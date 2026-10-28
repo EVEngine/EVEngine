@@ -1,4 +1,4 @@
-# Softbody — Cloth & Fluid
+# Softbody — Cloth & Fluid2D
 
 Interactive demo for the Physics module's cloth and 2D fluid solvers.
 

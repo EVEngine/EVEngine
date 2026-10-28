@@ -48,12 +48,12 @@ public:
 
     bool handlesPath(const std::string &normPath) const override {
         const std::string ext = extensionOf(normPath);
-        return ext == ".json" || isImagePath(normPath);
+        return ext == ".json" || ext == ".tmj" || ext == ".tsj" || ext == ".tsx" || isImagePath(normPath);
     }
 
-    bool reload(const std::string &normPath) override {
-        if (ecs::current()->getManager<TileLayer>() == nullptr) return false;
-        return isImagePath(normPath) ? rebindTileset(normPath) : reloadConfig(normPath);
+    eve::Result<bool> reload(const std::string &normPath) override {
+        if (ecs::current()->getManager<TileLayer>() == nullptr) return eve::Result<bool>::success(false);
+        return eve::Result<bool>::success(isImagePath(normPath) ? rebindTileset(normPath) : reloadConfig(normPath));
     }
 
 private:
@@ -63,7 +63,10 @@ private:
         for (auto it = view.begin(); it != view.end(); ++it) {
             auto [cfg, res] = *it;
             if (!cfg->entity || res->path.empty()) continue;
-            if (normalize(res->path) != normPath) continue;
+            bool matches = normalize(res->path) == normPath;
+            for (const std::string &dependency : res->dependencyPaths)
+                matches = matches || normalize(dependency) == normPath;
+            if (!matches) continue;
             if (reloadConfigFile(cfg->entity, nullptr)) ++reloaded;
         }
         return reloaded > 0;
@@ -77,12 +80,14 @@ private:
         auto view = ecs::View<TileLayer, TileLayer::Config, TileLayer::Resource, TileLayer::Tileset>();
         for (auto it = view.begin(); it != view.end(); ++it) {
             auto [cfg, res, ts] = *it;
-            if (!cfg->entity || res->texturePath.empty()) continue;
-            if (normalize(res->texturePath) != normPath) continue;
+            if (!cfg->entity) continue;
             try {
-                cfg->entity->setTileset(gfx->newTextureFromFile(normPath), ts->firstGid,
-                                        ts->columns, ts->margin, ts->spacing);
-                any = true;
+                for (auto &atlas : ts->atlases) {
+                    if (normalize(atlas.imagePath) != normPath) continue;
+                    atlas.texture = gfx->newTextureFromFile(normPath);
+                    if (atlas.firstGid == ts->firstGid) ts->texture = atlas.texture;
+                    any = true;
+                }
             } catch (...) {
             }
         }

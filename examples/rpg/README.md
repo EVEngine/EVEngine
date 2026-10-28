@@ -1,9 +1,11 @@
 # RPG 示例 —— 地牢生存
 
-用 `eve.RPG()` 模块搭的可玩 ARPG 垂直切片：玩家 vs 一波波强度递增的敌人。
-除属性 / 效果 / 状态 / 技能外，还实际使用标准战斗、等级经验、任务、Utility AI、
-确定性战利品表和运行时事件。完整设计见
-[ARPG 框架设计](../../docs/dev/ARPG框架设计.md)。
+[English](README.en.md)
+
+
+用 `eve.RPG()` 模块搭的一个最小可玩 demo：玩家 vs 一波波强度递增的敌人，
+用来演示属性 / 效果 / 状态 / 技能 / 结算五套系统怎么协同工作。完整设计说明见
+[RPG 系统设计](../../docs/dev/RPG系统设计.md)。
 
 ## 运行
 
@@ -25,6 +27,13 @@ make run/macosx-debug GAME=examples/rpg
 敌人会自动用「利爪」普通攻击和「怒吼」（削弱玩家防御）反击，一波波变强，
 撑得越久分数越高。
 
+## 数据文件
+
+- `data/effects.json`：效果模板（治疗 / 力量姿态 / 衰弱 / 灼烧 / 被动回复）。
+- `data/skills.json`：技能定义（消耗、冷却、读条、附加效果）。
+
+改数值不用碰脚本：保存 JSON 后热重载即生效。
+
 ## 演示了什么
 
 | 系统 | 用到的点 |
@@ -33,19 +42,13 @@ make run/macosx-debug GAME=examples/rpg
 | 效果 | JSON 注册 4 种策略：instant（治疗药水）、duration+refresh（力量姿态/衰弱）、duration+period+stack（灼烧最多叠 3 层）|
 | 状态 | `getStatusCount/EffectId/Stacks/Remaining` 逐帧读出来做 UI；`pollTicks` 驱动灼烧伤害与被动回复 |
 | 技能 | 学习/冷却/消耗/读条时间；`canCastSkill`/`canCastSkillReason` 给出施法失败原因；`getCastProgress` 画读条进度条 |
-| 结算 | 默认使用 `CombatSystem` 标准公式；特殊项目仍可用 `SettlementPipeline` 插入或替换阶段 |
-| 标准战斗 | `dealDamage` 统一处理 attack / armor / 元素抗性 / 暴击，并产生击杀事件 |
-| 成长 | 击杀获得经验，支持连续升级和未分配点数 |
-| 任务 | `notify("kill", "dungeon.enemy", 1)` 推进「地牢清剿」目标 |
-| 战利品 | 敌人死亡后按权重、掉率、数量范围和 luck 抽取物品 |
-| AI | UtilityBrain 根据玩家生命比例在利爪与怒吼之间评分选择 |
+| 结算 | 示例为教学目的把伤害公式写在脚本 `computeDamage`；正式 Battle 使用通用 Settlement，旧 named pipeline 只作兼容 |
 
 ## 已知限制 / 扩展点
 
-- **结算流水线是 C++ 扩展点**：`SettlementContext`/`runSettlement` 已绑定到脚本，
-  但注册新阶段（`SettlementPipeline::registerStage`，接受一个 C++ `std::function`）
-  目前只能在原生代码里做。纯脚本项目通常自己实现伤害公式（本例的做法），
-  想要"原生插件注册阶段 + 脚本触发"的组合可以参考 `examples/native-plugin`。
+- **`runSettlement` 是兼容入口**：旧 `SettlementContext` 数值袋仍可由原生插件注册回调并由脚本触发，
+  其调度已委托通用 Settlement。新项目应配置 `Battle` 的 `settlement.rules`，让伤害、治疗、Status tick、
+  Buff 与触发链走同一正式路径；不要用兼容数值袋直接提交权威状态。
 - **自定义施法条件同理**：`SkillSystem::registerCastCondition` 也是 C++-only。
 
 ## 踩过的坑（写给以后改这个模块/写新脚本绑定的人）

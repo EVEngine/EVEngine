@@ -16,13 +16,19 @@ import struct
 import subprocess
 import sys
 from pathlib import Path
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parents[1]
 SHADER_DIR = ROOT / "src" / "modules" / "graphics" / "shaders"
 
 SHADERS = [
+    ("mesh3d_mtoon.vert", "vert"),
+    ("mesh3d_mtoon.frag", "frag"),
+    ("scene_tonemap.frag", "frag"),
     ("mesh3d.vert", "vert"),
     ("mesh3d.frag", "frag"),
+    ("mesh3d_gpudriven.vert", "vert"),
+    ("mesh3d_gpudriven.frag", "frag"),
     ("mesh3d_clustered.vert", "vert"),
     ("mesh3d_clustered.frag", "frag"),
     ("mesh3d_hair.vert", "vert"),
@@ -32,7 +38,22 @@ SHADERS = [
     ("mesh3d_gbuffer.vert", "vert"),
     ("mesh3d_gbuffer.frag", "frag"),
     ("mesh3d_gbuffer_alpha.frag", "frag"),
+    ("mesh3d_gbuffer_skin.vert", "vert"),
+    ("mesh3d_gbuffer_skin.frag", "frag"),
+    ("mesh3d_gbuffer_skin_alpha.frag", "frag"),
+    ("mesh3d_shadow_skin.vert", "vert"),
+    ("mesh3d_shadow_skin_alpha.frag", "frag"),
+    ("mesh3d_shadow_alpha.vert", "vert"),
+    ("mesh3d_shadow_alpha.frag", "frag"),
+    ("mesh3d_gbuffer_vis.vert", "vert"),
+    ("mesh3d_gbuffer_vis.frag", "frag"),
+    ("mesh3d_gbuffer_vgvis.vert", "vert"),
+    ("mesh3d_gbuffer_vgvis.frag", "frag"),
+    ("resolve_vis.vert", "vert"),
+    ("resolve_vis.frag", "frag"),
     ("mesh3d_toon.vert", "vert"),
+    ("deferred_lighting.vert", "vert"),
+    ("deferred_lighting.frag", "frag"),
 ]
 
 
@@ -74,6 +95,10 @@ def compile_one(src: Path, stage: str) -> Path:
             "-o",
             str(out),
         ]
+        # The GPU-driven path uses descriptor indexing (nonuniform() sampling),
+        # which requires a 1.2 target environment for glslc's SPIR-V emission.
+        if "gpudriven" in src.name:
+            cmd.append("--target-env=vulkan1.2")
     else:
         validator = shutil.which("glslangValidator")
         if not validator:
@@ -111,4 +136,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

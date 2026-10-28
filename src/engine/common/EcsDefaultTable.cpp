@@ -1,0 +1,44 @@
+// The default ECS Table and each thread's current-world slot have one owner.
+//
+// `ecs::default_table()` used to be an inline function with a function-local
+// static (external/ECS.hpp). In a single-image build that is one Table, but the
+// shared link-group route (EVENGINE_MODULE_LINKAGE=SHARED) puts the engine in
+// several DLLs plus the host executable, and MSVC/ELF do not unify an inline
+// function's local static across images: the host and each group would address a
+// different Table, so an entity created through a domain module would be
+// invisible to `ecs::current()` in the caller (and vice versa).
+//
+// The canonical external/ECS.hpp header declares the compiled owner so
+// that in SHARED mode `ecs::default_table()` forwards to
+// `ecs::engine_default_table()`, and this translation unit -- compiled into the
+// foundation link unit, which every other group already depends on -- owns the
+// storage. The OBJECT/static route keeps the inline definition, so a release SDK
+// remains a single self-contained executable with no engine DLLs.
+// The canonical current-slot API routes ScopedTable's override through the same owner:
+// otherwise a factory in another link group still creates into the default
+// table instead of the caller's selected world. The override remains per-thread.
+//
+// The definition repeats EVE_ECS_DEFAULT_TABLE_API on purpose: MSVC rejects a
+// plain declaration followed by a dllexport definition (C2375, "redefinition;
+// different linkage"), so the header's declaration and this definition must carry
+// the same annotation.
+
+#include <ECS.hpp>
+
+#if defined(EVENGINE_MODULE_DLL)
+
+namespace ecs {
+
+EVE_ECS_DEFAULT_TABLE_API Table& engine_default_table() {
+    static Table table;
+    return table;
+}
+
+EVE_ECS_DEFAULT_TABLE_API Table*& engine_current_slot() {
+    thread_local Table* slot = nullptr;
+    return slot;
+}
+
+}  // namespace ecs
+
+#endif

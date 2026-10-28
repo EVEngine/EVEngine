@@ -1,7 +1,15 @@
 #include "stylize/Stylize.h"
 
+#include "stylize/AttackVfxRuntime.h"
 #include "stylize/ImageStylize.h"
+#include "stylize/MeshEffect.h"
+#include "stylize/MeshEffectRenderer.h"
+#include "stylize/MeshVfxAsset.h"
+#include "stylize/SkillMeshEffect.h"
+#include "stylize/StyleInstance.h"
+#include "stylize/StyleRecipe.h"
 #include "stylize/StyleShaders.h"
+#include "stylize/TrailEffect.h"
 
 #include "common/Exception.h"
 #include "graphics/Graphics.h"
@@ -12,7 +20,13 @@
 
 namespace eve::stylize {
 
+void registerStylizeAttackVfxExecutors();
+void unregisterStylizeAttackVfxExecutors();
+
 Module_IMPL(Stylize, new Stylize());
+
+Stylize::Stylize() { registerStylizeAttackVfxExecutors(); }
+Stylize::~Stylize() { unregisterStylizeAttackVfxExecutors(); }
 
 int Stylize::getStyleCount() const { return styleCount(); }
 
@@ -58,7 +72,39 @@ graphics::Shader *Stylize::newMeshShader(graphics::Graphics *gfx, const std::str
 
 image::ImageData *Stylize::processImage(image::ImageData *src, const std::string &style) {
     if (!hasStyle(style)) throw eve::Exception("Stylize.processImage: unknown style '%s'", style.c_str());
+    if (!supports(style, "cpu"))
+        throw eve::Exception("Stylize.processImage: style '%s' has no CPU technique", style.c_str());
     return processImageCpu(src, style);
+}
+
+StyleInstance *Stylize::newInstance(const std::string &style) {
+    return new StyleInstance(style);
+}
+
+StyleRecipe *Stylize::newRecipe() { return new StyleRecipe(); }
+
+std::unique_ptr<MeshEffectInstance> Stylize::createMeshEffect(const std::string& style) {
+    return std::make_unique<MeshEffectInstance>(style);
+}
+
+std::unique_ptr<TrailEmitter> Stylize::createTrailEmitter() {
+    return std::make_unique<TrailEmitter>();
+}
+
+std::unique_ptr<MeshEffectRenderer> Stylize::createMeshEffectRenderer(graphics::Graphics& gfx) {
+    return std::make_unique<MeshEffectRenderer>(gfx);
+}
+
+std::unique_ptr<SkillMeshEffect> Stylize::createSkillMeshEffect(SkillMeshEffectKind kind) {
+    return std::make_unique<SkillMeshEffect>(kind);
+}
+
+eve::Result<std::unique_ptr<MeshVfxAssetInstance>> Stylize::createMeshVfxAssetInstance(const MeshVfxAsset& asset) {
+    return MeshVfxAssetInstance::create(asset);
+}
+
+std::unique_ptr<AttackVfxRuntime> Stylize::createAttackVfxRuntime() {
+    return std::make_unique<AttackVfxRuntime>();
 }
 
 void Stylize::expose(ssq::Table &table) {
@@ -78,6 +124,44 @@ void Stylize::expose(ssq::Table &table) {
     pass.addFunc("applyTo", &StylePass::applyTo);
     pass.addFunc("applyCanvasTo", &StylePass::applyCanvasTo);
     pass.addFunc("getShader", &StylePass::getShader);
+    pass.addFunc("getStage", &StylePass::getStage);
+    pass.addFunc("getPriority", &StylePass::getPriority);
+    pass.addFunc("setPriority", &StylePass::setPriority);
+    pass.addFunc("requiresInput", &StylePass::requiresInput);
+
+    auto instance = table.addClass<StyleInstance>(
+        "StyleInstance", std::function<StyleInstance *()>([]() -> StyleInstance * { return nullptr; }),
+        true);
+    instance.addFunc("getStyle", &StyleInstance::getStyle);
+    instance.addFunc("getStage", &StyleInstance::getStage);
+    instance.addFunc("getPriority", &StyleInstance::getPriority);
+    instance.addFunc("requiresInput", &StyleInstance::requiresInput);
+    instance.addFunc("getParamCount", &StyleInstance::getParamCount);
+    instance.addFunc("getParamName", &StyleInstance::getParamName);
+    instance.addFunc("getParamDefault", &StyleInstance::getParamDefault);
+    instance.addFunc("getParamMin", &StyleInstance::getParamMin);
+    instance.addFunc("getParamMax", &StyleInstance::getParamMax);
+    instance.addFunc("hasParam", &StyleInstance::hasParam);
+    instance.addFunc("isOverridden", &StyleInstance::isOverridden);
+    instance.addFunc("setFloat", &StyleInstance::setFloat);
+    instance.addFunc("getFloat", &StyleInstance::getFloat);
+    instance.addFunc("reset", &StyleInstance::reset);
+    instance.addFunc("resetAll", &StyleInstance::resetAll);
+    instance.addFunc("newPass", &StyleInstance::newPass);
+    instance.addFunc("newMeshShader", &StyleInstance::newMeshShader);
+
+    auto recipe = table.addClass<StyleRecipe>(
+        "StyleRecipe", std::function<StyleRecipe *()>([]() -> StyleRecipe * { return nullptr; }),
+        true);
+    recipe.addFunc("clear", &StyleRecipe::clear);
+    recipe.addFunc("add", &StyleRecipe::add);
+    recipe.addFunc("getStyleCount", &StyleRecipe::getStyleCount);
+    recipe.addFunc("getStyle", &StyleRecipe::getStyle);
+    recipe.addFunc("compile", &StyleRecipe::compile);
+    recipe.addFunc("isCompiled", &StyleRecipe::isCompiled);
+    recipe.addFunc("getStage", &StyleRecipe::getStage);
+    recipe.addFunc("apply", &StyleRecipe::apply);
+    recipe.addFunc("applyCanvas", &StyleRecipe::applyCanvas);
 
     auto chain = table.addClass<StyleChain>(
         "StyleChain", std::function<StyleChain *()>([]() -> StyleChain * { return nullptr; }), true);
@@ -98,6 +182,8 @@ void Stylize::expose(ssq::Class &cls) {
     cls.addFunc("supports", &Stylize::supports);
     cls.addFunc("getStyleParamCount", &Stylize::getStyleParamCount);
     cls.addFunc("getStyleParamName", &Stylize::getStyleParamName);
+    cls.addFunc("newInstance", &Stylize::newInstance);
+    cls.addFunc("newRecipe", &Stylize::newRecipe);
     cls.addFunc("newPass", &Stylize::newPass);
     cls.addFunc("newPassFromShader", &Stylize::newPassFromShader);
     cls.addFunc("newChain", &Stylize::newChain);

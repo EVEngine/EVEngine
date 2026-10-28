@@ -1,0 +1,124 @@
+#include "dialogue/ConversationToolchain.h"
+#include "dialogue/DialogueSequence.h"
+
+#include <algorithm>
+#include <unordered_set>
+
+namespace eve::dialogue {
+namespace {
+
+void rewriteNodeReference(std::string& reference, const std::string& oldId, const std::string& newId) {
+    if (reference == oldId) reference = newId;
+}
+
+}  // namespace
+
+eve::Result<void> lintConversationWorkspace(const std::vector<eve::dnut::SequenceAsset>& assets,
+                                            const std::string&                           label,
+                                            std::vector<ConversationDiagnostic>&         diagnostics) {
+    const size_t                    diagnosticsBegin = diagnostics.size();
+    auto                            linted           = lintConversations(assets, label, diagnostics);
+    bool                            valid            = linted.ok();
+    std::unordered_set<std::string> assetIds;
+    for (const auto& asset : assets) assetIds.insert(asset.id);
+    for (const auto& asset : assets) {
+        for (const auto& node : asset.nodes) {
+            if (node.type != "call") continue;
+            const std::string targetId = sequencePayloadString(node, "target");
+            if (targetId.empty()) continue;
+            if (assetIds.find(targetId) == assetIds.end()) {
+                diagnostics.push_back({ConversationDiagnostic::Severity::Error, label, node.sourceLine,
+                                       "conversation '" + asset.id + "': call node '" + node.id +
+                                           "' references missing conversation '" + targetId + "'",
+                                       "MissingConversation", node.sourceColumn, asset.id + "/" + node.id});
+                valid = false;
+                continue;
+            }
+            const auto        target    = std::find_if(assets.begin(), assets.end(),
+                                                       [&](const auto& candidate) { return candidate.id == targetId; });
+            const eve::Value* arguments = node.payload.find("arguments");
+            for (const auto& parameter : target->parameters) {
+                if (parameter.required && (!arguments || !arguments->find(parameter.name))) {
+                    diagnostics.push_back({ConversationDiagnostic::Severity::Error, label, node.sourceLine,
+                                           "conversation '" + asset.id + "': call node '" + node.id +
+                                               "' omits required argument '" + parameter.name + "'",
+                                           "MissingCallArgument", node.sourceColumn, asset.id + "/" + node.id});
+                    valid = false;
+                }
+            }
+            if (!arguments || !arguments->isObject()) continue;
+            for (const auto& argument : arguments->keys()) {
+                if (std::none_of(target->parameters.begin(), target->parameters.end(), [&](const auto& parameter) {
+                        return parameter.name == argument;
+                    })) {
+                    diagnostics.push_back({ConversationDiagnostic::Severity::Error, label, node.sourceLine,
+                                           "conversation '" + asset.id + "': call node '" + node.id +
+                                               "' passes undeclared argument '" + argument + "'",
+                                           "UnexpectedCallArgument", node.sourceColumn, asset.id + "/" + node.id});
+                    valid = false;
+                }
+            }
+        }
+    }
+    valid = valid &&
+            std::none_of(diagnostics.begin() + static_cast<std::ptrdiff_t>(diagnosticsBegin), diagnostics.end(),
+                         [](const auto& diagnostic) {
+                             return diagnostic.severity == ConversationDiagnostic::Severity::Error;
+                         });
+    if (!valid) {
+        const std::string message = diagnostics.size() > diagnosticsBegin ? diagnostics[diagnosticsBegin].message
+                                                                          : "dialogue workspace lint failed";
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, message, label, {}, "dialogue.workspace.lint"));
+    }
+    return eve::Result<void>::success();
+}
+
+eve::Result<void> renameConversationAsset(std::vector<eve::dnut::SequenceAsset>& assets, const std::string& oldId,
+                                          const std::string& newId) {
+    if (oldId.empty() || newId.empty()) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "conversation IDs must not be empty", oldId, {}, "dialogue.rename"));
+    auto source = std::find_if(assets.begin(), assets.end(), [&](const auto& asset) { return asset.id == oldId; });
+    if (source == assets.end()) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "conversation not found: " + oldId, oldId, {}, "dialogue.rename"));
+    if (std::any_of(assets.begin(), assets.end(), [&](const auto& asset) { return asset.id == newId; }))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "conversation already exists: " + newId, newId, {}, "dialogue.rename"));
+    source->id = newId;
+    ++source->version;
+    for (auto& asset : assets)
+        for (auto& node : asset.nodes)
+            if (node.type == "call" && sequencePayloadString(node, "target") == oldId)
+                node.payload.set("target", eve::Value::string(newId));
+    return eve::Result<void>::success();
+}
+
+eve::Result<void> renameConversationNode(std::vector<eve::dnut::SequenceAsset>& assets, const std::string& assetId,
+                                         const std::string& oldId, const std::string& newId) {
+    if (oldId.empty() || newId.empty()) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "node IDs must not be empty", assetId, {}, "dialogue.rename"));
+    auto asset = std::find_if(assets.begin(), assets.end(), [&](const auto& item) { return item.id == assetId; });
+    if (asset == assets.end()) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "conversation not found: " + assetId, assetId, {}, "dialogue.rename"));
+    auto node =
+        std::find_if(asset->nodes.begin(), asset->nodes.end(), [&](const auto& item) { return item.id == oldId; });
+    if (node == asset->nodes.end()) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "node not found: " + oldId, assetId + "/" + oldId, {}, "dialogue.rename"));
+    if (asset->findNode(newId)) return eve::Result<void>::failure(eve::Diagnostic::error(
+        eve::DiagnosticCode::InvalidArgument, "node already exists: " + newId, assetId + "/" + newId, {}, "dialogue.rename"));
+    node->id = newId;
+    rewriteNodeReference(asset->entry, oldId, newId);
+    for (auto& item : asset->nodes) {
+        rewriteNodeReference(item.next, oldId, newId);
+        if (item.type == "call") {
+            std::string returnNode = sequencePayloadString(item, "return");
+            rewriteNodeReference(returnNode, oldId, newId);
+            if (!returnNode.empty()) item.payload.set("return", eve::Value::string(returnNode));
+        }
+        for (auto& route : item.routes) rewriteNodeReference(route.target, oldId, newId);
+    }
+    ++asset->version;
+    return eve::Result<void>::success();
+}
+
+}  // namespace eve::dialogue

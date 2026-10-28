@@ -1,26 +1,23 @@
 // Arbor Lab — interactive procedural tree recipe showcase.
-// R regenerate, 1/2 Low Poly/Realistic, A algorithm, L leaves, [/] density, C canopy.
+// R regenerate, 1/2 Low Poly/Realistic, A algorithm, L cycle leaf mode, [/] density.
 
-if (!("treeSeed" in getroottable())) treeSeed <- 31415;
-if (!("treeStyle" in getroottable())) treeStyle <- "lowpoly";
-if (!("treeAlgorithm" in getroottable())) treeAlgorithm <- "weberPenn";
-if (!("leafMode" in getroottable())) leafMode <- "cards";
-if (!("leafDensity" in getroottable())) leafDensity <- 0.65;
-if (!("treeMesh" in getroottable())) treeMesh <- null;
-if (!("treeObject" in getroottable())) treeObject <- null;
-if (!("treeCamera" in getroottable())) treeCamera <- null;
-if (!("treeYaw" in getroottable())) treeYaw <- 0.0;
-if (!("prevTreeKeys" in getroottable())) prevTreeKeys <- {};
-
+persist treeSeed = 31415
+persist treeStyle = "lowpoly"
+persist treeAlgorithm = "weberPenn"
+persist leafMode = "clusters"
+persist leafDensity = 0.65
+persist treeMesh = null
+persist treeObject = null
+persist treeCamera = null
+persist treeYaw = 0.0
 function pressed(k) {
-    local down = keyboard.isDown(k);
-    local old = k in prevTreeKeys ? prevTreeKeys[k] : false;
-    prevTreeKeys[k] <- down;
-    return down && !old;
+    return key_just_pressed(k);
 }
 
 function rebuildTree() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return;
+    local p = paramsResult.value;
     p.setSeed(treeSeed);
     p.setString("style", treeStyle);
     p.setString("branchAlgorithm", treeAlgorithm);
@@ -30,7 +27,18 @@ function rebuildTree() {
     p.setFloat("crownRadius", 2.15);
     p.setInt("branchLevels", treeStyle == "realistic" ? 3 : 2);
     p.setInt("branchCount", treeStyle == "realistic" ? 10 : 6);
-    treeMesh = procgen.generateMesh("mesh.tree", p, gfx);
+    // Blue-noise leaf clusters: a sphere of leaf planes per foliage anchor.
+    // Denser, more separated clusters give a continuous crown instead of a few
+    // big lobes; smaller leaves suit the realistic style.
+    p.setFloat("clusterSize", treeStyle == "realistic" ? 0.26 : 0.30);
+    p.setFloat("clusterSeparation", treeStyle == "realistic" ? 0.45 : 0.55);
+    p.setFloat("clusterLeafScale", treeStyle == "realistic" ? 0.70 : 0.85);
+    p.setInt("clusterPlanes", treeStyle == "realistic" ? 12 : 10);
+    p.setInt("clusterLeaves", treeStyle == "realistic" ? 34 : 28);
+    p.setInt("clusterLimit", treeStyle == "realistic" ? 160 : 120);
+    local meshResult = procgen.generateMesh("mesh.tree", p, gfx);
+    if (!meshResult.ok) return;
+    treeMesh = meshResult.value;
     if (treeObject == null) {
         treeObject = eve.Renderable3D();
         treeObject.setPosition(1.35, -3.0, 0.0);
@@ -65,11 +73,9 @@ function eve_update(dt) {
         rebuildTree();
     }
     if (pressed("l") || pressed("L")) {
-        leafMode = leafMode == "none" ? "cards" : "none";
-        rebuildTree();
-    }
-    if (pressed("c") || pressed("C")) {
-        leafMode = leafMode == "canopy" ? "cards" : "canopy";
+        leafMode = leafMode == "clusters" ? "cards" :
+                   leafMode == "cards" ? "canopy" :
+                   leafMode == "canopy" ? "none" : "clusters";
         rebuildTree();
     }
     if (pressed("leftbracket")) { leafDensity = max(0.0, leafDensity - 0.1); rebuildTree(); }

@@ -1,0 +1,203 @@
+# ---------------------------------------------------------------------------
+# L-1 -- engine core. Built by src/engine/CMakeLists.txt rather than src/modules.
+# ---------------------------------------------------------------------------
+
+eve_declare_module(NAME common CORE REQUIRED LIB EVCommon LAYER -1
+                   THIRDPARTY squirrel)
+eve_declare_module(NAME cmdline CORE REQUIRED LIB EVCmdLine LAYER -1
+                   DEPS filesystem
+                   THIRDPARTY squirrel poco)
+# DevTools consumes business modules only through the capability interfaces in
+# common/ (ISceneQuery / IRenderCapture / IPhysicsQuery / IProcgenQuery /
+# IParticlesQuery / IAudioQuery / IEditorHost), so it no longer blocks
+# trimming scene / physics / procgen / particles / audio / ui / graphics.
+eve_declare_module(NAME devtools CORE LIB EVDevTools LAYER -1
+                   DEPS platform_event
+                   THIRDPARTY poco
+                   GROUP 3d)
+
+# ---------------------------------------------------------------------------
+# L0 -- foundation
+# ---------------------------------------------------------------------------
+
+eve_declare_module(NAME math LAYER 0 SCRIPT Math SLOT math
+                   GROUP minimal 2d 3d web)
+# Unified grid: layout/topology + projection. Pure math, no Module class.
+eve_declare_module(NAME grid LAYER 0
+                   GROUP 2d 3d web)
+# Resettable domain-test search and CPU policy learning; no renderer dependency.
+eve_declare_module(NAME agent LAYER 0 LIB EVAgent SCRIPT Agent SLOT agent
+                   GROUP 2d 3d web)
+# UI-independent property-access contracts shared by game UI, editor UI and
+# automation hosts. Core headers (PropertyAccess.h) have no renderer or script
+# runtime. The Squirrel reflection adapter lives in squirrel/ so Inspector can
+# bind script instances without a separate module.
+eve_declare_module(NAME property_access LAYER 0
+                   GROUP minimal 2d 3d web)
+# L1 -- gameplay/model adapters
+# UI-independent editable-target, command and transaction contracts shared by
+# developer editors, in-game builders and automation hosts.
+eve_declare_module(NAME editing LAYER 1
+                   DEPS property_access schema transaction)
+# L0 -- foundation (continued)
+eve_declare_module(NAME data LAYER 0 SCRIPT DataModule
+                   THIRDPARTY lz4 poco xxhash
+                   GROUP minimal 2d 3d web)
+# Filesystem also exposes HotReload, the asset-reload dispatcher.
+eve_declare_module(NAME filesystem REQUIRED LIB EVFileSystem LAYER 0 SCRIPT Filesystem HotReload SLOT fs hot
+                   THIRDPARTY physfs lz4 zlib poco sdl2)
+# Canonical source/runtime asset packages. Importer integrations remain in
+# higher modules; this layer owns only package admission, manifests and Cook IR.
+eve_declare_module(NAME asset LAYER 0
+                   DEPS data
+                   THIRDPARTY zlib
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME platform_event REQUIRED LAYER 0 SCRIPT PlatformEvent SLOT platform_event
+                   THIRDPARTY sdl2)
+eve_declare_module(NAME timer REQUIRED LAYER 0 SCRIPT Timer SLOT timer
+                   THIRDPARTY sdl2)
+eve_declare_module(NAME os LAYER 0 SCRIPT OS SLOT os
+                   THIRDPARTY sdl2
+                   GROUP minimal 2d 3d web)
+# Profiler: built-in engine-wide profiler. Scoped zones (common/Profile.h) are
+# sprinkled across the core hot systems (physics, animation, particles, audio,
+# ui, scene, map, crowd, event, graphics passes) and aggregated per frame into a
+# per-module/per-zone call tree with self/total time; GPU frame time comes from
+# Vulkan timestamp queries. Zero overhead when disabled.
+eve_declare_module(NAME profiler LAYER 0 SCRIPT Profiler SLOT profiler
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME thread LAYER 0 SCRIPT Thread SLOT thread
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME spatial LAYER 0 SCRIPT Spatial SLOT spatial
+                   GROUP 2d 3d web)
+# Crowd: 连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群（纯 CPU 仿真，
+# 与渲染解耦；examples/crowd 演示渲染由游戏脚本自行完成）。
+eve_declare_module(NAME crowd LAYER 0 SCRIPT Crowd SLOT crowd
+                   GROUP 2d 3d web)
+eve_declare_module(NAME pixelworld LAYER 0 SCRIPT PixelWorldModule SLOT pixelworld
+                   THIRDPARTY poco
+                   GROUP 2d 3d web)
+eve_declare_module(NAME ik LIB EVIK LAYER 0 SCRIPT IK
+                   GROUP 2d 3d web)
+# L6 -- editor orchestration
+eve_declare_module(NAME editor LAYER 6 SCRIPT Editor SLOT editor
+                   DEPS asset editing property_access rx settlement tags transaction
+                   GROUP 3d web
+                   OPTIONAL_DEPS graphics)
+# L0 -- foundation (continued)
+eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
+                   GROUP 3d)
+eve_declare_module(NAME database LAYER 0 SCRIPT Database
+                   THIRDPARTY poco_data poco)
+# L1 -- gameplay domain adapter
+eve_declare_module(NAME crowd_thread LIB EVCrowdThread LAYER 1
+                   DEPS crowd thread
+                   GROUP 2d 3d web)
+eve_declare_module(NAME pixelworld_thread LAYER 1
+                   DEPS pixelworld thread
+                   GROUP 2d 3d web)
+eve_declare_module(NAME pixelworld_replay LAYER 1
+                   DEPS pixelworld
+                   GROUP 2d 3d web)
+eve_declare_module(NAME pixelworld_streaming LAYER 1
+                   DEPS asset pixelworld
+                   GROUP 2d 3d web)
+eve_declare_module(NAME rpg LIB EVRPG LAYER 1 SCRIPT RPG
+                   DEPS action attributes definitions dnut_interpreter effects inventory production settlement transaction)
+# L0 -- foundation (continued)
+eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME economy LAYER 0 SCRIPT Economy SLOT economy
+                   DEPS transaction
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME attributes LAYER 0 SCRIPT Attributes SLOT attributes
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME authority LAYER 0 SCRIPT Authority SLOT authority
+                   GROUP minimal 2d 3d web)
+# Indexed emergent rule triggers (watch-key inverted index + deferred activations).
+# Reuses common Condition AST; economy actions go through IEconomy capability.
+eve_declare_module(NAME emergence LAYER 0 SCRIPT Emergence SLOT emergence
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME definitions LAYER 0 SCRIPT Definitions SLOT definitions
+                   DEPS schema
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME effects LAYER 0 SCRIPT Effects SLOT effects
+                   DEPS definitions
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME game_event LAYER 0 SCRIPT GameEvent SLOT game_event
+                   DEPS schema
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME settlement LIB EVSettlement LAYER 0 SCRIPT Settlement SLOT settlement
+                   DEPS effects game_event
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME orders LAYER 0 SCRIPT Orders SLOT orders
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME policyregistry LAYER 0 SCRIPT PolicyRegistryModule SLOT policies
+                   DEPS schema
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME production LAYER 0 SCRIPT Production SLOT production
+                   GROUP minimal 2d 3d web)
+# L1 -- sensing/action protocol
+eve_declare_module(NAME sensing LAYER 1 SCRIPT Sensing SLOT sensing
+                   DEPS spatial
+                   GROUP minimal 2d 3d web)
+# Data-oriented NPC AI orchestration. Also owns DecisionContext (blackboard /
+# FSM / utility / influence grids) previously in the dissolved decision module.
+# Shared Condition AST lives in engine common (not a separate module).
+eve_declare_module(NAME npc_ai LAYER 1 SCRIPT NpcAi Decision SLOT npc_ai decision
+                   GROUP minimal 2d 3d web)
+# Renderer- and ruleset-neutral gameplay action lifecycle. Domain adapters
+# (RPG Skill, Weapon Attack, Card Play, RTS Command) depend on this protocol;
+# the core depends on sensing values / common Condition but never on a gameplay domain.
+eve_declare_module(NAME action LIB EVAction LAYER 1 SCRIPT Action SLOT action
+                   DEPS sensing tags transaction
+                   GROUP minimal 2d 3d web)
+# `.dnut` authored-sequence language. Owns the shared lexer, the registry-driven
+# compiler, the compiled sequence model and the cross-frame interpreter. Domain
+# vocabularies (dialogue lines and pools, RPG story steps) are registered by the
+# modules that own them; this core never interprets a domain payload.
+eve_declare_module(NAME dnut_interpreter LIB EVDnutInterpreter LAYER 1
+                   GROUP minimal 2d 3d web)
+# L2 -- combat resolution and optional adapters consuming the action protocol
+# Optional persistent GameEventLog adapter for action timeline events.
+eve_declare_module(NAME action_game_event DIR action/game_event LAYER 2
+                   DEPS action game_event
+                   GROUP minimal 2d 3d web)
+# Optional semantic combo-window projection consumed by player, AI, and script input adapters.
+eve_declare_module(NAME action_input DIR action/input LAYER 2
+                   DEPS action
+                   GROUP minimal 2d 3d web)
+# L2 -- combat resolution consuming the action protocol
+eve_declare_module(NAME combat LIB EVCombat LAYER 2 SCRIPT Combat SLOT combat
+                   DEPS action action_input attributes settlement tags
+                   GROUP minimal 2d 3d web)
+# Shared fixed-step/backend contract extracted from the physics host so
+# independently switchable simulation satellites do not depend back upward.
+eve_declare_module(NAME physics_backend DIR physics/backend LAYER 2
+                   GROUP 2d 3d web)
+# L3 -- independently switchable physics simulation satellites
+# Volumetric soft-body domain core. Rendering and authoring are separate
+# nested satellites; custom headless compositions may select only this target.
+eve_declare_module(NAME physics_softbody DIR physics/softbody LAYER 3
+                   DEPS physics_backend schema
+                   GROUP 3d web)
+# L0 -- foundation (continued)
+eve_declare_module(NAME schema LAYER 0 SCRIPT Schema SLOT schema
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME social LAYER 0 SCRIPT Social SLOT social
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME statepatch LAYER 0 SCRIPT StatePatch SLOT statepatch
+                   DEPS transaction
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME tags LAYER 0 SCRIPT Tags SLOT tags
+                   GROUP minimal 2d 3d web)
+eve_declare_module(NAME transaction LAYER 0 SCRIPT Transaction SLOT transaction
+                   GROUP minimal 2d 3d web)
+# L4 -- world construction
+# PlacementWorld.cpp includes data/JsonDocument.h and Poco JSON (save/load).
+# THIRDPARTY poco is required so MSVC compiles those TUs with
+# POCO_NO_AUTOMATIC_LIBS; otherwise the obj records a link of
+# PocoFoundationd.lib instead of the *mdd archive the third-party build emits.
+eve_declare_module(NAME building LAYER 4 SCRIPT Building
+                   DEPS grid data game_event
+                   THIRDPARTY poco)

@@ -1,7 +1,71 @@
 create_module(EVCommon common)
+# ECS script component reflection uses the pinned VM internal class/instance layouts.
+target_include_directories(EVCommon PRIVATE "${CMAKE_SOURCE_DIR}/third-party/squirrel/squirrel")
+
+eve_configure_file_if_changed(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
+eve_configure_file_if_changed(${CMAKE_CURRENT_SOURCE_DIR}/common/BuildInfo.h.in common/BuildInfo.h)
+
+# Generate the language-level contract from the same addFunc declarations that
+# SimpleSquirrel compiles. Keeping this as a build input makes stale or
+# parameter-less bindings fail before the engine is linked.
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+# Generated source: OUTPUT + COMMAND + DEPENDS (the generator only).
+# Do not file(GLOB) the tree into DEPENDS (CMake documents GLOB as
+# configure-time only; Ninja then gets a stale file list or VerifyGlobs).
+# Do not use DEPFILE here: that option is for a compiler-style gcc depfile
+# of headers one translation unit included, not thousands of repo paths.
+string(REPLACE ";" "," _eve_binding_contract_modules "${EVE_ENABLED_MODULES}")
+set(_eve_binding_contract_cpp "${CMAKE_CURRENT_BINARY_DIR}/common/BindingContracts.generated.cpp")
+set(_eve_binding_contract_json "${CMAKE_CURRENT_BINARY_DIR}/common/eve-api.json")
+set(_eve_binding_contract_dts "${CMAKE_CURRENT_BINARY_DIR}/common/eve-api.d.ts")
+add_custom_command(
+    OUTPUT "${_eve_binding_contract_cpp}" "${_eve_binding_contract_json}" "${_eve_binding_contract_dts}"
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py"
+            --modules "${_eve_binding_contract_modules}"
+            --platform "${BUILD_PLATFORM}"
+            --output "${_eve_binding_contract_cpp}"
+            --json-output "${_eve_binding_contract_json}"
+            --dts-output "${_eve_binding_contract_dts}"
+    DEPENDS "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py"
+            "${CMAKE_SOURCE_DIR}/scripts/binding_architecture.py"
+            "${CMAKE_SOURCE_DIR}/scripts/binding_semantics.py"
+            "${CMAKE_SOURCE_DIR}/src/engine/common/ScriptStructure.hpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/common/ScriptStructure.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/ProjectIndexAutomatic.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/ProjectIndexGraph.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/ProjectIndexScan.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/McpProjectIndexTools.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/binding_semantics.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/game_event/binding_semantics.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/rpg/binding_semantics.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/binding_architecture.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/Scene.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneCameraQueries.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneNodeRef.h"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneHost.h"
+            "${CMAKE_SOURCE_DIR}/test/unit/scene/scene_tests.cpp"
+            "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_scene_tests.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/binding_architecture.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/Inventory.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/Bag.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/Bag.h"
+            "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_dap_tests.cpp"
+    COMMENT "Generating strict EveScript Binding Contracts"
+    VERBATIM)
+target_sources(EVCommon PRIVATE "${_eve_binding_contract_cpp}")
+
+# Core/headless/server profiles intentionally stop after EVCommon. They do not
+# create cmdline, a window or a renderer, so a profile build cannot accidentally
+# acquire the interactive host through an unconditional executable.
+if(NOT EVENGINE_BUILD_HOST)
+    set(EVENGINE_NATIVE_TARGET "" CACHE INTERNAL "Host target for SDK install" FORCE)
+    return()
+endif()
+
 eve_module_enabled(devtools _has_devtools)
 if(_has_devtools)
     create_module(EVDevTools devtools)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/devtools/McpToolFamilies.cmake")
     # Snapshot / DAP pull Poco JSON+Net; disable Windows #pragma lib auto-link
     # (would request PocoFoundationd.lib instead of our *mdd postfix).
     # NOMINMAX: Poco headers pull in windows.h; without it the min/max macros
@@ -9,11 +73,12 @@ if(_has_devtools)
     target_compile_definitions(EVDevTools PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
 endif()
 create_module(EVCmdLine cmdline)
+# Derived from the resolved manifest, not a separately configurable feature flag.
+target_compile_definitions(EVCmdLine PRIVATE EVENGINE_CMDLINE_DEVTOOLS=$<BOOL:${_has_devtools}>)
+target_sources(EVCmdLine PRIVATE cmdline/Sha256.cpp)
 # DevTool.hpp (pulled in by cmdline/Run.cpp) includes Poco JSON/Net headers;
 # keep the same no-auto-link contract so the debug Poco libs (*mdd) are used.
 target_compile_definitions(EVCmdLine PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
 
 set(EVENGINE_IOS_DEPLOYMENT_TARGET "13.0" CACHE STRING "Minimum iOS/iPadOS deployment target")
 
@@ -27,7 +92,15 @@ if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     set(EVENGINE_NATIVE_TARGET main CACHE INTERNAL "Host target for SDK install")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     # UIKit SDL entry: MACOSX_BUNDLE .app with SDL_main.
-    add_executable(eve MACOSX_BUNDLE main.cpp)
+    if(NOT EVENGINE_IOS_TEST_APP)
+        add_executable(eve MACOSX_BUNDLE main.cpp)
+    else()
+        # iOS test app: the zeroerr runner (test/main.cpp + test sources) is
+        # attached to this target from test/CMakeLists.txt. The bundle
+        # properties below still apply so the .app ships signed and launches
+        # like the game shell.
+        add_executable(eve MACOSX_BUNDLE)
+    endif()
     set(EVENGINE_NATIVE_TARGET eve CACHE INTERNAL "Host target for SDK install")
 else()
     # Desktop + webgpu (native Dawn and Emscripten/WASM) produce `eve`.
@@ -38,95 +111,19 @@ endif()
 # Crash-backtrace support (backward-cpp from EVEngine/third-party, MIT). The
 # host binary installs an unhandled-exception handler (main.cpp) that prints a
 # symbolized stack trace on crash; it is a host-only tool, not a game module.
-if(WIN32)
-    add_library(EVBacktrace INTERFACE)
-    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-        # Prebuilt-install mode: point at the install tree directly.
-        target_include_directories(EVBacktrace INTERFACE ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include)
-        target_link_libraries(EVBacktrace INTERFACE
-            ${EVENGINE_THIRD_PARTY_BINARY_DIR}/lib/backward$<$<CONFIG:Debug>:mdd>$<$<NOT:$<CONFIG:Debug>>:md>.lib)
-    else()
-        # ExternalProject mode (CI): the root CMakeLists already added the
-        # third-party install include/lib dirs to the global search paths.
-        target_link_libraries(EVBacktrace INTERFACE
-            backward$<$<CONFIG:Debug>:mdd>$<$<NOT:$<CONFIG:Debug>>:md>)
-    endif()
+include(${CMAKE_SOURCE_DIR}/cmake/host_backtrace.cmake)
+
+# Engine entry-point sources include common/config.h / cmdline/*.h directly;
+# link the shared include set explicitly (also propagates the third-party
+# link directories needed by the bare-name ${ThirdParty} list).
+if(TARGET ${EVENGINE_NATIVE_TARGET})
+    # Plain signature: the target's other links use the plain form.
+    target_link_libraries(${EVENGINE_NATIVE_TARGET} eve_engine_includes)
 endif()
 
-if(WIN32)
-    set(SystemLibraries ${SystemLibraries} winmm version imm32 Setupapi ws2_32 iphlpapi shlwapi)
-elseif(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-    find_library(ANDROID_LOG_LIB log)
-    find_library(ANDROID_LIB android)
-    find_library(ANDROID_OPENSLES_LIB OpenSLES)
-    set(SystemLibraries ${SystemLibraries}
-        ${ANDROID_LOG_LIB}
-        ${ANDROID_LIB}
-        ${ANDROID_OPENSLES_LIB}
-        dl
-        m
-        c++_shared
-    )
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-    # Emscripten exposes pthread/dl/GL as virtual libraries; nothing to link.
-    # Game-side threading is enabled through -sPROXY_TO_PTHREAD (platform/webgpu).
-    set(SystemLibraries ${SystemLibraries})
-elseif(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
-    set(SystemLibraries ${SystemLibraries}
-        "-framework UIKit"
-        "-framework Foundation"
-        "-framework CoreFoundation"
-        "-framework Metal"
-        "-framework QuartzCore"
-        "-framework CoreGraphics"
-        "-framework AudioToolbox"
-        "-framework CoreAudio"
-        "-framework AVFoundation"
-        "-framework CoreMedia"
-        "-framework GameController"
-        "-framework CoreHaptics"
-        "-framework CoreMotion"
-        "-framework OpenGLES"
-        "-framework CoreBluetooth"
-        # Static MoltenVK references IOSurface APIs.
-        "-framework IOSurface"
-        iconv
-    )
-elseif(APPLE)
-    set(SystemLibraries ${SystemLibraries}
-        dl pthread iconv
-        "-framework Cocoa"
-        "-framework IOKit"
-        "-framework ForceFeedback"
-        "-framework Carbon"
-        "-framework CoreVideo"
-        "-framework Metal"
-        "-framework QuartzCore"
-        "-framework AudioToolbox"
-        "-framework CoreAudio"
-        "-framework GameController"
-        "-framework CoreHaptics"
-        "-framework AVFoundation"
-        "-framework CoreMedia"
-        "-framework CoreFoundation"
-        "-framework Foundation"
-        "-framework OpenGL"
-    )
-elseif(UNIX)
-    # Static SDL2 pulls Wayland/X11 extras; FreeType needs bz2/png.
-    set(SystemLibraries ${SystemLibraries}
-        dl pthread m rt bz2 png
-        X11 Xext Xcursor Xrandr Xxf86vm Xi Xss Xinerama
-        wayland-client wayland-cursor wayland-egl xkbcommon
-        asound
-    )
-    # OpenAL Soft may compile the sndio backend when libsndio-dev is present.
-    # GitHub Actions runners typically lack libsndio, so only link when found.
-    find_library(EVENGINE_SNDIO_LIBRARY sndio)
-    if(EVENGINE_SNDIO_LIBRARY)
-        list(APPEND SystemLibraries sndio)
-    endif()
-endif()
+# Platform system libraries, shared with the unit-test runner
+# (see cmake/system_libraries.cmake).
+eve_append_system_libraries(SystemLibraries)
 
 # Third-party link list, derived from the module manifest: only the libraries
 # the enabled modules actually need, in the canonical order GNU ld requires.
@@ -137,7 +134,9 @@ message(STATUS "Third-party groups: ${EVE_THIRDPARTY_GROUPS}")
 
 # Module link list, derived from the module manifest; EVCommon, EVCmdLine and
 # EVDevTools are declared there too, so only the embedded scripts are added here.
-set(EVELIBS EVScripts ${EVE_MODULE_LIBS})
+# EVE_LINK_TARGETS is the module libraries in OBJECT mode and the link-group
+# shared libraries in SHARED mode (see cmake/link_groups.cmake).
+set(EVELIBS EVScripts ${EVE_LINK_TARGETS})
 if(_has_devtools)
     # DevTools ImGui host panels (AI + console) compile into the host binary --
     # not EVDevTools, which avoids imgui.h to protect MSVC export limits.
@@ -156,8 +155,33 @@ endif()
 # engine includes; keep the same no-auto-link contract as the modules.
 if(WIN32 AND TARGET ${EVENGINE_NATIVE_TARGET})
     target_compile_definitions(${EVENGINE_NATIVE_TARGET} PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+    if(MSVC)
+        # SDL_WINDOW_ALLOW_HIGHDPI does not make an SDL 2.0 process DPI-aware
+        # by itself. Without this manifest Windows bitmap-scales the complete
+        # framebuffer (commonly by 150%), making ImGui text and hairlines soft.
+        target_sources(${EVENGINE_NATIVE_TARGET} PRIVATE eve.rc)
+        # eve.rc already contains resource #1, so disable MSVC's generated
+        # manifest resource instead of merging two resources with the same ID.
+        target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE "/MANIFEST:NO")
+    endif()
     # Plain form: the host target's other third-party libs are linked plainly.
     target_link_libraries(${EVENGINE_NATIVE_TARGET} EVBacktrace)
+    # Plugins link against eve.lib and need the host's full symbol surface
+    # (Squirrel C API, ssq, engine internals), not just EVENGINE_API-marked
+    # classes. Export every symbol from eve.exe so eve.lib satisfies plugins.
+    set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
+        WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
+
+# Copy the generated build metadata to the build root after every link so
+# `build/<plat>/build-info.txt` records exactly which engine git commit and
+# third-party version this build corresponds to (same data as `eve --version`).
+if(TARGET ${EVENGINE_NATIVE_TARGET})
+    add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_BINARY_DIR}/common/BuildInfo.h
+            ${CMAKE_BINARY_DIR}/build-info.txt
+        VERBATIM)
 endif()
 
 if(NOT EVENGINE_ANDROID_TEST_APP)
@@ -198,6 +222,18 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     endif()
 
     set(EVENGINE_IOS_BUNDLE_ID "com.evengine.example" CACHE STRING "iOS/iPadOS bundle identifier")
+    set(EVENGINE_IOS_TEST_BUNDLE_ID "com.evengine.example.test" CACHE STRING
+        "iOS test app bundle identifier (side-by-side with the game app)")
+    if(EVENGINE_IOS_TEST_APP)
+        set(_eve_ios_bundle_id "${EVENGINE_IOS_TEST_BUNDLE_ID}")
+        set(_eve_ios_bundle_name "EVEngineTest")
+        set(_eve_ios_display_name "EVEngine Test")
+    else()
+        set(_eve_ios_bundle_id "${EVENGINE_IOS_BUNDLE_ID}")
+        set(_eve_ios_bundle_name "EVEngine")
+        set(_eve_ios_display_name "EVEngine")
+    endif()
+    set(EVENGINE_IOS_DISPLAY_NAME "${_eve_ios_display_name}")
     set(_eve_ios_team "$ENV{IOS_DEVELOPMENT_TEAM}")
     if(NOT _eve_ios_team)
         set(_eve_ios_team "")
@@ -210,12 +246,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
     endif()
     set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_GUI_IDENTIFIER "${EVENGINE_IOS_BUNDLE_ID}"
-        MACOSX_BUNDLE_BUNDLE_NAME "EVEngine"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "${_eve_ios_bundle_id}"
+        MACOSX_BUNDLE_BUNDLE_NAME "${_eve_ios_bundle_name}"
         MACOSX_BUNDLE_BUNDLE_VERSION "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}"
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/platform/ios/Info.plist.in"
-        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${EVENGINE_IOS_BUNDLE_ID}"
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${_eve_ios_bundle_id}"
         XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
         XCODE_ATTRIBUTE_IPHONEOS_DEPLOYMENT_TARGET "${EVENGINE_IOS_DEPLOYMENT_TARGET}"
         XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH NO
@@ -226,29 +262,48 @@ if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR EVENGINE_IOS)
         XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME "AppIcon"
     )
 
-    # Bundle game assets under Resources/game (iOS resourcePath == .app root).
-    # Default "demo" = shell without main.nut → load.nut runs embedded eve.demoScript
-    # (meteor defense + particles). "example" copies example/ (box + fire.json).
-    set(EVENGINE_IOS_GAME "demo" CACHE STRING "iOS bundled game: demo | example | absolute path")
-    if(EVENGINE_IOS_GAME STREQUAL "example")
-        set(_eve_game_src "${CMAKE_SOURCE_DIR}/example")
-    elseif(EVENGINE_IOS_GAME STREQUAL "demo")
-        set(_eve_game_src "${CMAKE_SOURCE_DIR}/platform/ios/game-shell")
-    elseif(IS_DIRECTORY "${EVENGINE_IOS_GAME}")
-        set(_eve_game_src "${EVENGINE_IOS_GAME}")
+    if(EVENGINE_IOS_TEST_APP)
+        # Bundle the zeroerr suite's test/ + examples/ trees so the runner can
+        # stage them into a writable location on first launch (mirrors the
+        # Android test app's assets/test + assets/examples unpacking).
+        add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
+            # Wipe first so assets removed from the tree do not linger in the bundle.
+            COMMAND ${CMAKE_COMMAND} -E remove_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/test"
+            COMMAND ${CMAKE_COMMAND} -E remove_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/examples"
+            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/test"
+            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/examples"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/test" "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/test"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/examples" "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/examples"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/platform/ios/LaunchScreen.storyboard"
+            "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/LaunchScreen.storyboard"
+            COMMENT "Bundle iOS test assets (test/ + examples/) + LaunchScreen into EVEngine.app"
+        )
     else()
-        message(FATAL_ERROR "EVENGINE_IOS_GAME must be 'demo', 'example', or an existing directory (got: ${EVENGINE_IOS_GAME})")
+        # Bundle game assets under Resources/game (iOS resourcePath == .app root).
+        # Default "demo" = shell without main.nut → load.nut runs embedded eve.demoScript
+        # (meteor defense + particles). "example" copies example/ (box + fire.json).
+        set(EVENGINE_IOS_GAME "demo" CACHE STRING "iOS bundled game: demo | example | absolute path")
+        if(EVENGINE_IOS_GAME STREQUAL "example")
+            set(_eve_game_src "${CMAKE_SOURCE_DIR}/example")
+        elseif(EVENGINE_IOS_GAME STREQUAL "demo")
+            set(_eve_game_src "${CMAKE_SOURCE_DIR}/platform/ios/game-shell")
+        elseif(IS_DIRECTORY "${EVENGINE_IOS_GAME}")
+            set(_eve_game_src "${EVENGINE_IOS_GAME}")
+        else()
+            message(FATAL_ERROR "EVENGINE_IOS_GAME must be 'demo', 'example', or an existing directory (got: ${EVENGINE_IOS_GAME})")
+        endif()
+        add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
+            # Wipe first so a previous example/main.nut cannot shadow demoScript.
+            COMMAND ${CMAKE_COMMAND} -E remove_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
+            COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${_eve_game_src}" "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/platform/ios/LaunchScreen.storyboard"
+            "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/LaunchScreen.storyboard"
+            COMMENT "Bundle iOS game (${EVENGINE_IOS_GAME}) + LaunchScreen into EVEngine.app"
+        )
     endif()
-    add_custom_command(TARGET ${EVENGINE_NATIVE_TARGET} POST_BUILD
-        # Wipe first so a previous example/main.nut cannot shadow demoScript.
-        COMMAND ${CMAKE_COMMAND} -E remove_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
-        COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${_eve_game_src}" "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/game"
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_SOURCE_DIR}/platform/ios/LaunchScreen.storyboard"
-        "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/LaunchScreen.storyboard"
-        COMMENT "Bundle iOS game (${EVENGINE_IOS_GAME}) + LaunchScreen into EVEngine.app"
-    )
 
     if(EVENGINE_MOLTENVK_LINK_MODE STREQUAL "framework")
         # Embed MoltenVK.framework so dlsym(RTLD_DEFAULT) / rpath resolve at runtime.
@@ -285,6 +340,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         -sFORCE_FILESYSTEM=1
         -sASSERTIONS=1
         -sFETCH=1
+        # The playground shell calls these helpers directly on Module.
+        # Emscripten 6 no longer auto-adds _main when EXPORTED_FUNCTIONS is set.
+        -sEXPORTED_FUNCTIONS=_main,_malloc,_free
+        -sEXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8,UTF8ToString,HEAPU8
         # C++ exceptions can be thrown through ASYNCIFY-wrapped frames (e.g. a
         # module expose() failing); keep JS-side catching enabled so the abort
         # helper is compiled instead of asserting on the first __cxa_throw.
@@ -292,6 +351,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         # The WebGPU backend spin-waits for requestAdapter/requestDevice with
         # emscripten_sleep(0); on the main thread that requires ASYNCIFY.
         -sASYNCIFY=1
+        # Frame readback (saveFramePng / getPixel) sleeps inside a deep native
+        # call chain (JS -> Squirrel -> Graphics); the default asyncify stack
+        # overflows ("unreachable") and aborts the runtime.
+        -sASYNCIFY_STACK_SIZE=32768
+        # The same chain (Squirrel VM + readback + LodePNG/zlib encode) exceeds
+        # the 64 KiB default wasm stack; give the main thread room to breathe.
+        -sTOTAL_STACK=1048576
     )
 
     set(EVENGINE_WEBGPU_GAME_DIR "${CMAKE_SOURCE_DIR}/platform/webgpu/game-shell" CACHE PATH
@@ -318,6 +384,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         target_link_options(${EVENGINE_NATIVE_TARGET} PRIVATE
             "--preload-file" "${EVENGINE_WEBGPU_GAME_DIR}@/game"
         )
+        # Track the preloaded assets as link inputs so demo/asset edits
+        # regenerate eve.data instead of shipping a stale VFS.
+        file(GLOB_RECURSE _eve_game_files "${EVENGINE_WEBGPU_GAME_DIR}/*")
+        set_property(TARGET ${EVENGINE_NATIVE_TARGET} APPEND PROPERTY
+            LINK_DEPENDS ${_eve_game_files})
     endif()
 endif()
 

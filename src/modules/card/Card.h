@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief 卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。
@@ -7,26 +9,110 @@
  * 数据模型与渲染/交互逻辑见 CardTypes.h。
  */
 
-#include "common/Module.h"
+#include "card/CardPlay.h"
 #include "card/CardTypes.h"
+#include "common/ECS.h"
+#include "common/Module.h"
+#include "common/Result.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
-
 namespace eve::graphics {
 class Graphics;
 }
 
+namespace eve::resource {
+class IResourceAccount;
+}
+
+namespace eve::transaction {
+class AtomicBatch;
+}
+
 namespace eve::card {
 
+class CardControl;
+
+/** @brief Immutable presentation data captured from one card for external 2D/3D adapters. */
+struct CardPresentationSnapshot {
+    std::string instanceId;
+    std::string definitionId;
+    std::string state;
+    float x = 0.f;
+    float y = 0.f;
+    float width = 0.f;
+    float height = 0.f;
+    float angle = 0.f;
+    float scale = 1.f;
+    float alpha = 1.f;
+    bool hovered = false;
+    bool dragging = false;
+    bool disabled = false;
+    bool faceUp = true;
+};
+
+/** @brief Maps a logical card canvas to a 3D parallelogram without depending on graphics. */
+class EVENGINE_API_WORLD CardPlaneMapper {
+public:
+    /** @brief Configure the logical rectangle represented by the world plane. */
+    void setLogicalRect(float x, float y, float width, float height);
+    /** @brief Configure world origin plus full-width U and full-height V vectors. */
+    void setPlane(float ox, float oy, float oz, float ux, float uy, float uz,
+                  float vx, float vy, float vz);
+    /** @brief Intersect a world ray and store its logical and world hit coordinates. */
+    bool mapRay(float ox, float oy, float oz, float dx, float dy, float dz);
+    /** @brief Map a logical point to the configured world plane. */
+    bool mapLayout(float x, float y);
+    /** @brief Return the most recently mapped logical X coordinate. */
+    float getLogicalX() const { return resultLogicalX_; }
+    /** @brief Return the most recently mapped logical Y coordinate. */
+    float getLogicalY() const { return resultLogicalY_; }
+    /** @brief Return the most recently mapped world X coordinate. */
+    float getWorldX() const { return resultWorld_.x; }
+    /** @brief Return the most recently mapped world Y coordinate. */
+    float getWorldY() const { return resultWorld_.y; }
+    /** @brief Return the most recently mapped world Z coordinate. */
+    float getWorldZ() const { return resultWorld_.z; }
+
+private:
+    glm::vec3 origin_{0.f};
+    glm::vec3 axisU_{1.f, 0.f, 0.f};
+    glm::vec3 axisV_{0.f, 0.f, 1.f};
+    glm::vec3 resultWorld_{0.f};
+    float logicalX_ = 0.f;
+    float logicalY_ = 0.f;
+    float logicalWidth_ = 1.f;
+    float logicalHeight_ = 1.f;
+    float resultLogicalX_ = 0.f;
+    float resultLogicalY_ = 0.f;
+};
+
 /** @brief 卡牌模块入口（eve.Card）：定义注册、对象工厂与每帧 update/render。 */
-class Card : public Module {
+class EVENGINE_API_WORLD Card : public Module {
 public:
     Module_REG(Card);
-    Card() = default;
+    /** @brief Declared out of line so the incomplete `CardControl` member needs no deleter here. */
+    Card();
+    /** @brief Card. */
     ~Card() override;
+
+    // The two `vector<unique_ptr<...>>` members make the implicit copy operations
+    // ill-formed (C2280) the moment a class-level dllexport instantiates them;
+    // spell the four out so the export surface stays defined. Semantics unchanged:
+    // a module instance was never copyable or assignable in practice.
+    Card(const Card &)            = delete;
+    Card &operator=(const Card &) = delete;
+    // Out of line for the same reason as the constructor and destructor above: a
+    // defaulted move in the class body instantiates the move of every member,
+    // including the deleter of the incomplete `CardControl`.
+    /** @brief Card. */
+    Card(Card &&) noexcept;
+    /** @brief Operator =. */
+    Card &operator=(Card &&) noexcept;
 
     /** @brief 从 JSON 注册卡牌类型；返回成功注册数量。 */
     int registerCardsFromJson(const std::string &json);
@@ -34,43 +120,231 @@ public:
     void clearCardDefinitions();
     /** @brief 已注册卡牌类型数量。 */
     int getCardDefinitionCount();
+    /** @brief Return a definition ID in deterministic sorted order.
+     * @param index Zero-based index in the sorted definition view.
+     * @return Definition ID, or an empty string when the index is invalid.
+     */
+    std::string getCardDefinitionId(int index) const;
     /** @brief 卡牌类型查询。 */
     bool hasCardDefinition(const std::string &id);
+    /** @brief Insert or replace one definition for project-owned authoring tools.
+     * @param id Stable definition identifier.
+     * @param name Display name; an empty value falls back to id.
+     * @param kind Project-defined card kind; an empty value falls back to creature.
+     * @param cost Non-negative resource cost.
+     * @param attack Non-negative attack value.
+     * @param health Non-negative health value.
+     * @param tintR Red tint channel, clamped to [0, 1].
+     * @param tintG Green tint channel, clamped to [0, 1].
+     * @param tintB Blue tint channel, clamped to [0, 1].
+     * @return True when the definition was accepted.
+     */
+    bool setCardDefinition(const std::string &id, const std::string &name, const std::string &kind,
+                           int cost, int attack, int health, float tintR, float tintG, float tintB);
+    /** @brief Remove one definition by stable identifier.
+     * @param id Stable definition identifier.
+     * @return True when an existing definition was removed.
+     */
+    bool removeCardDefinition(const std::string &id);
+    /**
+     * @brief Replace the side-effect-free condition required to play a definition.
+     * @param id Stable card definition identifier.
+     * @param condition Owning condition tree; it is copied into the definition.
+     * @return Success, or NotFound/Rejected when the definition or tree is invalid.
+     */
+    [[nodiscard]] eve::Result<void> setCardPlayCondition(const std::string& id, condition::Condition condition);
     std::string getCardDefinitionName(const std::string &id);
+    /** @brief Returns the card definition kind. */
     std::string getCardDefinitionKind(const std::string &id);
+    /** @brief Returns the card definition cost. */
     int getCardDefinitionCost(const std::string &id);
+    /** @brief Returns the card definition attack. */
     int getCardDefinitionAttack(const std::string &id);
+    /** @brief Returns the card definition health. */
     int getCardDefinitionHealth(const std::string &id);
+    /** @brief Returns the card definition tint r. */
     float getCardDefinitionTintR(const std::string &id);
+    /** @brief Returns the card definition tint g. */
     float getCardDefinitionTintG(const std::string &id);
+    /** @brief Returns the card definition tint b. */
     float getCardDefinitionTintB(const std::string &id);
 
-    /** @brief 工厂：对象由模块持有，脚本持有的是非拥有句柄。 */
+    /** @brief 工厂：对象由 ECS 表持有，脚本持有的是非拥有句柄。 */
     LayoutConfig *newConfig();
+    /** @brief Creates a card. @ownership Caller deletes unless documented otherwise. */
     CardData *newCard(const std::string &defId);
+    /** @brief Creates a deck. @ownership Caller deletes unless documented otherwise. */
     Deck *newDeck();
     /** @brief 创建一个落牌区。 */
     Zone *newZone(const std::string &id, const std::string &label, float x, float y, float w, float h);
     /** @brief 创建一个手牌布局。 */
     Hand *newHand(LayoutConfig *cfg);
+    /** @brief Create a reusable logical-card-canvas to 3D plane mapper. */
+    CardPlaneMapper *newPlaneMapper();
 
     /** @brief 游戏状态：当前布局、手牌、落牌区、牌库。 */
     void setConfig(LayoutConfig *cfg);
+    /** @brief Returns the config. */
     LayoutConfig *getConfig() const;
+    /** @brief Hand count. */
     int handCount() const;
+    /** @brief Returns the hand. */
     Hand *getHand(int index) const;
+    /** @brief Finds hand. */
     Hand *findHand(const std::string &owner) const;
+    /** @brief Zone count. */
     int zoneCount() const;
+    /** @brief Returns the zone. */
     Zone *getZone(int index) const;
+    /** @brief Returns the deck. */
     Deck *getDeck() const;
     /** @brief 从牌库抽一张牌加入指定手牌；无牌时返回 nullptr。 */
     CardData *drawCard(const std::string &handOwner);
+
+    /**
+     * @brief Evaluate a card's pure play condition through the shared protocol.
+     * @param card Borrowed card instance observed synchronously; it is not moved.
+     * @param queries Optional read-only resource, authority and policy providers.
+     * @return Stable passed/rejected result with evidence and UI details.
+     */
+    [[nodiscard]] condition::ConditionResult evaluatePlay(const CardData*          card,
+                                                          CardPlayConditionQueries queries = {}) const;
+    /**
+     * @brief Resolve one owned card's canonical definition payment for composition.
+     * @return Owning Mana cost, no cost for a free card, or a stale/definition error.
+     * @remarks Synchronous owner-thread query; does not reserve resources or mutate the card.
+     */
+    [[nodiscard]] Result<std::optional<resource::CostSpec>> playCost(CardData &card) const;
+    /**
+     * @brief Stage removal from the unique owning hand for an outer gameplay transaction.
+     * @cost Linear in hand membership; copies only the affected hand per play.
+     * @return Owning compensatable participant, or absent/ambiguous membership error.
+     * @remarks Consume synchronously on the owner thread while Card and Hand live;
+     * no participant may advance/destroy this hand during the transaction. The
+     * participant owns no card. CardPlayParticipant remains the phase authority.
+     */
+    /** @brief Stage card rules, phase, hand consumption and cost in any atomic batch.
+     * @cost Linear in hand size; clones only the affected hand during prepare.
+     * @remarks Card owns its facts; no other gameplay domain is required.
+     * Native callers retain this facade through batch execution. */
+    [[nodiscard]] Result<void> stagePlay(transaction::AtomicBatch &batch, CardData &card) const;
+    [[nodiscard]] Result<std::unique_ptr<transaction::ITransactionParticipant>> prepareHandConsumption(
+        CardData &card) const;
+
+    /**
+     * @brief Read one canonical combat attribute through the Card facade.
+     * @param card Borrowed live CardData owned by this ECS world.
+     * @param attribute Selected attribute name such as `attack` or `health`.
+     * @return The canonical final value, or a structured rejection.
+     */
+    [[nodiscard]] eve::Result<double> getCardAttribute(CardData &card, std::string_view attribute) const;
+
+    /**
+     * @brief Set one canonical combat attribute through the Card facade.
+     * @param card Borrowed live CardData owned by this ECS world.
+     * @param attribute Selected attribute name such as `attack` or `health`.
+     * @param value New canonical base value.
+     * @return Applied, or a structured rejection without a legacy side channel.
+     */
+    [[nodiscard]] eve::Result<void> setCardAttribute(CardData &card, std::string_view attribute, double value) const;
+
+    /**
+     * @brief Apply a domain card effect to the card-owned lifecycle component.
+     * @param card Borrowed CardData whose Effects component owns the instance.
+     * @param definition Effect policy and card-specific interpretation.
+     * @param subject Stable subject identity used by the common effect store.
+     * @return Generation-qualified effect handle owned by the caller.
+     */
+    [[nodiscard]] eve::Result<effects::EffectHandle> applyEffect(CardData &card, const CardEffectDefinition &definition,
+                                                                 eve::SubjectRef subject) const;
+
+    /**
+     * @brief Advance all card-owned effects and project current health.
+     * @param step Injected deterministic simulation tick and duration.
+     * @return Number of settled periodic triggers, or a structured failure.
+     */
+    [[nodiscard]] eve::Result<std::size_t> step(const eve::SimulationStep &step);
+
+    /**
+     * @brief Play a card through the facade's condition, container and payment transaction.
+     * @param card Borrowed CardData whose definition is registered by this module.
+     * @param playerAccount Borrowed authoritative player account.
+     * @param composition Optional caller-owned container/effect ports.
+     * @param transactionId Optional non-empty transaction correlation id.
+     * @return Committed transaction receipt, or a failure with no partial play.
+     */
+    [[nodiscard]] eve::Result<eve::transaction::TransactionReceipt> play(CardData                        &card,
+                                                                         eve::resource::IResourceAccount &playerAccount,
+                                                                         CardPlayComposition composition   = {},
+                                                                         std::string         transactionId = {});
+
+    /** @brief Capture all live cards into a contiguous presentation snapshot buffer. */
+    int capturePresentation();
+    /** @brief Return the number of entries in the most recently captured buffer. */
+    int getPresentationCount() const;
+    /** @brief Return an entry from the most recently captured buffer, or nullptr. */
+    CardPresentationSnapshot *getPresentation(int index);
 
     /** @brief 每帧更新布局与交互。 */
     void update(float dt, float mx, float my, bool down);
     /** @brief 绘制手牌/落牌区（与牌库）。 */
     void render(graphics::Graphics *gfx);
+    /** @brief Renders deck. */
     void renderDeck(graphics::Graphics *gfx);
+
+    /** @brief Enable or disable the built-in card visuals while retaining layout and interaction. */
+    void setBuiltInVisuals(bool enabled) { builtInVisuals_ = enabled; }
+    /** @brief Return whether Card::render draws the built-in card faces. */
+    bool getBuiltInVisuals() const { return builtInVisuals_; }
+
+    /**
+     * @brief 把一副手牌发布到共享玩法协议（`eve_gameplay` / MCP）。
+     *
+     * 领域动作词表就是本模块自己的操作：`card:draw` 走牌库到手牌的抽取，
+     * `card:play` 走 `Card::play`（条件 + 容器 + 支付事务），`card:set-attribute`
+     * 因为会改写权威战斗属性，只对 test-driver / developer-cheat 开放。
+     * 出牌需要游戏自己的权威账户，适配器不能凭空创造：发布时可以绑定一个借用
+     * 的 `IResourceAccount`；未绑定时 `card:play` 既不广播也不接受，观察结果里
+     * `payment` 为 `unbound`，缺口是可见的而不是静默缺失。
+     * @param instanceId 实例稳定标识，必须是规范持久 id（UUID 文本）。
+     * @param ownerId 控制该实例的玩家/角色稳定标识，同为规范持久 id。
+     * @param hand 借用的一副手牌，必须比本次发布存活更久。
+     * @param account 借用的玩家支付账户，可为 null。
+     * @return 成功返回空结果；id 非法或实例重复返回诊断。
+     * @ownership 适配器由本模块持有并随模块销毁；hand / account 所有权不变。
+     * @thread 所有者模拟线程。
+     */
+    [[nodiscard]] eve::Result<void> publishGameplay(const std::string &instanceId, const std::string &ownerId,
+                                                    Hand *hand, eve::resource::IResourceAccount *account = nullptr);
+    /** @brief 取消发布一个实例；该实例未发布（或 id 非法）时返回诊断。 */
+    [[nodiscard]] eve::Result<void> unpublishGameplay(const std::string &instanceId);
+    /** @brief 取消发布本模块持有的全部玩法实例。 */
+    void clearGameplayControls();
+    /** @brief 已发布的玩法实例数量。 */
+    [[nodiscard]] int gameplayControlCount() const;
+    /** @brief 已发布的玩法实例标识（发布顺序）。 */
+    [[nodiscard]] std::vector<std::string> gameplayInstances() const;
+
+private:
+    /** 惰性创建的领域适配器；模块析构时随之注销。 */
+    std::unique_ptr<CardControl> gameplay_;
+
+    /** @brief Begin a drag-to-target gesture at the supplied canvas position. */
+    void beginTargeting(const std::string &sourceId, float x, float y);
+    /** @brief Update the pointer and current game-validated target. */
+    void updateTargeting(float x, float y, const std::string &targetId, bool valid);
+    /** @brief Cancel the active target gesture. */
+    void cancelTargeting();
+    /** @brief Draw the current target arrow; target legality remains game-defined. */
+    void renderTargeting(graphics::Graphics *gfx);
+    /** @brief Return whether a target gesture is active. */
+    bool isTargeting() const { return targetingActive_; }
+    /** @brief Return the game-supplied legality of the current target. */
+    bool isTargetValid() const { return targetingValid_; }
+    /** @brief Return the source card instance ID for the active gesture. */
+    std::string getTargetSource() const { return targetingSource_; }
+    /** @brief Return the current game-supplied target ID, or an empty string. */
+    std::string getTargetId() const { return targetingId_; }
 
     /** @brief 交互事件队列（抽牌/出牌/拖拽等）。 */
     void clearEvents();
@@ -85,16 +359,29 @@ private:
     const CardDefinition *findDef(const std::string &id) const;
 
     std::unordered_map<std::string, CardDefinition> defs_;
+    mutable std::vector<std::string> definitionView_;
+    mutable bool definitionViewDirty_ = true;
     std::vector<std::unique_ptr<LayoutConfig>> configs_;
-    std::vector<std::unique_ptr<CardData>> cards_;
-    std::vector<std::unique_ptr<Deck>> decks_;
-    std::vector<std::unique_ptr<Zone>> zones_;
-    std::vector<std::unique_ptr<Hand>> hands_;
+    std::vector<std::unique_ptr<CardPlaneMapper>> planeMappers_;
     std::vector<CardEvent> events_;
+    std::vector<ecs::EntityHandle> cards_;
+    std::vector<ecs::EntityHandle> decks_;
+    std::vector<ecs::EntityHandle> zones_;
+    std::vector<ecs::EntityHandle> hands_;
+    std::vector<CardPresentationSnapshot> presentation_;
 
     LayoutConfig *activeConfig_ = nullptr;
     Deck *activeDeck_ = nullptr;
     int nextInstance_ = 1;
+    bool builtInVisuals_ = true;
+    bool targetingActive_ = false;
+    bool targetingValid_ = false;
+    float targetingStartX_ = 0.f;
+    float targetingStartY_ = 0.f;
+    float targetingX_ = 0.f;
+    float targetingY_ = 0.f;
+    std::string targetingSource_;
+    std::string targetingId_;
 };
 
 }  // namespace eve::card

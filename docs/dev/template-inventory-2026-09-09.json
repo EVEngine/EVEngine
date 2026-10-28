@@ -1,0 +1,672 @@
+{
+  "scope": "tracked and non-ignored new C++ source; lexical sites, not emitted specializations",
+  "files_scanned": 903,
+  "sites": [
+    {
+      "file": "scripts/tests/direct_binding/test.cpp",
+      "line": 21,
+      "kind": "generic-lambda",
+      "declaration": "](const char* name, auto pointer)"
+    },
+    {
+      "file": "src/engine/common/Capability.h",
+      "line": 70,
+      "kind": "explicit-template",
+      "declaration": "template <class I> void provide(I* impl)"
+    },
+    {
+      "file": "src/engine/common/Capability.h",
+      "line": 76,
+      "kind": "explicit-template",
+      "declaration": "template <class I> I* query()"
+    },
+    {
+      "file": "src/engine/common/Capability.h",
+      "line": 82,
+      "kind": "explicit-template",
+      "declaration": "template <class I> void revoke(I* impl)"
+    },
+    {
+      "file": "src/engine/common/Capability.h",
+      "line": 88,
+      "kind": "explicit-template",
+      "declaration": "template <class I> void addListener(I* impl, int priority = 0)"
+    },
+    {
+      "file": "src/engine/common/Capability.h",
+      "line": 93,
+      "kind": "explicit-template",
+      "declaration": "template <class I> void removeListener(I* impl)"
+    },
+    {
+      "file": "src/engine/common/Capability.h",
+      "line": 98,
+      "kind": "explicit-template",
+      "declaration": "template <class I> size_t listenerCount()"
+    },
+    {
+      "file": "src/engine/common/Capability.h",
+      "line": 103,
+      "kind": "explicit-template",
+      "declaration": "template <class I> I* listenerAt(size_t index)"
+    },
+    {
+      "file": "src/engine/common/Capability.h",
+      "line": 113,
+      "kind": "explicit-template",
+      "declaration": "template <class I, class F> void forEach(F&& fn)"
+    },
+    {
+      "file": "src/engine/common/Capability.h",
+      "line": 125,
+      "kind": "explicit-template",
+      "declaration": "template <class I, class F> bool forEachUntil(F&& fn)"
+    },
+    {
+      "file": "src/engine/common/Module.h",
+      "line": 78,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> static T* getInstance(const char* name)"
+    },
+    {
+      "file": "src/engine/common/Module.h",
+      "line": 84,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> static T* requireInstance(const char* name)"
+    },
+    {
+      "file": "src/engine/common/Object.h",
+      "line": 11,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> concept DerivedFromObject = std::is_base_of_v<eve::Object, T>"
+    },
+    {
+      "file": "src/engine/common/Object.h",
+      "line": 35,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> friend class ref"
+    },
+    {
+      "file": "src/engine/common/Object.h",
+      "line": 53,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> class ref"
+    },
+    {
+      "file": "src/engine/common/ScriptBinding.h",
+      "line": 18,
+      "kind": "explicit-template",
+      "declaration": "template <class Pointer> struct Call"
+    },
+    {
+      "file": "src/engine/common/ScriptBinding.h",
+      "line": 20,
+      "kind": "explicit-template",
+      "declaration": "template <class R, class... Args> struct Call<R (*)(Args...)>"
+    },
+    {
+      "file": "src/engine/common/ScriptBinding.h",
+      "line": 25,
+      "kind": "explicit-template",
+      "declaration": "template <size_t... I> static R invoke(HSQUIRRELVM vm, R (*fn)(Args...), std::index_sequence<I...>)"
+    },
+    {
+      "file": "src/engine/common/ScriptBinding.h",
+      "line": 34,
+      "kind": "explicit-template",
+      "declaration": "template <class Pointer, class R, class C, class... Args> struct MemberCall"
+    },
+    {
+      "file": "src/engine/common/ScriptBinding.h",
+      "line": 39,
+      "kind": "explicit-template",
+      "declaration": "template <size_t... I> static R invoke(HSQUIRRELVM vm, Pointer fn, std::index_sequence<I...>)"
+    },
+    {
+      "file": "src/engine/common/ScriptBinding.h",
+      "line": 49,
+      "kind": "explicit-template",
+      "declaration": "template <class R, class C, class... Args> struct Call<R (C::*)(Args...)> : MemberCall<R (C::*)(Args...), R, C, Args...>"
+    },
+    {
+      "file": "src/engine/common/ScriptBinding.h",
+      "line": 51,
+      "kind": "explicit-template",
+      "declaration": "template <class R, class C, class... Args> struct Call<R (C::*)(Args...) const> : MemberCall<R (C::*)(Args...) const, R, C, Args...>"
+    },
+    {
+      "file": "src/engine/common/ScriptBinding.h",
+      "line": 55,
+      "kind": "explicit-template",
+      "declaration": "template <class R> struct PushResult"
+    },
+    {
+      "file": "src/engine/common/ScriptBinding.h",
+      "line": 58,
+      "kind": "explicit-template",
+      "declaration": "template <class T, class Alloc> struct PushResult<std::vector<T, Alloc>>"
+    },
+    {
+      "file": "src/engine/common/ScriptBinding.h",
+      "line": 64,
+      "kind": "explicit-template",
+      "declaration": "template <class... T> struct PushResult<std::tuple<T...>>"
+    },
+    {
+      "file": "src/engine/common/ScriptBinding.h",
+      "line": 71,
+      "kind": "explicit-template",
+      "declaration": "template <class Pointer> SQInteger invokePointer(HSQUIRRELVM vm)"
+    },
+    {
+      "file": "src/engine/common/ScriptBinding.h",
+      "line": 107,
+      "kind": "explicit-template",
+      "declaration": "template <class Pointer> void bindMethod(ssq::Class& cls, const char* name, Pointer pointer, bool isStatic = false)"
+    },
+    {
+      "file": "src/engine/devtools/DevTool.cpp",
+      "line": 710,
+      "kind": "generic-lambda",
+      "declaration": "](const auto& a, const auto& b)"
+    },
+    {
+      "file": "src/modules/database/Database.h",
+      "line": 28,
+      "kind": "explicit-template",
+      "declaration": "template <class T> struct Field"
+    },
+    {
+      "file": "src/modules/database/Database.h",
+      "line": 37,
+      "kind": "explicit-template",
+      "declaration": "template <class T> struct Mapping"
+    },
+    {
+      "file": "src/modules/database/Database.h",
+      "line": 105,
+      "kind": "explicit-template",
+      "declaration": "template <class T> int save(const Mapping<T>& mapping, const T& object)"
+    },
+    {
+      "file": "src/modules/database/Database.h",
+      "line": 111,
+      "kind": "explicit-template",
+      "declaration": "template <class Range, class Mapper> int exportECS(const std::string& table, const Range& entities, Mapper mapper)"
+    },
+    {
+      "file": "src/modules/database/Database.h",
+      "line": 157,
+      "kind": "explicit-template",
+      "declaration": "template <class T> class Repository"
+    },
+    {
+      "file": "src/modules/gpgpu/EcsGpu.h",
+      "line": 17,
+      "kind": "explicit-template",
+      "declaration": "template <typename Comp> constexpr int componentFloatCount()"
+    },
+    {
+      "file": "src/modules/gpgpu/EcsGpu.h",
+      "line": 27,
+      "kind": "explicit-template",
+      "declaration": "template <typename Base, typename Comp> int countViewEntities()"
+    },
+    {
+      "file": "src/modules/gpgpu/EcsGpu.h",
+      "line": 40,
+      "kind": "explicit-template",
+      "declaration": "template <typename Base, typename Comp> int packViewComponent(ShaderSystem &sys, int binding)"
+    },
+    {
+      "file": "src/modules/gpgpu/EcsGpu.h",
+      "line": 68,
+      "kind": "explicit-template",
+      "declaration": "template <typename Base, typename Comp> void unpackViewComponent(ShaderSystem &sys, int binding, int count)"
+    },
+    {
+      "file": "src/modules/gpgpu/EcsGpu.h",
+      "line": 88,
+      "kind": "explicit-template",
+      "declaration": "template <typename Base, typename Comp> int runViewComponentSystem(ShaderSystem &sys, int binding, float dt)"
+    },
+    {
+      "file": "src/modules/graphics/RenderSystem3D.cpp",
+      "line": 787,
+      "kind": "generic-lambda",
+      "declaration": "](auto *fx)"
+    },
+    {
+      "file": "src/modules/graphics/SceneLinks.cpp",
+      "line": 76,
+      "kind": "explicit-template",
+      "declaration": "template <class T> bool entityAlive(const void *target)"
+    },
+    {
+      "file": "src/modules/graphics/vulkan/Graphics.cpp",
+      "line": 69,
+      "kind": "explicit-template",
+      "declaration": "template <typename T, size_t N> std::vector<T> embeddedSpirv(const T (&words)[N])"
+    },
+    {
+      "file": "src/modules/graphics/vulkan/Graphics.cpp",
+      "line": 74,
+      "kind": "explicit-template",
+      "declaration": "template <typename Slots> auto &currentSlot(Slots &slots, size_t slotCount, size_t slotIndex)"
+    },
+    {
+      "file": "src/modules/graphics/vulkan/Graphics.cpp",
+      "line": 80,
+      "kind": "explicit-template",
+      "declaration": "template <typename FrameBuffers> void releaseFrame2dBuffers(FrameBuffers &buffers)"
+    },
+    {
+      "file": "src/modules/housegen/HouseComponentLibrary.cpp",
+      "line": 167,
+      "kind": "generic-lambda",
+      "declaration": "](auto *a, auto *b)"
+    },
+    {
+      "file": "src/modules/ik/ChainSolver.h",
+      "line": 17,
+      "kind": "explicit-template",
+      "declaration": "template <unsigned D> struct ChainOptions"
+    },
+    {
+      "file": "src/modules/ik/ChainSolver.h",
+      "line": 32,
+      "kind": "explicit-template",
+      "declaration": "template <unsigned D> void placeOnLine(::ik::vec<float, D>& point, const ::ik::vec<float, D>& anchor, float boneLength)"
+    },
+    {
+      "file": "src/modules/ik/ChainSolver.h",
+      "line": 46,
+      "kind": "explicit-template",
+      "declaration": "template <unsigned D> std::vector<::ik::bone<D>*> buildChain(::ik::skeleton<D>& sk, unsigned root_id, unsigned tip_id)"
+    },
+    {
+      "file": "src/modules/ik/ChainSolver.h",
+      "line": 73,
+      "kind": "explicit-template",
+      "declaration": "template <unsigned D> void reachTarget(::ik::ecs<D>& state, const std::vector<::ik::bone<D>*>& chain, unsigned tipIndex, const ::ik::vec<float, D>& desired)"
+    },
+    {
+      "file": "src/modules/ik/ChainSolver.h",
+      "line": 109,
+      "kind": "explicit-template",
+      "declaration": "template <unsigned D> void applyPole(::ik::ecs<D>& state, const std::vector<::ik::bone<D>*>& chain, const ::ik::vec<float, D>& goal, const ::ik::vec3& pole, float weight)"
+    },
+    {
+      "file": "src/modules/ik/ChainSolver.h",
+      "line": 148,
+      "kind": "explicit-template",
+      "declaration": "template <unsigned D> void applyChainConstraints(::ik::ecs<D>& state, const std::vector<::ik::bone<D>*>& chain)"
+    },
+    {
+      "file": "src/modules/ik/ChainSolver.h",
+      "line": 169,
+      "kind": "explicit-template",
+      "declaration": "template <unsigned D> bool solveChain(::ik::skeleton<D>& sk, ::ik::ecs<D>& state, unsigned root_id, unsigned tip_id, const std::vector<typename ::ik::solver<D>::target>& targets, const ChainOptions<D>& opt)"
+    },
+    {
+      "file": "src/modules/physics/World.cpp",
+      "line": 359,
+      "kind": "explicit-template",
+      "declaration": "template <typename Event> const Event *eventAt(const std::vector<Event> &events, int index)"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 27,
+      "kind": "explicit-template",
+      "declaration": "template<typename Derived, typename Matrix_Var_, typename Return_Var_ = bool> class DrawJagged"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 46,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename... Args> constexpr Return_Var_ draw(Matrix_& matrix_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 57,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename... Args> constexpr Return_Var_ redraw(const Matrix_Var_& init_value_, Matrix_ & matrix_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 68,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename... Args> constexpr Return_Var_ drawAdd(Matrix_& matrix_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 79,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename Matrix2_, typename... Args> constexpr Return_Var_ drawOther(Matrix_& matrix_, Matrix2_& matrix2_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 91,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_Var2_, typename Matrix_, typename Matrix2_, typename... Args> constexpr Return_Var_ drawOther(Matrix_& matrix_, Matrix2_& matrix2_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 103,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename Function_, typename... Args> constexpr Return_Var_ drawOperator(Matrix_ & matrix_, Function_ && function_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 111,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename Function_> constexpr Return_Var_ drawOperatorArray(Matrix_& matrix_, const Index_Size max_x_, const Index_Size max_y_, Function_&& function_) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 124,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename Function_, typename... Args> constexpr Return_Var_ drawFunction(Matrix_& matrix_, Function_&& function_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 135,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename Function_, typename... Args> constexpr Return_Var_ drawAddOperator(Matrix_& matrix_, Function_&& function_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 146,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_> constexpr Return_Var_ drawArray(Matrix_ & matrix_, const Index_Size max_x_, const Index_Size max_y_) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 159,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename ...Args_> constexpr Return_Var_ operator()(Matrix_& matrix_, Args_&& ... args_) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 173,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename ...Args_> DTL_VERSIONING_CPP14_CONSTEXPR Matrix_&& create(Matrix_ && matrix_, Args_ && ... args_) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 186,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename ...Args_> DTL_VERSIONING_CPP14_CONSTEXPR Matrix_&& createArray(Matrix_ && matrix_, Args_ && ... args_) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 199,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename ...Args_> DTL_VERSIONING_CPP14_CONSTEXPR Matrix_&& createOperator(Matrix_ && matrix_, Args_ && ... args_) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJagged.hpp",
+      "line": 212,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename ...Args_> DTL_VERSIONING_CPP14_CONSTEXPR Matrix_&& createOperatorArray(Matrix_ && matrix_, Args_ && ... args_) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 28,
+      "kind": "explicit-template",
+      "declaration": "template<typename Derived, typename Matrix_Var_, typename Random_Engine_, typename Return_Var_ = bool> class DrawJaggedRandom"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 47,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename... Args> constexpr Return_Var_ redraw(const Matrix_Var_& init_value_, Matrix_& matrix_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 58,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename... Args> constexpr Return_Var_ draw(Matrix_& matrix_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 69,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename... Args> constexpr Return_Var_ drawAdd(Matrix_& matrix_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 80,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename Matrix2_, typename... Args> constexpr Return_Var_ drawOther(Matrix_& matrix_, Matrix2_& matrix2_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 92,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_Var2_, typename Matrix_, typename Matrix2_, typename... Args> constexpr Return_Var_ drawOther(Matrix_& matrix_, Matrix2_& matrix2_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 104,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename Function_, typename... Args> constexpr Return_Var_ drawOperator(Matrix_& matrix_, Function_&& function_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 110,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename Function_> constexpr Return_Var_ drawOperatorArray(Matrix_& matrix_, const Index_Size max_x_, const Index_Size max_y_, Function_&& function_) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 124,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename Function_, typename... Args> constexpr Return_Var_ drawFunction(Matrix_& matrix_, Function_&& function_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 135,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename Function_, typename... Args> constexpr Return_Var_ drawAddOperator(Matrix_& matrix_, Function_&& function_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 146,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_> constexpr Return_Var_ drawArray(Matrix_& matrix_, const Index_Size max_x_, const Index_Size max_y_) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 157,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename SEED_, typename... Args> constexpr Return_Var_ drawSEED(Matrix_& matrix_, SEED_&& seed_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 168,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename SEED_, typename... Args> constexpr Return_Var_ drawAddSEED(Matrix_& matrix_, SEED_&& seed_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 179,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename... Args> constexpr Return_Var_ drawRandomEngine(Matrix_& matrix_, Random_Engine_&& seed_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 190,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename... Args> constexpr Return_Var_ drawAddRandomEngine(Matrix_& matrix_, Random_Engine_&& seed_, Args&& ... args) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 203,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename ...Args_> constexpr Return_Var_ operator()(Matrix_& matrix_, Args_&& ... args_) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 217,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename ...Args_> DTL_VERSIONING_CPP14_CONSTEXPR Matrix_&& create(Matrix_&& matrix_, Args_&& ... args_) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 230,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename ...Args_> DTL_VERSIONING_CPP14_CONSTEXPR Matrix_&& createArray(Matrix_&& matrix_, Args_&& ... args_) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 243,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename ...Args_> DTL_VERSIONING_CPP14_CONSTEXPR Matrix_&& createOperator(Matrix_&& matrix_, Args_&& ... args_) const noexcept"
+    },
+    {
+      "file": "src/modules/procgen/dtl_compat/DTL/Utility/DrawJaggedRandom.hpp",
+      "line": 256,
+      "kind": "explicit-template",
+      "declaration": "template<typename Matrix_, typename ...Args_> DTL_VERSIONING_CPP14_CONSTEXPR Matrix_&& createOperatorArray(Matrix_&& matrix_, Args_&& ... args_) const noexcept"
+    },
+    {
+      "file": "src/modules/rx/Rx.cpp",
+      "line": 91,
+      "kind": "explicit-template",
+      "declaration": "template <> inline void pushValue(HSQUIRRELVM vm, const eve::rx::Value& v)"
+    },
+    {
+      "file": "src/modules/rx/Rx.cpp",
+      "line": 105,
+      "kind": "explicit-template",
+      "declaration": "template <> inline eve::rx::Value popValue(HSQUIRRELVM vm, SQInteger index)"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 135,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> class Observer"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 180,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> struct ForwardError"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 186,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> struct ForwardCompleted"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 198,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> class Observable"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 226,
+      "kind": "explicit-template",
+      "declaration": "template <typename R> Observable<R>* map(std::function<R(const T&)> fn)"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 241,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> class AnonymousObservable : public Observable<T>"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 253,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> Observable<T>* Observable<T>::filter(std::function<bool(const T&)> pred)"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 267,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> template <typename R> Observable<R>* Observable<T>::map(std::function<R(const T&)> fn)"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 268,
+      "kind": "explicit-template",
+      "declaration": "template <typename R> Observable<R>* Observable<T>::map(std::function<R(const T&)> fn)"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 280,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> Observable<T>* Observable<T>::take(int n)"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 301,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> Observable<T>* Observable<T>::skip(int n)"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 320,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> Observable<T>* Observable<T>::first()"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 338,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> Observable<T>* Observable<T>::takeUntil(Observable<T>* other)"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 366,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> Observable<T>* Observable<T>::distinctUntilChanged()"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 389,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> class Subject : public Observable<T>"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 490,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> class BehaviorSubject : public Observable<T>"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 559,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> class ReplaySubject : public Observable<T>"
+    },
+    {
+      "file": "src/modules/rx/Rx.h",
+      "line": 611,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> class ReactiveProperty"
+    },
+    {
+      "file": "src/modules/sound/Sound.cpp",
+      "line": 122,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> std::unique_ptr<medialoader::Decoder> tryMake(const char *data, size_t size, int bufferSize)"
+    },
+    {
+      "file": "test/ECS.cpp",
+      "line": 222,
+      "kind": "explicit-template",
+      "declaration": "template <typename T> void registerCppEntityClassForScript()"
+    },
+    {
+      "file": "test/housegen.cpp",
+      "line": 137,
+      "kind": "generic-lambda",
+      "declaration": "](const auto &instance)"
+    }
+  ]
+}

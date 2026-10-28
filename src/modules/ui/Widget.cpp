@@ -3,7 +3,7 @@
 namespace eve::ui {
 namespace {
 
-int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
+int appendNode(UIHost::Tree &tree, WidgetDesc &&desc, int parent = -1) {
     const int index = int(tree.nodes.size());
     UINode node;
     node.type = desc.type;
@@ -11,60 +11,111 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
     node.key = desc.key.empty() ? node.id : std::move(desc.key);
     node.text = std::move(desc.text);
     node.valueText = std::move(desc.valueText);
+    node.tooltip = std::move(desc.tooltip);
+    node.helpText       = std::move(desc.helpText);
+    node.disabledReason = std::move(desc.disabledReason);
+    node.placeholder    = std::move(desc.placeholder);
+    node.multiline      = desc.multiline;
+    node.readOnly       = desc.readOnly;
     node.visible = desc.visible;
+    node.enabled = desc.enabled;
     node.checked = desc.checked;
     node.open = desc.open;
-    node.value = desc.value;
-    node.minValue = desc.minValue;
-    node.maxValue = desc.maxValue;
-    node.sizeX = desc.sizeX;
-    node.sizeY = desc.sizeY;
-    node.marginL = desc.marginL;
-    node.marginT = desc.marginT;
-    node.marginR = desc.marginR;
-    node.marginB = desc.marginB;
-    node.paddingL = desc.paddingL;
-    node.paddingT = desc.paddingT;
-    node.paddingR = desc.paddingR;
-    node.paddingB = desc.paddingB;
-    node.minSizeX = desc.minSizeX;
-    node.minSizeY = desc.minSizeY;
-    node.maxSizeX = desc.maxSizeX;
-    node.maxSizeY = desc.maxSizeY;
-    node.percentW = desc.percentW;
-    node.percentH = desc.percentH;
-    node.anchorX = desc.anchorX;
-    node.anchorY = desc.anchorY;
-    node.posX = desc.posX;
-    node.posY = desc.posY;
-    node.absolute = desc.absolute;
-    node.textureId = desc.textureId;
-    node.tintR = desc.tintR;
-    node.tintG = desc.tintG;
-    node.tintB = desc.tintB;
-    node.tintA = desc.tintA;
-    node.uv0x = desc.uv0x;
-    node.uv0y = desc.uv0y;
-    node.uv1x = desc.uv1x;
-    node.uv1y = desc.uv1y;
-    node.borderL = desc.borderL;
-    node.borderT = desc.borderT;
-    node.borderR = desc.borderR;
-    node.borderB = desc.borderB;
-    node.cornerRadius = desc.cornerRadius;
-    node.wrapWidth = desc.wrapWidth;
-    node.itemHeight = desc.itemHeight;
-    node.flexDirection = desc.flexDirection;
-    node.alignItems = desc.alignItems;
-    node.justifyContent = desc.justifyContent;
-    node.gap = desc.gap;
-    node.flexGrow = desc.flexGrow;
-    node.firstChild = -1;
-    node.nextSibling = -1;
-    node.handlerClick = 0;
-    node.handlerToggle = 0;
-    node.handlerValue = 0;
-    node.handlerText = 0;
+    node.focusMode = desc.focusMode;
+    node.mouseFilter = desc.mouseFilter;
+    node.themePreset = desc.themePreset;
+    node.styleClass = std::move(desc.styleClass);
+    node.hasResolvedStyle =
+        resolveStyleClass(node.styleClass, &node.resolvedStyle) == StyleClassStatus::Applied;
+    node.tabIndex = desc.tabIndex;
+    node.focusNext = std::move(desc.focusNext);
+    node.focusPrevious = std::move(desc.focusPrevious);
+    node.focusLeft = std::move(desc.focusLeft);
+    node.focusRight = std::move(desc.focusRight);
+    node.focusUp = std::move(desc.focusUp);
+    node.focusDown = std::move(desc.focusDown);
+    node.accessibilityRole = desc.accessibilityRole;
+    node.accessibilityName = std::move(desc.accessibilityName);
+    node.accessibilityDescription = std::move(desc.accessibilityDescription);
+    node.dragSource               = desc.dragSource;
+    node.dropTarget               = desc.dropTarget;
+    node.dragPayloadType          = std::move(desc.dragPayloadType);
+    node.dragPayloadText          = std::move(desc.dragPayloadText);
+    node.acceptedDropType         = std::move(desc.acceptedDropType);
+    node.value                    = desc.value;
+    node.minValue                 = desc.minValue;
+    node.maxValue                 = desc.maxValue;
+    node.sizeX                    = desc.sizeX;
+    node.sizeY                    = desc.sizeY;
+    node.marginL                  = desc.marginL;
+    node.marginT                  = desc.marginT;
+    node.marginR                  = desc.marginR;
+    node.marginB                  = desc.marginB;
+    node.paddingL                 = desc.paddingL;
+    node.paddingT                 = desc.paddingT;
+    node.paddingR                 = desc.paddingR;
+    node.paddingB                 = desc.paddingB;
+    node.minSizeX                 = desc.minSizeX;
+    node.minSizeY                 = desc.minSizeY;
+    node.maxSizeX                 = desc.maxSizeX;
+    node.maxSizeY                 = desc.maxSizeY;
+    node.percentW                 = desc.percentW;
+    node.percentH                 = desc.percentH;
+    node.aspectRatio              = desc.aspectRatio;
+    node.anchorX                  = desc.anchorX;
+    node.anchorY                  = desc.anchorY;
+    node.posX                     = desc.posX;
+    node.posY                     = desc.posY;
+    node.absolute                 = desc.absolute;
+    node.textureId                = desc.textureId;
+    node.tintR                    = desc.tintR;
+    node.tintG                    = desc.tintG;
+    node.tintB                    = desc.tintB;
+    node.tintA                    = desc.tintA;
+    node.uv0x                     = desc.uv0x;
+    node.uv0y                     = desc.uv0y;
+    node.uv1x                     = desc.uv1x;
+    node.uv1y                     = desc.uv1y;
+    node.borderL                  = desc.borderL;
+    node.borderT                  = desc.borderT;
+    node.borderR                  = desc.borderR;
+    node.borderB                  = desc.borderB;
+    node.fillDirection            = desc.fillDirection;
+    node.fillStretch              = desc.fillStretch;
+    node.fillStartDegrees         = desc.fillStartDegrees;
+    node.fillClockwise            = desc.fillClockwise;
+    node.fillInnerRadius          = desc.fillInnerRadius;
+    node.cornerRadius             = desc.cornerRadius;
+    node.fontSize                 = desc.fontSize;
+    node.textR                    = desc.textR;
+    node.textG                    = desc.textG;
+    node.textB                    = desc.textB;
+    node.textA                    = desc.textA;
+    node.textAlignX               = desc.textAlignX;
+    node.textAlignY               = desc.textAlignY;
+    node.wrapWidth                = desc.wrapWidth;
+    node.itemHeight               = desc.itemHeight;
+    node.flexDirection            = desc.flexDirection;
+    node.alignItems               = desc.alignItems;
+    node.justifyContent           = desc.justifyContent;
+    node.gap                      = desc.gap;
+    node.flexGrow                 = desc.flexGrow;
+    node.flexShrink               = desc.flexShrink;
+    node.flexBasis                = desc.flexBasis;
+    node.alignSelf                = desc.alignSelf;
+    node.columnGap                = desc.columnGap;
+    node.rowGap                   = desc.rowGap;
+    node.flexWrap                 = desc.flexWrap;
+    node.overflow                 = desc.overflow;
+    node.gridColumns              = desc.gridColumns;
+    node.gridColumnSpan           = desc.gridColumnSpan;
+    node.parent                   = parent;
+    node.firstChild               = -1;
+    node.nextSibling              = -1;
+    node.handlerClick             = 0;
+    node.handlerToggle            = 0;
+    node.handlerValue             = 0;
+    node.handlerText              = 0;
 
     if (desc.onClick) {
         tree.clickHandlers.push_back(std::move(desc.onClick));
@@ -88,7 +139,7 @@ int appendNode(UIHost::Tree &tree, WidgetDesc &&desc) {
     int prevChild = -1;
     int firstChild = -1;
     for (auto &child : desc.children) {
-        int childIndex = appendNode(tree, std::move(child));
+        int childIndex = appendNode(tree, std::move(child), index);
         if (firstChild < 0) firstChild = childIndex;
         if (prevChild >= 0) tree.nodes[size_t(prevChild)].nextSibling = childIndex;
         prevChild = childIndex;
@@ -130,54 +181,104 @@ void patchProps(UIHost::Tree &tree, int nodeIndex, WidgetDesc &&desc) {
     UINode &n = tree.nodes[size_t(nodeIndex)];
     n.text = std::move(desc.text);
     n.valueText = std::move(desc.valueText);
+    n.tooltip = std::move(desc.tooltip);
+    n.helpText       = std::move(desc.helpText);
+    n.disabledReason = std::move(desc.disabledReason);
+    n.placeholder    = std::move(desc.placeholder);
+    n.multiline      = desc.multiline;
+    n.readOnly       = desc.readOnly;
     n.visible = desc.visible;
+    n.enabled = desc.enabled;
     n.checked = desc.checked;
     n.open = desc.open;
-    n.value = desc.value;
-    n.minValue = desc.minValue;
-    n.maxValue = desc.maxValue;
-    n.sizeX = desc.sizeX;
-    n.sizeY = desc.sizeY;
-    n.marginL = desc.marginL;
-    n.marginT = desc.marginT;
-    n.marginR = desc.marginR;
-    n.marginB = desc.marginB;
-    n.paddingL = desc.paddingL;
-    n.paddingT = desc.paddingT;
-    n.paddingR = desc.paddingR;
-    n.paddingB = desc.paddingB;
-    n.minSizeX = desc.minSizeX;
-    n.minSizeY = desc.minSizeY;
-    n.maxSizeX = desc.maxSizeX;
-    n.maxSizeY = desc.maxSizeY;
-    n.percentW = desc.percentW;
-    n.percentH = desc.percentH;
-    n.anchorX = desc.anchorX;
-    n.anchorY = desc.anchorY;
-    n.posX = desc.posX;
-    n.posY = desc.posY;
-    n.absolute = desc.absolute;
-    n.textureId = desc.textureId;
-    n.tintR = desc.tintR;
-    n.tintG = desc.tintG;
-    n.tintB = desc.tintB;
-    n.tintA = desc.tintA;
-    n.uv0x = desc.uv0x;
-    n.uv0y = desc.uv0y;
-    n.uv1x = desc.uv1x;
-    n.uv1y = desc.uv1y;
-    n.borderL = desc.borderL;
-    n.borderT = desc.borderT;
-    n.borderR = desc.borderR;
-    n.borderB = desc.borderB;
-    n.cornerRadius = desc.cornerRadius;
-    n.wrapWidth = desc.wrapWidth;
-    n.itemHeight = desc.itemHeight;
-    n.flexDirection = desc.flexDirection;
-    n.alignItems = desc.alignItems;
-    n.justifyContent = desc.justifyContent;
-    n.gap = desc.gap;
-    n.flexGrow = desc.flexGrow;
+    n.focusMode = desc.focusMode;
+    n.mouseFilter = desc.mouseFilter;
+    n.themePreset = desc.themePreset;
+    n.styleClass = std::move(desc.styleClass);
+    n.hasResolvedStyle =
+        resolveStyleClass(n.styleClass, &n.resolvedStyle) == StyleClassStatus::Applied;
+    n.tabIndex = desc.tabIndex;
+    n.focusNext = std::move(desc.focusNext);
+    n.focusPrevious = std::move(desc.focusPrevious);
+    n.focusLeft = std::move(desc.focusLeft);
+    n.focusRight = std::move(desc.focusRight);
+    n.focusUp = std::move(desc.focusUp);
+    n.focusDown = std::move(desc.focusDown);
+    n.accessibilityRole = desc.accessibilityRole;
+    n.accessibilityName = std::move(desc.accessibilityName);
+    n.accessibilityDescription = std::move(desc.accessibilityDescription);
+    n.dragSource               = desc.dragSource;
+    n.dropTarget               = desc.dropTarget;
+    n.dragPayloadType          = std::move(desc.dragPayloadType);
+    n.dragPayloadText          = std::move(desc.dragPayloadText);
+    n.acceptedDropType         = std::move(desc.acceptedDropType);
+    n.value                    = desc.value;
+    n.minValue                 = desc.minValue;
+    n.maxValue                 = desc.maxValue;
+    n.sizeX                    = desc.sizeX;
+    n.sizeY                    = desc.sizeY;
+    n.marginL                  = desc.marginL;
+    n.marginT                  = desc.marginT;
+    n.marginR                  = desc.marginR;
+    n.marginB                  = desc.marginB;
+    n.paddingL                 = desc.paddingL;
+    n.paddingT                 = desc.paddingT;
+    n.paddingR                 = desc.paddingR;
+    n.paddingB                 = desc.paddingB;
+    n.minSizeX                 = desc.minSizeX;
+    n.minSizeY                 = desc.minSizeY;
+    n.maxSizeX                 = desc.maxSizeX;
+    n.maxSizeY                 = desc.maxSizeY;
+    n.percentW                 = desc.percentW;
+    n.percentH                 = desc.percentH;
+    n.aspectRatio              = desc.aspectRatio;
+    n.anchorX                  = desc.anchorX;
+    n.anchorY                  = desc.anchorY;
+    n.posX                     = desc.posX;
+    n.posY                     = desc.posY;
+    n.absolute                 = desc.absolute;
+    n.textureId                = desc.textureId;
+    n.tintR                    = desc.tintR;
+    n.tintG                    = desc.tintG;
+    n.tintB                    = desc.tintB;
+    n.tintA                    = desc.tintA;
+    n.uv0x                     = desc.uv0x;
+    n.uv0y                     = desc.uv0y;
+    n.uv1x                     = desc.uv1x;
+    n.uv1y                     = desc.uv1y;
+    n.borderL                  = desc.borderL;
+    n.borderT                  = desc.borderT;
+    n.borderR                  = desc.borderR;
+    n.borderB                  = desc.borderB;
+    n.fillDirection            = desc.fillDirection;
+    n.fillStretch              = desc.fillStretch;
+    n.fillStartDegrees         = desc.fillStartDegrees;
+    n.fillClockwise            = desc.fillClockwise;
+    n.fillInnerRadius          = desc.fillInnerRadius;
+    n.cornerRadius             = desc.cornerRadius;
+    n.fontSize                 = desc.fontSize;
+    n.textR                    = desc.textR;
+    n.textG                    = desc.textG;
+    n.textB                    = desc.textB;
+    n.textA                    = desc.textA;
+    n.textAlignX               = desc.textAlignX;
+    n.textAlignY               = desc.textAlignY;
+    n.wrapWidth                = desc.wrapWidth;
+    n.itemHeight               = desc.itemHeight;
+    n.flexDirection            = desc.flexDirection;
+    n.alignItems               = desc.alignItems;
+    n.justifyContent           = desc.justifyContent;
+    n.gap                      = desc.gap;
+    n.flexGrow                 = desc.flexGrow;
+    n.flexShrink               = desc.flexShrink;
+    n.flexBasis                = desc.flexBasis;
+    n.alignSelf                = desc.alignSelf;
+    n.columnGap                = desc.columnGap;
+    n.rowGap                   = desc.rowGap;
+    n.flexWrap                 = desc.flexWrap;
+    n.overflow                 = desc.overflow;
+    n.gridColumns              = desc.gridColumns;
+    n.gridColumnSpan           = desc.gridColumnSpan;
     if (!desc.id.empty()) n.id = desc.id;
 
     if (desc.onClick) {
@@ -251,6 +352,13 @@ WidgetDesc button(std::string label, std::string id, std::function<void()> onCli
     return d;
 }
 
+WidgetDesc icon(Icon value, std::string id) { return text(iconGlyph(value), std::move(id)); }
+
+WidgetDesc iconButton(Icon value, std::string label, std::string id,
+                      std::function<void()> onClick) {
+    return button(iconText(value, label), std::move(id), std::move(onClick));
+}
+
 WidgetDesc group(std::vector<WidgetDesc> children, std::string id) {
     WidgetDesc d;
     d.type = NodeType::Group;
@@ -302,6 +410,22 @@ WidgetDesc slider(std::string label, float value, float minV, float maxV, std::s
     return d;
 }
 
+WidgetDesc colorPalette(std::string label, float r, float g, float b, float a, std::string id,
+                        std::function<void(float)> onValue) {
+    WidgetDesc d;
+    d.type = NodeType::ColorPalette;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.tintR = r;
+    d.tintG = g;
+    d.tintB = b;
+    d.tintA = a;
+    d.accessibilityRole = AccessibilityRole::Slider;
+    d.onValue = std::move(onValue);
+    return d;
+}
+
 WidgetDesc progress(float fraction, std::string id, std::string overlay) {
     WidgetDesc d;
     d.type = NodeType::Progress;
@@ -313,7 +437,7 @@ WidgetDesc progress(float fraction, std::string id, std::string overlay) {
 }
 
 WidgetDesc combo(std::string label, std::vector<std::string> options, int selected,
-                 std::string id, std::function<void(int)> onValue) {
+                 std::string id, std::function<void(float)> onValue) {
     WidgetDesc d;
     d.type = NodeType::Combo;
     d.id = std::move(id);
@@ -337,6 +461,52 @@ WidgetDesc image(std::string id, float width, float height, std::function<void()
     d.sizeY = height;
     d.onClick = std::move(onClick);
     return d;
+}
+
+WidgetDesc filledImage(std::string id, float width, float height, float fraction) {
+    auto result        = image(std::move(id), width, height);
+    result.type        = NodeType::FilledImage;
+    result.value       = fraction;
+    result.mouseFilter = MouseFilter::Ignore;
+    result.focusMode   = FocusMode::None;
+    return result;
+}
+
+WidgetDesc radialFill(std::string id, float width, float height, float fraction) {
+    auto result = filledImage(std::move(id), width, height, fraction);
+    result.type = NodeType::RadialFill;
+    return result;
+}
+
+WidgetDesc resourceBar(std::string id, float width, float height, float fraction) {
+    auto background = image(id + "/background", width, height).withTint(.08f, .10f, .15f, 1.f).withAbsolute(0.f, 0.f);
+    auto trail =
+        filledImage(id + "/trail", width, height, fraction).withTint(.95f, .60f, .20f, 1.f).withAbsolute(0.f, 0.f);
+    auto value =
+        filledImage(id + "/value", width, height, fraction).withTint(.20f, .80f, .50f, 1.f).withAbsolute(0.f, 0.f);
+    auto label       = text("", id + "/label").withSize(width, height).withAbsolute(0.f, 0.f);
+    label.fontSize   = 14.f;
+    label.textAlignX = .5f;
+    label.textAlignY = .5f;
+    return row({std::move(background), std::move(trail), std::move(value), std::move(label)}, std::move(id))
+        .withSize(width, height)
+        .withMouseFilter(MouseFilter::Ignore)
+        .withFocusMode(FocusMode::None);
+}
+
+WidgetDesc skillSlot(std::string id, float size, uint64_t iconTexture, float cooldown, std::string key) {
+    auto activate      = imageButton(id + "/activate", size, size).withAbsolute(0.f, 0.f);
+    activate.textureId = iconTexture;
+    activate.tooltip   = key;
+    auto mask =
+        radialFill(id + "/cooldown", size, size, cooldown).withTint(.02f, .03f, .06f, .80f).withAbsolute(0.f, 0.f);
+    auto label        = text(std::move(key), id + "/key").withSize(size, size).withAbsolute(0.f, 0.f);
+    label.fontSize    = 16.f;
+    label.textAlignX  = .5f;
+    label.textAlignY  = .5f;
+    label.mouseFilter = MouseFilter::Ignore;
+    label.focusMode   = FocusMode::None;
+    return row({std::move(activate), std::move(mask), std::move(label)}, std::move(id)).withSize(size, size);
 }
 
 WidgetDesc imageButton(std::string id, float width, float height, std::function<void()> onClick) {
@@ -369,6 +539,275 @@ WidgetDesc inputText(std::string label, std::string value, std::string id,
     d.text = std::move(label);
     d.valueText = std::move(value);
     d.onTextChange = std::move(onChange);
+    return d;
+}
+
+WidgetDesc link(std::string label, std::string target, std::string id, std::function<void()> onClick) {
+    WidgetDesc d;
+    d.type              = NodeType::Link;
+    d.accessibilityRole = AccessibilityRole::Link;
+    d.text              = std::move(label);
+    d.valueText         = std::move(target);
+    d.id                = std::move(id);
+    d.key               = d.id;
+    d.onClick           = std::move(onClick);
+    return d;
+}
+
+WidgetDesc searchField(std::string hint, std::string value, std::string id,
+                       std::function<void(const std::string &)> onChange) {
+    WidgetDesc d;
+    d.type = NodeType::SearchField;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(hint);
+    d.valueText = std::move(value);
+    d.onTextChange = std::move(onChange);
+    return d;
+}
+
+WidgetDesc toggleSwitch(std::string label, bool checked, std::string id,
+                        std::function<void(bool)> onToggle) {
+    WidgetDesc d;
+    d.type = NodeType::Switch;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.checked = checked;
+    d.onToggle = std::move(onToggle);
+    return d;
+}
+
+WidgetDesc badge(std::string label, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Badge;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.tintR = 0.96f;
+    d.tintG = 0.35f;
+    d.tintB = 0.40f;
+    d.tintA = 0.20f;
+    return d;
+}
+
+WidgetDesc card(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Card;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc ninePatchPanel(std::vector<WidgetDesc> children, std::string id,
+                          uint64_t textureId) {
+    WidgetDesc d;
+    d.type = NodeType::NinePatchPanel;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.textureId = textureId;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc sectionHeader(std::string label, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::SectionHeader;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    return d;
+}
+
+WidgetDesc menuBar(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::MenuBar;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc menu(std::string label, std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Menu;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc menuItem(std::string label, std::string shortcut, std::string id,
+                    std::function<void()> onClick, bool selected) {
+    WidgetDesc d;
+    d.type = NodeType::MenuItem;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.text = std::move(label);
+    d.valueText = std::move(shortcut);
+    d.checked = selected;
+    d.onClick = std::move(onClick);
+    return d;
+}
+
+WidgetDesc toolbar(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Toolbar;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.flexDirection = FlexDirection::Row;
+    d.alignItems = FlexAlign::Center;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc toolbox(std::vector<WidgetDesc> children, std::string id, float cellSize,
+                   int columns) {
+    WidgetDesc d;
+    d.type = NodeType::Toolbox;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.itemHeight = cellSize > 0.f ? cellSize : 40.f;
+    d.value = float(std::max(0, columns));
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc sidebar(std::vector<WidgetDesc> children, std::string id, float width) {
+    WidgetDesc d;
+    d.type = NodeType::Sidebar;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.sizeX = width;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc statusBar(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::StatusBar;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.flexDirection = FlexDirection::Row;
+    d.alignItems = FlexAlign::Center;
+    d.children = std::move(children);
+    return d;
+}
+
+WidgetDesc splitPane(FlexDirection direction, WidgetDesc first, WidgetDesc second, float ratio,
+                     std::string id, std::function<void(float)> onResize) {
+    WidgetDesc d;
+    d.type = NodeType::SplitPane;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.flexDirection = direction;
+    d.value = std::max(0.1f, std::min(0.9f, ratio));
+    d.minValue = 0.1f;
+    d.maxValue = 0.9f;
+    d.onValue = std::move(onResize);
+    d.children.push_back(std::move(first));
+    d.children.push_back(std::move(second));
+    return d;
+}
+
+WidgetDesc tab(std::string label, std::string pageId, bool selected, std::string id, std::function<void()> onClick) {
+    WidgetDesc d;
+    d.type              = NodeType::Tab;
+    d.id                = id.empty() ? ("tab/" + pageId) : std::move(id);
+    d.key               = d.id;
+    d.text              = std::move(label);
+    d.valueText         = std::move(pageId);
+    d.checked           = selected;
+    d.accessibilityRole = AccessibilityRole::Tab;
+    d.onClick           = std::move(onClick);
+    return d;
+}
+
+WidgetDesc tabBar(std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type          = NodeType::TabBar;
+    d.id            = std::move(id);
+    d.key           = d.id;
+    d.flexDirection = FlexDirection::Row;
+    d.alignItems    = FlexAlign::Center;
+    d.children      = std::move(children);
+    return d;
+}
+
+WidgetDesc tabContainer(std::vector<WidgetDesc> pages, std::string activePageId, std::string id,
+                        std::function<void(const std::string &)> onSelect) {
+    WidgetDesc d;
+    d.type          = NodeType::TabContainer;
+    d.id            = std::move(id);
+    d.key           = d.id;
+    d.valueText     = activePageId;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.onTextChange  = std::move(onSelect);
+
+    std::vector<WidgetDesc> tabs;
+    tabs.reserve(pages.size());
+    if (d.valueText.empty() && !pages.empty()) {
+        d.valueText = pages.front().id.empty() ? pages.front().key : pages.front().id;
+    }
+    for (auto &page : pages) {
+        const std::string pageId   = page.id.empty() ? page.key : page.id;
+        const std::string label    = page.text.empty() ? pageId : page.text;
+        const bool        selected = !d.valueText.empty() && pageId == d.valueText;
+        page.visible               = selected;
+        tabs.push_back(tab(label, pageId, selected));
+    }
+    d.children.push_back(tabBar(std::move(tabs), d.id.empty() ? "tabs" : d.id + "/bar"));
+    for (auto &page : pages) d.children.push_back(std::move(page));
+    return d;
+}
+
+WidgetDesc panelFrame(std::string title, std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type          = NodeType::PanelFrame;
+    d.id            = std::move(id);
+    d.key           = d.id;
+    d.text          = std::move(title);
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.overflow      = OverflowMode::Clip;
+    d.children      = std::move(children);
+    return d;
+}
+
+WidgetDesc dockArea(std::string region, std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type          = NodeType::DockArea;
+    d.id            = id.empty() ? ("dock/" + region) : std::move(id);
+    d.key           = d.id;
+    d.valueText     = std::move(region);
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.overflow      = OverflowMode::Clip;
+    d.children      = std::move(children);
+    return d;
+}
+
+WidgetDesc appFrame(WidgetDesc body, WidgetDesc toolbarWidget, WidgetDesc statusBarWidget, std::string id) {
+    WidgetDesc d;
+    d.type          = NodeType::AppFrame;
+    d.id            = std::move(id);
+    d.key           = d.id;
+    d.flexDirection = FlexDirection::Column;
+    d.flexGrow      = 1.f;
+    d.percentW      = 1.f;
+    d.percentH      = 1.f;
+    if (toolbarWidget.type == NodeType::Toolbar || !toolbarWidget.children.empty() || !toolbarWidget.id.empty()) {
+        d.children.push_back(std::move(toolbarWidget));
+    }
+    body.flexGrow = std::max(body.flexGrow, 1.f);
+    d.children.push_back(std::move(body));
+    if (statusBarWidget.type == NodeType::StatusBar || !statusBarWidget.children.empty() ||
+        !statusBarWidget.id.empty()) {
+        d.children.push_back(std::move(statusBarWidget));
+    }
     return d;
 }
 
@@ -436,6 +875,16 @@ WidgetDesc column(std::vector<WidgetDesc> children, std::string id) {
     return flex(FlexDirection::Column, std::move(children), std::move(id));
 }
 
+WidgetDesc grid(int columns, std::vector<WidgetDesc> children, std::string id) {
+    WidgetDesc d;
+    d.type = NodeType::Grid;
+    d.id = std::move(id);
+    d.key = d.id;
+    d.gridColumns = std::max(1, columns);
+    d.children = std::move(children);
+    return d;
+}
+
 WidgetDesc spacer(std::string id, float grow) {
     WidgetDesc d;
     d.type = NodeType::Spacer;
@@ -477,6 +926,7 @@ WidgetDesc listButtons(std::string listId, const std::vector<std::string> &items
 void applyTree(UIHost *host, WidgetDesc root) {
     if (!host) return;
     auto t = host->tree();
+    ++t->generation;
     t->nodes.clear();
     t->clickHandlers.clear();
     t->toggleHandlers.clear();

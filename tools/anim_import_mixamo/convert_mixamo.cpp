@@ -13,7 +13,7 @@
 
 int main(int argc, char **argv) {
     if (argc < 3) {
-        std::cerr << "usage: convert_mixamo <in.fbx> <out.eva> [clipName]\n";
+        std::cerr << "usage: convert_mixamo <in.fbx> <out.anim.txt> [clipName]\n";
         return 1;
     }
     Assimp::Importer importer;
@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
         auto *clip = eve::animation::AnimImporter::loadClip(scene, sk, 0);
         if (argc > 3) clip->setName(argv[3]);
         clip->setSampleRate(15.f);
-        const std::string text = eve::animation::AnimImporter::exportEva(sk, clip);
+        const std::string text = eve::animation::AnimImporter::exportAnimationFixtureText(sk, clip);
         std::ofstream out(argv[2]);
         out << text;
         std::cout << "wrote " << argv[2] << " bones=" << sk->getBoneCount()

@@ -1,14 +1,24 @@
 #pragma once
+#include "common/Export.h"
+
+
+#include "common/Result.h"
+#include "graphics/AtmosphereVolume.h"
 
 #include <string>
+#include <memory>
+#include <vector>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
 namespace eve::graphics {
 
 class Canvas;
+class FogVolume;
 class Drawable;
 class Graphics;
+class Light2D;
+class Light3D;
 class Mesh;
 class Shader;
 class Texture;
@@ -20,13 +30,16 @@ class Texture;
  *  - "screenspace" — Mitchell radial blur god rays (+ dust/fog tint)
  *  - "raymarch"    — depth ray march light shafts (SS occlusion ≈ CSM)
  *  - "fog"         — height + distance volumetric fog (Beer-Lambert)
+ *  - "cloud"       — bounded procedural cloud layer with self-shadowing
  *
  * Quality presets ("low" | "medium" | "high") control sample count and
  * suggested downscale via resolutionFor().
  */
-class Volumetric {
+class EVENGINE_API_BACKENDS Volumetric {
 public:
+    /** @brief Volumetric. */
     explicit Volumetric(Graphics *gfx);
+    /** @brief Volumetric. */
     ~Volumetric();
 
     Volumetric(const Volumetric &) = delete;
@@ -34,15 +47,19 @@ public:
 
     /** @brief "low" | "medium" | "high" (unknown → medium). */
     void setQuality(const std::string &quality);
+    /** @brief Returns the quality. */
     std::string getQuality() const { return quality_; }
 
-    /** @brief "screenspace" | "raymarch" | "fog" — selects which shader params quality tweaks. */
+    /** @brief "screenspace" | "raymarch" | "fog" | "froxel" | "cloud". */
     void setMode(const std::string &mode);
+    /** @brief Returns the mode. */
     std::string getMode() const { return mode_; }
 
     /** @brief Light position in UV (0..1), origin top-left to match 2D UVs. */
     void setLightScreenUV(float u, float v);
+    /** @brief Returns the light screen u. */
     float getLightScreenU() const;
+    /** @brief Returns the light screen v. */
     float getLightScreenV() const;
 
     /** @brief Pixel-space helper (converts with width/height). */
@@ -62,25 +79,59 @@ public:
     /** @brief Raw inverse view-projection (column-major, matching glm). */
     void setInvViewProj(const glm::mat4 &invViewProj);
 
+    /** @brief Sets the shaft color. */
     void setShaftColor(float r, float g, float b);
+    /** @brief Sets the fog color. */
     void setFogColor(float r, float g, float b);
+    /** @brief Sets the intensity. */
     void setIntensity(float intensity);
+    /** @brief Sets the time. */
     void setTime(float seconds);
+    /** @brief Sets the density. */
     void setDensity(float density);
+
+    /**
+     * @brief Henyey–Greenstein anisotropy for raymarch shafts in [-0.99, 0.99].
+     * Positive values produce forward-scattering god rays; negative back-scatters.
+     */
+    void setAnisotropy(float g);
+    /** @brief Current raymarch anisotropy. */
+    float getAnisotropy() const;
 
     /** @brief Height fog: denser near world Y = fogHeight; falloff is 1/meters scale. */
     void setFogHeight(float worldY);
+    /** @brief Sets the fog height falloff. */
     void setFogHeightFalloff(float falloff);
     /** @brief View-distance ramp where fog appears (world units along the ray). */
     void setFogStart(float startDistance);
+    /** @brief Sets the fog end. */
     void setFogEnd(float endDistance);
+    /** @brief Sets the fog noise. */
     void setFogNoise(float amount);
 
+    /** @brief Set cloud layer world-space bottom and top heights. */
+    void setCloudLayer(float bottom, float top);
+    /** @brief Cloud cover fraction in [0,1]. */
+    void setCloudCoverage(float coverage);
+    /** @brief Cloud density multiplier, clamped non-negative. */
+    void setCloudDensity(float density);
+    /** @brief Horizontal size of procedural cloud features in world units. */
+    void setCloudScale(float worldScale);
+    /** @brief Cloud wind velocity in world X/Z units per second. */
+    void setCloudWind(float x, float z);
+    /** @brief Direct sunlight color used by cloud single scattering. */
+    void setCloudLightColor(float r, float g, float b);
+
+    /** @brief True when param. */
     bool hasParam(const std::string &name) const;
+    /** @brief Sets the float. */
     void setFloat(const std::string &name, float value);
+    /** @brief Returns the float. */
     float getFloat(const std::string &name) const;
 
+    /** @brief Returns the sample count. */
     int getSampleCount() const;
+    /** @brief Returns the downscale. */
     float getDownscale() const { return downscale_; }
 
     /**
@@ -95,6 +146,7 @@ public:
 
     /** @brief Convenience 2D black silhouette (solid or textured alpha). */
     void drawOccluderSolid(Graphics *gfx, float x, float y, float w, float h);
+    /** @brief Draws occluder texture. */
     void drawOccluderTexture(Graphics *gfx, Texture *texture, float x, float y, float w, float h);
 
     /**
@@ -111,6 +163,7 @@ public:
      * add shafts + dust/fog onto it. Writes to current canvas.
      */
     void applyFromScene(Graphics *gfx, Texture *scene);
+    /** @brief Applies from scene to. */
     void applyFromSceneTo(Graphics *gfx, Texture *scene, Canvas *dest);
 
     /**
@@ -119,6 +172,7 @@ public:
      * occlusion. Call setCamera / setLightDirection / setLightScreenUV first.
      */
     void rayMarch(Graphics *gfx, Texture *linearDepth);
+    /** @brief Ray march to. */
     void rayMarchTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
 
     /**
@@ -127,13 +181,129 @@ public:
      * Call setCamera / setFogHeight* / setFogStart/End first.
      */
     void applyFog(Graphics *gfx, Texture *linearDepth);
+    /** @brief Applies fog to. */
     void applyFogTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
+
+    /**
+     * @brief Project a repeating directional-light cookie over visible scene surfaces.
+     * @param gfx Borrowed graphics provider used synchronously.
+     * @param depth Hardware depth texture used to reconstruct world positions.
+     * @param cookie Borrowed repeating RGB cookie sampled synchronously.
+     * @param worldSize Cookie repeat size in world units; must be positive.
+     * @param intensity Non-negative overlay intensity.
+     * @return Success or InvalidArgument; validation completes before drawing.
+     * @thread Render thread only; no argument is retained.
+     */
+    [[nodiscard]] Result<void> projectDirectionalCookie(Graphics *gfx, Texture *depth,
+                                                         Texture *cookie, float worldSize,
+                                                         float intensity = 1.f);
+
+    /** @brief Render the bounded cloud layer using scene linear depth for occlusion. */
+    void renderClouds(Graphics *gfx, Texture *linearDepth);
+    /** @brief Renders clouds to. */
+    void renderCloudsTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
+
+    /**
+     * @brief Configure the CPU reference/fallback froxel grid used by the atlas renderer.
+     * Quality presets choose suitable defaults, but explicit dimensions are useful for tests.
+     */
+    void configureFroxelGrid(int width, int height, int depth, float nearDistance,
+                             float farDistance);
+    /** @brief Access the froxel media grid for native density/light injection. */
+    AtmosphereVolume *getAtmosphereVolume() const { return atmosphereVolume_.get(); }
+    /** @brief Inverse view-projection last written by setCamera / setInvViewProj. */
+    const glm::mat4 &getInvViewProj() const { return invViewProj_; }
+    /** @brief Clear all media in the configured froxel grid. */
+    void clearFroxelGrid();
+    /** @brief Inject an exponential global height layer into the froxel grid. */
+    void injectFroxelHeightFog(float extinction, float albedoR, float albedoG, float albedoB,
+                               float baseHeight, float heightFalloff, float minWorldY,
+                               float maxWorldY);
+    /** @brief Inject an analytic local fog volume using the camera from setCamera(). */
+    void injectFroxelLocalVolume(FogVolume *volume);
+    /** @brief Integrate the current froxel media using a uniform incident light. */
+    void integrateFroxel(float lightR, float lightG, float lightB, float phaseScale = 1.f);
+
+    /**
+     * @brief Collect enabled Light3D with volumetric=true into froxel light snapshots.
+     * @param out Cleared then filled; not retained.
+     * @param maxCount Cap on collected lights (clamped to at least 1).
+     * @return Number of lights written, or InvalidArgument when out storage is unusable.
+     * @thread Render/main thread with a live ECS world.
+     */
+    [[nodiscard]] Result<int> collectSceneLights3D(std::vector<VolumetricLight> &out,
+                                                   int maxCount = 32);
+
+    /**
+     * @brief Drive shaft UV/direction/color/intensity from one Light3D using setCamera().
+     * Directional lights set lightDir; point lights aim from the camera toward the light
+     * and project the light position to screen UV for SS occlusion.
+     * @param light Borrowed; not retained.
+     * @param viewportW Viewport width in pixels; must be positive.
+     * @param viewportH Viewport height in pixels; must be positive.
+     * @return Success or InvalidArgument / NotFound.
+     */
+    [[nodiscard]] Result<void> driveFromLight3D(Light3D *light, float viewportW, float viewportH);
+
+    /**
+     * @brief Drive shafts from the strongest volumetric Light3D currently in ECS.
+     * @return Success, NotFound when none exist, or InvalidArgument for bad viewport.
+     */
+    [[nodiscard]] Result<void> driveFromPrimarySceneLight3D(float viewportW, float viewportH);
+
+    /**
+     * @brief Integrate froxels with volumetric Light3D (+ emissive proxies) from ECS.
+     * Falls back to uniform ambient-only integrate when no volumetric lights are present.
+     * @param worldMin World AABB min represented by the froxel grid.
+     * @param worldMax World AABB max represented by the froxel grid.
+     */
+    [[nodiscard]] Result<void> integrateFroxelFromSceneLights(float ambientR, float ambientG,
+                                                              float ambientB,
+                                                              const glm::vec3 &worldMin,
+                                                              const glm::vec3 &worldMax,
+                                                              int maxLights = 16);
+
+    /**
+     * @brief Clear the occlusion canvas and draw bright discs for every volumetric Light2D.
+     * Sets the primary (brightest) light UV for the first scatter pass.
+     * @param canvasFilter Optional canvas match; nullptr accepts lights with null canvas.
+     * @return Number of discs drawn.
+     */
+    [[nodiscard]] Result<int> beginOcclusionMapFromSceneLights2D(Graphics *gfx,
+                                                                Canvas *canvasFilter = nullptr,
+                                                                float defaultRadiusPixels = 24.f);
+
+    /**
+     * @brief Multi-pass screenspace scatter: one radial blur per volumetric Light2D.
+     * Uses additive blending so overlapping shafts accumulate. Spot lights upload their
+     * beam direction and cos(outer/inner) so shafts are masked to the flashlight cone;
+     * point lights leave the cone off (full radial). The occlusion texture must not be
+     * the active canvas's color target (Vulkan/WebGPU feedback rule).
+     * @return Number of scatter passes executed.
+     */
+    [[nodiscard]] Result<int> scatterFromSceneLights2D(Graphics *gfx, Texture *occlusion,
+                                                      Canvas *canvasFilter = nullptr);
+
+    /**
+     * @brief Inject a one-shot emissive glow proxy into the froxel integrate light list.
+     * Accumulates until the next integrateFroxel / integrateFroxelFromSceneLights call.
+     */
+    [[nodiscard]] Result<void> injectEmissiveLightProxy(float x, float y, float z, float r, float g,
+                                                        float b, float radius, float intensity);
+
+    /** @brief Upload integrated froxels into a slice atlas sampled by applyFroxel. */
+    void uploadFroxel(Graphics *gfx);
+    /** @brief Composite the uploaded froxel volume over the current target using scene depth. */
+    void applyFroxel(Graphics *gfx, Texture *linearDepth);
+    /** @brief Composite the uploaded froxel volume into an explicit destination. */
+    void applyFroxelTo(Graphics *gfx, Texture *linearDepth, Canvas *dest);
 
     /**
      * @brief Build an RGBA8 texture with linear depth in R (G=B=R, A=255).
      * depth01(x,y) should return values in [0,1]. Owned by Graphics.
      */
     Texture *newLinearDepthTexture(Graphics *gfx, int width, int height,
+                                   /** @brief Float. */
                                    float (*depth01)(int x, int y, void *userdata), void *userdata);
 
     /**
@@ -149,21 +319,40 @@ public:
      */
     void drawOccluders2D(Graphics *gfx);
 
+    /** @brief Returns the shader. */
     Shader *getShader() const { return shader_; }
+    /** @brief Returns the ray march shader. */
     Shader *getRayMarchShader() const { return rayShader_; }
+    /** @brief Returns the fog shader. */
     Shader *getFogShader() const { return fogShader_; }
+    /** @brief Returns the cloud shader. */
+    Shader *getCloudShader() const { return cloudShader_; }
+    /** @brief Returns the froxel shader. */
+    Shader *getFroxelShader() const { return froxelShader_; }
+    /** @brief Returns the froxel atlas. */
+    Texture *getFroxelAtlas() const { return froxelAtlas_; }
 
 private:
     void applyQualityDefaults();
     void uploadCommon(bool compositeFromScene);
     void uploadRayMarchCommon();
     void uploadFogCommon();
+    void uploadCloudCommon();
     void drawFullscreen(Graphics *gfx, Texture *source, Shader *shader);
+    void uploadRayMarchShadowAnisotropy();
+    void clearPendingEmissiveProxies();
 
     Graphics *gfx_ = nullptr;     // not owned
     Shader *shader_ = nullptr;    // owned by Graphics (screenspace)
     Shader *rayShader_ = nullptr; // owned by Graphics (ray march)
     Shader *fogShader_ = nullptr; // owned by Graphics (volumetric fog)
+    Shader *directionalCookieShader_ = nullptr; // owned by Graphics
+    Shader *cloudShader_ = nullptr; // owned by Graphics (volumetric clouds)
+    Shader *froxelShader_ = nullptr; // owned by Graphics (froxel atlas composite)
+    std::unique_ptr<AtmosphereVolume> atmosphereVolume_;
+    Texture *froxelAtlas_ = nullptr; // owned by Graphics
+    int froxelAtlasCols_ = 1;
+    int froxelAtlasRows_ = 1;
     std::string quality_ = "medium";
     std::string mode_ = "screenspace";
     float downscale_ = 2.f;
@@ -171,11 +360,20 @@ private:
     float nearZ_ = 0.1f;
     float farZ_ = 100.f;
     glm::vec3 lightDir_{0.4f, 1.f, 0.3f};
+    float anisotropy_ = 0.6f;
     float fogHeight_ = 0.f;
     float fogHeightFalloff_ = 0.15f;
     float fogStart_ = 2.f;
     float fogEnd_ = 40.f;
     float fogNoise_ = 0.35f;
+    float cloudBottom_ = 8.f;
+    float cloudTop_ = 16.f;
+    float cloudCoverage_ = 0.55f;
+    float cloudDensity_ = 1.f;
+    float cloudScale_ = 18.f;
+    glm::vec3 cloudWind_{1.5f, 0.f, 0.4f};
+    glm::vec3 cloudLightColor_{1.f, 0.92f, 0.78f};
+    std::vector<VolumetricLight> pendingEmissiveProxies_;
 };
 
 }  // namespace eve::graphics

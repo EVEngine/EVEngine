@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Result.h"
+
 #include <cstdint>
 
 namespace eve::procgen {
@@ -17,7 +19,15 @@ void registerRoguelikeGenerator(GeneratorRegistry &registry);
  */
 bool autotileGridInPlace(Grid2D &grid);
 
+/**
+ * @brief Write an eight-neighbour occupancy mask into every non-empty cell's detail value.
+ * @param grid Dense grid mutated in place; empty cells receive detail zero.
+ * @return Success after writing all masks; InvalidArgument for unusable dimensions.
+ * @thread Caller-owned grid only; not safe for concurrent mutation.
+ */
+[[nodiscard]] eve::Result<void> autotileOccupiedGridInPlace(Grid2D &grid);
+
 /** @brief Produce a fresh seed suitable for regenerating a level (never 0). */
-uint32_t randomSeedValue();
+EVENGINE_API_DOMAINS uint32_t randomSeedValue();
 
 }  // namespace eve::procgen

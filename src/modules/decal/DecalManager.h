@@ -1,0 +1,173 @@
+#pragma once
+#include "common/Export.h"
+
+// Incomplete glm::mat4 is enough for const-reference parameters.
+#include <glm/fwd.hpp>
+
+#include <cstdint>
+#include <string>
+#include <vector>
+
+namespace eve::graphics {
+class Graphics;
+class Texture;
+}  // namespace eve::graphics
+
+namespace eve::decal {
+
+/** @brief One live decal instance (CPU-side state; GPU draw happens per frame). */
+struct DecalInstance {
+    int id = 0;
+    float x = 0.f, y = 0.f, z = 0.f;
+    float nx = 0.f, ny = 1.f, nz = 0.f;
+    float yaw = 0.f;  // random rotation around the surface normal
+    float size = 0.5f;
+    float depth = 0.15f;
+    float age = 0.f;        // seconds since spawn
+    float lifetime = 0.f;   // 0 = persistent
+    float fadeIn = 0.f;
+    float fadeOut = 0.f;
+    graphics::Texture *albedo = nullptr;
+    graphics::Texture *normal = nullptr;
+    graphics::Texture *params = nullptr;
+    float uvRect[4] = {0.f, 0.f, 1.f, 1.f};
+    float normalStrength = 0.f;
+    float roughnessStrength = 0.f;
+    float metalStrength = 0.f;
+    float emissiveStrength = 0.f;
+    int blendMode = 0;       // 0 = premultiplied over, 1 = additive (emissive)
+    int projectionMode = 0;  // 0 = planar, 1 = triplanar, 2 = spherical, 3 = world-aligned
+    float blendSharpness = 4.f;
+    float parallaxScale = 0.f;
+    float parallaxMinLayers = 8.f;
+    float parallaxMaxLayers = 24.f;
+    float edgeFadeWidth = 0.06f;
+    std::string kind;  // quota group ("blood", "dirt", ...)
+};
+
+/**
+ * @brief Outcome of DecalManager::setProjection / Decal::setProjection.
+ *
+ * Named status (not bool) so callers can distinguish unknown id, bad mode,
+ * and non-positive sharpness without a parallel lastError channel.
+ */
+enum class DecalProjectionStatus : std::uint8_t {
+    Applied = 0,
+    UnknownId = 1,
+    InvalidMode = 2,
+    InvalidSharpness = 3,
+};
+
+/** @brief Outcome of applying height-driven parallax settings to a live decal. */
+enum class DecalParallaxStatus : std::uint8_t {
+    Applied = 0,
+    UnknownId = 1,
+    InvalidScale = 2,
+    InvalidLayers = 3,
+};
+
+/** @brief Outcome of changing the projection-volume edge mask width. */
+enum class DecalEdgeFadeStatus : std::uint8_t {
+    Applied = 0,
+    UnknownId = 1,
+    InvalidWidth = 2,
+};
+
+/**
+ * @brief CPU-side decal registry: spawn / remove / fade / quotas, and the
+ * per-frame drawer that feeds the graphics decal pass.
+ *
+ * Rendering path: DecalManager registers a RenderSystem3D::DecalExtraDrawer,
+ * which runs between the G-buffer and the forward pass. For each visible
+ * instance it builds the box transform (Z axis = surface normal, optional
+ * random yaw) and calls gfx.drawDecal.
+ */
+class EVENGINE_API_WORLD DecalManager {
+public:
+    /** @brief Inst. */
+    static DecalManager &inst();
+
+    /** @brief Spawn a decal at a world-space point facing along (nx,ny,nz). */
+    int project(float x, float y, float z, float nx, float ny, float nz,
+                graphics::Texture *albedo, const std::string &kind, float size, float depth,
+                bool randomYaw, int seed, float fadeIn, float lifetime, float fadeOut,
+                float normalStrength, float roughnessStrength, float metalStrength,
+                float emissiveStrength);
+
+    /** @brief Removes . */
+    bool remove(int id);
+    /** @brief Whether a projected decal id is still registered. */
+    [[nodiscard]] bool contains(int id) const;
+    void clearAll();
+    /** @brief Returns the number of . */
+    int count() const;
+    /** @brief Sets the strength. */
+    bool setStrength(int id, float normalStrength, float roughnessStrength, float metalStrength,
+                     float emissiveStrength);
+    /** @brief Sets the uv rect. */
+    bool setUvRect(int id, float x, float y, float w, float h);
+    /** @brief Sets the textures. */
+    bool setTextures(int id, graphics::Texture *normal, graphics::Texture *params);
+    /** @brief Sets the blend. */
+    bool setBlend(int id, const std::string &mode);
+    /**
+     * @brief Projection mode: "planar" (default) or "triplanar".
+     * @param blendSharpness Triplanar |n|^exponent; higher = sharper plane seams.
+     * @return Applied on success; UnknownId / InvalidMode / InvalidSharpness otherwise.
+     */
+    [[nodiscard]] DecalProjectionStatus setProjection(int id, const std::string &mode,
+                                                      float blendSharpness = 4.f);
+    /** @brief Configure POM; scale zero disables it and layers satisfy 1 <= min <= max <= 64. */
+    [[nodiscard]] DecalParallaxStatus setParallax(int id, float scale, float minLayers = 8.f,
+                                                 float maxLayers = 24.f);
+    /** @brief Configure normalized edge feather width in [0, 0.49]. */
+    [[nodiscard]] DecalEdgeFadeStatus setEdgeFade(int id, float width);
+
+    /**
+     * @brief Atomically install a fully configured instance and remove a previous generation.
+     * @param previousId Existing runtime id, or zero for first publication.
+     * @param candidate Complete value; its input id/age are ignored.
+     * @return New runtime id, or zero when the candidate is invalid.
+     */
+    int replace(int previousId, DecalInstance candidate);
+
+    /** @brief Per-kind quota ("blood" -> 64 etc.); oldest of the kind is evicted. */
+    void setLimit(const std::string &kind, int limit);
+
+    /** @brief Advance instance ages; expire and evict finished decals. */
+    void update(float dt);
+
+    /**
+     * @brief Draws all live instances into the active graphics decal pass.
+     * @param gfx Active graphics service.
+     * @param eyeX Camera world-space X coordinate.
+     * @param eyeY Camera world-space Y coordinate.
+     * @param eyeZ Camera world-space Z coordinate.
+     * @param viewProj Camera view-projection matrix.
+     * @param aspect Viewport aspect ratio.
+     */
+    void drawAll(graphics::Graphics &gfx, float eyeX, float eyeY, float eyeZ,
+                 const glm::mat4 &viewProj, float aspect);
+
+    /** @brief Instances. */
+    std::vector<DecalInstance> &instances() { return decals_; }
+    /** @brief Instances. */
+    const std::vector<DecalInstance> &instances() const { return decals_; }
+
+private:
+    DecalManager() = default;
+    ~DecalManager() = default;
+    DecalManager(const DecalManager &) = delete;
+    DecalManager &operator=(const DecalManager &) = delete;
+
+    int nextId_ = 1;
+    std::vector<DecalInstance> decals_;
+    struct KindLimit {
+        std::string kind;
+        int limit = 0;  // 0 = unlimited
+    };
+    std::vector<KindLimit> limits_;
+    int limitFor(const std::string &kind) const;
+};
+
+}  // namespace eve::decal

@@ -1,13 +1,33 @@
 #pragma once
-#include "Object.h"
+#include "common/AssetReloader.h"
+#include "common/BorrowedRef.h"
+#include "common/Export.h"
+#include "common/Result.h"
+// Cached resources are owned by a RuntimeObjectRegistry and handed out as borrows and
+// keep-alive pins, so this header needs those definitions. RuntimeRegistry.h is
+// deliberately Squirrel-free: the cache's consumers must not be forced to include
+// <squirrel.h> just to name a resource handle.
+#include "common/RuntimeRegistry.h"
 
-#include <string>
+#include <cstddef>
+#include <condition_variable>
 #include <map>
+#include <memory>
+#include <mutex>
+#include <span>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace eve {
 
 class Resource;
+
+/** @brief Domain tag of the registry that exclusively owns cached resources. */
+struct ResourceCacheTag;
+
+/** @brief Keep-alive pin on one cached resource; see script::RuntimePin. */
+using ResourcePin = script::RuntimePin<Resource, ResourceCacheTag>;
 
 /**
  * @brief Resource is a game object that is managed by the ResourceManager.
@@ -23,48 +43,301 @@ class Resource;
  * - Online: http://example.com/path/to/resource
  * - Save: save://path/name
  * - Config: config://name
+ *
+ * The ResourceManager cache keys file-backed resources by their normalized VFS
+ * path, optionally with `?param=value` suffixes for parameters that change the
+ * decoded asset (e.g. a font's pixel size). See ResourceManager::makeKey.
  */
-class Resource : public Object {
+class Resource {
 public:
+    /** @brief Releases Resource resources. */
     virtual ~Resource() {}
 
-    std::string getUri() const { return uri; }
-	std::vector<eve::ref<Resource>> getDependencies() const { return dependencies; }
+    /**
+     * @brief Resources own keep-alive pins, so they are not copyable.
+     *
+     * The pins in `dependencies` are move-only, which already deletes both
+     * special members implicitly; declaring that intent is not cosmetic. Under
+     * the SHARED linkage the resource subclasses are dllexport, and MSVC then
+     * tries to emit every special member it would export -- including the
+     * implicitly deleted copy assignment -- which turns a silent deletion into
+     * a hard C2280 in every translation unit that merely includes the subclass
+     * (image/sound/font/graphics resource loaders). A user-declared `= delete`
+     * is not emitted, so the exported subclass stays well-formed, exactly like
+     * the in-module out-of-line special members the OBJECT route already needs.
+     */
+    Resource(const Resource&)            = delete;
+    Resource& operator=(const Resource&) = delete;
 
-	virtual void addDependency(eve::ref<Resource> resource) { dependencies.push_back(resource); }
+    /** @brief Returns the uri. */
+    std::string getUri() const { return uri; }
+
+    /**
+     * @brief Borrowed views of the resources this instance keeps alive.
+     * @return One borrowed entry per registered dependency, in registration order.
+     * @ownership Borrowed; the dependency stays owned by the resource cache.
+     * @nullable No entry is null while this instance holds its keep-alive pins.
+     * @lifetime Valid until this instance is destroyed or a pin is released;
+     *           callers must not retain the pointers across either.
+     * @thread Same thread as the owning ResourceManager.
+     * @reentrancy Side-effect free.
+     */
+    [[nodiscard]] EVENGINE_API_FOUNDATION std::vector<Resource*> getDependencies() const;
+
+    /**
+     * @brief Keeps @p dependency alive for as long as this instance lives.
+     * @param dependency A resource the cache currently owns (see ResourceManager::pin).
+     * @return Applied, or NotFound/Failed when @p dependency is not cached.
+     * @ownership The cache keeps owning @p dependency; this instance only postpones
+     *            its destruction across unload()/clear()/reload.
+     * @lifetime The pin is released when this instance is destroyed.
+     * @thread Same thread as the owning ResourceManager.
+     * @reentrancy Registers a pin only; it never invokes callbacks.
+     */
+    [[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<void> addDependency(Resource& dependency);
+
+    /**
+     * @brief Replace this instance's contents with `replacement`'s.
+     * The ResourceManager keeps instance identity stable across reloads, so
+     * existing holders (raw pointers, refs, script instances) keep a valid
+     * object. Subclasses move the payload out of `replacement`, which is
+     * drained and destroyed by the caller afterwards. `replacement` must be
+     * the same concrete type as `this`. Implementations must use a reversible
+     * swap and either complete without throwing or leave both objects unchanged;
+     * ResourceManager uses the drained candidate to roll back a later failure
+     * in the same dependency transaction.
+     */
+    virtual void adopt(eve::Resource& replacement) = 0;
+
 protected:
+    /** @brief Constructs a Resource. */
     Resource(std::string uri) : uri(uri) {}
 
+    /** @brief Set the resource URI (the cache key). Used by ResourceManager. */
+    void setUri(std::string value) { uri = std::move(value); }
+
+    friend class ResourceManager;
+
     std::string uri;
-	std::vector<eve::ref<Resource>> dependencies;
+    /** @brief Keep-alive pins; see getDependencies()/addDependency(). */
+    std::vector<ResourcePin> dependencies;
 };
 
 
 /**
  * @brief ResourceManager is a singleton that manages all resources in the game.
  * It provides a way to load, reload, and unload resources.
+ *
+ * The manager is a unified cache for CPU-side assets (ImageData, FontData,
+ * ModelData, SoundData, ...). Keys are normalized VFS paths, optionally with
+ * `?param=value` entries ("fonts/a.ttf?size=16"). On a miss it asks the
+ * registered eve::caps::IAssetReloader providers which one claims the key and
+ * can `load()` it; the first hit is cached and returned. On a file change the
+ * manager itself participates in hot reload as the first IAssetReloader
+ * listener (kCache priority): every cached entry for that path is re-loaded
+ * and refreshed in place through Resource::adopt, so holders keep a valid
+ * pointer. Entries that list the refreshed resource as a dependency are
+ * refreshed too (transitively, cycle-safe).
+ *
+ * The cache itself is thread-safe: map access is mutex-guarded and the heavy
+ * provider load() runs outside the lock, so sceneloader's background decode
+ * threads can insert entries while the main thread reads them. Reloads (adopt)
+ * are expected on the main thread during hot-reload dispatch.
+ *
+ * `request()` / `waitFor()` are the asynchronous programming interface: request
+ * queues CPU decode on `caps::IAsyncWorkExecutor` (the thread module) and
+ * waitFor joins that job. `get()` waits for an in-flight request of the same
+ * key so a prefetch cannot race a later synchronous load into a double decode.
  */
-class ResourceManager {
+class EVENGINE_API_FOUNDATION ResourceManager : public eve::caps::IAssetReloader {
 public:
+	/** @brief Returns the instance. */
 	static ResourceManager& getInstance();
 
-	/**
-	 * @brief Load a resource from a URI.
-	 * If the resource is already loaded, return the existing resource.
-	 * If the resource is not loaded, create a new resource and load it.
-	 * If the resource is a file, a monitor will be created to watch the file changes.
-	 */
-	ref<Resource> get(std::string uri);
+    /** @brief Normalize a VFS path: backslashes to '/', strip leading "./" and trailing '/'. */
+    static std::string normalizePath(std::string path);
 
-	/**
-	 * @brief Unload a resource from a URI.
-	 * If the resource is already loaded, unload it.
-	 * If the resource is not loaded, do nothing.
-	 */
-	void unload(std::string uri);
+    /** @brief Build a cache key from a path and optional `?query` parameters. */
+    static std::string makeKey(const std::string& path, const std::string& query = "");
+
+    /** @brief The path part of a cache key (everything before the first '?'). */
+    static std::string pathOfKey(const std::string& key);
+
+    /**
+     * @brief Get the cached resource for `key`; on a miss, load it through the
+     * registered IAssetReloader providers and cache the result.
+     * @param key A normalized VFS path, optionally with `?params`.
+     * @return The shared resource, or nullptr when no provider claims the key.
+     *         Loader errors propagate to the caller. The returned pointer is
+     *         owned by the cache (kept alive while the entry exists); callers
+     *         must not delete it, and it stays valid until unload() or process
+     *         exit.
+     * @ownership Borrowed from the cache; ResourceManager is the owning authority.
+     * @nullable Yes when no registered provider claims `key`.
+     * @lifetime Valid while the cache entry remains loaded and until manager teardown;
+     *           callers must not retain it across unload or reload replacement.
+     * @thread Lookup may be called by concurrent readers; cache mutation and reload
+     *         commit are serialized by ResourceManager.
+     * @reentrancy The returned resource must not be used to re-enter cache mutation
+     *             while a ResourceManager operation is holding its internal lock.
+     */
+    [[nodiscard("resource lookup ownership must be retained or explicitly handled")]] Resource* get(std::string key);
+
+    /**
+     * @brief Queue a cache miss load without blocking for decode to finish.
+     * @param key Normalized VFS path, optionally with `?params`.
+     * @return `NoOp` if already cached, `Pending` if a load is already in flight,
+     *         `Applied` if this call queued or completed a load, `NotFound` if no
+     *         provider claims the key, or `Failed` when inline load throws.
+     * @ownership Does not transfer a resource; the cache remains the owner.
+     * @lifetime The pending job keeps the key alive until waitFor/get/clear.
+     * @thread Safe to call from the game thread. Decode runs on a worker when
+     *         `IAsyncWorkExecutor` is registered, otherwise inline.
+     * @reentrancy Must not be called from `IAssetReloader::load()`.
+     */
+    [[nodiscard("async resource request outcome must be checked")]] eve::Result<void> request(
+        std::string key);
+
+    /**
+     * @brief `request()` every key; stops at the first hard failure.
+     * @param keys Borrowed list of cache keys; duplicates share one in-flight job.
+     */
+    [[nodiscard("async resource request outcome must be checked")]] eve::Result<void> requestAll(
+        std::span<const std::string> keys);
+
+    /**
+     * @brief Cache lookup that never starts a load.
+     * @return Empty when missing or still decoding; borrowed cache entry otherwise.
+     * @ownership Borrowed from the cache.
+     * @nullable Yes — empty optional means not ready.
+     * @lifetime Valid until unload/clear of that entry; do not retain across reload.
+     * @thread Concurrent readers are serialized with the cache mutex.
+     */
+    [[nodiscard]] OptionalRef<Resource> peek(const std::string& key);
+
+    /**
+     * @brief Keeps one cached resource alive across unload()/clear()/reload.
+     * @param resource Borrowed pointer to a resource the cache owns, typically one
+     *                 returned by get()/peek()/waitFor() or a `newXFromFile()` factory.
+     *                 A null or already-stale pointer is rejected; this call never
+     *                 dereferences it, so a concurrent unload() cannot make the call
+     *                 itself read freed memory.
+     * @return A move-only keep-alive pin, or NotFound when no live cache entry resolves
+     *         to @p resource (already unloaded, or never cached here). Once a pin is
+     *         returned it is the authority: use `pin.get()` rather than the borrowed
+     *         pointer, which may have been stale before the call.
+     * @ownership The cache keeps owning the resource; the pin only postpones its
+     *            destruction, so the address stays valid after unload() drops the
+     *            cache entry (this is what keeps a playing SoundData alive).
+     * @lifetime The pin must not outlive the manager; release it (or let it go out
+     *           of scope) as soon as the borrower no longer needs the resource.
+     * @cost O(cached entries): the entry is located by address.
+     * @thread Same serialization as the rest of the cache.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] eve::Result<ResourcePin> pin(Resource* resource);
+
+    /**
+     * @brief Block until `key` is cached, failed, or unclaimed.
+     * @param key Cache key; starts a load if neither cached nor in flight.
+     * @return Borrowed resource on success; `NotFound` / `Failed` otherwise.
+     * @ownership Borrowed from the cache on success.
+     * @lifetime Same as get().
+     * @thread Game thread; waits for a worker if request() is in flight.
+     * @reentrancy Must not be called from a worker that this wait would join
+     *             on the same pool (deadlock).
+     */
+    [[nodiscard("resource wait outcome must be checked")]] ResultRef<Resource> waitFor(std::string key);
+
+    /** @brief Number of in-flight `request()` jobs (including failed-not-yet-consumed). */
+    size_t pendingCount() const;
+
+    /**
+     * @brief Drop the exact cache entry `key` (parameters included).
+     * The resource stays alive while other holders still reference it.
+     */
+    void unload(std::string key);
+
+    /** @brief Drop every cache entry whose path matches, whatever its parameters. */
+    void unloadPath(const std::string& path);
+
+    /** @brief Number of cached entries. */
+    size_t count() const;
+
+    /** @brief Drop every entry and re-arm lazy registration (tests / teardown). */
+    void clear();
+
+    // eve::caps::IAssetReloader -- the cache participates in hot reload as the
+    // first listener, refreshing CPU resources before GPU/consumers re-bind.
+    /**
+     * @brief Stable capability name for the cache reloader.
+     * @return Borrowed, non-null, null-terminated static text.
+     * @ownership Borrowed; not allocated and not caller-owned.
+     * @nullable No.
+     * @lifetime Static for the process lifetime.
+     * @thread Thread-safe and side-effect free.
+     * @reentrancy Does not invoke callbacks.
+     */
+    const char* reloadKind() const override { return "cache"; }
+    /** @brief Handles path. */
+    bool handlesPath(const std::string& normPath) const override;
+    /** @brief Reloads . */
+    [[nodiscard("resource reload outcome must be checked")]] eve::Result<bool> reload(
+        const std::string& normPath) override;
+    /**
+     * @brief Cache provider entry point; this implementation does not claim keys.
+     * @return Always nullptr for the cache provider.
+     * @ownership Borrowed/null; no resource is created by this override.
+     * @nullable Yes.
+     * @lifetime No returned object; the call is main-thread affine during reload dispatch.
+     * @thread Main/reload dispatch thread.
+     * @reentrancy Does not invoke external callbacks.
+     */
+    [[nodiscard("loaded resource ownership must be retained or explicitly handled")]] Resource* load(
+        const std::string& key) override {
+        return nullptr;
+    }
 
 protected:
-	std::map< std::string, ref<Resource> > resources;
+    /** @brief Resource manager. */
+    ResourceManager() = default;
+
+    /** @brief Ensure registered. */
+    void ensureRegistered();
+    /** @brief Loads replacement. */
+    Resource* loadReplacement(const std::string& key);
+    /** @brief Loads uncached. */
+    Resource* loadUncached(const std::string& norm);
+    /** @brief Run load job. */
+    void runLoadJob(std::string norm, uint64_t epoch);
+
+    /** @brief AsyncLoad public API. */
+    struct AsyncLoad {
+        bool done = false;
+        bool failed = false;
+        std::string error;
+        uint64_t epoch = 0;
+    };
+
+    using ResourceRef = script::RuntimeHandleRef<ResourceCacheTag>;
+
+    /**
+     * @brief Borrows the live resource behind a cache entry.
+     * @param reference Entry from `resources`.
+     * @return The owned resource, or null when the entry is stale.
+     * @remarks Callers must hold `mu_`; the borrowed pointer is only valid until
+     *          the next cache mutation.
+     */
+    [[nodiscard]] Resource* borrowLocked(const ResourceRef& reference) { return registry_.resolve(reference).get(); }
+
+    /** @brief Registry that exclusively owns every cached resource. */
+    script::RuntimeObjectRegistry<Resource, ResourceCacheTag>   registry_;
+    std::map<std::string, ResourceRef>                          resources;
+    std::unordered_map<std::string, std::shared_ptr<AsyncLoad>> pending_;
+    mutable std::mutex mu_;
+    std::condition_variable cv_;
+    uint64_t epoch_ = 1;
+    bool registered_ = false;
 };
 
 }  // namespace eve

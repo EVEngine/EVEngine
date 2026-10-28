@@ -74,27 +74,42 @@ class DoxygenAwesomeDarkModeToggle extends HTMLElement {
         return window.matchMedia('(prefers-color-scheme: dark)').matches
     }
 
+    // EVEngine hardening: embedded browsers (e.g. a docs panel inside an IDE)
+    // can deny localStorage on file:// URLs. Never let a storage exception
+    // break theme initialization or the light/dark toggle.
+    static safeGet(key) {
+        try { return localStorage.getItem(key) } catch (e) { return null }
+    }
+
+    static safeSet(key, value) {
+        try { localStorage.setItem(key, value) } catch (e) { /* noop */ }
+    }
+
+    static safeRemove(key) {
+        try { localStorage.removeItem(key) } catch (e) { /* noop */ }
+    }
+
     /**
      * @returns `true` for dark-mode, `false` for light-mode user preference
      */
     static get userPreference() {
-        return (!DoxygenAwesomeDarkModeToggle.systemPreference && localStorage.getItem(DoxygenAwesomeDarkModeToggle.prefersDarkModeInLightModeKey)) || 
-        (DoxygenAwesomeDarkModeToggle.systemPreference && !localStorage.getItem(DoxygenAwesomeDarkModeToggle.prefersLightModeInDarkModeKey))
+        return (!DoxygenAwesomeDarkModeToggle.systemPreference && DoxygenAwesomeDarkModeToggle.safeGet(DoxygenAwesomeDarkModeToggle.prefersDarkModeInLightModeKey)) || 
+        (DoxygenAwesomeDarkModeToggle.systemPreference && !DoxygenAwesomeDarkModeToggle.safeGet(DoxygenAwesomeDarkModeToggle.prefersLightModeInDarkModeKey))
     }
 
     static set userPreference(userPreference) {
         DoxygenAwesomeDarkModeToggle.darkModeEnabled = userPreference
         if(!userPreference) {
             if(DoxygenAwesomeDarkModeToggle.systemPreference) {
-                localStorage.setItem(DoxygenAwesomeDarkModeToggle.prefersLightModeInDarkModeKey, true)
+                DoxygenAwesomeDarkModeToggle.safeSet(DoxygenAwesomeDarkModeToggle.prefersLightModeInDarkModeKey, true)
             } else {
-                localStorage.removeItem(DoxygenAwesomeDarkModeToggle.prefersDarkModeInLightModeKey)
+                DoxygenAwesomeDarkModeToggle.safeRemove(DoxygenAwesomeDarkModeToggle.prefersDarkModeInLightModeKey)
             }
         } else {
             if(!DoxygenAwesomeDarkModeToggle.systemPreference) {
-                localStorage.setItem(DoxygenAwesomeDarkModeToggle.prefersDarkModeInLightModeKey, true)
+                DoxygenAwesomeDarkModeToggle.safeSet(DoxygenAwesomeDarkModeToggle.prefersDarkModeInLightModeKey, true)
             } else {
-                localStorage.removeItem(DoxygenAwesomeDarkModeToggle.prefersLightModeInDarkModeKey)
+                DoxygenAwesomeDarkModeToggle.safeRemove(DoxygenAwesomeDarkModeToggle.prefersLightModeInDarkModeKey)
             }
         }
         DoxygenAwesomeDarkModeToggle.onUserPreferenceChanged()

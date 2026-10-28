@@ -1,0 +1,394 @@
+#pragma once
+#include "common/Export.h"
+#include "common/StringMapInstances.h"
+
+
+#include "common/BorrowedRef.h"
+#include "procgen/PointSet.h"
+#include "procgen/SpatialData.h"
+
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <vector>
+
+namespace eve::procgen {
+
+class BiomeRules;
+class PointCompute;
+class ShapeGrammar;
+
+/** @brief Per-node execution information from the most recent graph run. */
+struct PointGraphNodeMetric {
+    std::string id;
+    int         outputCount  = 0;
+    float       milliseconds = 0.f;
+    bool        cacheHit     = false;
+    std::string backend        = "cpu";
+    float       minX           = 0.f;
+    float       minY           = 0.f;
+    float       minZ           = 0.f;
+    float       maxX           = 0.f;
+    float       maxY           = 0.f;
+    float       maxZ           = 0.f;
+    float       averageDensity = 0.f;
+};
+
+/**
+ * @brief A data-flow graph for attributed procedural points.
+ *
+ * Nodes are addressed by stable string ids and evaluated lazily from a chosen
+ * output. Graph mutations invalidate cached results. Execution rejects missing
+ * inputs and cycles, retains inspectable node outputs, and supports nested
+ * graphs through the `subgraph` operation.
+ */
+
+/** @brief One attribute/column descriptor for PointGraph inspect panels. */
+struct PointGraphColumnInfo {
+    std::string name;
+    std::string type;   /**< float, int, bool, vector, string, or builtin. */
+    std::string domain; /**< elements, data, or builtin. */
+};
+
+/** @brief Snapshot of one node output for editor Attribute/Inspect panels. */
+struct PointGraphInspectReport {
+    std::string                     nodeId;
+    int                             pointCount = 0;
+    std::vector<PointGraphColumnInfo> columns;
+    /** @brief Optional sampled float values: columns-major flattened [column * sampleCount + point]. */
+    std::vector<float>              sampleFloats;
+    int                             sampleCount = 0;
+};
+
+/** @brief EVENGINE_API_DOMAINS public API. */
+class EVENGINE_API_DOMAINS PointGraph {
+public:
+    /** @brief Point graph. */
+    PointGraph();
+    /** @brief Add a node using one of the operations returned by operationAt(). */
+    bool addNode(const std::string& id, const std::string& operation);
+    /** @brief Remove a node and every edge that references it. */
+    bool removeNode(const std::string& id);
+    /** @brief True when node. */
+    bool hasNode(const std::string& id) const;
+    /** @brief Returns the node count. */
+    int  getNodeCount() const;
+    /** @brief Returns the node id. */
+    std::string getNodeId(int index) const;
+    /** @brief Returns the node operation. */
+    std::string getNodeOperation(const std::string& id) const;
+
+    /** @brief Connect an output to input slot 0 or 1. Replaces that input connection. */
+    bool connect(const std::string& fromId, const std::string& toId, int inputIndex = 0);
+    /** @brief Remove one input connection. */
+    bool disconnect(const std::string& toId, int inputIndex = 0);
+    /** @brief Returns the input node. */
+    std::string getInputNode(const std::string& nodeId, int inputIndex) const;
+
+    /** @brief Assign a copied PointSet to an `input` node. */
+    bool setNodePoints(const std::string& id, PointSet* points);
+    /** @brief Assign copied spatial data to a spatial sample, filter, projection, or biome node. */
+    bool setNodeSpatial(const std::string& id, SpatialData* spatial);
+
+    /**
+     * @brief Bind named SpatialData for get.* / optional binding= parameters.
+     * External runtime slot: not serialized with serializeDefinition().
+     */
+    [[nodiscard]] Result<void> setBindingSpatial(const std::string& name, SpatialData* spatial);
+    /**
+     * @brief Bind named PointSet for get.points / get.actor.
+     * External runtime slot: not serialized with serializeDefinition().
+     */
+    [[nodiscard]] Result<void> setBindingPoints(const std::string& name, PointSet* points);
+    /** @brief Remove one named binding. */
+    [[nodiscard]] Result<void> clearBinding(const std::string& name);
+    /** @brief Remove every named binding. */
+    void clearBindings();
+    /** @brief Return the number of named bindings. */
+    int getBindingCount() const;
+    /** @brief Return a binding name by stable insertion index. */
+    std::string getBindingName(int index) const;
+    /** @brief Return `spatial`, `points`, or empty when the name is unbound. */
+    std::string getBindingType(const std::string& name) const;
+
+    /**
+     * @brief Build an inspect snapshot for a cached node output after execute.
+     * @param id Node identity.
+     * @param sampleLimit Maximum points to sample into sampleFloats; zero skips samples.
+     */
+    [[nodiscard]] Result<PointGraphInspectReport> inspectNode(const std::string& id, int sampleLimit = 0) const;
+
+    /** @brief Assign copied biome rules to a `biome.generate` node. */
+    bool setNodeBiomeRules(const std::string& id, BiomeRules* rules);
+    /** @brief Assign a copied shape grammar to a `grammar.generate` node. */
+    bool setNodeShapeGrammar(const std::string& id, ShapeGrammar* grammar);
+    /** @brief Sets the node float. */
+    bool setNodeFloat(const std::string& id, const std::string& key, float value);
+    /** @brief Sets the node int. */
+    bool setNodeInt(const std::string& id, const std::string& key, int value);
+    /** @brief Sets the node string. */
+    bool setNodeString(const std::string& id, const std::string& key, const std::string& value);
+    /** @brief Expose one reflected node parameter for per-instance overrides. */
+    bool exposeParameter(const std::string& name, const std::string& nodeId,
+                         const std::string& key);
+    /** @brief Return the number of exposed graph parameters. */
+    int         getParameterCount() const;
+    /** @brief Return an exposed parameter name by stable insertion index. */
+    std::string getParameterName(int index) const;
+    /** @brief Return the reflected kind of an exposed parameter. */
+    std::string getParameterKind(const std::string& name) const;
+    /** @brief Report whether an instance override is active. */
+    bool        hasParameterOverride(const std::string& name) const;
+    /** @brief Override an exposed floating-point parameter for this graph instance. */
+    bool        setParameterFloat(const std::string& name, float value);
+    /** @brief Override an exposed integer or Boolean parameter for this graph instance. */
+    bool        setParameterInt(const std::string& name, int value);
+    /** @brief Override an exposed string parameter for this graph instance. */
+    bool        setParameterString(const std::string& name, const std::string& value);
+    /** @brief Return the effective floating-point parameter value. */
+    float       getParameterFloat(const std::string& name, float fallback) const;
+    /** @brief Return the effective integer or Boolean parameter value. */
+    int         getParameterInt(const std::string& name, int fallback) const;
+    /** @brief Return the effective string parameter value. */
+    std::string getParameterString(const std::string& name, const std::string& fallback) const;
+    /** @brief Remove an instance override and restore the asset default. */
+    bool        clearParameterOverride(const std::string& name);
+    /**
+     * @brief Assign an immutable nested graph.
+     * @param inputNode Nested `input` node receiving this node's first input.
+     * @param outputNode Nested node returned by the subgraph.
+     */
+    bool setNodeSubgraph(const std::string& id, PointGraph* graph, const std::string& inputNode,
+                         const std::string& outputNode);
+
+    /**
+     * @brief Evaluate an output and return an independent owning point snapshot.
+     * @param outputId Output node identity.
+     * @return Owning points or structured node/path diagnostics; failure publishes no output.
+     * @thread Graph-owning thread only; not reentrant. Successful intermediate caches may survive failure.
+     * @ownership The value and diagnostics remain valid after graph mutation or destruction.
+     */
+    [[nodiscard]] Result<PointSet> executeResult(std::string_view outputId);
+    /**
+     * @brief Validate configured nodes and nested graphs without executing them.
+     * @return Structured topology/configuration diagnostics, independent of getError().
+     * @thread Graph-owning thread only; not reentrant. Does not mutate node results.
+     */
+    [[nodiscard]] Result<void> validateResult() const;
+    /** @brief Compatibility-only projection of executeResult; caller deletes the result, nullptr means failure. */
+    PointSet* execute(const std::string& outputId);
+    /** @brief Limit uncached nodes evaluated by one execute call; zero disables the limit. */
+    void setExecutionNodeBudget(int nodes);
+    /** @brief Returns the execution node budget. */
+    int  getExecutionNodeBudget() const;
+    /** @brief Limit points produced by any node; zero disables the limit. */
+    void setMaxNodeOutputPoints(int points);
+    /** @brief Return the per-node point output limit; zero means unlimited. */
+    int  getMaxNodeOutputPoints() const;
+    /** @brief Select `auto`, `gpu`, or `cpu` point execution; GPU failures fall back to CPU. */
+    bool setComputePolicy(const std::string& policy);
+    /** @brief Return the configured point compute policy. */
+    std::string getComputePolicy() const;
+    /** @brief Set the minimum point count for `auto` GPU dispatch. */
+    void setComputeMinimumPoints(int points);
+    /** @brief Return the minimum point count for automatic GPU dispatch. */
+    int getComputeMinimumPoints() const;
+    /** @brief Cancel subsequent execution until resetCancellation is called. */
+    void requestCancel();
+    /** @brief Resets cancellation. */
+    void resetCancellation();
+    /** @brief Was cancelled. */
+    bool wasCancelled() const;
+    /** @brief Compatibility-only bool projection of validateResult; diagnostics are rendered by getError(). */
+    bool validate();
+    /** @brief Render the last compatibility execute/validate or legacy authoring error; canonical Result calls do not
+     * update it. */
+    std::string getError() const;
+    /** @brief Clears cache. */
+    void        clearCache();
+    /** @brief Monotonic topology/parameter revision used by asset and preview caches. */
+    uint64_t    getRevision() const;
+    /** @brief Returns the execution count. */
+    int         getExecutionCount() const;
+    /** @brief Returns the cache hit count. */
+    int         getCacheHitCount() const;
+    /**
+     * @brief Return logical CPU/GPU segments in the execution plan compiled for the latest output.
+     * @return Segment count, or zero when no active valid plan exists.
+     * @thread Call on the graph-owning thread.
+     * @reentrant Not reentrant for this graph instance.
+     */
+    int getCompiledSegmentCount() const;
+    /**
+     * @brief Return how many execution plans this graph instance has compiled.
+     * @return Monotonic build count; parameter-only changes do not increase it.
+     * @thread Call on the graph-owning thread.
+     * @reentrant Not reentrant for this graph instance.
+     */
+    uint64_t getExecutionPlanBuildCount() const;
+
+    /** @brief Returns the metric count. */
+    int         getMetricCount() const;
+    /** @brief Returns the metric node id. */
+    std::string getMetricNodeId(int index) const;
+    /** @brief Returns the metric output count. */
+    int         getMetricOutputCount(int index) const;
+    /** @brief Returns the metric milliseconds. */
+    float       getMetricMilliseconds(int index) const;
+    /** @brief True when metric cache hit. */
+    bool        isMetricCacheHit(int index) const;
+    /** @brief Return `cpu`, `vulkan`, or `webgpu` for one evaluated node. */
+    std::string getMetricBackend(int index) const;
+    /** @brief Return why the latest eligible GPU node used the CPU fallback. */
+    std::string getComputeFallbackReason() const;
+    /** @brief Return successful point-compute uploads for this graph executor. */
+    uint64_t getComputeUploadCount() const;
+    /** @brief Return successful point-compute dispatches for this graph executor. */
+    uint64_t getComputeDispatchCount() const;
+    /** @brief Return successful point-compute readbacks for this graph executor. */
+    uint64_t getComputeReadbackCount() const;
+    /** @brief Return executions that reused allocated point-compute buffers. */
+    uint64_t getComputeBufferReuseCount() const;
+    /** @brief Return peak bytes reserved in each reusable point-compute buffer. */
+    uint64_t getComputePeakBufferBytes() const;
+    /** @brief Return logical transforms in the latest successful fused dispatch. */
+    int getLastFusedTransformCount() const;
+    /** @brief Return cached output bounds for editor/debug visualization. */
+    float getMetricMinX(int index) const;
+    /** @brief Return the cached minimum output Y coordinate. */
+    float getMetricMinY(int index) const;
+    /** @brief Return the cached minimum output Z coordinate. */
+    float getMetricMinZ(int index) const;
+    /** @brief Return the cached maximum output X coordinate. */
+    float getMetricMaxX(int index) const;
+    /** @brief Return the cached maximum output Y coordinate. */
+    float getMetricMaxY(int index) const;
+    /** @brief Return the cached maximum output Z coordinate. */
+    float getMetricMaxZ(int index) const;
+    /** @brief Return the mean point density of one node output. */
+    float getMetricAverageDensity(int index) const;
+    /** @brief Copy the cached/debug output of a node after execution. */
+    PointSet* getNodeOutput(const std::string& id) const;
+    /** @brief Debug report. */
+    std::string debugReport() const;
+    /**
+     * @brief Serialize graph topology, parameters and nested graphs.
+     *
+     * Runtime PointSet, SpatialData, BiomeRules and ShapeGrammar values are
+     * external slots and are not embedded; callers rebind them after loading.
+     */
+    std::string serializeDefinition() const;
+    /** @brief Transactionally replace this graph from serializeDefinition output. */
+    bool deserializeDefinition(const std::string& definition);
+    /** @brief Create an independent runtime instance without external inputs or overrides. */
+    PointGraph* instantiate() const;
+
+    /** @brief Returns the operation count. */
+    static int         getOperationCount();
+    /** @brief Returns the operation id. */
+    static std::string getOperationId(int index);
+    /** @brief Returns the operation input count. */
+    static int         getOperationInputCount(const std::string& operation);
+    /** @brief Returns the operation param count. */
+    static int         getOperationParamCount(const std::string& operation);
+    /** @brief Returns the operation param key. */
+    static std::string getOperationParamKey(const std::string& operation, int index);
+    /** @brief Returns the operation param kind. */
+    static std::string getOperationParamKind(const std::string& operation, int index);
+    /** @brief Returns the operation param default. */
+    static std::string getOperationParamDefault(const std::string& operation, int index);
+
+private:
+    struct Node {
+        std::string id;
+        std::string operation;
+        std::string inputs[2];
+        std::unordered_map<std::string, float>       floats;
+        std::unordered_map<std::string, int>         ints;
+        std::unordered_map<std::string, std::string> strings;
+        PointSet                                    points;
+        bool                                        hasPoints = false;
+        std::shared_ptr<SpatialData>                 spatial;
+        std::shared_ptr<BiomeRules>                  biomeRules;
+        std::shared_ptr<ShapeGrammar>                shapeGrammar;
+        std::shared_ptr<PointGraph>                  subgraph;
+        std::string                                  subgraphInput;
+        std::string                                  subgraphOutput;
+        PointSet                                    cache;
+        PointGraphNodeMetric                        cacheMetric;
+        bool                                        cacheValid = false;
+        bool                                         deferredTransformValid = false;
+    };
+
+    struct GraphBinding {
+        std::shared_ptr<SpatialData> spatial;
+        std::shared_ptr<PointSet>    points;
+        bool                         isSpatial = false;
+    };
+    struct ParameterBinding {
+        std::string nodeId;
+        std::string key;
+        std::string kind;
+    };
+    struct ExecutionSegment {
+        std::vector<std::string> nodes;
+        bool                     gpuTransformChain = false;
+    };
+    struct ExecutionPlan {
+        std::vector<std::string>                     topologicalOrder;
+        std::vector<ExecutionSegment>                segments;
+        std::unordered_map<std::string, std::size_t> segmentByOutput;
+    };
+
+    [[nodiscard]] ResultRef<const PointSet>           evaluate(const std::string&                    id,
+                                                               std::unordered_map<std::string, int>& states);
+    [[nodiscard]] Result<OptionalRef<const PointSet>> evaluateTransformSegment(
+        const std::string& id, std::unordered_map<std::string, int>& states);
+    PointSet*       materializeNodeOutput(const std::string& id) const;
+    [[nodiscard]] Result<void> validateNode(const std::string& id, std::unordered_map<std::string, int>& states) const;
+    void            invalidate();
+    void            invalidateFrom(const std::string& id);
+    void            invalidateTopology(const std::string& changedNode);
+    [[nodiscard]] Result<void> compileExecutionPlan(const std::string& outputId);
+    float           floatValue(const Node& node, const std::string& key, float fallback) const;
+    int             intValue(const Node& node, const std::string& key, int fallback) const;
+    std::string     stringValue(const Node& node, const std::string& key,
+                                const std::string& fallback = {}) const;
+    [[nodiscard]] Result<std::shared_ptr<SpatialData>> resolveNodeSpatial(const Node& node) const;
+    [[nodiscard]] Result<std::shared_ptr<PointSet>>    resolveBindingPoints(const std::string& name) const;
+
+
+
+    std::unordered_map<std::string, GraphBinding> bindings_;
+    std::vector<std::string>                      bindingOrder_;
+    std::unordered_map<std::string, Node>             nodes_;
+    std::vector<std::string>                          nodeOrder_;
+    std::unordered_map<std::string, ParameterBinding> parameters_;
+    std::vector<std::string>                          parameterOrder_;
+    std::unordered_map<std::string, float>            floatOverrides_;
+    std::unordered_map<std::string, int>              intOverrides_;
+    std::unordered_map<std::string, std::string>      stringOverrides_;
+    std::vector<PointGraphNodeMetric>                 metrics_;
+    std::string                                       error_;
+    int                                               executionCount_      = 0;
+    int                                               cacheHitCount_       = 0;
+    uint64_t                                          revision_            = 0;
+    uint64_t                                                              executionPlanBuildCount_ = 0;
+    std::shared_ptr<const ExecutionPlan>                                  executionPlan_;
+    std::unordered_map<std::string, std::shared_ptr<const ExecutionPlan>> executionPlans_;
+    std::vector<std::string>                                              executionPlanRecency_;
+    int                                               executionNodeBudget_ = 0;
+    int                                               maxNodeOutputPoints_ = 0;
+    std::string                                       computePolicy_        = "auto";
+    int                                               computeMinimumPoints_ = 1024;
+    std::string                                       computeFallbackReason_;
+    std::shared_ptr<PointCompute>                     pointCompute_;
+    int                                               evaluatedNodes_      = 0;
+    bool                                              cancelRequested_     = false;
+    bool                                              lastCancelled_       = false;
+};
+
+}  // namespace eve::procgen

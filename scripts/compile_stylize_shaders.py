@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compile stylize GLSL fragments to SPIR-V C++ include arrays."""
+"""Compile stylize GLSL shaders to SPIR-V C++ include arrays."""
 
 from __future__ import annotations
 
@@ -7,17 +7,39 @@ import struct
 import subprocess
 import sys
 from pathlib import Path
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parents[1]
 SHADER_DIR = ROOT / "src" / "modules" / "stylize" / "shaders"
 
 FRAGS = [
+    "impasto_mesh.frag",
+    "ysa_mesh.frag",
+    "anime_mesh.frag",
     "cartoon_post.frag",
     "watercolor_post.frag",
     "ink_post.frag",
     "pixel_post.frag",
     "ink_mesh.frag",
     "xray_mesh.frag",
+    # Ported effect / material shaders (Unity / Godot style).
+    "rim_mesh.frag",
+    "dissolve_mesh.frag",
+    "hologram_mesh.frag",
+    "snow_mesh.frag",
+    "slash_mesh.frag",
+    "ember_mesh.frag",
+    "aura_mesh.frag",
+    "vignette_post.frag",
+    "chromatic_post.frag",
+    "grain_post.frag",
+]
+
+# Dedicated vertex sources owned by the stylize module. Materials that reuse
+# graphics/mesh3d_toon.vert (ink, ported effect shaders, ...) are not listed.
+VERTS = [
+    "impasto_mesh.vert",
+    "stylize_mesh.vert",
 ]
 
 
@@ -44,9 +66,9 @@ def spv_to_inc(spv_path: Path, array_name: str, out_path: Path) -> None:
     print(f"wrote {out_path.relative_to(ROOT)} ({len(words)} words)")
 
 
-def compile_frag(src: Path) -> Path:
+def compile_stage(src: Path, stage: str) -> Path:
     out = src.with_suffix(".spv")
-    cmd = ["glslc", "-fshader-stage=frag", str(src), "-o", str(out)]
+    cmd = ["glslc", f"-fshader-stage={stage}", f"-I{SHADER_DIR}", str(src), "-o", str(out)]
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         raise SystemExit(f"glslc failed for {src.name}:\n{r.stderr or r.stdout}")
@@ -60,14 +82,24 @@ def main() -> int:
         src = SHADER_DIR / name
         if not src.is_file():
             raise SystemExit(f"missing {src}")
-        spv = compile_frag(src)
+        spv = compile_stage(src, "frag")
         stem = src.stem  # e.g. cartoon_post
         array = f"{stem}_frag_spv"
         spv_to_inc(spv, array, SHADER_DIR / f"{stem}_frag_spv.inc")
+        spv.unlink(missing_ok=True)
+    for name in VERTS:
+        src = SHADER_DIR / name
+        if not src.is_file():
+            raise SystemExit(f"missing {src}")
+        spv = compile_stage(src, "vert")
+        stem = src.stem
+        array = f"{stem}_vert_spv"
+        spv_to_inc(spv, array, SHADER_DIR / f"{stem}_vert_spv.inc")
         spv.unlink(missing_ok=True)
     # Mesh ink reuses mesh3d_toon.vert SPIR-V from graphics; no vert compile here.
     return 0
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

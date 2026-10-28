@@ -2,16 +2,11 @@
 'use strict';
 
 /**
- * VS Code debugger extension for EVEngine.
+ * VS Code extension for EVEngine: EveScript language server + debugger.
  *
- * Architecture (same pattern as microsoft/vscode-mock-debug):
- *  - package.json contributes type `eve` + breakpoints for `.nut`
- *  - DebugConfigurationProvider fills / validates launch.json
+ *  - package.json contributes language `nut`, TextMate grammar, and type `eve`
+ *  - Language service spawns `eve language-server --root` over stdio
  *  - DebugAdapterDescriptorFactory launches `eve run --debug --dap-port`
- *    and returns DebugAdapterServer so VS Code speaks DAP to the engine
- *
- * Standard VS Code debug keys then work against the session:
- *  F5 continue · F10 step over · F11 step into · F8 step frame · F6 pause
  */
 
 const vscode = require('vscode');
@@ -19,6 +14,8 @@ const { spawn } = require('child_process');
 const fs = require('fs');
 const net = require('net');
 const path = require('path');
+const { resolveEvePath } = require('./lib/evePath');
+const { activateLanguageService } = require('./lib/language');
 
 /** @type {import('child_process').ChildProcess | null} */
 let launched = null;
@@ -26,11 +23,100 @@ let launched = null;
 /** @type {vscode.OutputChannel | null} */
 let output = null;
 
+/** @type {vscode.DiagnosticCollection | null} */
+let sliceDiagnostics = null;
+
 function getOutput() {
   if (!output) {
     output = vscode.window.createOutputChannel('EVEngine Debug');
   }
   return output;
+}
+
+function getSliceDiagnostics() {
+  if (!sliceDiagnostics) {
+    sliceDiagnostics = vscode.languages.createDiagnosticCollection('eve-error-slice');
+  }
+  return sliceDiagnostics;
+}
+
+/**
+ * Show DevTool's last dynamic backward slice (DAP custom request `errorSlice`).
+ * @param {any} body
+ */
+async function presentErrorSlice(body) {
+  const report = String(body?.report || '');
+  const error = String(body?.error || '');
+  const locations = Array.isArray(body?.locations) ? body.locations : [];
+  const ch = getOutput();
+  ch.appendLine(report || error || '(empty error slice)');
+  ch.show(true);
+
+  const diags = getSliceDiagnostics();
+  diags.clear();
+  /** @type {Map<string, vscode.Diagnostic[]>} */
+  const byUri = new Map();
+  /** @type {vscode.Location[]} */
+  const peekLocs = [];
+
+  for (const loc of locations) {
+    const filePath = String(loc.path || loc.name || '');
+    const line = Math.max(1, Number(loc.line) || 1);
+    if (!filePath) continue;
+    const uri = vscode.Uri.file(filePath);
+    const range = new vscode.Range(line - 1, 0, line - 1, 120);
+    peekLocs.push(new vscode.Location(uri, range));
+    const key = uri.toString();
+    const list = byUri.get(key) || [];
+    const d = new vscode.Diagnostic(range, error || 'Error slice', vscode.DiagnosticSeverity.Error);
+    d.source = 'eve-error-slice';
+    list.push(d);
+    byUri.set(key, list);
+  }
+  for (const [key, list] of byUri) {
+    diags.set(vscode.Uri.parse(key), list);
+  }
+
+  if (peekLocs.length === 0) {
+    if (!report && !error) {
+      void vscode.window.showInformationMessage(
+        'No error slice yet. Trigger a script error while debugging with --debug.'
+      );
+    }
+    return;
+  }
+
+  const first = peekLocs[0];
+  await vscode.window.showTextDocument(first.uri, {
+    selection: first.range,
+    preview: true,
+  });
+  if (peekLocs.length > 1) {
+    await vscode.commands.executeCommand(
+      'editor.action.peekLocations',
+      first.uri,
+      first.range.start,
+      peekLocs,
+      'peek'
+    );
+  }
+}
+
+async function showErrorSlice() {
+  const session = vscode.debug.activeDebugSession;
+  if (!session || session.type !== 'eve') {
+    void vscode.window.showInformationMessage(
+      'Start an EVEngine debug session first (eve run --debug).'
+    );
+    return;
+  }
+  try {
+    const body = await session.customRequest('errorSlice', {});
+    await presentErrorSlice(body);
+  } catch (err) {
+    const message = err && err.message ? err.message : String(err);
+    void vscode.window.showErrorMessage(`Error slice failed: ${message}`);
+  }
 }
 
 /**
@@ -58,46 +144,6 @@ function waitForPort(host, port, timeoutMs) {
     };
     tryOnce();
   });
-}
-
-/**
- * Resolve the eve executable from config or common build trees.
- * @param {string | undefined} configured
- * @param {string | undefined} workspaceRoot
- * @returns {string}
- */
-function resolveEvePath(configured, workspaceRoot) {
-  if (configured && configured !== 'eve' && fs.existsSync(configured)) {
-    return configured;
-  }
-  if (!workspaceRoot) {
-    return configured || 'eve';
-  }
-
-  const candidates = [];
-  if (process.platform === 'darwin') {
-    candidates.push(
-      path.join(workspaceRoot, 'build/macosx-debug/src/engine/eve'),
-      path.join(workspaceRoot, 'build/macosx/src/engine/eve')
-    );
-  } else if (process.platform === 'win32') {
-    candidates.push(
-      path.join(workspaceRoot, 'build/win32-debug/src/engine/Debug/eve.exe'),
-      path.join(workspaceRoot, 'build/win32-debug/src/engine/eve.exe'),
-      path.join(workspaceRoot, 'build/win32/src/engine/Release/eve.exe'),
-      path.join(workspaceRoot, 'build/win32/src/engine/eve.exe')
-    );
-  } else {
-    candidates.push(
-      path.join(workspaceRoot, 'build/linux-debug/src/engine/eve'),
-      path.join(workspaceRoot, 'build/linux/src/engine/eve')
-    );
-  }
-
-  for (const c of candidates) {
-    if (fs.existsSync(c)) return c;
-  }
-  return configured || 'eve';
 }
 
 /**
@@ -352,6 +398,8 @@ function killLaunched() {
  */
 function activate(context) {
   context.subscriptions.push(getOutput());
+  context.subscriptions.push(getSliceDiagnostics());
+  activateLanguageService(context);
 
   const provider = new EveConfigurationProvider();
   context.subscriptions.push(
@@ -390,15 +438,25 @@ function activate(context) {
   );
   context.subscriptions.push(factory);
 
-  // Optional DAP wire log (enable with `"trace": true` in launch.json).
+  // DAP wire log (`"trace": true`) plus auto-open of the last error slice.
   context.subscriptions.push(
     vscode.debug.registerDebugAdapterTrackerFactory('eve', {
       createDebugAdapterTracker(session) {
-        if (!session.configuration.trace) return {};
         const ch = getOutput();
+        const trace = !!session.configuration.trace;
         return {
-          onWillReceiveMessage: (m) => ch.appendLine(`→ ${JSON.stringify(m)}`),
-          onDidSendMessage: (m) => ch.appendLine(`← ${JSON.stringify(m)}`),
+          onWillReceiveMessage: (m) => {
+            if (trace) ch.appendLine(`→ ${JSON.stringify(m)}`);
+          },
+          onDidSendMessage: (m) => {
+            if (trace) ch.appendLine(`← ${JSON.stringify(m)}`);
+            if (m && m.type === 'event' && m.event === 'stopped' && m.body?.reason === 'exception') {
+              void session
+                .customRequest('errorSlice', {})
+                .then((body) => presentErrorSlice(body))
+                .catch(() => {});
+            }
+          },
         };
       },
     })
@@ -467,13 +525,19 @@ function activate(context) {
 
   context.subscriptions.push(
     vscode.debug.onDidTerminateDebugSession((session) => {
-      if (session.type === 'eve') killLaunched();
+      if (session.type === 'eve') {
+        killLaunched();
+        getSliceDiagnostics().clear();
+      }
     })
   );
 
   // VARIABLES view context menu: "查看实例" opens the object inspector.
   context.subscriptions.push(
     vscode.commands.registerCommand('eve-debug.inspectVariable', inspectVariable)
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand('eve-debug.showErrorSlice', showErrorSlice)
   );
 }
 
@@ -528,7 +592,10 @@ class EveConfigurationProvider {
     const workspaceRoot = folder?.uri.fsPath || vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 
     if (config.request === 'launch') {
-      config.evePath = resolveEvePath(config.evePath, workspaceRoot);
+      config.evePath = resolveEvePath(
+        config.evePath || vscode.workspace.getConfiguration('eve').get('executable'),
+        workspaceRoot
+      );
       if (!config.evePath || (config.evePath !== 'eve' && !fs.existsSync(config.evePath))) {
         // Still allow bare `eve` on PATH.
         if (config.evePath !== 'eve') {

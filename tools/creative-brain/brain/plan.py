@@ -7,7 +7,6 @@ resource-agent handoff point explicit for when assets are missing.
 
 from __future__ import annotations
 
-import json
 import os
 from pathlib import Path
 from typing import Optional, Tuple
@@ -15,7 +14,7 @@ from typing import Optional, Tuple
 from brain import intent, layout
 from brain.assets import Catalog
 from brain.resource_proto import ResourceBroker
-from brain.schema import AssetRef, GenerationPlan, SceneConfig
+from brain.schema import GenerationPlan, SceneConfig
 
 DEFAULT_CATALOG = Path(__file__).resolve().parent.parent / "catalogs" / "assets.example.json"
 

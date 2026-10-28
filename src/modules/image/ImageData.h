@@ -1,33 +1,47 @@
 
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Data.h"
 #include "common/Resource.h"
+#include "common/Result.h"
 
 #include "medialoader/image/pixelformat.h"
 #include "medialoader/image/floattypes.h"
 #include "medialoader/image/Color.h"
 #include "medialoader/image/FormatHandler.h"
 
-#include "filesystem/FileData.h"
-
 #include <cstdint>
 
 namespace eve
 {
+namespace filesystem {
+class FileData;
+}
 namespace image
 {
+
+/** @brief Sampling modes used by Pcg-compatible in-place texture scaling. */
+enum class ImageScaleFilter { Point, Bilinear };
+
+/** @brief Owning receipt for one UV-space raster paint operation. */
+struct UvPaintReceipt {
+	int centerX = 0;
+	int centerY = 0;
+	int changedPixelCount = 0;
+};
 
 /**
  * @brief Represents raw pixel data.
  **/
-class ImageData : public Resource
-{
+class EVENGINE_API_PLATFORM ImageData : public Resource {
 public:
 	using float16 = medialoader::float16;
 	using Colorf = medialoader::Colorf;
 	using FormatHandler = medialoader::FormatHandler;
 
+	/** @brief Pixel public API. */
 	union Pixel
 	{
 		uint8_t   rgba8[4];
@@ -80,6 +94,18 @@ public:
 	ImageData *rotate(float radians, std::string filter = "nearest", bool expand = true) const;
 
 	/**
+	 * @brief Resize this image with Pcg ScaleTexture's exact point or bilinear coordinate mapping.
+	 * @param newWidth Positive destination width.
+	 * @param newHeight Positive destination height.
+	 * @param filter Point uses floor(sourceSize/destinationSize * coordinate). Bilinear uses
+	 * (sourceSize-1)/destinationSize and therefore intentionally does not sample the final source edge.
+	 * @return Number of destination pixels written, or InvalidArgument with this image unchanged.
+	 * @thread Affine to this mutable ImageData; callers provide synchronization.
+	 * @reentrancy Does not invoke callbacks or retain source storage.
+	 */
+	[[nodiscard]] eve::Result<int> scalePcg(int newWidth, int newHeight, ImageScaleFilter filter);
+
+	/**
 	 * @brief Checks whether a position is inside this ImageData. Useful for checking bounds.
 	 * @param x The position along the x-axis.
 	 * @param y The position along the y-axis.
@@ -93,6 +119,22 @@ public:
 	 * @param p The color to use for the given location.
 	 **/
 	void setPixel(int x, int y, const Colorf &p);
+
+	/**
+	 * @brief Paint a filled circular brush centered at normalized UV coordinates.
+	 * @param u Horizontal normalized texture coordinate; wrapping is optional.
+	 * @param v Vertical normalized texture coordinate, converted to top-left image Y as (1-v).
+	 * @param radiusPixels Non-negative brush radius in pixels; zero paints one pixel.
+	 * @param color Replacement color.
+	 * @param wrapU Whether the brush wraps across the left/right seam.
+	 * @param wrapV Whether the brush wraps across the top/bottom seam.
+	 * @return Paint receipt or a structured failure; mutation occurs only after validation.
+	 * @thread Affine to this mutable ImageData; callers provide synchronization.
+	 * @reentrancy Does not invoke callbacks.
+	 */
+	[[nodiscard]] eve::Result<UvPaintReceipt> paintCircleUv(float u, float v, float radiusPixels,
+	                                                        const Colorf &color, bool wrapU = false,
+	                                                        bool wrapV = false);
 
 	/**
 	 * @brief Gets the pixel at location (x,y).
@@ -115,6 +157,12 @@ public:
 	void *getData() const;
 	size_t getSize() const;
 	bool isSRGB() const;
+
+	/**
+	 * @brief Replace this instance's pixels with `replacement`'s (cache reload).
+	 * The replacement is drained; its destructor releases the old pixels.
+	 */
+	void adopt(eve::Resource &replacement) override;
 
 	int getWidth() const;
 	int getHeight() const;
@@ -156,7 +204,7 @@ private:
 	PixelSetFunction pixelSetFunction;
 	PixelGetFunction pixelGetFunction;
 
-}; // ImageData
+};  // ImageData
 
 } // image
 } // eve

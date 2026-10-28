@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "workload": "pcg-four-transform-million-point",
+  "pointCount": 1000000,
+  "logicalOperationCount": 4,
+  "warmupCount": 5,
+  "sampleCount": 20,
+  "requiredTransfers": {
+    "uploadsPerExecution": 1,
+    "dispatchesPerExecution": 1,
+    "readbacksPerExecution": 1
+  },
+  "requiredSpeedups": {
+    "overCpu": 2.0,
+    "overFourIsolatedGpuRoundTrips": 1.5
+  },
+  "measurement": "median",
+  "run": "EVENGINE_PCG_MILLION_BENCHMARK=1 make test/linux-debug FILTER=gpgpu.procgen.millionPointAcceptanceBenchmark"
+}

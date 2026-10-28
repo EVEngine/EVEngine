@@ -1,7 +1,12 @@
 #pragma once
+#include "common/Export.h"
 
+
+#include "common/BorrowedRef.h"
 #include "ui/UIHost.h"
 
+#include <functional>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,10 +20,12 @@ class UIBackend;
 
 namespace eve::ui {
 
+/** @brief UIEvent public API. */
 struct UIEvent {
-    UIHost *host = nullptr;
+    UIHostHandle host{};
     std::string hostName;
     std::string nodeId;
+    int nodeIndex = -1;
     std::string kind;  // "click" | "toggle" | "value" | "text"
     uint32_t handlerIndex = 0;
     bool toggleValue = false;
@@ -39,7 +46,25 @@ struct UIChange {
     std::string kind;
 };
 
+/** @brief Origin of an owning desktop drag-and-drop payload snapshot. */
+enum class DragDropOrigin : uint8_t { Internal = 0, OperatingSystemFile };
+
+/** @brief Build-target availability of retained drag-and-drop. */
+enum class DragDropSupport : uint8_t { Supported = 0, UnsupportedPlatform };
+
+/** @brief One completed desktop drop with no borrowed node or platform pointers. */
+struct UIDrop {
+    DragDropOrigin origin = DragDropOrigin::Internal;
+    std::string sourceHostName;
+    std::string sourceNodeId;
+    std::string targetHostName;
+    std::string targetNodeId;
+    std::string payloadType;
+    std::string payloadText;
+};
+
 /** Per-frame UI statistics (P2-3 profiler counters). */
+/** @brief UIStats public API. */
 struct UIStats {
     int hostCount = 0;
     int nodeCount = 0;
@@ -49,9 +74,10 @@ struct UIStats {
 
 /**
  * Per-frame state of one embedded Viewport widget: its offscreen render target
- * (owned by Graphics) and the input routed from the widget rect (local mouse,
+ * owned by Graphics, and the input routed from the widget rect (local mouse,
  * drag delta, wheel). Filled during UISystem::render().
  */
+/** @brief ViewportState public API. */
 struct ViewportState {
     std::string key;                 // "hostName/nodeId"
     graphics::Canvas *canvas = nullptr;
@@ -67,30 +93,82 @@ struct ViewportState {
     float wheel = 0.f;
 };
 
-class UISystem {
+/** @brief EVENGINE_API_WORLD public API. */
+class EVENGINE_API_WORLD UISystem {
 public:
-    /** Backend used for texture size lookups while rendering (set by UI). */
-    static void setBackend(UIBackend *backend);
-    static UIBackend *backend();
+    /** @brief Sets the borrowed backend used for the current UI/render lifetime. */
+    static void setBackend(UIBackend &backend);
+    /** @brief Clears the backend association before the backend is shut down. */
+    static void clearBackend() noexcept;
+    /**
+     * @brief Returns the configured backend for the current synchronous operation.
+     * @return A borrowed reference when configured, or empty when unavailable.
+     * @ownership UISystem does not own the backend.
+     * @lifetime The reference is valid until backend replacement or teardown; do not retain it.
+     * @thread Call on the UI/render thread.
+     */
+    [[nodiscard]] static eve::OptionalRef<UIBackend> backend();
     static const UIStats &stats();
-    /** Viewport state for "hostName/nodeId"; nullptr if no such viewport. */
-    static ViewportState *viewportState(const std::string &hostName, const std::string &nodeId);
-    /** Create/refresh the offscreen canvas for a viewport key. */
-    static ViewportState *ensureViewport(const std::string &key, int w, int h);
+    /**
+     * @brief Returns viewport state for a host/node key when it exists.
+     * @return A borrowed reference for this synchronous operation, or empty when absent.
+     * @ownership UISystem owns the state.
+     * @lifetime Valid until viewport removal, refresh, or render-state reset; do not retain it.
+     * @thread Call on the UI/render thread.
+     */
+    [[nodiscard]] static eve::OptionalRef<ViewportState> viewportState(const std::string &hostName,
+                                                                       const std::string &nodeId);
+    /**
+     * @brief Creates or refreshes offscreen state for a viewport key.
+     * @return A borrowed state reference, or a structured failure for invalid dimensions/key.
+     * @ownership UISystem owns the state and Graphics owns its Canvas.
+     * @lifetime Valid until viewport removal, refresh, or render-state reset; do not retain it.
+     * @thread Call on the UI/render thread.
+     */
+    [[nodiscard]] static eve::ResultRef<ViewportState> ensureViewport(const std::string &key, int w, int h);
 
     /** @brief Walk all UIHost (+ subclasses) via ECS View. */
     static void render();
 
+    /** @brief Pending events. */
     static std::vector<UIEvent> &pendingEvents();
+    /** @brief Dispatches events. */
     static void dispatchEvents();
 
-    /** @brief Lookup by Meta.name across the UIHost View. */
-    static UIHost *findHost(const std::string &name);
-    /** @brief First host with Meta.ownerId == ownerId, or nullptr. */
-    static UIHost *findHostByOwner(uint32_t ownerId);
+    /**
+     * @brief Lookup by Meta.name across the UIHost View.
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UISystem does not own the host; callers must not delete it.
+     * @lifetime Valid until host destruction or ECS structural mutation.
+     * @thread Call on the UI thread.
+     * @reentrancy The lookup invokes no callbacks and is invalid across ECS mutation.
+     */
+    [[nodiscard]] static UIHostHandle findHost(const std::string &name);
+    /**
+     * @brief Find the first host with Meta.ownerId equal to ownerId, or null.
+     * @return Borrowed nullable host owned by the UI ECS world.
+     * @ownership UISystem does not own the host; callers must not delete it.
+     * @lifetime Valid until host destruction or ECS structural mutation.
+     * @thread Call on the UI thread.
+     * @reentrancy The lookup invokes no callbacks and is invalid across ECS mutation.
+     */
+    [[nodiscard]] static UIHostHandle findHostByOwner(uint32_t ownerId);
 
     static std::vector<UIClick> &clickQueue();
+    /** @brief Change queue. */
     static std::vector<UIChange> &changeQueue();
+    /** @brief Returns retained drag-and-drop availability for this build target. */
+    [[nodiscard]] static DragDropSupport dragDropSupport() noexcept;
+    /**
+     * @brief Copies an OS file-drop path into UI-owned pending state.
+     * @param path UTF-8 path copied synchronously; the caller retains no lifetime obligation.
+     * @thread Call on the platform/UI thread.
+     */
+    static void enqueuePlatformFileDrop(const std::string &path);
+    /** @brief Returns the owning completed-drop queue. */
+    static std::vector<UIDrop> &dropQueue();
+    /** @brief Pops the oldest completed drop, or returns empty when none exists. */
+    [[nodiscard]] static std::optional<UIDrop> consumeDrop();
     /** @brief Pop next click as "name/node"; empty if none. */
     static std::string consumeClick();
     /** @brief Pop next click for a specific host; returns node id only (or ""). */

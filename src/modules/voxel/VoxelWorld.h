@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "voxel/Chunk.h"
 #include "voxel/CubeTypeRegistry.h"
@@ -6,8 +8,7 @@
 #include "voxel/Frustum.h"
 #include "voxel/VoxelPack.h"
 
-#include "procgen/heightmap/TerrainSampler.h"
-
+#include "procgen/heightmap/TerrainStreaming.h"
 #include <cmath>
 #include <cstdint>
 #include <functional>
@@ -15,6 +16,10 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+namespace eve::procgen {
+class TerrainSampler;
+}
 
 namespace eve::graphics {
 class Graphics;
@@ -25,12 +30,17 @@ namespace eve::data {
 class ByteData;
 }  // namespace eve::data
 
+namespace eve::thread {
+class Job;
+}
+
 namespace eve::voxel {
 
 /** @brief Result of a streaming pass. */
 struct StreamStats {
     int created = 0;  // chunks allocated + filled this pass
     int evicted = 0;  // chunks unloaded outside the radius
+    int pending = 0;  // still missing inside the radius after this pass
 };
 
 /** @brief One draw batch: all packed rects of one face direction for one chunk. */
@@ -47,19 +57,32 @@ struct DrawBatch {
  * Meshing is neighbor-aware (cross-chunk seam culling), parallel-capable and
  * script-friendly via getVisible getters and raycast helpers.
  */
-class VoxelWorld {
+class EVENGINE_API_DOMAINS VoxelWorld {
 public:
-    VoxelWorld() = default;
-    explicit VoxelWorld(const CubeTypeRegistry &types) : types_(types) {}
+    /** @brief Voxel world. */
+    VoxelWorld();
+    /** @brief Voxel world. */
+    ~VoxelWorld();
+    /** @brief Voxel world. */
+    explicit VoxelWorld(const CubeTypeRegistry &types);
 
+    /** @brief Returns the or create chunk. */
     Chunk *getOrCreateChunk(int cx, int cy, int cz);
+    /** @brief Returns the chunk. */
     Chunk *getChunk(int cx, int cy, int cz);
+    /** @brief Returns the chunk. */
     const Chunk *getChunk(int cx, int cy, int cz) const;
+    /** @brief True when chunk. */
     bool hasChunk(int cx, int cy, int cz) const;
+    /** @brief Removes chunk. */
     void removeChunk(int cx, int cy, int cz);
+    /** @brief Clears . */
     void clear();
 
+    /** @brief Returns the chunk count. */
     int getChunkCount() const { return int(chunks_.size()); }
+    /** @brief Monotonic content revision incremented by voxel/chunk mutations. */
+    uint64_t getRevision() const { return revision_; }
 
     /**
      * @brief Streaming eviction: drop chunks whose center is farther than
@@ -69,43 +92,70 @@ public:
     int unloadChunksOutside(int centerX, int centerY, int centerZ, int radiusChunks);
 
     /**
-     * @brief Player-centered streaming: evict chunks outside `radiusChunks`, then
-     * allocate + fill + mesh missing chunks inside it (sphere, chunk coords).
+     * @brief Extra chunk radius kept after leaving the stream sphere.
+     * `streamAround` still creates only inside `radiusChunks`, but does not
+     * unload or drop in-flight jobs until distance exceeds radius plus this value.
+     * 0 (default) matches the old immediately-evict behaviour.
+     */
+    void setStreamCacheChunks(int extraChunks);
+    /** @brief Returns the stream cache chunks. */
+    int getStreamCacheChunks() const { return streamCacheChunks_; }
+
+    /**
+     * @brief Player-centered streaming: fill missing chunks inside `radiusChunks`,
+     * unload only past radius + `getStreamCacheChunks()` (hysteresis cache).
      * `generator` is called for each new chunk (chunk, cx, cy, cz); when null
      * the stored terrain sampler (procgen::TerrainSampler) is used if enabled,
      * otherwise chunks stay empty.
      * Radius < 0 is a no-op.
+     * @param maxCreates Maximum new chunks to *start or harvest* this call; nearest first.
+     *                   0 means unlimited synchronous fill (tests / one-shot).
+     *                   >0 runs terrain fill+mesh on JobSystem workers; this call
+     *                   only enqueues work and inserts chunks that are already
+     *                   ready, so eve_update stays off the generation cost.
      */
     StreamStats streamAround(int centerX, int centerY, int centerZ, int radiusChunks,
-                             const std::function<void(Chunk &, int, int, int)> &generator = {});
+                             /** @brief Void. */
+                             const std::function<void(Chunk &, int, int, int)> &generator = {},
+                             int maxCreates = 0);
 
     /**
      * @brief Configure the built-in terrain generator used by streamAround(). The
      * sampling itself lives in procgen::TerrainSampler (deterministic Perlin
      * fBm); voxel only adapts it to 32³ chunk filling.
      */
-    void setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone,
-                          float baseHeight, float amplitude, float scale) {
-        terrainSampler_.setSeed(seed);
-        terrainSampler_.setBase(0.f);
-        terrainSampler_.setAmplitude(1.f);
-        terrainSampler_.setClamp(true, 0.f, 1.f);
-        terrainSampler_.setFrequency(scale > 0.f ? scale : 1.f / 32.f);
-        terrainTop_ = top;
-        terrainSub_ = sub;
-        terrainStone_ = stone;
-        terrainBase_ = baseHeight;
-        terrainAmplitude_ = amplitude < 0.f ? 0.f : amplitude;
-        terrainEnabled_ = true;
-    }
-    void disableTerrain() { terrainEnabled_ = false; }
-    bool terrainEnabled() const { return terrainEnabled_; }
+    void setTerrainParams(uint32_t seed, uint8_t top, uint8_t sub, uint8_t stone, float baseHeight, float amplitude,
+                          float scale);
+
+    /**
+     * @brief 细粒度地形参数配置（脚本用）。key 支持：
+     *   seed/top/sub/stone/sand/base/amplitude/scale(=frequency)/
+     *   octaves/lacunarity/gain/ridge/warp/exponent/continent/island/coast/
+     *   worldWidth/worldHeight/sandLevel/enable
+     * 所有参数以 float 传入（整数在内部取整）。sandLevel ∈ (0,1] 时，
+     * 采样高度 ≤ sandLevel 的柱子顶层用 sand 纹理（沙滩带）；0 或负值关闭。
+     * enable=1 打开地形（默认流式生成开启），enable=0 关闭。
+     */
+    void setTerrainParam(const std::string &key, float value);
+
+    /** @brief Disables terrain. */
+    void disableTerrain();
+    /** @brief Terrain enabled. */
+    bool terrainEnabled() const { return terrainEnabled_ || terrainAssetEnabled_; }
+
+    /** @brief Compatibility operation that opens baked EVTR terrain data. */
+    bool loadTerrainAsset(data::ByteData *bytes, float heightOffset = 0.f, float heightScale = 1.f);
+    /** @brief Decode/evict EVTR chunks around a world-space column with an optional load budget. */
+    procgen::TerrainStreamStats streamTerrainAssetAround(int worldX, int worldZ, int radiusChunks,
+                                                          int maxLoads = 0);
+    /** @brief Configure biome surface ids: vegetation, sand, snow, alpine rock, river bed. */
+    void setTerrainAssetMaterials(uint8_t vegetation, uint8_t sand, uint8_t snow,
+                                  uint8_t alpine, uint8_t riverbed);
+    /** @brief Returns the terrain asset resident count. */
+    int getTerrainAssetResidentCount() const { return terrainAsset_.getResidentCount(); }
 
     /** @brief Terrain height (world blocks) at a column for the configured seed. */
-    int terrainHeightAt(int wx, int wz) const {
-        const float e = terrainSampler_.sample(float(wx), float(wz));
-        return int(std::floor(terrainBase_ + terrainAmplitude_ * e));
-    }
+    int terrainHeightAt(int wx, int wz) const;
 
     /**
      * @brief Persistence: serialize every chunk (coords + raw voxels) into `out`.
@@ -113,47 +163,63 @@ public:
      * (cx, cy, cz, 32³ voxels). Meshes are rebuilt on demand after loading.
      */
     void serializeWorld(std::vector<uint8_t> &out) const;
+    /** @brief Deserialize world. */
     bool deserializeWorld(const uint8_t *data, size_t size);
 
     /** @brief Script-facing wrappers around serialize/deserialize. */
     data::ByteData *saveWorld() const;
+    /** @brief Loads world. */
     bool loadWorld(data::ByteData *bytes);
 
     /**
-     * @brief Remesh every dirty chunk. Returns number remeshed.
+     * @brief Remesh dirty chunks.
      * @param maxThreads 0 = auto (parallel up to an internal cap on desktop),
      *                   1 = serial, >1 = that many workers. Falls back to
      *                   serial when threads are unavailable.
+     * @param maxChunks  0 = all dirty chunks; >0 remesh at most that many
+     *                   (so a streaming world can finish meshes across frames).
      */
-    int remeshDirty(int maxThreads = 0);
+    int remeshDirty(int maxThreads = 0, int maxChunks = 0);
+    /** @brief Number of chunks whose mesh is stale. */
+    int getDirtyCount() const;
+    /** @brief Terrain jobs still running (not yet inserted into the world). */
+    int getInflightStreamCount() const;
 
     /**
      * @brief Select chunks/faces to draw.
      * @param viewProj16 column-major 4x4 RH+ZO view-projection (16 floats)
      * @param eyeX/Y/Z  camera eye world position
      * @param viewRange max distance from eye to chunk center (world units; ≤0 disables)
-     * @param faceCull  when true, drop face buffers whose outward normal points away
+     * @param faceCull  when true, conservatively drop face-direction buffers that are
+     *                  back-facing from every possible face plane in the chunk
      */
     void selectVisible(const float *viewProj16, float eyeX, float eyeY, float eyeZ, float viewRange,
                        bool faceCull = true);
 
+    /** @brief Returns the visible batch count. */
     int getVisibleBatchCount() const { return int(visible_.size()); }
+    /** @brief Returns the visible batch. */
     const DrawBatch &getVisibleBatch(int index) const { return visible_[size_t(index)]; }
 
     /** @brief Script accessors for the last selectVisible result. */
     int getVisibleChunkCount() const { return int(visibleChunkKeys_.size()); }
+    /** @brief Returns the visible chunk coord. */
     void getVisibleChunkCoord(int index, int &cx, int &cy, int &cz) const;
+    /** @brief Returns the visible rect count. */
     int getVisibleRectCount() const;
 
     /**
      * @brief Issue Graphics::drawVoxelFaceInstances for every visible batch.
      * Requires begin3DFrame + setMesh3DViewProj already done.
+     * 参数用主类 Graphics*（而非 IGraphics3D*）：脚本绑定对接口指针
+     * 不做次基类偏移调整，经接口的虚调用会错位到别的 vtable 槽位。
      */
     void drawVisible(graphics::Graphics *gfx, graphics::Texture *atlas, int tilesPerRow = 16);
 
     /** @brief World-space voxel get/set. Air (0) never allocates a chunk; a border
      *  edit also invalidates the adjacent chunk's mesh. */
     uint8_t getVoxel(int wx, int wy, int wz) const;
+    /** @brief Sets the voxel. */
     void setVoxel(int wx, int wy, int wz, uint8_t texId);
 
     /**
@@ -168,15 +234,25 @@ public:
 
     /** @brief Script-facing raycast: stores the last result, returns hit/miss. */
     bool raycastScript(float ox, float oy, float oz, float dx, float dy, float dz, float maxDist);
+    /** @brief Last raycast hit. */
     bool lastRaycastHit() const { return raycastHit_; }
+    /** @brief Last raycast hit x. */
     int lastRaycastHitX() const { return raycastHitX_; }
+    /** @brief Last raycast hit y. */
     int lastRaycastHitY() const { return raycastHitY_; }
+    /** @brief Last raycast hit z. */
     int lastRaycastHitZ() const { return raycastHitZ_; }
+    /** @brief Last raycast prev x. */
     int lastRaycastPrevX() const { return raycastPrevX_; }
+    /** @brief Last raycast prev y. */
     int lastRaycastPrevY() const { return raycastPrevY_; }
+    /** @brief Last raycast prev z. */
     int lastRaycastPrevZ() const { return raycastPrevZ_; }
+    /** @brief Last raycast face x. */
     int lastRaycastFaceX() const { return raycastFaceX_; }
+    /** @brief Last raycast face y. */
     int lastRaycastFaceY() const { return raycastFaceY_; }
+    /** @brief Last raycast face z. */
     int lastRaycastFaceZ() const { return raycastFaceZ_; }
 
     /**
@@ -221,18 +297,51 @@ private:
 
     /** Mark the six adjacent chunks dirty when an edit lands on a border face. */
     void markNeighborChunksDirty(int cx, int cy, int cz, int lx, int ly, int lz);
+    uint8_t terrainSurfaceAt(int wx, int wz) const;
+    void fillChunkTerrain(Chunk &chunk, int nx, int ny, int nz) const;
+    void remeshChunks(const std::vector<Chunk *> &chunks, int maxThreads);
+    void waitStreamJobs();
+    void reapRetiredStreamJobs();
+    void restoreRetiredInside(int centerX, int centerY, int centerZ, int radiusChunks);
+    bool isStreamJob(int cx, int cy, int cz) const;
+    int harvestStreamJobs(int centerX, int centerY, int centerZ, int radiusChunks, int maxHarvest);
+    void dropStreamJobsOutside(int centerX, int centerY, int centerZ, int radiusChunks);
+
+    struct StreamJob {
+        int cx = 0;
+        int cy = 0;
+        int cz = 0;
+        std::unique_ptr<Chunk> chunk;
+        thread::Job *job = nullptr;
+    };
+
+    std::vector<StreamJob> inflight_;
+    std::vector<StreamJob> retired_;
 
     std::unordered_map<uint64_t, std::unique_ptr<Chunk>> chunks_;
+    int streamCacheChunks_ = 0;
+    uint64_t revision_ = 0;
     std::vector<DrawBatch> visible_;
     std::vector<uint64_t> visibleChunkKeys_;
     CubeTypeRegistry types_;
-    procgen::TerrainSampler terrainSampler_;
+    std::unique_ptr<procgen::TerrainSampler>             terrainSampler_;
     uint8_t terrainTop_ = 1;
     uint8_t terrainSub_ = 2;
     uint8_t terrainStone_ = 3;
+    uint8_t terrainSand_ = 0;  // 0 = 沙滩带关闭
+    float sandLevel_ = 0.f;    // 归一化采样高度阈值；≤0 关闭
     float terrainBase_ = 8.f;
     float terrainAmplitude_ = 14.f;
     bool terrainEnabled_ = false;
+    procgen::TerrainStreamingCache terrainAsset_;
+    bool terrainAssetEnabled_ = false;
+    float terrainAssetOffset_ = 0.f;
+    float terrainAssetScale_ = 1.f;
+    uint8_t terrainVegetation_ = 1;
+    uint8_t terrainAssetSand_ = 1;
+    uint8_t terrainSnow_ = 1;
+    uint8_t terrainAlpine_ = 3;
+    uint8_t terrainRiverbed_ = 2;
 
     bool raycastHit_ = false;
     int raycastHitX_ = 0;

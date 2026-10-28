@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 import os
 import random
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict
 
 MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
 

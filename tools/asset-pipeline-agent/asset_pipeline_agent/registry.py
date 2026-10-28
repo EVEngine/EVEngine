@@ -15,7 +15,7 @@ import threading
 import time
 from typing import Any, Dict, Optional
 
-from .report import AssetOutcome, Candidate, license_label
+from .report import AssetOutcome, license_label
 
 
 class McpError(RuntimeError):

@@ -1,0 +1,3 @@
+schema=ecs-benchmark-v1 config=Release compiler=gcc 14.2.0 pointer_bytes=8 entity_bytes=48 handle_bytes=24 hot_payload_bytes=32 cold_payload_bytes=0 warmup=3 samples=11 iterations=3 dt=0.015625
+engine_revision=10f6faa7509e4a108ee5f2e6b6e3be357e99af26 ecs_revision=9949054f1871ff7ea3c2b9a250d417d62a732f53 ecs_header_sha256=2ccbd1433c67f7d12855fc6c7acbb1edf9bf261606bb820621452138c7fe99bf rss_before_bytes=1904640
+validation=passed checked=100000 ticks=36 checksum=6.39572e+07

@@ -1,0 +1,22 @@
+#pragma once
+#include "common/Export.h"
+
+/**
+ * @file ConditionCodec.h
+ * @brief Value/JSON codec for condition::Condition trees owned by emergence rules.
+ */
+
+#include "common/Condition.h"
+#include "common/Result.h"
+#include "common/Value.h"
+
+namespace eve::emergence {
+
+/**
+ * @brief Decode one validated condition tree from an owning Value.
+ * @param value Node-shaped Value from an `eve.emergence.rules` document.
+ * @return Validated condition tree, or a structured parse failure.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION eve::Result<condition::Condition> decodeCondition(const eve::Value& value);
+
+}  // namespace eve::emergence

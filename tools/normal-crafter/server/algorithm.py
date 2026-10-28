@@ -21,7 +21,7 @@ Notes
 
 from __future__ import annotations
 
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 import numpy as np
 import torch
@@ -148,11 +148,11 @@ class NormalCrafterPipeline(StableVideoDiffusionPipeline):
     def _unpad(v, pads):
         if pads is None:
             return v
-        t, b, l, r = pads
-        if t > 0 or b > 0:
-            v = v[:, :, t:(-b if b > 0 else None)]
-        if l > 0 or r > 0:
-            v = v[:, :, :, l:(-r if r > 0 else None)]
+        top, bottom, left, right = pads
+        if top > 0 or bottom > 0:
+            v = v[:, :, top:(-bottom if bottom > 0 else None)]
+        if left > 0 or right > 0:
+            v = v[:, :, :, left:(-right if right > 0 else None)]
         return v
 
     # ------------------------------------------------------------------ #

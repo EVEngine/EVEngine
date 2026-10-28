@@ -1,13 +1,35 @@
+// eve-hot-path
 #include "graphics/RenderSystem3D.h"
+#include "common/Assert.h"
+#include "common/Capability.h"
+#include "common/Exception.h"
+#include "common/Profile.h"
 #include "common/RenderTrace.h"
-#include "graphics/ClipSpace.h"
-#include "graphics/Graphics.h"
-#include "graphics/Light.h"
-#include "graphics/ClusteredLight.h"
-#include "graphics/Shadow.h"
-#include "graphics/RenderControl.h"
-#include "graphics/Material.h"
+#include "common/Status.h"
 #include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/ClipSpace.h"
+#include "graphics/ClusteredLight.h"
+#include "graphics/DepthPyramid.h"
+#include "graphics/DiffuseLightProbeRegistry.h"
+#include "graphics/GlobalIllumination.h"
+#include "graphics/Graphics.h"
+#include "graphics/IRayTracing.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/PrimitiveScene.h"
+#include "graphics/ReflectionProbeUpload.h"
+#include "graphics/RenderControl.h"
+#include "graphics/RenderTransformProjection.h"
+#include "graphics/RenderableInstances.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Shadow.h"
+#include "graphics/ShadowScheme.h"
+#include "graphics/Texture.h"
+#include "graphics/ViewPreparation.h"
 
 #include <algorithm>
 #include <cmath>
@@ -20,22 +42,39 @@ namespace eve::graphics {
 namespace {
 
 std::vector<RenderSystem3D::GBufferExtraDrawer> g_gbufferDrawers;
-std::vector<RenderSystem3D::ShadowExtraDrawer> g_shadowDrawers;
+struct ShadowExtraDrawerEntry {
+    uint64_t                          token = 0;
+    RenderSystem3D::ShadowExtraDrawer drawer;
+};
+std::vector<ShadowExtraDrawerEntry>           g_shadowDrawers;
+uint64_t                                      g_nextShadowDrawerToken = 1;
+std::vector<RenderSystem3D::DecalExtraDrawer> g_decalDrawers;
+struct CaptureExtraDrawerEntry {
+    uint64_t                           token = 0;
+    uint32_t                           mask  = 0;
+    RenderSystem3D::CaptureExtraDrawer drawer;
+};
+std::vector<CaptureExtraDrawerEntry> g_captureDrawers;
+uint64_t                             g_nextCaptureDrawerToken = 1;
+struct ForwardExtraDrawerEntry {
+    uint64_t                           token = 0;
+    RenderSystem3D::ForwardExtraDrawer drawer;
+};
+std::vector<ForwardExtraDrawerEntry> g_forwardDrawers;
+uint64_t                             g_nextForwardExtraDrawerToken = 1;
+struct GpuOpaqueCollectorEntry {
+    uint64_t                           token = 0;
+    RenderSystem3D::GpuOpaqueCollector collector;
+};
+std::vector<GpuOpaqueCollectorEntry> g_gpuOpaqueCollectors;
+uint64_t                             g_nextGpuOpaqueCollectorToken = 1;
 
-glm::vec3 gLightDir = glm::normalize(glm::vec3(0.4f, 1.f, 0.3f));
+glm::vec3 gLightDir   = glm::normalize(glm::vec3(0.4f, 1.f, 0.3f));
 glm::vec3 gLightColor = glm::vec3(1.f);
 
-glm::mat4 modelFromTransform(const Renderable3D::Transform3D &t) {
-    glm::mat4 m(1.f);
-    m = glm::translate(m, glm::vec3(t.x, t.y, t.z));
-    m = glm::rotate(m, t.yaw, glm::vec3(0.f, 1.f, 0.f));
-    m = glm::rotate(m, t.pitch, glm::vec3(1.f, 0.f, 0.f));
-    m = glm::rotate(m, t.roll, glm::vec3(0.f, 0.f, 1.f));
-    m = glm::scale(m, glm::vec3(t.sx, t.sy, t.sz));
-    return m;
-}
+using detail::modelFromTransform;
 
-Camera3D *findDefaultCamera3D() {
+Camera3D* findDefaultCamera3D() {
     if (ecs::current()->getManager<Camera3D>() == nullptr) return nullptr;
     auto camView = ecs::View<Camera3D, Camera3D::Data>();
     for (auto it = camView.begin(); it != camView.end(); ++it) {
@@ -47,23 +86,25 @@ Camera3D *findDefaultCamera3D() {
 }
 
 struct PackedLight3D {
-    Light3D::Data *data = nullptr;
-    bool isPoint = true;
+    Light3D::Data* data    = nullptr;
+    bool           isPoint = true;
 };
 
-void collectLights3D(std::vector<PackedLight3D> &out, size_t maxCount) {
+void collectLights3D(std::vector<PackedLight3D>& out, size_t maxCount) {
     out.clear();
     if (ecs::current()->getManager<Light3D>() == nullptr) return;
     auto view = ecs::View<Light3D, Light3D::Data>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [d] = *it;
+        d->shadowLocalSlot = -1;  // cleared each frame; selectShadowCasters reassigns
         if (!d->enabled) continue;
+        if (d->volumetricOnly) continue;  // emissive proxies skip surface lighting
         PackedLight3D pl;
-        pl.data = d;
+        pl.data    = d;
         pl.isPoint = (d->type != "dir");
         out.push_back(pl);
     }
-    std::stable_sort(out.begin(), out.end(), [](const PackedLight3D &a, const PackedLight3D &b) {
+    std::stable_sort(out.begin(), out.end(), [](const PackedLight3D& a, const PackedLight3D& b) {
         if (a.isPoint != b.isPoint) return a.isPoint && !b.isPoint;
         return a.data->intensity > b.data->intensity;
     });
@@ -72,7 +113,7 @@ void collectLights3D(std::vector<PackedLight3D> &out, size_t maxCount) {
 
 /** mesh3d.frag always shades lights[0] as the primary directional. Keep a real
  *  directional in slot 0 whenever one exists (points stay in the remaining slots). */
-void promoteDirectional(std::vector<PackedLight3D> &packed) {
+void promoteDirectional(std::vector<PackedLight3D>& packed) {
     for (size_t i = 0; i < packed.size(); ++i) {
         if (packed[i].isPoint) continue;
         if (i != 0) std::swap(packed[0], packed[i]);
@@ -80,71 +121,97 @@ void promoteDirectional(std::vector<PackedLight3D> &packed) {
     }
 }
 
-Lighting3DPack packLights3D(const std::vector<PackedLight3D> &lights, const Camera3D::Data *cam) {
+void fillLight3DGpu(Light3DGpu& g, const Light3D::Data& d, bool isPoint) {
+    g.color = glm::vec4(d.r * d.intensity, d.g * d.intensity, d.b * d.intensity, 1.f);
+    g.spot  = glm::vec4(0.f, 0.f, 0.f, -1.f);
+    if (!isPoint) {
+        glm::vec3 dir(d.dx, d.dy, d.dz);
+        if (glm::length(dir) < 1e-6f)
+            dir = glm::vec3(0.f, 1.f, 0.f);
+        else
+            dir = glm::normalize(dir);
+        g.posRadius = glm::vec4(dir, 0.f);
+        return;
+    }
+    g.posRadius = glm::vec4(d.x, d.y, d.z, d.radius);
+    if (d.type != "spot") return;
+    float cosOuter = 0.f, cosInner = 0.f;
+    lightSpotCosines(d.spotAngleDeg, d.spotSoftness, cosOuter, cosInner);
+    const float scale = 1.f / std::max(cosInner - cosOuter, 1e-4f);
+    const float bias  = -cosOuter * scale;
+    glm::vec3 beam(d.dx, d.dy, d.dz);
+    if (glm::length(beam) < 1e-6f)
+        beam = glm::vec3(0.f, -1.f, 0.f);
+    else
+        beam = glm::normalize(beam);
+    // Encode local shadow slot in beam length: |beam| = 1 + (slot+1)/100.
+    // spotAttenuation3D normalizes; shaders decode the slot independently of
+    // packed vs clustered light indices (which diverge after CSM promotion).
+    if (d.shadowLocalSlot >= 0 && d.shadowLocalSlot < ShadowConfig::kLocalSlots)
+        beam *= 1.f + float(d.shadowLocalSlot + 1) * 0.01f;
+    g.spot    = glm::vec4(beam, scale);
+    g.color.a = bias;
+}
+
+Lighting3DPack packLights3D(const std::vector<PackedLight3D>& lights, const Camera3D::Data* cam) {
     Lighting3DPack pack{};
     if (cam) {
         pack.ambient = glm::vec4(cam->ambientR, cam->ambientG, cam->ambientB, 0.f);
     }
     if (lights.empty()) {
-        pack.count = 1;
+        pack.count               = 1;
         pack.lights[0].posRadius = glm::vec4(gLightDir, 0.f);
-        pack.lights[0].color = glm::vec4(gLightColor, 1.f);
+        pack.lights[0].color     = glm::vec4(gLightColor, 1.f);
+        pack.lights[0].spot      = glm::vec4(0.f, 0.f, 0.f, -1.f);
         return pack;
     }
     const int n = std::min(int(lights.size()), Lighting3DPack::kMaxLights);
-    pack.count = n;
+    pack.count  = n;
     for (int i = 0; i < n; ++i) {
-        const auto *d = lights[size_t(i)].data;
-        Light3DGpu &g = pack.lights[i];
-        g.color = glm::vec4(d->r * d->intensity, d->g * d->intensity, d->b * d->intensity, 1.f);
-        if (lights[size_t(i)].isPoint) {
-            g.posRadius = glm::vec4(d->x, d->y, d->z, d->radius);
-        } else {
-            glm::vec3 dir(d->dx, d->dy, d->dz);
-            if (glm::length(dir) < 1e-6f) dir = glm::vec3(0.f, 1.f, 0.f);
-            else dir = glm::normalize(dir);
-            g.posRadius = glm::vec4(dir, 0.f);
-        }
+        const auto* d = lights[size_t(i)].data;
+        fillLight3DGpu(pack.lights[i], *d, lights[size_t(i)].isPoint);
     }
     return pack;
 }
 
-void splitLights(const std::vector<PackedLight3D> &packed, std::vector<ClusteredLightGpu> &points,
-                 std::vector<ClusteredLightGpu> &dirs) {
+void splitLights(const std::vector<PackedLight3D>& packed, std::vector<ClusteredLightGpu>& points,
+                 std::vector<ClusteredLightGpu>& dirs) {
     points.clear();
     dirs.clear();
-    for (const auto &pl : packed) {
-        const auto *d = pl.data;
+    for (const auto& pl : packed) {
+        const auto*       d = pl.data;
         ClusteredLightGpu g{};
-        g.color = glm::vec4(d->r * d->intensity, d->g * d->intensity, d->b * d->intensity, 1.f);
-        if (pl.isPoint) {
-            g.posRadius = glm::vec4(d->x, d->y, d->z, d->radius);
+        fillLight3DGpu(g, *d, pl.isPoint);
+        if (pl.isPoint)
             points.push_back(g);
-        } else {
-            glm::vec3 dir(d->dx, d->dy, d->dz);
-            if (glm::length(dir) < 1e-6f) dir = glm::vec3(0.f, 1.f, 0.f);
-            else dir = glm::normalize(dir);
-            g.posRadius = glm::vec4(dir, 0.f);
+        else
             dirs.push_back(g);
-        }
     }
 }
 
-} // namespace
+}  // namespace
 
 void Camera3D::setEye(float x, float y, float z) {
-    auto d = data();
+    auto d  = data();
     d->eyeX = x;
     d->eyeY = y;
     d->eyeZ = z;
 }
 
+float Camera3D::getEyeX() { return data()->eyeX; }
+float Camera3D::getEyeY() { return data()->eyeY; }
+float Camera3D::getEyeZ() { return data()->eyeZ; }
+
 void Camera3D::setTarget(float x, float y, float z) {
-    auto d = data();
+    auto d     = data();
     d->targetX = x;
     d->targetY = y;
     d->targetZ = z;
 }
+
+float Camera3D::getTargetX() { return data()->targetX; }
+float Camera3D::getTargetY() { return data()->targetY; }
+float Camera3D::getTargetZ() { return data()->targetZ; }
 
 void Camera3D::setUp(float x, float y, float z) {
     auto d = data();
@@ -155,23 +222,190 @@ void Camera3D::setUp(float x, float y, float z) {
 
 void Camera3D::setFov(float fovYDeg) { data()->fovYDeg = fovYDeg; }
 
+float Camera3D::getFov() { return data()->fovYDeg; }
+
+void Camera3D::setOrthographic(float height) {
+    data()->orthographic = true;
+    data()->orthoHeight  = std::max(0.001f, height);
+}
+
+void Camera3D::setPerspective() { data()->orthographic = false; }
+
+void Camera3D::setClipPlanes(float nearZ, float farZ) {
+    data()->nearZ = std::max(0.001f, nearZ);
+    data()->farZ  = std::max(data()->nearZ + 0.001f, farZ);
+}
+
+float Camera3D::getNearClip(){return data()->nearZ;}
+float Camera3D::getFarClip(){return data()->farZ;}
+void Camera3D::setPhysicalLens(float aperture,float focalLength){
+ EV_PARAM_CHECK(std::isfinite(aperture),"aperture must be positive and finite");
+ EV_PARAM_CHECK(aperture>0.f,"aperture must be positive and finite");
+ EV_PARAM_CHECK(std::isfinite(focalLength),"focal length must be positive and finite");
+ EV_PARAM_CHECK(focalLength>0.f,"focal length must be positive and finite");
+ data()->aperture=aperture;data()->focalLength=focalLength;
+}
+float Camera3D::getAperture(){return data()->aperture;}
+float Camera3D::getFocalLength(){return data()->focalLength;}
+void Camera3D::setLayerCullDistance(int layer, float distance) {
+    EV_PARAM_CHECK(layer >= 0, "layer must be in [0,31]");
+    EV_PARAM_CHECK(layer < 32, "layer must be in [0,31]");
+    EV_PARAM_CHECK(std::isfinite(distance), "distance must be finite and non-negative");
+    EV_PARAM_CHECK(distance >= 0.f, "distance must be finite and non-negative");
+    data()->layerCullDistances[size_t(layer)] = distance;
+}
+
+float Camera3D::getLayerCullDistance(int layer) {
+    EV_PARAM_CHECK(layer >= 0, "layer must be in [0,31]");
+    EV_PARAM_CHECK(layer < 32, "layer must be in [0,31]");
+    return data()->layerCullDistances[size_t(layer)];
+}
+
+void Camera3D::setShadowLayerCullDistance(int layer, float distance) {
+    EV_PARAM_CHECK(layer >= 0, "layer must be in [0,31]");
+    EV_PARAM_CHECK(layer < 32, "layer must be in [0,31]");
+    EV_PARAM_CHECK(std::isfinite(distance), "distance must be finite and non-negative");
+    EV_PARAM_CHECK(distance >= 0.f, "distance must be finite and non-negative");
+    data()->shadowLayerCullDistances[size_t(layer)] = distance;
+}
+
+float Camera3D::getShadowLayerCullDistance(int layer) {
+    EV_PARAM_CHECK(layer >= 0, "layer must be in [0,31]");
+    EV_PARAM_CHECK(layer < 32, "layer must be in [0,31]");
+    return data()->shadowLayerCullDistances[size_t(layer)];
+}
+
 void Camera3D::setActive(bool active) { data()->active = active; }
 
 void Camera3D::setAmbient(float r, float g, float b) {
-    auto d = data();
+    auto d      = data();
     d->ambientR = r;
     d->ambientG = g;
     d->ambientB = b;
 }
 
-void Camera3D::setEnvMap(Texture *cube) { data()->envMap = cube; }
+void Camera3D::setEnvMap(Texture* cube) { data()->envMap = cube; }
 
-void Camera3D::setEnvIntensity(float intensity) {
-    data()->envIntensity = intensity < 0.f ? 0.f : intensity;
+void Camera3D::setEnvIntensity(float intensity) { data()->envIntensity = intensity < 0.f ? 0.f : intensity; }
+
+void Camera3D::setExposure(float ev) { data()->exposureEV = std::clamp(ev, -16.f, 16.f); }
+
+float Camera3D::getExposure() { return data()->exposureEV; }
+
+void Camera3D::setAutoExposure(bool enabled, float minEV, float maxEV) {
+    auto d               = data();
+    d->autoExposure      = enabled;
+    d->autoExposureMinEV = std::clamp(std::min(minEV, maxEV), -16.f, 16.f);
+    d->autoExposureMaxEV = std::clamp(std::max(minEV, maxEV), -16.f, 16.f);
+}
+
+bool Camera3D::isAutoExposure() { return data()->autoExposure; }
+
+void Camera3D::setBloom(float intensity, float threshold) {
+    auto d            = data();
+    d->bloomIntensity = std::clamp(intensity, 0.f, 8.f);
+    d->bloomThreshold = std::clamp(threshold, 0.f, 16.f);
+}
+
+float Camera3D::getBloomIntensity() { return data()->bloomIntensity; }
+float Camera3D::getBloomThreshold() { return data()->bloomThreshold; }
+
+void Camera3D::setDepthOfField(float focusDistance, float maxBlurPx, float focusRange) {
+    auto d = data();
+    d->dofFocusDistance = std::max(0.f, focusDistance);
+    d->dofMaxBlurPx = std::clamp(maxBlurPx, 0.f, 32.f);
+    d->dofFocusRange = std::max(1e-3f, focusRange);
+}
+
+void Camera3D::clearDepthOfField() { data()->dofMaxBlurPx = 0.f; }
+
+float Camera3D::getDofFocusDistance() { return data()->dofFocusDistance; }
+float Camera3D::getDofMaxBlur() { return data()->dofMaxBlurPx; }
+float Camera3D::getDofFocusRange() { return data()->dofFocusRange; }
+
+void Camera3D::setEnvProbe(float centerX, float centerY, float centerZ, float extentX,
+                           float extentY, float extentZ) {
+    data()->envProbeCenter = glm::vec3(centerX, centerY, centerZ);
+    data()->envProbeExtent = glm::max(glm::vec3(extentX, extentY, extentZ), glm::vec3(0.f));
+}
+
+void Camera3D::clearEnvProbe() { data()->envProbeExtent = glm::vec3(0.f); }
+
+bool Camera3D::hasEnvProbe() {
+    const glm::vec3 e = data()->envProbeExtent;
+    return e.x > 0.f && e.y > 0.f && e.z > 0.f;
+}
+float Camera3D::getEnvProbeCenterX() { return data()->envProbeCenter.x; }
+float Camera3D::getEnvProbeCenterY() { return data()->envProbeCenter.y; }
+float Camera3D::getEnvProbeCenterZ() { return data()->envProbeCenter.z; }
+float Camera3D::getEnvProbeExtentX() { return data()->envProbeExtent.x; }
+float Camera3D::getEnvProbeExtentY() { return data()->envProbeExtent.y; }
+float Camera3D::getEnvProbeExtentZ() { return data()->envProbeExtent.z; }
+
+void Camera3D::setReflectionProbe(int slot, Texture* cubemap, float centerX, float centerY, float centerZ,
+                                  float extentX, float extentY, float extentZ, float intensity, float blendDistance,
+                                  int priority) {
+    if (slot < 0 || slot >= Data::kMaxReflectionProbes) return;
+    auto& probe         = data()->reflectionProbes[static_cast<size_t>(slot)];
+    probe.cubemap       = cubemap;
+    probe.center        = glm::vec3(centerX, centerY, centerZ);
+    probe.extent        = glm::max(glm::vec3(extentX, extentY, extentZ), glm::vec3(0.f));
+    probe.intensity     = std::max(intensity, 0.f);
+    probe.blendDistance = std::max(blendDistance, 0.f);
+    probe.priority      = priority;
+    probe.enabled       = cubemap && glm::all(glm::greaterThan(probe.extent, glm::vec3(0.f))) && probe.intensity > 0.f;
+}
+
+void Camera3D::clearReflectionProbe(int slot) {
+    if (slot < 0 || slot >= Data::kMaxReflectionProbes) return;
+    data()->reflectionProbes[static_cast<size_t>(slot)] = {};
+}
+
+int Camera3D::getReflectionProbeCount() {
+    int count = 0;
+    for (const auto& probe : data()->reflectionProbes)
+        if (probe.enabled) ++count;
+    return count;
+}
+
+static ReflectionProbeUpload selectReflectionProbes(const Camera3D::Data& camera, const glm::vec3& samplePosition) {
+    struct Candidate {
+        int   slot      = 0;
+        int   priority  = 0;
+        float distance2 = 0.f;
+    };
+    std::array<Candidate, Camera3D::Data::kMaxReflectionProbes> candidates{};
+    int                                                         candidateCount = 0;
+    for (int slot = 0; slot < Camera3D::Data::kMaxReflectionProbes; ++slot) {
+        const auto& probe = camera.reflectionProbes[static_cast<size_t>(slot)];
+        if (!probe.enabled || !probe.cubemap) continue;
+        const glm::vec3 outside = glm::max(glm::abs(samplePosition - probe.center) - probe.extent, glm::vec3(0.f));
+        candidates[static_cast<size_t>(candidateCount++)] = Candidate{slot, probe.priority, glm::dot(outside, outside)};
+    }
+    std::stable_sort(candidates.begin(), candidates.begin() + candidateCount,
+                     [](const Candidate& a, const Candidate& b) {
+                         if (a.priority != b.priority) return a.priority > b.priority;
+                         if (a.distance2 != b.distance2) return a.distance2 < b.distance2;
+                         return a.slot < b.slot;
+                     });
+
+    ReflectionProbeUpload upload;
+    upload.count = std::min(candidateCount, ReflectionProbeUpload::kMaxProbes);
+    for (int i = 0; i < upload.count; ++i) {
+        const auto& source   = camera.reflectionProbes[static_cast<size_t>(candidates[i].slot)];
+        auto&       target   = upload.probes[i];
+        target.cubemap       = source.cubemap;
+        target.center        = source.center;
+        target.extent        = source.extent;
+        target.intensity     = source.intensity;
+        target.blendDistance = source.blendDistance;
+        target.priority      = source.priority;
+    }
+    return upload;
 }
 
 void Camera3D::screenToRay(float screenX, float screenY, float viewW, float viewH) {
-    auto d = data();
+    auto d         = data();
     d->screenRayOx = d->eyeX;
     d->screenRayOy = d->eyeY;
     d->screenRayOz = d->eyeZ;
@@ -183,16 +417,17 @@ void Camera3D::screenToRay(float screenX, float screenY, float viewW, float view
     const glm::vec3 eye(d->eyeX, d->eyeY, d->eyeZ);
     const glm::vec3 target(d->targetX, d->targetY, d->targetZ);
     const glm::vec3 up(d->upX, d->upY, d->upZ);
-    const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
-    const float aspect = viewW / viewH;
-    const float fovRad = d->fovYDeg * 0.017453292519943295f;
-    const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, aspect, d->nearZ, d->farZ);
+    const glm::mat4 viewM  = glm::lookAtRH(eye, target, up);
+    const float     aspect = viewW / viewH;
+    const float     fovRad = d->fovYDeg * 0.017453292519943295f;
+    const glm::mat4 projM =
+        cameraProjectionVulkanRH_ZO(d->orthographic, fovRad, d->orthoHeight, aspect, d->nearZ, d->farZ);
     const glm::mat4 invVP = glm::inverse(projM * viewM);
 
     // Screen pixel → Vulkan NDC (Y-down; matches perspectiveVulkanRH_ZO).
-    const float ndcX = (screenX / viewW) * 2.f - 1.f;
-    const float ndcY = (screenY / viewH) * 2.f - 1.f;
-    auto unproject = [&](float ndcZ) -> glm::vec3 {
+    const float ndcX      = (screenX / viewW) * 2.f - 1.f;
+    const float ndcY      = (screenY / viewH) * 2.f - 1.f;
+    auto        unproject = [&](float ndcZ) -> glm::vec3 {
         glm::vec4 w = invVP * glm::vec4(ndcX, ndcY, ndcZ, 1.f);
         if (std::fabs(w.w) < 1e-8f) return eye;
         w /= w.w;
@@ -201,14 +436,21 @@ void Camera3D::screenToRay(float screenX, float screenY, float viewW, float view
     // ZO depth: near = 0, far = 1.
     const glm::vec3 nearPt = unproject(0.f);
     const glm::vec3 farPt  = unproject(1.f);
-    glm::vec3 dir = farPt - nearPt;
-    const float len = glm::length(dir);
-    if (len > 1e-8f) dir /= len;
-    else dir = glm::normalize(target - eye);
+    glm::vec3       dir    = farPt - nearPt;
+    const float     len    = glm::length(dir);
+    if (len > 1e-8f)
+        dir /= len;
+    else
+        dir = glm::normalize(target - eye);
 
     d->screenRayOx = eye.x;
     d->screenRayOy = eye.y;
     d->screenRayOz = eye.z;
+    if (d->orthographic) {
+        d->screenRayOx = nearPt.x;
+        d->screenRayOy = nearPt.y;
+        d->screenRayOz = nearPt.z;
+    }
     d->screenRayDx = dir.x;
     d->screenRayDy = dir.y;
     d->screenRayDz = dir.z;
@@ -221,183 +463,10 @@ float Camera3D::getScreenRayDirX() { return data()->screenRayDx; }
 float Camera3D::getScreenRayDirY() { return data()->screenRayDy; }
 float Camera3D::getScreenRayDirZ() { return data()->screenRayDz; }
 
-void Renderable3D::setPosition(float x, float y, float z) {
-    auto t = transform();
-    t->x = x;
-    t->y = y;
-    t->z = z;
-}
-
-void Renderable3D::setRotation(float yaw, float pitch, float roll) {
-    auto t = transform();
-    t->yaw = yaw;
-    t->pitch = pitch;
-    t->roll = roll;
-}
-
-void Renderable3D::setYaw(float yaw) { transform()->yaw = yaw; }
-
-float Renderable3D::getYaw() { return transform()->yaw; }
-
-void Renderable3D::setScale(float sx, float sy, float sz) {
-    auto t = transform();
-    t->sx = sx;
-    t->sy = sy;
-    t->sz = sz;
-}
-
-void Renderable3D::setMesh(Mesh *mesh) { meshRenderer()->mesh = mesh; }
-
-void Renderable3D::setTexture(Texture *texture) { meshRenderer()->texture = texture; }
-
-void Renderable3D::setNormalTexture(Texture *texture) { meshRenderer()->normalTexture = texture; }
-
-void Renderable3D::setHeightTexture(Texture *texture) { meshRenderer()->heightTexture = texture; }
-
-void Renderable3D::setShader(Shader *shader) { meshRenderer()->shader = shader; }
-
-void Renderable3D::setMaterial(Material *material) { meshRenderer()->material = material; }
-
-Material *Renderable3D::getMaterial() { return meshRenderer()->material; }
-
-void Renderable3D::setXRayShader(Shader *shader) { meshRenderer()->xrayShader = shader; }
-
-Shader *Renderable3D::getXRayShader() { return meshRenderer()->xrayShader; }
-
-void Renderable3D::setXRayHighlight(bool on) { meshRenderer()->xrayHighlight = on; }
-
-bool Renderable3D::getXRayHighlight() { return meshRenderer()->xrayHighlight; }
-
-void Renderable3D::setPart(int index, const std::string &name, Mesh *mesh, Material *material) {
-    auto mr = meshRenderer();
-    if (index < 0 || index >= MeshRenderer::kMaxParts) return;
-    mr->parts[index].name = name;
-    mr->parts[index].mesh = mesh;
-    mr->parts[index].material = material;
-    if (mesh) {
-        if (mr->partCount < index + 1) mr->partCount = index + 1;
-    } else if (index + 1 == mr->partCount) {
-        while (mr->partCount > 0 && !mr->parts[mr->partCount - 1].mesh) --mr->partCount;
-    }
-}
-
-void Renderable3D::clearParts() {
-    auto mr = meshRenderer();
-    mr->partCount = 0;
-    for (int i = 0; i < MeshRenderer::kMaxParts; ++i) {
-        mr->parts[i] = ModelPart{};
-    }
-}
-
-int Renderable3D::getPartCount() { return meshRenderer()->partCount; }
-
-std::string Renderable3D::getPartName(int index) {
-    auto mr = meshRenderer();
-    if (index < 0 || index >= mr->partCount) return {};
-    return mr->parts[index].name;
-}
-
-Mesh *Renderable3D::getPartMesh(int index) {
-    auto mr = meshRenderer();
-    if (index < 0 || index >= mr->partCount) return nullptr;
-    return mr->parts[index].mesh;
-}
-
-Material *Renderable3D::getPartMaterial(int index) {
-    auto mr = meshRenderer();
-    if (index < 0 || index >= mr->partCount) return nullptr;
-    return mr->parts[index].material;
-}
-
-void Renderable3D::setHair(bool hair) { meshRenderer()->isHair = hair; }
-
-bool Renderable3D::getHair() { return meshRenderer()->isHair; }
-
-void Renderable3D::setTint(float r, float g, float b, float a) {
-    auto mr = meshRenderer();
-    mr->r = r;
-    mr->g = g;
-    mr->b = b;
-    mr->a = a;
-}
-
-void Renderable3D::setMetallic(float metallic) { meshRenderer()->metallic = metallic; }
-
-void Renderable3D::setRoughness(float roughness) { meshRenderer()->roughness = roughness; }
-
-void Renderable3D::setTexCellBomb(float cellScale, float strength, float rotAmount) {
-    auto mr = meshRenderer();
-    mr->texBombScale = cellScale > 1e-3f ? cellScale : 1e-3f;
-    mr->texBombStrength = strength < 0.f ? 0.f : (strength > 1.f ? 1.f : strength);
-    mr->texBombRot = rotAmount < 0.f ? 0.f : (rotAmount > 1.f ? 1.f : rotAmount);
-}
-
-float Renderable3D::getTexCellBombScale() { return meshRenderer()->texBombScale; }
-
-float Renderable3D::getTexCellBombStrength() { return meshRenderer()->texBombStrength; }
-
-float Renderable3D::getTexCellBombRotation() { return meshRenderer()->texBombRot; }
-
-void Renderable3D::setParallax(float scale, float minLayers, float maxLayers) {
-    auto mr = meshRenderer();
-    mr->parallaxScale = scale < 0.f ? 0.f : (scale > 0.25f ? 0.25f : scale);
-    float minL = minLayers < 1.f ? 1.f : minLayers;
-    float maxL = maxLayers < minL ? minL : maxLayers;
-    if (maxL > 64.f) maxL = 64.f;
-    mr->parallaxMinLayers = minL;
-    mr->parallaxMaxLayers = maxL;
-}
-
-float Renderable3D::getParallaxScale() { return meshRenderer()->parallaxScale; }
-
-float Renderable3D::getParallaxMinLayers() { return meshRenderer()->parallaxMinLayers; }
-
-float Renderable3D::getParallaxMaxLayers() { return meshRenderer()->parallaxMaxLayers; }
-
-void Renderable3D::setVisible(bool visible) { meshRenderer()->visible = visible; }
-
-void Renderable3D::setReceiveLight(bool receive) { meshRenderer()->receiveLight = receive; }
-
-void Renderable3D::setCastShadow(bool cast) { meshRenderer()->castShadow = cast; }
-
-void Renderable3D::setReceiveShadow(bool receive) { meshRenderer()->receiveShadow = receive; }
-
-void Renderable3D::setCastOcclusion(bool cast) { meshRenderer()->castOcclusion = cast; }
-
-bool Renderable3D::getCastOcclusion() { return meshRenderer()->castOcclusion; }
-
-void Renderable3D::setCamera(Camera3D *camera) { meshRenderer()->camera = camera; }
-
-void Renderable3D::setMeshLod(int index, Mesh *mesh, float switchDistance) {
-    auto mr = meshRenderer();
-    if (index < 0 || index >= MeshRenderer::kMaxLodLevels) return;
-    mr->lodMeshes[index] = mesh;
-    if (index > 0) mr->lodDistances[index - 1] = switchDistance;
-    if (mesh) {
-        if (mr->lodCount < index + 1) mr->lodCount = index + 1;
-    } else if (index + 1 == mr->lodCount) {
-        while (mr->lodCount > 0 && !mr->lodMeshes[mr->lodCount - 1]) --mr->lodCount;
-    }
-    // Keep primary mesh in sync with LOD0 when set.
-    if (index == 0 && mesh) mr->mesh = mesh;
-}
-
-void Renderable3D::clearMeshLod() {
-    auto mr = meshRenderer();
-    mr->lodCount = 0;
-    for (int i = 0; i < MeshRenderer::kMaxLodLevels; ++i) mr->lodMeshes[i] = nullptr;
-}
-
-int Renderable3D::getMeshLodCount() { return meshRenderer()->lodCount; }
-
-int Renderable3D::getMeshLodLevelAtDistance(float distance) {
-    return meshRenderer()->lodLevelForDistance(distance);
-}
-
 void RenderSystem3D::setDirectionalLight(float dx, float dy, float dz, float r, float g, float b) {
     glm::vec3 d(dx, dy, dz);
     if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
-    gLightDir = glm::normalize(d);
+    gLightDir   = glm::normalize(d);
     gLightColor = glm::vec3(r, g, b);
 }
 
@@ -406,27 +475,101 @@ void RenderSystem3D::addGBufferExtraDrawer(GBufferExtraDrawer drawer) {
     g_gbufferDrawers.push_back(std::move(drawer));
 }
 
-void RenderSystem3D::addShadowExtraDrawer(ShadowExtraDrawer drawer) {
+uint64_t RenderSystem3D::addCaptureExtraDrawer(uint32_t reflectionCaptureMask, CaptureExtraDrawer drawer) {
+    if (!drawer || reflectionCaptureMask == 0u) return 0;
+    const uint64_t token = g_nextCaptureDrawerToken++;
+    g_captureDrawers.push_back(CaptureExtraDrawerEntry{token, reflectionCaptureMask, std::move(drawer)});
+    return token;
+}
+
+void RenderSystem3D::removeCaptureExtraDrawer(uint64_t token) {
+    if (token == 0) return;
+    g_captureDrawers.erase(
+        std::remove_if(g_captureDrawers.begin(), g_captureDrawers.end(),
+                       [token](const CaptureExtraDrawerEntry& entry) { return entry.token == token; }),
+        g_captureDrawers.end());
+}
+
+uint64_t RenderSystem3D::addForwardExtraDrawer(ForwardExtraDrawer drawer) {
+    if (!drawer) return 0;
+    const uint64_t token = g_nextForwardExtraDrawerToken++;
+    g_forwardDrawers.push_back(ForwardExtraDrawerEntry{token, std::move(drawer)});
+    return token;
+}
+
+void RenderSystem3D::removeForwardExtraDrawer(uint64_t token) {
+    if (token == 0) return;
+    g_forwardDrawers.erase(
+        std::remove_if(g_forwardDrawers.begin(), g_forwardDrawers.end(),
+                       [token](const ForwardExtraDrawerEntry& entry) { return entry.token == token; }),
+        g_forwardDrawers.end());
+}
+
+uint64_t RenderSystem3D::addGpuOpaqueCollector(GpuOpaqueCollector collector) {
+    if (!collector) return 0;
+    const uint64_t token = g_nextGpuOpaqueCollectorToken++;
+    g_gpuOpaqueCollectors.push_back(GpuOpaqueCollectorEntry{token, std::move(collector)});
+    return token;
+}
+
+void RenderSystem3D::removeGpuOpaqueCollector(uint64_t token) {
+    if (token == 0) return;
+    g_gpuOpaqueCollectors.erase(
+        std::remove_if(g_gpuOpaqueCollectors.begin(), g_gpuOpaqueCollectors.end(),
+                       [token](const GpuOpaqueCollectorEntry& entry) { return entry.token == token; }),
+        g_gpuOpaqueCollectors.end());
+}
+
+uint64_t RenderSystem3D::addShadowExtraDrawer(ShadowExtraDrawer drawer) {
+    if (!drawer) return 0;
+    const uint64_t token = g_nextShadowDrawerToken++;
+    g_shadowDrawers.push_back(ShadowExtraDrawerEntry{token, std::move(drawer)});
+    return token;
+}
+
+void RenderSystem3D::removeShadowExtraDrawer(uint64_t token) {
+    if (token == 0) return;
+    g_shadowDrawers.erase(std::remove_if(g_shadowDrawers.begin(), g_shadowDrawers.end(),
+                                         [token](const ShadowExtraDrawerEntry& entry) { return entry.token == token; }),
+                          g_shadowDrawers.end());
+}
+
+void RenderSystem3D::addDecalExtraDrawer(DecalExtraDrawer drawer) {
     if (!drawer) return;
-    g_shadowDrawers.push_back(std::move(drawer));
+    g_decalDrawers.push_back(std::move(drawer));
 }
 
 namespace {
 
-Light3D::Data *findShadowCasterDir(const std::vector<PackedLight3D> &packed) {
-    Light3D::Data *best = nullptr;
-    float bestI = -1.f;
-    for (const auto &pl : packed) {
-        if (pl.isPoint || !pl.data || !pl.data->castShadow) continue;
-        if (pl.data->intensity > bestI) {
-            bestI = pl.data->intensity;
-            best = pl.data;
-        }
-    }
-    return best;
+ShadowPagingView makeShadowPagingView(Camera3D* cam, float aspect) {
+    ShadowPagingView view{};
+    if (!cam) return view;
+    auto cd = cam->data();
+    view.eye = glm::vec3(cd->eyeX, cd->eyeY, cd->eyeZ);
+    const glm::vec3 target(cd->targetX, cd->targetY, cd->targetZ);
+    const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
+    const glm::mat4 v = glm::lookAtRH(view.eye, target, up);
+    const float fov = cd->fovYDeg * 0.017453292519943295f;
+    const glm::mat4 p = perspectiveVulkanRH_ZO(fov, std::max(aspect, 1e-3f), cd->nearZ, cd->farZ);
+    view.viewProj = p * v;
+    view.valid = true;
+    return view;
 }
 
-void prioritizeShadowCaster(std::vector<PackedLight3D> &packed, Light3D::Data *caster) {
+void selectFrameShadowCasters(const std::vector<PackedLight3D>& packed, const ShadowPagingView& view,
+                              Light3D::Data*& directionalCaster, std::vector<LocalShadowSlot>& localSlots) {
+    std::vector<Light3D::Data*> lights;
+    std::vector<bool>           isPoint;
+    lights.reserve(packed.size());
+    isPoint.reserve(packed.size());
+    for (const auto& pl : packed) {
+        lights.push_back(pl.data);
+        isPoint.push_back(pl.isPoint);
+    }
+    selectShadowCasters(lights, isPoint, ShadowSchemeSettings::current(), view, directionalCaster, localSlots);
+}
+
+void prioritizeShadowCaster(std::vector<PackedLight3D>& packed, Light3D::Data* caster) {
     if (!caster || packed.empty()) return;
     for (size_t i = 0; i < packed.size(); ++i) {
         if (packed[i].data != caster) continue;
@@ -435,327 +578,800 @@ void prioritizeShadowCaster(std::vector<PackedLight3D> &packed, Light3D::Data *c
     }
 }
 
+/**
+ * @brief Six normalized view-frustum planes (Gribb–Hartmann) for sphere culling.
+ * Plane convention: point is inside when dot(plane.xyz, p) + plane.w >= 0.
+ */
+struct FrustumPlanes {
+    glm::vec4 p[6]{};
+
+    bool sphereVisible(const glm::vec3& center, float radius) const {
+        for (const auto& pl : p) {
+            const float d = pl.x * center.x + pl.y * center.y + pl.z * center.z + pl.w;
+            if (d < -radius) return false;
+        }
+        return true;
+    }
+};
+
+FrustumPlanes extractFrustum(const glm::mat4& m) {
+    FrustumPlanes   f;
+    const glm::vec4 r0(m[0][0], m[1][0], m[2][0], m[3][0]);
+    const glm::vec4 r1(m[0][1], m[1][1], m[2][1], m[3][1]);
+    const glm::vec4 r2(m[0][2], m[1][2], m[2][2], m[3][2]);
+    const glm::vec4 r3(m[0][3], m[1][3], m[2][3], m[3][3]);
+    auto            norm = [](glm::vec4& v) {
+        const float l = glm::length(glm::vec3(v));
+        if (l > 1e-8f) v /= l;
+    };
+    f.p[0] = r3 + r0;  // left
+    f.p[1] = r3 - r0;  // right
+    f.p[2] = r3 + r1;  // bottom
+    f.p[3] = r3 - r1;  // top
+    // Vulkan clip space uses zero-to-one depth: near plane is z_clip = 0
+    // (plane r2), not the z = -w plane used by OpenGL-style [-1,1] depth.
+    f.p[4] = r2;       // near
+    f.p[5] = r3 - r2;  // far
+    for (auto& pl : f.p) norm(pl);
+    return f;
+}
+
+/**
+ * @brief Per-camera constants resolved once per frame: view/proj matrices,
+ * frustum for culling, lighting pack, and (when clustered) the clustered
+ * light table for this camera. Multi-camera scenes pay once per camera.
+ */
+struct CameraView {
+    Camera3D::Data*         data = nullptr;
+    glm::vec3               eye{0.f};
+    glm::mat4               view{1.f};
+    glm::mat4               proj{1.f};
+    glm::mat4               viewProj{1.f};
+    glm::mat4               cullViewProj{1.f};
+    FrustumPlanes           frustum;
+    float                   fovRad = 1.f;
+    Lighting3DPack          lighting{};
+    ClusteredLightingUpload clustered{};
+    bool                    clusteredValid = false;
+    /** @brief Whether the clustered SSBOs were uploaded for this camera this frame. */
+    bool clusteredUploaded = false;
+};
+
+CameraView buildCameraView(Camera3D::Data* cd, const std::vector<PackedLight3D>& packed, bool useClustered,
+                           float aspect, const std::vector<ClusteredLightGpu>& clusteredPoints,
+                           const std::vector<ClusteredLightGpu>& clusteredDirs, Graphics& gfx,
+                           const glm::vec2& jitterNdc) {
+    CameraView cv;
+    cv.data = cd;
+    cv.eye  = glm::vec3(cd->eyeX, cd->eyeY, cd->eyeZ);
+    const glm::vec3 look(cd->targetX, cd->targetY, cd->targetZ);
+    const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
+    cv.view   = glm::lookAtRH(cv.eye, look, up);
+    cv.fovRad = cd->fovYDeg * 0.017453292519943295f;
+    cv.proj   = cameraProjectionVulkanRH_ZO(cd->orthographic, cv.fovRad, cd->orthoHeight, aspect, cd->nearZ, cd->farZ);
+    cv.cullViewProj = cv.proj * cv.view;
+    cv.frustum      = extractFrustum(cv.cullViewProj);
+    cv.proj[2][0] += jitterNdc.x;
+    cv.proj[2][1] += jitterNdc.y;
+    cv.viewProj = cv.proj * cv.view;
+    cv.lighting = packLights3D(packed, cd);
+    if (useClustered && !cd->orthographic) {
+        cv.clustered      = buildClusteredLighting(clusteredPoints, clusteredDirs, cv.view, cd->nearZ, cd->farZ,
+                                                   gfx.getWidth(), gfx.getHeight(), cv.fovRad,
+                                                   glm::vec4(cd->ambientR, cd->ambientG, cd->ambientB, 0.f));
+        cv.clusteredValid = true;
+    }
+    return cv;
+}
+
+/**
+ * @brief One collected draw unit (mesh + material + transform). The ECS is
+ * traversed exactly once per frame; shadow / G-buffer / forward passes replay
+ * this list instead of re-walking the whole scene five times.
+ */
+struct CulledItem {
+    Renderable3D::MeshRenderer* mr       = nullptr;
+    Mesh*                       mesh     = nullptr;
+    Material*                   material = nullptr;
+    Shader*                     shader   = nullptr;  // effective mesh shader (material or legacy)
+    glm::mat4                   model{1.f};
+    glm::vec3                   worldC{0.f};           // world-space bounding-sphere center
+    glm::vec2                   temporalMotion{0.f};   // object-only previous-UV correction
+    bool                        receiveShadow = true;
+    bool                        shadowsOnly = false;
+    bool                        shadowDoubleSided = true;
+    bool                        useReflectionProbes = true;
+    int                         lightProbeUsage = 0;
+    int                         skinInfluenceLimit = 4;
+    float                       lodWeight = 1.f;
+    bool                        lodFadeReverse = false;
+    bool                        speedTreeFade = false;
+    float                       worldR         = 0.f;  // world-space bounding-sphere radius (0 = unknown → unculled)
+    float                       distSq         = 0.f;
+    float                       projectedDepth = 0.f;
+    SurfaceMode                 surfaceMode    = SurfaceMode::Opaque;
+    int                         sortPriority   = 0;
+    int                         camIdx         = 0;
+    uint32_t                    cascadeMask    = 0;      // bit c set when the caster may contribute to cascade c
+    bool                        inView         = false;  // inside the item camera's frustum
+    bool                        inDefaultView  = false;  // inside the default camera's frustum (G-buffer)
+    bool                        hair           = false;
+    bool                        xray           = false;
+};
+
+SkinInfluenceLimit skinInfluenceLimit(int count) {
+    if (count == 1) return SkinInfluenceLimit::One;
+    if (count == 2) return SkinInfluenceLimit::Two;
+    return SkinInfluenceLimit::Four;
+}
+
 }  // namespace
 
-void RenderSystem3D::render(Graphics &gfx) {
+void RenderSystem3D::render(Graphics& gfx) {
+    eve::debug::rtFrameBegin();
+    EV_PROFILE_MODULE("graphics", "Render3D");
     eve::debug::RenderPassScope pass3d("RenderSystem3D");
-    Camera3D *defaultCam = findDefaultCamera3D();
+    Camera3D*                   defaultCam = findDefaultCamera3D();
 
-    RenderControl *rc = gfx.getRenderControl();
+    RenderControl* rc = gfx.getRenderControl();
     rc->ensureCompiled();
-    const bool doShadow = rc->hasPass("shadow");
-    const bool doGBuffer = rc->hasPass("gbuffer");
-    const bool doForward = rc->hasPass("forward");
-    const bool doHair = rc->hasPass("hair");
-    const bool allowClustered = rc->isEnabled("clustered");
+    const bool doShadow           = rc->hasPass("shadow");
+    const bool doGBuffer          = rc->hasPass("gbuffer");
+    const bool doDecal            = rc->hasPass("decal");
+    const bool doDeferredLighting = rc->hasPass("deferredLighting");
+    const bool doForward          = rc->hasPass("forward");
+    const bool doHair             = rc->hasPass("hair");
+    const bool allowClustered     = rc->isEnabled("clustered");
 
     std::vector<PackedLight3D> packed;
     collectLights3D(packed, size_t(ClusteredLightConfig::kMaxLights));
     promoteDirectional(packed);
-    Light3D::Data *shadowCaster = doShadow ? findShadowCasterDir(packed) : nullptr;
+    Light3D::Data*              shadowCaster = nullptr;
+    std::vector<LocalShadowSlot> localShadowSlots;
+    const float aspectEarly =
+        (gfx.getHeight() > 0) ? float(gfx.getWidth()) / float(gfx.getHeight()) : 1.f;
+    if (doShadow)
+        selectFrameShadowCasters(packed, makeShadowPagingView(defaultCam, aspectEarly), shadowCaster,
+                                 localShadowSlots);
     prioritizeShadowCaster(packed, shadowCaster);
+    // CSM promotion may swap packed indices; refresh local slot → light mapping.
+    for (LocalShadowSlot& slot : localShadowSlots) {
+        slot.lightIndex = -1;
+        if (!slot.light) continue;
+        for (size_t i = 0; i < packed.size() && i < size_t(Lighting3DPack::kMaxLights); ++i) {
+            if (packed[i].data == slot.light) {
+                slot.lightIndex = int(i);
+                break;
+            }
+        }
+    }
     const bool haveExtraShadowCasters = doShadow && !g_shadowDrawers.empty();
 
-    const float aspect =
-        (gfx.getHeight() > 0) ? float(gfx.getWidth()) / float(gfx.getHeight()) : 1.f;
+    const float aspect = aspectEarly;
 
     ShadowUpload shadowUpload{};
     shadowUpload.active = false;
+    // Per-cascade light frustums for caster culling (sphere vs frustum).
+    FrustumPlanes cascadeFrustums[ShadowConfig::kCascades];
     if ((shadowCaster || haveExtraShadowCasters) && defaultCam) {
-        auto cd = defaultCam->data();
-        glm::vec3 dir = shadowCaster ? glm::vec3(shadowCaster->dx, shadowCaster->dy, shadowCaster->dz)
-                                     : gLightDir;
-        if (glm::length(dir) < 1e-6f) dir = glm::vec3(0.f, 1.f, 0.f);
-        else dir = glm::normalize(dir);
-        const float shadowBias = shadowCaster ? shadowCaster->shadowBias : 0.003f;
+        auto      cd  = defaultCam->data();
+        glm::vec3 dir = shadowCaster ? glm::vec3(shadowCaster->dx, shadowCaster->dy, shadowCaster->dz) : gLightDir;
+        if (glm::length(dir) < 1e-6f)
+            dir = glm::vec3(0.f, 1.f, 0.f);
+        else
+            dir = glm::normalize(dir);
+        const float shadowBias     = shadowCaster ? shadowCaster->shadowBias : 0.003f;
         const float shadowStrength = shadowCaster ? shadowCaster->shadowStrength : 1.f;
-        const float fovRad = cd->fovYDeg * 0.017453292519943295f;
-        shadowUpload =
-            buildDirectionalCSM(dir, glm::vec3(cd->eyeX, cd->eyeY, cd->eyeZ),
-                                glm::vec3(cd->targetX, cd->targetY, cd->targetZ),
-                                glm::vec3(cd->upX, cd->upY, cd->upZ), fovRad, aspect, cd->nearZ,
-                                cd->farZ, shadowBias, shadowStrength);
-
-        if (ecs::current()->getManager<Renderable3D>() != nullptr || haveExtraShadowCasters) {
-            auto casterView =
-                ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
-            for (int c = 0; c < ShadowConfig::kCascades; ++c) {
-                eve::debug::rtPassBegin("ShadowPass");
-                gfx.beginShadowPass(c);
-                for (auto it = casterView.begin(); it != casterView.end(); ++it) {
-                    auto [xf, mr] = *it;
-                    if (!mr->visible || !mr->effectiveCastShadow()) continue;
-                    const glm::mat4 model = modelFromTransform(*xf);
-                    auto drawShadowMesh = [&](Mesh *drawMesh) {
-                        if (!drawMesh) return;
-                        eve::debug::rtBind("mesh", "shadowCaster");
-                        eve::debug::rtDraw("drawMeshShadow", "cascade");
-                        gfx.drawMeshShadow(drawMesh, shadowUpload.ubo.lightVP[c] * model);
-                    };
-                    if (mr->usesParts()) {
-                        for (int p = 0; p < mr->partCount; ++p) {
-                            Material *mat = mr->parts[p].material ? mr->parts[p].material : mr->material;
-                            if (mat && !mat->getCastShadow()) continue;
-                            drawShadowMesh(mr->parts[p].mesh);
-                        }
-                } else {
-                    Mesh *drawMesh = mr->mesh;
-                    if (defaultCam) {
-                            auto cdd = defaultCam->data();
-                            const float dx = xf->x - cdd->eyeX;
-                            const float dy = xf->y - cdd->eyeY;
-                            const float dz = xf->z - cdd->eyeZ;
-                            drawMesh = mr->meshForDistance(std::sqrt(dx * dx + dy * dy + dz * dz));
-                        }
-                        drawShadowMesh(drawMesh);
-                    }
-                }
-                // Extra shadow casters (billboard/card geometry not in the ECS).
-                for (const auto &drawer : g_shadowDrawers)
-                    drawer(gfx, shadowUpload.ubo.lightVP[c], *cd);
-                gfx.endShadowPass();
-                eve::debug::rtPassEnd("ShadowPass");
+        const float fovRad         = cd->fovYDeg * 0.017453292519943295f;
+        shadowUpload               = buildDirectionalCSM(
+            dir, glm::vec3(cd->eyeX, cd->eyeY, cd->eyeZ), glm::vec3(cd->targetX, cd->targetY, cd->targetZ),
+            glm::vec3(cd->upX, cd->upY, cd->upZ), fovRad, aspect, cd->nearZ, cd->farZ, shadowBias, shadowStrength);
+        for (int c = 0; c < ShadowConfig::kCascades; ++c)
+            cascadeFrustums[c] = extractFrustum(shadowUpload.ubo.lightVP[c]);
+    } else if (!localShadowSlots.empty()) {
+        // Local-only frame: keep CSM inactive but still upload local VPs.
+        shadowUpload.active = true;
+        shadowUpload.ubo.bias = glm::vec4(0.002f, 0.f, 1.f, 0.02f);
+        shadowUpload.ubo.splits.w = 0.f;
+    }
+    if (!localShadowSlots.empty()) {
+        shadowUpload.active = true;
+        shadowUpload.ubo.localMeta =
+            glm::vec4(float(localShadowSlots.size()), 1.f, 0.f, 0.f);
+        shadowUpload.ubo.localSlot01 = glm::vec4(-1.f);
+        shadowUpload.ubo.localSlot23 = glm::vec4(-1.f);
+        for (size_t s = 0; s < localShadowSlots.size(); ++s) {
+            const LocalShadowSlot& slot = localShadowSlots[s];
+            shadowUpload.ubo.localVP[s] = slot.lightVP;
+            if (s < 4) shadowUpload.ubo.localBias[int(s)] = slot.bias;
+            if (slot.lightIndex >= 0 && slot.lightIndex < 8) {
+                glm::vec4& bank = slot.lightIndex < 4 ? shadowUpload.ubo.localSlot01 : shadowUpload.ubo.localSlot23;
+                bank[slot.lightIndex % 4] = float(s);
             }
         }
     }
     gfx.setMesh3DShadows(shadowUpload);
 
+    // Hybrid always builds the clustered light table so deferred lighting and
+    // transparent Forward+ share one upload. ForwardPlus still gates on light count.
     const bool useClustered =
-        allowClustered && packed.size() > size_t(Lighting3DPack::kMaxLights);
-    if (!useClustered) {
-        ClusteredLightingUpload off{};
-        off.active = false;
-        gfx.setMesh3DClusteredLighting(off);
-        const Camera3D::Data *ambientCam = defaultCam ? defaultCam->data().operator->() : nullptr;
-        gfx.setMesh3DLighting(packLights3D(packed, ambientCam));
+        allowClustered && (doDeferredLighting || packed.size() > size_t(Lighting3DPack::kMaxLights));
+    // Light split / directional promotion is camera-independent: compute once,
+    // then each camera view bakes its own clustered table from these lists.
+    std::vector<ClusteredLightGpu> clusteredPoints;
+    std::vector<ClusteredLightGpu> clusteredDirs;
+    if (useClustered) {
+        splitLights(packed, clusteredPoints, clusteredDirs);
+        if (clusteredDirs.empty()) {
+            ClusteredLightGpu d{};
+            d.posRadius = glm::vec4(gLightDir, 0.f);
+            d.color     = glm::vec4(gLightColor, 1.f);
+            clusteredDirs.push_back(d);
+        }
+        if (shadowCaster && !clusteredDirs.empty()) {
+            glm::vec3 dir(shadowCaster->dx, shadowCaster->dy, shadowCaster->dz);
+            if (glm::length(dir) < 1e-6f)
+                dir = glm::vec3(0.f, 1.f, 0.f);
+            else
+                dir = glm::normalize(dir);
+            for (size_t i = 0; i < clusteredDirs.size(); ++i) {
+                if (glm::length(glm::vec3(clusteredDirs[i].posRadius) - dir) < 1e-3f) {
+                    if (i != 0) std::swap(clusteredDirs[0], clusteredDirs[i]);
+                    break;
+                }
+            }
+        }
+    }
+
+    const bool haveManager  = ecs::current()->getManager<Renderable3D>() != nullptr;
+    const bool shadowActive = doShadow && shadowUpload.active;
+
+    // Per-camera constants (matrices, frustum, lighting, clustered table).
+    // The default camera is slot 0 so the G-buffer pass reuses its view.
+    std::vector<CameraView> cams;
+    cams.reserve(2);
+    glm::vec2     temporalJitter(0.f);
+    AntiAliasing* temporalAA = nullptr;
+    if (defaultCam && rc->isEnabled("taa")) {
+        auto cd    = defaultCam->data();
+        temporalAA = gfx.pipelineAntiAliasing();
+        temporalAA->setTemporalCamera(glm::vec3(cd->eyeX, cd->eyeY, cd->eyeZ),
+                                      glm::vec3(cd->targetX, cd->targetY, cd->targetZ), cd->fovYDeg);
+        temporalJitter = temporalAA->prepareTemporalJitter(gfx.getWidth(), gfx.getHeight());
+    }
+    if (defaultCam) {
+        cams.push_back(buildCameraView(defaultCam->data().operator->(), packed, useClustered, aspect, clusteredPoints,
+                                       clusteredDirs, gfx, temporalJitter));
+        if (temporalAA) {
+            auto cd = defaultCam->data();
+            temporalAA->setTemporalViewProjection(cams.front().viewProj, cd->nearZ, cd->farZ);
+        }
+    }
+    auto findOrAddCam = [&](Camera3D* camEnt) -> int {
+        Camera3D::Data* d = camEnt->data().operator->();
+        for (size_t i = 0; i < cams.size(); ++i) {
+            if (cams[i].data == d) return int(i);
+        }
+        cams.push_back(
+            buildCameraView(d, packed, useClustered, aspect, clusteredPoints, clusteredDirs, gfx, temporalJitter));
+        return int(cams.size()) - 1;
+    };
+
+    // Single ECS traversal: one model matrix, one LOD pick, one set of
+    // sphere-vs-frustum tests per part. Passes below only replay the list.
+    std::vector<CulledItem> items;
+    items.reserve(64);
+    if (haveManager) {
+        auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto [xf, mr] = *it;
+            if (!mr->visible) continue;
+            if (mr->instances) {
+                auto valid = detail::validateInstancedRenderable(*mr);
+                if (!valid) throw eve::Exception("%s", valid.status().describe().c_str());
+            }
+            Camera3D *camEnt = mr->camera ? mr->camera : defaultCam;
+            if (!camEnt) continue;
+            const int         camIdx        = findOrAddCam(camEnt);
+            const CameraView& cv            = cams[size_t(camIdx)];
+            const float       dx            = xf->x - cv.eye.x;
+            const float       dy            = xf->y - cv.eye.y;
+            const float       dz            = xf->z - cv.eye.z;
+            const float       distSq        = dx * dx + dy * dy + dz * dz;
+            const float       dist          = std::sqrt(distSq);
+            const float       layerDistance = cv.data->layerCullDistances[size_t(mr->layer)];
+            if (layerDistance > 0.f && dist > layerDistance) continue;
+            const glm::mat4 model    = modelFromTransform(*xf);
+            const float     maxScale = detail::sphereStretch(*xf);
+            const bool      shadowOk = mr->effectiveCastShadow();
+
+            auto pushPart = [&](Mesh* drawMesh, Material* mat, bool asHair, bool castsShadow,
+                                const ModelPart* modelPart, int lodLevel, float lodWeight,
+                                bool lodFadeReverse = false) {
+                if (!drawMesh) return;
+                CulledItem item;
+                item.mr       = mr;
+                item.mesh     = drawMesh;
+                item.material = mat;
+                item.shader   = mat ? mat->effectiveShader() : mr->shader;
+                item.model    = model;
+                const auto* lodState = lodLevel >= 0 && lodLevel < mr->lodCount &&
+                                               mr->lodRendererStates[lodLevel].configured
+                    ? &mr->lodRendererStates[lodLevel]
+                    : nullptr;
+                item.receiveShadow = lodState ? lodState->receiveShadows : mr->receiveShadow;
+                item.shadowsOnly = lodState && lodState->shadowCastingMode == 3;
+                item.shadowDoubleSided = lodState ? lodState->shadowCastingMode == 2
+                                                  : (!mat || mat->getDoubleSided());
+                item.useReflectionProbes = !lodState || lodState->reflectionProbeUsage != 0;
+                item.lightProbeUsage = lodState ? lodState->lightProbeUsage : 0;
+                item.skinInfluenceLimit = lodState && lodState->skinQuality != 0 ? lodState->skinQuality : 4;
+                item.lodWeight = std::clamp(lodWeight, 0.f, 1.f);
+                item.lodFadeReverse = lodFadeReverse;
+                item.speedTreeFade = mr->lodFadeMode == 1 && item.lodWeight < 0.9999f && !item.shader;
+                if (temporalAA && (!lodState || lodState->motionVectorMode == 1))
+                    item.temporalMotion = temporalAA->prepareTemporalObjectMotion(mr, model);
+                item.distSq                = distSq;
+                const glm::vec4 viewCenter = cv.view * glm::vec4(xf->x, xf->y, xf->z, 1.f);
+                item.projectedDepth = -viewCenter.z;
+                item.camIdx   = camIdx;
+                item.hair     = asHair;
+                item.surfaceMode = mat ? mat->surfaceMode()
+                                       : (asHair ? SurfaceMode::Transparent
+                                                 : SurfaceMode::Opaque);
+                item.sortPriority = modelPart && modelPart->hasSortPriority
+                                        ? modelPart->sortPriority
+                                        : (mat ? mat->getSortPriority() : 0);
+                item.xray     = mr->xrayHighlight;
+                if (mr->instances) {
+                    const auto &range = *mr->instances;
+                    glm::vec3   center, half;
+                    for (int i = 0; i < 3; ++i) {
+                        center[i] = range.minimum[i] * .5f + range.maximum[i] * .5f;
+                        half[i]   = range.maximum[i] * .5f - range.minimum[i] * .5f;
+                    }
+                    item.worldC = glm::vec3(model * glm::vec4(center, 1));
+                    item.worldR = glm::length(half) * maxScale;
+                    item.inView = meshInstanceRangeVisible(range, model, cv.cullViewProj, cv.eye);
+                    item.inDefaultView =
+                        defaultCam ? meshInstanceRangeVisible(range, model, cams[0].cullViewProj, cams[0].eye) : true;
+                } else if (drawMesh->hasBounds()) {
+                    const glm::vec4 c4 =
+                        model * glm::vec4(drawMesh->boundsCx, drawMesh->boundsCy, drawMesh->boundsCz, 1.f);
+                    item.worldC        = glm::vec3(c4);
+                    item.worldR        = drawMesh->boundsRadius * maxScale;
+                    item.inView        = cv.frustum.sphereVisible(item.worldC, item.worldR);
+                    item.inDefaultView = defaultCam ? cams[0].frustum.sphereVisible(item.worldC, item.worldR) : true;
+                    const Camera3D::Data* shadowCamera   = defaultCam ? defaultCam->data().operator->() : cv.data;
+                    const float           shadowDistance = shadowCamera->shadowLayerCullDistances[size_t(mr->layer)];
+                    if (shadowCaster && shadowActive && castsShadow &&
+                        (shadowDistance <= 0.f || dist <= shadowDistance)) {
+                        for (int c = 0; c < ShadowConfig::kCascades; ++c) {
+                            if (cascadeFrustums[c].sphereVisible(item.worldC, item.worldR))
+                                item.cascadeMask |= (1u << c);
+                        }
+                    }
+                } else {
+                    // No bounds (e.g. legacy/imported mesh): never cull.
+                    item.inView                          = true;
+                    item.inDefaultView                   = true;
+                    const Camera3D::Data* shadowCamera   = defaultCam ? defaultCam->data().operator->() : cv.data;
+                    const float           shadowDistance = shadowCamera->shadowLayerCullDistances[size_t(mr->layer)];
+                    if (shadowCaster && shadowActive && castsShadow &&
+                        (shadowDistance <= 0.f || dist <= shadowDistance))
+                        item.cascadeMask = (1u << ShadowConfig::kCascades) - 1u;
+                }
+                items.push_back(item);
+            };
+
+            if (mr->usesParts()) {
+                for (int p = 0; p < mr->partCount; ++p) {
+                    Material*  mat    = mr->parts[p].material ? mr->parts[p].material : mr->material;
+                    const bool asHair = mat ? mat->isTransparentHair() : mr->isHair;
+                    const bool casts  = shadowOk && !(mat && !mat->getCastShadow());
+                    pushPart(mr->parts[p].mesh, mat, asHair, casts, &mr->parts[p], -1, 1.f);
+                }
+            } else {
+                const float lodDistance = dist / std::max(cv.data->lodBias, 0.001f);
+                int primary=-1,secondary=-1;float secondaryWeight=0.f;
+                mr->lodBlendForDistance(lodDistance,primary,secondary,secondaryWeight);
+                auto meshAt=[&](int level)->Mesh*{
+                    if (mr->lodCount <= 0) return level >= 0 ? mr->mesh : nullptr;
+                    return level>=0&&level<mr->lodCount?mr->lodMeshes[level]:nullptr;
+                };
+                auto castsAt=[&](int level){return level<0||mr->lodRendererStates[level].shadowCastingMode!=0;};
+                const float primaryWeight=1.f-secondaryWeight;
+                const bool ditherShadows = mr->lodFadeMode == 1 && secondaryWeight > 0.f;
+                pushPart(meshAt(primary),mr->material,mr->effectiveHair(),
+                         shadowOk&&castsAt(primary)&&(ditherShadows||primaryWeight>=.5f),
+                         nullptr,primary,primaryWeight);
+                if(secondaryWeight>0.f)
+                    pushPart(meshAt(secondary),mr->material,mr->effectiveHair(),
+                             shadowOk&&castsAt(secondary)&&(ditherShadows||secondaryWeight>.5f),
+                             nullptr,secondary,secondaryWeight,true);
+            }
+        }
+    }
+
+    // CSM shadow passes — replay the collected casters, culled per cascade.
+    // Extra drawers may run without a Light3D caster (default gLightDir CSM).
+    if (shadowActive && (shadowCaster || haveExtraShadowCasters) &&
+        (haveManager || haveExtraShadowCasters)) {
+        auto cd = defaultCam->data();
+        for (int c = 0; c < ShadowConfig::kCascades; ++c) {
+            eve::debug::rtPassBegin("ShadowPass");
+            gfx.beginShadowPass(c);
+            for (const auto& item : items) {
+                if ((item.cascadeMask & (1u << c)) == 0) continue;
+                eve::debug::rtBind("mesh", "shadowCaster");
+                eve::debug::rtDraw("drawMeshShadow", "cascade");
+                Texture* shadowAlbedo = item.material ? item.material->getAlbedoTexture() : item.mr->texture;
+                const bool doubleSidedShadow = item.shadowDoubleSided ||
+                                               (item.material && item.material->getDoubleSided());
+                if (item.surfaceMode == SurfaceMode::Masked)
+                    gfx.setMesh3DSkinInfluenceLimit(skinInfluenceLimit(item.skinInfluenceLimit));
+                if (item.surfaceMode == SurfaceMode::Masked)
+                    gfx.drawMeshShadowAlpha(item.mesh, shadowUpload.ubo.lightVP[c] * item.model, shadowAlbedo,
+                                            doubleSidedShadow, item.lodWeight, item.lodFadeReverse,
+                                            item.speedTreeFade);
+                else if (item.surfaceMode != SurfaceMode::Transparent) {
+                    gfx.setMesh3DSkinInfluenceLimit(skinInfluenceLimit(item.skinInfluenceLimit));
+                    gfx.drawMeshShadow(item.mesh, shadowUpload.ubo.lightVP[c] * item.model, doubleSidedShadow);
+                }
+            }
+            // Extra shadow casters (billboard/card geometry not in the ECS).
+            for (const auto& entry : g_shadowDrawers) entry.drawer(gfx, shadowUpload.ubo.lightVP[c], *cd);
+            gfx.endShadowPass();
+            eve::debug::rtPassEnd("ShadowPass");
+        }
+    }
+
+    // Spot (perspective) local shadow slots — layers after the three CSM cascades.
+    // Paging may keep a slot resident without redrawing when needsUpdate is false.
+    if (doShadow && !localShadowSlots.empty() && (haveManager || haveExtraShadowCasters) && defaultCam) {
+        auto cd = defaultCam->data();
+        for (const LocalShadowSlot& slot : localShadowSlots) {
+            if (!slot.needsUpdate) continue;
+            eve::debug::rtPassBegin("LocalShadowPass");
+            gfx.beginShadowPass(slot.layer);
+            const FrustumPlanes localFrustum = extractFrustum(slot.lightVP);
+            for (const auto& item : items) {
+                if (item.surfaceMode == SurfaceMode::Transparent) continue;
+                // Approximate: draw every opaque caster inside the spot frustum.
+                const glm::vec3 center = glm::vec3(item.model[3]);
+                if (!localFrustum.sphereVisible(center, 2.f)) continue;
+                eve::debug::rtBind("mesh", "localShadowCaster");
+                Texture* shadowAlbedo = item.material ? item.material->getAlbedoTexture() : item.mr->texture;
+                const bool doubleSidedShadow =
+                    item.shadowDoubleSided || (item.material && item.material->getDoubleSided());
+                gfx.setMesh3DSkinInfluenceLimit(skinInfluenceLimit(item.skinInfluenceLimit));
+                if (item.surfaceMode == SurfaceMode::Masked)
+                    gfx.drawMeshShadowAlpha(item.mesh, slot.lightVP * item.model, shadowAlbedo, doubleSidedShadow,
+                                            item.lodWeight, item.lodFadeReverse, item.speedTreeFade);
+                else
+                    gfx.drawMeshShadow(item.mesh, slot.lightVP * item.model, doubleSidedShadow);
+            }
+            for (const auto& entry : g_shadowDrawers) entry.drawer(gfx, slot.lightVP, *cd);
+            gfx.endShadowPass();
+            eve::debug::rtPassEnd("LocalShadowPass");
+        }
     }
 
     // G-buffer fill (sampleable depth/normal) — before the forward swapchain pass.
     if (doGBuffer && defaultCam &&
-        (ecs::current()->getManager<Renderable3D>() != nullptr || !g_gbufferDrawers.empty())) {
+        (haveManager || !g_gbufferDrawers.empty() || !g_gpuOpaqueCollectors.empty())) {
         eve::debug::rtPassBegin("GBufferPass");
-        auto cd = defaultCam->data();
-        const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
-        const glm::vec3 target(cd->targetX, cd->targetY, cd->targetZ);
-        const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
-        const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
-        const float fovRad = cd->fovYDeg * 0.017453292519943295f;
-        const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, aspect, cd->nearZ, cd->farZ);
-        const glm::mat4 viewProj = projM * viewM;
-        const int gw = std::max(1, gfx.getPixelWidth() > 0 ? gfx.getPixelWidth() : gfx.getWidth());
-        const int gh = std::max(1, gfx.getPixelHeight() > 0 ? gfx.getPixelHeight() : gfx.getHeight());
+        const CameraView& cv = cams[0];  // default camera is slot 0
+        const int         gw = std::max(1, gfx.getPixelWidth() > 0 ? gfx.getPixelWidth() : gfx.getWidth());
+        const int         gh = std::max(1, gfx.getPixelHeight() > 0 ? gfx.getPixelHeight() : gfx.getHeight());
         gfx.beginGBufferPass(gw, gh);
-        auto gbView =
-            ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
-        for (auto it = gbView.begin(); it != gbView.end(); ++it) {
-            auto [xf, mr] = *it;
-            if (!mr->visible) continue;
+        for (const auto& item : items) {
             // X-ray targets are skipped so their pixels record the occluder depth
             // behind them; the X-ray shader samples that to detect occlusion.
-            if (mr->xrayHighlight) continue;
-            const glm::mat4 model = modelFromTransform(*xf);
-            const glm::mat4 mvp = viewProj * model;
-            auto emit = [&](Mesh *drawMesh, Material *mat, Texture *albedo, float tr, float tg,
-                            float tb) {
-                if (!drawMesh) return;
-                if (mat && mat->isTransparentHair()) return;
-                if (!mat && mr->isHair) return;
-                eve::debug::rtDraw("drawMeshGBuffer", "gbuffer");
-                gfx.drawMeshGBuffer(drawMesh, mvp, model, cd->nearZ, cd->farZ, albedo, tr, tg, tb);
-            };
-            if (mr->usesParts()) {
-                for (int p = 0; p < mr->partCount; ++p) {
-                    Material *mat = mr->parts[p].material ? mr->parts[p].material : mr->material;
-                    Texture *alb = mat ? mat->getAlbedoTexture() : mr->texture;
-                    float tr = mat ? mat->getTintR() : mr->r;
-                    float tg = mat ? mat->getTintG() : mr->g;
-                    float tb = mat ? mat->getTintB() : mr->b;
-                    emit(mr->parts[p].mesh, mat, alb, tr, tg, tb);
-                }
-            } else {
-                if (mr->effectiveHair()) continue;
-                const float dx = xf->x - eye.x;
-                const float dy = xf->y - eye.y;
-                const float dz = xf->z - eye.z;
-                Texture *alb = mr->material ? mr->material->getAlbedoTexture() : mr->texture;
-                float tr = mr->material ? mr->material->getTintR() : mr->r;
-                float tg = mr->material ? mr->material->getTintG() : mr->g;
-                float tb = mr->material ? mr->material->getTintB() : mr->b;
-                emit(mr->meshForDistance(std::sqrt(dx * dx + dy * dy + dz * dz)), mr->material, alb, tr,
-                     tg, tb);
-            }
+            if (item.xray || item.mr->instances) continue;
+            if (item.surfaceMode == SurfaceMode::Transparent) continue;
+            if (!item.inDefaultView) continue;
+            Texture*    alb       = item.material ? item.material->getAlbedoTexture() : item.mr->texture;
+            const float tr        = item.material ? item.material->getTintR() : item.mr->r;
+            const float tg        = item.material ? item.material->getTintG() : item.mr->g;
+            const float tb        = item.material ? item.material->getTintB() : item.mr->b;
+            const float roughness = item.material ? item.material->getRoughness() : item.mr->roughness;
+            const float metallic  = item.material ? item.material->getMetallic() : item.mr->metallic;
+            gfx.setMesh3DSkinInfluenceLimit(skinInfluenceLimit(item.skinInfluenceLimit));
+            eve::debug::rtDraw("drawMeshGBuffer", "gbuffer");
+            if (item.surfaceMode == SurfaceMode::Masked)
+                gfx.drawMeshGBufferAlpha(item.mesh, cv.viewProj * item.model, item.model, cv.data->nearZ, cv.data->farZ,
+                                         alb, tr, tg, tb, item.temporalMotion.x, item.temporalMotion.y, roughness,
+                                         metallic);
+            else
+                gfx.drawMeshGBuffer(item.mesh, cv.viewProj * item.model, item.model, cv.data->nearZ, cv.data->farZ, alb,
+                                    tr, tg, tb, item.temporalMotion.x, item.temporalMotion.y, roughness, metallic);
         }
         // Extra G-buffer contributors (billboard/card geometry not in the ECS).
-        for (const auto &drawer : g_gbufferDrawers) drawer(gfx, *cd, viewProj, aspect);
+        for (const auto& drawer : g_gbufferDrawers) drawer(gfx, *cv.data, cv.viewProj, aspect);
         gfx.endGBufferPass();
         eve::debug::rtPassEnd("GBufferPass");
     } else if (!doGBuffer) {
         rc->getGBuffer()->clear();
     }
 
-    if (!doForward && !doHair) return;
-
-    gfx.begin3DFrame();
-    if (!gfx.had3DThisFrame())
-        return;
-
-    if (ecs::current()->getManager<Renderable3D>() == nullptr) return;
-
-    struct DrawItem {
-        Renderable3D::Transform3D *xf;
-        Renderable3D::MeshRenderer *mr;
-        Mesh *mesh;
-        Material *material;
-        float distSq;
-    };
-    std::vector<DrawItem> opaque;
-    std::vector<DrawItem> hair;
-    opaque.reserve(64);
-    hair.reserve(16);
-
-    auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
-    for (auto it = view.begin(); it != view.end(); ++it) {
-        auto [xf, mr] = *it;
-        if (!mr->visible) continue;
-        Camera3D *camEnt = mr->camera ? mr->camera : defaultCam;
-        if (!camEnt) continue;
-        auto cd = camEnt->data();
-        const float dx = xf->x - cd->eyeX;
-        const float dy = xf->y - cd->eyeY;
-        const float dz = xf->z - cd->eyeZ;
-        const float distSq = dx * dx + dy * dy + dz * dz;
-        const float dist = std::sqrt(distSq);
-
-        auto pushItem = [&](Mesh *mesh, Material *mat, bool asHair) {
-            if (!mesh) return;
-            DrawItem item{xf, mr, mesh, mat, distSq};
-            if (asHair)
-                hair.push_back(item);
-            else
-                opaque.push_back(item);
-        };
-
-        if (mr->usesParts()) {
-            for (int p = 0; p < mr->partCount; ++p) {
-                Material *mat = mr->parts[p].material ? mr->parts[p].material : mr->material;
-                const bool asHair = mat ? mat->isTransparentHair() : mr->isHair;
-                pushItem(mr->parts[p].mesh, mat, asHair);
-            }
-        } else {
-            Mesh *drawMesh = mr->meshForDistance(dist);
-            Material *mat = mr->material;
-            pushItem(drawMesh, mat, mr->effectiveHair());
-        }
+    // Screen-space decal layer: box-projected decals read the G-buffer
+    // depth/normal and write albedo/normal/params targets sampled by
+    // mesh3d.frag before lighting. Skipped when no decals are registered or
+    // the backend cannot run the pass (WebGPU).
+    if (doDecal && defaultCam && !g_decalDrawers.empty() && gfx.supportsDecal()) {
+        eve::debug::rtPassBegin("DecalPass");
+        const CameraView& cv = cams[0];
+        const int         dw = std::max(1, gfx.getPixelWidth() > 0 ? gfx.getPixelWidth() : gfx.getWidth());
+        const int         dh = std::max(1, gfx.getPixelHeight() > 0 ? gfx.getPixelHeight() : gfx.getHeight());
+        gfx.beginDecalPass(dw, dh);
+        gfx.setDecalCamera(cv.viewProj, cv.data->nearZ, cv.data->farZ);
+        for (const auto& drawer : g_decalDrawers) drawer(gfx, *cv.data, cv.viewProj, aspect);
+        gfx.endDecalPass();
+        eve::debug::rtPassEnd("DecalPass");
     }
 
-    std::stable_sort(hair.begin(), hair.end(),
-                     [](const DrawItem &a, const DrawItem &b) { return a.distSq > b.distSq; });
+    if (!doForward && !doHair) return;
 
-    auto bindLegacyMaterial = [&](Renderable3D::MeshRenderer *mr) {
+    // GPU-driven opaque is a ForwardPlus path; Hybrid lights core opaque via
+    // deferredLighting and must not also submit GPU-driven lit draws.
+    const bool gpuDrivenWanted = !doDeferredLighting && rc->isEnabled("gpuDriven") && gfx.supportsGpuDriven3D();
+    gfx.gpuDrivenSetEnabled(gpuDrivenWanted);
+
+    if (defaultCam) {
+        auto cd = defaultCam->data();
+        gfx.setSceneExposure(std::exp2(cd->exposureEV));
+        gfx.setSceneAutoExposure(cd->autoExposure, cd->autoExposureMinEV, cd->autoExposureMaxEV);
+        gfx.setSceneBloom(cd->bloomIntensity, cd->bloomThreshold);
+        gfx.setSceneDepthOfField(cd->dofFocusDistance, cd->dofMaxBlurPx, cd->dofFocusRange,
+                                 cd->nearZ, cd->farZ);
+    }
+    if (defaultCam) {
+        const auto& cv       = cams.front();
+        auto        prepared = detail::prepareViewResources(gfx, cv.viewProj, cv.eye);
+        if (!prepared) throw eve::Exception("%s", prepared.status().describe().c_str());
+    }
+    gfx.begin3DFrame();
+    if (!gfx.had3DThisFrame()) return;
+
+    // Phase C Hybrid: fullscreen clustered deferred lighting fills scene color
+    // for core PBR opaque/masked pixels written to the GBuffer. Transparent and
+    // extended-feature opaques still go through Forward+ below.
+    if (doDeferredLighting && defaultCam && !cams.empty()) {
+        eve::debug::rtPassBegin("DeferredLighting");
+        const CameraView& cv = cams[0];
+        gfx.setMesh3DViewProj(cv.viewProj);
+        gfx.setMesh3DView(cv.view);
+        gfx.setMesh3DClip(cv.data->nearZ, cv.data->farZ);
+        gfx.setMesh3DCameraPos(cv.eye);
+        gfx.setMesh3DEnv(cv.data->envMap, cv.data->envIntensity);
+        gfx.setMesh3DEnvProbe(cv.data->envProbeCenter, cv.data->envProbeExtent);
+        gfx.setMesh3DLighting(cv.lighting);
+        if (cv.clusteredValid) {
+            gfx.setMesh3DClusteredLighting(cv.clustered);
+        } else {
+            // Orthographic / empty: drawDeferredLighting synthesizes a valid
+            // empty cluster table from the frame UBO primary light.
+            ClusteredLightingUpload off{};
+            off.active = false;
+            gfx.setMesh3DClusteredLighting(off);
+        }
+        gfx.drawDeferredLighting();
+        eve::debug::rtPassEnd("DeferredLighting");
+    }
+
+    auto drawPersistentPrimitives = [&]() {
+        if (cams.empty()) return;
+        const CameraView& camera = cams.front();
+        SceneDrawContext  context;
+        context.view           = camera.view;
+        context.projection     = camera.proj;
+        context.cameraPosition = camera.eye;
+        context.viewportSize   = glm::ivec2(gfx.getPixelWidth() > 0 ? gfx.getPixelWidth() : gfx.getWidth(),
+                                            gfx.getPixelHeight() > 0 ? gfx.getPixelHeight() : gfx.getHeight());
+        context.nearPlane      = camera.data->nearZ;
+        context.farPlane       = camera.data->farZ;
+        PrimitiveSceneCanvas3D canvas(context);
+        gfx.getPrimitiveScene()->render(canvas);
+        if (!canvas.commands().empty() || !canvas.triangles().empty()) gfx.drawPrimitiveScene(canvas);
+    };
+
+    if (!haveManager && g_forwardDrawers.empty() && g_gpuOpaqueCollectors.empty()) {
+        drawPersistentPrimitives();
+        return;
+    }
+
+    // Replay the items collected above: opaque first, hair back-to-front.
+    std::vector<const CulledItem*> opaque;
+    std::vector<const CulledItem*> transparentItems;
+    opaque.reserve(items.size());
+    transparentItems.reserve(items.size() / 4);
+    for (const auto& item : items) {
+        if (!item.inView || item.shadowsOnly) continue;
+        (item.surfaceMode == SurfaceMode::Transparent ? transparentItems : opaque).push_back(&item);
+    }
+    // Opaque: group by (camera, shader, material, mesh) so the backend sees
+    // long runs of identical pipeline/descriptor state instead of thrashing
+    // between materials. Hair stays sorted back-to-front by distance below.
+    std::stable_sort(opaque.begin(), opaque.end(), [](const CulledItem* a, const CulledItem* b) {
+        if (a->camIdx != b->camIdx) return a->camIdx < b->camIdx;
+        if (a->shader != b->shader) return a->shader < b->shader;
+        if (a->material != b->material) return a->material < b->material;
+        return a->mesh < b->mesh;
+    });
+    std::stable_sort(transparentItems.begin(), transparentItems.end(), [](const CulledItem* a, const CulledItem* b) {
+        if (a->camIdx != b->camIdx) return a->camIdx < b->camIdx;
+        if (a->sortPriority != b->sortPriority) return a->sortPriority < b->sortPriority;
+        return a->projectedDepth > b->projectedDepth;
+    });
+
+    // Core metallic-roughness opaque/masked already lit by deferredLighting —
+    // skip their Forward+ draws. Custom shaders, extended PBR, unlit, instances,
+    // light probes, and x-ray stay on the forward path.
+    auto isDeferredCoreOpaque = [&](const CulledItem& item) -> bool {
+        if (!doDeferredLighting) return false;
+        // The core deferred shader has no environment/decal samplers or
+        // per-renderable shadow-receive policy. Keep those surfaces on the
+        // existing opaque ForwardPlus overwrite path, alongside custom PBR.
+        if (doDecal && !g_decalDrawers.empty()) return false;
+        const auto* camera = cams[size_t(item.camIdx)].data;
+        if (camera->envMap && camera->envIntensity > 0.f) return false;
+        if (!item.receiveShadow) return false;
+        if (item.surfaceMode == SurfaceMode::Transparent) return false;
+        if (item.hair || item.xray || item.speedTreeFade) return false;
+        if (item.mr->instances || item.lightProbeUsage != 0) return false;
+        if (item.shader) return false;
+        Material* mat = item.material;
+        if (mat) {
+            if (!mat->getReceiveShadow()) return false;
+            if (mat->getTexCellBombStrength() > 0.f) return false;
+            if (mat->getHeightTexture() && mat->getParallaxScale() > 0.f) return false;
+            if (mat->effectiveShader()) return false;
+            if (mat->isTransparentHair()) return false;
+            const std::string model = mat->getShadingModel();
+            if (model != "pbr") return false;
+            if (!mat->getReceiveLight()) return false;
+            // The core G-buffer does not carry the dedicated PBR surface's
+            // texture bindings, authored normal mode or vegetation factors.
+            if (mat->hasPbrSurface()) return false;
+        } else {
+            if (item.mr->texBombStrength > 0.f) return false;
+            if (item.mr->heightTexture && item.mr->parallaxScale > 0.f) return false;
+            if (item.mr->shader) return false;
+            if (!item.mr->receiveLight) return false;
+        }
+        return true;
+    };
+
+    auto bindLegacyMaterial = [&](Renderable3D::MeshRenderer* mr) {
+        gfx.setMesh3DSurface(mr->isHair ? SurfaceMode::Transparent : SurfaceMode::Opaque, BlendMode::Alpha, false,
+                             mr->isHair, 0.5f);
         gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
         gfx.setMesh3DTexCellBomb(mr->texBombScale, mr->texBombStrength, mr->texBombRot);
         gfx.setMesh3DNormalTexture(mr->normalTexture);
+        gfx.setMesh3DPackedNormalMask(mr->packedNormalMask);
         gfx.setMesh3DHeightTexture(mr->heightTexture);
         gfx.setMesh3DParallax(mr->parallaxScale, mr->parallaxMinLayers, mr->parallaxMaxLayers);
         gfx.setMesh3DShadowReceive(mr->receiveShadow);
     };
 
-    auto applyLighting = [&](Renderable3D::MeshRenderer *mr, Material *mat, Camera3D::Data *cd,
-                             const glm::mat4 &viewM, float fovRad) {
-        const bool receiveLight = mat ? mat->getReceiveLight() : mr->receiveLight;
-        Shader *shader = mat ? mat->effectiveShader() : mr->shader;
-        if (!receiveLight) {
-            ClusteredLightingUpload off{};
-            off.active = false;
-            gfx.setMesh3DClusteredLighting(off);
-            Lighting3DPack none{};
-            none.count = 0;
-            none.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
-            gfx.setMesh3DLighting(none);
-        } else if (useClustered && !shader) {
-            std::vector<ClusteredLightGpu> points, dirs;
-            splitLights(packed, points, dirs);
-            if (dirs.empty()) {
-                ClusteredLightGpu d{};
-                d.posRadius = glm::vec4(gLightDir, 0.f);
-                d.color = glm::vec4(gLightColor, 1.f);
-                dirs.push_back(d);
+    // Per-camera / per-lighting state. The clustered SSBO table is uploaded at
+    // most once per camera; afterwards only the cheap active flag toggles.
+    int  curCam       = -1;
+    bool curLit       = false;
+    bool curClustered = false;
+    int  curLightProbeUsage = 0;
+
+    auto drawMeshWithMaterial = [&](const CulledItem& item, CameraView& cv) {
+        auto*     mr       = item.mr;
+        Mesh*     drawMesh = item.mesh;
+        Material* mat      = item.material;
+        if (!drawMesh) return;
+
+        Texture* albedo = mr->texture;
+        Color    tint(mr->r, mr->g, mr->b, mr->a);
+        Shader*  shader = mr->shader;
+        if (mat) {
+            auto bound = mat->bind(gfx);
+            if (!bound) throw Exception("%s", bound.error()->message().c_str());
+            albedo = mat->getAlbedoTexture();
+            tint   = Color(mat->getTintR(), mat->getTintG(), mat->getTintB(), mat->getTintA());
+            shader = mat->effectiveShader();
+        } else {
+            auto reset = gfx.setMesh3DPbrSurface(nullptr);
+            if (!reset) throw Exception("%s", reset.error()->message().c_str());
+            bindLegacyMaterial(mr);
+        }
+        if(item.lodWeight<0.9999f && !item.speedTreeFade)
+            gfx.setMesh3DSurface(SurfaceMode::Transparent,BlendMode::Alpha,mat&&mat->getDoubleSided(),false,0.5f);
+        else if (item.speedTreeFade)
+            gfx.setMesh3DSurface(SurfaceMode::Masked, BlendMode::Alpha, true,
+                                 mat && mat->getDoubleSided(), 0.5f, "cutoff");
+        gfx.setMesh3DShadowReceive(item.receiveShadow && (!mat || mat->getReceiveShadow()));
+
+        const bool lit       = mat ? mat->getReceiveLight() : mr->receiveLight;
+        const bool clustered = lit && useClustered && !shader && item.lightProbeUsage == 0 && !item.speedTreeFade;
+        if (item.camIdx != curCam || lit != curLit || clustered != curClustered ||
+            (lit && (item.lightProbeUsage != 0 || curLightProbeUsage != 0))) {
+            if (item.camIdx != curCam) {
+                gfx.setMesh3DViewProj(cv.viewProj);
+                gfx.setMesh3DView(cv.view);
+                gfx.setMesh3DClip(cv.data->nearZ, cv.data->farZ);
+                gfx.setMesh3DCameraPos(cv.eye);
+                gfx.setMesh3DEnv(cv.data->envMap, cv.data->envIntensity);
+                gfx.setMesh3DEnvProbe(cv.data->envProbeCenter, cv.data->envProbeExtent);
+                curCam = item.camIdx;
             }
-            if (shadowCaster && !dirs.empty()) {
-                glm::vec3 dir(shadowCaster->dx, shadowCaster->dy, shadowCaster->dz);
-                if (glm::length(dir) < 1e-6f) dir = glm::vec3(0.f, 1.f, 0.f);
-                else dir = glm::normalize(dir);
-                for (size_t i = 0; i < dirs.size(); ++i) {
-                    if (glm::length(glm::vec3(dirs[i].posRadius) - dir) < 1e-3f) {
-                        if (i != 0) std::swap(dirs[0], dirs[i]);
-                        break;
+            if (clustered && cv.clusteredValid) {
+                if (!cv.clusteredUploaded) {
+                    gfx.setMesh3DClusteredLighting(cv.clustered);
+                    cv.clusteredUploaded = true;
+                } else {
+                    gfx.setMesh3DClusteredActive(true);
+                }
+            } else {
+                gfx.setMesh3DClusteredActive(false);
+            }
+            if (lit) {
+                Lighting3DPack lighting = cv.lighting;
+                bool sampled = false;
+                if (item.lightProbeUsage == 4 && mr->customLightProbe) {
+                    lighting.diffuseProbeSh = mr->customLightProbeSh;
+                    sampled = true;
+                } else if (item.lightProbeUsage == 1) {
+                    auto sample = DiffuseLightProbeRegistry::instance().sample(
+                        item.worldC, 4);
+                    if (sample) {
+                        lighting.diffuseProbeSh = sample.value().coefficients;
+                        sampled = true;
+                    }
+                } else if (item.lightProbeUsage == 2) {
+                    auto volume = DiffuseLightProbeRegistry::instance().selectVolume(item.worldC);
+                    if (volume) {
+                        lighting.diffuseVolumePosition = volume.value().positions;
+                        lighting.diffuseVolumeExtent = volume.value().extents;
+                        lighting.diffuseVolumeSh = volume.value().coefficients;
+                        lighting.diffuseVolumeProbeCount = volume.value().count;
+                        lighting.diffuseVolumeTrilinearCell = volume.value().trilinearCell;
                     }
                 }
+                lighting.diffuseProbeShEnabled = sampled;
+                gfx.setMesh3DLighting(lighting);
+            } else {
+                Lighting3DPack none{};
+                none.count   = 0;
+                none.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
+                gfx.setMesh3DLighting(none);
             }
-            glm::vec4 ambient(cd->ambientR, cd->ambientG, cd->ambientB, 0.f);
-            auto upload = buildClusteredLighting(points, dirs, viewM, cd->nearZ, cd->farZ,
-                                                 gfx.getWidth(), gfx.getHeight(), fovRad, ambient);
-            gfx.setMesh3DClusteredLighting(upload);
-            gfx.setMesh3DLighting(packLights3D(packed, cd));
-        } else {
-            ClusteredLightingUpload off{};
-            off.active = false;
-            gfx.setMesh3DClusteredLighting(off);
-            gfx.setMesh3DLighting(packLights3D(packed, cd));
-        }
-    };
-
-    auto drawMeshWithMaterial = [&](Renderable3D::Transform3D *xf, Renderable3D::MeshRenderer *mr,
-                                    Mesh *drawMesh, Material *mat) {
-        if (!drawMesh) return;
-        Camera3D *camEnt = mr->camera ? mr->camera : defaultCam;
-        if (!camEnt) return;
-        auto cd = camEnt->data();
-
-        const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
-        const glm::vec3 target(cd->targetX, cd->targetY, cd->targetZ);
-        const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
-        const glm::mat4 viewM = glm::lookAtRH(eye, target, up);
-        const float fovRad = cd->fovYDeg * 0.017453292519943295f;
-        const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, aspect, cd->nearZ, cd->farZ);
-        gfx.setMesh3DViewProj(projM * viewM);
-        gfx.setMesh3DView(viewM);
-        gfx.setMesh3DClip(cd->nearZ, cd->farZ);
-        gfx.setMesh3DCameraPos(eye);
-        gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
-
-        Texture *albedo = mr->texture;
-        Color tint(mr->r, mr->g, mr->b, mr->a);
-        Shader *shader = mr->shader;
-        if (mat) {
-            mat->bind(gfx);
-            albedo = mat->getAlbedoTexture();
-            tint = Color(mat->getTintR(), mat->getTintG(), mat->getTintB(), mat->getTintA());
-            shader = mat->effectiveShader();
-            if (mat->getReceiveLight() && mat->getShadingModel() != "unlit") {
-                applyLighting(mr, mat, cd.operator->(), viewM, fovRad);
-            }
-        } else {
-            bindLegacyMaterial(mr);
-            applyLighting(mr, nullptr, cd.operator->(), viewM, fovRad);
+            curLit       = lit;
+            curClustered = clustered;
+            curLightProbeUsage = item.lightProbeUsage;
         }
 
-        const glm::mat4 model = modelFromTransform(*xf);
+        // Local probes are spatial data. Select at the renderable bounds center
+        // so adjacent volumes do not leak the camera's nearest probe into every
+        // object in the frame.
+        gfx.setMesh3DReflectionProbes(item.useReflectionProbes
+            ? selectReflectionProbes(*cv.data, item.worldC) : ReflectionProbeUpload{});
+
+        const glm::mat4& model = item.model;
         if (albedo) eve::debug::rtBind("texture", "albedo");
-        if (shader)
-            eve::debug::rtBind("shader", (mat && mat->isTransparentHair()) || mr->isHair ? "hair"
-                                                                                         : "mesh");
+        if (shader) eve::debug::rtBind("shader", item.hair ? "hair" : "mesh");
         eve::debug::rtBind("mesh", "renderable3d");
         eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
-        gfx.drawMeshShader(drawMesh, model, albedo, tint, shader);
+        if (mr->instances) {
+            const auto &range = *mr->instances;
+            auto        drawn = gfx.drawMeshShaderInstances(*drawMesh, *shader, model, tint, range.first, range.count);
+            if (!drawn) throw eve::Exception("%s", drawn.status().describe().c_str());
+        } else
+            gfx.drawMeshShader(drawMesh, model, albedo, tint, shader);
 
         // X-ray second pass: paint only the occluded (behind-building) part over
         // the scene. The pipeline runs with depth test/write off + alpha blend and
         // the shader discards visible fragments by sampling the G-buffer depth.
         if (mr->xrayHighlight && mr->xrayShader) {
-            float sw = gfx.getPixelWidth() > 0 ? float(gfx.getPixelWidth()) : float(gfx.getWidth());
-            float shh =
-                gfx.getPixelHeight() > 0 ? float(gfx.getPixelHeight()) : float(gfx.getHeight());
+            float sw  = gfx.getPixelWidth() > 0 ? float(gfx.getPixelWidth()) : float(gfx.getWidth());
+            float shh = gfx.getPixelHeight() > 0 ? float(gfx.getPixelHeight()) : float(gfx.getHeight());
             if (mr->xrayShader->hasUniform("screenW")) mr->xrayShader->sendFloat("screenW", sw);
             if (mr->xrayShader->hasUniform("screenH")) mr->xrayShader->sendFloat("screenH", shh);
             eve::debug::rtBind("shader", "xray");
@@ -766,111 +1382,693 @@ void RenderSystem3D::render(Graphics &gfx) {
 
     // Provide the G-buffer depth to X-ray shaders for the occlusion test.
     if (doGBuffer && rc->getGBuffer() && rc->getGBuffer()->isValid()) {
-        if (Texture *depth = rc->getGBuffer()->getHwDepthTexture()) gfx.setMesh3DSceneDepth(depth);
+        if (Texture* depth = rc->getGBuffer()->getHwDepthTexture()) gfx.setMesh3DSceneDepth(depth);
     }
 
     if (doForward) {
-        for (const auto &item : opaque) drawMeshWithMaterial(item.xf, item.mr, item.mesh, item.material);
+        bool gpuDrivenUsed = false;
+        if (gpuDrivenWanted && !useClustered && defaultCam &&
+            (!opaque.empty() || !g_gpuOpaqueCollectors.empty())) {
+            std::vector<const CulledItem*> gpuOpaque;
+            std::vector<const CulledItem*> cpuOpaque;
+            gpuOpaque.reserve(opaque.size());
+            cpuOpaque.reserve(opaque.size());
+            for (const CulledItem* it : opaque) {
+                if (it->mesh->hasGpuSkinning() || it->camIdx != 0 || !it->material || it->mr->camera != nullptr ||
+                    it->material->effectiveShader() != nullptr || it->lightProbeUsage != 0 ||
+                    !gfx.gpuDrivenMaterialUsable(it->material))
+                    cpuOpaque.push_back(it);
+                else
+                    gpuOpaque.push_back(it);
+            }
+            if (!gpuOpaque.empty() || !g_gpuOpaqueCollectors.empty()) {
+                const CameraView&     cv  = cams[0];  // default camera is slot 0
+                const Camera3D::Data* cd  = cv.data;
+                const glm::vec3       eye = cv.eye;
+                gfx.setMesh3DViewProj(cv.viewProj);
+                gfx.setMesh3DView(cv.view);
+                gfx.setMesh3DClip(cd->nearZ, cd->farZ);
+                gfx.setMesh3DCameraPos(cv.eye);
+                gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
+                gfx.setMesh3DEnvProbe(cd->envProbeCenter, cd->envProbeExtent);
+                gfx.setMesh3DReflectionProbes(ReflectionProbeUpload{});
+                ClusteredLightingUpload off{};
+                off.active = false;
+                gfx.setMesh3DClusteredLighting(off);
+                gfx.setMesh3DLighting(cv.lighting);
+
+                std::vector<eve::graphics::GpuInstance> instances;
+                instances.reserve(gpuOpaque.size());
+                bool       recordsOk     = true;
+                bool       vgAny         = false;
+                const bool resolveWanted = gfx.gpuDrivenResolveWanted();
+                for (const CulledItem* it : gpuOpaque) {
+                    const ReflectionProbeUpload probes = selectReflectionProbes(*cd, it->worldC);
+                    // Stage 3 VG: meshes with a virtual-geometry asset are culled /
+                    // drawn through the cluster path, not the instance chain.
+                    const uint32_t vgAsset =
+                        resolveWanted ? gfx.gpuDrivenVgAssetId(it->mesh) : eve::graphics::kInvalidGpuDrivenSlot;
+                    if (vgAsset != eve::graphics::kInvalidGpuDrivenSlot && probes.count == 0) {
+                        const uint32_t matId = gfx.gpuDrivenMaterialRecord(it->material);
+                        if (matId == eve::graphics::kInvalidGpuDrivenSlot) {
+                            recordsOk = false;
+                            break;
+                        }
+                        vgAny |= gfx.gpuDrivenVgSetInstance(vgAsset, it->model, matId);
+                        continue;
+                    }
+                    eve::graphics::GpuInstance inst{};
+                    inst.model                  = it->model;
+                    inst.meshId                 = gfx.gpuDrivenMeshRecord(it->mesh);
+                    inst.materialId             = gfx.gpuDrivenMaterialRecord(it->material);
+                    inst.reflectionProbeSlots.z = uint32_t(probes.count);
+                    for (int probeIndex = 0; probeIndex < probes.count; ++probeIndex) {
+                        const auto&    probe = probes.probes[probeIndex];
+                        const uint32_t slot  = gfx.gpuDrivenReflectionProbeSlot(probe.cubemap);
+                        if (slot == eve::graphics::kInvalidGpuDrivenSlot) {
+                            recordsOk = false;
+                            break;
+                        }
+                        inst.reflectionProbeSlots[probeIndex]  = slot;
+                        inst.reflectionProbeCenter[probeIndex] = glm::vec4(probe.center, probe.intensity);
+                        inst.reflectionProbeExtent[probeIndex] = glm::vec4(probe.extent, probe.blendDistance);
+                    }
+                    if (!recordsOk) break;
+                    if (inst.meshId == eve::graphics::kInvalidGpuDrivenSlot ||
+                        inst.materialId == eve::graphics::kInvalidGpuDrivenSlot) {
+                        recordsOk = false;
+                        break;
+                    }
+                    instances.push_back(inst);
+                }
+                if (recordsOk && !g_gpuOpaqueCollectors.empty()) {
+                    const auto collectors = g_gpuOpaqueCollectors;
+                    for (const auto& entry : collectors)
+                        entry.collector(gfx, *cd, cv.viewProj, aspect, instances);
+                }
+                if (recordsOk) {
+                    // Stage 2: GPU frustum/HZB cull + GPU-written indirect commands.
+                    if (gfx.gpuDrivenCullEnabled() && !instances.empty() &&
+                        gfx.gpuDrivenCullBegin(instances.data(), uint32_t(instances.size()))) {
+                        gfx.gpuDrivenCullEmit(cv.cullViewProj, eye, cd->fovYDeg, cd->nearZ, cd->farZ);
+                        if (gfx.gpuDrivenResolveWanted()) {
+                            // Stage 3: opaque goes to the GBuffer vis pass, the
+                            // scene color pass runs the fullscreen resolve.
+                            gfx.gpuDrivenRecordVisPass();
+                            gfx.gpuDrivenOpenScenePass();
+                            gfx.gpuDrivenResolve();
+                        } else {
+                            gfx.gpuDrivenOpenScenePass();
+                            gfx.gpuDrivenDrawOpaque();
+                        }
+                        gpuDrivenUsed = true;
+                    } else if (gfx.gpuDrivenCullEnabled() && instances.empty() && vgAny) {
+                        // VG-only frame: no instance chain; the vis pass runs the
+                        // VG cluster cull + draws + resolve.
+                        gfx.gpuDrivenVgComputeSection(cv.cullViewProj, eye, cd->fovYDeg, cd->nearZ, cd->farZ);
+                        gfx.gpuDrivenRecordVisPass();
+                        gfx.gpuDrivenOpenScenePass();
+                        gfx.gpuDrivenResolve();
+                        gpuDrivenUsed = true;
+                    } else {
+                        // Deferred scene pass must be open before stage-1 recording.
+                        gfx.gpuDrivenOpenScenePass();
+                        if (gfx.gpuDrivenSubmitOpaque(instances.data(), uint32_t(instances.size())))
+                            gpuDrivenUsed = true;
+                    }
+                }
+                if (gpuDrivenUsed) {
+                    if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
+                    for (const CulledItem* item : cpuOpaque) drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
+                }
+            }
+        }
+        if (!gpuDrivenUsed) {
+            if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
+            for (const CulledItem* item : opaque) {
+                if (isDeferredCoreOpaque(*item)) continue;
+                drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
+            }
+        }
+        if (defaultCam && !g_forwardDrawers.empty()) {
+            if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
+            const CameraView&     cv = cams.front();
+            const Camera3D::Data* cd = cv.data;
+            gfx.setMesh3DViewProj(cv.viewProj);
+            gfx.setMesh3DView(cv.view);
+            gfx.setMesh3DClip(cd->nearZ, cd->farZ);
+            gfx.setMesh3DCameraPos(cv.eye);
+            gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
+            gfx.setMesh3DEnvProbe(cd->envProbeCenter, cd->envProbeExtent);
+            gfx.setMesh3DReflectionProbes(ReflectionProbeUpload{});
+            gfx.setMesh3DLighting(cv.lighting);
+            if (useClustered)
+                gfx.setMesh3DClusteredLighting(cv.clustered);
+            else {
+                ClusteredLightingUpload off{};
+                off.active = false;
+                gfx.setMesh3DClusteredLighting(off);
+            }
+            const auto drawers = g_forwardDrawers;
+            for (const auto& entry : drawers) entry.drawer(gfx, *cd, cv.viewProj, aspect);
+        }
     }
-    if (doHair) {
-        for (const auto &item : hair) drawMeshWithMaterial(item.xf, item.mr, item.mesh, item.material);
+    if (doForward || doHair) {
+        // Generic transparent surfaces belong to the forward pass; the legacy
+        // hair pass remains independently switchable for hair materials.
+        if (gfx.gpuDrivenScenePassPending()) gfx.gpuDrivenOpenScenePass();
+        for (const CulledItem* item : transparentItems) {
+            if ((item->hair && doHair) || (!item->hair && doForward))
+                drawMeshWithMaterial(*item, cams[size_t(item->camIdx)]);
+        }
     }
 
-    const bool doAO = rc->isEnabled("ao");
-    // WebGPU has no SPIR-V AO shaders; the X-ray path (below) still reads the
-    // G-buffer depth directly.
-    if (doAO && gfx.supportsGBufferPost() && defaultCam && gfx.had3DThisFrame()) {
-        GBuffer *gb = rc->getGBuffer();
+    drawPersistentPrimitives();
+
+    const bool doAO      = rc->isEnabled("ao");
+    const bool doRTGI    = rc->isEnabled("rtgi") || rc->isEnabled("reflectionChain");
+    const bool doSSR     = rc->isEnabled("ssr") || rc->isEnabled("reflectionChain");
+    const bool doRTX     = rc->isEnabled("rtx");
+    bool       aoApplied = false;
+    auto       applyAO   = [&]() {
+        if (!doAO || !gfx.supportsGBufferPost() || !defaultCam || !gfx.had3DThisFrame()) return;
+        GBuffer* gb = rc->getGBuffer();
         if (gb && gb->isValid()) {
-            auto cd = defaultCam->data();
+            auto        cd         = defaultCam->data();
             const float aspectSafe = aspect > 1e-4f ? aspect : 1.f;
-            auto bindCam = [&](auto *fx) {
-                fx->setCamera(cd->eyeX, cd->eyeY, cd->eyeZ, cd->targetX, cd->targetY, cd->targetZ,
-                              cd->upX, cd->upY, cd->upZ, cd->fovYDeg, aspectSafe, cd->nearZ, cd->farZ);
+            auto        bindCam    = [&](auto* fx) {
+                fx->setCamera(cd->eyeX, cd->eyeY, cd->eyeZ, cd->targetX, cd->targetY, cd->targetZ, cd->upX, cd->upY,
+                              cd->upZ, cd->fovYDeg, aspectSafe, cd->nearZ, cd->farZ);
             };
-            AmbientOcclusion *ao = gfx.pipelineAmbientOcclusion();
+            AmbientOcclusion* ao = gfx.pipelineAmbientOcclusion();
             ao->setQuality("medium");
             ao->setIntensity(0.16f);
             ao->setPower(1.1f);
             ao->setRadius(std::clamp(cd->farZ * 0.006f, 0.18f, 0.35f));
             bindCam(ao);
-            if (Texture *depth = gb->getHwDepthTexture())
-                ao->applyFromGBuffer(&gfx, depth, gb->getNormalTexture());
+            // WebGPU cannot bind a depth-aspect texture to the generic 2D
+            // post-process layout. Its G-buffer already carries equivalent
+            // linear depth in a filterable RGBA target.
+            Texture* depth = gfx.getBackendName() == "webgpu" ? gb->getDepthTexture() : gb->getHwDepthTexture();
+            if (depth) ao->applyFromGBuffer(&gfx, depth, gb->getNormalTexture());
             // Fullscreen SSGI from lit scene color reprints nearby props
             // (curtains, planters) onto the floor as multiple swimming ghosts.
             // Mesh shaders still add hemispheric sky/ground + wrap fill.
         }
+        aoApplied = true;
+    };
+
+    const bool doReflectionLighting = doRTGI || doSSR || doRTX;
+    if (doReflectionLighting && defaultCam && gfx.had3DThisFrame()) {
+        GBuffer* gb = rc->getGBuffer();
+        if (gb && gb->isValid()) {
+            Texture* sceneColor = gfx.getSceneColorTexture();
+            Texture* depth      = gfx.getBackendName() == "webgpu" ? gb->getDepthTexture() : gb->getHwDepthTexture();
+            if (sceneColor && depth) {
+                DepthPyramid*     depthPyramid      = gfx.pipelineDepthPyramid();
+                const std::string reflectionQuality = rc->getReflectionQuality();
+                const int         depthBudget = reflectionQuality == "low" ? 4 : reflectionQuality == "medium" ? 6 : 8;
+                Texture*          depthAtlas  = depthPyramid->build(depth, depthBudget);
+                const int         depthLevels = depthPyramid->getLevelCount();
+                auto              cd          = defaultCam->data();
+                const float       aspectSafe  = aspect > 1e-4f ? aspect : 1.f;
+                const float       dw = gfx.getCanvas() ? float(gfx.getCanvas()->getWidth()) : float(gfx.getWidth());
+                const float       dh = gfx.getCanvas() ? float(gfx.getCanvas()->getHeight()) : float(gfx.getHeight());
+                auto              bindCam = [&](auto* fx) {
+                    fx->setCamera(cd->eyeX, cd->eyeY, cd->eyeZ, cd->targetX, cd->targetY, cd->targetZ, cd->upX, cd->upY,
+                                  cd->upZ, cd->fovYDeg, aspectSafe, cd->nearZ, cd->farZ);
+                    if (!cams.empty()) fx->setInvViewProj(glm::inverse(cams.front().viewProj));
+                };
+
+                Texture* rtgiTexture = nullptr;
+                Texture* ssrTexture  = nullptr;
+
+                if (doRTGI) {
+                    GlobalIllumination* gi = gfx.pipelineGlobalIllumination();
+                    if (gi->getQuality() != rc->getReflectionQuality()) gi->setQuality(rc->getReflectionQuality());
+                    gi->setWorldNormalTexture(gb->getNormalTexture());
+                    gi->setAlbedoTexture(gb->getAlbedoTexture());
+                    gi->setTemporalMotionTexture(gb->getDepthTexture());
+                    gi->setDepthPyramid(depthAtlas, depthLevels);
+                    bindCam(gi);
+                    Canvas* rtgiCanvas = gi->getWorkingCanvas();
+                    if (rtgiCanvas) {
+                        gi->applyFromSceneTo(&gfx, sceneColor, depth, rtgiCanvas);
+                        rtgiTexture = gi->getWorkingTexture();
+                    }
+                }
+
+                // Hardware RT reflections (optional module). Prefer RTX when
+                // available; fall through to SSR on NoOp / failure / absent provider.
+                if (doRTX) {
+                    if (auto* rt = eve::cap::query<IRayTracing>()) {
+                        if (rt->isAvailable()) {
+                            ScreenSpaceReflection* ssr        = gfx.pipelineScreenSpaceReflection();
+                            Canvas*                reflCanvas = ssr->getReflectionCanvas();
+                            if (reflCanvas) {
+                                // Switching canvas ends the open scene-color pass so RT
+                                // can sample the finished frame on the present CB.
+                                Canvas* prevCanvas = gfx.getCanvas();
+                                gfx.setCanvas(reflCanvas);
+
+                                rt->clearScene();
+                                constexpr size_t kMaxRtMeshes = 64;
+                                size_t           registered   = 0;
+                                for (const CulledItem* item : opaque) {
+                                    if (!item || !item->mesh || registered >= kMaxRtMeshes) continue;
+                                    auto added = rt->addMesh(item->mesh, item->model);
+                                    if (added.ok()) {
+                                        ++registered;
+                                        (void)added.value();
+                                    } else {
+                                        added.ignore();
+                                    }
+                                }
+                                bool produced = false;
+                                if (registered > 0) {
+                                    auto rebuilt = rt->rebuildScene();
+                                    if (rebuilt.ok()) {
+                                        glm::mat4 viewProj = !cams.empty() ? cams.front().viewProj : glm::mat4(1.f);
+                                        glm::mat4 invVP    = glm::inverse(viewProj);
+                                        glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
+                                        auto      applied =
+                                            rt->applyReflections(&gfx, sceneColor, depth, gb->getNormalTexture(),
+                                                                 reflCanvas, invVP, viewProj, eye);
+                                        if (applied.ok() && applied.code() != eve::StatusCode::NoOp) {
+                                            ssrTexture = reflCanvas->getTexture();
+                                            produced   = true;
+                                        } else {
+                                            applied.ignore();
+                                        }
+                                    } else {
+                                        rebuilt.ignore();
+                                    }
+                                }
+                                (void)produced;
+                                gfx.setCanvas(prevCanvas);
+                            }
+                        }
+                    }
+                }
+
+                // Portable SSR path: explicit ssr/reflectionChain, or RTX requested
+                // but hardware did not produce a usable reflection texture.
+                if ((doSSR || doRTX) && !ssrTexture) {
+                    ScreenSpaceReflection* ssr = gfx.pipelineScreenSpaceReflection();
+                    if (ssr->getQuality() != rc->getReflectionQuality()) ssr->setQuality(rc->getReflectionQuality());
+                    ssr->setEnabled(true);
+                    ssr->setTemporalMotionTexture(gb->getDepthTexture());
+                    ssr->setDepthPyramid(depthAtlas, depthLevels);
+                    bindCam(ssr);
+                    Canvas* reflCanvas = ssr->getReflectionCanvas();
+                    if (reflCanvas) {
+                        ssr->applyFromSceneTo(&gfx, sceneColor, depth, gb->getNormalTexture(), gb->getAlbedoTexture(),
+                                              reflCanvas);
+                        ssrTexture = ssr->getReflectionTexture();
+                    }
+                }
+
+                // Queue AO only after selecting the final composition target;
+                // switching targets with a pending AO draw presents too early.
+                if (rtgiTexture || ssrTexture) {
+                    if (gfx.getBackendName() == "vulkan" && !doRTX) {
+                        applyAO();
+                        if (rtgiTexture)
+                            gfx.drawTexturedRectShaderUV(rtgiTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
+                                                         Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Additive);
+                        if (ssrTexture)
+                            gfx.drawTexturedRectShaderUV(ssrTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
+                                                         Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Additive);
+                    } else if (Canvas* composite = gfx.pipelineReflectionComposite(int(dw), int(dh))) {
+                        // Register before setCanvas(): switching away from the scene target
+                        // closes its pass and queues the final resolve immediately.
+                        gfx.setFinalSceneTexture(composite->getTexture());
+                        Canvas* previous = gfx.getCanvas();
+                        gfx.setCanvas(composite);
+                        gfx.drawTexturedRectShaderUV(sceneColor, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
+                                                     Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Opaque);
+                        applyAO();
+                        if (rtgiTexture)
+                            gfx.drawTexturedRectShaderUV(rtgiTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
+                                                         Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Additive);
+                        if (ssrTexture)
+                            gfx.drawTexturedRectShaderUV(ssrTexture, nullptr, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f,
+                                                         Color(1.f, 1.f, 1.f, 1.f), false, BlendMode::Premultiplied);
+                        gfx.setCanvas(previous);
+                    }
+                }
+            }
+        }
     }
+    if (!aoApplied) applyAO();
 
     const bool doOutline = rc->isEnabled("outline");
     if (doOutline && defaultCam && gfx.had3DThisFrame()) {
-        GBuffer *gb = rc->getGBuffer();
+        GBuffer* gb = rc->getGBuffer();
         if (gb && gb->isValid()) {
-            Outline *outline = gfx.pipelineOutline();
-            auto cd = defaultCam->data();
+            Outline* outline = gfx.pipelineOutline();
+            auto     cd      = defaultCam->data();
             outline->setClip(cd->nearZ, cd->farZ);
-            if (Texture *depth = gb->getHwDepthTexture())
-                outline->apply(&gfx, depth, gb->getNormalTexture());
+            Texture* depth = gfx.getBackendName() == "webgpu" ? gb->getDepthTexture() : gb->getHwDepthTexture();
+            if (depth) outline->apply(&gfx, depth, gb->getNormalTexture());
         }
     }
 }
 
-void RenderSystem3D::renderToCanvas(Graphics &gfx, Canvas *target, Camera3D *camera) {
-    if (!target || !camera) return;
-    auto cd = camera->data();
-    const float aspect = target->getWidth() > 0
-                             ? float(target->getWidth()) / float(target->getHeight())
-                             : 1.f;
+void RenderSystem3D::renderToCanvas(Graphics& gfx, Canvas* target, Camera3D* camera, uint32_t reflectionCaptureMask,
+                                    float lodDistanceScale, bool includeTransparent, bool useClusteredLighting,
+                                    Texture* skyFaceTexture, Mesh* skyQuad, float skyFaceTextureScale,
+                                    bool includePrimitives) {
+    renderToCanvasImpl(gfx, target, camera, reflectionCaptureMask, lodDistanceScale, includeTransparent,
+                       useClusteredLighting, skyFaceTexture, skyQuad, skyFaceTextureScale, CanvasShadows::Disabled,
+                       includePrimitives);
+}
 
-    // Preview-quality forward pass: no shadow / G-buffer / AO passes.
-    gfx.begin3DFrameToCanvas(target);
+void RenderSystem3D::renderWithShadowsToCanvas(Graphics& gfx, Canvas& target, Camera3D& camera) {
+    renderToCanvasImpl(gfx, &target, &camera, 0xffffffffu, 1.f, true, true, nullptr, nullptr, 1.f,
+                       CanvasShadows::Directional, false);
+}
+
+void RenderSystem3D::renderToCanvasImpl(Graphics& gfx, Canvas* target, Camera3D* camera, uint32_t reflectionCaptureMask,
+                                        float lodDistanceScale, bool includeTransparent, bool useClusteredLighting,
+                                        Texture* skyFaceTexture, Mesh* skyQuad, float skyFaceTextureScale,
+                                        CanvasShadows shadows, bool includePrimitives) {
+    if (!target || !camera) return;
+    auto        cd     = camera->data();
+    const float aspect = target->getWidth() > 0 ? float(target->getWidth()) / float(target->getHeight()) : 1.f;
 
     const glm::vec3 eye(cd->eyeX, cd->eyeY, cd->eyeZ);
     const glm::vec3 look(cd->targetX, cd->targetY, cd->targetZ);
     const glm::vec3 up(cd->upX, cd->upY, cd->upZ);
-    const glm::mat4 viewM = glm::lookAtRH(eye, look, up);
-    const float fovRad = cd->fovYDeg * 0.017453292519943295f;
-    const glm::mat4 projM = perspectiveVulkanRH_ZO(fovRad, aspect, cd->nearZ, cd->farZ);
-    gfx.setMesh3DViewProj(projM * viewM);
-    gfx.setMesh3DView(viewM);
-    gfx.setMesh3DClip(cd->nearZ, cd->farZ);
-    gfx.setMesh3DCameraPos(eye);
-    gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
-
-    // Lighting: real lights (if any) + camera ambient; shadows/clustered off.
+    const glm::mat4 viewM  = glm::lookAtRH(eye, look, up);
+    const float     fovRad = cd->fovYDeg * 0.017453292519943295f;
+    const glm::mat4 projM =
+        cameraProjectionVulkanRH_ZO(cd->orthographic, fovRad, cd->orthoHeight, aspect, cd->nearZ, cd->farZ);
+    auto prepared = detail::prepareViewResources(gfx, projM * viewM, eye);
+    if (!prepared) throw eve::Exception("%s", prepared.status().describe().c_str());
+    // Collect lights before staging optional directional preview shadows.
     std::vector<PackedLight3D> packed;
     collectLights3D(packed, size_t(ClusteredLightConfig::kMaxLights));
     promoteDirectional(packed);
-    ClusteredLightingUpload noClustered{};
-    noClustered.active = false;
-    gfx.setMesh3DClusteredLighting(noClustered);
-    gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
-    ShadowUpload noShadow{};
-    noShadow.active = false;
-    gfx.setMesh3DShadows(noShadow);
-
-    if (ecs::current()->getManager<Renderable3D>() != nullptr) {
-        auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
-        for (auto it = view.begin(); it != view.end(); ++it) {
-            auto [xf, mr] = *it;
-            if (!mr->visible) continue;
-            // Legacy per-entity material path (no parts / materials / hair).
-            gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
-            gfx.setMesh3DTexCellBomb(mr->texBombScale, mr->texBombStrength, mr->texBombRot);
-            gfx.setMesh3DNormalTexture(mr->normalTexture);
-            gfx.setMesh3DHeightTexture(mr->heightTexture);
-            gfx.setMesh3DParallax(mr->parallaxScale, mr->parallaxMinLayers, mr->parallaxMaxLayers);
-            gfx.setMesh3DShadowReceive(false);
-            Texture *albedo = mr->texture;
-            Color tint(mr->r, mr->g, mr->b, mr->a);
-            Shader *shader = mr->shader;
-            const glm::mat4 model = modelFromTransform(*xf);
-            eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
-            gfx.drawMeshShader(mr->mesh, model, albedo, tint, shader);
+    const glm::mat4 captureViewProj = projM * viewM;
+    {
+        const FrustumPlanes captureFrustum = extractFrustum(captureViewProj);
+        struct CanvasItem {
+            Renderable3D::MeshRenderer* mr       = nullptr;
+            Mesh*                       mesh     = nullptr;
+            Material*                   material = nullptr;
+            glm::mat4                   model{1.f};
+            float                       distance2    = 0.f;
+            SurfaceMode                 surface      = SurfaceMode::Opaque;
+            int                         sortPriority = 0;
+            float                       lodWeight    = 1.f;
+            bool                        lodFadeReverse = false;
+            bool                        speedTreeFade = false;
+            int                         skinInfluenceLimit = 4;
+            int                         lightProbeUsage = 0;
+            glm::vec3                   worldCenter{0.f};
+            bool                        inView = true;
+        };
+        std::vector<CanvasItem> canvasItems;
+        if (ecs::current()->getManager<Renderable3D>() != nullptr) {
+            auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
+            for (auto it = view.begin(); it != view.end(); ++it) {
+                auto [xf, mr] = *it;
+                if (!mr->visible || (mr->reflectionCaptureMask & reflectionCaptureMask) == 0u) continue;
+                if (mr->instances) {
+                    auto valid = detail::validateInstancedRenderable(*mr);
+                    if (!valid) throw eve::Exception("%s", valid.status().describe().c_str());
+                }
+                const glm::mat4 model     = modelFromTransform(*xf);
+                const float     maxScale  = detail::sphereStretch(*xf);
+                const float     dx        = xf->x - eye.x;
+                const float     dy        = xf->y - eye.y;
+                const float     dz        = xf->z - eye.z;
+                const float     distance2 = dx * dx + dy * dy + dz * dz;
+                auto            append    = [&](Mesh* mesh, Material* material, bool hair, float lodWeight,
+                                  int skinInfluenceLimit = 4, int lightProbeUsage = 0, bool lodFadeReverse = false) {
+                    if (!mesh) return;
+                    glm::vec3 worldCenter(xf->x, xf->y, xf->z);
+                    bool      inView = true;
+                    if (mr->instances) {
+                        inView = meshInstanceRangeVisible(*mr->instances, model, captureViewProj, eye);
+                    } else if (mesh->hasBounds()) {
+                        const glm::vec4 transformedCenter =
+                            model * glm::vec4(mesh->boundsCx, mesh->boundsCy, mesh->boundsCz, 1.f);
+                        worldCenter = glm::vec3(transformedCenter);
+                        inView = captureFrustum.sphereVisible(worldCenter, mesh->boundsRadius * maxScale);
+                    }
+                    if (!inView && shadows == CanvasShadows::Disabled) return;
+                    SurfaceMode surface =
+                        material ? material->surfaceMode() : (hair ? SurfaceMode::Transparent : SurfaceMode::Opaque);
+                    lodWeight = std::clamp(lodWeight, 0.f, 1.f);
+                    const bool speedTreeFade =
+                        mr->lodFadeMode == 1 && lodWeight < 0.9999f && !(material && material->effectiveShader());
+                    if (lodWeight < 0.9999f && !speedTreeFade) surface = SurfaceMode::Transparent;
+                    if (surface == SurfaceMode::Transparent && !includeTransparent) return;
+                    const int sortPriority = material ? material->getSortPriority() : 0;
+                    canvasItems.push_back(CanvasItem{mr, mesh, material, model, distance2, surface, sortPriority,
+                                                     lodWeight, lodFadeReverse, speedTreeFade, skinInfluenceLimit,
+                                                     lightProbeUsage, worldCenter, inView});
+                };
+                if (mr->usesParts()) {
+                    for (int part = 0; part < mr->partCount; ++part) {
+                        Material* material = mr->parts[part].material ? mr->parts[part].material : mr->material;
+                        append(mr->parts[part].mesh, material, material ? material->isTransparentHair() : mr->isHair,
+                               1.f);
+                    }
+                } else {
+                    const float distance = std::sqrt(distance2) * std::max(lodDistanceScale, 0.01f);
+                    int         primary = -1, secondary = -1;
+                    float       secondaryWeight = 0.f;
+                    mr->lodBlendForDistance(distance, primary, secondary, secondaryWeight);
+                    auto meshAt = [&](int level) -> Mesh* {
+                        if (mr->lodCount <= 0) return level >= 0 ? mr->mesh : nullptr;
+                        return level >= 0 && level < mr->lodCount ? mr->lodMeshes[level] : nullptr;
+                    };
+                    const bool hair      = mr->material ? mr->material->isTransparentHair() : mr->isHair;
+                    auto       qualityAt = [&](int level) {
+                        if (level < 0 || level >= mr->lodCount || !mr->lodRendererStates[level].configured ||
+                            mr->lodRendererStates[level].skinQuality == 0)
+                            return 4;
+                        return mr->lodRendererStates[level].skinQuality;
+                    };
+                    auto lightProbeAt = [&](int level) {
+                        if (level < 0 || level >= mr->lodCount || !mr->lodRendererStates[level].configured) return 0;
+                        return mr->lodRendererStates[level].lightProbeUsage;
+                    };
+                    append(meshAt(primary), mr->material, hair, 1.f - secondaryWeight, qualityAt(primary),
+                           lightProbeAt(primary));
+                    if (secondaryWeight > 0.f)
+                        append(meshAt(secondary), mr->material, hair, secondaryWeight, qualityAt(secondary),
+                               lightProbeAt(secondary), true);
+                }
+            }
         }
+        std::stable_sort(canvasItems.begin(), canvasItems.end(), [](const CanvasItem& a, const CanvasItem& b) {
+            const bool transparentA = a.surface == SurfaceMode::Transparent;
+            const bool transparentB = b.surface == SurfaceMode::Transparent;
+            if (transparentA != transparentB) return !transparentA;
+            if (transparentA) {
+                if (a.sortPriority != b.sortPriority) return a.sortPriority < b.sortPriority;
+                if (a.distance2 != b.distance2) return a.distance2 > b.distance2;
+            }
+            if (a.material != b.material) return a.material < b.material;
+            return a.mesh < b.mesh;
+        });
+
+        ShadowUpload   shadowUpload{};
+        Light3D::Data* caster = nullptr;
+        if (shadows == CanvasShadows::Directional && ShadowSchemeSettings::current().enableDirectionalCsm) {
+            for (const auto& light : packed) {
+                if (!light.isPoint && light.data->castShadow && light.data->shadowMethod != 1) {
+                    caster = light.data;
+                    break;
+                }
+            }
+        }
+        if (caster) {
+            prioritizeShadowCaster(packed, caster);
+            glm::vec3 direction(caster->dx, caster->dy, caster->dz);
+            direction    = glm::length(direction) < 1e-6f ? glm::vec3(0.f, 1.f, 0.f) : glm::normalize(direction);
+            shadowUpload = buildDirectionalCSM(direction, eye, look, up, fovRad, aspect, cd->nearZ, cd->farZ,
+                                               caster->shadowBias, caster->shadowStrength);
+            gfx.setMesh3DShadows(shadowUpload);
+            for (int cascade = 0; cascade < ShadowConfig::kCascades; ++cascade) {
+                gfx.beginShadowPass(cascade);
+                for (const CanvasItem& item : canvasItems) {
+                    if (!item.mr->effectiveCastShadow() || (item.material && !item.material->getCastShadow())) continue;
+                    if (item.surface == SurfaceMode::Transparent) continue;
+                    const float limit = cd->shadowLayerCullDistances[size_t(item.mr->layer)];
+                    if (limit > 0.f && item.distance2 > limit * limit) continue;
+                    const bool doubleSided = item.material && item.material->getDoubleSided();
+                    gfx.setMesh3DSkinInfluenceLimit(skinInfluenceLimit(item.skinInfluenceLimit));
+                    if (item.surface == SurfaceMode::Masked)
+                        gfx.drawMeshShadowAlpha(item.mesh, shadowUpload.ubo.lightVP[cascade] * item.model,
+                                                item.material ? item.material->getAlbedoTexture() : item.mr->texture,
+                                                doubleSided, item.lodWeight, item.lodFadeReverse, item.speedTreeFade);
+                    else
+                        gfx.drawMeshShadow(item.mesh, shadowUpload.ubo.lightVP[cascade] * item.model, doubleSided);
+                }
+                gfx.endShadowPass();
+            }
+        }
+        // Offscreen backends consume staged shadows before opening color.
+        gfx.setMesh3DShadows(shadowUpload);
+        gfx.begin3DFrameToCanvas(target);
+        gfx.setMesh3DViewProj(projM * viewM);
+        gfx.setMesh3DView(viewM);
+        gfx.setMesh3DClip(cd->nearZ, cd->farZ);
+        gfx.setMesh3DCameraPos(eye);
+        gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
+        gfx.setMesh3DEnvProbe(cd->envProbeCenter, cd->envProbeExtent);
+        gfx.setMesh3DReflectionProbes(selectReflectionProbes(*cd, eye));
+        gfx.setSceneExposure(std::exp2(cd->exposureEV));
+        gfx.setSceneAutoExposure(cd->autoExposure, cd->autoExposureMinEV, cd->autoExposureMaxEV);
+        gfx.setSceneBloom(cd->bloomIntensity, cd->bloomThreshold);
+        gfx.setSceneDepthOfField(cd->dofFocusDistance, cd->dofMaxBlurPx, cd->dofFocusRange, cd->nearZ, cd->farZ);
+
+        bool clusteredCapture = false;
+        if (useClusteredLighting && packed.size() > size_t(Lighting3DPack::kMaxLights)) {
+            std::vector<ClusteredLightGpu> clusteredPoints;
+            std::vector<ClusteredLightGpu> clusteredDirections;
+            splitLights(packed, clusteredPoints, clusteredDirections);
+            if (clusteredDirections.empty()) {
+                ClusteredLightGpu direction{};
+                direction.posRadius = glm::vec4(gLightDir, 0.f);
+                direction.color     = glm::vec4(gLightColor, 1.f);
+                clusteredDirections.push_back(direction);
+            }
+            ClusteredLightingUpload clustered =
+                buildClusteredLighting(clusteredPoints, clusteredDirections, viewM, cd->nearZ, cd->farZ,
+                                       target->getWidth(), target->getHeight(), cd->fovYDeg * 0.017453292519943295f,
+                                       glm::vec4(cd->ambientR, cd->ambientG, cd->ambientB, 0.f));
+            clusteredCapture = clustered.active;
+            gfx.setMesh3DClusteredLighting(clustered);
+        } else {
+            ClusteredLightingUpload noClustered{};
+            noClustered.active = false;
+            gfx.setMesh3DClusteredLighting(noClustered);
+        }
+        gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
+        gfx.setMesh3DShadows(shadowUpload);
+
+        if (skyFaceTexture && skyQuad) {
+            const float distance = std::max(cd->farZ * 0.999f, cd->nearZ * 2.f);
+            glm::mat4   skyModel = glm::inverse(viewM);
+            skyModel             = glm::translate(skyModel, glm::vec3(0.f, 0.f, -distance));
+            skyModel             = glm::scale(skyModel, glm::vec3(distance * aspect * 1.01f, distance * 1.01f, 1.f));
+            Lighting3DPack unlit{};
+            unlit.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
+            gfx.setMesh3DClusteredActive(false);
+            gfx.setMesh3DLighting(unlit);
+            gfx.setMesh3DEnv(nullptr, 0.f);
+            gfx.setMesh3DSurface(SurfaceMode::Opaque, BlendMode::Opaque, true, false, 0.5f);
+            gfx.setMesh3DMaterial(0.f, 1.f);
+            gfx.setMesh3DShadowReceive(false);
+            const float skyScale = std::max(skyFaceTextureScale, 0.f);
+            gfx.drawMeshShader(skyQuad, skyModel, skyFaceTexture, Color(skyScale, skyScale, skyScale, 1.f), nullptr);
+            gfx.setMesh3DEnv(cd->envMap, cd->envIntensity);
+            gfx.setMesh3DClusteredActive(clusteredCapture);
+            gfx.setMesh3DLighting(packLights3D(packed, cd.operator->()));
+        }
+
+        bool lightingEnabled = true;
+        for (const CanvasItem& item : canvasItems) {
+            if (!item.inView) continue;
+            Renderable3D::MeshRenderer* mr     = item.mr;
+            Texture*                    albedo = mr->texture;
+            Color                       tint(mr->r, mr->g, mr->b, mr->a);
+            Shader*                     shader = mr->shader;
+            const bool                  lit    = item.material ? item.material->getReceiveLight() : mr->receiveLight;
+            if (lit) {
+                Lighting3DPack lighting = packLights3D(packed, cd.operator->());
+                bool sampled = false;
+                if (item.lightProbeUsage == 4 && mr->customLightProbe) {
+                    lighting.diffuseProbeSh = mr->customLightProbeSh;
+                    sampled = true;
+                } else if (item.lightProbeUsage == 1) {
+                    auto sample = DiffuseLightProbeRegistry::instance().sample(
+                        item.worldCenter, 4);
+                    if (sample) {
+                        lighting.diffuseProbeSh = sample.value().coefficients;
+                        sampled = true;
+                    }
+                } else if (item.lightProbeUsage == 2) {
+                    auto volume = DiffuseLightProbeRegistry::instance().selectVolume(item.worldCenter);
+                    if (volume) {
+                        lighting.diffuseVolumePosition = volume.value().positions;
+                        lighting.diffuseVolumeExtent = volume.value().extents;
+                        lighting.diffuseVolumeSh = volume.value().coefficients;
+                        lighting.diffuseVolumeProbeCount = volume.value().count;
+                        lighting.diffuseVolumeTrilinearCell = volume.value().trilinearCell;
+                    }
+                }
+                lighting.diffuseProbeShEnabled = sampled;
+                gfx.setMesh3DClusteredActive(clusteredCapture && item.lightProbeUsage == 0);
+                gfx.setMesh3DLighting(lighting);
+            } else if (lightingEnabled) {
+                gfx.setMesh3DClusteredActive(false);
+                Lighting3DPack unlit{};
+                unlit.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
+                gfx.setMesh3DLighting(unlit);
+            }
+            lightingEnabled = lit;
+            if (item.material) {
+                auto bound = item.material->bind(gfx);
+                if (!bound) throw Exception("%s", bound.error()->message().c_str());
+                albedo = item.material->getAlbedoTexture();
+                tint   = Color(item.material->getTintR(), item.material->getTintG(), item.material->getTintB(),
+                               item.material->getTintA());
+                shader = item.material->effectiveShader();
+            } else {
+                gfx.setMesh3DSurface(item.surface, BlendMode::Alpha, false, mr->isHair, 0.5f);
+                gfx.setMesh3DMaterial(mr->metallic, mr->roughness);
+                gfx.setMesh3DTexCellBomb(mr->texBombScale, mr->texBombStrength, mr->texBombRot);
+                gfx.setMesh3DNormalTexture(mr->normalTexture);
+                gfx.setMesh3DHeightTexture(mr->heightTexture);
+                gfx.setMesh3DParallax(mr->parallaxScale, mr->parallaxMinLayers, mr->parallaxMaxLayers);
+            }
+            if (item.lodWeight < 0.9999f && !item.speedTreeFade)
+                gfx.setMesh3DSurface(SurfaceMode::Transparent, BlendMode::Alpha,
+                                     item.material && item.material->getDoubleSided(), false, 0.5f);
+            else if (item.speedTreeFade)
+                gfx.setMesh3DSurface(SurfaceMode::Masked, BlendMode::Alpha, true,
+                                     item.material && item.material->getDoubleSided(), 0.5f, "cutoff");
+            gfx.setMesh3DShadowReceive(shadowUpload.active && mr->receiveShadow &&
+                                       (!item.material || item.material->getReceiveShadow()));
+            eve::debug::rtDraw("drawMeshShader", shader ? "custom" : "default");
+            if (mr->instances) {
+                const auto &range = *mr->instances;
+                auto        drawn =
+                    gfx.drawMeshShaderInstances(*item.mesh, *shader, item.model, tint, range.first, range.count);
+                if (!drawn) throw eve::Exception("%s", drawn.status().describe().c_str());
+            } else
+                gfx.drawMeshShader(item.mesh, item.model, albedo, tint, shader);
+        }
+    }
+
+    // Copy the list so a contributor may safely unregister itself while drawing.
+    const auto captureDrawers = g_captureDrawers;
+    for (const CaptureExtraDrawerEntry& entry : captureDrawers) {
+        if ((entry.mask & reflectionCaptureMask) == 0u || !entry.drawer) continue;
+        entry.drawer(gfx, *cd, captureViewProj, aspect, reflectionCaptureMask);
+    }
+
+    if (includePrimitives) {
+        SceneDrawContext context;
+        context.view           = viewM;
+        context.projection     = projM;
+        context.cameraPosition = eye;
+        context.viewportSize   = glm::ivec2(target->getWidth(), target->getHeight());
+        context.nearPlane      = cd->nearZ;
+        context.farPlane       = cd->farZ;
+        PrimitiveSceneCanvas3D primitives(context);
+        gfx.getPrimitiveScene()->render(primitives);
+        if (!primitives.commands().empty() || !primitives.triangles().empty()) gfx.drawPrimitiveScene(primitives);
     }
 
     gfx.end3DFrameToCanvas();
 }
 
-} // namespace eve::graphics
+}  // namespace eve::graphics

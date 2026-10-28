@@ -1,6 +1,7 @@
-// EVEngine Dialogue 台词池示例（.dnut）
-// 由 dlg.loadPoolsFromDnutFile("pools.dnut") 解析并注册到 eve.Dialogue。
-// 玩法：mood / hour 是故事变量，playPool 按条件加权选词；meta 自动切表情/动作。
+schema "eve.dnut"
+version 1
+
+// 单一 dnut 文档同时拥有台词池和剧情图；DialogueFlow 原子编译并提交两者。
 
 pool alice.greet noRepeat=3 {
     when mood == "happy" && hour >= 18 {
@@ -22,4 +23,30 @@ pool bob.greet noRepeat=2 {
         bob: "晚上好。今天过得怎么样？" weight=2 meta(expression="neutral") tags=["greet","evening"]
     }
     bob: "嘿，{name}。" weight=1 meta(expression="neutral") tags=["greet"]
+}
+
+conversation demo.details entry=detail {
+    parameter playerName string required
+    node detail line speaker=bob text="Image、Live2D 与 VRM 后端都消费同一份当前节点。" i18n=line.image_layers voice=voice.demo.details next=end
+    node end end
+}
+
+conversation demo.main entry=welcome {
+    parameter playerName string required
+    parameter evening bool optional default=true
+    node welcome line speaker=alice pool=alice.greet i18n=line.hello voice=voice.demo.welcome next=decide
+    node decide branch {
+        route evening when="isEvening" target=ask
+        route daytime target=ask
+    }
+    node ask choice {
+        route continue text="继续" i18n=choice.yes target=details
+        route leave text="下次再聊" i18n=choice.no target=bye
+    }
+    node details call target=demo.details return=wait_after arguments(playerName="Codex")
+    node wait_after wait next=prepare
+    node prepare command kind=operation target="demo.prepare" result="prepared" arguments(delay=0.8) next=done
+    node bye line speaker=bob text="下次见。" i18n=line.bye next=end
+    node done line speaker=alice text="异步准备完成；存档恢复后的 request ID 仍然有效。" i18n=line.end next=end
+    node end end
 }

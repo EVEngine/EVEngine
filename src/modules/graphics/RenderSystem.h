@@ -1,25 +1,30 @@
 #pragma once
+#include "common/Export.h"
 
+
+#include <cstdint>
+#include <string>
+#include <vector>
 #include "common/ECS.h"
 #include "graphics/DrawItem2D.h"
-#include "graphics/Quad.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "zeroerr/assert.h"
-#include <cstdint>
-#include <vector>
 
 namespace eve::graphics {
 
 class Canvas;
+class Quad;
+class Shader;
+class Texture;
 
 /** @brief Declarative 2D camera (viewport center + zoom). */
-class Camera2D : public ecs::Entity {
+class EVENGINE_API_BACKENDS Camera2D : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Camera2D, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Data public API. */
     struct Data {
         float x = 0.f;
         float y = 0.f;
@@ -33,14 +38,15 @@ public:
 
     COMPONENT(Data, data)
 
-    static Camera2D *createCamera() {
-        Camera2D *c = Camera2D::create();
-        ASSERT(c != nullptr);
-        c->data()->entity = c;
-        c->data()->active = true;
-        ASSERT(c->data()->entity == c);
-        return c;
-    }
+    /**
+     * @brief Create an active camera in the current ECS table.
+     * @param table ECS table owning the result; defaults to the calling thread's current table.
+     * @return ECS-owned camera with its self reference initialized.
+     * @ownership ECS owns the result. @lifetime Valid until ECS destroys the entity.
+     * @note Call on the current ECS table owner thread; no external callbacks are invoked.
+     * @cost Allocates entity/component storage per camera creation.
+     */
+    static Camera2D *createCamera(ecs::Table &table = *ecs::current());
 
     void setAmbient(float r, float g, float b);
 
@@ -62,12 +68,15 @@ public:
 };
 
 /** @brief Default renderable entity for declarative 2D sprites / solid quads. */
-class Renderable2D : public ecs::Entity {
+class EVENGINE_API_BACKENDS Renderable2D : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(Renderable2D, ecs::Entity)
 
-    void release() override {}
+    /** @brief Release. */
+    void release() override;
 
+    /** @brief Transform2D public API. */
     struct Transform2D {
         float x = 0;
         float y = 0;
@@ -90,19 +99,103 @@ public:
         Camera2D *camera = nullptr;        // nullptr → default active camera for canvas
         bool receiveLight = true;          // false → force unlit (ignore lights)
         bool castOcclusion = true;         // volumetric occlusion map (shadow analogue)
+        BlendMode blend = BlendMode::Alpha;
+        float anchorX = 0.5f, anchorY = 0.5f;
+        bool flipX = false, flipY = false;
+        int trimW = 0, trimH = 0, offsetX = 0, offsetY = 0;
     };
 
     COMPONENT(Transform2D, transform)
     COMPONENT(Sprite, sprite)
 
+    /** @brief Set world-space position in pixels. */
+    void setPosition(float x, float y);
+    /** @brief Return world-space X position. */
+    float getX();
+    /** @brief Return world-space Y position. */
+    float getY();
+    /** @brief Set center rotation in degrees. */
+    void setRotation(float degrees);
+    /** @brief Return center rotation in degrees. */
+    float getRotation();
+    /** @brief Set independent X/Y scale. */
+    void setScale(float sx, float sy);
+    /** @brief Return X scale. */
+    float getScaleX();
+    /** @brief Return Y scale. */
+    float getScaleY();
+    /** @brief Set unscaled sprite dimensions in pixels. */
+    void setSize(float width, float height);
+    /** @brief Return unscaled width. */
+    float getWidth();
+    /** @brief Return unscaled height. */
+    float getHeight();
+    /** @brief Assign the borrowed sprite texture. */
+    void setTexture(Texture *texture);
+    /** @brief Return the assigned texture. */
+    Texture *getTexture();
+    /**
+     * @brief Assign an optional tangent-space normal map for the GPU lit2d path.
+     * @param texture Borrowed normal map, or nullptr to clear. Non-null with
+     *        receiveLight and an albedo texture (and no custom shader) selects
+     *        lit2d; otherwise lighting falls back to CPU modulation.
+     * @ownership `texture` remains owned by the caller (typically Graphics); this
+     *            sprite only borrows it and never deletes it.
+     * @lifetime Must remain valid while assigned, or until cleared / the sprite is destroyed.
+     */
+    void setNormalTexture(Texture *texture);
+    /**
+     * @brief Return the assigned normal map, or nullptr when unlit/flat.
+     * @ownership Returns a borrowed Texture*; the caller must not delete it.
+     * @lifetime Valid until `setNormalTexture` replaces or clears it, or the sprite is destroyed.
+     */
+    Texture *getNormalTexture();
+    /** @brief Assign the borrowed UV quad. */
+    void setQuad(Quad *quad);
+    /** @brief Return the assigned UV quad. */
+    Quad *getQuad();
+    /** @brief Set RGBA tint. */
+    void setColor(float r, float g, float b, float a = 1.f);
+    /** @brief Set integer painter-order layer. */
+    void setLayer(int layer);
+    /** @brief Return painter-order layer. */
+    int getLayer();
+    /** @brief Include or exclude the sprite from collection. */
+    void setVisible(bool visible);
+    /** @brief Return whether the sprite is visible. */
+    bool getVisible();
+    /** @brief Enable or disable 2D light reception. */
+    void setReceiveLight(bool receive);
+    /** @brief Return whether the sprite receives 2D lights. */
+    bool getReceiveLight();
+    /** @brief Set blend mode (`alpha` or `additive`). */
+    void setBlend(const std::string &blend);
+    /** @brief Return blend mode name. */
+    std::string getBlend();
+    /** @brief Set normalized transform pivot; (0,0) top-left, (0.5,0.5) center. */
+    void setAnchor(float x, float y);
+    /** @brief Return normalized horizontal pivot. */
+    float getAnchorX();
+    /** @brief Return normalized vertical pivot. */
+    float getAnchorY();
+    /** @brief Mirror atlas UVs without changing transform scale. */
+    void setFlip(bool horizontal, bool vertical);
+    /** @brief Return horizontal mirror state. */
+    bool getFlipX();
+    /** @brief Return vertical mirror state. */
+    bool getFlipY();
+    /** @brief Apply trimmed-frame layout while preserving the original canvas origin. */
+    void setFrameLayout(int sourceW, int sourceH, int trimW, int trimH, int offsetX, int offsetY);
+    /** @brief Enable or disable volumetric occlusion casting. */
     void setCastOcclusion(bool cast);
+    /** @brief Return whether the sprite casts volumetric occlusion. */
     bool getCastOcclusion();
 };
 
 class Graphics;
 
 /** @brief Walks ECS Renderable2D views and draws via Graphics batch path. */
-class RenderSystem {
+class EVENGINE_API_BACKENDS RenderSystem {
 public:
     /** @brief Full sprite pass + present (existing tests / sprite-only scenes). */
     static void render(Graphics &gfx);

@@ -1,0 +1,83 @@
+#pragma once
+
+#include "graphics/editing/OffscreenPreview.h"
+#include "particles/editing/ParticleGraph.h"
+
+#include <functional>
+
+namespace eve::particles_graphics_editing {
+using namespace eve::particles_editing;
+using EditorStatus=editing::Status; using EditorValue=editing::Value;
+using StableId=editing::StableId; using RuleId=editing::RuleId;
+using editing::Result;
+using graphics_editing::GraphicsOffscreenPreviewService;
+using graphics_editing::OffscreenPreviewArtifact;
+using graphics_editing::OffscreenPreviewRequest;
+
+struct ParticleOffscreenPreviewRequest;
+
+/** @brief Presentation boundary for an isolated, compiled particle preview. */
+class IParticleOffscreenPresenter {
+public:
+    /** @brief Releases IParticleOffscreenPresenter resources. */
+    virtual ~IParticleOffscreenPresenter() = default;
+    /** @brief Simulate and draw only the requested graph into the active Canvas. */
+    virtual Result<void> draw(const ParticleOffscreenPreviewRequest& request,
+                                    const ParticleGraphCompileResult& compiled,
+                                    const ParticleGraphPreviewResult& estimate,
+                                    graphics::Graphics* graphics,
+                                    graphics::Canvas* canvas) = 0;
+};
+
+/** @brief Revision-bound particle scrub preview request. */
+struct ParticleOffscreenPreviewRequest {
+    StableId previewId;
+    GraphDocumentData graph;
+    int width = 512;
+    int height = 512;
+    double seconds = 1.0;
+    double fixedStep = 1.0 / 60.0;
+    int particleBudget = 100000;
+};
+
+/** @brief Compiles, budget-checks and rasterizes particle graph previews offscreen. */
+class EVENGINE_API_ORCHESTRATION ParticleOffscreenPreviewService {
+public:
+    using DrawCallback = std::function<Result<void>(const ParticleGraphCompileResult&,
+        const ParticleGraphPreviewResult&, graphics::Graphics*, graphics::Canvas*)>;
+    /** @brief Particle offscreen preview service. */
+    ParticleOffscreenPreviewService(GraphicsOffscreenPreviewService* previews, DrawCallback draw)
+        /** @brief Previews. */
+        : previews_(previews), draw_(std::move(draw)) {}
+    /** @brief Particle offscreen preview service. */
+    ParticleOffscreenPreviewService(GraphicsOffscreenPreviewService* previews,
+                                    IParticleOffscreenPresenter* presenter)
+        /** @brief Previews. */
+        : previews_(previews), presenter_(presenter) {}
+    /** @brief Renders . */
+    Result<OffscreenPreviewArtifact> render(const ParticleOffscreenPreviewRequest& request) const;
+private:
+    GraphicsOffscreenPreviewService* previews_ = nullptr;
+    DrawCallback draw_;
+    IParticleOffscreenPresenter* presenter_ = nullptr;
+};
+
+/** @brief Real ParticleEmitter presenter with deterministic stepping and isolated drawing. */
+class EVENGINE_API_ORCHESTRATION ParticleEmitterOffscreenPresenter final : public IParticleOffscreenPresenter {
+public:
+    using TextureResolver = ParticleGraphRuntimeBuilder::TextureResolver;
+    /** @brief Particle emitter offscreen presenter. */
+    explicit ParticleEmitterOffscreenPresenter(TextureResolver textures = {})
+        /** @brief Textures. */
+        : textures_(std::move(textures)) {}
+    /** @brief Draws . */
+    Result<void> draw(const ParticleOffscreenPreviewRequest& request,
+                            const ParticleGraphCompileResult& compiled,
+                            const ParticleGraphPreviewResult& estimate,
+                            graphics::Graphics* graphics,
+                            graphics::Canvas* canvas) override;
+private:
+    TextureResolver textures_;
+};
+
+}  // namespace eve::particles_graphics_editing

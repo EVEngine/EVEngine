@@ -1,0 +1,177 @@
+{
+  "schema": "eve.tileset/1",
+  "tileset": {
+    "image": "assets/generated/tiles.atlas.png",
+    "firstGid": 5,
+    "columns": 1,
+    "tiles": [
+      {
+        "gid": 5,
+        "name": "tile_4",
+        "region": [
+          0,
+          0,
+          225,
+          163
+        ],
+        "pivot": [
+          113.0,
+          148.0
+        ],
+        "footprint": [
+          1,
+          1
+        ],
+        "walkable": true,
+        "cost": 1.0,
+        "sortBias": 0.0,
+        "tags": []
+      },
+      {
+        "gid": 7,
+        "name": "tile_6",
+        "region": [
+          227,
+          0,
+          225,
+          163
+        ],
+        "pivot": [
+          112.0,
+          148.0
+        ],
+        "footprint": [
+          1,
+          1
+        ],
+        "walkable": true,
+        "cost": 1.0,
+        "sortBias": 0.0,
+        "tags": []
+      },
+      {
+        "gid": 76,
+        "name": "tile_75",
+        "region": [
+          454,
+          0,
+          214,
+          171
+        ],
+        "pivot": [
+          108.0,
+          143.0
+        ],
+        "footprint": [
+          1,
+          1
+        ],
+        "walkable": true,
+        "cost": 1.0,
+        "sortBias": 0.0,
+        "tags": []
+      },
+      {
+        "gid": 77,
+        "name": "tile_76",
+        "region": [
+          670,
+          0,
+          216,
+          206
+        ],
+        "pivot": [
+          110.0,
+          163.0
+        ],
+        "footprint": [
+          1,
+          1
+        ],
+        "walkable": true,
+        "cost": 1.0,
+        "sortBias": 0.0,
+        "tags": []
+      },
+      {
+        "gid": 78,
+        "name": "tile_77",
+        "region": [
+          0,
+          208,
+          216,
+          238
+        ],
+        "pivot": [
+          110.0,
+          163.0
+        ],
+        "footprint": [
+          1,
+          1
+        ],
+        "walkable": false,
+        "cost": 1.0,
+        "sortBias": 4,
+        "tags": [
+          "wall"
+        ]
+      },
+      {
+        "gid": 81,
+        "name": "tile_80",
+        "region": [
+          218,
+          208,
+          223,
+          243
+        ],
+        "pivot": [
+          111.0,
+          179.0
+        ],
+        "footprint": [
+          1,
+          1
+        ],
+        "walkable": false,
+        "cost": 1.0,
+        "sortBias": 6,
+        "tags": [
+          "tower"
+        ]
+      },
+      {
+        "gid": 10,
+        "name": "tile_9",
+        "region": [
+          443,
+          208,
+          213,
+          150
+        ],
+        "pivot": [
+          107.0,
+          140.0
+        ],
+        "footprint": [
+          1,
+          1
+        ],
+        "walkable": true,
+        "cost": 1.0,
+        "sortBias": 0.0,
+        "tags": []
+      }
+    ]
+  },
+  "pipeline": {
+    "config": "tile-pipeline.json",
+    "stages": [
+      "scan",
+      "analyze",
+      "pack",
+      "emit"
+    ]
+  }
+}

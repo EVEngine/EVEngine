@@ -1,24 +1,63 @@
 #include "thread/Thread.h"
 
+#include "common/AsyncWork.h"
+#include "common/Diagnostic.h"
 #include "common/Exception.h"
 #include "common/Capability.h"
 #include "common/MainThreadPost.h"
+#include "common/Result.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <algorithm>
 #include <functional>
 #include <thread>
 
 namespace eve {
 namespace thread {
 
+namespace {
+
+class PoolExecutor final : public eve::caps::IAsyncWorkExecutor {
+public:
+    explicit PoolExecutor(Thread *owner) : pool_(std::min(8, owner->getHardwareConcurrency())) {}
+
+    eve::Result<void> submit(std::function<void()> work) override {
+        if (!work) {
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "IAsyncWorkExecutor: null work"));
+        }
+        try {
+            std::unique_ptr<Task> task(pool_.submit(std::move(work)));
+            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+        } catch (const eve::Exception &ex) {
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, ex.what()));
+        }
+    }
+
+private:
+    // CPU resource decoders are allocation/IO heavy. Bound admission independently
+    // of the general-purpose pool and drain accepted work during destruction.
+    ThreadPool pool_;
+};
+
+}  // namespace
+
 Module_IMPL(Thread, new Thread());
 
-Thread::Thread() = default;
+Thread::Thread() {
+    executor_ = std::make_unique<PoolExecutor>(this);
+    cap::provide<caps::IAsyncWorkExecutor>(executor_.get());
+}
 
 Thread::~Thread() {
+    cap::revoke<caps::IAsyncWorkExecutor>(executor_.get());
+    executor_.reset();
     if (defaultPool_)
         defaultPool_->stop();
+    if (defaultJobSystem_)
+        defaultJobSystem_->stop();
 }
 
 int Thread::getHardwareConcurrency() const {
@@ -39,29 +78,36 @@ ThreadPool *Thread::newThreadPool(int workerCount) {
     return new ThreadPool(workerCount);
 }
 
-Channel *Thread::getChannel(std::string name) {
-    if (name.empty())
+JobSystem *Thread::getJobSystem() {
+    std::lock_guard<std::mutex> lock(mu_);
+    if (!defaultJobSystem_)
+        defaultJobSystem_ = std::unique_ptr<JobSystem>(createJobSystem(getHardwareConcurrency()));
+    return defaultJobSystem_.get();
+}
+
+Channel *Thread::getChannel(std::string channelName) {
+    if (channelName.empty())
         throw eve::Exception("Thread::getChannel: name must not be empty");
     std::lock_guard<std::mutex> lock(mu_);
-    auto it = namedChannels_.find(name);
+    auto it = namedChannels_.find(channelName);
     if (it != namedChannels_.end())
         return it->second.get();
-    auto ch = std::make_unique<Channel>(name);
+    auto ch = std::make_unique<Channel>(channelName);
     Channel *raw = ch.get();
-    namedChannels_.emplace(std::move(name), std::move(ch));
+    namedChannels_.emplace(std::move(channelName), std::move(ch));
     return raw;
 }
 
 Channel *Thread::newChannel() { return new Channel(); }
 
-void Thread::postMain(std::string name, std::string data) {
-    if (name.empty())
+void Thread::postMain(std::string eventName, std::string data) {
+    if (eventName.empty())
         throw eve::Exception("Thread::postMain: name must not be empty");
     auto *poster = cap::query<caps::IMainThreadPost>();
     if (!poster)
         throw eve::Exception("Thread::postMain: no main-thread queue (event module not linked)");
     poster->prepare();
-    poster->postToMainThread(std::move(name), std::move(data));
+    poster->postToMainThread(std::move(eventName), std::move(data));
 }
 
 void Thread::expose(ssq::Table &table) {

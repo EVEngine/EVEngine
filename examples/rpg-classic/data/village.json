@@ -1,0 +1,81 @@
+{
+  "width": 20,
+  "height": 12,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "origin": [160, 82],
+  "autoReload": true,
+  "layers": [
+    {
+      "type": "tilelayer",
+      "name": "ground",
+      "layer": 0,
+      "data": [
+        2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,2,2,2,1,1,1,1,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,2,
+        2,1,1,1,2,2,1,1,1,2,1,1,1,1,1,2,2,1,1,2,
+        2,1,1,1,2,1,1,1,1,1,1,1,1,1,1,2,1,1,1,2,
+        2,1,1,1,2,1,1,1,1,1,1,1,1,1,1,2,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,2,
+        2,1,1,1,1,1,2,2,1,2,1,1,1,2,2,1,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
+        2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
+      ]
+    },
+    {
+      "type": "objectgroup",
+      "name": "events",
+      "objects": [
+        { "name": "spawn", "type": "spawn", "x": 2, "y": 5, "width": 0, "height": 0 },
+        {
+          "name": "elder",
+          "type": "quest_npc",
+          "x": 3,
+          "y": 3,
+          "width": 0,
+          "height": 0,
+          "properties": [
+            { "name": "questId", "type": "string", "value": "quest.slayer" },
+            { "name": "dialogueBase", "type": "string", "value": "village.elder" },
+            { "name": "speakerName", "type": "string", "value": "村庄长者" }
+          ]
+        },
+        { "name": "merchant", "type": "merchant", "x": 3, "y": 8, "width": 0, "height": 0 },
+        {
+          "name": "old_chest",
+          "type": "loot",
+          "x": 7,
+          "y": 3,
+          "width": 0,
+          "height": 0,
+          "properties": [
+            { "name": "displayName", "type": "string", "value": "旧宝箱" },
+            { "name": "itemId", "type": "string", "value": "potion" },
+            { "name": "itemCount", "type": "int", "value": 2 },
+            { "name": "gold", "type": "int", "value": 25 }
+          ]
+        },
+        { "name": "slime_west", "type": "encounter", "x": 7, "y": 6, "width": 0, "height": 0, "properties": [{"name":"encounterId","type":"string","value":"slime.west"}] },
+        { "name": "slime_north", "type": "encounter", "x": 13, "y": 3, "width": 0, "height": 0, "properties": [{"name":"encounterId","type":"string","value":"slime.north"}] },
+        {
+          "name": "forest_gate",
+          "type": "portal",
+          "x": 18,
+          "y": 5,
+          "width": 0,
+          "height": 0,
+          "properties": [
+            { "name": "targetMap", "type": "string", "value": "forest" },
+            { "name": "targetX", "type": "int", "value": 2 },
+            { "name": "targetY", "type": "int", "value": 5 },
+            { "name": "facingX", "type": "int", "value": 1 },
+            { "name": "facingY", "type": "int", "value": 0 }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+name: Restore verified third-party libraries
+description: Restore an exact toolchain and recipe match, or leave the normal dependency build enabled.
+inputs:
+  platform:
+    description: Target platform used by the dependency build
+    required: true
+  configuration:
+    description: Engine CMake build type
+    required: true
+  toolchain:
+    description: Compiler, SDK, architecture and target settings fingerprint
+    required: true
+outputs:
+  cache-hit:
+    description: Whether an exact install tree was restored and verified
+    value: ${{ steps.restore.outputs.cache-hit }}
+  key:
+    description: Exact cache key for saving a completed dependency build
+    value: ${{ steps.identity.outputs.key }}
+  path:
+    description: Cache archive root; keeps install paths intact across configurations
+    value: |
+      build/third-party-binary
+      build/third-party-releases
+  prefix:
+    description: Verified restored prefix, or normal install prefix on a miss
+    value: ${{ steps.restore.outputs.cache-hit == 'true' && steps.verify.outputs.prefix || steps.identity.outputs.path }}
+  cmake-args:
+    description: Prebuilt dependency argument, empty on a cache miss
+    value: ${{ steps.verify.outputs.cmake-args }}
+runs:
+  using: composite
+  steps:
+    - name: Identify dependency install
+      id: identity
+      shell: bash
+      env:
+        CACHE_PLATFORM: ${{ inputs.platform }}
+        CACHE_CONFIGURATION: ${{ inputs.configuration }}
+        CACHE_TOOLCHAIN: ${{ inputs.toolchain }}
+        CACHE_RECIPE: ${{ hashFiles('CMakeLists.txt', 'Makefile', '.github/scripts/identify-third-party-toolchain.sh', 'cmake/ios.toolchain.cmake', 'cmake/modules.cmake', 'cmake/module_manifest.cmake', 'cmake/module_manifest/**', 'cmake/third_party_pin.cmake', 'cmake/third_party_cache_version.txt', 'cmake/third_party_build.cmake', 'cmake/third_party_release.cmake', 'scripts/third_party_package.py', 'cmake/write_third_party_version.cmake', '.github/actions/restore-third-party/action.yml') }}
+        CACHE_RUNNER_OS: ${{ runner.os }}
+        CACHE_RUNNER_ARCH: ${{ runner.arch }}
+      run: |
+        export CACHE_RUNNER_IMAGE="${ImageOS:-unknown}"
+        python3 - <<'PY'
+        import hashlib
+        import os
+        from pathlib import Path
+
+        platform = os.environ['CACHE_PLATFORM']
+        configuration = os.environ['CACHE_CONFIGURATION']
+        suffix = '-debug' if configuration == 'Debug' else ''
+        prefix = f'build/third-party-binary/{platform}{suffix}'
+        build_type = configuration if platform == 'win32' else 'Release'
+        identity = build_type + '\n' + '\n'.join(os.environ[name] for name in (
+            'CACHE_RUNNER_OS', 'CACHE_RUNNER_ARCH', 'CACHE_RUNNER_IMAGE',
+            'CACHE_PLATFORM', 'CACHE_TOOLCHAIN', 'CACHE_RECIPE',
+        ))
+        key = 'third-party-v2-' + hashlib.sha256(identity.encode('utf-8')).hexdigest()
+        with Path(os.environ['GITHUB_OUTPUT']).open('a', encoding='utf-8') as output:
+            output.write(f'key={key}\npath={prefix}\nbuild-type={build_type}\n')
+        PY
+
+    - name: Restore dependency install
+      id: restore
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        # Preserve original install paths. Non-Windows dependencies are Release
+        # in both Debug and Release engine builds, so those lanes can share one
+        # archive without relocating libraries or their package metadata.
+        path: |
+          build/third-party-binary
+          build/third-party-releases
+        key: ${{ steps.identity.outputs.key }}
+
+    - name: Verify restored dependency install
+      id: verify
+      if: steps.restore.outputs.cache-hit == 'true'
+      shell: bash
+      env:
+        CACHE_PREFIX: ${{ steps.identity.outputs.path }}
+        CACHE_PLATFORM: ${{ inputs.platform }}
+        CACHE_BUILD_TYPE: ${{ steps.identity.outputs.build-type }}
+      run: |
+        for candidate in "$CACHE_PREFIX" "build/third-party-binary/$CACHE_PLATFORM" "build/third-party-binary/$CACHE_PLATFORM-debug" build/third-party-releases/*/"$CACHE_PLATFORM"-*-"$CACHE_BUILD_TYPE"; do
+          if [ -d "$candidate" ]; then
+            bash .github/scripts/verify-third-party-cache.sh "$candidate" "$CACHE_PLATFORM" "$CACHE_BUILD_TYPE"
+            echo "prefix=$candidate" >> "$GITHUB_OUTPUT"
+            echo "cmake-args=-DEVENGINE_THIRD_PARTY_BINARY_DIR=$candidate" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+        done
+        echo 'Restored third-party cache has no target install prefix' >&2
+        exit 1

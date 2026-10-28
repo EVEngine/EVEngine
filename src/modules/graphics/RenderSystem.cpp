@@ -1,10 +1,14 @@
 #include "graphics/RenderSystem.h"
-#include "graphics/Graphics.h"
+#include "common/Assert.h"
+#include "common/Exception.h"
+#include "common/Profile.h"
+#include "common/RenderTrace.h"
 #include "graphics/Canvas.h"
+#include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Quad.h"
-#include "common/RenderTrace.h"
-#include "zeroerr/assert.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
 
 #include <algorithm>
 #include <cmath>
@@ -13,6 +17,87 @@
 #include <vector>
 
 namespace eve::graphics {
+
+void Renderable2D::release() { ecs::DestroyEntity(this); }
+
+void Renderable2D::setPosition(float x, float y) {
+    transform()->x = x;
+    transform()->y = y;
+}
+float Renderable2D::getX() { return transform()->x; }
+float Renderable2D::getY() { return transform()->y; }
+void Renderable2D::setRotation(float degrees) { transform()->rot = degrees; }
+float Renderable2D::getRotation() { return transform()->rot; }
+void Renderable2D::setScale(float sx, float sy) {
+    transform()->sx = sx;
+    transform()->sy = sy;
+}
+float Renderable2D::getScaleX() { return transform()->sx; }
+float Renderable2D::getScaleY() { return transform()->sy; }
+void Renderable2D::setSize(float width, float height) {
+    if (width < 0.f || height < 0.f)
+        throw Exception("Sprite2D.setSize: width/height must be >= 0");
+    sprite()->width = width;
+    sprite()->height = height;
+}
+float Renderable2D::getWidth() { return sprite()->width; }
+float Renderable2D::getHeight() { return sprite()->height; }
+void Renderable2D::setTexture(Texture *texture) { sprite()->texture = texture; }
+Texture *Renderable2D::getTexture() { return sprite()->texture; }
+void Renderable2D::setNormalTexture(Texture *texture) { sprite()->normalTexture = texture; }
+Texture *Renderable2D::getNormalTexture() { return sprite()->normalTexture; }
+void Renderable2D::setQuad(Quad *quad) { sprite()->quad = quad; }
+Quad *Renderable2D::getQuad() { return sprite()->quad; }
+void Renderable2D::setColor(float r, float g, float b, float a) {
+    sprite()->r = r;
+    sprite()->g = g;
+    sprite()->b = b;
+    sprite()->a = a;
+}
+void Renderable2D::setLayer(int layer) { sprite()->layer = layer; }
+int Renderable2D::getLayer() { return sprite()->layer; }
+void Renderable2D::setVisible(bool visible) { sprite()->visible = visible; }
+bool Renderable2D::getVisible() { return sprite()->visible; }
+void Renderable2D::setReceiveLight(bool receive) { sprite()->receiveLight = receive; }
+bool Renderable2D::getReceiveLight() { return sprite()->receiveLight; }
+void Renderable2D::setBlend(const std::string &blend) {
+    if (blend == "alpha") sprite()->blend = BlendMode::Alpha;
+    else if (blend == "additive" || blend == "add") sprite()->blend = BlendMode::Additive;
+    else if (blend == "opaque") sprite()->blend = BlendMode::Opaque;
+    else if (blend == "premultiplied" || blend == "premultiplied_alpha")
+        sprite()->blend = BlendMode::Premultiplied;
+    else if (blend == "multiply") sprite()->blend = BlendMode::Multiply;
+    else throw Exception(
+        "Sprite2D.setBlend: expected alpha|additive|opaque|premultiplied|multiply");
+}
+std::string Renderable2D::getBlend() {
+    switch (sprite()->blend) {
+        case BlendMode::Additive: return "additive";
+        case BlendMode::Opaque: return "opaque";
+        case BlendMode::Premultiplied: return "premultiplied";
+        case BlendMode::Multiply: return "multiply";
+        default: return "alpha";
+    }
+}
+void Renderable2D::setAnchor(float x, float y) {
+    sprite()->anchorX = x;
+    sprite()->anchorY = y;
+}
+float Renderable2D::getAnchorX() { return sprite()->anchorX; }
+float Renderable2D::getAnchorY() { return sprite()->anchorY; }
+void Renderable2D::setFlip(bool horizontal, bool vertical) {
+    sprite()->flipX = horizontal;
+    sprite()->flipY = vertical;
+}
+bool Renderable2D::getFlipX() { return sprite()->flipX; }
+bool Renderable2D::getFlipY() { return sprite()->flipY; }
+void Renderable2D::setFrameLayout(int sourceW, int sourceH, int trimW, int trimH, int offsetX, int offsetY) {
+    setSize(float(sourceW), float(sourceH));
+    sprite()->trimW = trimW;
+    sprite()->trimH = trimH;
+    sprite()->offsetX = offsetX;
+    sprite()->offsetY = offsetY;
+}
 
 void Camera2D::setAmbient(float r, float g, float b) {
     auto d = data();
@@ -120,6 +205,7 @@ void collectLights(Canvas *canvasKey, std::vector<PackedLight> &out) {
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [d] = *it;
         if (!d->enabled) continue;
+        if (d->volumetricOnly) continue;  // emissive proxies skip surface lighting
         if (d->canvas != canvasKey) continue;
         PackedLight pl;
         pl.data = d;
@@ -143,6 +229,7 @@ Lighting2DUBO packLights(const std::vector<PackedLight> &lights, const ViewCam &
         const auto *d = lights[i].data;
         Light2DGpu &g = ubo.lights[i];
         g.color = glm::vec4(d->r * d->intensity, d->g * d->intensity, d->b * d->intensity, 1.f);
+        g.spot = glm::vec4(0.f, 0.f, -2.f, -2.f);
         if (lights[i].isPoint) {
             float lx = d->x, ly = d->y;
             float lr = d->radius;
@@ -151,6 +238,22 @@ Lighting2DUBO packLights(const std::vector<PackedLight> &lights, const ViewCam &
                 lx = (d->x - cam.x) * z + float(viewW) * 0.5f;
                 ly = (d->y - cam.y) * z + float(viewH) * 0.5f;
                 lr = d->radius * z;
+            }
+            // Spot keeps cone metadata even at radius 0 so shaders/CPU can reject the
+            // directional branch (w<=0 alone is the dir discriminator for point/dir).
+            if (d->type == "spot") {
+                float dx = d->dx, dy = d->dy;
+                const float len = std::sqrt(dx * dx + dy * dy);
+                if (len > 1e-6f) {
+                    dx /= len;
+                    dy /= len;
+                } else {
+                    dx = 0.f;
+                    dy = -1.f;
+                }
+                float cosOuter = 0.f, cosInner = 0.f;
+                light2dSpotCosines(d->spotAngleDeg, d->spotSoftness, cosOuter, cosInner);
+                g.spot = glm::vec4(dx, dy, cosOuter, cosInner);
             }
             g.posRadius = glm::vec4(lx, ly, 0.f, lr);
         } else {
@@ -177,8 +280,11 @@ Color modulateUnlit(Color base, float cx, float cy, bool receiveLight, const Lig
         const auto &L = ubo.lights[i];
         glm::vec3 col(L.color.r, L.color.g, L.color.b);
         if (L.posRadius.w <= 0.f) {
-            // Directional: approximate as constant contribution for unlit sprites.
-            lit += col * 0.65f;
+            // Zero-range spots contribute nothing; do not treat position as a dir vector.
+            if (L.spot.z <= -1.5f) {
+                // Directional: approximate as constant contribution for unlit sprites.
+                lit += col * 0.65f;
+            }
         } else {
             const float dx = L.posRadius.x - cx;
             const float dy = L.posRadius.y - cy;
@@ -186,6 +292,25 @@ Color modulateUnlit(Color base, float cx, float cy, bool receiveLight, const Lig
             float atten = 1.f - dist / std::max(L.posRadius.w, 1.f);
             if (atten < 0.f) atten = 0.f;
             atten *= atten;
+            if (L.spot.z > -1.5f) {
+                const float fx = cx - L.posRadius.x;
+                const float fy = cy - L.posRadius.y;
+                const float fl = std::sqrt(fx * fx + fy * fy);
+                float spotAtten = 1.f;
+                if (fl > 1e-4f) {
+                    const float beamLen =
+                        std::sqrt(L.spot.x * L.spot.x + L.spot.y * L.spot.y);
+                    if (beamLen > 1e-6f) {
+                        const float cosTheta = (fx * L.spot.x + fy * L.spot.y) / (fl * beamLen);
+                        const float t = (cosTheta - L.spot.z) / std::max(L.spot.w - L.spot.z, 1e-4f);
+                        spotAtten = std::clamp(t, 0.f, 1.f);
+                        spotAtten = spotAtten * spotAtten * (3.f - 2.f * spotAtten);
+                    } else {
+                        spotAtten = 0.f;
+                    }
+                }
+                atten *= spotAtten;
+            }
             lit += col * atten;
         }
     }
@@ -221,13 +346,23 @@ void RenderSystem::collectSprites(std::vector<DrawItem2D> &out) {
 
         ViewCam cam = fromEntity(camEnt);
         DrawItem2D item;
-        item.x = xf->x;
-        item.y = xf->y;
-        item.w = sp->width * xf->sx;
-        item.h = sp->height * xf->sy;
+        item.x = xf->x + float(sp->offsetX) * xf->sx;
+        item.y = xf->y + float(sp->offsetY) * xf->sy;
+        item.w = float(sp->trimW > 0 ? sp->trimW : sp->width) * xf->sx;
+        item.h = float(sp->trimH > 0 ? sp->trimH : sp->height) * xf->sy;
         item.depthY = xf->y + sp->height * xf->sy;
+        item.rotation = xf->rot;
+        item.anchorX = sp->trimW > 0
+                           ? (sp->anchorX * sp->width - float(sp->offsetX)) / float(sp->trimW)
+                           : sp->anchorX;
+        item.anchorY = sp->trimH > 0
+                           ? (sp->anchorY * sp->height - float(sp->offsetY)) / float(sp->trimH)
+                           : sp->anchorY;
+        item.flipX = sp->flipX;
+        item.flipY = sp->flipY;
         item.color = Color(sp->r, sp->g, sp->b, sp->a);
         item.layer = sp->layer;
+        item.blend = sp->blend;
         item.texture = sp->texture;
         item.normal = sp->normalTexture;
         item.quad = sp->quad;
@@ -328,13 +463,35 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
         float v1 = it.hasUV ? it.v1 : 1.f;
         if (!it.hasUV && it.quad && it.texture)
             it.quad->getUV(it.texture->getWidth(), it.texture->getHeight(), u0, v0, u1, v1);
+        if (it.flipX) std::swap(u0, u1);
+        if (it.flipY) std::swap(v0, v1);
 
-        if (it.litPath) {
+        const float pivotX = sx + sw * it.anchorX;
+        const float pivotY = sy + sh * it.anchorY;
+        const float radians = it.rotation * 3.14159265358979323846f / 180.f;
+        const float ox = sw * (0.5f - it.anchorX);
+        const float oy = sh * (0.5f - it.anchorY);
+        const float centerX = pivotX + ox * std::cos(radians) - oy * std::sin(radians);
+        const float centerY = pivotY + ox * std::sin(radians) + oy * std::cos(radians);
+
+        if (it.sceneColorDistortion) {
+            eve::debug::rtBind("texture", "distortion");
+            eve::debug::rtBind("texture", "sceneColor");
+            eve::debug::rtDraw("drawSceneColorDistortionUVRotated", "distortion");
+            gfx.drawSceneColorDistortionUVRotated(it.texture, centerX, centerY, sw, sh, it.rotation,
+                                                  u0, v0, u1, v1, it.distortionStrength,
+                                                  it.color.a, it.rotatedUV);
+        } else if (it.litPath) {
             eve::debug::rtBind("texture", "albedo");
             eve::debug::rtBind("texture", "normal");
-            eve::debug::rtDraw("drawTexturedRectLitUV", "lit2d");
-            gfx.drawTexturedRectLitUV(it.texture, it.normal, sx, sy, sw, sh, u0, v0, u1, v1,
-                                      it.color);
+            if (it.rotation != 0.f) {
+                eve::debug::rtDraw("drawTexturedRectLitUVRotated", "lit2d");
+                gfx.drawTexturedRectLitUVRotated(it.texture, it.normal, centerX, centerY, sw, sh, it.rotation, u0, v0,
+                                                 u1, v1, it.color, it.blend);
+            } else {
+                eve::debug::rtDraw("drawTexturedRectLitUV", "lit2d");
+                gfx.drawTexturedRectLitUV(it.texture, it.normal, sx, sy, sw, sh, u0, v0, u1, v1, it.color, it.blend);
+            }
         } else if (it.texture) {
             Color c = it.color;
             if (it.receiveLight && !it.normal)
@@ -344,8 +501,8 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
             if (it.rotation != 0.f) {
                 eve::debug::rtDraw("drawTexturedRectShaderUVRotated",
                                    it.shader ? "shader" : "textured");
-                gfx.drawTexturedRectShaderUVRotated(it.texture, it.shader, sx + sw * 0.5f,
-                                                    sy + sh * 0.5f, sw, sh, it.rotation, u0, v0, u1,
+                gfx.drawTexturedRectShaderUVRotated(it.texture, it.shader, centerX,
+                                                    centerY, sw, sh, it.rotation, u0, v0, u1,
                                                     v1, c, it.rotatedUV, it.blend);
             } else {
                 eve::debug::rtDraw("drawTexturedRectShaderUV", it.shader ? "shader" : "textured");
@@ -358,7 +515,7 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
                 c = modulateUnlit(c, sx + sw * 0.5f, sy + sh * 0.5f, true, currentLights);
             eve::debug::rtDraw("drawSolidRect", "solid");
             if (it.rotation != 0.f)
-                gfx.drawSolidRectRotated(sx + sw * 0.5f, sy + sh * 0.5f, sw, sh, it.rotation, c,
+                gfx.drawSolidRectRotated(centerX, centerY, sw, sh, it.rotation, c,
                                          it.blend);
             else
                 gfx.drawSolidRect(sx, sy, sw, sh, c, it.blend);
@@ -374,6 +531,7 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
 }
 
 void RenderSystem::render(Graphics &gfx) {
+    EV_PROFILE_MODULE("graphics", "Render2D");
     eve::debug::rtFrameBegin();
     std::vector<DrawItem2D> items;
     collectSprites(items);

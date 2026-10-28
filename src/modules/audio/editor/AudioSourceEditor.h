@@ -1,0 +1,240 @@
+#pragma once
+#include "common/Export.h"
+
+
+/**
+ * @file AudioSourceEditor.h
+ * @brief UI-neutral audio source editor: workspace, waveform, audition, undo.
+ */
+
+#include "audio/editing/AudioTarget.h"
+#include "audio/editing/AudioTransport.h"
+#include "audio/editing/AudioWaveform.h"
+#include "editor/EditorAuthority.h"
+#include "editor/EditorSelection.h"
+#include "editor/EditorTransactionService.h"
+#include "editor/EditorWorkspace.h"
+
+#include <cstdint>
+#include <memory>
+#include <string>
+
+namespace eve::editor {
+struct PreviewState;
+}
+
+namespace eve::audio_editor {
+class IAudioSourcePreviewProvider;
+
+/**
+ * @brief Clock-backed audition used when no live OpenAL Source is attached.
+ *
+ * Position advances only through @ref advance. Owner-thread only.
+ */
+class AudioClockTransportBackend final : public audio_editing::IAudioTransportBackend {
+public:
+    /** @brief Play. */
+    void play() override;
+    /** @brief Pause. */
+    void pause() override;
+    /** @brief Stops . */
+    void stop() override;
+    /** @brief Seeks . */
+    [[nodiscard]] audio_editing::Result<void> seek(double seconds) override;
+    /** @brief Tell. */
+    double tell() const override { return position_; }
+    /** @brief Duration. */
+    double duration() const override { return duration_; }
+    /** @brief Playing. */
+    bool   playing() const override { return playing_; }
+    /** @brief Sets the native looping. */
+    void   setNativeLooping(bool) override {}
+
+    /** @brief Install clip length before bind. */
+    void setDuration(double seconds);
+    /** @brief Advance playhead when playing. */
+    void advance(double deltaSeconds);
+
+private:
+    double duration_ = 1.0;
+    double position_ = 0.0;
+    bool   playing_  = false;
+};
+
+/**
+ * @brief Timeline-style controller for one authored audio source.
+ *
+ * Owns the document, local undo, waveform cache and audition transport.
+ * PCM identity is separate from document revision so volume/pitch edits do not
+ * stale-unbind playback. Clip PCM changes increment @ref pcmRevision.
+ *
+ * @ownership Editor owns the document and clock backend. Live Source is borrowed
+ *            from the Audio module when attachLiveAudition succeeds.
+ * @threadaffinity Owner thread only.
+ * @reentrancy No unknown callbacks.
+ */
+class EVENGINE_API_EDITORS AudioSourceEditor {
+public:
+    /**
+     * @brief Construct a seeded preview source with a generated tone clip.
+     * @param targetId Stable editor target identity.
+     */
+    explicit AudioSourceEditor(std::string targetId);
+
+    AudioSourceEditor(const AudioSourceEditor&)            = delete;
+    AudioSourceEditor& operator=(const AudioSourceEditor&) = delete;
+    /** @brief Audio source editor. */
+    ~AudioSourceEditor();
+
+    /**
+     * @brief Replace the owned immutable preview provider and invalidate all previous work, even for the same instance.
+     * @ownership Retains shared ownership; null explicitly disables previews, preserving the last successful payload.
+     * @thread Owner thread; providers run on a worker with owning immutable inputs and must cooperate with
+     * cancellation.
+     * @reentrancy Provider callbacks never run under editor locks or access this editor.
+     */
+    [[nodiscard]] audio_editing::Result<void> setPreviewProvider(
+        std::shared_ptr<const IAudioSourcePreviewProvider> provider);
+    /**
+     * @brief Queue a preview of the current domain inputs; accepted work returns Pending.
+     * @cost Copies the PCM/clip input once per request; computation runs on the editing task worker, amortized over
+     * polls.
+     */
+    [[nodiscard]] audio_editing::Result<void> requestPreview();
+    /** @brief Publish the current completed preview atomically; Pending while work runs, NoOp when idle. Owner thread
+     * only. */
+    [[nodiscard]] audio_editing::Result<void> pollPreview();
+    /** @brief Cancel pending publication while keeping the last valid preview; a new explicit request may resume. */
+    [[nodiscard]] audio_editing::Result<void> cancelPreview();
+    /** @brief Permanently cancel and close preview publication; idempotent. Destruction joins cooperative work. */
+    void closePreview();
+    /** @brief Observe request sequence, provider generation and phase without copying preview payloads. */
+    editor::PreviewState previewState() const noexcept;
+
+    /** @brief Borrow the authoritative source document. */
+    const audio_editing::AudioSourceTarget& target() const noexcept { return target_; }
+
+    /**
+     * @brief Install Sources / Waveform / Inspector / Transport panels.
+     * @note Does not retain @p workspace.
+     */
+    [[nodiscard]] audio_editing::Result<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
+
+    /**
+     * @brief Rebuild waveform envelopes for the given pixel width.
+     * @param width Viewport width in pixels; finite, at least 8, and within waveform service limits.
+     * @return Rejected on invalid input; failed rebuilds preserve the last valid waveform and layout.
+     */
+    [[nodiscard]] audio_editing::Result<void> setViewportWidth(float width);
+
+    /**
+     * @brief Seek from a waveform x coordinate in the current viewport.
+     * @param x Pixel x in the waveform view.
+     */
+    [[nodiscard]] audio_editing::Result<void> seekX(float x);
+
+    /** @brief Seek preview to an exact time in seconds. */
+    [[nodiscard]] audio_editing::Result<void> seekSeconds(double seconds);
+
+    /** @brief Commit an absolute property assignment through the document transaction path. */
+    [[nodiscard]] audio_editing::Result<void> setProperty(const std::string& path,
+                                                                const audio_editing::EditorValue& value);
+
+    /** @brief Undo. */
+    [[nodiscard]] audio_editing::Result<editor::TransactionReceipt> undo();
+    /** @brief Redo. */
+    [[nodiscard]] audio_editing::Result<editor::TransactionReceipt> redo();
+
+    /** @brief Play. */
+    [[nodiscard]] audio_editing::Result<void> play();
+    /** @brief Pause. */
+    [[nodiscard]] audio_editing::Result<void> pause();
+    /** @brief Stops . */
+    [[nodiscard]] audio_editing::Result<void> stop();
+
+    /**
+     * @brief Poll audition and advance the clock backend.
+     * @param deltaSeconds Injected frame time.
+     */
+    [[nodiscard]] audio_editing::Result<audio_editing::AudioTransportSnapshot> update(double deltaSeconds);
+
+    /**
+     * @brief Bind a live OpenAL Source generated from the preview PCM when Audio/Sound exist.
+     * @return Applied when live audition is bound; Unsupported when modules are absent.
+     */
+    [[nodiscard]] audio_editing::Result<void> attachLiveAudition();
+
+    bool          canUndo() const noexcept { return transactions_.canUndo(); }
+    /** @brief Can redo. */
+    bool          canRedo() const noexcept { return transactions_.canRedo(); }
+    /** @brief True when playing. */
+    bool          isPlaying() const noexcept;
+    /** @brief Revision. */
+    std::uint64_t revision() const noexcept { return target_.revision(); }
+    /** @brief Pcm revision. */
+    std::uint64_t pcmRevision() const noexcept { return pcmRevision_; }
+    /** @brief Duration. */
+    double        duration() const noexcept;
+    /** @brief Playhead. */
+    double        playhead() const noexcept;
+    /** @brief Layout width. */
+    float         layoutWidth() const noexcept { return viewportWidth_; }
+    /** @brief Bucket count. */
+    int           bucketCount() const noexcept;
+    /** @brief Playhead x. */
+    float         playheadX() const noexcept;
+    /** @brief Loop start x. */
+    float         loopStartX() const noexcept;
+    /** @brief Loop end x. */
+    float         loopEndX() const noexcept;
+
+    /** @brief Read a property using the source selection. */
+    [[nodiscard]] audio_editing::PropertyReadResult read(const std::string& path) const;
+
+    /**
+     * @brief Envelope bucket for drawing; channel 0.
+     * @ownership Borrowed bucket owned by this editor.
+     * @lifetime Valid until the next setViewportWidth/rebuild or destruction; null when index is out of range.
+     */
+    [[nodiscard]] const audio_editing::AudioWaveformBucket* bucket(int index) const;
+
+    /** @brief Latest transport observation after a successful update/play. */
+    const audio_editing::AudioTransportSnapshot& transport() const noexcept { return lastTransport_; }
+
+    /** @brief Canonical snapshot of the source document. */
+    audio_editing::EditorValue snapshot() const { return target_.snapshotValue(); }
+
+private:
+    struct PreviewSession;
+    struct PreviewSessionDeleter {
+        void operator()(PreviewSession*) const;
+    };
+    std::unique_ptr<PreviewSession, PreviewSessionDeleter> previewSession_;
+    void                                                   initializePreview();
+    [[nodiscard]] editor::SelectionSnapshot selection() const;
+    [[nodiscard]] audio_editing::Result<void>              rebuildWaveform(float viewportWidth);
+    [[nodiscard]] audio_editing::Result<void> bindClockAudition();
+    [[nodiscard]] audio_editing::Result<void> syncLoop();
+    [[nodiscard]] audio_editing::Result<void> publishLive();
+    [[nodiscard]] audio_editing::Revision           auditionRevision() const;
+    void                                            seedPreviewDocument();
+    void                                            generateTonePcm();
+
+    audio_editing::AudioSourceTarget         target_;
+    editor::LocalWorldAuthority              authority_;
+    editor::LocalTransactionBackend          transactions_;
+    audio_editing::EditorAudioPcm            pcm_;
+    audio_editing::AudioWaveformResult       waveform_;
+    AudioClockTransportBackend               clock_;
+    audio_editing::AudioAuditionTransport    transport_;
+    audio_editing::AudioTransportSnapshot    lastTransport_;
+    struct LiveAudition;
+    std::unique_ptr<LiveAudition>            liveAudition_;
+    bool                                     liveBound_    = false;
+    std::uint64_t                            pcmRevision_  = 1;
+    std::uint64_t                            txSequence_   = 0;
+    float                                    viewportWidth_ = 640.0f;
+    float                                    requestedViewportWidth_ = 640.0f;
+};
+
+}  // namespace eve::audio_editor

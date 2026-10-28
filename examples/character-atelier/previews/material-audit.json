@@ -1,0 +1,84 @@
+{
+  "originalMaterials": [
+    {
+      "name": "Body_00_SKIN",
+      "width": 2048,
+      "height": 2048,
+      "alphaMode": "OPAQUE"
+    },
+    {
+      "name": "Bottoms_01_CLOTH",
+      "width": 1024,
+      "height": 1024,
+      "alphaMode": "OPAQUE"
+    },
+    {
+      "name": "Shoes_01_CLOTH",
+      "width": 512,
+      "height": 512,
+      "alphaMode": "OPAQUE"
+    },
+    {
+      "name": "Tops_01_CLOTH",
+      "width": 1024,
+      "height": 2048,
+      "alphaMode": "OPAQUE"
+    },
+    {
+      "name": "HairBack_00_HAIR",
+      "width": 1024,
+      "height": 1024,
+      "alphaMode": "OPAQUE"
+    },
+    {
+      "name": "FaceMouth_00_FACE",
+      "width": 512,
+      "height": 512,
+      "alphaMode": "OPAQUE"
+    },
+    {
+      "name": "EyeIris_00_EYE",
+      "width": 1024,
+      "height": 512,
+      "alphaMode": "OPAQUE"
+    },
+    {
+      "name": "Face_00_SKIN",
+      "width": 1024,
+      "height": 1024,
+      "alphaMode": "OPAQUE"
+    },
+    {
+      "name": "EyeWhite_00_EYE",
+      "width": 1024,
+      "height": 512,
+      "alphaMode": "OPAQUE"
+    },
+    {
+      "name": "FaceEyeline_00_FACE",
+      "width": 1024,
+      "height": 256,
+      "alphaMode": "OPAQUE"
+    },
+    {
+      "name": "FaceBrow_00_FACE",
+      "width": 1024,
+      "height": 256,
+      "alphaMode": "OPAQUE"
+    },
+    {
+      "name": "EyeHighlight_00_EYE",
+      "width": 1024,
+      "height": 512,
+      "alphaMode": "OPAQUE"
+    },
+    {
+      "name": "Hair_00_HAIR",
+      "width": 512,
+      "height": 1024,
+      "alphaMode": "OPAQUE"
+    }
+  ],
+  "neutralShirtPixels": 1.0,
+  "screenshot": "female-body.png"
+}

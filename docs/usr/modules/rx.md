@@ -65,7 +65,7 @@ print(hp.get());  // 80
 ### 桥接事件队列
 
 ```squirrel
-local ev = eve.Event();
+local ev = eve.PlatformEvent();
 local rx = eve.Rx();
 local quest = rx.fromEvent("quest-complete");
 quest.subscribe(function(data) { print("quest done: " + data); });
@@ -83,9 +83,7 @@ rx.pump(ev);
 - 混淆 `subscribe` 与 `subscribe3`：前者只有 onNext 回调；后者是
   `subscribe3(onNext, onError, onCompleted)`，全部必填（不需要就传 `null`）。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象的方法也列在这里。
+## 绑定与行为说明
 
 **模块 `Rx`：**
 
@@ -110,15 +108,22 @@ rx.pump(ev);
 - `BehaviorSubject` 额外：`getValue()` / `setValue(v)`
 - `ReactiveProperty`：`get()` / `set(v)` / `subscribe` / `subscribe3`
 
-**`Subscription`：**
-
-- `dispose()` / `isDisposed()`
-
 ## 使用要点
 
 - 流对象和订阅对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 默认回调在当前线程同步执行；跨线程需求先回到主线程再推送。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
+
+## 引擎内的 Editor 观察会话
+
+Editor automation 直接复用本模块的 C++ `Subject` 和 `distinctUntilChanged` 管线，实现 MCP
+`eve_editor_observe_start/poll/close`。Editor 持有会话、流和订阅，是生命周期唯一所有者；MCP 的
+poll 只在主线程采样 live runtime 并推送事件，不复制场景或材质权威状态。连续相同 JSON 事件不会
+重复交给 Agent，provider 丢失或 stale identity 则作为可观察的状态变化返回。使用方必须显式 close；
+target 或引擎对象仍按原所有权销毁，关闭观察会话不会销毁被观察对象。
 
 **源码：** [`src/modules/rx/`](../../../src/modules/rx/)
-**相关测试：** [`test/rx.cpp`](../../../test/rx.cpp)
+**相关测试：** [`test/integration/script-api/script_api_graphics_scene_tests.cpp`](../../../test/integration/script-api/script_api_graphics_scene_tests.cpp)
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](rx/api-reference.md)，使用前先确认本章的前置条件与生命周期。

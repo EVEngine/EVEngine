@@ -1,0 +1,726 @@
+{
+  "schema": "evengine.integration-top10-build-cost/v1",
+  "baseline": "044e1ca5a",
+  "order": [
+    "baseline",
+    "final",
+    "final",
+    "baseline"
+  ],
+  "scope": "Same ten default graphics test CPPs; four workers; direct MSVC via repository wrapper; original compile flags; no compiler cache; no configure/link timing.",
+  "limitations": [
+    "Two observations per revision, warm OS caches; no statistical significance claim.",
+    "Snapshot source paths differ; identical current generated headers and compile flags for both revisions.",
+    "On-disk PDB baseline was not clean-relinked; final PDB was clean-relinked, so its entire reduction cannot be attributed to source changes.",
+    "Existing external submodule edits were identical throughout; clean CI still required."
+  ],
+  "rounds": [
+    {
+      "cohort": "baseline",
+      "workers": 4,
+      "wall_seconds": 15.896142999874428,
+      "obj_bytes": 230450081,
+      "files": [
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 7.867145100142807,
+          "exit_code": 0,
+          "obj_bytes": 26756906,
+          "source_sha256": "6de5cc788fb53a204ae63de5b721f594b50f9b933d0aecdac2311c30855a6e26"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 4.487007700139657,
+          "exit_code": 0,
+          "obj_bytes": 20616898,
+          "source_sha256": "633cbb5ce6739f4656ed3fcd4a606d4845552de237ea1bd090dae062cc1981fb"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 7.753578000003472,
+          "exit_code": 0,
+          "obj_bytes": 27887709,
+          "source_sha256": "9737db212cf7d5d4cafbde7c91272a77f7d8a12a87557289ccff105c2ce7d65b"
+        },
+        {
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 5.337790000019595,
+          "exit_code": 0,
+          "obj_bytes": 27410153,
+          "source_sha256": "527a2d98be997d44037aebdba9ebcbc7444548d5337af21f747b3858571201bb"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 2.9320882000029087,
+          "exit_code": 0,
+          "obj_bytes": 13917680,
+          "source_sha256": "782d459a7faace19487d6f4f143ece35cc512de48c3b75bdbf7ca8de1264bcf2"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 6.851578500121832,
+          "exit_code": 0,
+          "obj_bytes": 21103650,
+          "source_sha256": "1b52f0b49a086972284489bafe3e2d6bbc4d42d30bbf0041646f820d0d588dfb"
+        },
+        {
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 5.701387699926272,
+          "exit_code": 0,
+          "obj_bytes": 29254681,
+          "source_sha256": "35083db3455ca008a974cec81bd9041e90644f398339840c8ac6ef15b8874993"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 3.822968899970874,
+          "exit_code": 0,
+          "obj_bytes": 20759315,
+          "source_sha256": "ccfec040723c25371249f314c4b7d6ec267b3d8815c0517a8646a499fecc42d6"
+        },
+        {
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 6.065785399870947,
+          "exit_code": 0,
+          "obj_bytes": 20358516,
+          "source_sha256": "d33ff9032bfe61d8881c910225a6f5081299486abb7e399951e27c879344b7cd"
+        },
+        {
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 4.310390600003302,
+          "exit_code": 0,
+          "obj_bytes": 22384573,
+          "source_sha256": "73de441a3d22c7aabcfaef48a6c01413c768d1f9556cdb31ae6413a2d3f424d6"
+        }
+      ]
+    },
+    {
+      "cohort": "final",
+      "workers": 4,
+      "wall_seconds": 16.005170800024644,
+      "obj_bytes": 230864788,
+      "files": [
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 8.00659089977853,
+          "exit_code": 0,
+          "obj_bytes": 26955935,
+          "source_sha256": "6fdbfe626cb821955973b3e179bd8bbdfd1ddb0ff443d6ff4f1f6a10f60d24a0"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 4.566387600032613,
+          "exit_code": 0,
+          "obj_bytes": 20720836,
+          "source_sha256": "06aec065e99c0f4a9cbf86a6acbd149ce849cd6953de50b40c668f05cdef4a25"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 7.8068165997974575,
+          "exit_code": 0,
+          "obj_bytes": 27134187,
+          "source_sha256": "0def29fb92f9ade777a1b49b9d43f0f6c3abd32ab2e7cff34a7dba7e76ebff6f"
+        },
+        {
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 5.385327100055292,
+          "exit_code": 0,
+          "obj_bytes": 27509898,
+          "source_sha256": "61aa464095ce72b95af0f5bbc0f83c280fcd8f2a86b9fa59e86faff3955983c4"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 2.906931399833411,
+          "exit_code": 0,
+          "obj_bytes": 14013884,
+          "source_sha256": "bd23de30cb643f8ed73e4c78d541c5b144c22a5ea61cf0c43965b6d13f7dc7e8"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 6.708088800078258,
+          "exit_code": 0,
+          "obj_bytes": 21336107,
+          "source_sha256": "7ac63e6cd6afbe0856a6e2edea0283ff0a58b7c7dfe18babd1a91b6608565f00"
+        },
+        {
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 5.8394756000489,
+          "exit_code": 0,
+          "obj_bytes": 29356735,
+          "source_sha256": "af97a07e25bff94afff0d926caefd07998649d0e038f614e8a2e1938657054e0"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 3.8370741000398993,
+          "exit_code": 0,
+          "obj_bytes": 20367996,
+          "source_sha256": "16eae0b9c35a34d29e7420a42b1a21937591139ce7c1bcea6613e4dc9f7f7d5c"
+        },
+        {
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 6.132547900080681,
+          "exit_code": 0,
+          "obj_bytes": 20511864,
+          "source_sha256": "48fc87e609c070d4a321949088016a5ba331ac4c4923b005b83e8332dcb349a0"
+        },
+        {
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 4.354612899944186,
+          "exit_code": 0,
+          "obj_bytes": 22957346,
+          "source_sha256": "8143debde6e926a1ab5e736cfaf0889e5a6906c41784f05db2695bb6319e4730"
+        }
+      ]
+    },
+    {
+      "cohort": "final",
+      "workers": 4,
+      "wall_seconds": 15.273512399988249,
+      "obj_bytes": 230864788,
+      "files": [
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 7.540652700001374,
+          "exit_code": 0,
+          "obj_bytes": 26955935,
+          "source_sha256": "6fdbfe626cb821955973b3e179bd8bbdfd1ddb0ff443d6ff4f1f6a10f60d24a0"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 4.1585983000695705,
+          "exit_code": 0,
+          "obj_bytes": 20720836,
+          "source_sha256": "06aec065e99c0f4a9cbf86a6acbd149ce849cd6953de50b40c668f05cdef4a25"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 7.3544063998851925,
+          "exit_code": 0,
+          "obj_bytes": 27134187,
+          "source_sha256": "0def29fb92f9ade777a1b49b9d43f0f6c3abd32ab2e7cff34a7dba7e76ebff6f"
+        },
+        {
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 5.018536900170147,
+          "exit_code": 0,
+          "obj_bytes": 27509898,
+          "source_sha256": "61aa464095ce72b95af0f5bbc0f83c280fcd8f2a86b9fa59e86faff3955983c4"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 2.6285980998072773,
+          "exit_code": 0,
+          "obj_bytes": 14013884,
+          "source_sha256": "bd23de30cb643f8ed73e4c78d541c5b144c22a5ea61cf0c43965b6d13f7dc7e8"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 6.56411030003801,
+          "exit_code": 0,
+          "obj_bytes": 21336107,
+          "source_sha256": "7ac63e6cd6afbe0856a6e2edea0283ff0a58b7c7dfe18babd1a91b6608565f00"
+        },
+        {
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 5.5495801998768,
+          "exit_code": 0,
+          "obj_bytes": 29356735,
+          "source_sha256": "af97a07e25bff94afff0d926caefd07998649d0e038f614e8a2e1938657054e0"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 3.7092738999053836,
+          "exit_code": 0,
+          "obj_bytes": 20367996,
+          "source_sha256": "16eae0b9c35a34d29e7420a42b1a21937591139ce7c1bcea6613e4dc9f7f7d5c"
+        },
+        {
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 6.291253700153902,
+          "exit_code": 0,
+          "obj_bytes": 20511864,
+          "source_sha256": "48fc87e609c070d4a321949088016a5ba331ac4c4923b005b83e8332dcb349a0"
+        },
+        {
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 4.182963700033724,
+          "exit_code": 0,
+          "obj_bytes": 22957346,
+          "source_sha256": "8143debde6e926a1ab5e736cfaf0889e5a6906c41784f05db2695bb6319e4730"
+        }
+      ]
+    },
+    {
+      "cohort": "baseline",
+      "workers": 4,
+      "wall_seconds": 15.31170430011116,
+      "obj_bytes": 230450081,
+      "files": [
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 7.599672800162807,
+          "exit_code": 0,
+          "obj_bytes": 26756906,
+          "source_sha256": "6de5cc788fb53a204ae63de5b721f594b50f9b933d0aecdac2311c30855a6e26"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 4.125278900144622,
+          "exit_code": 0,
+          "obj_bytes": 20616898,
+          "source_sha256": "633cbb5ce6739f4656ed3fcd4a606d4845552de237ea1bd090dae062cc1981fb"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 7.485233800020069,
+          "exit_code": 0,
+          "obj_bytes": 27887709,
+          "source_sha256": "9737db212cf7d5d4cafbde7c91272a77f7d8a12a87557289ccff105c2ce7d65b"
+        },
+        {
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 5.1448059000540525,
+          "exit_code": 0,
+          "obj_bytes": 27410153,
+          "source_sha256": "527a2d98be997d44037aebdba9ebcbc7444548d5337af21f747b3858571201bb"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 2.6313505999278277,
+          "exit_code": 0,
+          "obj_bytes": 13917680,
+          "source_sha256": "782d459a7faace19487d6f4f143ece35cc512de48c3b75bdbf7ca8de1264bcf2"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 6.577737000072375,
+          "exit_code": 0,
+          "obj_bytes": 21103650,
+          "source_sha256": "1b52f0b49a086972284489bafe3e2d6bbc4d42d30bbf0041646f820d0d588dfb"
+        },
+        {
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 5.405933199916035,
+          "exit_code": 0,
+          "obj_bytes": 29254681,
+          "source_sha256": "35083db3455ca008a974cec81bd9041e90644f398339840c8ac6ef15b8874993"
+        },
+        {
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 3.7450192000251263,
+          "exit_code": 0,
+          "obj_bytes": 20759315,
+          "source_sha256": "ccfec040723c25371249f314c4b7d6ec267b3d8815c0517a8646a499fecc42d6"
+        },
+        {
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 5.958272499963641,
+          "exit_code": 0,
+          "obj_bytes": 20358516,
+          "source_sha256": "d33ff9032bfe61d8881c910225a6f5081299486abb7e399951e27c879344b7cd"
+        },
+        {
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 4.059798900038004,
+          "exit_code": 0,
+          "obj_bytes": 22384573,
+          "source_sha256": "73de441a3d22c7aabcfaef48a6c01413c768d1f9556cdb31ae6413a2d3f424d6"
+        }
+      ]
+    }
+  ],
+  "median_wall_seconds": {
+    "baseline": 15.603923649992794,
+    "final": 15.639341600006446
+  },
+  "median_change_percent": 0.2269810517412374,
+  "canonical_obj_bytes": {
+    "baseline": 230407138,
+    "final": 230823883,
+    "change_percent": 0.1808733026317899
+  },
+  "pdb_bytes": {
+    "baseline_on_disk": 540209152,
+    "final_clean_link": 417402880
+  },
+  "strict_obj_zero_growth_satisfied": false,
+  "repair": {
+    "scope": "Same ten integration CPPs plus existing UI unit CPP, including the migrated round-trip contract.",
+    "compile_order": [
+      "baseline",
+      "final",
+      "final",
+      "baseline"
+    ],
+    "rounds": [
+      {
+        "cohort": "baseline",
+        "workers": 4,
+        "wall_seconds": 14.578804600052536,
+        "valid": true,
+        "obj_bytes": 244280392,
+        "files": [
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+            "seconds": 7.003963799914345,
+            "exit_code": 0,
+            "obj_bytes": 26756369,
+            "source_sha256": "6de5cc788fb53a204ae63de5b721f594b50f9b933d0aecdac2311c30855a6e26"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+            "seconds": 4.28670629998669,
+            "exit_code": 0,
+            "obj_bytes": 20616871,
+            "source_sha256": "633cbb5ce6739f4656ed3fcd4a606d4845552de237ea1bd090dae062cc1981fb"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+            "seconds": 7.003041099989787,
+            "exit_code": 0,
+            "obj_bytes": 27887334,
+            "source_sha256": "9737db212cf7d5d4cafbde7c91272a77f7d8a12a87557289ccff105c2ce7d65b"
+          },
+          {
+            "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+            "seconds": 4.8499797999393195,
+            "exit_code": 0,
+            "obj_bytes": 27409782,
+            "source_sha256": "527a2d98be997d44037aebdba9ebcbc7444548d5337af21f747b3858571201bb"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+            "seconds": 2.758979700040072,
+            "exit_code": 0,
+            "obj_bytes": 13917257,
+            "source_sha256": "782d459a7faace19487d6f4f143ece35cc512de48c3b75bdbf7ca8de1264bcf2"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+            "seconds": 5.723741700174287,
+            "exit_code": 0,
+            "obj_bytes": 21103066,
+            "source_sha256": "1b52f0b49a086972284489bafe3e2d6bbc4d42d30bbf0041646f820d0d588dfb"
+          },
+          {
+            "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+            "seconds": 5.294590799836442,
+            "exit_code": 0,
+            "obj_bytes": 29253794,
+            "source_sha256": "35083db3455ca008a974cec81bd9041e90644f398339840c8ac6ef15b8874993"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+            "seconds": 3.995174399809912,
+            "exit_code": 0,
+            "obj_bytes": 20759119,
+            "source_sha256": "ccfec040723c25371249f314c4b7d6ec267b3d8815c0517a8646a499fecc42d6"
+          },
+          {
+            "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+            "seconds": 5.77990259998478,
+            "exit_code": 0,
+            "obj_bytes": 20358045,
+            "source_sha256": "d33ff9032bfe61d8881c910225a6f5081299486abb7e399951e27c879344b7cd"
+          },
+          {
+            "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+            "seconds": 3.996019500074908,
+            "exit_code": 0,
+            "obj_bytes": 22384118,
+            "source_sha256": "73de441a3d22c7aabcfaef48a6c01413c768d1f9556cdb31ae6413a2d3f424d6"
+          },
+          {
+            "source": "test/unit/ui/ui_tests.cpp",
+            "seconds": 2.0880778999999166,
+            "exit_code": 0,
+            "obj_bytes": 13834637,
+            "source_sha256": "601c9ddb6b42b006b8bc99ccee27489058d569b0f69b12ebfa3583f1374fd3fb"
+          }
+        ]
+      },
+      {
+        "cohort": "final",
+        "workers": 4,
+        "wall_seconds": 14.843356000026688,
+        "valid": true,
+        "obj_bytes": 244270206,
+        "files": [
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+            "seconds": 7.066828100010753,
+            "exit_code": 0,
+            "obj_bytes": 26955528,
+            "source_sha256": "6fdbfe626cb821955973b3e179bd8bbdfd1ddb0ff443d6ff4f1f6a10f60d24a0"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+            "seconds": 4.2947909000795335,
+            "exit_code": 0,
+            "obj_bytes": 20658256,
+            "source_sha256": "ba44868788be4a03d3db82c704d9994ea4bb7921520298e6115cf4f7ce2cfe16"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+            "seconds": 7.062445000046864,
+            "exit_code": 0,
+            "obj_bytes": 27230605,
+            "source_sha256": "eb72ec1b5ca08aab8d2e13b768c95d0f70fb0ddf9d25f76b3ff8b70b961b03f2"
+          },
+          {
+            "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+            "seconds": 5.126513999886811,
+            "exit_code": 0,
+            "obj_bytes": 27509235,
+            "source_sha256": "61aa464095ce72b95af0f5bbc0f83c280fcd8f2a86b9fa59e86faff3955983c4"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+            "seconds": 3.176907900022343,
+            "exit_code": 0,
+            "obj_bytes": 14207282,
+            "source_sha256": "2fff76e30b9200c41f36d7bc6613079bead2149b7598117a04c1121d3a5ee5d3"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+            "seconds": 6.007673199987039,
+            "exit_code": 0,
+            "obj_bytes": 21335512,
+            "source_sha256": "7ac63e6cd6afbe0856a6e2edea0283ff0a58b7c7dfe18babd1a91b6608565f00"
+          },
+          {
+            "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+            "seconds": 5.159595600096509,
+            "exit_code": 0,
+            "obj_bytes": 29355976,
+            "source_sha256": "af97a07e25bff94afff0d926caefd07998649d0e038f614e8a2e1938657054e0"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+            "seconds": 3.784234499791637,
+            "exit_code": 0,
+            "obj_bytes": 20554835,
+            "source_sha256": "20a1aa6caff2ded0c530b42b39dc639b59fed17a896c01844730412fcc80b7ef"
+          },
+          {
+            "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+            "seconds": 5.45618880004622,
+            "exit_code": 0,
+            "obj_bytes": 20381941,
+            "source_sha256": "e0fa4703ce493ebfe12bf5a8adc3c6658a97b1fd4f6e97e5ca32c0143eaecc70"
+          },
+          {
+            "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+            "seconds": 3.9877639000769705,
+            "exit_code": 0,
+            "obj_bytes": 21954745,
+            "source_sha256": "424698a18a797f12520345df6c5c41791d6d24bfe94c74e6dd33e73bb23fca66"
+          },
+          {
+            "source": "test/unit/ui/ui_tests.cpp",
+            "seconds": 2.088222000049427,
+            "exit_code": 0,
+            "obj_bytes": 14126291,
+            "source_sha256": "f9343097dcd4d9d5ddb36954cc17f19e7ee73357e5f77b76045d344b9717f0e8"
+          }
+        ]
+      },
+      {
+        "cohort": "final",
+        "workers": 4,
+        "wall_seconds": 13.908084500115365,
+        "valid": true,
+        "obj_bytes": 244270206,
+        "files": [
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+            "seconds": 6.512900999980047,
+            "exit_code": 0,
+            "obj_bytes": 26955528,
+            "source_sha256": "6fdbfe626cb821955973b3e179bd8bbdfd1ddb0ff443d6ff4f1f6a10f60d24a0"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+            "seconds": 4.00540030002594,
+            "exit_code": 0,
+            "obj_bytes": 20658256,
+            "source_sha256": "ba44868788be4a03d3db82c704d9994ea4bb7921520298e6115cf4f7ce2cfe16"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+            "seconds": 6.381684700027108,
+            "exit_code": 0,
+            "obj_bytes": 27230605,
+            "source_sha256": "eb72ec1b5ca08aab8d2e13b768c95d0f70fb0ddf9d25f76b3ff8b70b961b03f2"
+          },
+          {
+            "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+            "seconds": 4.6272799000144005,
+            "exit_code": 0,
+            "obj_bytes": 27509235,
+            "source_sha256": "61aa464095ce72b95af0f5bbc0f83c280fcd8f2a86b9fa59e86faff3955983c4"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+            "seconds": 2.793986899778247,
+            "exit_code": 0,
+            "obj_bytes": 14207282,
+            "source_sha256": "2fff76e30b9200c41f36d7bc6613079bead2149b7598117a04c1121d3a5ee5d3"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+            "seconds": 5.744305100059137,
+            "exit_code": 0,
+            "obj_bytes": 21335512,
+            "source_sha256": "7ac63e6cd6afbe0856a6e2edea0283ff0a58b7c7dfe18babd1a91b6608565f00"
+          },
+          {
+            "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+            "seconds": 4.958406700054184,
+            "exit_code": 0,
+            "obj_bytes": 29355976,
+            "source_sha256": "af97a07e25bff94afff0d926caefd07998649d0e038f614e8a2e1938657054e0"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+            "seconds": 3.521041499916464,
+            "exit_code": 0,
+            "obj_bytes": 20554835,
+            "source_sha256": "20a1aa6caff2ded0c530b42b39dc639b59fed17a896c01844730412fcc80b7ef"
+          },
+          {
+            "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+            "seconds": 5.311128600034863,
+            "exit_code": 0,
+            "obj_bytes": 20381941,
+            "source_sha256": "e0fa4703ce493ebfe12bf5a8adc3c6658a97b1fd4f6e97e5ca32c0143eaecc70"
+          },
+          {
+            "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+            "seconds": 3.856427300022915,
+            "exit_code": 0,
+            "obj_bytes": 21954745,
+            "source_sha256": "424698a18a797f12520345df6c5c41791d6d24bfe94c74e6dd33e73bb23fca66"
+          },
+          {
+            "source": "test/unit/ui/ui_tests.cpp",
+            "seconds": 2.088234700029716,
+            "exit_code": 0,
+            "obj_bytes": 14126291,
+            "source_sha256": "f9343097dcd4d9d5ddb36954cc17f19e7ee73357e5f77b76045d344b9717f0e8"
+          }
+        ]
+      },
+      {
+        "cohort": "baseline",
+        "workers": 4,
+        "wall_seconds": 14.399997999891639,
+        "valid": true,
+        "obj_bytes": 244280392,
+        "files": [
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+            "seconds": 6.555412100162357,
+            "exit_code": 0,
+            "obj_bytes": 26756369,
+            "source_sha256": "6de5cc788fb53a204ae63de5b721f594b50f9b933d0aecdac2311c30855a6e26"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+            "seconds": 3.9286558998283,
+            "exit_code": 0,
+            "obj_bytes": 20616871,
+            "source_sha256": "633cbb5ce6739f4656ed3fcd4a606d4845552de237ea1bd090dae062cc1981fb"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+            "seconds": 6.437678300077096,
+            "exit_code": 0,
+            "obj_bytes": 27887334,
+            "source_sha256": "9737db212cf7d5d4cafbde7c91272a77f7d8a12a87557289ccff105c2ce7d65b"
+          },
+          {
+            "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+            "seconds": 4.580785899888724,
+            "exit_code": 0,
+            "obj_bytes": 27409782,
+            "source_sha256": "527a2d98be997d44037aebdba9ebcbc7444548d5337af21f747b3858571201bb"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+            "seconds": 2.780558400088921,
+            "exit_code": 0,
+            "obj_bytes": 13917257,
+            "source_sha256": "782d459a7faace19487d6f4f143ece35cc512de48c3b75bdbf7ca8de1264bcf2"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+            "seconds": 5.828449900029227,
+            "exit_code": 0,
+            "obj_bytes": 21103066,
+            "source_sha256": "1b52f0b49a086972284489bafe3e2d6bbc4d42d30bbf0041646f820d0d588dfb"
+          },
+          {
+            "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+            "seconds": 4.9163670998532325,
+            "exit_code": 0,
+            "obj_bytes": 29253794,
+            "source_sha256": "35083db3455ca008a974cec81bd9041e90644f398339840c8ac6ef15b8874993"
+          },
+          {
+            "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+            "seconds": 3.6924473999533802,
+            "exit_code": 0,
+            "obj_bytes": 20759119,
+            "source_sha256": "ccfec040723c25371249f314c4b7d6ec267b3d8815c0517a8646a499fecc42d6"
+          },
+          {
+            "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+            "seconds": 5.596714899875224,
+            "exit_code": 0,
+            "obj_bytes": 20358045,
+            "source_sha256": "d33ff9032bfe61d8881c910225a6f5081299486abb7e399951e27c879344b7cd"
+          },
+          {
+            "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+            "seconds": 4.135739100165665,
+            "exit_code": 0,
+            "obj_bytes": 22384118,
+            "source_sha256": "73de441a3d22c7aabcfaef48a6c01413c768d1f9556cdb31ae6413a2d3f424d6"
+          },
+          {
+            "source": "test/unit/ui/ui_tests.cpp",
+            "seconds": 2.060495499987155,
+            "exit_code": 0,
+            "obj_bytes": 13834637,
+            "source_sha256": "601c9ddb6b42b006b8bc99ccee27489058d569b0f69b12ebfa3583f1374fd3fb"
+          }
+        ]
+      }
+    ],
+    "median_wall_seconds": {
+      "baseline": 14.489401299972087,
+      "final": 14.375720250071026
+    },
+    "median_change_percent": -0.7845807259219129,
+    "canonical_obj_bytes": {
+      "baseline_ten": 230407138,
+      "repaired_ten": 230107556,
+      "baseline_ui": 13830654,
+      "repaired_ui": 14122295,
+      "baseline_eleven": 244237792,
+      "repaired_eleven": 244229851,
+      "change_percent": -0.0032513395797462152
+    },
+    "graphics_pdb_bytes": 417452032,
+    "strict_obj_zero_growth_satisfied": true,
+    "limits": [
+      "Two observations per revision; current headers and compiler flags shared, source snapshot paths differ.",
+      "UI source at baseline 044e1ca5a and pre-repair c50abc135 is identical; baseline UI OBJ is the saved pre-repair measurement.",
+      "PDB baseline was not clean-relinked; do not attribute all on-disk shrinkage to source changes."
+    ],
+    "ui_pdb_bytes": 30306304,
+    "affected_test_pdb_bytes": 447758336,
+    "pdb_baseline_limit": "Original UI PDB was not captured. The repaired graphics+UI sum is below the original graphics PDB alone; no exact combined reduction or source-only attribution is claimed."
+  },
+  "latest_measurement": "repair"
+}

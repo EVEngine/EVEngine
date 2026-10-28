@@ -1,0 +1,19 @@
+[
+  {
+    "id": "companion.ranger",
+    "rules": [
+      {
+        "skillId": "skill.ranger_aid",
+        "targetPolicy": "lowestHealthAlly",
+        "conditionResource": "hp",
+        "belowRatio": 0.4
+      },
+      {
+        "skillId": "skill.strike",
+        "targetPolicy": "lowestHealthEnemy",
+        "conditionResource": "",
+        "belowRatio": 1.0
+      }
+    ]
+  }
+]

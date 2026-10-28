@@ -1,6 +1,10 @@
 #include "dialogue/DnutParser.h"
 
-#include <cctype>
+#include "dialogue/DialogueSequence.h"
+#include "dnut_interpreter/DnutBlockScanner.h"
+#include "dnut_interpreter/DnutCompiler.h"
+#include "dnut_interpreter/DnutLexer.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <stdexcept>
@@ -11,283 +15,161 @@
 namespace eve::dialogue {
 namespace {
 
-enum class Tok { Ident, Str, Num, Punct, Eof };
+class PoolParseError final : public std::runtime_error {
+public:
+    PoolParseError(const eve::dnut::DnutToken& token, std::string message)
+        : std::runtime_error(std::move(message)), line(token.line), column(token.column) {}
 
-struct Token {
-    Tok kind = Tok::Eof;
-    std::string value;
-    int line = 1;
+    int line;
+    int column;
 };
 
-std::string floatToString(double v) {
-    char buf[64];
-    std::snprintf(buf, sizeof(buf), "%g", v);
-    return buf;
+std::string floatToString(double value) {
+    char buffer[64];
+    std::snprintf(buffer, sizeof(buffer), "%g", value);
+    return buffer;
 }
 
-std::string scalarToString(const DataValue &v) {
-    switch (v.kind) {
-        case DataValue::Kind::String:
-            return v.s;
-        case DataValue::Kind::Int:
-            return std::to_string(v.i);
-        case DataValue::Kind::Float:
-            return floatToString(v.f);
-        case DataValue::Kind::Bool:
-            return v.b ? "true" : "false";
-        default:
-            return {};
-    }
+std::string scalarToString(const DataValue& value) {
+    if (value.isString()) return value.asString();
+    if (value.isInt64()) return std::to_string(value.asInt());
+    if (value.isDouble()) return floatToString(value.asDouble());
+    if (value.isBool()) return value.asBool() ? "true" : "false";
+    return {};
 }
 
-DataValue numValue(const std::string &raw) {
+DataValue numberValue(const std::string& raw) {
     if (raw.find_first_of(".eE") != std::string::npos)
         return DataValue::number(std::strtod(raw.c_str(), nullptr));
     return DataValue::integer(std::strtoll(raw.c_str(), nullptr, 10));
 }
 
-DataValue negNumValue(const std::string &raw) {
-    DataValue v = numValue(raw);
-    if (v.kind == DataValue::Kind::Int) v.i = -v.i;
-    else v.f = -v.f;
-    return v;
-}
-
-class Parser {
+class PoolBlockParser {
 public:
-    Parser(std::string source, std::string path) : source_(std::move(source)), path_(std::move(path)) {}
+    PoolBlockParser(const std::vector<eve::dnut::DnutToken>& tokens, const eve::dnut::DnutBlock& block)
+        : tokens_(tokens), end_(block.endToken), index_(block.beginToken) {}
 
-    bool parse(DataValue &out, std::string &error) {
-        try {
-            tokenize();
-            out = parsePools();
-            return true;
-        } catch (const ParseError &e) {
-            error = e.what();
-            return false;
+    std::pair<std::string, DataValue> parse() {
+        expectKeyword("pool");
+        const std::string poolId   = expectIdentifier("pool name");
+        long long         noRepeat = -1;
+        while (isIdentifier("noRepeat")) {
+            advance();
+            expectPunct("=");
+            if (cur().kind != eve::dnut::DnutTokenKind::Number) fail("noRepeat must be a number");
+            noRepeat = std::strtoll(advance().text.c_str(), nullptr, 10);
         }
+        expectPunct("{");
+
+        std::vector<DataValue> lines;
+        int                    lineIndex = 1;
+        while (!isPunct("}")) {
+            if (atEnd()) fail("unterminated pool block");
+            if (isIdentifier("pool")) fail("pool blocks cannot be nested");
+            if (isIdentifier("when")) {
+                advance();
+                DataValue condition = parseOr();
+                expectPunct("{");
+                while (!isPunct("}")) {
+                    if (atEnd()) fail("unterminated when block");
+                    lines.push_back(parseLine(poolId, lineIndex++, &condition));
+                }
+                advance();
+            } else {
+                lines.push_back(parseLine(poolId, lineIndex++, nullptr));
+            }
+        }
+        advance();
+        DataValue::Object fields;
+        fields.emplace("lines", DataValue::array(std::move(lines)));
+        if (noRepeat >= 0) fields.emplace("noRepeat", DataValue::integer(noRepeat));
+        return {poolId, DataValue::object(std::move(fields))};
     }
 
 private:
-    struct ParseError : std::runtime_error {
-        explicit ParseError(const std::string &msg) : std::runtime_error(msg) {}
-    };
-
-    std::string source_;
-    std::string path_;
-    std::vector<Token> toks_;
-    size_t pos_ = 0;
-
-    const Token &cur() const { return toks_[pos_]; }
-    Token adv() {
-        Token t = toks_[pos_];
-        if (pos_ + 1 < toks_.size()) ++pos_;
-        return t;
+    const eve::dnut::DnutToken& cur() const {
+        const std::size_t position = index_ < tokens_.size() ? index_ : tokens_.size() - 1;
+        return tokens_[position];
     }
-    bool isPunct(const std::string &p) const {
-        return cur().kind == Tok::Punct && cur().value == p;
+    bool                 atEnd() const { return index_ >= end_ || cur().kind == eve::dnut::DnutTokenKind::EndOfFile; }
+    eve::dnut::DnutToken advance() {
+        const auto token = cur();
+        if (!atEnd()) ++index_;
+        return token;
     }
-    bool isIdent() const { return cur().kind == Tok::Ident; }
-
-    [[noreturn]] void fail(const std::string &msg) const {
-        const std::string at = cur().kind == Tok::Eof ? "<结束>" : cur().value;
-        throw ParseError(path_ + ":" + std::to_string(cur().line) + ": " + msg +
-                         "（实际是 '" + at + "'）");
+    bool isPunct(const char* text) const {
+        return cur().kind == eve::dnut::DnutTokenKind::Punctuator && cur().text == text;
     }
-    void expectPunct(const std::string &p) {
-        if (!isPunct(p)) fail("期望 '" + p + "'");
-        adv();
+    bool isIdentifier(const char* text) const {
+        return cur().kind == eve::dnut::DnutTokenKind::Identifier && cur().text == text;
     }
-    std::string expectIdent(const std::string &what) {
-        if (!isIdent()) fail("期望标识符 " + what);
-        return adv().value;
+    [[noreturn]] void fail(std::string message) const { throw PoolParseError(cur(), std::move(message)); }
+    void              expectKeyword(const char* text) {
+        if (!isIdentifier(text)) fail("expected '" + std::string(text) + "'");
+        advance();
+    }
+    void expectPunct(const char* text) {
+        if (!isPunct(text)) fail("expected '" + std::string(text) + "'");
+        advance();
+    }
+    std::string expectIdentifier(const std::string& description) {
+        if (cur().kind != eve::dnut::DnutTokenKind::Identifier) fail("expected " + description);
+        return advance().text;
     }
 
-    void tokenize() {
-        toks_.clear();
-        const std::string &src = source_;
-        const size_t n = src.size();
-        size_t i = 0;
-        int line = 1;
-        const auto add = [&](Tok k, std::string v) {
-            toks_.push_back(Token{k, std::move(v), line});
-        };
-
-        while (i < n) {
-            const char c = src[i];
-            if (c == '\n') {
-                ++line;
-                ++i;
-                continue;
-            }
-            if (c == ' ' || c == '\t' || c == '\r') {
-                ++i;
-                continue;
-            }
-            if (c == '/' && i + 1 < n && src[i + 1] == '/') {
-                while (i < n && src[i] != '\n') ++i;
-                continue;
-            }
-            if (c == '/' && i + 1 < n && src[i + 1] == '*') {
-                const int startLine = line;
-                i += 2;
-                while (i < n && !(src[i] == '*' && i + 1 < n && src[i + 1] == '/')) {
-                    if (src[i] == '\n') ++line;
-                    ++i;
-                }
-                if (i >= n)
-                    throw ParseError(path_ + ":" + std::to_string(startLine) + ": 未闭合的块注释");
-                i += 2;
-                continue;
-            }
-            if (c == '"' || c == '\'') {
-                const char quote = c;
-                const int startLine = line;
-                ++i;
-                std::string s;
-                while (i < n && src[i] != quote) {
-                    if (src[i] == '\\' && i + 1 < n) {
-                        ++i;
-                        const char e = src[i];
-                        switch (e) {
-                            case 'n': s += '\n'; break;
-                            case 't': s += '\t'; break;
-                            case 'r': s += '\r'; break;
-                            case '"': s += '"'; break;
-                            case '\'': s += '\''; break;
-                            case '\\': s += '\\'; break;
-                            case '{': s += '{'; break;
-                            case '}': s += '}'; break;
-                            default: s += e; break;
-                        }
-                        ++i;
-                    } else {
-                        s += src[i++];
-                    }
-                }
-                if (i >= n)
-                    throw ParseError(path_ + ":" + std::to_string(startLine) + ": 未闭合的字符串");
-                ++i;
-                add(Tok::Str, std::move(s));
-                continue;
-            }
-            if (std::isdigit(static_cast<unsigned char>(c)) ||
-                (c == '.' && i + 1 < n && std::isdigit(static_cast<unsigned char>(src[i + 1])))) {
-                const size_t start = i;
-                while (i < n) {
-                    const char d = src[i];
-                    if (d >= '0' && d <= '9') {
-                        ++i;
-                    } else if (d == '.') {
-                        ++i;
-                    } else if ((d == 'e' || d == 'E') && i + 1 < n &&
-                               ((src[i + 1] >= '0' && src[i + 1] <= '9') ||
-                                src[i + 1] == '+' || src[i + 1] == '-')) {
-                        i += 2;
-                    } else {
-                        break;
-                    }
-                }
-                add(Tok::Num, src.substr(start, i - start));
-                continue;
-            }
-            if (std::isalpha(static_cast<unsigned char>(c)) || c == '_') {
-                const size_t start = i;
-                while (i < n) {
-                    const char d = src[i];
-                    if (std::isalnum(static_cast<unsigned char>(d)) || d == '_' || d == '.') ++i;
-                    else break;
-                }
-                add(Tok::Ident, src.substr(start, i - start));
-                continue;
-            }
-            const std::string two = (i + 1 < n) ? src.substr(i, 2) : "";
-            if (two == "==" || two == "!=" || two == ">=" || two == "<=" ||
-                two == "&&" || two == "||") {
-                add(Tok::Punct, two);
-                i += 2;
-                continue;
-            }
-            if (c == '{' || c == '}' || c == '(' || c == ')' || c == '[' || c == ']' ||
-                c == ':' || c == ',' || c == '=' || c == '>' || c == '<' || c == '!' ||
-                c == '-') {
-                add(Tok::Punct, std::string(1, c));
-                ++i;
-                continue;
-            }
-            throw ParseError(path_ + ":" + std::to_string(line) + ": 无法识别的字符 '" +
-                             std::string(1, c) + "'");
-        }
-        toks_.push_back(Token{Tok::Eof, "", line});
-    }
-
-    DataValue parseLiteralValue() {
-        const Token &t = cur();
-        if (t.kind == Tok::Str) {
-            adv();
-            return DataValue::string(t.value);
-        }
-        if (t.kind == Tok::Num) {
-            adv();
-            return numValue(t.value);
-        }
-        if (t.kind == Tok::Ident) {
-            if (t.value == "true") {
-                adv();
-                return DataValue::boolean(true);
-            }
-            if (t.value == "false") {
-                adv();
-                return DataValue::boolean(false);
-            }
-            fail("条件字面量只支持字符串/数字/true/false");
-        }
+    DataValue parseLiteral() {
         if (isPunct("-")) {
-            adv();
-            const Token &tt = cur();
-            if (tt.kind == Tok::Num) {
-                adv();
-                return negNumValue(tt.value);
-            }
-            fail("'-' 后应跟数字");
+            advance();
+            if (cur().kind != eve::dnut::DnutTokenKind::Number) fail("'-' must be followed by a number");
+            DataValue value = numberValue(advance().text);
+            return value.isInt64() ? DataValue::integer(-value.asInt()) : DataValue::number(-value.asDouble());
         }
-        fail("期望字面量");
+        if (cur().kind == eve::dnut::DnutTokenKind::String) return DataValue::string(advance().text);
+        if (cur().kind == eve::dnut::DnutTokenKind::Number) return numberValue(advance().text);
+        if (isIdentifier("true")) {
+            advance();
+            return DataValue::boolean(true);
+        }
+        if (isIdentifier("false")) {
+            advance();
+            return DataValue::boolean(false);
+        }
+        fail("expected a string, number, true, or false");
     }
 
     DataValue parseComparison() {
-        if (!isIdent()) fail("条件左侧应为变量名");
-        const std::string varName = adv().value;
-        const Token &op = cur();
-        if (op.kind != Tok::Punct ||
-            (op.value != "==" && op.value != "!=" && op.value != ">" && op.value != "<" &&
-             op.value != ">=" && op.value != "<="))
-            fail("期望比较运算符（== != > < >= <=）");
-        adv();
-        DataValue value = parseLiteralValue();
-        std::string mapped;
-        if (op.value == "==") mapped = "eq";
-        else if (op.value == "!=") mapped = "ne";
-        else if (op.value == ">") mapped = "gt";
-        else if (op.value == "<") mapped = "lt";
-        else if (op.value == ">=") mapped = "ge";
-        else mapped = "le";
-        return DataValue::object({
-            {"var", DataValue::string(varName)},
-            {"op", DataValue::string(mapped)},
-            {"value", std::move(value)},
-        });
+        const std::string variable = expectIdentifier("a condition variable");
+        if (cur().kind != eve::dnut::DnutTokenKind::Punctuator) fail("expected a comparison operator");
+        const std::string operation = advance().text;
+        std::string       mapped;
+        if (operation == "==")
+            mapped = "eq";
+        else if (operation == "!=")
+            mapped = "ne";
+        else if (operation == ">")
+            mapped = "gt";
+        else if (operation == "<")
+            mapped = "lt";
+        else if (operation == ">=")
+            mapped = "ge";
+        else if (operation == "<=")
+            mapped = "le";
+        else
+            fail("unsupported comparison operator '" + operation + "'");
+        return DataValue::object(
+            {{"var", DataValue::string(variable)}, {"op", DataValue::string(mapped)}, {"value", parseLiteral()}});
     }
 
     DataValue parseNot() {
         if (isPunct("!")) {
-            adv();
+            advance();
             return DataValue::object({{"not", parseNot()}});
         }
         if (isPunct("(")) {
-            adv();
-            DataValue e = parseOr();
+            advance();
+            DataValue value = parseOr();
             expectPunct(")");
-            return e;
+            return value;
         }
         return parseComparison();
     }
@@ -295,22 +177,12 @@ private:
     DataValue parseAnd() {
         DataValue left = parseNot();
         while (isPunct("&&")) {
-            adv();
+            advance();
             DataValue right = parseNot();
-            bool appended = false;
-            if (left.kind == DataValue::Kind::Object) {
-                for (auto &kv : left.obj) {
-                    if (kv.first == "all" && kv.second.kind == DataValue::Kind::Array) {
-                        kv.second.arr.push_back(std::move(right));
-                        appended = true;
-                        break;
-                    }
-                }
-            }
-            if (!appended) {
-                left = DataValue::object(
-                    {{"all", DataValue::array({std::move(left), std::move(right)})}});
-            }
+            if (DataValue* all = left.find("all"); all && all->isArray())
+                all->pushBack(std::move(right));
+            else
+                left = DataValue::object({{"all", DataValue::array({std::move(left), std::move(right)})}});
         }
         return left;
     }
@@ -318,158 +190,192 @@ private:
     DataValue parseOr() {
         DataValue left = parseAnd();
         while (isPunct("||")) {
-            adv();
+            advance();
             DataValue right = parseAnd();
-            bool appended = false;
-            if (left.kind == DataValue::Kind::Object) {
-                for (auto &kv : left.obj) {
-                    if (kv.first == "any" && kv.second.kind == DataValue::Kind::Array) {
-                        kv.second.arr.push_back(std::move(right));
-                        appended = true;
-                        break;
-                    }
-                }
-            }
-            if (!appended) {
-                left = DataValue::object(
-                    {{"any", DataValue::array({std::move(left), std::move(right)})}});
-            }
+            if (DataValue* any = left.find("any"); any && any->isArray())
+                any->pushBack(std::move(right));
+            else
+                left = DataValue::object({{"any", DataValue::array({std::move(left), std::move(right)})}});
         }
         return left;
     }
 
-    void parseAttrs(const int lineNum, std::vector<std::pair<std::string, DataValue>> &out) {
-        while (cur().line == lineNum && !isPunct("}") && cur().kind != Tok::Eof) {
-            if (!isIdent()) fail("期望属性名");
-            const std::string name = adv().value;
+    void parseAttributes(int sourceLine, DataValue::Object& out) {
+        while (!atEnd() && cur().line == sourceLine && !isPunct("}")) {
+            const std::string name = expectIdentifier("an attribute name");
             if (name == "meta" && isPunct("(")) {
-                adv();
-                std::vector<std::pair<std::string, DataValue>> metaFields;
+                advance();
+                DataValue::Object metadata;
                 while (!isPunct(")")) {
-                    if (!isIdent()) fail("meta 键应为标识符");
-                    const std::string k = adv().value;
+                    const std::string key = expectIdentifier("a metadata key");
                     expectPunct("=");
-                    DataValue v = parseLiteralValue();
-                    if (v.kind != DataValue::Kind::String && v.kind != DataValue::Kind::Int &&
-                        v.kind != DataValue::Kind::Float && v.kind != DataValue::Kind::Bool)
-                        fail("meta 值只支持标量");
-                    metaFields.emplace_back(k, DataValue::string(scalarToString(v)));
-                    if (isPunct(",")) adv();
-                    else if (!isPunct(")")) fail("meta 内期望 ',' 或 ')'");
+                    DataValue         value  = parseLiteral();
+                    const std::string scalar = scalarToString(value);
+                    if (scalar.empty() && !value.isString()) fail("metadata values must be scalar");
+                    metadata.emplace(key, DataValue::string(scalar));
+                    if (isPunct(","))
+                        advance();
+                    else if (!isPunct(")"))
+                        fail("expected ',' or ')' in metadata");
                 }
-                adv();  // )
-                out.emplace_back("meta", DataValue::object(std::move(metaFields)));
+                advance();
+                out.emplace("meta", DataValue::object(std::move(metadata)));
                 continue;
             }
             if (name == "tags") {
                 expectPunct("=");
-                if (!isPunct("[")) fail("tags 后应为 [");
-                adv();
-                std::vector<DataValue> arr;
+                expectPunct("[");
+                std::vector<DataValue> tags;
                 while (!isPunct("]")) {
-                    if (cur().kind != Tok::Str) fail("tags 元素应为字符串");
-                    arr.emplace_back(DataValue::string(adv().value));
-                    if (isPunct(",")) adv();
-                    else if (!isPunct("]")) fail("tags 内期望 ',' 或 ']'");
+                    if (cur().kind != eve::dnut::DnutTokenKind::String) fail("tag values must be quoted strings");
+                    tags.push_back(DataValue::string(advance().text));
+                    if (isPunct(","))
+                        advance();
+                    else if (!isPunct("]"))
+                        fail("expected ',' or ']' in tags");
                 }
-                adv();  // ]
-                out.emplace_back("tags", DataValue::array(std::move(arr)));
+                advance();
+                out.emplace("tags", DataValue::array(std::move(tags)));
                 continue;
             }
             expectPunct("=");
-            DataValue v = parseLiteralValue();
-            if (name == "weight" || name == "i18n" || name == "id") {
-                out.emplace_back(name, std::move(v));
-            } else {
-                fail("未知属性 '" + name + "'");
-            }
+            if (name != "weight" && name != "i18n" && name != "id") fail("unknown pool line attribute '" + name + "'");
+            out.emplace(name, parseLiteral());
         }
     }
 
-    DataValue parseLine(const std::string &poolId, int idx, const DataValue *inheritWhen) {
-        const int lineNum = cur().line;
+    DataValue parseLine(const std::string& poolId, int lineIndex, const DataValue* inheritedCondition) {
+        const int   sourceLine = cur().line;
         std::string speaker;
         if (isPunct("-")) {
-            adv();
-        } else if (isIdent()) {
-            if (cur().value == "when") fail("when 分组不允许嵌套");
-            speaker = adv().value;
-            expectPunct(":");
+            advance();
         } else {
-            fail("期望说话人或 '-'");
+            if (isIdentifier("when")) fail("when blocks cannot be nested");
+            speaker = expectIdentifier("a speaker or '-'");
+            expectPunct(":");
         }
-        if (cur().kind != Tok::Str) fail("期望台词字符串");
-        const std::string text = adv().value;
+        if (cur().kind != eve::dnut::DnutTokenKind::String) fail("expected quoted dialogue text");
+        DataValue::Object fields;
+        fields.emplace("speaker", DataValue::string(speaker));
+        fields.emplace("text", DataValue::string(advance().text));
+        if (inheritedCondition) fields.emplace("when", *inheritedCondition);
 
-        std::vector<std::pair<std::string, DataValue>> fields;
-        fields.emplace_back("speaker", DataValue::string(speaker));
-        fields.emplace_back("text", DataValue::string(text));
-        if (inheritWhen) fields.emplace_back("when", *inheritWhen);
-        std::vector<std::pair<std::string, DataValue>> attrs;
-        parseAttrs(lineNum, attrs);
+        DataValue::Object attributes;
+        parseAttributes(sourceLine, attributes);
         bool hasId = false;
-        for (auto &kv : attrs) {
-            if (kv.first == "id") hasId = true;
-            fields.push_back(std::move(kv));
+        for (auto& [key, value] : attributes) {
+            if (key == "id") hasId = true;
+            fields.emplace(std::move(key), std::move(value));
         }
-        if (!hasId) fields.emplace_back("id", DataValue::string(poolId + "." + std::to_string(idx)));
+        if (!hasId) fields.emplace("id", DataValue::string(poolId + "." + std::to_string(lineIndex)));
         return DataValue::object(std::move(fields));
     }
 
-    void parsePool(std::vector<std::pair<std::string, DataValue>> &pools) {
-        expectIdent("pool");
-        const std::string poolId = expectIdent("pool 名称");
-        long long noRepeat = -1;
-        while (isIdent() && cur().value == "noRepeat") {
-            adv();
-            expectPunct("=");
-            const Token &t = cur();
-            if (t.kind != Tok::Num) fail("noRepeat 应为数字");
-            noRepeat = std::strtoll(adv().value.c_str(), nullptr, 10);
-        }
-        expectPunct("{");
-
-        std::vector<DataValue> lines;
-        int idx = 1;
-        while (!isPunct("}")) {
-            if (cur().kind == Tok::Eof) fail("未闭合的 pool 块");
-            if (isIdent() && cur().value == "pool") fail("pool 块不允许嵌套");
-            if (isIdent() && cur().value == "when") {
-                adv();
-                DataValue cond = parseOr();
-                expectPunct("{");
-                while (!isPunct("}")) {
-                    if (cur().kind == Tok::Eof) fail("未闭合的 when 块");
-                    lines.push_back(parseLine(poolId, idx, &cond));
-                    ++idx;
-                }
-                adv();
-                continue;
-            }
-            lines.push_back(parseLine(poolId, idx, nullptr));
-            ++idx;
-        }
-        adv();  // }
-
-        std::vector<std::pair<std::string, DataValue>> poolFields;
-        poolFields.emplace_back("lines", DataValue::array(std::move(lines)));
-        if (noRepeat >= 0) poolFields.emplace_back("noRepeat", DataValue::integer(noRepeat));
-        pools.emplace_back(poolId, DataValue::object(std::move(poolFields)));
-    }
-
-    DataValue parsePools() {
-        std::vector<std::pair<std::string, DataValue>> pools;
-        while (cur().kind != Tok::Eof) parsePool(pools);
-        return DataValue::object({{"pools", DataValue::object(std::move(pools))}});
-    }
+    const std::vector<eve::dnut::DnutToken>& tokens_;
+    std::size_t                              end_;
+    std::size_t                              index_;
 };
+
+void addError(std::vector<ConversationDiagnostic>& diagnostics, const std::string& path, int line, int column,
+              std::string message, std::string code = "DnutParseError") {
+    diagnostics.push_back({ConversationDiagnostic::Severity::Error,
+                           path,
+                           line,
+                           path + ":" + std::to_string(line) + ": " + message,
+                           std::move(code),
+                           column,
+                           {}});
+}
+
+bool validateEnvelope(const std::vector<eve::dnut::DnutToken>& tokens, const std::string& path,
+                      std::vector<ConversationDiagnostic>& diagnostics, DnutDocument& document) {
+    if (tokens.size() < 5 || tokens[0].kind != eve::dnut::DnutTokenKind::Identifier || tokens[0].text != "schema" ||
+        tokens[1].kind != eve::dnut::DnutTokenKind::String || tokens[2].kind != eve::dnut::DnutTokenKind::Identifier ||
+        tokens[2].text != "version" || tokens[3].kind != eve::dnut::DnutTokenKind::Number) {
+        const auto& token = tokens.front();
+        addError(diagnostics, path, token.line, token.column, "expected schema \"eve.dnut\" and version 1");
+        return false;
+    }
+    document.schema  = tokens[1].text;
+    document.version = static_cast<int>(std::strtol(tokens[3].text.c_str(), nullptr, 10));
+    if (document.schema != "eve.dnut" || document.version != DnutDocument::CurrentVersion) {
+        addError(diagnostics, path, tokens[0].line, tokens[0].column, "unsupported dnut schema or version",
+                 "UnsupportedSchemaVersion");
+        return false;
+    }
+    return true;
+}
 
 }  // namespace
 
-bool parseDnut(const std::string &source, const std::string &path, DataValue &outRoot,
-               std::string &error) {
-    Parser parser(source, path);
-    return parser.parse(outRoot, error);
+eve::Result<DnutDocument> parseDnutDocument(const std::string& source, const std::string& path,
+                                            std::vector<ConversationDiagnostic>& diagnostics) {
+    DnutDocument document;
+    auto         tokensResult = eve::dnut::lexDnut(source, path);
+    if (!tokensResult.ok()) {
+        const eve::Diagnostic* error  = tokensResult.error();
+        int                    line   = 1;
+        int                    column = 1;
+        if (error)
+            for (const auto& [key, value] : error->details()) {
+                if (key == "line") line = std::atoi(value.c_str());
+                if (key == "column") column = std::atoi(value.c_str());
+            }
+        addError(diagnostics, path, line, column, error ? error->message() : "could not lex dnut");
+        return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
+    }
+    std::vector<eve::dnut::DnutToken> tokens = std::move(tokensResult).takeValue();
+    if (!validateEnvelope(tokens, path, diagnostics, document))
+        return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::UnknownVersion, diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
+
+    auto blocksResult = eve::dnut::scanDnutBlocks(tokens, path);
+    if (!blocksResult.ok()) {
+        const eve::Diagnostic* error = blocksResult.error();
+        addError(diagnostics, path, 1, 1, error ? error->message() : "could not scan dnut blocks");
+        return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
+    }
+
+    DataValue::Object pools;
+    try {
+        for (const auto& block : blocksResult.value()) {
+            if (block.kind == "pool") {
+                auto [id, pool] = PoolBlockParser(tokens, block).parse();
+                if (pools.contains(id))
+                    throw PoolParseError(tokens[block.beginToken], "duplicate pool id '" + id + "'");
+                pools.emplace(std::move(id), std::move(pool));
+            } else if (block.kind != "conversation" && block.kind != "story") {
+                throw PoolParseError(tokens[block.beginToken], "unknown top-level block '" + block.kind + "'");
+            }
+        }
+    } catch (const PoolParseError& error) {
+        addError(diagnostics, path, error.line, error.column, error.what());
+        return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
+    }
+    document.poolRoot = DataValue::object({{"pools", DataValue::object(std::move(pools))}});
+
+    eve::dnut::StepKindRegistry registry;
+    auto                        registered = registerDialogueSequenceSteps(registry);
+    if (!registered.ok()) return eve::Result<DnutDocument>::failure(registered.status());
+    eve::dnut::DnutCompileOutput compiled = eve::dnut::compileDnutConversations(source, path, registry);
+    for (const auto& diagnostic : compiled.diagnostics)
+        diagnostics.push_back({diagnostic.severity == eve::dnut::DnutSeverity::Error
+                                   ? ConversationDiagnostic::Severity::Error
+                                   : ConversationDiagnostic::Severity::Warning,
+                               diagnostic.path,
+                               diagnostic.line,
+                               diagnostic.message,
+                               "DnutParseError",
+                               diagnostic.column,
+                               {}});
+    if (compiled.hasErrors())
+        return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::ParseError, diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
+    document.conversations = std::move(compiled.assets);
+    return eve::Result<DnutDocument>::success(std::move(document));
 }
 
 }  // namespace eve::dialogue

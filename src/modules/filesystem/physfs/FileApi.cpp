@@ -1,6 +1,12 @@
 #include "filesystem/physfs/FileApi.h"
 
+#include "common/Module.h"
+#include "common/Runtime.h"
+#include "common/ScriptCompiler.h"
+#include "common/ScriptModule.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
+#include <squirrel.h>
 
 #include <cstring>
 #include <fstream>
@@ -20,7 +26,7 @@ bool readViaPhysFS(const char* path, std::string& out) {
     if (!f) return false;
     const PHYSFS_uint64 len = PHYSFS_fileLength(f);
     out.resize(static_cast<size_t>(len));
-    if (len > 0 && PHYSFS_readBytes(f, out.data(), len) != len) {
+    if (len > 0 && PHYSFS_readBytes(f, out.data(), len) != static_cast<PHYSFS_sint64>(len)) {
         PHYSFS_close(f);
         out.clear();
         return false;
@@ -42,6 +48,23 @@ bool readFileContent(const char* path, std::string& out) {
     return readViaOS(path, out);
 }
 
+// `load.nut` loads the game with `dofile("main.nut")`. A raw `sq_compilebuffer`
+// compiles `import` edges but never instantiates them, so the import opcode
+// fails with "module was not instantiated". Give the chunk a `game:/` URI and
+// run the same ScriptCompiler + instantiate path EditorHost uses.
+std::string scriptUriFromPath(const char* path) {
+    std::string uri = path ? path : "";
+    for (char& ch : uri) {
+        if (ch == '\\') ch = '/';
+    }
+    const size_t scheme = uri.find(":/");
+    const bool   drive  = uri.size() >= 2 && uri[1] == ':';
+    if (scheme != std::string::npos && !drive) return uri;
+    while (uri.rfind("./", 0) == 0) uri.erase(0, 2);
+    while (!uri.empty() && uri.front() == '/') uri.erase(0, 1);
+    return "game:/" + uri;
+}
+
 // Shared implementation of dofile (execute) and loadfile (return closure).
 SQInteger compileAndMaybeRun(HSQUIRRELVM vm, bool run) {
     const SQChar* path = nullptr;
@@ -57,13 +80,32 @@ SQInteger compileAndMaybeRun(HSQUIRRELVM vm, bool run) {
         (unsigned char)content[1] == 0xBB && (unsigned char)content[2] == 0xBF)
         content.erase(0, 3);
 
-    if (SQ_FAILED(sq_compilebuffer(vm, content.c_str(), static_cast<SQInteger>(content.size()),
-                                   path, SQTrue)))
+    const std::string uri = scriptUriFromPath(path);
+    if (SQ_FAILED(eve::script::ScriptCompiler::compileBuffer(vm, content.c_str(),
+                                                             static_cast<SQInteger>(content.size()),
+                                                             uri.c_str(), SQTrue)))
         return SQ_ERROR;
+
+    Runtime* rt = Runtime::current();
+    if (!rt) rt = ModuleManager::runtime();
+    if (rt) {
+        try {
+            rt->scriptModules().instantiateDependencies(uri);
+        } catch (const std::exception& error) {
+            sq_pop(vm, 1);
+            return sq_throwerror(vm, error.what());
+        }
+    }
 
     if (!run) return 1;  // leave the closure on the stack
 
     sq_pushroottable(vm);
+    // `return SQ_ERROR` is the correct Squirrel native convention here, not a swallowed
+    // failure: the inner call already raised, so SQVM::CallNative re-raises `_lasterror`
+    // and the script's `catch` receives the original message. Reporting it through
+    // eve::script::reportScriptCallFailure() would print it twice and would consume the
+    // context before the VM re-raises. The plan doc listed this site as "reports too
+    // little"; reading the VM settled that it reports the whole error.
     if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) return SQ_ERROR;
     sq_pop(vm, 1);
     return 0;
@@ -144,9 +186,14 @@ SQInteger sq_file(HSQUIRRELVM vm) {
     }
 
     sq_newtable(vm);                       // the handle table (becomes 'this')
-    sq_pushstring(vm, path, -1);           // _path
+    // Squirrel 的 sq_newslot(-3) 需要 [table, key, value] 三层栈；
+    // 只推一个值会把目标错指到调用帧的 mode 参数上（非表对象会被静默跳过），
+    // 导致句柄永远没有 _path/_data，read()/getSize() 报 "file not readable"。
+    sq_pushstring(vm, "_path", -1);        // key
+    sq_pushstring(vm, path, -1);           // value
     sq_newslot(vm, -3, SQFalse);
-    sq_pushstring(vm, content.c_str(), static_cast<SQInteger>(content.size()));  // _data
+    sq_pushstring(vm, "_data", -1);        // key
+    sq_pushstring(vm, content.c_str(), static_cast<SQInteger>(content.size()));  // value
     sq_newslot(vm, -3, SQFalse);
 
     struct { const SQChar* name; SQFUNCTION fn; } methods[] = {

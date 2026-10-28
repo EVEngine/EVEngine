@@ -7,10 +7,10 @@
 #include <string>
 #include <vector>
 
-namespace eve::graphics {
-class Graphics;
-class Camera3D;
-}  // namespace eve::graphics
+namespace eve {
+class IRenderCapture;
+class ISceneQuery;
+}  // namespace eve
 
 namespace eve::dev {
 
@@ -25,7 +25,7 @@ namespace eve::dev {
  *
  * 桌面端专用（EVDevTools 的一部分）。
  */
-struct EVENGINE_API InspectView {
+struct EVENGINE_API_FOUNDATION_INLINE InspectView {
     std::string name;   // "along_road" | "bird_eye" | "corner_close" | "vista"
     std::string kind;   // 中文说明：沿路平视 / 高空俯拍 / 拐角特写 / 远景视角
     glm::vec3   eye{0.f};
@@ -34,7 +34,7 @@ struct EVENGINE_API InspectView {
 };
 
 /** @brief 一次原子快照的结果：PNG 渲染帧 + 配套几何 JSON。 */
-struct EVENGINE_API InspectCapture {
+struct EVENGINE_API_FOUNDATION_INLINE InspectCapture {
     bool        ok = false;
     std::string error;
     std::string pngPath;   // 渲染帧 PNG 的磁盘路径（color buffer）
@@ -50,7 +50,7 @@ struct EVENGINE_API InspectCapture {
     std::vector<std::string> unsupported;  // 请求但当前后端不支持的缓冲区
 };
 
-class EVENGINE_API SceneInspect {
+class EVENGINE_API_FOUNDATION SceneInspect {
 public:
     static SceneInspect& instance();
 
@@ -69,8 +69,6 @@ public:
     static std::vector<InspectView> generateViews(const glm::vec3& center, float fov = 60.f);
 
     // ---------- 相机位姿 ----------
-    /** @brief 查找当前激活的 Camera3D；不存在则惰性创建一个（作为渲染机位）。 */
-    graphics::Camera3D* findOrCreateCamera();
     /**
      * @brief 以 pos + 欧拉角 rot 设置相机位姿。
      * rot = [yawDeg, pitchDeg]（与 firstperson 约定一致，Y-up）。
@@ -114,8 +112,9 @@ public:
 private:
     SceneInspect() = default;
 
-    graphics::Graphics* graphics();
-    bool savePng(graphics::Graphics* gfx, const std::string& path, std::string& err);
+    eve::IRenderCapture* captureIface();
+    eve::ISceneQuery*    scene();
+    bool                 ensureCamera();
 
     std::string cacheDir_;
     std::string lastPngPath_;

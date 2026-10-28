@@ -1,0 +1,373 @@
+#include "physics/editing/PhysicsColliderAsset.h"
+#include <type_traits>
+#include <utility>
+#include "physics/Body.h"
+#include "physics/Body3D.h"
+#include "physics/Fixture.h"
+#include "physics/Shape3D.h"
+#include "physics/editing/PhysicsEditingProvider.h"
+#include "physics/editing/PhysicsTarget.h"
+
+// PhysicsColliderAsset.cpp
+namespace eve::physics_editing {
+
+static_assert(std::is_polymorphic_v<IPhysicsColliderAssetResolver>);
+
+}  // namespace eve::physics_editing
+
+// PhysicsEditingProvider.cpp
+namespace eve::physics_editing {
+namespace {
+class PhysicsEditingFactory final : public IPhysicsEditingFactory {
+public:
+    std::unique_ptr<PhysicsColliderPublishingTarget> createCollider(std::string id, int dimensions,
+                                                                    IPhysicsColliderRuntimeSink* sink) const override {
+        return std::make_unique<PhysicsColliderPublishingTarget>(std::move(id), dimensions, sink);
+    }
+};
+}  // namespace
+
+editing::Result<editing::ProviderHandle> registerEditingProvider(editing::ExtensionProviderRegistry& registry) {
+    editing::ExtensionDescriptor descriptor;
+    descriptor.id              = "physics.editing";
+    descriptor.schemaVersion   = 1;
+    descriptor.requiredModules = {"physics"};
+    return editing::registerStaticProvider(registry, std::move(descriptor), IPhysicsEditingFactory::capabilityId(),
+                                           std::make_shared<PhysicsEditingFactory>());
+}
+
+}  // namespace eve::physics_editing
+
+// PhysicsPublishingTarget.cpp
+namespace eve::physics_editing {
+namespace {}  // namespace
+
+PhysicsColliderPublishingTarget::PhysicsColliderPublishingTarget(std::string id, int dimensions,
+                                                                 IPhysicsColliderRuntimeSink* sink)
+    : document_(std::move(id), dimensions), sink_(sink) {}
+
+Result<void> PhysicsColliderPublishingTarget::applyDomainOperation(const DomainOperation& operation) {
+    if (staging_) return document_.applyDomainOperation(operation);
+    auto candidate = cloneDomainState();
+    auto applied   = candidate->applyDomainOperation(operation);
+    if (!applied.ok()) return applied;
+    return commitDomainState(std::move(candidate));
+}
+
+std::unique_ptr<IDomainOperationTarget> PhysicsColliderPublishingTarget::cloneDomainState() const {
+    auto candidate      = std::make_unique<PhysicsColliderPublishingTarget>(*this);
+    candidate->staging_ = true;
+    return candidate;
+}
+
+Result<void> PhysicsColliderPublishingTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+    auto* typed = dynamic_cast<PhysicsColliderPublishingTarget*>(candidate.get());
+    if (!typed || typed->targetId() != targetId() || typed->sink_ != sink_ || !typed->staging_ ||
+        typed->document_.describe().type != document_.describe().type)
+        return eve::editing::failed<void>(EditorStatus::Conflict,
+                                          RuleId("editor.physics.publishing-candidate-mismatch"),
+                                          "Collider candidate belongs to another live target");
+    if (!sink_)
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.publishing-sink-missing"),
+                                          "Collider publishing target requires a live runtime sink");
+    Result<void> published = sink_->publish(typed->document_);
+    if (!published.ok()) return published;
+    document_ = typed->document_;
+    return eve::editing::applied<void>();
+}
+
+}  // namespace eve::physics_editing
+
+// PhysicsRuntime.cpp
+namespace eve::physics_editing {
+namespace {
+
+template <class T>
+const T* propertyValue(const EditorValue::Object& values, const char* path) {
+    const auto found = values.find(path);
+    return found == values.end() ? nullptr : found->second.getIf<T>();
+}
+
+}  // namespace
+
+Result<physics::Fixture*> PhysicsColliderRuntimeBuilder::build2D(const PhysicsColliderTarget& target,
+                                                                 physics::Body*               body) const {
+    if (!body || target.describe().type != "physics-collider-2d")
+        return eve::editing::failed<physics::Fixture*>(EditorStatus::Rejected,
+                                                       RuleId("editor.physics.runtime-2d-input"),
+                                                       "A 2D collider target and body are required");
+    const EditorValue snapshot = target.snapshotValue();
+    const auto*       root     = snapshot.getIf<EditorValue::Object>();
+    const auto*       values   = root ? root->at("properties").getIf<EditorValue::Object>() : nullptr;
+    if (!values)
+        return eve::editing::failed<physics::Fixture*>(
+            EditorStatus::Failed, RuleId("editor.physics.runtime-properties"), "Collider properties are unavailable");
+    const std::string kind        = *propertyValue<std::string>(*values, "shape.kind");
+    const auto*       size        = propertyValue<EditorValue::Array>(*values, "shape.size");
+    const auto*       offset      = propertyValue<EditorValue::Array>(*values, "shape.offset");
+    const float       radius      = static_cast<float>(*propertyValue<double>(*values, "shape.radius"));
+    const float       density     = static_cast<float>(*propertyValue<double>(*values, "material.density"));
+    const float       friction    = static_cast<float>(*propertyValue<double>(*values, "material.friction"));
+    const float       restitution = static_cast<float>(*propertyValue<double>(*values, "material.restitution"));
+    physics::Fixture* fixture     = nullptr;
+    if (kind == "box")
+        fixture = body->newRectangleFixtureAt(
+            static_cast<float>(*(*size)[0].getIf<double>()), static_cast<float>(*(*size)[1].getIf<double>()),
+            static_cast<float>(*(*offset)[0].getIf<double>()), static_cast<float>(*(*offset)[1].getIf<double>()),
+            density, friction, restitution);
+    else if (kind == "circle")
+        fixture = body->newCircleFixture(radius, density, friction, restitution);
+    else
+        return eve::editing::failed<physics::Fixture*>(EditorStatus::Unsupported,
+                                                       RuleId("editor.physics.runtime-2d-asset-shape"),
+                                                       "Polygon and chain colliders require an asset resolver");
+    if (!fixture)
+        return eve::editing::failed<physics::Fixture*>(EditorStatus::Failed, RuleId("editor.physics.runtime-create"),
+                                                       "Physics backend failed to create the fixture");
+    fixture->setSensor(*propertyValue<bool>(*values, "shape.sensor"));
+    fixture->setCategoryBits(static_cast<int>(*propertyValue<int64_t>(*values, "collision.category")));
+    fixture->setMaskBits(static_cast<int>(*propertyValue<int64_t>(*values, "collision.mask")));
+    return eve::editing::applied<physics::Fixture*>(fixture);
+}
+
+Result<physics::Fixture*> PhysicsColliderRuntimeBuilder::build2D(const PhysicsColliderTarget&         target,
+                                                                 physics::Body*                       body,
+                                                                 const IPhysicsColliderAssetResolver& assets) const {
+    if (!body || target.describe().type != "physics-collider-2d")
+        return eve::editing::failed<physics::Fixture*>(EditorStatus::Rejected,
+                                                       RuleId("editor.physics.runtime-2d-input"),
+                                                       "A 2D collider target and body are required");
+    const EditorValue snapshot = target.snapshotValue();
+    const auto*       root     = snapshot.getIf<EditorValue::Object>();
+    const auto*       values   = root ? root->at("properties").getIf<EditorValue::Object>() : nullptr;
+    if (!values)
+        return eve::editing::failed<physics::Fixture*>(
+            EditorStatus::Failed, RuleId("editor.physics.runtime-properties"), "Collider properties are unavailable");
+    const std::string kind = *propertyValue<std::string>(*values, "shape.kind");
+    if (kind == "box" || kind == "circle") return build2D(target, body);
+    const std::string asset    = *propertyValue<std::string>(*values, "shape.asset");
+    auto              geometry = assets.resolve(asset, kind);
+    if (!geometry.ok()) return Result<physics::Fixture*>::failure(geometry.status());
+    std::vector<float> vertices = geometry.value().vertices;
+    const auto*        offset   = propertyValue<EditorValue::Array>(*values, "shape.offset");
+    const float        offsetX  = static_cast<float>(*(*offset)[0].getIf<double>());
+    const float        offsetY  = static_cast<float>(*(*offset)[1].getIf<double>());
+    for (size_t index = 0; index < vertices.size(); index += 2) {
+        vertices[index] += offsetX;
+        vertices[index + 1] += offsetY;
+    }
+    physics::Fixture* fixture = nullptr;
+    try {
+        const float density     = static_cast<float>(*propertyValue<double>(*values, "material.density"));
+        const float friction    = static_cast<float>(*propertyValue<double>(*values, "material.friction"));
+        const float restitution = static_cast<float>(*propertyValue<double>(*values, "material.restitution"));
+        if (kind == "polygon")
+            fixture = body->newPolygonFixture(vertices, density, friction, restitution);
+        else if (kind == "chain")
+            fixture = body->newChainFixture(vertices, geometry.value().loop, friction, restitution);
+    } catch (const std::exception& exception) {
+        return eve::editing::failed<physics::Fixture*>(
+            EditorStatus::Rejected, RuleId("editor.physics.runtime-2d-asset-shape"), exception.what());
+    }
+    if (!fixture)
+        return eve::editing::failed<physics::Fixture*>(EditorStatus::Failed, RuleId("editor.physics.runtime-create"),
+                                                       "Physics backend failed to create the 2D asset fixture");
+    fixture->setSensor(*propertyValue<bool>(*values, "shape.sensor"));
+    fixture->setCategoryBits(static_cast<int>(*propertyValue<int64_t>(*values, "collision.category")));
+    fixture->setMaskBits(static_cast<int>(*propertyValue<int64_t>(*values, "collision.mask")));
+    return eve::editing::applied<physics::Fixture*>(fixture);
+}
+
+Result<physics::Shape3D*> PhysicsColliderRuntimeBuilder::build3D(const PhysicsColliderTarget& target,
+                                                                 physics::Body3D*             body) const {
+    if (!body || target.describe().type != "physics-collider-3d")
+        return eve::editing::failed<physics::Shape3D*>(EditorStatus::Rejected,
+                                                       RuleId("editor.physics.runtime-3d-input"),
+                                                       "A 3D collider target and body are required");
+    const EditorValue snapshot = target.snapshotValue();
+    const auto*       root     = snapshot.getIf<EditorValue::Object>();
+    const auto*       values   = root ? root->at("properties").getIf<EditorValue::Object>() : nullptr;
+    if (!values)
+        return eve::editing::failed<physics::Shape3D*>(
+            EditorStatus::Failed, RuleId("editor.physics.runtime-properties"), "Collider properties are unavailable");
+    const std::string kind          = *propertyValue<std::string>(*values, "shape.kind");
+    const auto*       size          = propertyValue<EditorValue::Array>(*values, "shape.size");
+    const auto*       offset        = propertyValue<EditorValue::Array>(*values, "shape.offset");
+    const float       radius        = static_cast<float>(*propertyValue<double>(*values, "shape.radius"));
+    const float       capsuleHeight = static_cast<float>(*propertyValue<double>(*values, "shape.capsule-height"));
+    const float       density       = static_cast<float>(*propertyValue<double>(*values, "material.density"));
+    const float       friction      = static_cast<float>(*propertyValue<double>(*values, "material.friction"));
+    const float       restitution   = static_cast<float>(*propertyValue<double>(*values, "material.restitution"));
+    physics::Shape3D* shape         = nullptr;
+    if (kind == "box")
+        shape = body->newBoxShape(static_cast<float>(*(*size)[0].getIf<double>()),
+                                  static_cast<float>(*(*size)[1].getIf<double>()),
+                                  static_cast<float>(*(*size)[2].getIf<double>()), density, friction, restitution);
+    else if (kind == "sphere")
+        shape = body->newSphereShape(radius, density, friction, restitution);
+    else if (kind == "capsule")
+        shape = body->newCapsuleShape(capsuleHeight, radius, density, friction, restitution);
+    else
+        return eve::editing::failed<physics::Shape3D*>(
+            EditorStatus::Unsupported, RuleId("editor.physics.runtime-3d-asset-shape"),
+            "Mesh, hull and height-field colliders require an asset resolver");
+    if (!shape)
+        return eve::editing::failed<physics::Shape3D*>(EditorStatus::Failed, RuleId("editor.physics.runtime-create"),
+                                                       "Physics backend failed to create the shape");
+    shape->setLocalPosition(static_cast<float>(*(*offset)[0].getIf<double>()),
+                            static_cast<float>(*(*offset)[1].getIf<double>()),
+                            static_cast<float>(*(*offset)[2].getIf<double>()));
+    shape->setSensor(*propertyValue<bool>(*values, "shape.sensor"));
+    shape->setFilterBits(static_cast<uint64_t>(*propertyValue<int64_t>(*values, "collision.category")),
+                         static_cast<uint64_t>(*propertyValue<int64_t>(*values, "collision.mask")));
+    return eve::editing::applied<physics::Shape3D*>(shape);
+}
+
+Result<physics::Shape3D*> PhysicsColliderRuntimeBuilder::build3D(const PhysicsColliderTarget&         target,
+                                                                 physics::Body3D*                     body,
+                                                                 const IPhysicsColliderAssetResolver& assets) const {
+    if (!body || target.describe().type != "physics-collider-3d")
+        return eve::editing::failed<physics::Shape3D*>(EditorStatus::Rejected,
+                                                       RuleId("editor.physics.runtime-3d-input"),
+                                                       "A 3D collider target and body are required");
+    const EditorValue snapshot = target.snapshotValue();
+    const auto*       root     = snapshot.getIf<EditorValue::Object>();
+    const auto*       values   = root ? root->at("properties").getIf<EditorValue::Object>() : nullptr;
+    if (!values)
+        return eve::editing::failed<physics::Shape3D*>(
+            EditorStatus::Failed, RuleId("editor.physics.runtime-properties"), "Collider properties are unavailable");
+    const std::string kind = *propertyValue<std::string>(*values, "shape.kind");
+    if (kind == "box" || kind == "sphere" || kind == "capsule") return build3D(target, body);
+    const std::string asset    = *propertyValue<std::string>(*values, "shape.asset");
+    auto              geometry = assets.resolve(asset, kind);
+    if (!geometry.ok()) return Result<physics::Shape3D*>::failure(geometry.status());
+    physics::Shape3D* shape = nullptr;
+    try {
+        const float density     = static_cast<float>(*propertyValue<double>(*values, "material.density"));
+        const float friction    = static_cast<float>(*propertyValue<double>(*values, "material.friction"));
+        const float restitution = static_cast<float>(*propertyValue<double>(*values, "material.restitution"));
+        if (kind == "convex-hull")
+            shape = body->newConvexHullShape(geometry.value().vertices, 64, density, friction, restitution);
+        else if (kind == "triangle-mesh")
+            shape = body->newTriangleMeshShape(geometry.value().vertices, geometry.value().indices);
+        else if (kind == "height-field")
+            shape =
+                body->newHeightFieldShape(geometry.value().countX, geometry.value().countZ, geometry.value().cellSizeX,
+                                          geometry.value().cellSizeZ, geometry.value().heights,
+                                          geometry.value().minimumHeight, geometry.value().maximumHeight);
+    } catch (const std::exception& exception) {
+        return eve::editing::failed<physics::Shape3D*>(
+            EditorStatus::Rejected, RuleId("editor.physics.runtime-complex-shape"), exception.what());
+    }
+    if (!shape)
+        return eve::editing::failed<physics::Shape3D*>(EditorStatus::Failed, RuleId("editor.physics.runtime-create"),
+                                                       "Physics backend failed to create the resolved shape");
+    shape->setDensity(static_cast<float>(*propertyValue<double>(*values, "material.density")));
+    shape->setFriction(static_cast<float>(*propertyValue<double>(*values, "material.friction")));
+    shape->setRestitution(static_cast<float>(*propertyValue<double>(*values, "material.restitution")));
+    const auto* offset = propertyValue<EditorValue::Array>(*values, "shape.offset");
+    shape->setLocalPosition(static_cast<float>(*(*offset)[0].getIf<double>()),
+                            static_cast<float>(*(*offset)[1].getIf<double>()),
+                            static_cast<float>(*(*offset)[2].getIf<double>()));
+    shape->setSensor(*propertyValue<bool>(*values, "shape.sensor"));
+    shape->setFilterBits(static_cast<uint64_t>(*propertyValue<int64_t>(*values, "collision.category")),
+                         static_cast<uint64_t>(*propertyValue<int64_t>(*values, "collision.mask")));
+    return eve::editing::applied<physics::Shape3D*>(shape);
+}
+
+Result<void> PhysicsCollider3DRuntimeSink::publish(const PhysicsColliderTarget& candidate) {
+    if (!body_ || !body_->isValid() || candidate.describe().type != "physics-collider-3d")
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.live-3d-input"),
+                                          "A live Body3D and 3D collider candidate are required");
+    if (current_ && current_->isValid() && current_->getBody() != body_)
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.physics.live-shape-owner"),
+                                          "Current collider shape belongs to another body");
+    const auto diagnostics = candidate.validate();
+    for (const EditorDiagnostic& diagnostic : diagnostics) {
+        if (diagnostic.severity() == DiagnosticSeverity::Error)
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+    }
+    const EditorValue snapshot = candidate.snapshotValue();
+    const auto*       root     = snapshot.getIf<EditorValue::Object>();
+    const auto*       values   = root ? root->at("properties").getIf<EditorValue::Object>() : nullptr;
+    if (!values)
+        return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.physics.live-properties"),
+                                          "Collider properties are unavailable");
+    const std::string kind                  = *propertyValue<std::string>(*values, "shape.kind");
+    const std::string desiredBodyType       = *propertyValue<std::string>(*values, "body.type");
+    const std::string previousBodyType      = body_->getType();
+    const bool        currentRequiresStatic = current_ && current_->isValid() &&
+                                       (current_->getKind() == "triangleMesh" || current_->getKind() == "heightField");
+    if (currentRequiresStatic && desiredBodyType != "static" && desiredBodyType != previousBodyType)
+        return eve::editing::failed<void>(EditorStatus::Unsupported,
+                                          RuleId("editor.physics.live-complex-type-transition"),
+                                          "Swap the complex collider to a primitive before changing its body type");
+    try {
+        if (previousBodyType != desiredBodyType) body_->setType(desiredBodyType);
+    } catch (const std::exception& exception) {
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.live-body-type"),
+                                          exception.what());
+    }
+
+    Result<physics::Shape3D*> built = assets_ ? PhysicsColliderRuntimeBuilder().build3D(candidate, body_, *assets_)
+                                              : PhysicsColliderRuntimeBuilder().build3D(candidate, body_);
+    if (!built.ok()) {
+        if (previousBodyType != desiredBodyType) {
+            try {
+                body_->setType(previousBodyType);
+            } catch (...) {
+                auto diagnostics = built.diagnostics();
+                diagnostics.push_back(eve::editing::ruleDiagnostic(
+                    eve::DiagnosticCode::Failed, RuleId("editor.physics.live-rollback-body-type"),
+                    DiagnosticSeverity::Error,
+                    "Collider build failed and the previous body type could not be restored"));
+                return Result<void>::failure(eve::Status(EditorStatus::Failed, std::move(diagnostics)));
+            }
+        }
+        return Result<void>::failure(built.status());
+    }
+
+    physics::Shape3D* replacement = built.value();
+    if (current_ && current_->isValid()) current_->destroy();
+    current_ = replacement;
+    return eve::editing::applied<void>();
+}
+
+Result<void> PhysicsCollider2DRuntimeSink::publish(const PhysicsColliderTarget& candidate) {
+    if (!body_ || !body_->raw() || candidate.describe().type != "physics-collider-2d")
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.live-2d-input"),
+                                          "A live Body and 2D collider candidate are required");
+    if (current_ && current_->raw() && current_->getBody() != body_)
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.physics.live-fixture-owner"),
+                                          "Current fixture belongs to another body");
+    const auto diagnostics = candidate.validate();
+    for (const EditorDiagnostic& diagnostic : diagnostics) {
+        if (diagnostic.severity() == DiagnosticSeverity::Error)
+            return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+    }
+    const EditorValue snapshot = candidate.snapshotValue();
+    const auto*       root     = snapshot.getIf<EditorValue::Object>();
+    const auto*       values   = root ? root->at("properties").getIf<EditorValue::Object>() : nullptr;
+    if (!values)
+        return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.physics.live-properties"),
+                                          "Collider properties are unavailable");
+    const std::string desiredType  = *propertyValue<std::string>(*values, "body.type");
+    const std::string previousType = body_->getType();
+    try {
+        if (desiredType != previousType) body_->setType(desiredType);
+    } catch (const std::exception& exception) {
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.physics.live-body-type"),
+                                          exception.what());
+    }
+    Result<physics::Fixture*> built = assets_ ? PhysicsColliderRuntimeBuilder().build2D(candidate, body_, *assets_)
+                                              : PhysicsColliderRuntimeBuilder().build2D(candidate, body_);
+    if (!built.ok()) {
+        if (desiredType != previousType) body_->setType(previousType);
+        return Result<void>::failure(built.status());
+    }
+    if (current_ && current_->raw()) current_->destroy();
+    current_ = built.value();
+    return eve::editing::applied<void>();
+}
+
+}  // namespace eve::physics_editing

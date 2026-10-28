@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "factory": "RPG",
+  "bindings": {
+    "Tracker.getState": {"role":"quest_read","identityArgument":0},
+    "claimQuestRewards": {"role":"quest_complete","identityArgument":3},
+    "replaceQuestsFromJson": {"role":"quest_schema","identityArgument":0,"schema":{"kind":"quest","identityField":"id","fields":{"objectives":"array","completePolicy":"string"}}}
+  }
+}

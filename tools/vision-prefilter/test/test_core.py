@@ -6,7 +6,7 @@ Run:  python -m pytest tools/vision-prefilter/test -q
 from __future__ import annotations
 
 from vision_prefilter.model import parse_model_result
-from vision_prefilter.protocol import ModelResult, ProblemRegion, ProblemType
+from vision_prefilter.protocol import ProblemRegion, ProblemType
 from vision_prefilter.rules import evaluate
 
 

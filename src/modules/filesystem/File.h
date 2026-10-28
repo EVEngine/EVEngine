@@ -131,6 +131,7 @@ public:
      * @param[out] size The size in bytes of the buffer.
      * @return The current buffer mode.
      **/
+    /** @brief Returns the buffer. */
     virtual std::string getBuffer(int64_t &size) const = 0;
 
     /**

@@ -1,0 +1,31 @@
+#version 450
+layout(local_size_x=64) in;
+layout(set=0,binding=0,std430) readonly buffer Input { vec2 value[]; } sourceField;
+layout(set=0,binding=1,std430) writeonly buffer Output { vec2 value[]; } outputField;
+layout(push_constant) uniform Params { float data[32]; } p;
+// Same range-reduced polynomial as ocean_evolve.comp; native trig precision varies by provider.
+vec2 phase(float a) {
+    const float pi=3.141592653589793,halfPi=1.5707963267948966,tau=6.283185307179586;
+    float x=a-tau*floor(a/tau+0.5);
+    float cosineSign=1.0;
+    if(x>halfPi) { x=pi-x;cosineSign=-1.0; }
+    else if(x < -halfPi) { x=-pi-x;cosineSign=-1.0; }
+    float x2=x*x;
+    float s=x*(1.0+x2*(-1.0/6.0+x2*(1.0/120.0+x2*(-1.0/5040.0+x2*(1.0/362880.0-x2/39916800.0)))));
+    float c=1.0+x2*(-1.0/2.0+x2*(1.0/24.0+x2*(-1.0/720.0+x2*(1.0/40320.0+x2*(-1.0/3628800.0+x2/479001600.0)))));
+    return vec2(c*cosineSign,s);
+}
+void main() {
+    uint n=uint(p.data[0]),m=uint(p.data[1]),i=gl_GlobalInvocationID.x,count=n*n;
+    if(i>=6*count) return;
+    uint field=i/count,index=i%count,x=index%n,z=index/n;
+    bool vertical=p.data[2]>0.5;
+    uint coordinate=vertical?z:x,halfWidth=m/2,k=coordinate%halfWidth;
+    uint first=(coordinate/m)*m+k;
+    uint a=(vertical?first*n+x:z*n+first)+field*count;
+    uint b=a+(vertical?halfWidth*n:halfWidth);
+    float angle=6.283185307179586*float(k)/float(m);
+    vec2 value=sourceField.value[b],twiddle=phase(angle);
+    vec2 product=vec2(value.x*twiddle.x-value.y*twiddle.y,value.x*twiddle.y+value.y*twiddle.x);
+    outputField.value[i]=sourceField.value[a]+(coordinate%m<halfWidth?product:-product);
+}

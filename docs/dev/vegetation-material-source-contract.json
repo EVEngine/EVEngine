@@ -1,0 +1,1096 @@
+{
+  "schema": "eve.vegetation-source-inventory",
+  "version": 1,
+  "sourceVersion": "12.6.0",
+  "purpose": "Source admission and visual acceptance inventory, not a completion baseline.",
+  "materialImportStatus": "partial-primary-material",
+  "mainProperties": {
+    "_CategoryRender": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_RenderMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_RenderZWrite": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_RenderCull": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_RenderNormals": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_RenderQueue": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_RenderPriority": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_RenderSpecular": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_RenderDecals": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_RenderSSR": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_RenderDirect": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_RenderAmbient": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_RenderShadow": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_RenderClip": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_RenderCoverage": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_AlphaClipValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0.5"
+    },
+    "_SpaceRenderFade": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_FadeConstantValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_FadeCameraValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_FadeGlancingValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_CategoryGlobals": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_MessageGlobalsVariation": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_LayerColorsValue": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_LayerExtrasValue": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_LayerMotionValue": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_LayerVertexValue": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_SpaceGlobalLayers": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_GlobalColors": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_GlobalAlpha": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_GlobalOverlay": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_GlobalWetness": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_GlobalEmissive": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_GlobalSize": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_SpaceGlobalLocals": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_ColorsIntensityValue": {
+      "type": "Range( 0 , 2)",
+      "default": "1"
+    },
+    "_ColorsVariationValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0.5"
+    },
+    "_ColorsMaskValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_AlphaVariationValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0.5"
+    },
+    "_OverlayVariationValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0.5"
+    },
+    "_OverlayProjectionValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0.5"
+    },
+    "_SpaceGlobalOptions": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_ColorsPositionMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_ExtrasPositionMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_CategoryMain": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_MessageMainMask": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_MainAlbedoTex": {
+      "type": "2D",
+      "default": "\"white\" {}"
+    },
+    "_MainNormalTex": {
+      "type": "2D",
+      "default": "\"bump\" {}"
+    },
+    "_MainMaskTex": {
+      "type": "2D",
+      "default": "\"white\" {}"
+    },
+    "_MainUVs": {
+      "type": "Vector",
+      "default": "(1,1,0,0)"
+    },
+    "_MainColorMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_MainColor": {
+      "type": "Color",
+      "default": "(1,1,1,1)"
+    },
+    "_MainColorTwo": {
+      "type": "Color",
+      "default": "(1,1,1,1)"
+    },
+    "_MainAlbedoValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_MainNormalValue": {
+      "type": "Range( -8 , 8)",
+      "default": "1"
+    },
+    "_MainOcclusionValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_MainSmoothnessValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_MainMaskRemap": {
+      "type": "Vector",
+      "default": "(0,0,0,0)"
+    },
+    "_MainMaskMinValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_MainMaskMaxValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_CategoryDetail": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_MessageSecondMask": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_DetailMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_DetailBlendMode": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_DetailAlphaMode": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_DetailFadeMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_SecondAlbedoTex": {
+      "type": "2D",
+      "default": "\"white\" {}"
+    },
+    "_SecondNormalTex": {
+      "type": "2D",
+      "default": "\"bump\" {}"
+    },
+    "_SecondMaskTex": {
+      "type": "2D",
+      "default": "\"white\" {}"
+    },
+    "_SecondUVsMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_SecondUVs": {
+      "type": "Vector",
+      "default": "(1,1,0,0)"
+    },
+    "_SecondUVsScaleMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_SecondColorMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_SecondColor": {
+      "type": "Color",
+      "default": "(1,1,1,1)"
+    },
+    "_SecondColorTwo": {
+      "type": "Color",
+      "default": "(1,1,1,1)"
+    },
+    "_SecondAlbedoValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_SecondNormalValue": {
+      "type": "Range( -8 , 8)",
+      "default": "1"
+    },
+    "_SecondOcclusionValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_SecondSmoothnessValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_SecondMaskRemap": {
+      "type": "Vector",
+      "default": "(0,0,0,0)"
+    },
+    "_SecondMaskMinValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_SecondMaskMaxValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_DetailValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_DetailNormalValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_DetailBlendRemap": {
+      "type": "Vector",
+      "default": "(0,0,0,0)"
+    },
+    "_DetailBlendMinValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0.4"
+    },
+    "_DetailBlendMaxValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0.6"
+    },
+    "_DetailMeshMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_DetailMeshRemap": {
+      "type": "Vector",
+      "default": "(0,0,0,0)"
+    },
+    "_DetailMeshMinValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_DetailMeshMaxValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_DetailMaskMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_DetailMaskRemap": {
+      "type": "Vector",
+      "default": "(0,0,0,0)"
+    },
+    "_DetailMaskMinValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_DetailMaskMaxValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_second_uvs_mode": {
+      "type": "Vector",
+      "default": "(0,0,0,0)"
+    },
+    "_CategoryOcclusion": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_MessageOcclusion": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_VertexOcclusionColor": {
+      "type": "Color",
+      "default": "(1,1,1,0.5019608)"
+    },
+    "_VertexOcclusionRemap": {
+      "type": "Vector",
+      "default": "(0,0,0,0)"
+    },
+    "_VertexOcclusionMinValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_VertexOcclusionMaxValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_VertexOcclusionColorsMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_VertexOcclusionOverlayMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_CategoryGradient": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_GradientColorOne": {
+      "type": "Color",
+      "default": "(1,1,1,1)"
+    },
+    "_GradientColorTwo": {
+      "type": "Color",
+      "default": "(1,1,1,1)"
+    },
+    "_GradientMaskRemap": {
+      "type": "Vector",
+      "default": "(0,0,0,0)"
+    },
+    "_GradientMinValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_GradientMaxValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_CategoryNoise": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_NoiseMaskRemap": {
+      "type": "Vector",
+      "default": "(0,0,0,0)"
+    },
+    "_CategorySubsurface": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_MessageSubsurface": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_SubsurfaceDiffusion": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_SubsurfaceDiffusion_Asset": {
+      "type": "Vector",
+      "default": "(0,0,0,0)"
+    },
+    "_SpaceSubsurface": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_SubsurfaceValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_SubsurfaceColor": {
+      "type": "Color",
+      "default": "(1,1,1,1)"
+    },
+    "_SubsurfaceScatteringValue": {
+      "type": "Range( 0 , 16)",
+      "default": "2"
+    },
+    "_SubsurfaceAngleValue": {
+      "type": "Range( 1 , 16)",
+      "default": "8"
+    },
+    "_SubsurfaceDirectValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_SubsurfaceNormalValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_SubsurfaceAmbientValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0.2"
+    },
+    "_SubsurfaceShadowValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_SubsurfaceMaskValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_CategoryMatcap": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_CategoryRimLight": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_RimLightRemap": {
+      "type": "Vector",
+      "default": "(0,0,0,0)"
+    },
+    "_CategoryEmissive": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_EmissiveMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_EmissiveFlagMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_EmissiveTex": {
+      "type": "2D",
+      "default": "\"white\" {}"
+    },
+    "_EmissiveUVs": {
+      "type": "Vector",
+      "default": "(1,1,0,0)"
+    },
+    "_EmissiveColor": {
+      "type": "Color",
+      "default": "(0,0,0,0)"
+    },
+    "_EmissiveIntensityMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_EmissiveIntensityValue": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_EmissivePhaseValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_EmissiveTexRemap": {
+      "type": "Vector",
+      "default": "(0,0,0,0)"
+    },
+    "_EmissiveTexMinValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_EmissiveTexMaxValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_emissive_intensity_value": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_CategoryPerspective": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_PerspectivePushValue": {
+      "type": "Range( 0 , 4)",
+      "default": "0"
+    },
+    "_PerspectiveNoiseValue": {
+      "type": "Range( 0 , 4)",
+      "default": "0"
+    },
+    "_PerspectiveAngleValue": {
+      "type": "Range( 0 , 8)",
+      "default": "1"
+    },
+    "_CategorySizeFade": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_SizeFadeStartValue": {
+      "type": "Range( 0 , 1000)",
+      "default": "0"
+    },
+    "_SizeFadeEndValue": {
+      "type": "Range( 0 , 1000)",
+      "default": "0"
+    },
+    "_CategoryMotion": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_MessageMotionVariation": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_MotionHighlightColor": {
+      "type": "Color",
+      "default": "(0,0,0,0)"
+    },
+    "_MotionFacingValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0.5"
+    },
+    "_SpaceMotionGlobals": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_MotionAmplitude_10": {
+      "type": "Range( 0 , 2)",
+      "default": "0.2"
+    },
+    "_MotionPosition_10": {
+      "type": "Range( 0 , 1)",
+      "default": "0.5"
+    },
+    "_MotionSpeed_10": {
+      "type": "Range( 0 , 40)",
+      "default": "2"
+    },
+    "_MotionScale_10": {
+      "type": "Range( 0 , 20)",
+      "default": "1"
+    },
+    "_MotionVariation_10": {
+      "type": "Range( 0 , 20)",
+      "default": "0"
+    },
+    "_MotionAmplitude_20": {
+      "type": "Range( 0 , 2)",
+      "default": "0.2"
+    },
+    "_MotionAmplitude_22": {
+      "type": "Range( 0 , 2)",
+      "default": "0.2"
+    },
+    "_MotionSpeed_20": {
+      "type": "Range( 0 , 40)",
+      "default": "6"
+    },
+    "_MotionScale_20": {
+      "type": "Range( 0 , 20)",
+      "default": "3"
+    },
+    "_MotionVariation_20": {
+      "type": "Range( 0 , 20)",
+      "default": "0"
+    },
+    "_MotionAmplitude_32": {
+      "type": "Range( 0 , 2)",
+      "default": "0.2"
+    },
+    "_MotionSpeed_32": {
+      "type": "Range( 0 , 40)",
+      "default": "20"
+    },
+    "_MotionScale_32": {
+      "type": "Range( 0 , 20)",
+      "default": "10"
+    },
+    "_MotionVariation_32": {
+      "type": "Range( 0 , 20)",
+      "default": "0"
+    },
+    "_InteractionAmplitude": {
+      "type": "Range( 0 , 2)",
+      "default": "1"
+    },
+    "_InteractionMaskValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_VertexPivotMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_VertexDynamicMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_render_normals": {
+      "type": "Vector",
+      "default": "(1,1,1,0)"
+    },
+    "_Cutoff": {
+      "type": "Float",
+      "default": "0.5"
+    },
+    "_Color": {
+      "type": "Color",
+      "default": "(0,0,0,0)"
+    },
+    "_MainTex": {
+      "type": "2D",
+      "default": "\"white\" {}"
+    },
+    "_BumpMap": {
+      "type": "2D",
+      "default": "\"white\" {}"
+    },
+    "_MaxBoundsInfo": {
+      "type": "Vector",
+      "default": "(1,1,1,1)"
+    },
+    "_MotionValue_30": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_MotionValue_20": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_ColorsMaskMinValue": {
+      "type": "Range( 0 , 1)",
+      "default": "1"
+    },
+    "_ColorsMaskMaxValue": {
+      "type": "Range( 0 , 1)",
+      "default": "0"
+    },
+    "_DetailTypeMode": {
+      "type": "Float",
+      "default": "2"
+    },
+    "_DetailCoordMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_DetailOpaqueMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_DetailMeshInvertMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_DetailMaskInvertMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_IsTVEShader": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_IsIdentifier": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_IsCollected": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_IsCustomShader": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_IsShared": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_HasEmissive": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_HasGradient": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_HasOcclusion": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_VertexVariationMode": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_IsVersion": {
+      "type": "Float",
+      "default": "1230"
+    },
+    "_IsCoreShader": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_render_cull": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_render_src": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_render_dst": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_render_zw": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_render_coverage": {
+      "type": "Float",
+      "default": "0"
+    },
+    "_IsStandardShader": {
+      "type": "Float",
+      "default": "1"
+    },
+    "_IsPlantShader": {
+      "type": "Float",
+      "default": "1"
+    }
+  },
+  "variants": {
+    "Plant Standard Lit.shader": {
+      "sha256": "18c3bb72346c98e94f2834a80b1d76d572ad9cb42a822420aeec5e524cd2bdb0",
+      "propertyCount": 204,
+      "commentedProperties": [
+        "_TransmissionShadow",
+        "_TransStrength",
+        "_TransNormal",
+        "_TransScattering",
+        "_TransDirect",
+        "_TransAmbient",
+        "_TransShadow",
+        "_TessPhongStrength",
+        "_TessValue",
+        "_TessMin",
+        "_TessMax",
+        "_TessEdgeLength",
+        "_TessMaxDisp",
+        "_SpecularHighlights",
+        "_GlossyReflections"
+      ],
+      "addedOrChanged": {},
+      "absent": []
+    },
+    "Plant Subsurface Lit.shader": {
+      "sha256": "b59e8294dd743d530d0313a30025ea06738e24ea679692c274a747c8f0c1a2e1",
+      "propertyCount": 210,
+      "commentedProperties": [
+        "_TransmissionShadow",
+        "_TessPhongStrength",
+        "_TessValue",
+        "_TessMin",
+        "_TessMax",
+        "_TessEdgeLength",
+        "_TessMaxDisp",
+        "_SpecularHighlights",
+        "_GlossyReflections"
+      ],
+      "addedOrChanged": {
+        "_render_src": {
+          "type": "Float",
+          "default": "5"
+        },
+        "_render_dst": {
+          "type": "Float",
+          "default": "10"
+        },
+        "_IsSubsurfaceShader": {
+          "type": "Float",
+          "default": "1"
+        },
+        "_TransStrength": {
+          "type": "Range( 0, 50 )",
+          "default": "1"
+        },
+        "_TransNormal": {
+          "type": "Range( 0, 1 )",
+          "default": "0.5"
+        },
+        "_TransScattering": {
+          "type": "Range( 1, 50 )",
+          "default": "2"
+        },
+        "_TransDirect": {
+          "type": "Range( 0, 1 )",
+          "default": "0.9"
+        },
+        "_TransAmbient": {
+          "type": "Range( 0, 1 )",
+          "default": "0.1"
+        },
+        "_TransShadow": {
+          "type": "Range( 0, 1 )",
+          "default": "0.5"
+        }
+      },
+      "absent": [
+        "_IsStandardShader"
+      ]
+    },
+    "Prop Standard Lit.shader": {
+      "sha256": "cd4233b9a5e412afe0ac1ecbd33ffeb48ada506ca6ac9601466cb307917386dd",
+      "propertyCount": 167,
+      "commentedProperties": [
+        "_TransmissionShadow",
+        "_TransStrength",
+        "_TransNormal",
+        "_TransScattering",
+        "_TransDirect",
+        "_TransAmbient",
+        "_TransShadow",
+        "_TessPhongStrength",
+        "_TessValue",
+        "_TessMin",
+        "_TessMax",
+        "_TessEdgeLength",
+        "_TessMaxDisp",
+        "_SpecularHighlights",
+        "_GlossyReflections"
+      ],
+      "addedOrChanged": {
+        "_MainMetallicValue": {
+          "type": "Range( 0 , 1)",
+          "default": "0"
+        },
+        "_SecondMetallicValue": {
+          "type": "Range( 0 , 1)",
+          "default": "0"
+        },
+        "_IsPropShader": {
+          "type": "Float",
+          "default": "1"
+        }
+      },
+      "absent": [
+        "_RenderSpecular",
+        "_FadeGlancingValue",
+        "_LayerMotionValue",
+        "_LayerVertexValue",
+        "_GlobalAlpha",
+        "_GlobalSize",
+        "_ColorsVariationValue",
+        "_AlphaVariationValue",
+        "_OverlayVariationValue",
+        "_GradientColorOne",
+        "_GradientColorTwo",
+        "_GradientMinValue",
+        "_GradientMaxValue",
+        "_SubsurfaceValue",
+        "_SubsurfaceColor",
+        "_SubsurfaceMaskValue",
+        "_PerspectivePushValue",
+        "_PerspectiveNoiseValue",
+        "_PerspectiveAngleValue",
+        "_SizeFadeStartValue",
+        "_SizeFadeEndValue",
+        "_MotionHighlightColor",
+        "_MotionFacingValue",
+        "_MotionAmplitude_10",
+        "_MotionPosition_10",
+        "_MotionSpeed_10",
+        "_MotionScale_10",
+        "_MotionVariation_10",
+        "_MotionAmplitude_20",
+        "_MotionAmplitude_22",
+        "_MotionSpeed_20",
+        "_MotionScale_20",
+        "_MotionVariation_20",
+        "_MotionAmplitude_32",
+        "_MotionSpeed_32",
+        "_MotionScale_32",
+        "_MotionVariation_32",
+        "_InteractionAmplitude",
+        "_InteractionMaskValue",
+        "_IsPlantShader"
+      ]
+    },
+    "Prop Subsurface Lit.shader": {
+      "sha256": "58390d077542f9331dfd10ae507f76c2344a1951f90967380451b98a8cf00669",
+      "propertyCount": 175,
+      "commentedProperties": [
+        "_TransmissionShadow",
+        "_TessPhongStrength",
+        "_TessValue",
+        "_TessMin",
+        "_TessMax",
+        "_TessEdgeLength",
+        "_TessMaxDisp",
+        "_SpecularHighlights",
+        "_GlossyReflections"
+      ],
+      "addedOrChanged": {
+        "_MainMetallicValue": {
+          "type": "Range( 0 , 1)",
+          "default": "0"
+        },
+        "_SecondMetallicValue": {
+          "type": "Range( 0 , 1)",
+          "default": "0"
+        },
+        "_IsPropShader": {
+          "type": "Float",
+          "default": "1"
+        },
+        "_IsSubsurfaceShader": {
+          "type": "Float",
+          "default": "1"
+        },
+        "_TransStrength": {
+          "type": "Range( 0, 50 )",
+          "default": "1"
+        },
+        "_TransNormal": {
+          "type": "Range( 0, 1 )",
+          "default": "0.5"
+        },
+        "_TransScattering": {
+          "type": "Range( 1, 50 )",
+          "default": "2"
+        },
+        "_TransDirect": {
+          "type": "Range( 0, 1 )",
+          "default": "0.9"
+        },
+        "_TransAmbient": {
+          "type": "Range( 0, 1 )",
+          "default": "0.1"
+        },
+        "_TransShadow": {
+          "type": "Range( 0, 1 )",
+          "default": "0.5"
+        }
+      },
+      "absent": [
+        "_RenderSpecular",
+        "_FadeGlancingValue",
+        "_LayerMotionValue",
+        "_LayerVertexValue",
+        "_GlobalAlpha",
+        "_GlobalSize",
+        "_ColorsVariationValue",
+        "_AlphaVariationValue",
+        "_OverlayVariationValue",
+        "_GradientColorOne",
+        "_GradientColorTwo",
+        "_GradientMinValue",
+        "_GradientMaxValue",
+        "_SubsurfaceMaskValue",
+        "_PerspectivePushValue",
+        "_PerspectiveNoiseValue",
+        "_PerspectiveAngleValue",
+        "_SizeFadeStartValue",
+        "_SizeFadeEndValue",
+        "_MotionHighlightColor",
+        "_MotionFacingValue",
+        "_MotionAmplitude_10",
+        "_MotionPosition_10",
+        "_MotionSpeed_10",
+        "_MotionScale_10",
+        "_MotionVariation_10",
+        "_MotionAmplitude_20",
+        "_MotionAmplitude_22",
+        "_MotionSpeed_20",
+        "_MotionScale_20",
+        "_MotionVariation_20",
+        "_MotionAmplitude_32",
+        "_MotionSpeed_32",
+        "_MotionScale_32",
+        "_MotionVariation_32",
+        "_InteractionAmplitude",
+        "_InteractionMaskValue",
+        "_IsStandardShader",
+        "_IsPlantShader"
+      ]
+    }
+  },
+  "actualPackageMaterials": {
+    "count": 86,
+    "shaderGuidGroups": 14,
+    "explicitDetailEnabled": 4,
+    "explicitDualColorEnabled": 2,
+    "explicitAlphaClipEnabled": 22
+  },
+  "acceptanceRequirements": [
+    "Preserve material identity, shader family, active parameter defaults and authored overrides.",
+    "Implement per-pixel effects in Vulkan and WebGPU, including depth and shadow alpha.",
+    "Resolve texture GUIDs with source color-space and sampler semantics.",
+    "Validate real tree, shrub and grass appearances, not only untextured fixtures.",
+    "Source archival and constant PBR substitution are not implementation evidence."
+  ],
+  "materialImportContract": "unity-vegetation-material-import.md"
+}

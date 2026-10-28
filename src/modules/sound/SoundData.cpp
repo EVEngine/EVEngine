@@ -2,6 +2,8 @@
 
 #include "common/Exception.h"
 
+#include <utility>
+
 namespace eve {
 namespace sound {
 
@@ -16,6 +18,14 @@ SoundData::SoundData(std::vector<uint8_t> pcm, int sampleRate, int bitDepth, int
 }
 
 SoundData::~SoundData() = default;
+
+void SoundData::adopt(eve::Resource &replacement) {
+    auto &other = static_cast<SoundData &>(replacement);
+    std::swap(pcm, other.pcm);
+    std::swap(sampleRate, other.sampleRate);
+    std::swap(bitDepth, other.bitDepth);
+    std::swap(channels, other.channels);
+}
 
 int SoundData::getSampleCount() const {
     if (bitDepth <= 0 || channels <= 0)

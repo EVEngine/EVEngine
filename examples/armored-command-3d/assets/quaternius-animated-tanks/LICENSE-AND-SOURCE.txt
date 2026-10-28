@@ -1,0 +1,7 @@
+Quaternius Animated Tank Pack
+License: CC0 1.0 Universal
+Source: https://quaternius.com/packs/animatedtanks.html
+Mirror: https://poly.pizza/bundle/Animated-Tank-Pack-0tfvbeAJkU
+
+Downloaded 2026-08-28. The four GLB files are the four animated models in the
+pack. Attribution is not required by CC0, but source credit is retained here.

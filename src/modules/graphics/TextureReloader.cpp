@@ -34,10 +34,10 @@ public:
 
     bool handlesPath(const std::string &normPath) const override { return isImagePath(normPath); }
 
-    bool reload(const std::string &normPath) override {
+    eve::Result<bool> reload(const std::string &normPath) override {
         auto *gfx = eve::ModuleManager::getInstance<Graphics>("Graphics");
-        if (!gfx) return false;
-        return gfx->reloadTextureFromFile(normPath);
+        if (!gfx) return eve::Result<bool>::success(false);
+        return eve::Result<bool>::success(gfx->reloadTextureFromFile(normPath));
     }
 };
 

@@ -1,0 +1,16 @@
+[
+  {"id": "player.strike", "cooldown": 0.4, "castTime": 0.0,
+   "costs": [], "grantedEffects": [], "tags": ["attack"]},
+  {"id": "player.fireball", "cooldown": 3.0, "castTime": 0.6,
+   "costs": [{"attribute": "mana", "amount": 15.0}],
+   "grantedEffects": ["dot.burn"], "tags": ["attack", "magic"]},
+  {"id": "player.power_stance", "cooldown": 8.0, "castTime": 0.0,
+   "costs": [{"attribute": "stamina", "amount": 10.0}],
+   "grantedEffects": ["buff.power_stance"], "tags": ["buff"]},
+  {"id": "player.potion", "cooldown": 6.0, "castTime": 0.0,
+   "costs": [], "grantedEffects": ["instant.heal_potion"], "tags": ["item"]},
+  {"id": "enemy.claw", "cooldown": 1.2, "castTime": 0.0,
+   "costs": [], "grantedEffects": [], "tags": ["attack"]},
+  {"id": "enemy.roar", "cooldown": 6.0, "castTime": 0.5,
+   "costs": [], "grantedEffects": ["debuff.weaken"], "tags": ["debuff"]}
+]

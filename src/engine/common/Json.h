@@ -1,22 +1,28 @@
 #pragma once
 
-// Read-only JSON facade shared by every module that loads data-driven config.
+// Read-only JSON facade and canonical Value serializer shared by every module
+// that loads data-driven config.
 //
 // The backend is a self-contained recursive-descent parser (Json.cpp) rather
 // than Poco, so EVCommon stays dependency-free and modules that only read JSON
 // (rpg / inventory / building / card / voxel / housegen / i18n) no longer pull
 // Poco in just to parse a config file. Writing JSON still goes through
-// data::JsonDocument / Poco.
+// `stringify` is the single canonical serializer for common::Value. The
+// legacy data::JsonDocument/Poco facade remains available for mutable legacy
+// integrations, but must not be used as a second Value serialization format.
 //
 // Accessors never throw: a missing key, a wrong type or an out-of-range index
 // yields the supplied fallback (or a null Value), which is what config loading
 // wants and what the per-module helpers this replaces already did.
 
 #include "common/Export.h"
+#include "common/Result.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -29,59 +35,93 @@ class Document;
  * Handle to one node of a parsed Document. Cheap to copy, but only valid while
  * the owning Document is alive.
  */
-class EVENGINE_API Value {
+/** @brief EVENGINE_API_FOUNDATION public API. */
+class EVENGINE_API_FOUNDATION Value {
 public:
+    /** @brief Value. */
     Value() = default;
 
     /** True when this handle refers to an actual node. */
+    /** @brief Bool. */
     explicit operator bool() const { return node_ != nullptr; }
 
+    /** @brief True when null. */
     bool isNull() const;
+    /** @brief True when bool. */
     bool isBool() const;
+    /** @brief True when number. */
     bool isNumber() const;
+    /** @brief True when the JSON number was an integer literal that fits Int64. */
+    bool isInt64() const;
+    /** @brief True when the JSON number had no fraction or exponent. */
+    bool isIntegerLiteral() const;
+    /** @brief True when string. */
     bool isString() const;
+    /** @brief True when object. */
     bool isObject() const;
+    /** @brief True when array. */
     bool isArray() const;
 
     // --- object access -----------------------------------------------------
+    /** @brief True when active. */
     bool  has(const char* key) const;
     /** Member value, or a null Value when absent / not an object. */
+    /** @brief Returns the value. */
     Value get(const char* key) const;
     /** Member names in document order; empty when not an object. */
+    /** @brief Keys. */
     std::vector<std::string> keys() const;
 
     // --- array access ------------------------------------------------------
     /** Element count for arrays, member count for objects, else 0. */
+    /** @brief Returns the size of . */
     size_t size() const;
     /** Element at index, or a null Value when out of range / not an array. */
+    /** @brief At. */
     Value at(size_t index) const;
 
     // --- scalars -----------------------------------------------------------
     // Conversions are lenient (a numeric string reads as a number and back)
     // and fall back rather than throw.
+    /** @brief As bool. */
     bool        asBool(bool fallback = false) const;
+    /** @brief As int. */
     int         asInt(int fallback = 0) const;
+    /** @brief As float. */
     float       asFloat(float fallback = 0.f) const;
+    /** @brief As double. */
     double      asDouble(double fallback = 0.0) const;
+    /** @brief Read an exact Int64 literal, or return the caller-supplied default for other numbers. */
+    std::int64_t asInt64(std::int64_t fallback = 0) const;
+    /** @brief As string. */
     std::string asString(const std::string& fallback = {}) const;
 
     // --- keyed shorthand ---------------------------------------------------
     // get(key).asX(fallback), which is the dominant shape in config loaders.
+    /** @brief Returns the bool. */
     bool        getBool(const char* key, bool fallback = false) const;
+    /** @brief Returns the int. */
     int         getInt(const char* key, int fallback = 0) const;
+    /** @brief Returns the float. */
     float       getFloat(const char* key, float fallback = 0.f) const;
+    /** @brief Returns the double. */
     double      getDouble(const char* key, double fallback = 0.0) const;
+    /** @brief Returns the string. */
     std::string getString(const char* key, const std::string& fallback = {}) const;
 
     // --- collections -------------------------------------------------------
     // Empty when the key is absent or the value has the wrong shape.
+    /** @brief Returns the string array. */
     std::vector<std::string> getStringArray(const char* key) const;
+    /** @brief Returns the int array. */
     std::vector<int>         getIntArray(const char* key) const;
+    /** @brief Returns the float array. */
     std::vector<float>       getFloatArray(const char* key) const;
     std::unordered_map<std::string, std::string> getStringMap(const char* key) const;
     std::unordered_map<std::string, int>         getIntMap(const char* key) const;
 
     /** This node read as an array of strings (for a Value already in hand). */
+    /** @brief To string array. */
     std::vector<std::string> toStringArray() const;
 
 private:
@@ -93,11 +133,16 @@ private:
 /**
  * Owns a parsed JSON tree. Move-only; every Value handed out points into it.
  */
-class EVENGINE_API Document {
+/** @brief EVENGINE_API_FOUNDATION public API. */
+class EVENGINE_API_FOUNDATION Document {
 public:
+    /** @brief Document. */
     Document();
+    /** @brief Document. */
     ~Document();
+    /** @brief Document. */
     Document(Document&&) noexcept;
+    /** @brief Operator =. */
     Document& operator=(Document&&) noexcept;
     Document(const Document&) = delete;
     Document& operator=(const Document&) = delete;
@@ -106,9 +151,12 @@ public:
      * Parse `text`. On failure the Document is invalid, `error` (when given)
      * describes the problem, and root() returns a null Value.
      */
+    /** @brief Parse. */
     static Document parse(const std::string& text, std::string* error = nullptr);
 
+    /** @brief Valid. */
     bool  valid() const { return root_ != nullptr; }
+    /** @brief Root. */
     Value root() const { return Value(root_.get()); }
 
 private:
@@ -116,3 +164,59 @@ private:
 };
 
 }  // namespace eve::json
+
+namespace eve {
+
+class Value;
+
+namespace json {
+
+/** @brief JSON control-character spelling; UnicodeBackspaceFormFeed preserves legacy wire bytes. */
+enum class StringEscapeStyle { Canonical, UnicodeBackspaceFormFeed };
+
+/**
+ * @brief Encode an owning JSON string using the canonical serializer's escaping implementation.
+ * @param value Borrowed bytes, used only during this synchronous call; UTF-8 bytes are preserved.
+ * @param style Explicit spelling of backspace and form feed; both styles encode every control byte.
+ * @return Independent JSON string including quotes; allocation failures propagate as exceptions.
+ * @cost Linear in input bytes, with one output allocation amortized over the string.
+ * @note Callable on any thread with stable input; retains no borrows and invokes no callbacks.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION std::string quoteString(std::string_view value, StringEscapeStyle style);
+
+/** @brief Integer token syntax; LegacyStoull is compatibility-only and retains whitespace/sign acceptance. */
+enum class UnsignedIntegerSyntax { Decimal, LegacyStoull };
+
+/** @brief Owning scanned integer prefix; callers must check consumed against the full input length. */
+struct UnsignedIntegerScan {
+    /** @brief Value of the successfully scanned prefix. */
+    std::uint64_t value = 0;
+    /** @brief Number of input bytes consumed, including legacy leading whitespace/sign. */
+    std::size_t consumed = 0;
+    /** @brief Full original input length, including any unconsumed suffix. */
+    std::size_t size = 0;
+};
+
+/**
+ * @brief Scan an unsigned integer prefix without mutating caller state.
+ * @param text Borrowed input used synchronously; never retained.
+ * @param syntax Decimal uses from_chars; LegacyStoull preserves the old decimal stoull contract.
+ * @return Owning prefix and consumed length, or ParseError for no conversion or overflow.
+ * @remarks Trailing bytes are reported through consumed, allowing compatibility adapters to preserve
+ *          their historical output assignment before rejecting trailing input. Embedded NUL is trailing input.
+ * @note Runs on the caller thread; no callbacks. LegacyStoull uses the process C locale as stoull did.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<UnsignedIntegerScan> scanUnsignedInteger(std::string_view      text,
+                                                                                      UnsignedIntegerSyntax syntax);
+
+/**
+ * @brief Serialize the canonical owning Value as deterministic compact JSON.
+ * @param value Owning value containing only JSON-compatible kinds.
+ * @return JSON text, or SerializationError when a Double is NaN or infinity.
+ * @remarks Object keys are emitted in lexicographic order. This is the single
+ *          canonical JSON serializer used by owning Value adapters.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<std::string> stringify(const eve::Value& value);
+
+}  // namespace json
+}  // namespace eve

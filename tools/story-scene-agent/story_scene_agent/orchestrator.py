@@ -11,7 +11,6 @@ from __future__ import annotations
 import json
 import os
 import sys
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from .config import (
@@ -19,7 +18,6 @@ from .config import (
     SCENE_QC_DIR,
     DefaultConfig,
     load_config,
-    load_qc_config,
 )
 from .executor import McpSceneExecutor, MemorySceneExecutor, SceneExecutor
 from .story import StageBrief, parse_stage

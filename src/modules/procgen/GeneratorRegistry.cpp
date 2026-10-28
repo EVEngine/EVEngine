@@ -1,7 +1,6 @@
 #include "procgen/GeneratorRegistry.h"
 
 #include <algorithm>
-
 namespace eve::procgen {
 
 GeneratorRegistry &GeneratorRegistry::instance() {
@@ -10,7 +9,15 @@ GeneratorRegistry &GeneratorRegistry::instance() {
 }
 
 void GeneratorRegistry::registerAlgorithm(const std::string &id, GeneratorFn fn) {
-    algorithms_[id] = std::move(fn);
+    GeneratorDescriptor descriptor;
+    descriptor.id = id;
+    descriptor.displayName = id;
+    registerAlgorithm(std::move(descriptor), std::move(fn));
+}
+
+void GeneratorRegistry::registerAlgorithm(GeneratorDescriptor descriptor, GeneratorFn fn) {
+    const std::string id = descriptor.id;
+    algorithms_[id] = Entry{std::move(fn), std::move(descriptor)};
 }
 
 bool GeneratorRegistry::has(const std::string &id) const {
@@ -24,7 +31,19 @@ bool GeneratorRegistry::generate(const std::string &id, const Params &params, Gr
         error = "unknown algorithm: " + id;
         return false;
     }
-    return it->second(params, out, error);
+    return it->second.generate(params, out, error);
+}
+
+const GeneratorDescriptor *GeneratorRegistry::descriptor(const std::string &id) const {
+    const auto it = algorithms_.find(id);
+    return it == algorithms_.end() ? nullptr : &it->second.descriptor;
+}
+
+bool GeneratorRegistry::applyDefaults(const std::string &id, Params &params) const {
+    const GeneratorDescriptor *schema = descriptor(id);
+    if (!schema) return false;
+    schema->applyDefaults(params);
+    return true;
 }
 
 std::vector<std::string> GeneratorRegistry::list() const {

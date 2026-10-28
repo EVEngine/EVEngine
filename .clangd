@@ -1,4 +1,30 @@
 CompileFlags:
   CompilationDatabase: build
   # clang-cl defaults to -fno-exceptions unless /EHsc is in compile_commands.
-  Add: [-fcxx-exceptions]
+  Add:
+    - -fcxx-exceptions
+    - -std=c++20
+  # MSVC Ninja compile_commands.json contains cl.exe flags that vanilla clang
+  # (clangd) rejects as drv_unknown_argument, shown on line 1 of the TU.
+  # Use a block list: YAML flow sequences cannot have a trailing comma, and a
+  # parse error here makes clangd ignore the whole Remove filter.
+  Remove:
+    - -external:*
+    - /external:*
+    - /nologo
+    - /TP
+    - /FS
+    - /bigobj
+    - /utf-8
+    - /EHsc
+    - /W4
+    - /WX
+    - /wd*
+    - /Fo*
+    - /Fd*
+    - -MD*
+    - /MD*
+    - -MT*
+    - /MT*
+    - -std:c++*
+    - /std:c++*

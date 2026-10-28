@@ -6,7 +6,9 @@ from __future__ import annotations
 import struct
 import subprocess
 import sys
+import shutil
 from pathlib import Path
+import utf8_stdio
 
 ROOT = Path(__file__).resolve().parents[1]
 SHADER_DIR = ROOT / "src" / "modules" / "graphics" / "shaders"
@@ -41,10 +43,18 @@ def spv_to_inc(spv_path: Path, array_name: str, out_path: Path) -> None:
 
 def compile_frag(src: Path) -> Path:
     out = src.with_suffix(".spv")
-    cmd = ["glslc", "-fshader-stage=frag", str(src), "-o", str(out)]
+    glslc = shutil.which("glslc")
+    glslang = shutil.which("glslangValidator")
+    if glslc:
+        cmd = [glslc, "-fshader-stage=frag", str(src), "-o", str(out)]
+    elif glslang:
+        cmd = [glslang, "-V", "-S", "frag", "--target-env", "vulkan1.2", str(src),
+               "-o", str(out)]
+    else:
+        raise SystemExit("need glslc or glslangValidator on PATH (Vulkan SDK)")
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
-        raise SystemExit(f"glslc failed for {src.name}:\n{r.stderr or r.stdout}")
+        raise SystemExit(f"shader compile failed for {src.name}:\n{r.stderr or r.stdout}")
     return out
 
 
@@ -64,4 +74,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     sys.exit(main())

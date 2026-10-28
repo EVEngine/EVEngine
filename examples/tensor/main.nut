@@ -8,12 +8,9 @@
 //   3. speech-style attention step (fused SDPA)
 //   4. batched simulation update (broadcast arithmetic)
 
-if (!("tf" in getroottable()))
-    tf <- null;
-if (!("policy" in getroottable()))
-    policy <- null;
-if (!("frame" in getroottable()))
-    frame <- 0;
+persist tf = null
+persist policy = null
+persist frame = 0
 
 eve_init = function() {
     gfx.setBackgroundColor(0.06, 0.08, 0.12, 1.0);

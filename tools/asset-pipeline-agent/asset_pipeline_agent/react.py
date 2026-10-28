@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 import os
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, List, Optional
 
 from .blender_pipeline import BlenderPipeline
 from .cache import AssetCache
@@ -16,7 +16,6 @@ from .models import OpenAIClient, parse_json_block
 from .parser import RequirementParser
 from .registry import AssetRegistry
 from .report import ALLOWED_LICENSES, AssetOutcome, AssetRequest, PipelineReport
-from .sources import build_sources
 
 
 class AssetPipelineBrain:

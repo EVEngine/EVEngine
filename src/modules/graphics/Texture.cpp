@@ -3,6 +3,7 @@
 #include "graphics/Graphics.h"
 
 #include <cmath>
+#include <cstring>
 #include <glm/glm.hpp>
 
 namespace eve::graphics {
@@ -14,11 +15,53 @@ Texture::~Texture() {
     gpuHandle = nullptr;
 }
 
-void Texture::draw(Graphics *, const glm::mat4 &) const {
+void Texture::markDeferredFilePixels(Graphics* graphics) {
+    graphics_          = graphics;
+    filePixelsPending_ = graphics != nullptr;
+}
+
+void Texture::clearDeferredFilePixels() { filePixelsPending_ = false; }
+
+void Texture::realizeFilePixelsIfNeeded() const {
+    if (filePixelsPending_ && graphics_) graphics_->ensureFileTexturesReady();
+}
+
+int Texture::getWidth() const {
+    realizeFilePixelsIfNeeded();
+    return width;
+}
+
+int Texture::getHeight() const {
+    realizeFilePixelsIfNeeded();
+    return height;
+}
+
+int Texture::getPixelWidth() const {
+    realizeFilePixelsIfNeeded();
+    return pixelWidth;
+}
+
+int Texture::getPixelHeight() const {
+    realizeFilePixelsIfNeeded();
+    return pixelHeight;
+}
+
+int Texture::getMipmapCount() const {
+    realizeFilePixelsIfNeeded();
+    return mipmapCount;
+}
+
+void Texture::setAlphaConvention(const char* value) {
+    premultipliedAlpha_ = value != nullptr && std::strcmp(value, "premultiplied") == 0;
+}
+
+const char* Texture::getAlphaConvention() const { return premultipliedAlpha_ ? "premultiplied" : "straight"; }
+
+void Texture::draw(Graphics*, const glm::mat4&) const {
     // Declarative path uses RenderSystem; immediate draw left for later.
 }
 
-void Texture::drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const {
+void Texture::drawOcclusion(Graphics* gfx, const glm::mat4& matrix) const {
     if (!gfx || !getCastOcclusion()) return;
     // Treat matrix as 2D affine: translation in column 3, scale from basis lengths.
     const float x = matrix[3][0];
@@ -26,7 +69,7 @@ void Texture::drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const {
     const float w = std::sqrt(matrix[0][0] * matrix[0][0] + matrix[0][1] * matrix[0][1]);
     const float h = std::sqrt(matrix[1][0] * matrix[1][0] + matrix[1][1] * matrix[1][1]);
     if (w <= 0.f || h <= 0.f) return;
-    gfx->drawOcclusionTexture(const_cast<Texture *>(this), x, y, w, h);
+    gfx->drawOcclusionTexture(const_cast<Texture*>(this), x, y, w, h);
 }
 
 }  // namespace eve::graphics

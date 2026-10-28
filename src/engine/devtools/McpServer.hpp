@@ -32,7 +32,7 @@ namespace eve::dev {
  *
  * Desktop-only (part of EVDevTools); not shipped on Android/iOS trimmed runtimes.
  */
-class EVENGINE_API McpServer {
+class EVENGINE_API_FOUNDATION McpServer {
 public:
     static McpServer& instance();
 
@@ -67,6 +67,8 @@ public:
     const std::string& gameRoot() const { return gameRoot_; }
 
 private:
+    // Immortal<McpServer> constructs the singleton (devtools/Immortal.hpp).
+    template <typename> friend struct Immortal;
     McpServer();
     ~McpServer();
 

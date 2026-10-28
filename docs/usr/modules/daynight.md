@@ -17,6 +17,20 @@ IBL 环境光，使**天空盒角度与反射天空都跟随太阳转动**。
 
 演示场景见 `examples/daynight`（`eve run examples/daynight`）。
 
+独立天空路径见 `examples/uds-sky`。`daynight.prepareSky(gfx, profileJson)`
+返回拥有独立时钟和 GPU 大气资源的 `Result<SkyRuntime>`，不初始化或更新上面的旧系统。
+配置格式为 `eve.sky-profile`、版本 4（版本 1 按关闭高度雾迁移，版本 1/2 不启用薄云资源）、模式 `atmosphere`；版本 3 的 `wispsAsset` 指向 VFS 中的薄云资源清单。准备会读取资源、烘焙查找表并创建
+GPU 资源，应在初始化阶段调用。检查结果的 `ok` 后，通过 `value.attach()` 挂接，
+每帧调用 `value.advanceSeconds(dt)`（浮点秒数）；`value.frame()` 返回状态结果，
+`value.detach()` 移除渲染贡献。以上方法返回的 Result 都需要检查。
+版本 4 增加 `cloudMotion`：`phase`、`speed`、`timeScale`、`windMultiplier`。
+云时间按注入的累计秒数乘后三个值，再叠加初相位和资源初始时间；归一化的形变相位与太阳光照原子发布。
+版本 1–3 的云速显式迁移为零。`frame()` 的值包含 `cloudTime` 与 `wispsMorphPhase`，渲染和反射采集不会推进它们。
+`sky-animated.json` 使用插件独立天空的默认云速 0.35；在示例顶部选择该文件即可启用形变动画。
+对象由脚本拥有，垃圾回收时移除贡献并释放网格和着色器；固定尺寸 Canvas 遵循 Graphics 的既有所有权。
+当前实现大气、背景高度雾与导入薄云的时间形变，完整云雾、天气及
+UDS 像素一致性仍在开发中；不要把此示例视为完整 UDS 替代品。
+
 ## 基本用法
 
 ```squirrel
@@ -33,6 +47,10 @@ daynight.update(dt, gfx);
 camera.setAmbient(daynight.getAmbientR(),
                   daynight.getAmbientG(),
                   daynight.getAmbientB());
+
+// 用同一套太阳方向和大气衰减颜色驱动体积云，日落霞光会与天空一致。
+cloud.setLightDirection(daynight.getSunDirX(), daynight.getSunDirY(), daynight.getSunDirZ());
+cloud.setCloudLightColor(daynight.getSunR(), daynight.getSunG(), daynight.getSunB());
 gfx.render3D();
 ```
 
@@ -50,6 +68,10 @@ gfx.render3D();
 | `getSunElevation()` / `getSunAzimuth()` | 太阳高度角 / 方位角（度） |
 | `getSunDirX/Y/Z()` | 指向太阳的世界方向（单位向量） |
 | `getSunIntensity()` | 太阳能量 `[0,1]`，低于地平线为 0 |
+| `setTurbidity(v)` / `getTurbidity()` | 大气浑浊度 `[1.5,10]`；越高，地平线雾霾与暖色霞光越强 |
+| `setMieStrength(v)` / `getMieStrength()` | 米氏气溶胶强度 `[0,4]`，控制太阳周围光晕与地平线泛白 |
+| `setSkyExposure(v)` / `getSkyExposure()` | 天空写入 RGBA8 cubemap 前的曝光 `[0.05,8]` |
+| `applyAtmosphere(volumetric)` | 将当前太阳方向、直射光、天空色和天气影响统一写入 `Volumetric` fog/cloud 对象，避免脚本分别维护不一致参数 |
 
 太阳高度角在正午达到约 `70°`，方位角在一天内转动 360°。
 
@@ -58,10 +80,16 @@ gfx.render3D();
 | API | 说明 |
 |-----|------|
 | `setSkyboxEnabled(b)` / `isSkyboxEnabled()` | 开关程序化天空盒（IBL 环境光） |
+| `setWeatherInfluence(cloudiness, flash)` | 注入天气影响：云量 `[0,1]` 压低天空、日光与星光，闪电亮度 `[0,1]` 短暂照亮环境 |
+| `getWeatherCloudiness()` / `getWeatherFlash()` | 读取当前云量和闪电环境光影响 |
 | `getSkyR/G/B()` | 地平线处天空基调色（用于清屏背景） |
 | `getAmbientR/G/B()` / `getAmbientBrightness()` | 建议的相机环境光 |
 
-天空盒仅在太阳角变化到新“桶”时才重新生成，避免逐帧 GPU 分配。
+天空使用波长相关的瑞利散射、近似米氏散射、太阳路径消光和多散射底色生成，
+因此低太阳高度会自然产生暖色太阳、地平线霞光和更宽的气溶胶光晕。天空盒为
+每面 128×128；仅在太阳角变化到新“桶”或大气参数改变时重新生成，避免逐帧
+GPU 分配。当前图形后端的环境贴图格式仍为 RGBA8，模块使用 ACES 拟合曲线映射
+物理辐亮度；后端升级至浮点环境贴图后可移除此中间映射。
 
 ## 夜间光照系统
 
@@ -79,8 +107,20 @@ gfx.render3D();
 
 - **太阳轨道**：由时钟推导高度角 / 方位角，再换算为世界方向驱动方向光，
   高度角低时太阳能量平滑衰减至 0。
-- **程序化天空盒**：每张面按像素计算“天顶蓝 → 地平线浅色”渐变，叠加太阳
-  光盘与宽泛辉光，夜间再撒上确定性散列的星光；随太阳角分桶重新生成并写入
-  IBL 环境光，达到“天空随太阳转动”的效果。
+- **程序化天空盒**：每张面计算波长相关的大气单次散射、太阳消光及近似多次
+  散射，叠加具有真实角尺度的太阳盘，夜间再撒上确定性星光；同一天空写入 IBL，
+  使可见天空与材质反射保持一致。
 - **夜间光源**：月亮为方向光，篝火为暖色点光，萤火虫为绕锚点正弦漂移的一
   组点光；全部按命名开关启停。
+
+### PR #287 新增绑定
+
+- 反射链、HDR 与探针相关 API：`applyReflectionProbeSky`
+
+天空配置版本 5 要求 `heightFog.directionalElevationRange`：两个有限、递增或相等的
+太阳方向 Y 值，范围 [-1,1]。递增时将雾的定向颜色从零线性增至配置值；
+相等则禁用衰减。版本 1—4 迁移为禁用，不改变原有输出。该参数不控制物理大气透射项。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](daynight/api-reference.md)，使用前先确认本章的前置条件与生命周期。

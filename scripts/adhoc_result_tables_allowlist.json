@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "baselineCount": 12,
+  "policy": {
+    "allowNetGrowth": false,
+    "metadataFileIsReadOnly": true
+  },
+  "exempt": [
+    "src/engine/common/SquirrelBinding.cpp"
+  ],
+  "default": {
+    "owner": "engine-scripting",
+    "issue": "EVENGINE-ADHOC-RESULT-TABLES",
+    "reason": "Gameplay publish/unpublish facades still return a legacy {ok,message} table consumed by existing script tests; migrate to projectResult when those callers move to status.summary.",
+    "expiry": "2027-12-31"
+  },
+  "files": {
+    "src/modules/inventory/Inventory.cpp": {},
+    "src/modules/economy/Economy.cpp": {},
+    "src/modules/dialogue/DialogueFlow.cpp": {},
+    "src/modules/card/Card.cpp": {}
+  }
+}

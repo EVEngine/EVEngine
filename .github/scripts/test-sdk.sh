@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
-# test-sdk.sh <sdk-root> <platform>
+# test-sdk.sh <sdk-root> <platform> [expected-version] [android-abi|macos-arch]
+# macos-arch is required for macOS: arm64 or x86_64.
 #
 # Verify a freshly-built target-platform SDK is usable by consumers, before it is
 # zipped and published to a GitHub Release. Runs on the same host as the SDK:
 #   win32 -> bin/eve.exe   (Windows runner)
 #   linux -> bin/eve       (Linux runner)
 #   macosx-> bin/eve       (macOS runner)
-#   android/ios -> skipped (no host runtime binary)
+#   android -> packaged APK assembled from the installed SDK
+#   ios     -> installed device app bundle validated as an arm64 Mach-O
+#
+# [expected-version] (e.g. "0.1.0") makes the version checks exact: the
+# share/eve/VERSION marker must equal it and `eve -v` must contain it.
 #
 # Hard gate (fails CI on error):
 #   1. SDK layout + markers (bin runtime, include/eve headers, lib, cmake config,
@@ -16,21 +21,129 @@
 #   4. `eve package --sdk` assembles a runnable game folder containing the runtime
 #      + game.eve (and, on Windows, the runtime DLLs).
 #
-# Best-effort (WARN only, never blocks the release): try to run the packaged game
+# Best-effort (WARN only, never blocks the release): try to run the desktop packaged game
 # from memory and check for the game's startup marker. Window/Vulkan init depends
 # on a display / software ICD, so failures there are reported, not fatal.
 set -euo pipefail
 
-SDK="${1:?usage: test-sdk.sh <sdk-root> <platform>}"
-PLAT="${2:?usage: test-sdk.sh <sdk-root> <platform>}"
+SDK="${1:?usage: test-sdk.sh <sdk-root> <platform> [expected-version]}"
+# find_package(EVEngine) does not resolve a relative EVEngine_DIR; normalize
+# the SDK root to an absolute path so the consumer configure is reproducible.
+case "$SDK" in
+  /*) ;;
+  *) SDK="$(cd "$(dirname "$SDK")" && pwd)/$(basename "$SDK")" ;;
+esac
+PLAT="${2:?usage: test-sdk.sh <sdk-root> <platform> [expected-version]}"
+EXPECTED="${3:-}"
+ANDROID_PACKAGE_ABI="${4:-arm64-v8a}"
+SCRIPTS="$(cd "$(dirname "$0")" && pwd)"
+SDK_TEST_CONFIG="${SDK_TEST_CONFIG:-Release}"
 
 case "$PLAT" in
   win32)           RUNTIME="eve.exe" ;;
   linux|macosx)    RUNTIME="eve" ;;
+  android|ios)     RUNTIME="" ;;   # verified by target-specific gates below
   *) echo "SKIP: no host runtime to test for platform '$PLAT'"; exit 0 ;;
 esac
 
 fail() { echo "ERROR: $*" >&2; exit 1; }
+
+WORK="$(mktemp -d)"
+trap 'rm -rf "$WORK"' EXIT
+
+# --- Android: assemble an APK from the SDK packaging template ----------------
+# Hard gate: the template + SDK libs + a minimal game must produce an APK.
+if [ "$PLAT" = "android" ]; then
+  if [ -z "${ANDROID_SDK:-}" ] || [ -z "${JAVA_HOME:-}" ]; then
+    fail "android APK smoke needs ANDROID_SDK + JAVA_HOME in the environment"
+  fi
+  [ -f "$SDK/share/eve/TARGET_PLATFORM" ] || fail "missing share/eve/TARGET_PLATFORM"
+  [ "$(cat "$SDK/share/eve/TARGET_PLATFORM")" = "android" ] || fail "TARGET_PLATFORM != android"
+  VERSION_FILE="$(cat "$SDK/share/eve/VERSION")"
+  if [ -n "$EXPECTED" ] && [ "$VERSION_FILE" != "$EXPECTED" ]; then
+    fail "share/eve/VERSION '$VERSION_FILE' != expected '$EXPECTED'"
+  fi
+  TEMPLATE="$SDK/platform/apk"
+  [ -f "$TEMPLATE/gradlew" ] || [ -f "$TEMPLATE/gradlew.bat" ] || fail "android SDK missing gradle template"
+  # The packaged game must launch the game host when the user taps the icon.
+  # EVTestActivity is the unit-test host and is started explicitly (am start);
+  # if it leaks back into the launcher slot the game never starts.
+  MANIFEST="$TEMPLATE/app/src/main/AndroidManifest.xml"
+  if ! sed -n '/android:name="\.EVEngineActivity"/,/<\/activity>/p' "$MANIFEST" \
+       | grep -q 'android.intent.action.MAIN'; then
+    fail "android template launcher must be EVEngineActivity (MAIN intent missing)"
+  fi
+  if sed -n '/android:name="\.EVTestActivity"/,/<\/activity>/p' "$MANIFEST" \
+       | grep -q 'android.intent.action.MAIN'; then
+    fail "android template launcher must be EVEngineActivity (EVTestActivity has MAIN)"
+  fi
+
+  JNI="$TEMPLATE/app/src/main/jniLibs/$ANDROID_PACKAGE_ABI"
+  mkdir -p "$JNI"
+  [ -f "$SDK/lib/libmain.so" ] || fail "missing lib/libmain.so"
+  cp "$SDK/lib/libmain.so" "$JNI/"
+  for lib in libSDL2.so libc++_shared.so; do
+    [ -f "$SDK/lib/$lib" ] || fail "missing lib/$lib"
+    cp "$SDK/lib/$lib" "$JNI/"
+  done
+  [ ! -f "$SDK/lib/libhidapi.so" ] || cp "$SDK/lib/libhidapi.so" "$JNI/"
+
+  GAME="$TEMPLATE/app/src/main/assets/game"
+  mkdir -p "$GAME"
+  cat > "$GAME/config.nut" <<'EOF'
+config = { width=320 height=240 title="sdk-test" debug=false hotReload=false };
+EOF
+  cat > "$GAME/main.nut" <<'EOF'
+eve_init = function() { print("SDK_TEST_GAME_OK\n"); };
+eve_update = function(dt) {};
+EOF
+  printf 'sdk.dir=%s\n' "$ANDROID_SDK" > "$TEMPLATE/local.properties"
+
+  echo "== [test-sdk] assembling APK from $TEMPLATE =="
+  if ! ( cd "$TEMPLATE" && bash gradlew :app:assembleDebug \
+      -PevengineAbi="$ANDROID_PACKAGE_ABI" --no-daemon --console=plain ) \
+      >"$WORK/apk-build.log" 2>&1; then
+    tail -n 40 "$WORK/apk-build.log"
+    fail "gradle assembleDebug failed"
+  fi
+  APK="$TEMPLATE/app/build/outputs/apk/debug/app-debug.apk"
+  [ -f "$APK" ] || fail "assembleDebug did not produce app-debug.apk"
+  echo "OK: android APK assembled: $(basename "$APK") ($(du -h "$APK" | cut -f1))"
+  echo "== [test-sdk] PASS (android) =="
+  exit 0
+fi
+
+# --- iOS: validate the installed device SDK app bundle -----------------------
+# The release SDK contains an iphoneos app and cannot run in a simulator.  The
+# separate ios-sim workflow job is the runtime gate; this is the artifact gate
+# that catches a missing executable, wrong architecture, malformed bundle, or
+# version/target marker before the SDK is zipped.
+if [ "$PLAT" = "ios" ]; then
+  [ -f "$SDK/share/eve/TARGET_PLATFORM" ] || fail "missing share/eve/TARGET_PLATFORM"
+  [ "$(cat "$SDK/share/eve/TARGET_PLATFORM")" = "ios" ] || fail "TARGET_PLATFORM != ios"
+  [ -f "$SDK/share/eve/VERSION" ] || fail "missing share/eve/VERSION"
+  VERSION_FILE="$(cat "$SDK/share/eve/VERSION")"
+  if [ -n "$EXPECTED" ] && [ "$VERSION_FILE" != "$EXPECTED" ]; then
+    fail "share/eve/VERSION '$VERSION_FILE' != expected '$EXPECTED'"
+  fi
+
+  APP="$SDK/bin/eve.app"
+  PLIST="$APP/Info.plist"
+  [ -d "$APP" ] || fail "ios SDK missing bin/eve.app"
+  [ -f "$PLIST" ] || fail "ios SDK missing eve.app/Info.plist"
+  command -v /usr/libexec/PlistBuddy >/dev/null 2>&1 || fail "PlistBuddy unavailable"
+  EXECUTABLE="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$PLIST")"
+  [ -n "$EXECUTABLE" ] || fail "CFBundleExecutable is empty"
+  BINARY="$APP/$EXECUTABLE"
+  [ -f "$BINARY" ] || fail "ios SDK missing app executable '$EXECUTABLE'"
+  file "$BINARY" | grep -q 'Mach-O' || fail "ios app executable is not Mach-O"
+  lipo -archs "$BINARY" | tr ' ' '\n' | grep -qx arm64 || fail "ios app executable has no arm64 slice"
+  [ -d "$SDK/include/eve" ] || fail "ios SDK missing include/eve"
+  [ -d "$SDK/platform" ] || fail "ios SDK missing platform template"
+  echo "OK: ios device SDK bundle is complete (executable=$EXECUTABLE, arch=arm64)"
+  echo "== [test-sdk] PASS (ios) =="
+  exit 0
+fi
 
 echo "== [test-sdk] platform=$PLAT sdk=$SDK runtime=$RUNTIME =="
 
@@ -38,25 +151,58 @@ echo "== [test-sdk] platform=$PLAT sdk=$SDK runtime=$RUNTIME =="
 [ -x "$SDK/bin/$RUNTIME" ] || fail "missing runtime bin/$RUNTIME"
 [ -d "$SDK/include/eve" ] || fail "missing include/eve"
 [ "$(find "$SDK/include/eve" -name '*.h' | wc -l)" -gt 0 ] || fail "no headers under include/eve"
-[ -d "$SDK/lib" ] || fail "missing lib/"
+[ -f "$SDK/include/zeroerr/assert.h" ] || fail "missing public dependency include/zeroerr/assert.h"
+case "$PLAT" in
+  win32|android)
+    # Windows ships eve.lib for plugins; Android ships libmain.so + packaging .so.
+    [ -d "$SDK/lib" ] || fail "missing lib/"
+    ;;
+  # linux/macosx have no engine import libs: plugins are built by the consumer.
+esac
 [ -f "$SDK/cmake/EVEngineConfig.cmake" ] || fail "missing cmake/EVEngineConfig.cmake"
 [ -f "$SDK/cmake/EVEnginePlugin.cmake" ] || fail "missing cmake/EVEnginePlugin.cmake"
 [ -d "$SDK/platform" ] || fail "missing platform/"
 [ -f "$SDK/share/eve/TARGET_PLATFORM" ] || fail "missing share/eve/TARGET_PLATFORM"
 [ -f "$SDK/share/eve/VERSION" ] || fail "missing share/eve/VERSION"
+[ -f "$SDK/share/eve/examples/basic/config.nut" ] || fail "missing share/eve/examples/basic/config.nut"
+[ -f "$SDK/share/eve/examples/basic/main.nut" ] || fail "missing share/eve/examples/basic/main.nut"
 TP="$(cat "$SDK/share/eve/TARGET_PLATFORM")"
 [ "$TP" = "$PLAT" ] || fail "TARGET_PLATFORM '$TP' != expected '$PLAT'"
 echo "OK: SDK layout + markers"
+if [ "${SDK_TEST_ARCH:-}" = arm64 ]; then
+  python3 "$SCRIPTS/verify-arm64-sdk.py" "$SDK/bin"
+  if [ "$PLAT" = win32 ]; then
+    for dll in vulkan-1.dll msvcp140.dll vcruntime140.dll; do
+      [ -f "$SDK/bin/$dll" ] || fail "ARM64 SDK missing runtime $dll"
+    done
+  fi
+fi
+
+VERSION_FILE="$(cat "$SDK/share/eve/VERSION")"
+[ -n "$VERSION_FILE" ] || fail "share/eve/VERSION is empty"
+if [ -n "$EXPECTED" ]; then
+  [ "$VERSION_FILE" = "$EXPECTED" ] || \
+    fail "share/eve/VERSION '$VERSION_FILE' != expected '$EXPECTED'"
+fi
+echo "OK: SDK version marker -> $VERSION_FILE"
+
+if [ "$PLAT" = macosx ]; then
+  MACOS_ARCH="${4:?macOS SDK test requires arm64 or x86_64}"
+  bash "$(dirname "$0")/check-macos-sdk.sh" "$SDK" "$MACOS_ARCH"
+fi
 
 # --- 2. Host runtime runs ------------------------------------------------------
-VER="$("$SDK/bin/$RUNTIME" -v 2>&1)"
+VER="$("$SDK/bin/$RUNTIME" -v 2>&1)" || fail "eve -v failed: $VER"
 echo "  eve -v -> ${VER:-<empty>}"
-echo "$VER" | grep -qE '[0-9]+(\.[0-9]+)+' || fail "eve -v did not print a version"
+if [ -n "$EXPECTED" ]; then
+  echo "$VER" | grep -qF "$EXPECTED" || \
+    fail "eve -v did not contain expected version '$EXPECTED' (output: $VER)"
+else
+  echo "$VER" | grep -qE '[0-9]+(\.[0-9]+)+' || fail "eve -v did not print a version (output: $VER)"
+fi
 echo "OK: host runtime executes"
 
 # --- 3 + 4. zip + package a sample game ----------------------------------------
-WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
 GAME="$WORK/sample"
 mkdir -p "$GAME/assets"
 cat > "$GAME/config.nut" <<'EOF'
@@ -81,6 +227,84 @@ if [ "$PLAT" = "win32" ]; then
 fi
 echo "OK: eve package produced runnable game folder:"
 ls -1 "$PKG" | sed 's/^/    /'
+
+# --- 5. Native C++ plugin compiles against the SDK -----------------------------
+# Hard gate: find_package(EVEngine) + add_eve_plugin() is the SDK's primary
+# consumer path; a plugin must configure, compile and link on the host.
+PLUGIN="$WORK/plugin"
+mkdir -p "$PLUGIN"
+cat > "$PLUGIN/CMakeLists.txt" <<'EOF'
+cmake_minimum_required(VERSION 3.21)
+project(eve_sdk_plugin LANGUAGES CXX)
+find_package(EVEngine REQUIRED)
+add_eve_plugin(eve_sdk_plugin SOURCES plugin.cpp)
+EOF
+cat > "$PLUGIN/plugin.cpp" <<'EOF'
+#include "common/Export.h"
+#include "common/Module.h"
+
+#include <simplesquirrel/simplesquirrel.hpp>
+
+namespace eve::sdktest {
+class SdkTestPlugin : public Module {
+public:
+    Module_REG(SdkTestPlugin);
+    SdkTestPlugin() = default;
+    ~SdkTestPlugin() override = default;
+};
+Module_IMPL(SdkTestPlugin, new SdkTestPlugin());
+void SdkTestPlugin::expose(ssq::Table& table) {
+    auto cls = table.addClass(name, SdkTestPlugin::create, false);
+    expose(cls);
+}
+void SdkTestPlugin::expose(ssq::Class& cls) {
+    cls.addFunc("getName", &SdkTestPlugin::getName);
+}
+}  // namespace eve::sdktest
+
+EVE_PLUGIN_EXPORT int eve_plugin_init(void) { return 0; }
+EOF
+
+CMAKE_ARGS=(-S "$PLUGIN" -B "$PLUGIN/build" -DEVEngine_DIR="$SDK/cmake" -DCMAKE_BUILD_TYPE="$SDK_TEST_CONFIG")
+if [ "$PLAT" = macosx ]; then
+  CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES="$MACOS_ARCH" -DCMAKE_OSX_DEPLOYMENT_TARGET=13.3)
+fi
+if [ "$PLAT" = "win32" ]; then
+  # Default generator: GitHub-hosted windows images ship VS 2026, local dev
+  # machines may have 2022/2026. Let CMake pick the installed instance.
+  if [ "${SDK_TEST_ARCH:-}" = arm64 ]; then
+    CMAKE_ARGS+=(-A ARM64)
+  else
+    CMAKE_ARGS+=(-A x64)
+  fi
+fi
+cmake "${CMAKE_ARGS[@]}" >"$WORK/plugin-cmake.log" 2>&1 || {
+  tail -n 30 "$WORK/plugin-cmake.log"
+  fail "plugin cmake configure failed"
+}
+cmake --build "$PLUGIN/build" --config "$SDK_TEST_CONFIG" --parallel 2 >"$WORK/plugin-build.log" 2>&1 || {
+  tail -n 40 "$WORK/plugin-build.log"
+  fail "plugin cmake build failed"
+}
+case "$PLAT" in
+  win32)   PLUGIN_OUT="$(find "$PLUGIN/build" -type f -name 'eve_sdk_plugin.dll' | head -1)" ;;
+  macosx)  PLUGIN_OUT="$(find "$PLUGIN/build" -type f -name 'eve_sdk_plugin.dylib' | head -1)" ;;
+  *)       PLUGIN_OUT="$(find "$PLUGIN/build" -type f -name 'eve_sdk_plugin.so' | head -1)" ;;
+esac
+[ -n "$PLUGIN_OUT" ] || fail "plugin shared library not produced"
+if [ "$PLAT" = macosx ]; then
+  [ "$(lipo -archs "$PLUGIN_OUT")" = "$MACOS_ARCH" ] || fail "native plugin architecture mismatch"
+fi
+echo "OK: native C++ plugin compiled: $(basename "$PLUGIN_OUT")"
+if [ "${SDK_TEST_ARCH:-}" = arm64 ]; then
+  python3 "$SCRIPTS/verify-arm64-sdk.py" "$PLUGIN_OUT"
+fi
+
+if [ "${SDK_TEST_REQUIRE_RUN:-0}" = 1 ]; then
+  python3 "$SCRIPTS/run-sdk-game.py" "$PKG/$RUNTIME"
+  echo "== [test-sdk] PASS ($PLAT, required runtime) =="
+  exit 0
+fi
 
 # --- Best-effort: run the packaged game from memory -----------------------------
 echo "== best-effort in-memory run =="

@@ -1,0 +1,49 @@
+{
+  "source": "assets/source",
+  "output": "assets/generated",
+  "pipeline": [
+    {
+      "use": "scan",
+      "options": {
+        "glob": "tile_*.png",
+        "gidRegex": "tile_(\\d+)",
+        "firstGid": 1
+      }
+    },
+    {
+      "use": "analyze",
+      "options": {
+        "alphaThreshold": 1,
+        "pivot": [0.5, 0.75],
+        "footprint": [1, 1]
+      }
+    },
+    {
+      "use": "pack",
+      "options": {
+        "maxWidth": 1024,
+        "padding": 2
+      }
+    },
+    {
+      "use": "emit",
+      "options": {
+        "atlas": "tiles.atlas.png",
+        "manifest": "tiles.tileset.json",
+        "runtimeImage": "assets/generated/tiles.atlas.png"
+      }
+    }
+  ],
+  "overrides": {
+    "tile_77": {
+      "walkable": false,
+      "tags": ["wall"],
+      "sortBias": 4
+    },
+    "tile_80": {
+      "walkable": false,
+      "tags": ["tower"],
+      "sortBias": 6
+    }
+  }
+}

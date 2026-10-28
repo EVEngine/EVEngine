@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
 }
 
+val evengineAbi = providers.gradleProperty("evengineAbi").getOrElse("arm64-v8a")
+
 android {
     namespace = "com.evengine.example"
     compileSdk = 34
@@ -10,11 +12,13 @@ android {
         applicationId = "com.evengine.example"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "0.1.0"
+        // Derived from EVENGINE_*_VERSION by scripts/release.py:
+        // major*10000 + minor*100 + patch. Do not edit by hand.
+        versionCode = 601
+        versionName = "0.6.1"
 
         ndk {
-            abiFilters += listOf("arm64-v8a")
+            abiFilters += listOf(evengineAbi)
         }
     }
 

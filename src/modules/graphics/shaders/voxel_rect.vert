@@ -18,7 +18,8 @@ layout(location = 0) out vec2 vUV;
 layout(location = 1) out flat uint vTex;
 layout(location = 2) out vec3 vNormal;
 layout(location = 3) out vec4 vTint;
-layout(location = 4) out flat float vAO;
+layout(location = 4) out float vAO;
+layout(location = 5) out flat float vTiles;
 
 void main() {
     uint packed = inPacked;
@@ -64,13 +65,12 @@ void main() {
     vec3 world = pos + pc.chunkOrigin.xyz;
     gl_Position = pc.viewProj * vec4(world, 1.0);
 
-    float tiles = max(pc.atlasInfo.x, 1.0);
-    float tileU = 1.0 / tiles;
-    float col = mod(float(tex), tiles);
-    float row = floor(float(tex) / tiles);
-    vUV = vec2((col + inCorner.x) * tileU, (row + inCorner.y) * tileU);
+    // Keep UVs in voxel units. The fragment shader wraps them inside the selected
+    // atlas tile, so greedy rectangles retain the same texel density as separate cubes.
+    vUV = inCorner * vec2(w, h);
     vTex = tex;
     vNormal = n;
     vTint = pc.tint;
     vAO = float(ao) / 3.0;
+    vTiles = max(pc.atlasInfo.x, 1.0);
 }

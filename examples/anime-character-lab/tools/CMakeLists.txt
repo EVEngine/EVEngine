@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.21)
+project(anime_asset_prepare LANGUAGES CXX)
+set(ASSIMP_PREFIX "" CACHE PATH "EVEngine Debug third-party install containing include and lib")
+if(NOT EXISTS "${ASSIMP_PREFIX}/lib/assimpmdd.lib")
+    message(FATAL_ERROR "Pass -DASSIMP_PREFIX=<EVEngine Windows Debug third-party install>")
+endif()
+add_executable(anime_asset_prepare prepare_model.cpp)
+target_compile_features(anime_asset_prepare PRIVATE cxx_std_20)
+target_compile_options(anime_asset_prepare PRIVATE /utf-8)
+target_include_directories(anime_asset_prepare PRIVATE "${ASSIMP_PREFIX}/include")
+target_link_libraries(anime_asset_prepare PRIVATE
+    "${ASSIMP_PREFIX}/lib/assimpmdd.lib" "${ASSIMP_PREFIX}/lib/zlibstaticd.lib")

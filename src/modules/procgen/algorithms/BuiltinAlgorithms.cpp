@@ -1,7 +1,9 @@
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/DtlHelpers.h"
+#include "procgen/algorithms/HexTerrainBindings.h"
 #include "procgen/algorithms/RoguelikeGenerator.h"
+#include "procgen/urban/UrbanOutput.h"
 
 #include <algorithm>
 #include <cmath>
@@ -61,13 +63,35 @@ bool genCaveCellular(const Params &params, Grid2D &out, std::string &error) {
     const double fill  = double(params.getFloat("fill", 0.45f));
 
     auto matrix = dtlutil::makeMatrix(w, h, 0);
-    // land=1, border/wall=0
-    dtl::shape::CellularAutomatonIsland<std::uint_fast8_t> shape(1, 0, size_t(std::max(1, loops)),
-                                                                 fill);
-    dtlutil::seedEngine(params.getSeed());
-    if (!shape.draw(matrix)) {
-        error = "cave.cellular: DTL CellularAutomatonIsland draw failed";
-        return false;
+    dtl::random::DefaultRandom rng(params.getSeed());
+    // DTL construction consumes one sample; reseed to preserve the legacy stream.
+    rng.seed(params.getSeed());
+    rng.clear();
+    for (int y = 0; y < h; ++y)
+        for (int x = 0; x < w; ++x) matrix[size_t(y)][size_t(x)] = rng.probability(fill) ? 1 : 0;
+    for (int x = 0; x < w; ++x) {
+        matrix.front()[size_t(x)] = 0;
+        matrix.back()[size_t(x)]  = 0;
+    }
+    for (int y = 0; y < h; ++y) {
+        matrix[size_t(y)].front() = 0;
+        matrix[size_t(y)].back()  = 0;
+    }
+    for (int pass = 0; pass < std::max(1, loops); ++pass) {
+        for (int y = 1; y < h - 1; ++y) {
+            for (int x = 1; x < w - 1; ++x) {
+                const auto left  = matrix[size_t(y)][size_t(x - 1)];
+                const auto right = matrix[size_t(y)][size_t(x + 1)];
+                const auto up    = matrix[size_t(y - 1)][size_t(x)];
+                const auto down  = matrix[size_t(y + 1)][size_t(x)];
+                if (left == right && right == up && up == down) {
+                    matrix[size_t(y)][size_t(x)] = left;
+                } else {
+                    const std::uint_fast8_t neighbors[] = {left, right, up, down};
+                    matrix[size_t(y)][size_t(x)]        = neighbors[rng.getBit2()];
+                }
+            }
+        }
     }
 
     dtlutil::copyMatrixToGrid(matrix, out, [](std::uint_fast8_t v) -> uint32_t {
@@ -201,14 +225,43 @@ void registerTerrainHeightmapAlgorithm(GeneratorRegistry &registry);
 
 void GeneratorRegistry::registerBuiltins() {
     if (builtinsRegistered_) return;
-    registerAlgorithm("dungeon.bsp", genDungeonBsp);
-    registerAlgorithm("cave.cellular", genCaveCellular);
-    registerAlgorithm("cave.drunkard", genCaveDrunkard);
-    registerAlgorithm("maze.backtrack", genMazeBacktrack);
-    registerAlgorithm("noise.terrain", genNoiseTerrain);
+    auto dungeon = GeneratorDescriptor::grid("dungeon.bsp", "BSP Dungeon", "Dungeon", 8, 8);
+    dungeon.params.push_back(ParamDescriptor::integer("divisionMin", "Minimum Divisions", 3, 1, 32));
+    dungeon.params.push_back(ParamDescriptor::integer("divisionRandMax", "Division Variation", 4, 0, 32));
+    dungeon.params.push_back(ParamDescriptor::integer("roomMinX", "Minimum Room Width", 5, 1, 128));
+    dungeon.params.push_back(ParamDescriptor::integer("roomRandMaxX", "Room Width Variation", 2, 0, 128));
+    dungeon.params.push_back(ParamDescriptor::integer("roomMinY", "Minimum Room Height", 5, 1, 128));
+    dungeon.params.push_back(ParamDescriptor::integer("roomRandMaxY", "Room Height Variation", 2, 0, 128));
+    registerAlgorithm(std::move(dungeon), genDungeonBsp);
+
+    auto cellular = GeneratorDescriptor::grid("cave.cellular", "Cellular Cave", "Cave", 4, 4);
+    cellular.params.push_back(ParamDescriptor::integer("loops", "Smoothing Passes", 5, 1, 64));
+    cellular.params.push_back(ParamDescriptor::floating("fill", "Initial Fill", 0.45f, 0.f, 1.f, 0.01f));
+    registerAlgorithm(std::move(cellular), genCaveCellular);
+
+    auto drunkard = GeneratorDescriptor::grid("cave.drunkard", "Drunkard Cave", "Cave", 4, 4);
+    drunkard.params.push_back(ParamDescriptor::floating("floorPct", "Floor Coverage", 0.45f, 0.05f, 0.95f,
+                                                        0.01f));
+    registerAlgorithm(std::move(drunkard), genCaveDrunkard);
+
+    auto maze = GeneratorDescriptor::grid("maze.backtrack", "Backtracking Maze", "Maze", 5, 5);
+    registerAlgorithm(std::move(maze), genMazeBacktrack);
+
+    auto noise = GeneratorDescriptor::grid("noise.terrain", "Noise Terrain", "Terrain", 2, 2);
+    noise.params.push_back(ParamDescriptor::floating("frequency", "Frequency", 6.f, 0.1f, 64.f, 0.1f));
+    noise.params.push_back(ParamDescriptor::integer("octaves", "Octaves", 4, 1, 16));
+    noise.params.push_back(ParamDescriptor::integer("maxHeight", "Height Bands", 9, 1, 255));
+    noise.params.push_back(ParamDescriptor::floating("waterMax", "Water Threshold", 0.25f, 0.f, 1.f, 0.01f));
+    noise.params.push_back(ParamDescriptor::floating("sandMax", "Sand Threshold", 0.35f, 0.f, 1.f, 0.01f));
+    noise.params.push_back(ParamDescriptor::floating("grassMax", "Grass Threshold", 0.65f, 0.f, 1.f, 0.01f));
+    noise.params.push_back(ParamDescriptor::floating("dirtMax", "Dirt Threshold", 0.80f, 0.f, 1.f, 0.01f));
+    noise.params.push_back(ParamDescriptor::floating("stoneMax", "Stone Threshold", 0.92f, 0.f, 1.f, 0.01f));
+    registerAlgorithm(std::move(noise), genNoiseTerrain);
     registerWfcSimple(*this);
     registerRoguelikeGenerator(*this);
     registerTerrainHeightmapAlgorithm(*this);
+    registerHexTerrainAlgorithms(*this);
+    urban::registerUrbanGenerators(*this);
     builtinsRegistered_ = true;
 }
 

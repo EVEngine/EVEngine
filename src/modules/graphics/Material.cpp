@@ -1,16 +1,122 @@
 #include "graphics/Material.h"
+
+#include "graphics/ClusteredLight.h"
 #include "graphics/Graphics.h"
+#include "graphics/Light.h"
+#include "graphics/Mesh.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+
+#include <algorithm>
+#include <cmath>
 
 namespace eve::graphics {
 
-void Material::setShadingModel(const std::string &model) {
+namespace {
+eve::Diagnostic invalidMaterial(std::string message) {
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message);
+}
+}  // namespace
+
+eve::Result<void> Material::enableVirtualTexture(const VirtualTextureStreamingConfig& config) {
+    auto created = VirtualTextureStreaming::create(config);
+    if (!created.ok()) return eve::Result<void>::failure(created.status());
+    virtualStreaming_             = std::move(created).value();
+    virtualStreamingEpoch_        = 0;
+    virtualStreamingInitialized_  = false;
+    virtualTextureEnabled_        = false;
+    virtualPageCountX_       = 0;
+    virtualPageCountY_       = 0;
+    virtualAtlasSlotsX_      = 0;
+    virtualAtlasSlotsY_      = 0;
+    virtualBorderFraction_   = 0.f;
+    pbr_.textures[0].texture = nullptr;
+    pbr_.textures[2].texture = nullptr;
+    height_                  = nullptr;
+    return eve::Result<void>::success();
+}
+
+eve::Result<std::uint32_t> Material::addVirtualTextureLayer(const VirtualTextureBlendLayer& layer) {
+    if (!virtualStreaming_)
+        return eve::Result<std::uint32_t>::failure(
+            invalidMaterial("enableVirtualTexture must be called before addVirtualTextureLayer"));
+    return virtualStreaming_->addLayer(layer);
+}
+
+eve::Result<void> Material::setVirtualTexture(Texture* albedoAtlas, Texture* normalAtlas, Texture* pageTable,
+                                              int pageCountX, int pageCountY, int atlasSlotsX, int atlasSlotsY,
+                                              float borderFraction) {
+    if (!albedoAtlas || !normalAtlas || !pageTable)
+        return eve::Result<void>::failure(
+            invalidMaterial("virtual texture requires albedo, normal, and page-table textures"));
+    if (pageCountX <= 0 || pageCountY <= 0 || atlasSlotsX <= 0 || atlasSlotsY <= 0)
+        return eve::Result<void>::failure(
+            invalidMaterial("virtual texture page and atlas dimensions must be positive"));
+    if (!std::isfinite(borderFraction) || borderFraction < 0.f || borderFraction >= 0.5f)
+        return eve::Result<void>::failure(invalidMaterial("virtual texture border fraction must be in [0, 0.5)"));
+    pbr_.textures[0].texture = albedoAtlas;
+    pbr_.textures[2].texture = normalAtlas;
+    height_                  = pageTable;
+    virtualPageCountX_       = pageCountX;
+    virtualPageCountY_       = pageCountY;
+    virtualAtlasSlotsX_      = atlasSlotsX;
+    virtualAtlasSlotsY_      = atlasSlotsY;
+    virtualBorderFraction_   = borderFraction;
+    virtualTextureEnabled_   = true;
+    return eve::Result<void>::success();
+}
+
+void Material::clearVirtualTexture() {
+    virtualStreaming_.reset();
+    virtualStreamingEpoch_        = 0;
+    virtualStreamingInitialized_  = false;
+    virtualTextureEnabled_        = false;
+    virtualPageCountX_     = 0;
+    virtualPageCountY_     = 0;
+    virtualAtlasSlotsX_    = 0;
+    virtualAtlasSlotsY_    = 0;
+    virtualBorderFraction_ = 0.f;
+}
+
+eve::Result<void> Material::tickVirtualTexture(Graphics& gfx) const {
+    if (!virtualStreaming_) return eve::Result<void>::success();
+    const std::uint64_t epoch = gfx.mesh3dDrawEpoch();
+    if (virtualStreamingEpoch_ == epoch && virtualTextureEnabled_) return eve::Result<void>::success();
+    virtualStreamingEpoch_ = epoch;
+
+    // Bootstrap physical cache lazily after at least one layer is present.
+    if (!virtualStreamingInitialized_) {
+        auto initialized = virtualStreaming_->initializePhysicalCache();
+        if (!initialized.ok()) return initialized;
+        virtualStreamingInitialized_ = true;
+    }
+
+    // Engine-owned feedback: request the full mip-zero domain; decode budget + LRU stream residency.
+    const int pagesX = std::max(1, virtualStreaming_->pageCountX());
+    const int pagesY = std::max(1, virtualStreaming_->pageCountY());
+    auto      feedback = virtualStreaming_->recordFeedbackGrid(pagesX, pagesY, 0);
+    if (!feedback.ok()) return feedback;
+    auto updated = virtualStreaming_->update();
+    if (!updated.ok()) return eve::Result<void>::failure(updated.status());
+    return virtualStreaming_->syncToMaterial(gfx, const_cast<Material&>(*this));
+}
+
+void Material::setShadingModel(const std::string& model) {
     if (model == "unlit" || model == "hair" || model == "custom" || model == "pbr") {
         shadingModel_ = model;
     } else {
         shadingModel_ = "pbr";
     }
-    if (shadingModel_ == "unlit") receiveLight_ = false;
-    if (shadingModel_ == "hair") isHair_ = true;
+    if (shadingModel_ == "hair") {
+        isHair_      = true;
+        surfaceMode_ = SurfaceMode::Transparent;
+        blendMode_   = BlendMode::Alpha;
+        doubleSided_ = true;
+        depthWrite_  = false;
+        castShadow_  = false;
+        alphaCutoff_ = 0.15f;
+        if (sortPriority_ == 0) sortPriority_ = 10;
+    }
 }
 
 void Material::setTint(float r, float g, float b, float a) {
@@ -20,24 +126,22 @@ void Material::setTint(float r, float g, float b, float a) {
     a_ = a;
 }
 
-void Material::setMetallic(float metallic) {
-    metallic_ = metallic < 0.f ? 0.f : (metallic > 1.f ? 1.f : metallic);
-}
+void Material::setMetallic(float metallic) { metallic_ = metallic < 0.f ? 0.f : (metallic > 1.f ? 1.f : metallic); }
 
 void Material::setRoughness(float roughness) {
     roughness_ = roughness < 0.04f ? 0.04f : (roughness > 1.f ? 1.f : roughness);
 }
 
 void Material::setTexCellBomb(float cellScale, float strength, float rotAmount) {
-    texBombScale_ = cellScale > 1e-3f ? cellScale : 1e-3f;
+    texBombScale_    = cellScale > 1e-3f ? cellScale : 1e-3f;
     texBombStrength_ = strength < 0.f ? 0.f : (strength > 1.f ? 1.f : strength);
-    texBombRot_ = rotAmount < 0.f ? 0.f : (rotAmount > 1.f ? 1.f : rotAmount);
+    texBombRot_      = rotAmount < 0.f ? 0.f : (rotAmount > 1.f ? 1.f : rotAmount);
 }
 
 void Material::setParallax(float scale, float minLayers, float maxLayers) {
     parallaxScale_ = scale < 0.f ? 0.f : (scale > 0.25f ? 0.25f : scale);
-    float minL = minLayers < 1.f ? 1.f : minLayers;
-    float maxL = maxLayers < minL ? minL : maxLayers;
+    float minL     = minLayers < 1.f ? 1.f : minLayers;
+    float maxL     = maxLayers < minL ? minL : maxLayers;
     if (maxL > 64.f) maxL = 64.f;
     parallaxMinLayers_ = minL;
     parallaxMaxLayers_ = maxL;
@@ -45,50 +149,183 @@ void Material::setParallax(float scale, float minLayers, float maxLayers) {
 
 void Material::setHair(bool hair) {
     isHair_ = hair;
-    if (hair) shadingModel_ = "hair";
+    if (hair) {
+        shadingModel_ = "hair";
+        surfaceMode_  = SurfaceMode::Transparent;
+        blendMode_    = BlendMode::Alpha;
+        doubleSided_  = true;
+        depthWrite_   = false;
+        castShadow_   = false;
+        alphaCutoff_  = 0.15f;
+        if (sortPriority_ == 0) sortPriority_ = 10;
+    }
 }
 
-bool Material::hasParam(const std::string &name) const { return params_.count(name) > 0; }
+void Material::setSurfaceMode(const std::string& mode) {
+    if (mode == "masked")
+        surfaceMode_ = SurfaceMode::Masked;
+    else if (mode == "transparent" || mode == "blend")
+        surfaceMode_ = SurfaceMode::Transparent;
+    else
+        surfaceMode_ = SurfaceMode::Opaque;
+}
 
-void Material::setFloat(const std::string &name, float value) { params_[name] = value; }
+std::string Material::getSurfaceMode() const {
+    if (surfaceMode_ == SurfaceMode::Masked) return "masked";
+    if (surfaceMode_ == SurfaceMode::Transparent) return "transparent";
+    return "opaque";
+}
 
-float Material::getFloat(const std::string &name) const {
+void Material::setAlphaCutoff(float cutoff) { alphaCutoff_ = cutoff < 0.f ? 0.f : (cutoff > 1.f ? 1.f : cutoff); }
+
+void Material::setBlendMode(const std::string& mode) {
+    if (mode == "premultiplied" || mode == "premultiplied_alpha")
+        blendMode_ = BlendMode::Premultiplied;
+    else if (mode == "additive")
+        blendMode_ = BlendMode::Additive;
+    else if (mode == "multiply")
+        blendMode_ = BlendMode::Multiply;
+    else
+        blendMode_ = BlendMode::Alpha;
+}
+
+std::string Material::getBlendMode() const {
+    if (blendMode_ == BlendMode::Premultiplied) return "premultiplied";
+    if (blendMode_ == BlendMode::Additive) return "additive";
+    if (blendMode_ == BlendMode::Multiply) return "multiply";
+    return "alpha";
+}
+
+void Material::setAlphaTechnique(const std::string& technique) {
+    alphaTechnique_ = (technique == "dither" || technique == "coverage") ? technique : "cutoff";
+}
+
+bool Material::hasParam(const std::string& name) const { return params_.count(name) > 0; }
+
+void Material::setFloat(const std::string& name, float value) { params_[name] = value; }
+
+float Material::getFloat(const std::string& name) const {
     auto it = params_.find(name);
     return it == params_.end() ? 0.f : it->second;
 }
 
-Shader *Material::effectiveShader() const {
+Shader* Material::effectiveShader() const {
     if (shadingModel_ == "custom") return shader_;
     return shader_;
 }
 
-bool Material::isTransparentHair() const {
-    return isHair_ || shadingModel_ == "hair";
+bool Material::isTransparentHair() const { return isHair_ || shadingModel_ == "hair"; }
+
+Result<void> Material::setPbrSurface(const PbrSurface& surface) {
+    auto valid = validatePbrSurface(surface);
+    if (!valid) return valid;
+    pbr_        = surface;
+    pbrEnabled_ = true;
+    setShadingModel(surface.unlit ? "unlit" : "pbr");
+    pbr_.unlit = false;  // Shading mode is owned by shadingModel_; DTO snapshots derive it.
+    return Result<void>::success();
 }
 
-void Material::bind(Graphics &gfx) const {
+Result<void> Material::setFoliageTranslucency(float red, float green, float blue, float intensity, float strength,
+                                              float normalDistortion, float scattering, float direct, float ambient,
+                                              float shadow) {
+    auto candidate                               = pbr_;
+    candidate.translucency.color                 = {red, green, blue};
+    candidate.translucency.intensity             = intensity;
+    candidate.translucency.strength              = strength;
+    candidate.translucency.normalDistortion      = normalDistortion;
+    candidate.translucency.scattering            = scattering;
+    candidate.translucency.direct                = direct;
+    candidate.translucency.ambient               = ambient;
+    candidate.translucency.shadow                = shadow;
+    candidate.vegetationColor.backfaceNormalMode = PbrVegetationBackfaceNormalMode::Flip;
+    auto accepted                                = setPbrSurface(candidate);
+    if (!accepted) return accepted;
+    doubleSided_ = true;
+    return Result<void>::success();
+}
+
+Result<void> Material::setFoliageWind(Texture* motionTexture, Texture* noiseTexture, float directionX, float directionZ,
+                                      float strength, float bending, float bendingSpeed, float branch,
+                                      float branchSpeed, float flutter, float flutterSpeed, float fadeDistance,
+                                      float bendFactor) {
+    const float directionLength = std::hypot(directionX, directionZ);
+    if (!motionTexture || !noiseTexture || !std::isfinite(directionLength) || directionLength <= .0001f ||
+        !std::isfinite(strength) || strength < 0 || !std::isfinite(bendFactor) || bendFactor < 0)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid foliage wind profile",
+                                                       {}, {}, "graphics.foliage.wind"));
+    auto  candidate = pbr_;
+    auto& motion    = candidate.vegetationMotion;
+    motion.texture  = motionTexture;
+    motion.noise    = noiseTexture;
+    motion.usage.fill(0.f);
+    motion.fallback                   = {directionX / directionLength, directionZ / directionLength, strength, 0.f};
+    motion.globalDirection            = {directionX / directionLength, directionZ / directionLength};
+    motion.bending                    = bending;
+    motion.bendingSpeed               = bendingSpeed;
+    motion.branch                     = branch;
+    motion.branchSpeed                = branchSpeed;
+    motion.flutter                    = flutter;
+    motion.flutterSpeed               = flutterSpeed;
+    motion.globalBending              = bendFactor;
+    motion.globalBranch               = 1.f;
+    motion.globalFlutter              = 1.f;
+    motion.noiseTiling                = 1.f;
+    motion.fadeDistance               = fadeDistance;
+    motion.mode                       = PbrVegetationMotionMode::Object;
+    candidate.vegetationVertex.source = PbrVegetationDeformationSource::GpuFields;
+    return setPbrSurface(candidate);
+}
+
+Result<void> Material::setFoliageWindTime(float seconds) {
+    if (!std::isfinite(seconds) || std::abs(seconds) > 1e12 ||
+        pbr_.vegetationMotion.mode != PbrVegetationMotionMode::Object)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "foliage wind is not configured or time is invalid", {}, {},
+                                                       "graphics.foliage.wind"));
+    auto candidate                  = pbr_;
+    candidate.vegetationMotion.time = seconds;
+    return setPbrSurface(candidate);
+}
+
+Result<void> Material::bind(Graphics& gfx) const {
+    auto vtTick = tickVirtualTexture(gfx);
+    if (!vtTick.ok()) return vtTick;
+    auto snapshot  = pbr_;
+    snapshot.unlit = shadingModel_ == "unlit";
+    auto pbrStatus = gfx.setMesh3DPbrSurface(pbrEnabled_ ? &snapshot : nullptr);
+    if (!pbrStatus) return pbrStatus;
+    const BlendMode effectiveBlend =
+        pbr_.textures[0].texture && pbr_.textures[0].texture->hasPremultipliedAlpha() && blendMode_ == BlendMode::Alpha
+            ? BlendMode::Premultiplied
+            : blendMode_;
+    gfx.setMesh3DSurface(surfaceMode_, effectiveBlend, depthWrite_, doubleSided_, alphaCutoff_, alphaTechnique_);
     gfx.setMesh3DMaterial(metallic_, roughness_);
     gfx.setMesh3DTexCellBomb(texBombScale_, texBombStrength_, texBombRot_);
-    gfx.setMesh3DNormalTexture(normal_);
+    gfx.setMesh3DNormalTexture(pbr_.textures[2].texture);
+    gfx.setMesh3DPackedNormalMask(false);
     gfx.setMesh3DHeightTexture(height_);
+    gfx.setMesh3DVirtualTexture(virtualTextureEnabled_, virtualPageCountX_, virtualPageCountY_, virtualAtlasSlotsX_,
+                                virtualAtlasSlotsY_, virtualBorderFraction_);
     gfx.setMesh3DParallax(parallaxScale_, parallaxMinLayers_, parallaxMaxLayers_);
     gfx.setMesh3DShadowReceive(receiveShadow_);
 
     if (!receiveLight_ || shadingModel_ == "unlit") {
-        ClusteredLightingUpload off{};
-        off.active = false;
-        gfx.setMesh3DClusteredLighting(off);
+        // Cheap toggle only: never clobber the clustered light table that the
+        // frame uploaded once (see Graphics::setMesh3DClusteredActive).
+        gfx.setMesh3DClusteredActive(false);
         Lighting3DPack none{};
-        none.count = 0;
+        none.count   = 0;
         none.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
         gfx.setMesh3DLighting(none);
     }
 
     if (shader_ && !params_.empty()) {
-        for (const auto &kv : params_) {
+        for (const auto& kv : params_) {
             if (shader_->hasUniform(kv.first)) shader_->sendFloat(kv.first, kv.second);
         }
     }
+    return Result<void>::success();
 }
 
 }  // namespace eve::graphics

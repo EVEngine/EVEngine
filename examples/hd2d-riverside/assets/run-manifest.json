@@ -1,0 +1,61 @@
+{
+  "schema": "evengine.hd2d.art-run",
+  "version": 1,
+  "reference": {
+    "source_type": "text_concept",
+    "source": "Original riverside JRPG cast",
+    "used_for_generation": true
+  },
+  "scope": {
+    "sizes": [
+      64
+    ],
+    "actions": [
+      "walk"
+    ],
+    "directions": [
+      "south",
+      "east",
+      "north",
+      "west"
+    ],
+    "frames": 6,
+    "characters": [
+      "hero",
+      "scholar",
+      "guard"
+    ]
+  },
+  "map": {
+    "map_mode": "tile_mode",
+    "visual_model": "layered_tilemap",
+    "runtime_object_model": "interactive_scene_objects",
+    "collision_model": "tile_collision",
+    "engine_target": "EVEngine",
+    "art_style": "retro_pixel"
+  },
+  "generation": {
+    "method": "imagegen",
+    "procedural": false
+  },
+  "strips": [
+    "hero/64/generated/walk-south.png",
+    "hero/64/generated/walk-east.png",
+    "hero/64/generated/walk-north.png",
+    "hero/64/generated/walk-west.png",
+    "scholar/64/generated/walk-south.png",
+    "scholar/64/generated/walk-east.png",
+    "scholar/64/generated/walk-north.png",
+    "scholar/64/generated/walk-west.png",
+    "guard/64/generated/walk-south.png",
+    "guard/64/generated/walk-east.png",
+    "guard/64/generated/walk-north.png",
+    "guard/64/generated/walk-west.png"
+  ],
+  "status": "accepted",
+  "characterManifests": [
+    "hero/run-manifest.json",
+    "scholar/run-manifest.json",
+    "guard/run-manifest.json"
+  ]
+}

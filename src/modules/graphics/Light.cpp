@@ -1,4 +1,7 @@
 #include "graphics/Light.h"
+#include "common/Assert.h"
+
+#include <algorithm>
 
 namespace eve::graphics {
 
@@ -10,9 +13,21 @@ Light2D *Light2D::createLight(const std::string &type) {
     return l;
 }
 
+Light2D *Light2D::createEmissiveProxy(float x, float y, float r, float g, float b, float intensity,
+                                      float radius) {
+    Light2D *l = createLight("point");
+    l->setPosition(x, y);
+    l->setColor(r, g, b, intensity);
+    l->setRadius(radius);
+    l->setVolumetric(true);
+    l->setVolumetricIntensity(1.f);
+    l->setVolumetricOnly(true);
+    return l;
+}
+
 void Light2D::setType(const std::string &type) {
     auto d = data();
-    if (type == "dir" || type == "point")
+    if (type == "dir" || type == "point" || type == "spot")
         d->type = type;
     else
         d->type = "point";
@@ -47,6 +62,16 @@ void Light2D::setColor(float r, float g, float b, float intensity) {
 void Light2D::setRadius(float radius) { data()->radius = radius > 0.f ? radius : 0.f; }
 float Light2D::getRadius() { return data()->radius; }
 
+void Light2D::setSpotAngle(float degrees) {
+    data()->spotAngleDeg = std::clamp(degrees, 0.1f, 89.f);
+}
+float Light2D::getSpotAngle() { return data()->spotAngleDeg; }
+
+void Light2D::setSpotSoftness(float softness) {
+    data()->spotSoftness = std::clamp(softness, 0.f, 1.f);
+}
+float Light2D::getSpotSoftness() { return data()->spotSoftness; }
+
 void Light2D::setEnabled(bool enabled) { data()->enabled = enabled; }
 bool Light2D::isEnabled() { return data()->enabled; }
 
@@ -58,6 +83,9 @@ void Light2D::setVolumetricIntensity(float intensity) {
 }
 float Light2D::getVolumetricIntensity() { return data()->volumetricIntensity; }
 
+void Light2D::setVolumetricOnly(bool enabled) { data()->volumetricOnly = enabled; }
+bool Light2D::getVolumetricOnly() { return data()->volumetricOnly; }
+
 void Light2D::setCanvas(Canvas *canvas) { data()->canvas = canvas; }
 
 Light3D *Light3D::createLight(const std::string &type) {
@@ -68,9 +96,22 @@ Light3D *Light3D::createLight(const std::string &type) {
     return l;
 }
 
+Light3D *Light3D::createEmissiveProxy(float x, float y, float z, float r, float g, float b,
+                                      float intensity, float radius) {
+    Light3D *l = createLight("point");
+    l->setPosition(x, y, z);
+    l->setColor(r, g, b, intensity);
+    l->setRadius(radius);
+    l->setVolumetric(true);
+    l->setVolumetricIntensity(1.f);
+    l->setVolumetricOnly(true);
+    l->setCastShadow(false);
+    return l;
+}
+
 void Light3D::setType(const std::string &type) {
     auto d = data();
-    if (type == "dir" || type == "point")
+    if (type == "dir" || type == "point" || type == "spot")
         d->type = type;
     else
         d->type = "point";
@@ -111,11 +152,63 @@ void Light3D::setColor(float r, float g, float b, float intensity) {
 void Light3D::setRadius(float radius) { data()->radius = radius > 0.f ? radius : 0.f; }
 float Light3D::getRadius() { return data()->radius; }
 
+void Light3D::setSpotAngle(float degrees) {
+    data()->spotAngleDeg = std::clamp(degrees, 0.1f, 89.f);
+}
+float Light3D::getSpotAngle() { return data()->spotAngleDeg; }
+
+void Light3D::setSpotSoftness(float softness) {
+    data()->spotSoftness = std::clamp(softness, 0.f, 1.f);
+}
+float Light3D::getSpotSoftness() { return data()->spotSoftness; }
+
 void Light3D::setEnabled(bool enabled) { data()->enabled = enabled; }
 bool Light3D::isEnabled() { return data()->enabled; }
 
 void Light3D::setCastShadow(bool cast) { data()->castShadow = cast; }
 bool Light3D::getCastShadow() { return data()->castShadow; }
+
+void Light3D::setShadowMethod(const std::string &method) {
+    // Keep parse logic local so Light.cpp does not depend on ShadowScheme at link for
+    // every translation unit that only needs Light3D; names match parseShadowMethod.
+    auto equals = [](std::string_view a, std::string_view b) {
+        if (a.size() != b.size()) return false;
+        for (size_t i = 0; i < a.size(); ++i) {
+            const char ca = (a[i] >= 'A' && a[i] <= 'Z') ? char(a[i] - 'A' + 'a') : a[i];
+            const char cb = (b[i] >= 'A' && b[i] <= 'Z') ? char(b[i] - 'A' + 'a') : b[i];
+            if (ca != cb) return false;
+        }
+        return true;
+    };
+    std::uint8_t value = data()->shadowMethod;
+    if (equals(method, "auto")) value = 0;
+    else if (equals(method, "none") || equals(method, "off"))
+        value = 1;
+    else if (equals(method, "csm") || equals(method, "cascaded") || equals(method, "directional"))
+        value = 2;
+    else if (equals(method, "perspective") || equals(method, "spot"))
+        value = 3;
+    else if (equals(method, "cube") || equals(method, "cubemap") || equals(method, "point"))
+        value = 4;
+    else
+        return;
+    data()->shadowMethod = value;
+}
+
+std::string Light3D::getShadowMethod() {
+    switch (data()->shadowMethod) {
+    case 1:
+        return "none";
+    case 2:
+        return "csm";
+    case 3:
+        return "perspective";
+    case 4:
+        return "cube";
+    default:
+        return "auto";
+    }
+}
 
 void Light3D::setShadowBias(float bias) { data()->shadowBias = bias < 0.f ? 0.f : bias; }
 float Light3D::getShadowBias() { return data()->shadowBias; }
@@ -132,5 +225,8 @@ void Light3D::setVolumetricIntensity(float intensity) {
     data()->volumetricIntensity = intensity < 0.f ? 0.f : intensity;
 }
 float Light3D::getVolumetricIntensity() { return data()->volumetricIntensity; }
+
+void Light3D::setVolumetricOnly(bool enabled) { data()->volumetricOnly = enabled; }
+bool Light3D::getVolumetricOnly() { return data()->volumetricOnly; }
 
 }  // namespace eve::graphics

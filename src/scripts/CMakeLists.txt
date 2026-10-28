@@ -12,6 +12,8 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/scripts_content.cpp
     -DEVENGINE_BUILD_DEMO=${EVENGINE_BUILD_DEMO}
     -P "${CMAKE_CURRENT_SOURCE_DIR}/integrate.cmake"
   DEPENDS ${all_scripts} ${all_glsl} ${CMAKE_CURRENT_SOURCE_DIR}/template.cpp.in
+          ${CMAKE_CURRENT_SOURCE_DIR}/integrate.cmake
+          ${CMAKE_CURRENT_SOURCE_DIR}/raw_string_literal.cmake
           ${CMAKE_CURRENT_BINARY_DIR}/module_list.nut
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )

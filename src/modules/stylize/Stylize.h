@@ -1,9 +1,17 @@
 #pragma once
 
 #include "common/Module.h"
+#include "stylize/AttackVfxRecipe.h"
+#include "stylize/AttackVfxRuntime.h"
+#include "stylize/MeshEffect.h"
+#include "stylize/MeshEffectRenderer.h"
+#include "stylize/MeshVfxAsset.h"
+#include "stylize/SkillMeshEffect.h"
 #include "stylize/StyleChain.h"
 #include "stylize/StylePass.h"
+#include "stylize/TrailEffect.h"
 
+#include <memory>
 #include <string>
 
 namespace eve::graphics {
@@ -17,34 +25,48 @@ class ImageData;
 
 namespace eve::stylize {
 
+class StyleInstance;
+class StyleRecipe;
+
 /**
  * @brief Stylized / NPR rendering module — stable public surface for future expansion.
  *
  * Built-in style ids (string, no enums):
  *   - "cartoon"    — cel post (+ mesh)
+ *   - "anime"      — albedo-preserving character mesh, skin and anisotropic
+ * hair controls
  *   - "watercolor" — paper / bleed post
  *   - "ink"        — ink-wash post (+ mesh)
  *   - "pixel"      — pixel-art post
+ *   - "impasto"   — UV brush normals, stepped light and oily reflections (mesh)
+ *   - "xray"       — depth-aware mesh technique
  *
  * Extension points (keep these stable):
  *   - newPass / newPassFromShader — wrap built-in or custom SPIR-V post shaders
- *   - newMeshShader — object-space variants (cartoon/ink today)
- *   - StyleChain — multi-pass ping-pong (separable blur, outline+shade, …)
+ *   - newMeshShader — object-space variants including anime, cartoon and ink
+ *   - StyleChain — multi-pass
+ * ping-pong (separable blur, outline+shade, …)
  *   - supports(style, feature) — "post" | "mesh" | "cpu" | "gbuffer"
- *     ("gbuffer" reserved: depth/normal-aware outline; currently always false)
+ *     ("gbuffer" is true when depth or normal inputs are required)
  *   - getStyleParam* — introspect push-constant knobs for tooling / UI
  *
  * Script: `stylize <- eve.Stylize();`
  */
-class Stylize : public Module {
+class EVENGINE_API_WORLD Stylize : public Module {
 public:
     Module_REG(Stylize);
-    Stylize() = default;
-    ~Stylize() override = default;
+    /** @brief Stylize. */
+    Stylize();
+    /** @brief Stylize. */
+    ~Stylize() override;
 
+    /** @brief Returns the style count. */
     int         getStyleCount() const;
+    /** @brief Returns the style id. */
     std::string getStyleId(int index) const;
+    /** @brief True when style. */
     bool        hasStyle(const std::string &style) const;
+    /** @brief True when mesh style. */
     bool        hasMeshStyle(const std::string &style) const;
 
     /**
@@ -52,13 +74,33 @@ public:
      *   "post"    — StylePass / newPostShader
      *   "mesh"    — newMeshShader
      *   "cpu"     — processImage
-     *   "gbuffer" — reserved for depth/normal inputs (always false for now)
+     *   "depth" / "normal" — required scene inputs
+     *   "gbuffer" — shorthand for either depth or normal
      */
     bool supports(const std::string &style, const std::string &feature) const;
 
     /** @brief Introspect built-in post param names (empty for unknown / custom-only ids). */
     int         getStyleParamCount(const std::string &style) const;
+    /** @brief Returns the style param name. */
     std::string getStyleParamName(const std::string &style, int index) const;
+
+    /** @brief Create a mutable parameter instance of an immutable style definition. */
+    StyleInstance *newInstance(const std::string &style);
+    /** @brief Create an empty compilable multi-style recipe. */
+    StyleRecipe *newRecipe();
+
+    /** @brief Create an owned runtime mesh effect for a registered mesh style. */
+    [[nodiscard]] std::unique_ptr<MeshEffectInstance> createMeshEffect(const std::string& style);
+    /** @brief Create an owned CPU weapon-trail sampler with default settings. */
+    [[nodiscard]] std::unique_ptr<TrailEmitter> createTrailEmitter();
+    /** @brief Create a render-thread adapter bound to one Graphics owner. */
+    [[nodiscard]] std::unique_ptr<MeshEffectRenderer> createMeshEffectRenderer(graphics::Graphics& gfx);
+    /** @brief Create an owning runtime for a built-in gameplay mesh VFX recipe. */
+    [[nodiscard]] std::unique_ptr<SkillMeshEffect> createSkillMeshEffect(SkillMeshEffectKind kind);
+    /** @brief Instantiate all runtime layers, reporting incompatible authored style parameters. */
+    [[nodiscard]] eve::Result<std::unique_ptr<MeshVfxAssetInstance>> createMeshVfxAssetInstance(const MeshVfxAsset& asset);
+    /** @brief Create an empty AttackVfxRuntime pool for layered attack presentation recipes. */
+    [[nodiscard]] std::unique_ptr<AttackVfxRuntime> createAttackVfxRuntime();
 
     /** @brief Post-process StylePass (shader owned by Graphics). */
     StylePass *newPass(graphics::Graphics *gfx, const std::string &style);
@@ -71,6 +113,7 @@ public:
     StylePass *newPassFromShader(const std::string &styleId, graphics::Shader *shader);
 
     /** Empty multi-pass chain (caller adds StylePass*). */
+    /** @brief Creates a chain. @ownership Caller deletes unless documented otherwise. */
     StyleChain *newChain();
 
     /** @brief Raw post Shader with defaults (owned by Graphics). */

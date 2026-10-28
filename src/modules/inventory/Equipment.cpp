@@ -2,10 +2,8 @@
 #include "inventory/Bag.h"
 #include "inventory/InventorySystem.h"
 #include "inventory/Item.h"
-#include "rpg/RPGActor.h"
 
 #include <algorithm>
-#include <cstdint>
 
 namespace eve::inventory {
 
@@ -151,31 +149,6 @@ bool EquipmentSet::clearSlot(const std::string &slotName) {
     ev.equipSlot = slotName;
     InventorySystem::pushEvent(std::move(ev));
     return true;
-}
-
-int EquipmentSet::synchronizeAttributes(eve::rpg::RPGActor *actor) {
-    if (!actor) return 0;
-    const std::string identity = id_.empty()
-                                     ? std::to_string(reinterpret_cast<std::uintptr_t>(this))
-                                     : id_;
-    const std::string source = "equipment:" + identity;
-    actor->removeAllAttributeModifiersBySource(source);
-    int applied = 0;
-    for (const auto &slotName : order_) {
-        const auto &stack = slots_.at(slotName).stack;
-        const auto *definition = ItemRegistry::find(stack.itemId);
-        if (!definition || stack.empty()) continue;
-        for (const auto &[key, text] : definition->extra) {
-            if (!key.starts_with("attr.")) continue;
-            try {
-                actor->addAttributeModifier(key.substr(5), source, "add", std::stod(text), 0);
-                ++applied;
-            } catch (...) {
-                // Invalid designer data is ignored consistently with other lenient JSON fields.
-            }
-        }
-    }
-    return applied;
 }
 
 }  // namespace eve::inventory

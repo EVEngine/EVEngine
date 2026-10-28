@@ -1,0 +1,446 @@
+#pragma once
+#include "common/Export.h"
+
+
+#include "common/BorrowedRef.h"
+#include "common/Module.h"
+#include "common/Result.h"
+#include "common/SensingQuery.h"
+#include "common/SquirrelOwnership.h"
+#include "common/Value.h"
+#include "sensing/CoordinateSpace.h"
+
+#include <cstdint>
+#include <limits>
+#include <map>
+#include <memory>
+#include <optional>
+#include <set>
+#include <span>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <variant>
+#include <vector>
+
+namespace eve::spatial {
+class SpatialHash2D;
+class SpatialHash3D;
+}  // namespace eve::spatial
+
+namespace eve::sensing {
+
+class ILineOfSightQuery;
+class EnvironmentQueryPlan;
+struct EnvironmentRequest;
+struct EnvironmentServices;
+struct EnvironmentQueryResult;
+
+/** @brief Mirrored gameplay facts used by candidate queries. */
+struct Subject {
+    std::string           id;
+    float                 x = 0, y = 0;
+    std::string           faction;
+    std::set<std::string> tags;
+    std::set<std::string> visibleTo;
+    std::set<std::string> zones; /**< Logical zone ids (LogicalId text). */
+    float                 z = 0.f; /**< Actual world Z; indexing never overwrites coordinates. */
+};
+
+/** @brief A deterministic candidate returned by a spatial query. */
+struct Candidate {
+    std::string id;
+    float       x = 0, y = 0, distance = 0;
+    float       z = 0.f;
+};
+
+/** @brief How candidate-count overflow relative to maxCount is handled. */
+enum class CountPolicy : std::uint8_t {
+    /** @brief Fail the query when the filtered set is outside [minCount, maxCount]. */
+    FailIfOutOfRange,
+    /** @brief Keep the best maxCount candidates after sorting (legacy circle/box limit). */
+    TruncateToMax,
+};
+
+/** @brief Ordering applied to ranked query results. */
+enum class SortKey : std::uint8_t {
+    None,
+    DistanceAscending,
+};
+
+/** @brief Circle shape for QuerySpec (World2D). */
+struct QueryCircle {
+    float x      = 0.f;
+    float y      = 0.f;
+    float radius = 0.f;
+};
+
+/** @brief Inclusive axis-aligned box shape for QuerySpec (World2D). */
+struct QueryBox {
+    float minX = 0.f;
+    float minY = 0.f;
+    float maxX = 0.f;
+    float maxY = 0.f;
+};
+
+/**
+ * @brief 2D cone/sector shape for QuerySpec (World2D).
+ *
+ * Apex is `(x,y)`. `(dirX,dirY)` is the forward axis (normalized on use).
+ * `halfAngle` is radians in `[0, pi]`; `range` is non-negative distance from the apex.
+ */
+struct QueryCone {
+    float x         = 0.f;
+    float y         = 0.f;
+    float dirX      = 1.f;
+    float dirY      = 0.f;
+    float halfAngle = 0.f;
+    float range     = 0.f;
+};
+
+/** @brief Sphere in actual XYZ world coordinates. */
+struct QuerySphere {
+    float x = 0, y = 0, z = 0, radius = 0;
+};
+/** @brief Independent distance/projection semantics; planar shapes use these two axes. */
+enum class QueryAxes : std::uint8_t { XY, XZ, YZ, XYZ };
+/** @brief Broad-phase implementation; selecting an index never changes query semantics. */
+enum class SpatialIndexKind : std::uint8_t { None, XY, XZ, YZ, XYZ };
+
+/** @brief Optional broad-phase shape; monostate means range-only around the origin. */
+using QueryShape = std::variant<std::monostate, QueryCircle, QueryBox, QueryCone, QuerySphere>;
+
+/**
+ * @brief Configurable candidate query against SensingWorld.
+ *
+ * This is the single filtering/sorting implementation surface. Script circle/box
+ * helpers and Targeting adapters compose a QuerySpec rather than reimplementing
+ * acceptance rules. The axes select distance and planar-shape semantics independently
+ * of the index. LOS is explicitly injected; domain and zone policy stays in adapters.
+ */
+struct QuerySpec {
+    QueryShape               shape{};
+    float                    minRange = 0.f;
+    float                    maxRange = std::numeric_limits<float>::infinity();
+    std::vector<std::string> requiredTags;
+    std::vector<std::string> excludedTags;
+    std::vector<std::string> includeFactions;
+    std::vector<std::string> excludeFactions;
+    std::optional<std::string> visibleTo;
+    std::uint32_t            minCount    = 0;
+    std::uint32_t            maxCount    = std::numeric_limits<std::uint32_t>::max();
+    CountPolicy              countPolicy = CountPolicy::TruncateToMax;
+    SortKey                  sortKey     = SortKey::DistanceAscending;
+
+    bool      requireLineOfSight = false;         /**< Missing provider is Unsupported, never silently ignored. */
+    QueryAxes axes               = QueryAxes::XY; /**< Independent of index selection. */
+
+    /** @brief Validates ranges, counts, tags and shape invariants. */
+    [[nodiscard]] EVENGINE_API_PLATFORM eve::Result<void> validate() const;
+};
+
+/** @brief World origin used for range tests, distance sorting and LOS. */
+struct QueryOrigin {
+    float                x = 0.f;
+    float                y = 0.f;
+    std::optional<std::string> subjectId; /**< Optional self id to exclude from results. */
+    float                      z     = 0.f;
+    CoordinateSpace            space = CoordinateSpace::World2D; /**< LOS and output coordinate tag. */
+};
+
+/** @brief One ranked candidate produced by SensingWorld::query. */
+struct RankedCandidate {
+    std::string id;
+    float       x            = 0.f;
+    float       y            = 0.f;
+    float       distance     = 0.f;
+    float       score        = 0.f; /**< Higher is better; Phase 1 uses -distance. */
+    std::string scoreReason;        /**< Stable diagnostic token, e.g. "distance". */
+    float           z     = 0.f;
+    CoordinateSpace space = CoordinateSpace::World2D;
+};
+
+/** @brief Owning ranked result; does not assign a primary target. */
+class CandidateQueryResult {
+public:
+    /** @brief Constructs a CandidateQueryResult. */
+    CandidateQueryResult() = default;
+    /** @brief Constructs a CandidateQueryResult. */
+    explicit CandidateQueryResult(std::vector<RankedCandidate> ranked) : ranked_(std::move(ranked)) {}
+
+    /** @brief Ranked. */
+    [[nodiscard]] std::span<const RankedCandidate> ranked() const noexcept { return ranked_; }
+    /** @brief Returns the size of . */
+    [[nodiscard]] std::size_t size() const noexcept { return ranked_.size(); }
+
+private:
+    std::vector<RankedCandidate> ranked_;
+};
+
+/** @brief Owning broad-phase output; collection never publishes or applies result limits. */
+struct CandidateCollection {
+    std::vector<RankedCandidate> candidates;
+    bool                         usedSpatial = false;
+    std::uint32_t                scanned     = 0;
+};
+
+/** @brief Mirrored world positions and query composition; consumers decide gameplay actions from results. */
+class EVENGINE_API_PLATFORM SensingWorld {
+public:
+    /** @brief Inserts actual XYZ coordinates and metadata; owns copies, no retained arguments.
+     * @return InvalidArgument for nonfinite positions or an empty id; failure leaves facts unchanged.
+     * @thread Simulation thread; invokes no callbacks. Cost is one fact and its index entry.
+     */
+    [[nodiscard]] Result<void> upsertPosition(std::string_view id, float x, float y, float z, std::string_view faction,
+                                              std::string_view tagsCsv, std::string_view visibleToCsv);
+    /** @brief Compatibility-only XY insertion; delegates to upsertPosition with Z zero. */
+    [[nodiscard]] eve::Result<void> upsert(std::string_view id, float x, float y, std::string_view faction,
+                                           std::string_view tagsCsv, std::string_view visibleToCsv);
+    /** @brief Removes mirrored facts, or returns NotFound when the id is absent. */
+    [[nodiscard]] eve::Result<void> remove(std::string_view id);
+    /**
+     * @brief Replaces logical zone membership for an existing subject.
+     * @param id Subject id that must already be registered.
+     * @param zonesCsv Comma-separated LogicalId texts (e.g. "arena:central"); empty clears membership.
+     * @return Applied on success, NotFound when absent, or InvalidArgument for empty/invalid zone ids.
+     * @thread Call on the sensing world's owning simulation thread.
+     */
+    [[nodiscard]] eve::Result<void> setZones(std::string_view id, std::string_view zonesCsv);
+
+    /**
+     * @brief Enables or disables an compatibility-only XY broadphase; delegates to rebuildIndex (off by default).
+     * @param enabled When true, rebuilds the index from current subjects.
+     * @param cellSize Uniform grid cell size; must be finite and > 0 when enabling.
+     * @return Applied on success, or InvalidArgument when cellSize is invalid.
+     * @remarks Filtering/sorting remain QuerySpec-owned; the hash only culls candidates.
+     * @thread Call on the sensing world's owning simulation thread.
+     */
+    [[nodiscard]] eve::Result<void> setSpatialIndexEnabled(bool enabled, float cellSize = 64.f);
+    /** @brief Rebuilds the derived index from owned facts; no coordinate conversion is stored.
+     * @return InvalidArgument for an invalid kind, size or unrepresentable indexed coordinate.
+     * @cost Linear in subject count per explicit rebuild; configure outside query loops.
+     * @thread Simulation thread; no callbacks. Validation failure preserves the existing index.
+     */
+    [[nodiscard]] Result<void> rebuildIndex(SpatialIndexKind kind, float cellSize);
+    /** @brief Current broad-phase selection, independent of query distance semantics. */
+    [[nodiscard]] SpatialIndexKind indexKind() const noexcept;
+    /** @brief Reports whether the optional spatial broadphase is active. */
+    [[nodiscard]] bool spatialIndexEnabled() const noexcept;
+
+    /**
+     * @brief Runs a configurable candidate query.
+     * @return Owning ranked candidates, or a structured failure.
+     * @remarks Also refreshes the resultAt() cache to match ranked() order.
+     * @thread Call on the sensing world's owning simulation thread.
+     */
+    [[nodiscard]] eve::Result<CandidateQueryResult> query(const QueryOrigin& origin, const QuerySpec& spec);
+    /** @brief Runs the same query with an explicitly injected LOS backend, before result limits.
+     * @ownership Provider is borrowed only until return; results own coordinates and ids.
+     * @thread Simulation thread; provider must not mutate or re-enter this world.
+     * @cost Candidate scan plus one LOS call per accepted candidate; reuse the configured index.
+     */
+    [[nodiscard]] Result<CandidateQueryResult> query(const QueryOrigin& origin, const QuerySpec& spec,
+                                                     OptionalRef<const ILineOfSightQuery> lineOfSight);
+
+    /**
+     * @brief Collects matching facts without sorting, truncation or result-cache mutation.
+     * @return Owning candidates and broad-phase counters; invalid input is rejected.
+     * @cost Scans the broad-phase set once per request; use a bounded shape and reuse its output.
+     * @thread World simulation thread; no callbacks and no retained input references.
+     */
+    [[nodiscard]] eve::Result<CandidateCollection> collectCandidates(const QueryOrigin& origin,
+                                                                     const QuerySpec&   spec) const;
+
+    /** @brief Snapshots matching subjects as typed input for a compiled environment query.
+     * @cost One bounded broad-phase scan and owning projection per request; no result publication.
+     */
+    [[nodiscard]] Result<EnvironmentRequest> environmentInput(const QueryOrigin& origin, const QuerySpec& spec) const;
+    /** @brief Runs a prepared environment query and publishes its diagnostic trace for MCP.
+     * @ownership Inputs are owned values; services are borrowed only until return.
+     * @thread Simulation thread; does not mutate facts or the legacy resultAt cache.
+     * @reentrancy Provider callbacks must not re-enter this world.
+     * @cost Executes the compiled candidate/test plan once; retain plans between calls.
+     */
+    [[nodiscard]] Result<EnvironmentQueryResult> executeEnvironmentQuery(const EnvironmentQueryPlan& plan,
+                                                                         EnvironmentRequest          request,
+                                                                         const EnvironmentServices&  services);
+    /** @brief Script convenience for ring positions ranked by distance from the origin.
+     * @return Versioned owning result data, or structured input/provider failure.
+     * @cost Compiles and runs a ring query per call; C++ repeated callers should retain a plan.
+     * @thread Simulation thread; optional LOS is resolved at this composition boundary.
+     */
+    [[nodiscard]] Result<Value> queryPositions(float originX, float originY, float targetX, float targetY, float radius,
+                                               int samples, int limit, bool requireLineOfSight);
+
+    /** @brief Queries a circle. Filters are CSV; empty fields disable that filter. */
+    [[nodiscard]] eve::Result<int> circle(float x, float y, float radius, std::string_view requireTagsCsv,
+                                          std::string_view excludeTagsCsv, std::string_view includeFactionsCsv,
+                                          std::string_view excludeFactionsCsv, std::string_view visibleTo, int limit);
+    /** @brief Queries an axis-aligned box with the same filters as circle(). */
+    [[nodiscard]] eve::Result<int> box(float minX, float minY, float maxX, float maxY, std::string_view requireTagsCsv,
+                                       std::string_view excludeTagsCsv, std::string_view includeFactionsCsv,
+                                       std::string_view excludeFactionsCsv, std::string_view visibleTo, int limit);
+    /**
+     * @brief Runs a registered TargetingPreset against this world and refreshes resultAt().
+     * @param presetId Stable preset id (e.g. "sensing.builtin.coneSelect").
+     * @param originX Origin X used as QueryOrigin and cone apex.
+     * @param originY Origin Y used as QueryOrigin and cone apex.
+     * @param dirX Forward X for cone filter tasks (normalized on use).
+     * @param dirY Forward Y for cone filter tasks (normalized on use).
+     * @return Number of ranked candidates, or a structured failure.
+     * @thread Call on the sensing world's owning simulation thread.
+     */
+    [[nodiscard]] eve::Result<int> executePreset(std::string_view presetId, float originX, float originY, float dirX,
+                                                 float dirY);
+    /**
+     * @brief Returns a candidate from the most recent query, or null for an invalid index.
+     * @return Borrowed nullable candidate owned by the query result cache.
+     * @ownership SensingWorld owns the candidate cache; callers must not delete or mutate it.
+     * @lifetime Valid until the next query/circle/box, restore, or world destruction; copy it for later use.
+     * @thread Call on the sensing world's owning simulation thread.
+     * @reentrancy Do not retain across a callback or another query.
+     */
+    [[nodiscard]] eve::OptionalRef<const Candidate> resultAt(int index) const;
+    /**
+     * @brief Deterministic JSON dump of the last successful query for MCP/debug overlays.
+     * @return Schema `eve.sensing.lastQuery` with origin, shape, spatial stats, and ranked scores.
+     * @remarks Empty ranked list when no query has succeeded yet. Does not assign primary.
+     */
+    [[nodiscard]] std::string debugLastQueryJson() const;
+    /** @brief Exports deterministic JSON. */
+    std::string snapshotJson() const;
+    /** @brief Restores a snapshot transactionally. */
+    [[nodiscard]] eve::Result<void> restoreJson(const std::string& json);
+
+    /** @brief Returns a borrowed view of stored subjects for adapters; valid until mutation. */
+    [[nodiscard]] const std::map<std::string, Subject>& subjects() const noexcept { return subjects_; }
+
+    SensingWorld();
+    /** @brief Sensing world. */
+    ~SensingWorld();
+    SensingWorld(const SensingWorld&) = delete;
+    SensingWorld& operator=(const SensingWorld&) = delete;
+    /** @brief Sensing world. */
+    SensingWorld(SensingWorld&&) noexcept;
+    /** @brief Operator =. */
+    SensingWorld& operator=(SensingWorld&&) noexcept;
+
+private:
+    [[nodiscard]] bool accepts(const Subject& subject, const QuerySpec& spec) const;
+    void               publishResults(std::vector<RankedCandidate> ranked);
+    void               clearSpatialIndex();
+    void               rebuildSpatialIndex();
+    void               indexSubject(const Subject& subject);
+    void               unindexSubject(const std::string& id);
+    /** @brief Returns true when the spatial hash produced a broadphase candidate set. */
+    [[nodiscard]] bool trySpatialBroadphase(const QueryOrigin& origin, const QuerySpec& spec,
+                                            std::vector<const Subject*>& out) const;
+
+    std::map<std::string, Subject> subjects_;
+    std::vector<Candidate>         results_;
+
+    std::unique_ptr<eve::spatial::SpatialHash2D> spatialIndex_;
+    std::unique_ptr<eve::spatial::SpatialHash3D> spatialIndex3D_;
+    SpatialIndexKind                             indexKind_ = SpatialIndexKind::None;
+    std::unordered_map<std::string, int>         subjectSpatialIds_;
+    // Derived references into owned map nodes: stable across upserts, removed before erase,
+    // and rebuilt after restore. No borrowed external storage or worker access.
+    std::unordered_map<int, const Subject*> spatialIdSubjects_;
+    int                                     nextSpatialId_ = 1;
+
+    struct LastQueryDebug {
+        bool                         usedSpatial = false;
+        std::uint32_t                scanned     = 0;
+        std::uint32_t                accepted    = 0;
+        float                        originX     = 0.f;
+        float                        originY     = 0.f;
+        float                        originZ     = 0.f;
+        CoordinateSpace              space       = CoordinateSpace::World2D;
+        std::string                  shapeKind   = "none";
+        std::vector<RankedCandidate> ranked;
+    };
+    LastQueryDebug lastQuery_;
+    std::string    lastEnvironmentQuery_ = "null";
+};
+
+/** @brief Handle domain for module-owned sensing worlds. */
+struct SensingWorldHandleTag {};
+/** @brief Generation- and module-epoch-qualified sensing-world reference. */
+using SensingWorldHandleRef = eve::script::RuntimeHandleRef<SensingWorldHandleTag>;
+
+/** @brief Script factory for independent sensing worlds. */
+class EVENGINE_API_PLATFORM Sensing : public Module, public eve::ISensingQuery {
+public:
+    Module_REG(Sensing);
+    /** @brief Registers the read-only sensing capability for automation hosts. */
+    Sensing();
+    /** @brief Sensing. */
+    ~Sensing() override;
+    /**
+     * @brief Script factory for independent sensing worlds.
+     * @return A generation-qualified reference to a module-owned world.
+     * @ownership Sensing retains sole ownership; callers retain the reference and release it explicitly.
+     * @lifetime The reference becomes stale after release, module unload, or registry replacement.
+     * @thread Call on the Sensing module's owning thread.
+     * @reentrancy The factory invokes no callbacks.
+     */
+    [[nodiscard]] static eve::Result<SensingWorldHandleRef> newWorld();
+    /** @brief Resolves a live sensing world as a non-owning observation. */
+    [[nodiscard]] static eve::script::Borrowed<SensingWorld> resolve(SensingWorldHandleRef reference) noexcept;
+    /** @brief Releases a module-owned sensing world and invalidates its handle. */
+    [[nodiscard]] static eve::Result<void> release(SensingWorldHandleRef reference);
+    /** @brief Reports whether a world reference is stale. */
+    [[nodiscard]] static bool isStale(SensingWorldHandleRef reference) noexcept;
+
+    /** @copydoc eve::ISensingQuery::worldCount */
+    /** @brief World count. */
+    [[nodiscard]] int worldCount() const override;
+    /** @copydoc eve::ISensingQuery::lastQueries */
+    /** @brief Last queries. */
+    [[nodiscard]] std::vector<eve::SensingWorldQuery> lastQueries() const override;
+
+private:
+    eve::script::RuntimeObjectRegistry<SensingWorld, SensingWorldHandleTag> worlds_;
+};
+
+/**
+ * @brief Neutral perception fact projected from a ranked sensing candidate.
+ *
+ * npc_ai / gameplay adapters copy these into their own memory types. Sensing
+ * does not depend on npc_ai and never assigns threat or primary target semantics.
+ */
+struct PerceptionFact {
+    std::string subjectId;
+    float       x            = 0.f;
+    float       y            = 0.f;
+    float       distance     = 0.f;
+    float       score        = 0.f;
+    std::string scoreReason;
+    float           z     = 0.f;
+    CoordinateSpace space = CoordinateSpace::World2D;
+};
+
+/**
+ * @brief Projects ranked query results into adapter-neutral perception facts.
+ * @param result Borrowed ranked candidates from SensingWorld::query / executePreset.
+ * @return Owning facts in the same order as `result.ranked()`.
+ */
+[[nodiscard]] inline std::vector<PerceptionFact> perceptionFactsFrom(const CandidateQueryResult& result) {
+    std::vector<PerceptionFact> facts;
+    facts.reserve(result.size());
+    for (const auto& candidate : result.ranked()) {
+        PerceptionFact fact;
+        fact.subjectId   = candidate.id;
+        fact.x           = candidate.x;
+        fact.y           = candidate.y;
+        fact.z           = candidate.z;
+        fact.space       = candidate.space;
+        fact.distance    = candidate.distance;
+        fact.score       = candidate.score;
+        fact.scoreReason = candidate.scoreReason;
+        facts.push_back(std::move(fact));
+    }
+    return facts;
+}
+
+}  // namespace eve::sensing

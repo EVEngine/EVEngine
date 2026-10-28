@@ -1,12 +1,17 @@
 # House generator runtime example
 
 Run with `make run/win32-debug GAME=examples/housegen`. The example exercises the Squirrel
-generation API and prints a serializable layout. To display it, place the converted CC0 GLB kit
-under `assets/` and call the native `HouseLayout::instantiate` bridge from game code.
+generation API, exports its footprint to `Grid2D` and its component placements to `PointSet`,
+runs both through the existing GridGraph/PointGraph paths, and renders a compact isometric
+diagnostic view. To display the converted CC0 GLB kit instead, place it under `assets/` and use
+the native instantiation path. Native integrations call `HouseLayout::instantiate`; it returns a checked
+`Result<vector<ecs::EntityHandle>>`, so the graphics ECS world remains the sole owner of
+created entities and callers resolve handles only for the current operation.
 
 Asset provenance and the required conversion record are in `test/assets/housegen/ASSET_SOURCES.md`.
 
-Player kits should use `housegen.loadComponentsFromFile("assets/my-kit/components.json")`; relative
+Player kits should use `housegen.loadComponentsFromFile("assets/my-kit/components.json")` and
+check its structured Result; relative
 `model` paths are resolved beside that manifest. A component may override selected GLB PBR fields
 without replacing unspecified material data:
 
@@ -36,3 +41,9 @@ Texture paths are resolved beside the GLB. Values must be in `[0, 1]`; `parallax
 to `[0, 0.2]`. Omit a property to inherit it from the GLB. Embedded and external glTF base-color,
 normal and height textures are supported. The renderer currently uses scalar metallic/roughness;
 packed metallic-roughness maps are deliberately not advertised by this manifest.
+## Editable generation
+
+Edit `generators/house.nut` to change plot dimensions, seed, per-floor room types or upper-floor
+inset. It composes an owning `HouseGeneration` with optional GridGraph processing before floor
+emission. The default preserves the original showcase. See
+[generation stages](../../docs/usr/modules/procgen/generation-stages.md) for ownership and failure rules.

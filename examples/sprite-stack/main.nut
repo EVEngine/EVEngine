@@ -1,141 +1,67 @@
-// Sprite stacking pseudo-3D demo.
-//
-// A 3D primitive is sliced into thin RGBA layers on the CPU, then rendered as
-// a stack of alpha-blended slices inside the 3D forward pass. From the design
-// view angle the stack reads as a solid 3D object; rotating the camera (or the
-// stack yaw) reveals the classic pseudo-3D parallax.
-//
-// Controls:
-//   A / D    rotate stack yaw
-//   W / S    camera distance
-//   H        toggle vertical (billboard) / horizontal (top-down) mode
-//   1..4     primitive: cylinder / sphere / cone / box
-//   M        toggle procedural primitive / rock.obj (model-file slicing)
-//   Q / E    slice thickness
-//   R        rebuild (reslice) the stack
-
-if (!("stackYaw" in getroottable())) stackYaw <- 0.0;
-if (!("camDist" in getroottable())) camDist <- 6.0;
-if (!("stackMode" in getroottable())) stackMode <- "vertical";
-if (!("stackKind" in getroottable())) stackKind <- "cylinder";
-if (!("sliceCount" in getroottable())) sliceCount <- 20;
-if (!("sliceThick" in getroottable())) sliceThick <- 0.0;
-if (!("stack" in getroottable())) stack <- null;
-if (!("batch" in getroottable())) batch <- null;
-if (!("satellites" in getroottable())) satellites <- [];
-if (!("rockLayers" in getroottable())) rockLayers <- null;
-if (!("useModel" in getroottable())) useModel <- false;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
+// Classic SpriteStack rendered entirely by the normal 2D pipeline.
+// A / D rotate, 1..4 switch primitive, Q / E change slice spacing.
+persist angle = 0.0
+persist kind = "cylinder"
+persist spacing = 4.0
+persist stack = null
+persist batch = null
+persist copies = []
 
 local tints = {
-    cylinder = [0.35, 0.78, 0.72],
-    sphere   = [0.85, 0.52, 0.28],
-    cone     = [0.55, 0.42, 0.30],
-    box      = [0.42, 0.55, 0.85],
+    cylinder = [0.32, 0.82, 0.68], sphere = [0.92, 0.52, 0.26],
+    cone = [0.68, 0.48, 0.30], box = [0.42, 0.62, 0.92]
 };
 
-function pressed(k) {
-    local down = keyboard.isDown(k);
-    local old = k in prevKeys ? prevKeys[k] : false;
-    prevKeys[k] <- down;
-    return down && !old;
-}
-
-function rebuildStack() {
-    local axis = stackMode == "vertical" ? "z" : "y";
-    if (useModel) {
-        local md = model3d.newModelDataFromFile("assets/rock.obj");
-        rockLayers = spritestack.sliceModel(md, 22, 128, 128, axis, 0.0);
-    } else {
-        rockLayers = null;
-    }
-    local layers = rockLayers != null
-        ? rockLayers
-        : spritestack.slicePrimitive(stackKind, sliceCount, 128, 128, axis, 0.0);
+function rebuild() {
+    local layers = spritestack.slicePrimitive(kind, 20, 128, 128, "y", 0.0);
     stack = spritestack.newStack(gfx);
     stack.setLayerCount(layers.len());
-    for (local i = 0; i < layers.len(); i++)
-        stack.setLayerImage(gfx, layers[i], i);
-    stack.setThickness(stackMode == "vertical" ? 0.12 : 0.17);
-    stack.setSize(2.4, 2.8);
-    stack.setPosition(0.0, 0.0, 0.0);
-    stack.setMode(stackMode);
-    local t = useModel ? [0.55, 0.48, 0.40] : tints[stackKind];
-    stack.setTint(t[0], t[1], t[2], 1.0);
+    for (local i = 0; i < layers.len(); i++) stack.setLayerImage(gfx, layers[i], i);
+    stack.setPosition(480.0, 390.0);
+    stack.setSize(180.0, 180.0);
+    stack.setThickness(spacing);
+    local tint = tints[kind];
+    stack.setTint(tint[0], tint[1], tint[2], 1.0);
     stack.setShadowEnabled(true);
-    stack.setShadowOpacity(0.38);
-    stack.setShadowLight(-0.45, -1.0, -0.35);
-    stack.setShadowPlaneY(-1.53);
-    stack.setCastShadow(true);  // real CSM shadow from the slice silhouettes
-    if (stackMode == "vertical") stack.setOutline(0.045, 0.02, 0.03, 0.04);
-    rebuildSatellites();
-}
+    stack.setShadowOpacity(0.42);
+    stack.setShadowOffset(12.0, 9.0);
+    stack.setOutline(2.0, 0.02, 0.03, 0.04);
 
-// A few small copies sharing the main stack's layer textures, drawn in a
-// single batched draw call per (texture, tint) group.
-function rebuildSatellites() {
-    if (batch == null) batch = spritestack.newBatch(gfx);
-    batch.clear();
-    satellites = [];
-    local offsets = [[2.6, 0.9], [-2.5, 1.0], [3.0, -1.2]];
-    foreach (off in offsets) {
-        local s = spritestack.newStack(gfx);
-        s.setLayerCount(stack.getLayerCount());
+    batch = spritestack.newBatch(gfx);
+    copies = [];
+    foreach (x in [190.0, 770.0]) {
+        local copy = spritestack.newStack(gfx);
+        copy.setLayerCount(stack.getLayerCount());
         for (local i = 0; i < stack.getLayerCount(); i++)
-            s.setLayerTexture(stack.getLayerTexture(i), i);
-        s.setThickness(stack.getThickness());
-        s.setSize(0.85, 0.95);
-        s.setPosition(off[0], 0.0, off[1]);
-        s.setMode(stackMode);
-        s.setTint(0.58, 0.52, 0.46, 1.0);
-        batch.add(s);
-        satellites.append(s);
+            copy.setLayerTexture(stack.getLayerTexture(i), i);
+        copy.setPosition(x, 360.0);
+        copy.setSize(105.0, 105.0);
+        copy.setThickness(spacing * 0.55);
+        copy.setTint(tint[0], tint[1], tint[2], 1.0);
+        copy.setShadowEnabled(true);
+        batch.add(copy);
+        copies.append(copy);
     }
 }
 
-local cam = eve.Camera3D();
-cam.setEye(0.0, 2.8, camDist);
-cam.setTarget(0.0, 0.2, 0.0);
-cam.setUp(0.0, 1.0, 0.0);
-cam.setFov(45.0);
-cam.setAmbient(0.32, 0.35, 0.38);
-cam.setActive(true);
-gfx.setDirectionalLight(-0.45, -1.0, -0.35, 1.25, 1.18, 1.05);
-gfx.setBackgroundColor(0.075, 0.10, 0.12, 1.0);
-
-// Flat ground disc so the stack's depth reads against the scene.
-local ground = eve.Renderable3D();
-ground.setMesh(gfx.newMeshCylinder(48, 1, true));
-ground.setPosition(0.0, -1.55, 0.0);
-ground.setScale(9.0, 0.18, 9.0);
-ground.setTint(0.20, 0.30, 0.24, 1.0);
-ground.setRoughness(0.9);
-
-rebuildStack();
+gfx.setBackgroundColor(0.055, 0.075, 0.095, 1.0);
+rebuild();
 
 function eve_update(dt) {
-    if (pressed("h") || pressed("H")) {
-        stackMode = stackMode == "vertical" ? "horizontal" : "vertical";
-        rebuildStack();
-    }
-    if (pressed("r") || pressed("R")) rebuildStack();
-    if (pressed("1")) { stackKind = "cylinder"; rebuildStack(); }
-    if (pressed("2")) { stackKind = "sphere"; rebuildStack(); }
-    if (pressed("3")) { stackKind = "cone"; rebuildStack(); }
-    if (pressed("4")) { stackKind = "box"; rebuildStack(); }
-    if (pressed("m") || pressed("M")) { useModel = !useModel; rebuildStack(); }
-    if (keyboard.isDown("a") || keyboard.isDown("A")) stackYaw -= dt * 0.9;
-    if (keyboard.isDown("d") || keyboard.isDown("D")) stackYaw += dt * 0.9;
-    if (keyboard.isDown("w") || keyboard.isDown("W")) camDist = max(2.5, camDist - dt * 3.0);
-    if (keyboard.isDown("s") || keyboard.isDown("S")) camDist = min(14.0, camDist + dt * 3.0);
-    stack.setYaw(stackYaw);
-    cam.setEye(0.0, 2.8, camDist);
+    if (keyboard.isDown("a") || keyboard.isDown("A")) angle -= dt * 75.0;
+    if (keyboard.isDown("d") || keyboard.isDown("D")) angle += dt * 75.0;
+    if (key_just_pressed("1")) { kind = "cylinder"; rebuild(); }
+    if (key_just_pressed("2")) { kind = "sphere"; rebuild(); }
+    if (key_just_pressed("3")) { kind = "cone"; rebuild(); }
+    if (key_just_pressed("4")) { kind = "box"; rebuild(); }
+    if (key_just_pressed("q") || key_just_pressed("Q")) { spacing = max(1.0, spacing - 1.0); rebuild(); }
+    if (key_just_pressed("e") || key_just_pressed("E")) { spacing = min(10.0, spacing + 1.0); rebuild(); }
+    stack.setRotation(angle);
+    foreach (copy in copies) copy.setRotation(-angle * 0.7);
 }
 
 function eve_render() {
     gfx.clear();
-    gfx.render3D();
-    // Draw the pseudo-3D stack into the open 3D pass (before present).
     stack.render(gfx);
     batch.render(gfx);
 }

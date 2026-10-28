@@ -72,6 +72,17 @@ void AnimSkeleton::setBindScale(int boneIndex, float x, float y, float z) {
     t.sz = z;
 }
 
+void AnimSkeleton::setBoneLodLimit(int boneIndex, int highestLod) {
+    requireBone(boneIndex);
+    if (highestLod < 0) throw Exception("AnimSkeleton.setBoneLodLimit: highestLod must be >= 0");
+    bones_[static_cast<size_t>(boneIndex)].lodLimit = highestLod;
+}
+
+int AnimSkeleton::getBoneLodLimit(int boneIndex) const {
+    requireBone(boneIndex);
+    return bones_[static_cast<size_t>(boneIndex)].lodLimit;
+}
+
 float AnimSkeleton::getBindPositionX(int boneIndex) const {
     requireBone(boneIndex);
     return bones_[static_cast<size_t>(boneIndex)].bind.px;

@@ -1,0 +1,46 @@
+{
+  "sourcePackage": "The Vegetation Engine 12.6.0",
+  "feature": "global extras field",
+  "authoritativeSource": [
+    "Core/Runtime/TVEGlobalControl.cs:224-225",
+    "Core/Runtime/TVEGlobalVolume.cs:271-285",
+    "Core/Runtime/TVEGlobalVolume.cs:338-390",
+    "Core/Runtime/TVEGlobalVolume.cs:553-563",
+    "Core/Runtime/TVEUtils.cs:2617-2654",
+    "Core/Shaders/Geometry/Plant Subsurface Lit.shader:1540-1566",
+    "Core/Shaders/Geometry/Plant Subsurface Lit.shader:1702-1743"
+  ],
+  "storage": {
+    "format": "RGBAHalf",
+    "dimension": "2D array",
+    "layers": 9,
+    "fallback": "internal array texture",
+    "wrap": "clamp",
+    "channels": { "r": "emissive", "g": "wetness", "b": "overlay", "a": "alpha" }
+  },
+  "sampling": {
+    "plane": "world XZ or object XZ selected by _ExtrasPositionMode",
+    "uv": "TVE_ExtrasCoords.zw + TVE_ExtrasCoords.xy * position.xz",
+    "slice": "_LayerExtrasValue",
+    "disabledLayer": "TVE_ExtrasParams",
+    "usageThreshold": 0.5,
+    "lod": 0
+  },
+  "alpha": {
+    "extras": "saturate(sample.a)",
+    "variation": "lerp(0, clamp(meshVariation, 0.01, 0.99), _AlphaVariationValue)",
+    "detailFadeMask": "TVE_DETAIL ? lerp(1 - detailBlend, 1, _DetailFadeMode) : 1",
+    "global": "lerp(1, saturate(extras - saturate(variation) + extras * 0.1), detailFadeMask * _GlobalAlpha)",
+    "preclip": "min((detailAlpha - _AlphaClipValue) * global, fadeAlpha)",
+    "clipThreshold": 0.01
+  },
+  "nativeOwnership": {
+    "authority": "VegetationField globals and elements",
+    "gpuAtlas": "derived immutable render snapshot",
+    "publication": "replace only after all slices and descriptors succeed",
+    "staleDetection": "monotonic field revision",
+    "providerAbsent": "explicit uniform VegetationSample path",
+    "destruction": "GPU snapshot releases image leases before field owner destruction",
+    "restore": "rebuild all derived slices from the restored VegetationField"
+  }
+}

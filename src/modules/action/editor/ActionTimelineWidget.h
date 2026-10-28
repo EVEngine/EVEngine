@@ -1,0 +1,209 @@
+#pragma once
+#include "common/Export.h"
+
+
+/** @file ActionTimelineWidget.h @brief Renderer-neutral interactive action timeline widget. */
+
+#include "action/ActionNotifyRegistry.h"
+#include "action/editor/ActionTimelineEditor.h"
+#include "editor/EditorPresentation.h"
+
+#include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
+
+namespace eve::editor {
+
+/** @brief Interactive portion of a projected timeline item. */
+enum class TimelineHitPart : std::uint8_t { Body, StartHandle, EndHandle };
+
+/** @brief Observable pointer-drag lifecycle state. */
+enum class TimelineDragStatus : std::uint8_t { Idle, Active };
+
+/** @brief Stable semantic thumbnail kind projected for one timeline block. */
+enum class TimelineItemVisual : std::uint8_t {
+    Animation,
+    Gameplay,
+    Damage,
+    Vfx,
+    Audio,
+    Prefab,
+    Camera,
+    Hitbox,
+    Defense,
+    Input,
+    Collision,
+    Movement,
+    Curve,
+    Custom
+};
+
+/**
+ * @brief Return the stable script-facing name for a timeline visual kind.
+ * @param visual Semantic projection kind.
+ * @return Static text valid for the lifetime of the process.
+ */
+[[nodiscard]] EVENGINE_API_EDITORS std::string_view timelineItemVisualName(TimelineItemVisual visual) noexcept;
+
+/** @brief Owning geometry projected for one timeline item. */
+struct TimelineItemGeometry {
+    LogicalId trackId;
+    LogicalId itemId;
+    LogicalId type;
+    bool      state    = false;
+    bool      selected = false;
+    float     minimumX = 0.0f;
+    float     maximumX = 0.0f;
+    float     minimumY = 0.0f;
+    float     maximumY = 0.0f;
+    /** @brief Registry-owned display name copied into this frame projection. */
+    std::string displayName;
+    /** @brief Compact owning payload summary suitable for a tooltip or block subtitle. */
+    std::string detail;
+    /** @brief Semantic mini-preview selected from the registered type, never persisted. */
+    TimelineItemVisual visual = TimelineItemVisual::Custom;
+};
+
+/** @brief One deterministic ruler tick projected into host coordinates. */
+struct TimelineRulerTick {
+    Duration time;
+    float    x     = 0.0f;
+    bool     major = false;
+};
+
+/** @brief Result of widget hit testing. */
+struct TimelineHit {
+    LogicalId       itemId;
+    TimelineHitPart part = TimelineHitPart::Body;
+};
+
+/** @brief Complete renderer-neutral layout for one widget frame. */
+struct TimelineWidgetLayout {
+    float                             width     = 0.0f;
+    float                             height    = 0.0f;
+    float                             playheadX = 0.0f;
+    /** @brief Whether an audio module currently provides waveform projection. */
+    bool                              audioWaveformsAvailable = false;
+    std::vector<TimelineItemGeometry> items;
+    std::vector<TimelineRulerTick>    rulerTicks;
+};
+
+/** @brief Standard context-menu and keyboard actions exposed by the widget. */
+enum class TimelineWidgetCommand : std::uint8_t {
+    Copy,
+    Paste,
+    DeleteSelection,
+    Undo,
+    Redo,
+    PlayPause,
+    AlignSelectionStart,
+    AlignSelectionEnd
+};
+
+/** @brief One host-renderable command entry. */
+struct TimelineWidgetCommandDescriptor {
+    TimelineWidgetCommand command = TimelineWidgetCommand::Copy;
+    std::string           label;
+    std::string           shortcut;
+    bool                  enabled = false;
+};
+
+/**
+ * @brief Interactive timeline adapter shared by developer and in-game editor hosts.
+ *
+ * The widget borrows an editor and notify registry that must outlive it. Pointer
+ * drags mutate only widget preview state until pointerUp commits exactly one
+ * undoable domain transaction. All methods are owner-thread-only.
+ */
+class EVENGINE_API_EDITORS ActionTimelineWidget {
+public:
+    /** @brief Construct a widget over authoritative editor and notify services. */
+    ActionTimelineWidget(ActionTimelineEditor& editor, const action::ActionNotifyRegistry& registry);
+
+    /** @brief Configure host-space dimensions used for layout and hit testing. */
+    [[nodiscard]] Result<void> setViewport(float width, float rowHeight, float labelWidth = 120.0f);
+    /** @brief Set deterministic drag/seek snapping; zero disables snapping. */
+    [[nodiscard]] Result<void> setSnapInterval(Duration interval);
+    /** @brief Set the visible timeline interval used for zoomed projection and interaction. */
+    [[nodiscard]] Result<void> setVisibleRange(Duration start, Duration end);
+    /** @brief Zoom the visible interval around a normalized anchor in [0, 1]. */
+    [[nodiscard]] Result<void> zoom(double factor, double normalizedAnchor = 0.5);
+    /** @brief Pan the visible interval by an exact timeline delta, clamped to the asset. */
+    [[nodiscard]] Result<void> pan(Duration delta);
+    /** @brief Project the current authoritative timeline plus any active drag preview. */
+    [[nodiscard]] TimelineWidgetLayout layout() const;
+    /** @brief Emit rows, items, handles and playhead to an arbitrary overlay host. */
+    void draw(IEditorOverlay& overlay) const;
+    /** @brief Hit-test projected item bodies and state handles. */
+    [[nodiscard]] std::optional<TimelineHit> hitTest(float x, float y) const;
+
+    /** @brief Select an item and begin a pointer drag. */
+    [[nodiscard]] Result<void> pointerDown(float x, float y, bool additiveSelection = false);
+    /** @brief Update the non-authoritative drag preview. */
+    [[nodiscard]] Result<void> pointerMove(float x);
+    /** @brief Commit the active drag as one undoable edit. */
+    [[nodiscard]] Result<void> pointerUp(float x);
+    /** @brief Cancel a drag without mutating the timeline. */
+    void cancelPointer() noexcept { drag_.reset(); }
+    /** @brief Current pointer-drag lifecycle state. */
+    TimelineDragStatus dragStatus() const noexcept {
+        return drag_ ? TimelineDragStatus::Active : TimelineDragStatus::Idle;
+    }
+
+    /** @brief Seek the editor preview cursor from a host-space coordinate. */
+    [[nodiscard]] Result<void> seek(float x);
+    /** @brief Convert a host-space coordinate to its snapped authoritative timeline time. */
+    [[nodiscard]] Duration timeAt(float x) const noexcept { return xToTime(x); }
+    /** @brief Present and apply selected item timing, type and JSON payload fields. */
+    [[nodiscard]] Result<void> inspectSelection(IEditorInspector& inspector);
+
+    /** @brief Return standard menu entries with current enabled state. */
+    [[nodiscard]] std::vector<TimelineWidgetCommandDescriptor> commands() const;
+    /** @brief Execute a standard menu command. */
+    [[nodiscard]] Result<void> invoke(TimelineWidgetCommand command);
+    /** @brief Execute a normalized shortcut such as Ctrl+C, Delete or Space. */
+    [[nodiscard]] Result<void> handleShortcut(std::string_view shortcut);
+
+    /** @brief Notify types suitable for an instant or state insertion picker. */
+    [[nodiscard]] std::vector<action::ActionNotifyDescriptor> insertableTypes(action::ActionNotifyShape shape) const;
+    /** @brief Insert a validated instant notify at the preview cursor. */
+    [[nodiscard]] Result<void> addNotifyAtCursor(const LogicalId& trackId, std::string_view type,
+                                                       Value::Object payload);
+    /** @brief Insert a validated notify state beginning at the preview cursor. */
+    [[nodiscard]] Result<void> addStateAtCursor(const LogicalId& trackId, std::string_view type,
+                                                      Duration duration, Value::Object payload);
+
+private:
+    struct DragState {
+        LogicalId       itemId;
+        TimelineHitPart part = TimelineHitPart::Body;
+        Duration        anchorTime;
+        Duration        originalStart;
+        Duration        originalEnd;
+        Duration        previewStart;
+        Duration        previewEnd;
+        bool            state = false;
+    };
+
+    [[nodiscard]] float                   timeToX(Duration time) const noexcept;
+    [[nodiscard]] Duration                xToTime(float x) const noexcept;
+    [[nodiscard]] std::optional<Duration> magneticSnap(Duration candidate,
+                                                       const LogicalId& excludedItem) const noexcept;
+    [[nodiscard]] Result<void>      updateDrag(float x);
+    [[nodiscard]] LogicalId               generatedItemId();
+
+    ActionTimelineEditor&               editor_;
+    const action::ActionNotifyRegistry& registry_;
+    float                               width_      = 800.0f;
+    float                               rowHeight_  = 24.0f;
+    float                               labelWidth_ = 120.0f;
+    Duration                            snapInterval_ = Duration::zero();
+    Duration                            visibleStart_ = Duration::zero();
+    Duration                            visibleEnd_   = Duration::zero();
+    std::optional<DragState>            drag_;
+    std::optional<Duration>             clipboardAnchor_;
+    std::uint64_t                       generatedSequence_ = 0;
+};
+
+}  // namespace eve::editor

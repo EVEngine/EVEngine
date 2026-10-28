@@ -16,3 +16,8 @@ function basic() {
 
     return true;
 }
+
+function hasDrawText() {
+    local p = eve.Graphics();
+    return ("drawText" in p) && ("print" in p);
+}

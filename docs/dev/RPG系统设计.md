@@ -1,9 +1,20 @@
 # RPG 模块设计：属性 / 效果 / 状态 / 技能 / 结算
 
 日期：2026-08-08
-状态：已实现；完整 ARPG 闭环扩展见 [ARPG框架设计.md](./ARPG框架设计.md)
+状态：已实现（`src/modules/rpg/`）
 
-任务 / 目标追踪器（第六子系统）见单独文档 [RPG任务系统设计.md](./RPG任务系统设计.md)（2026-08-18，待实现）。
+ARPG 跨模块组合、合并后的模块归属与待验收闭环见 [ARPG框架设计.md](ARPG框架设计.md)。本文件的早期组件示意不代表当前完整状态模型；具体接口以当前头文件为准。
+
+任务 / 目标追踪器（第六子系统）见单独文档 [RPG任务系统设计.md](./RPG任务系统设计.md)（已实现，2026-08-18）。
+
+新增子系统：
+- **成长（LevelSystem）** — 等级 / 经验 / 升级事件（`RPGActor::Progression`）。
+- **当前资源（VitalsSystem）** — 受伤 / 治疗 / 死亡 / 复活（`RPGActor::Vitals`，上限取同名最终属性）。
+- **装备加成与掉落（EquipmentSystem / LootSystem）** — 把已装备物品（`inventory::EquipmentSet`）的注册属性加成同步到 actor，掉落表按概率随机入包（`inventory::Bag`）。
+- **特征（Trait / TraitSystem）** — 参数倍率（落属性）、元素/状态耐性、暴击/命中/闪避等特殊参数、攻击附加元素/状态；`RPGActor::Traits`。
+- **回合制战斗（BattleSystem / Battle）** — 伤害公式 DSL（`a.atk * 4 - b.def * 2`）、命中/暴击/元素耐性结算、行动顺序、胜败判定。**阵营是任意整数 id（多派系），伤害目标资源名任意（`damageType` 即资源名，`XHeal` 后缀为治疗）**；`setPlayerSide`/`getWinnerSide` 支持非默认玩家侧。
+- **职业（Class / ClassSystem）** — 职业定义、职业基础特征、升级学技能（`RPGActor::ClassInfo`）。
+- **全局状态（GameState）** — 开关 / 变量 / 独立变量（RPG Maker 的 `$gameSwitches` / `$gameVariables`）。
 
 ## 目标
 
@@ -17,7 +28,7 @@
 
 与引擎既有模块（`map`/`particles`/`scene`）保持同一套设计语言：ECS 组件为数据、`*System`
 静态类为行为、`Module` facade 做脚本绑定；参考 [模块设计.md](./模块设计.md) 与
-[游戏模型设计.md](./游戏模型设计.md)。
+[领域短根继承与跨域组合架构.md](./领域短根继承与跨域组合架构.md)。
 
 ## 为什么不用固定枚举
 
@@ -43,8 +54,8 @@
 | 状态/Buff | 周期效果只产生 tick 事件，不直接改属性 | 调用方（脚本/C++） | 让 DOT/HOT 可以完整走结算流水线而非被硬编码为直接扣血 |
 | 技能 | `SkillSystem::registerCastCondition(name, fn)` | C++ | 引擎不内置"沉默/眩晕"等互斥概念，由游戏自定义判断逻辑 |
 | 技能 | `SkillDefinition::extra`（string→string） | C++ 或 JSON | 任意自定义附加数据（动画名、特效……）无需扩结构体 |
-| 结算 | `SettlementPipeline::registerStage(pipeline, stage, priority, fn)` | C++ | 伤害/治疗/命中率等公式完全可换、可插入新阶段 |
-| 结算 | `setStageEnabled` / `setStagePriority` | C++ 或脚本 | 不写新原生代码也能开关/重排已注册的内建阶段 |
+| 结算 | `Battle::configureSettlementRules` + `eve::settlement::SettlementPipeline` | C++ 或 JSON | 正式伤害、治疗、Status tick、Buff 投影和触发链使用统一协议 |
+| 兼容结算 | `rpg::SettlementPipeline::registerStage` / `runSettlement` | C++ 或脚本 | 仅保留旧项目的开放数值袋；执行已委托统一 Settlement，不用于新玩法状态提交 |
 
 ## 数据模型
 
@@ -59,28 +70,19 @@ RPGActor : ecs::Entity
   Skills     { unordered_map<string, SkillRuntime> known; CastingState casting }
 ```
 
-游戏可以直接用 `RPGActor`，也可以仿照 `docs/dev/游戏模型设计.md` 的示例从它派生出
-`Player`/`Monster` 等子类，追加自己的组件——三大组件与配套 System 天然复用。
+游戏可以直接用 `RPGActor`，也可以从它派生出 `Player`/`Monster` 等子类并追加自己的
+组件——三大组件与配套 System 天然复用。
 
-`RPGActor::createActor()` 是推荐的工厂方法：除了创建实体外，还会把它加入
-`RPGActor::liveActors()` 跟踪列表，`StatusSystem::update` / `SkillSystem::update`
-靠这份列表逐帧推进（ECS `View` 目前不回传 `Entity*`，见
-`external/ECS.hpp/docs/API.md`，因此周期 tick / 技能释放事件需要携带 actor 身份时改用
-这份显式列表而非 `View`）。`release()` 会让 actor 从该列表中自然消失。
+`RPGActor::createActor()` 是推荐的工厂方法：创建实体并预热组件槽位。
+`RPGActor::liveActors()` 由 `ecs::View<RPGActor, Attributes>` +
+`ViewIterator::entity()` 收集当前 Table 中的存活 actor（含派生类），供
+`StatusSystem::update` / `SkillSystem::update` 逐帧推进。也可在系统内直接使用
+`it.entity()` / `it.row()`，不必再维护第二份注册表。
 
-> **坑 / 设计约束：** 这份跟踪列表内部存的是 `ecs::EntityHandle`（id + generation），
-> 而不是裸 `RPGActor*`。原因：`ecs::DestroyEntity` 在非 deferred 模式下会立刻
-> `reclaim` 槽位，槽位对应的内存会被**下一个** `createActor()` 复用（同地址、
-> generation 递增），并且复用时会用 `T{}` 重新构造，把 `flags` 清零。也就是说，
-> 一个已销毁 actor 的裸指针在槽位被复用后，`ecs::is_entity_visible(ptr)` 会重新
-> 变为 `true`——旧指针"看起来又活了"，导致 `liveActors()` 把同一块内存返回两次
-> （一份是新 actor 自己 push 的，一份是上一个已销毁 actor 遗留、从未被清理的
-> stale 条目），进而使 `StatusSystem::update` / `SkillSystem::update` 对同一个
-> actor 重复跑一遍 tick 逻辑（duration 类 buff 会提前双倍衰减到期、冷却双倍扣减等）。
-> 修复方式是用 `ecs::handle_of(actor)` 存 handle、用 `ecs::try_get(handle)` 解析
-> ——它会同时校验 id 与 generation，槽位被复用后旧 handle 会正确解析为
-> `nullptr` 并被 `liveActors()` 清理掉。**结论：任何跨帧持有 `Entity*` 的场景都应该
-> 优先使用 `EntityHandle` 而不是裸指针**，除非能保证在实体销毁的同一帧内完成清理。
+> **坑 / 设计约束：** 跨帧持有身份应使用 `ecs::EntityHandle`（id + generation），
+> 而不是裸 `RPGActor*`。`DestroyEntity` 会 reclaim 槽位，下一个 `create` 可能复用
+> 同地址并递增 generation；裸指针 + `is_entity_visible` 无法区分这种复用。
+> `try_get(handle)` 会同时校验 generation。View 迭代本身不会把已销毁槽位当成活实体。
 
 ### 属性（`AttributeTypes.h` / `AttributeSystem.h`）
 
@@ -165,8 +167,9 @@ enable/disable、调整已注册阶段的优先级，但不能新增原生阶段
   `getTickEventCount/Actor/InstanceId/EffectId/Source/Stacks`、
   `getStatusChangeEventCount/Actor/InstanceId/EffectId/Source/Action/Stacks/Reason`、
   `getCastEventCount/Caster/Target/SkillId`
-- 结算：`newSettlementContext()` → `SettlementContext`，`runSettlement(pipeline, ctx)`，
-  以及 stage 的 enable/priority/remove 内省接口
+- 正式结算：`Battle` 的行动与 Status tick 自动进入统一 Settlement；规则通过严格版本化 JSON 配置
+- 兼容结算：`newSettlementContext()` → `runSettlement()` 及 stage 内省接口仅服务旧脚本数值袋，
+  新代码不应通过它提交生命、护盾或其他权威状态
 
 `RPGActor` 自身暴露一层薄的便捷方法（转发到各 `*System`），与 `TileLayer`/
 `ParticleEmitter` 的绑定风格一致：`actor.setBaseAttribute(...)`、
@@ -188,7 +191,7 @@ enable/disable、调整已注册阶段的优先级，但不能新增原生阶段
 
 ## 测试
 
-`test/rpg.cpp`：属性纯函数计算（各 op / 自定义 op / 优先级）、`AttributeSystem` 的
+`test/unit/rpg/rpg_tests.cpp`：属性纯函数计算（各 op / 自定义 op / 优先级）、`AttributeSystem` 的
 增删查与缓存失效、`EffectRegistry` 的注册与 JSON 加载（含 `extra`）、`StatusSystem` 的
 instant/duration/infinite/周期 tick/四种叠加策略、施加条件拒绝、自定义 stackPolicy、
 生命周期钩子与变更事件、Buff API 别名、`SkillSystem` 的

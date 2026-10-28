@@ -1,0 +1,38 @@
+#pragma once
+#include "common/Export.h"
+
+
+#include "common/Value.h"
+
+#include <functional>
+#include <string>
+#include <vector>
+
+namespace eve::dialogue {
+
+/** @brief Parameter substitution and state-driven character voice modifiers. */
+class EVENGINE_API_ORCHESTRATION ConversationTextRenderer {
+public:
+    using Evaluator = std::function<bool(const std::string&)>;
+    /** @brief ToneRule public API. */
+    struct ToneRule {
+        std::string expression;
+        std::string prefix;
+        std::string suffix;
+        std::string find;
+        std::string replacement;
+    };
+    /** @brief Render placeholders from locals first, then bindings, and apply matching tone rules. */
+    std::string render(const std::string& text, const eve::Value& bindings, const eve::Value& locals,
+                       const Evaluator& evaluate = {}) const;
+    /** @brief Append a state-dependent character voice rule. */
+    void addToneRule(std::string expression, std::string prefix, std::string suffix, std::string find,
+                     std::string replacement);
+    /** @brief Remove all character voice rules. */
+    void clearToneRules() { rules_.clear(); }
+
+private:
+    std::vector<ToneRule> rules_;
+};
+
+}  // namespace eve::dialogue

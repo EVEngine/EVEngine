@@ -1,0 +1,727 @@
+#include "common/Capability.h"
+#include "common/EntitySpatialResolver.h"
+#include "common/ProcgenSceneSink.h"
+#include "common/SceneQuery.h"
+#include "common/TransformEuler.h"
+#include "scene/Scene.h"
+#include "scene/SceneHost.h"
+#include "scene/SceneObject.h"
+#include "scene/TransformSystem.h"
+
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/quaternion.hpp>
+
+#include <cmath>
+#include <cstdint>
+#include <exception>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
+
+namespace eve::scene {
+namespace {
+struct PublicationScope {
+    bool& active;
+    explicit PublicationScope(bool& value) : active(value) { active = true; }
+    ~PublicationScope() { active = false; }
+};
+eve::Result<void> invokePreparedOwner(const std::function<eve::Result<void>()>& commit) {
+    try {
+        return commit();
+    } catch (const std::exception& error) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::CallbackFailure, error.what()));
+    } catch (...) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::CallbackFailure, "procedural scene owner commit threw an unknown exception"));
+    }
+}
+void notifyPublished(SceneHost& host, const std::string& action, const std::string& id, const std::string& parent,
+                     std::vector<eve::Diagnostic>& warnings) {
+    try {
+        host.fireEvent(action, id, parent);
+    } catch (const std::exception& error) {
+        warnings.push_back(eve::Diagnostic::warning(eve::DiagnosticCode::CallbackFailure, error.what(), id));
+    } catch (...) {
+        warnings.push_back(
+            eve::Diagnostic::warning(eve::DiagnosticCode::CallbackFailure,
+                                     "committed procedural scene notification threw an unknown exception", id));
+    }
+}
+bool hasConsistentAssetBinding(const eve::ProcgenInstanceDesc& instance) {
+    return !instance.assetBinding ||
+           (!instance.assetBinding->buildId.isNil() && instance.assetBinding->asset.format() == instance.asset &&
+            (instance.assetBinding->rootPose == eve::PrefabRootPose::Authored ||
+             instance.assetBinding->rootPose == eve::PrefabRootPose::ReplaceTranslationRotation));
+}
+
+template <class T>
+T* borrowSceneResult(eve::Result<T*> result) {
+    if (!result.ok()) return nullptr;
+    return std::move(result).takeValue();
+}
+
+SceneHost *hostByName(const std::string &name) {
+    if (name.empty()) return nullptr;
+    if (ecs::current()->getManager<SceneHost>() == nullptr) return nullptr;
+    auto view = ecs::View<SceneHost, SceneHost::Meta>();
+    for (auto it = view.begin(); it != view.end(); ++it) {
+        auto [meta] = *it;
+        if (meta->entity && meta->name == name) return meta->entity;
+    }
+    return nullptr;
+}
+
+SceneHost *hostAt(int index) {
+    if (index < 0 || ecs::current()->getManager<SceneHost>() == nullptr) return nullptr;
+    auto view = ecs::View<SceneHost, SceneHost::Meta>();
+    int i = 0;
+    for (auto it = view.begin(); it != view.end(); ++it, ++i) {
+        auto [meta] = *it;
+        if (i == index) return meta->entity;
+    }
+    return nullptr;
+}
+
+class SceneEntitySpatialProvider final : public eve::IEntitySpatialProvider {
+public:
+    eve::Result<eve::EntitySpatialPose> resolve(ecs::EntityHandle handle,
+                                                std::string_view bone) const override {
+        auto* object = dynamic_cast<SceneObject*>(ecs::try_get(handle));
+        if (!object)
+            return failure(eve::DiagnosticCode::NotFound, "entity is not owned by Scene", "entity");
+        if (!bone.empty())
+            return failure(eve::DiagnosticCode::Unsupported,
+                           "Scene root provider cannot resolve a bone or socket", "bone");
+        auto* host = hostByName(object->meta()->hostName);
+        if (!host) return failure(eve::DiagnosticCode::NotFound, "owning scene host is unavailable", "entity");
+        auto node = host->findById(object->meta()->nodeId);
+        if (!node) return eve::Result<eve::EntitySpatialPose>::failure(node.status());
+        TransformSystem::updateHost(host);
+        glm::vec3 scale;
+        glm::quat rotation;
+        glm::vec3 translation;
+        glm::vec3 skew;
+        glm::vec4 perspective;
+        if (!glm::decompose(node.value()->world, scale, rotation, translation, skew, perspective))
+            return failure(eve::DiagnosticCode::Failed, "scene world transform could not be decomposed", "entity");
+        float yaw = 0.f, pitch = 0.f, roll = 0.f;
+        eve::eulerYxzFromQuat(rotation, yaw, pitch, roll);
+        // rotationX/Y/Z keep meaning rotation about X/Y/Z, i.e. pitch/yaw/roll.
+        const glm::vec3 euler = glm::degrees(glm::vec3(pitch, yaw, roll));
+        return eve::Result<eve::EntitySpatialPose>::success({translation.x, translation.y, translation.z,
+                                                              euler.x, euler.y, euler.z,
+                                                              scale.x, scale.y, scale.z});
+    }
+
+private:
+    static eve::Result<eve::EntitySpatialPose> failure(eve::DiagnosticCode code, std::string message,
+                                                        std::string path) {
+        return eve::Result<eve::EntitySpatialPose>::failure(
+            eve::Diagnostic::error(code, message, path));
+    }
+};
+
+SceneNodeInfo toInfo(SceneHost *host, const SceneNode &n) {
+    SceneNodeInfo info;
+    info.id = n.id;
+    info.name = n.name;
+    info.path = host->getPathById(n.id);
+    info.visible = n.visible;
+    info.x = n.x;
+    info.y = n.y;
+    info.z = n.z;
+    info.yaw = n.yaw;
+    info.pitch = n.pitch;
+    info.roll = n.roll;
+    info.sx = n.sx;
+    info.sy = n.sy;
+    info.sz = n.sz;
+    if (auto *p = host->getParentById(n.id)) info.parent = p->id;
+    for (int i = 0; i < host->getChildCountById(n.id); ++i) {
+        if (auto *c = host->getChildAtById(n.id, i)) info.children.push_back(c->id);
+    }
+    return info;
+}
+
+class SceneQueryImpl final : public eve::ISceneQuery {
+public:
+    SceneHost *host() const {
+        auto *s = eve::ModuleManager::getInstance<Scene>("Scene");
+        return s ? s->current() : nullptr;
+    }
+
+    std::string activeHost() const override {
+        auto *h = host();
+        return h ? h->getName() : std::string();
+    }
+
+    int hostCount() const override {
+        if (ecs::current()->getManager<SceneHost>() == nullptr) return 0;
+        auto view = ecs::View<SceneHost, SceneHost::Meta>();
+        int n = 0;
+        for (auto it = view.begin(); it != view.end(); ++it) ++n;
+        return n;
+    }
+
+    std::string hostNameAt(int index) const override {
+        auto *h = hostAt(index);
+        return h ? h->getName() : std::string();
+    }
+
+    int nodeCount() const override {
+        auto *h = host();
+        return h ? h->getNodeCount() : 0;
+    }
+
+    std::string rootId() const override {
+        auto *h = host();
+        auto *r = h ? h->getRoot() : nullptr;
+        return r ? r->id : std::string();
+    }
+
+    std::vector<SceneNodeInfo> nodes(int limit) const override {
+        return nodesOf(host() ? host()->getName() : std::string(), limit);
+    }
+
+    std::vector<SceneNodeInfo> nodesOf(const std::string &hostName, int limit) const override {
+        std::vector<SceneNodeInfo> out;
+        SceneHost *h = hostName.empty() ? host() : hostByName(hostName);
+        if (!h) return out;
+        h->walkDepthFirst([&](SceneHost *, int, SceneNode &n) {
+            if (static_cast<int>(out.size()) >= limit) return;
+            out.push_back(toInfo(h, n));
+        });
+        return out;
+    }
+
+    eve::Result<SceneNodeInfo> getNode(const std::string& id) const override {
+        auto *h = host();
+        if (!h) {
+            return eve::Result<SceneNodeInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "no active scene host", "host"));
+        }
+        return getNodeIn(h->getName(), id);
+    }
+
+    eve::Result<SceneNodeInfo> getNodeIn(const std::string& hostName, const std::string& id) const override {
+        SceneHost *h = hostName.empty() ? host() : hostByName(hostName);
+        if (!h) {
+            return eve::Result<SceneNodeInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene host not found", "host"));
+        }
+        SceneNode* n = borrowSceneResult(h->findById(id));
+        if (!n) {
+            return eve::Result<SceneNodeInfo>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
+        return eve::Result<SceneNodeInfo>::success(toInfo(h, *n));
+    }
+
+    eve::Result<void> setNodeTransform(const std::string& id, float x, float y, float z) override {
+        auto *h = host();
+        SceneNode *n = h ? borrowSceneResult(h->findById(id)) : nullptr;
+        if (!n) {
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
+        n->x = x;
+        n->y = y;
+        n->z = z;
+        h->markTransformDirty();
+        return eve::Result<void>::success();
+    }
+
+    eve::Result<void> setNodeVisible(const std::string& id, bool visible) override {
+        auto *h = host();
+        SceneNode *n = h ? borrowSceneResult(h->findById(id)) : nullptr;
+        if (!n) {
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "scene node not found", "node"));
+        }
+        n->visible = visible;
+        return eve::Result<void>::success();
+    }
+
+    void syncTransforms() override { TransformSystem::updateAll(); }
+};
+
+class ProcgenSceneSinkImpl final : public eve::IProcgenSceneSink {
+public:
+    bool applyBatch(const std::string& batchId, const std::vector<eve::ProcgenInstanceDesc>& instances) override {
+        if (publicationActive_) return false;
+        if (batchId.empty()) return false;
+        for (const auto& instance : instances)
+            if (!hasConsistentAssetBinding(instance)) return false;
+        for (const auto& instance : instances)
+            if (!std::isfinite(instance.yaw) || !std::isfinite(instance.pitch) || !std::isfinite(instance.roll))
+                return false;
+        SceneHost* host = hostByName(hostName(batchId));
+        if (!host) host = borrowSceneResult(SceneHost::createHost(hostName(batchId)));
+        if (!host) return false;
+
+        NodeDesc root;
+        root.id   = "pcg-root";
+        root.key  = "pcg-root";
+        root.name = batchId;
+        root.tags = {"pcg", "pcg.batch"};
+        root.children.reserve(instances.size());
+        for (const auto& instance : instances) {
+            NodeDesc child;
+            child.id   = instance.id;
+            child.key  = instance.id;
+            child.name = instance.asset;
+            child.x     = instance.x;
+            child.y     = instance.y;
+            child.z     = instance.z;
+            child.yaw   = glm::radians(instance.yaw);
+            child.pitch = glm::radians(instance.pitch);
+            child.roll  = glm::radians(instance.roll);
+            child.sx    = instance.scaleX;
+            child.sy    = instance.scaleY;
+            child.sz    = instance.scaleZ;
+            child.tags  = {"pcg", "pcg.instance"};
+            if (!instance.asset.empty()) child.tags.push_back("pcg.asset:" + instance.asset);
+            if (instance.assetBinding) {
+                child.tags.push_back("pcg.asset-build:" + instance.assetBinding->buildId.format());
+                child.tags.push_back(instance.assetBinding->rootPose == eve::PrefabRootPose::Authored
+                                         ? "pcg.asset-root-pose:authored"
+                                         : "pcg.asset-root-pose:placement");
+            }
+            root.children.push_back(std::move(child));
+        }
+        std::unordered_set<std::string>           nextIds;
+        std::unordered_map<uint64_t, std::string> nextPointIds;
+        nextIds.reserve(instances.size());
+        nextPointIds.reserve(instances.size());
+        for (const auto& instance : instances) {
+            if (!nextIds.insert(instance.id).second) return false;
+            if (instance.sourcePointId != 0 && !nextPointIds.emplace(instance.sourcePointId, instance.id).second)
+                return false;
+        }
+        const auto previous = ids_.find(batchId);
+        const auto& previousIds = previous == ids_.end() ? emptyIds_ : previous->second;
+        Stats stats;
+        for (const auto& id : nextIds) {
+            if (previousIds.find(id) == previousIds.end()) ++stats.created;
+            else ++stats.reused;
+        }
+        for (const auto& id : previousIds) {
+            if (nextIds.find(id) == nextIds.end()) ++stats.removed;
+        }
+
+        host->setVisible(true);
+        host->setTreeReconcile(std::move(root));
+        TransformSystem::updateHost(host);
+        counts_[batchId] = int(instances.size());
+        ids_[batchId]    = std::move(nextIds);
+        instances_[batchId] = instances;
+        pointIds_[batchId]   = std::move(nextPointIds);
+        revisions_[batchId] = revisions_[batchId] + 1;
+        stats_[batchId]  = stats;
+        return true;
+    }
+
+    eve::Result<uint64_t> replaceBatch(const std::string& batchId, uint64_t targetRevision,
+                                       const std::vector<eve::ProcgenInstanceDesc>& instances) override {
+        const uint64_t currentRevision = batchRevision(batchId);
+        if (batchId.empty() || targetRevision == 0)
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument,
+                "procedural scene snapshot requires a batch id and non-zero target revision", "targetRevision"));
+        if (currentRevision >= targetRevision)
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "procedural scene snapshot revision is stale", "targetRevision"));
+        std::unordered_set<std::string> instanceIds;
+        std::unordered_set<uint64_t>    pointIds;
+        instanceIds.reserve(instances.size());
+        pointIds.reserve(instances.size());
+        for (const auto& instance : instances) {
+            if (!hasConsistentAssetBinding(instance))
+                return eve::Result<uint64_t>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                           "procedural asset label conflicts with its typed binding", "asset"));
+            if (instance.id.empty() || instance.sourcePointId == 0 || !instanceIds.insert(instance.id).second ||
+                !pointIds.insert(instance.sourcePointId).second)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict,
+                    "procedural scene snapshot requires unique instance ids and source PointIds", "instances"));
+        }
+        if (!applyBatch(batchId, instances))
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, "procedural scene provider rejected snapshot commit", "batchId"));
+        revisions_[batchId] = targetRevision;
+        return eve::Result<uint64_t>::success(targetRevision);
+    }
+
+    eve::Result<uint64_t> replaceBatches(const std::vector<eve::ProcgenBatchSnapshot>& snapshots) override {
+        return replaceBatchesCoordinated(snapshots, [] { return eve::Result<void>::success(); });
+    }
+
+    eve::Result<uint64_t> replaceBatchesCoordinated(
+        const std::vector<eve::ProcgenBatchSnapshot>& snapshots,
+        const std::function<eve::Result<void>()>&     commitPreparedOwner) override {
+        if (publicationActive_ || !commitPreparedOwner || ecs::current()->is_deferred())
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::PreconditionViolation,
+                "procedural scene publication requires a commit outside reentry or deferred iteration"));
+        PublicationScope publication(publicationActive_);
+        if (snapshots.empty())
+            return eve::Result<uint64_t>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                       "procedural scene transaction requires at least one snapshot", "snapshots"));
+
+        struct PreparedBatch {
+            const eve::ProcgenBatchSnapshot*          snapshot = nullptr;
+            SceneHost*                                host     = nullptr;
+            SceneHost::Tree                           tree;
+            std::unordered_set<std::string>           ids;
+            std::unordered_map<uint64_t, std::string> pointIds;
+            std::vector<std::string>                  addedIds;
+            std::vector<std::string>                  reusedIds;
+            std::vector<std::string>                  removedIds;
+            Stats                                     stats;
+        };
+        std::vector<PreparedBatch> prepared;
+        prepared.reserve(snapshots.size());
+        std::unordered_set<std::string> batchIds;
+        batchIds.reserve(snapshots.size());
+
+        for (const auto& snapshot : snapshots) {
+            if (snapshot.batchId.empty() || snapshot.targetRevision == 0)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument,
+                    "procedural scene transaction requires batch ids and non-zero revisions", "snapshots"));
+            if (!batchIds.insert(snapshot.batchId).second)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict, "procedural scene transaction repeats a batch id", "snapshots"));
+            if (batchRevision(snapshot.batchId) >= snapshot.targetRevision)
+                return eve::Result<uint64_t>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::Conflict,
+                                           "procedural scene transaction contains a stale revision", snapshot.batchId));
+
+            PreparedBatch batch;
+            batch.snapshot = &snapshot;
+            batch.ids.reserve(snapshot.instances.size());
+            batch.pointIds.reserve(snapshot.instances.size());
+            for (const auto& instance : snapshot.instances) {
+                if (!hasConsistentAssetBinding(instance))
+                    return eve::Result<uint64_t>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                               "procedural asset label conflicts with its typed binding", "asset"));
+                if (!std::isfinite(instance.yaw) || !std::isfinite(instance.pitch) || !std::isfinite(instance.roll))
+                    return eve::Result<uint64_t>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                               "procedural instance rotation must be finite", "rotation"));
+                if (instance.id.empty() || instance.sourcePointId == 0 || !batch.ids.insert(instance.id).second ||
+                    !batch.pointIds.emplace(instance.sourcePointId, instance.id).second)
+                    return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::Conflict,
+                        "procedural scene transaction requires unique instance ids and source PointIds",
+                        snapshot.batchId));
+            }
+            const auto  previous    = ids_.find(snapshot.batchId);
+            const auto& previousIds = previous == ids_.end() ? emptyIds_ : previous->second;
+            for (const auto& id : batch.ids) {
+                if (previousIds.find(id) == previousIds.end()) {
+                    ++batch.stats.created;
+                    batch.addedIds.push_back(id);
+                } else {
+                    ++batch.stats.reused;
+                    batch.reusedIds.push_back(id);
+                }
+            }
+            for (const auto& id : previousIds) {
+                if (batch.ids.find(id) != batch.ids.end()) continue;
+                ++batch.stats.removed;
+                batch.removedIds.push_back(id);
+            }
+
+            batch.host    = hostByName(hostName(snapshot.batchId));
+            NodeDesc root = makeRoot(snapshot.batchId, snapshot.instances);
+            auto     tree = SceneHost::buildDetachedTree(batch.host ? &*batch.host->tree() : nullptr, std::move(root));
+            if (!tree) return eve::Result<uint64_t>::failure(tree.status());
+            batch.tree = std::move(tree).takeValue();
+            prepared.push_back(std::move(batch));
+        }
+
+        auto nextCounts    = counts_;
+        auto nextIds       = ids_;
+        auto nextInstances = instances_;
+        auto nextPointIds  = pointIds_;
+        auto nextRevisions = revisions_;
+        auto nextStats     = stats_;
+        for (const auto& batch : prepared) {
+            const auto& snapshot            = *batch.snapshot;
+            nextCounts[snapshot.batchId]    = int(snapshot.instances.size());
+            nextIds[snapshot.batchId]       = batch.ids;
+            nextInstances[snapshot.batchId] = snapshot.instances;
+            nextPointIds[snapshot.batchId]  = batch.pointIds;
+            nextRevisions[snapshot.batchId] = snapshot.targetRevision;
+            nextStats[snapshot.batchId]     = batch.stats;
+        }
+
+        struct CandidateHosts {
+            std::vector<ecs::EntityHandle> handles;
+            bool                           committed = false;
+            ~CandidateHosts() {
+                if (!committed)
+                    for (const auto& handle : handles)
+                        if (auto* host = ecs::try_get(handle)) ecs::DestroyEntity(host);
+            }
+        } candidates;
+        candidates.handles.reserve(prepared.size());
+        std::vector<eve::Diagnostic> notificationWarnings;
+        std::size_t                  notificationCount = 0;
+        for (const auto& batch : prepared)
+            notificationCount += batch.removedIds.size() + batch.addedIds.size() + batch.reusedIds.size();
+        notificationWarnings.reserve(notificationCount);
+        for (auto& batch : prepared) {
+            if (batch.host) continue;
+            batch.host = borrowSceneResult(SceneHost::createHost(hostName(batch.snapshot->batchId)));
+            if (!batch.host)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Failed, "procedural scene transaction could not allocate all target hosts",
+                    batch.snapshot->batchId));
+            candidates.handles.push_back(ecs::handle_of(batch.host));
+            batch.host->setVisible(false);
+        }
+
+        auto ownerCommit = invokePreparedOwner(commitPreparedOwner);
+        if (!ownerCommit.ok()) return eve::Result<uint64_t>::failure(ownerCommit.status());
+
+        for (auto& batch : prepared) {
+            *batch.host->tree() = std::move(batch.tree);
+            batch.host->setVisible(true);
+        }
+        counts_.swap(nextCounts);
+        ids_.swap(nextIds);
+        instances_.swap(nextInstances);
+        pointIds_.swap(nextPointIds);
+        revisions_.swap(nextRevisions);
+        stats_.swap(nextStats);
+        candidates.committed = true;
+        for (const auto& batch : prepared) TransformSystem::updateHost(batch.host);
+        for (const auto& batch : prepared) {
+            for (const auto& id : batch.removedIds)
+                notifyPublished(*batch.host, "node_removed", id, {}, notificationWarnings);
+            for (const auto& id : batch.addedIds)
+                notifyPublished(*batch.host, "node_added", id, "pcg-root", notificationWarnings);
+            for (const auto& id : batch.reusedIds)
+                notifyPublished(*batch.host, "node_changed", id, "pcg-root", notificationWarnings);
+        }
+        return eve::Result<uint64_t>::success(static_cast<uint64_t>(prepared.size()),
+                                              eve::Status(eve::StatusCode::Applied, std::move(notificationWarnings)));
+    }
+
+    eve::Result<uint64_t> applyDelta(const std::string& batchId, const eve::ProcgenInstanceDelta& delta) override {
+        if (publicationActive_)
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::PreconditionViolation, "procedural scene publication cannot be reentered"));
+        const auto current = revisions_.find(batchId);
+        if (batchId.empty() || current == revisions_.end())
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "procedural scene batch is not published", "batchId"));
+        auto target = eve::buildProcgenInstanceDeltaSnapshot(instances_.at(batchId), current->second, delta);
+        if (!target.ok()) return eve::Result<uint64_t>::failure(target.status());
+        return replaceBatch(batchId, delta.targetRevision, target.value());
+    }
+
+    uint64_t batchRevision(const std::string& batchId) const override {
+        const auto found = revisions_.find(batchId);
+        return found == revisions_.end() ? 0 : found->second;
+    }
+
+    bool removeBatch(const std::string& batchId) override {
+        if (publicationActive_) return false;
+        SceneHost* host = hostByName(hostName(batchId));
+        if (!host) return false;
+        NodeDesc root;
+        root.id   = "pcg-root";
+        root.key  = "pcg-root";
+        root.name = batchId;
+        root.tags = {"pcg", "pcg.batch"};
+        host->setTree(std::move(root));
+        host->setVisible(false);
+        Stats stats;
+        const auto ids = ids_.find(batchId);
+        if (ids != ids_.end()) stats.removed = int(ids->second.size());
+        stats_[batchId] = stats;
+        counts_.erase(batchId);
+        ids_.erase(batchId);
+        instances_.erase(batchId);
+        pointIds_.erase(batchId);
+        revisions_.erase(batchId);
+        return true;
+    }
+
+    eve::Result<uint64_t> removeBatches(const std::vector<std::string>& batchIds) override {
+        return removeBatchesCoordinated(batchIds, [] { return eve::Result<void>::success(); });
+    }
+
+    eve::Result<uint64_t> removeBatchesCoordinated(
+        const std::vector<std::string>&           batchIds,
+        const std::function<eve::Result<void>()>& commitPreparedOwner) override {
+        if (publicationActive_)
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::PreconditionViolation, "procedural scene publication cannot be reentered"));
+        PublicationScope publication(publicationActive_);
+        if (batchIds.empty())
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument,
+                "procedural scene removal transaction requires at least one batch id", "batchIds"));
+        struct PreparedRemoval {
+            std::string              batchId;
+            SceneHost*               host = nullptr;
+            SceneHost::Tree          tree;
+            std::vector<std::string> removedIds;
+            Stats                    stats;
+        };
+        std::vector<PreparedRemoval> prepared;
+        prepared.reserve(batchIds.size());
+        std::unordered_set<std::string> uniqueBatchIds;
+        uniqueBatchIds.reserve(batchIds.size());
+        for (const auto& batchId : batchIds) {
+            const auto ids = ids_.find(batchId);
+            if (batchId.empty() || !uniqueBatchIds.insert(batchId).second)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::Conflict,
+                    "procedural scene removal transaction requires unique non-empty batch ids", "batchIds"));
+            SceneHost* host = hostByName(hostName(batchId));
+            if (ids == ids_.end() || !host)
+                return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::NotFound, "procedural scene removal transaction contains an unpublished batch",
+                    batchId));
+            PreparedRemoval removal;
+            removal.batchId = batchId;
+            removal.host    = host;
+            removal.removedIds.assign(ids->second.begin(), ids->second.end());
+            std::sort(removal.removedIds.begin(), removal.removedIds.end());
+            removal.stats.removed = int(ids->second.size());
+            auto tree             = SceneHost::buildDetachedTree(&*host->tree(), makeRoot(batchId, {}));
+            if (!tree) return eve::Result<uint64_t>::failure(tree.status());
+            removal.tree = std::move(tree).takeValue();
+            prepared.push_back(std::move(removal));
+        }
+
+        auto nextCounts    = counts_;
+        auto nextIds       = ids_;
+        auto nextInstances = instances_;
+        auto nextPointIds  = pointIds_;
+        auto nextRevisions = revisions_;
+        auto nextStats     = stats_;
+        for (const auto& removal : prepared) {
+            nextCounts.erase(removal.batchId);
+            nextIds.erase(removal.batchId);
+            nextInstances.erase(removal.batchId);
+            nextPointIds.erase(removal.batchId);
+            nextRevisions.erase(removal.batchId);
+            nextStats[removal.batchId] = removal.stats;
+        }
+        if (!commitPreparedOwner)
+            return eve::Result<uint64_t>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "procedural scene removal transaction requires a commit",
+                "commitPreparedOwner"));
+        std::vector<eve::Diagnostic> notificationWarnings;
+        std::size_t                  notificationCount = 0;
+        for (const auto& removal : prepared) notificationCount += removal.removedIds.size();
+        notificationWarnings.reserve(notificationCount);
+        auto ownerCommit = invokePreparedOwner(commitPreparedOwner);
+        if (!ownerCommit.ok()) return eve::Result<uint64_t>::failure(ownerCommit.status());
+        for (auto& removal : prepared) {
+            *removal.host->tree() = std::move(removal.tree);
+            removal.host->setVisible(false);
+        }
+        counts_.swap(nextCounts);
+        ids_.swap(nextIds);
+        instances_.swap(nextInstances);
+        pointIds_.swap(nextPointIds);
+        revisions_.swap(nextRevisions);
+        stats_.swap(nextStats);
+        for (const auto& removal : prepared)
+            for (const auto& id : removal.removedIds)
+                notifyPublished(*removal.host, "node_removed", id, {}, notificationWarnings);
+        return eve::Result<uint64_t>::success(static_cast<uint64_t>(prepared.size()),
+                                              eve::Status(eve::StatusCode::Applied, std::move(notificationWarnings)));
+    }
+
+    int instanceCount(const std::string& batchId) const override {
+        const auto found = counts_.find(batchId);
+        return found == counts_.end() ? 0 : found->second;
+    }
+    int lastCreatedCount(const std::string& batchId) const override {
+        const auto found = stats_.find(batchId);
+        return found == stats_.end() ? 0 : found->second.created;
+    }
+    int lastReusedCount(const std::string& batchId) const override {
+        const auto found = stats_.find(batchId);
+        return found == stats_.end() ? 0 : found->second.reused;
+    }
+    int lastRemovedCount(const std::string& batchId) const override {
+        const auto found = stats_.find(batchId);
+        return found == stats_.end() ? 0 : found->second.removed;
+    }
+
+private:
+    bool publicationActive_ = false;
+    struct Stats {
+        int created = 0;
+        int reused  = 0;
+        int removed = 0;
+    };
+    static NodeDesc makeRoot(const std::string& batchId, const std::vector<eve::ProcgenInstanceDesc>& instances) {
+        NodeDesc root;
+        root.id   = "pcg-root";
+        root.key  = "pcg-root";
+        root.name = batchId;
+        root.tags = {"pcg", "pcg.batch"};
+        root.children.reserve(instances.size());
+        for (const auto& instance : instances) {
+            NodeDesc child;
+            child.id   = instance.id;
+            child.key  = instance.id;
+            child.name = instance.asset;
+            child.x     = instance.x;
+            child.y     = instance.y;
+            child.z     = instance.z;
+            child.yaw   = glm::radians(instance.yaw);
+            child.pitch = glm::radians(instance.pitch);
+            child.roll  = glm::radians(instance.roll);
+            child.sx    = instance.scaleX;
+            child.sy    = instance.scaleY;
+            child.sz    = instance.scaleZ;
+            child.tags  = {"pcg", "pcg.instance"};
+            if (!instance.asset.empty()) child.tags.push_back("pcg.asset:" + instance.asset);
+            if (instance.assetBinding) {
+                child.tags.push_back("pcg.asset-build:" + instance.assetBinding->buildId.format());
+                child.tags.push_back(instance.assetBinding->rootPose == eve::PrefabRootPose::Authored
+                                         ? "pcg.asset-root-pose:authored"
+                                         : "pcg.asset-root-pose:placement");
+            }
+            root.children.push_back(std::move(child));
+        }
+        return root;
+    }
+    static std::string hostName(const std::string& batchId) { return "__pcg/" + batchId; }
+    const std::unordered_set<std::string> emptyIds_;
+    std::unordered_map<std::string, int> counts_;
+    std::unordered_map<std::string, std::unordered_set<std::string>> ids_;
+    std::unordered_map<std::string, std::vector<eve::ProcgenInstanceDesc>> instances_;
+    std::unordered_map<std::string, std::unordered_map<uint64_t, std::string>> pointIds_;
+    std::unordered_map<std::string, uint64_t> revisions_;
+    std::unordered_map<std::string, Stats> stats_;
+};
+
+}  // namespace
+
+void registerSceneCapabilities() {
+    static SceneQueryImpl impl;
+    static ProcgenSceneSinkImpl procgenSink;
+    static SceneEntitySpatialProvider spatialProvider;
+    eve::cap::provide<eve::ISceneQuery>(&impl);
+    eve::cap::provide<eve::IProcgenSceneSink>(&procgenSink);
+    eve::cap::addListener<eve::IEntitySpatialProvider>(&spatialProvider);
+}
+
+}  // namespace eve::scene

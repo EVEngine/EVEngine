@@ -1,0 +1,4 @@
+# Local C14 assets; regenerate using ../prepare_assets.py.
+*.png
+provenance.json
+catalog.nut

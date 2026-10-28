@@ -1,0 +1,319 @@
+#include "property_access/squirrel/ReflectedPropertyModel.h"
+
+#include <algorithm>
+#include <cstdlib>
+#include <string_view>
+#include <utility>
+
+namespace eve::property_access {
+namespace {
+
+using eve::Value;
+
+PropertyKind propertyKind(const ReflectedMember &member) {
+    const std::string editor = member.attrString("editor");
+    if (editor == "combo" && !member.attrOptions("options").empty()) return PropertyKind::Enum;
+    if (editor == "color") return PropertyKind::Color;
+    if (editor == "vec2") return PropertyKind::Vec2;
+    if (editor == "vec3") return PropertyKind::Vec3;
+    if (editor == "vec4") return PropertyKind::Vec4;
+    switch (member.value.kind) {
+        case ReflectedValueKind::Bool: return PropertyKind::Bool;
+        case ReflectedValueKind::Integer: return PropertyKind::Integer;
+        case ReflectedValueKind::Float: return PropertyKind::Number;
+        case ReflectedValueKind::String: return PropertyKind::String;
+        case ReflectedValueKind::Array: return PropertyKind::Array;
+        case ReflectedValueKind::Table: return PropertyKind::Map;
+        case ReflectedValueKind::Instance: return PropertyKind::ObjectRef;
+        case ReflectedValueKind::None:
+        case ReflectedValueKind::Other: return PropertyKind::ReadOnlyText;
+    }
+    return PropertyKind::Auto;
+}
+
+bool editableKind(PropertyKind kind) {
+    switch (kind) {
+        case PropertyKind::Bool:
+        case PropertyKind::Integer:
+        case PropertyKind::Number:
+        case PropertyKind::String:
+        case PropertyKind::Enum:
+        case PropertyKind::Color:
+        case PropertyKind::Vec2:
+        case PropertyKind::Vec3:
+        case PropertyKind::Vec4:
+        case PropertyKind::Array:
+        case PropertyKind::Map:
+        case PropertyKind::Struct:
+        case PropertyKind::Action:
+        case PropertyKind::AssetRef:
+            return true;
+        case PropertyKind::ObjectRef:
+        case PropertyKind::ReadOnlyText:
+        case PropertyKind::Auto:
+            return false;
+    }
+    return false;
+}
+
+bool scalar(ReflectedValueKind kind) {
+    return kind == ReflectedValueKind::Bool || kind == ReflectedValueKind::Integer ||
+           kind == ReflectedValueKind::Float || kind == ReflectedValueKind::String;
+}
+
+std::string ownerClass(const Runtime &runtime, const std::string &className,
+                       const std::string &memberName) {
+    // Prefer the most-base class that still declares the member so inherited
+    // fields group under their defining class even when the leaf also lists them.
+    std::string owner;
+    std::string current = className;
+    while (!current.empty()) {
+        const ReflectedClass *reflected = runtime.reflectedClass(current);
+        if (!reflected) break;
+        const auto found = std::find_if(reflected->members.begin(), reflected->members.end(),
+                                        [&memberName](const ReflectedMember &member) {
+                                            return member.name == memberName;
+                                        });
+        if (found != reflected->members.end()) owner = current;
+        current = reflected->base;
+    }
+    return owner.empty() ? className : owner;
+}
+
+PropertyFlag propertyFlags(const ReflectedMember &member, PropertyKind kind) {
+    PropertyFlag flags = PropertyFlag::Runtime;
+    if (!editableKind(kind) || member.attrBool("read_only") || member.attrBool("readonly"))
+        flags = flags | PropertyFlag::ReadOnly;
+    if (member.attrBool("advanced")) flags = flags | PropertyFlag::Advanced;
+    if (member.attrBool("editor_only")) flags = flags | PropertyFlag::EditorOnly;
+    if (member.attrBool("transient")) flags = flags | PropertyFlag::Transient;
+    if (member.attrBool("dangerous")) flags = flags | PropertyFlag::Dangerous;
+    return flags;
+}
+
+ReflectedValue toReflectedValue(const Value &value) {
+    ReflectedValue result;
+    if (const auto *boolean = value.getIf<bool>()) {
+        result.kind    = ReflectedValueKind::Bool;
+        result.boolean = *boolean;
+    } else if (const auto *integer = value.getIf<std::int64_t>()) {
+        result.kind    = ReflectedValueKind::Integer;
+        result.integer = *integer;
+    } else if (const auto *number = value.getIf<double>()) {
+        result.kind     = ReflectedValueKind::Float;
+        result.floating = *number;
+    } else if (const auto *text = value.getIf<std::string>()) {
+        result.kind = ReflectedValueKind::String;
+        result.text = *text;
+    }
+    return result;
+}
+
+Value scalarValue(const ReflectedValue &value) {
+    switch (value.kind) {
+        case ReflectedValueKind::Bool: return Value(value.boolean);
+        case ReflectedValueKind::Integer: return Value(value.integer);
+        case ReflectedValueKind::Float: return Value(value.floating);
+        case ReflectedValueKind::String: return Value(value.text);
+        default: return {};
+    }
+}
+
+const char *scriptValidationCode(std::string_view sharedCode) {
+    if (sharedCode == "property_access.property.read-only") return "property_access.script.read-only";
+    if (sharedCode == "property_access.property.type") return "property_access.script.type";
+    if (sharedCode == "property_access.property.choice") return "property_access.script.choice";
+    if (sharedCode == "property_access.property.finite") return "property_access.script.finite";
+    if (sharedCode == "property_access.property.minimum") return "property_access.script.minimum";
+    if (sharedCode == "property_access.property.maximum") return "property_access.script.maximum";
+    if (sharedCode == "property_access.property.arity") return "property_access.script.arity";
+    return "property_access.script.validation";
+}
+
+Result<void> validationFailure(Result<void> validation) {
+    std::string rule;
+    std::string message;
+    if (const Diagnostic *error = validation.error()) {
+        rule    = std::string(diagnosticRule(*error));
+        message = error->message();
+    }
+    return rejected(scriptValidationCode(rule), std::move(message));
+}
+
+}  // namespace
+
+struct ReflectedPropertyModel::ObserverState {
+    struct Entry {
+        std::uint64_t  id = 0;
+        ChangeCallback callback;
+    };
+    std::uint64_t      nextId = 1;
+    std::vector<Entry> entries;
+};
+
+ReflectedPropertyModel::ReflectedPropertyModel(Runtime &runtime, ssq::Object instance)
+    : runtime_(&runtime), instance_(std::move(instance)), observers_(std::make_shared<ObserverState>()) {
+    rebuildSchema();
+    refresh();
+}
+
+ReflectedPropertyModel::~ReflectedPropertyModel() = default;
+
+void ReflectedPropertyModel::rebuildSchema() {
+    schema_ = {};
+    cachedValues_.clear();
+    if (!runtime_ || instance_.getType() != ssq::Type::INSTANCE) return;
+    schema_.typeId = runtime_->classNameOf(instance_);
+    for (const ReflectedMember &member : runtime_->reflectInstance(instance_)) {
+        if (member.method) continue;
+        PropertyDescriptor descriptor;
+        descriptor.path         = member.name;
+        descriptor.displayName  = member.attrString("label", member.name);
+        descriptor.description  = member.attrString("tooltip", member.attrString("description"));
+        descriptor.category     = member.attrString("category", ownerClass(*runtime_, schema_.typeId, member.name));
+        descriptor.kind         = propertyKind(member);
+        descriptor.flags        = propertyFlags(member, descriptor.kind);
+        descriptor.defaultValue = convertValue(member.name, member.value);
+        descriptor.numeric.minimum =
+            member.findAttribute("min") ? std::optional<double>(member.attrFloat("min")) : std::nullopt;
+        descriptor.numeric.maximum =
+            member.findAttribute("max") ? std::optional<double>(member.attrFloat("max")) : std::nullopt;
+        descriptor.numeric.step =
+            member.findAttribute("step") ? std::optional<double>(member.attrFloat("step")) : std::nullopt;
+        descriptor.numeric.units     = member.attrString("units");
+        descriptor.numeric.precision = static_cast<int>(member.attrFloat("precision", 3.f));
+        descriptor.choices           = member.attrOptions("options");
+        descriptor.presenterHint     = member.attrString("editor");
+        schema_.properties.push_back(std::move(descriptor));
+    }
+    ++revision_;
+}
+
+Value ReflectedPropertyModel::convertValue(const std::string &path, const ReflectedValue &value) const {
+    switch (value.kind) {
+        case ReflectedValueKind::Bool: return Value(value.boolean);
+        case ReflectedValueKind::Integer: return Value(value.integer);
+        case ReflectedValueKind::Float: return Value(value.floating);
+        case ReflectedValueKind::String: return Value(value.text);
+        case ReflectedValueKind::Array: {
+            Value::Array      result;
+            const std::size_t count = runtime_->arraySize(instance_, path);
+            result.reserve(count);
+            for (std::size_t index = 0; index < count; ++index) {
+                const ReflectedValue entry = runtime_->arrayGet(instance_, path, index);
+                if (scalar(entry.kind))
+                    result.push_back(scalarValue(entry));
+                else
+                    result.emplace_back();
+            }
+            return Value(std::move(result));
+        }
+        case ReflectedValueKind::Table: {
+            Value::Object result;
+            for (const std::string &key : runtime_->tableKeys(instance_, path)) {
+                const ReflectedValue entry = runtime_->tableGet(instance_, path, key);
+                if (scalar(entry.kind))
+                    result.emplace(key, scalarValue(entry));
+                else
+                    result.emplace(key, Value());
+            }
+            return Value(std::move(result));
+        }
+        case ReflectedValueKind::Instance: {
+            const ssq::Object nested = runtime_->readObjectProperty(instance_, path);
+            return Value(runtime_->classNameOf(nested));
+        }
+        case ReflectedValueKind::None:
+        case ReflectedValueKind::Other: return {};
+    }
+    return {};
+}
+
+std::optional<Value> ReflectedPropertyModel::read(const std::string &path) const {
+    if (!runtime_ || !schema_.find(path)) return std::nullopt;
+    return convertValue(path, runtime_->readProperty(instance_, path));
+}
+
+Result<void> ReflectedPropertyModel::write(const std::string &path, const Value &value) {
+    auto descriptor = schema_.find(path);
+    if (!descriptor) return rejected("property_access.script.missing", "Property is not reflected");
+    Result<void> validation = validatePropertyValue(descriptor->get(), value);
+    if (!validation.ok()) return validationFailure(std::move(validation));
+
+    const PropertyKind kind = descriptor->get().kind;
+    if (kind == PropertyKind::Array || kind == PropertyKind::Color || kind == PropertyKind::Vec2 ||
+        kind == PropertyKind::Vec3 || kind == PropertyKind::Vec4) {
+        const auto *items = value.getIf<Value::Array>();
+        if (!items) return rejected("property_access.script.type", "Unsupported property value type");
+        std::size_t current = runtime_->arraySize(instance_, path);
+        while (current > items->size()) {
+            if (!runtime_->arrayRemove(instance_, path, current - 1))
+                return rejected("property_access.script.write", "Runtime rejected the property write");
+            --current;
+        }
+        for (std::size_t index = 0; index < items->size(); ++index) {
+            const ReflectedValue reflected = toReflectedValue((*items)[index]);
+            if (reflected.empty()) return rejected("property_access.script.type", "Unsupported property value type");
+            if (index < current) {
+                if (!runtime_->arraySet(instance_, path, index, reflected))
+                    return rejected("property_access.script.write", "Runtime rejected the property write");
+            } else if (!runtime_->arrayAppend(instance_, path, reflected)) {
+                return rejected("property_access.script.write", "Runtime rejected the property write");
+            }
+        }
+    } else if (kind == PropertyKind::Map || kind == PropertyKind::Struct) {
+        const auto *fields = value.getIf<Value::Object>();
+        if (!fields) return rejected("property_access.script.type", "Unsupported property value type");
+        const std::vector<std::string> existing = runtime_->tableKeys(instance_, path);
+        for (const std::string &key : existing) {
+            if (fields->find(key) != fields->end()) continue;
+            if (!runtime_->tableRemove(instance_, path, key))
+                return rejected("property_access.script.write", "Runtime rejected the property write");
+        }
+        for (const auto &[key, entry] : *fields) {
+            const ReflectedValue reflected = toReflectedValue(entry);
+            if (reflected.empty()) return rejected("property_access.script.type", "Unsupported property value type");
+            if (!runtime_->tableSet(instance_, path, key, reflected))
+                return rejected("property_access.script.write", "Runtime rejected the property write");
+        }
+    } else {
+        ReflectedValue reflected = toReflectedValue(value);
+        if (reflected.empty()) return rejected("property_access.script.type", "Unsupported property value type");
+        if (!runtime_->writeProperty(instance_, path, reflected))
+            return rejected("property_access.script.write", "Runtime rejected the property write");
+    }
+
+    const Value applied = convertValue(path, runtime_->readProperty(instance_, path));
+    const auto  found   = cachedValues_.find(path);
+    if (found == cachedValues_.end() || found->second != applied) emit(path, applied);
+    return accepted();
+}
+
+Subscription ReflectedPropertyModel::subscribe(ChangeCallback callback) {
+    const std::uint64_t id = observers_->nextId++;
+    observers_->entries.push_back({id, std::move(callback)});
+    std::weak_ptr<ObserverState> weak = observers_;
+    return Subscription([weak, id]() {
+        if (const auto state = weak.lock())
+            std::erase_if(state->entries, [id](const ObserverState::Entry &entry) { return entry.id == id; });
+    });
+}
+
+void ReflectedPropertyModel::refresh() {
+    for (const PropertyDescriptor &descriptor : schema_.properties) {
+        const std::optional<Value> current = read(descriptor.path);
+        if (!current) continue;
+        const auto found = cachedValues_.find(descriptor.path);
+        if (found == cachedValues_.end() || found->second != *current) emit(descriptor.path, *current);
+    }
+}
+
+void ReflectedPropertyModel::emit(const std::string &path, const Value &value) {
+    cachedValues_[path] = value;
+    const PropertyChange change{path, value, ++revision_};
+    const auto           snapshot = observers_->entries;
+    for (const ObserverState::Entry &entry : snapshot)
+        if (entry.callback) entry.callback(change);
+}
+
+}  // namespace eve::property_access

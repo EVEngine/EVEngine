@@ -1,3 +1,5 @@
+
+#include "common/Export.h"
 #ifndef EVE_TENSOR_KERNELGEN_H
 #define EVE_TENSOR_KERNELGEN_H
 
@@ -11,7 +13,7 @@ namespace eve::tensor {
 /**
  * A generated, fully specialized compute kernel (AITemplate-style codegen).
  *
- * Shapes are baked into the GLSL as constants; the only runtime inputs are the
+ * Shapes are baked into the GLSL or WGSL as constants; the only runtime inputs are the
  * storage buffers themselves, so a CompiledFunction is a static executable
  * program with no per-dispatch shape computation.
  *
@@ -21,11 +23,15 @@ namespace eve::tensor {
  *    `inputsReadPass1` inputs + `statsCount` stats buffers; pass2 binds all
  *    inputs + stats + the output as the last binding.
  */
+/** @brief KernelSpec public API. */
 struct KernelSpec {
     std::string pass1;   // empty when single-pass
     std::string pass2;   // always set
     int groupsX1 = 0, groupsY1 = 1, groupsZ1 = 1;
     int groupsX2 = 0, groupsY2 = 1, groupsZ2 = 1;
+    /** @brief Input slot to representative slot; empty means identity. WGSL aliases repeated
+     * read inputs to one declaration so WebGPU never binds overlapping writable ranges. */
+    std::vector<int> inputRepresentatives;
     int inputCount = 0;          // total group input buffers
     int inputsReadPass1 = 0;     // leading inputs bound in pass1
     int statsCount = 0;          // per-row stats buffers (allocated by the runtime)
@@ -43,15 +49,19 @@ struct KernelSpec {
 /**
  * Generate the specialized GLSL kernel(s) for a fused group.
  * Returns false when the group cannot be lowered (e.g. too many inputs for the
- * fixed 8-binding descriptor layout) — callers fall back to the CPU interpreter.
+ * fixed 8-binding descriptor layout) — callers use the CPU interpreter.
+ * This compatibility facade preserves the optimizer alternate-execution contract; new APIs should return a named status
+ * enum or Result.
  */
-bool generateKernel(const Graph &graph, const FusedGroup &group, KernelSpec &out);
+/** @brief Generate kernel. */
+EVENGINE_API_DOMAINS bool generateKernel(const Graph &graph, const FusedGroup &group, KernelSpec &out);
 
 /**
  * Generate a specific matmul variant for autotuning (tiled=false: thread-per-
  * output naive; tiled=true: shared-memory 16x16 tiles). Only rank-2 matmuls
  * support the tiled variant.
  */
+/** @brief Generate mat mul variant. */
 bool generateMatMulVariant(const Graph &graph, const FusedGroup &group, bool tiled,
                            KernelSpec &out);
 

@@ -1,0 +1,82 @@
+#version 450
+
+#extension GL_GOOGLE_include_directive : enable
+#include "gpudriven_tables.glsl"
+#include "gpu_driven_cull_common.glsl"
+
+layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
+
+layout(set = 1, binding = 2, std430) readonly buffer Meshes {
+    GpuMeshRecord meshes[];
+};
+layout(set = 1, binding = 17, std430) readonly buffer SourceInstances {
+    GpuInstance instances[];
+};
+layout(set = 1, binding = 10, std430) readonly buffer Hzb {
+    float hzb[];
+};
+layout(set = 1, binding = 7, std430) coherent buffer VisibleFlags {
+    uint flags[];
+};
+
+bool frustumTest(vec3 center, float radius) {
+    for (int p = 0; p < 6; ++p) {
+        vec4 pl = params.frustumPlanes[p];
+        if (dot(pl.xyz, center) + pl.w <= -radius) return false;
+    }
+    return true;
+}
+
+bool hzbTest(vec3 center, float radius, vec3 eye) {
+    vec4 clip = params.viewProj * vec4(center, 1.0);
+    if (clip.w <= params.clipNearFar.x) return true;  // behind near plane: let raster clip
+    vec3 ndc = clip.xyz / clip.w;
+    if (abs(ndc.x) > 1.0 || abs(ndc.y) > 1.0 || ndc.z > 1.0) return true;  // outside: frustum handles
+    vec2 uv = ndc.xy * 0.5 + 0.5;
+    // Test the FRONT of the bounding sphere, not its center: the HZB this
+    // frame contains the same objects being culled, and a sphere's own front
+    // surface is closer than its center - otherwise every sphere occludes
+    // itself and gets culled.
+    vec3 toEye = normalize(eye - center);
+    vec4 clipFront = params.viewProj * vec4(center + toEye * radius, 1.0);
+    float frontZ = clipFront.z / clipFront.w - 0.002;  // nudge toward camera vs own depth
+    float viewDepth = length(center - eye);
+    float screenRadius = radius * params.clipNearFar.z / max(viewDepth, 1e-4);
+    float px = max(2.0 * screenRadius, 1.0);
+    uint mip = min(uint(ceil(log2(px))), uint(params.hzbInfo.x));
+    uint mw = max(uint(params.hzbInfo.z) >> mip, 1u);
+    uint mh = max(uint(params.hzbInfo.w) >> mip, 1u);
+    uint off = floatBitsToUint(hzb[uint(params.hzbInfo.y) + mip]);
+    uint base = uint(params.hzbInfo.y) + kHZBHeaderWords + off;
+    int x0 = clamp(int(uv.x * float(mw)) - 1, 0, int(mw) - 1);
+    int y0 = clamp(int(uv.y * float(mh)) - 1, 0, int(mh) - 1);
+    int x1 = min(x0 + 1, int(mw) - 1);
+    int y1 = min(y0 + 1, int(mh) - 1);
+    float a = hzb[base + uint(y0) * mw + uint(x0)];
+    float b = hzb[base + uint(y0) * mw + uint(x1)];
+    float c = hzb[base + uint(y1) * mw + uint(x0)];
+    float d = hzb[base + uint(y1) * mw + uint(x1)];
+    // Occluded only if all four candidate texels are closer than us.
+    float m = min(min(a, b), min(c, d));
+    // Depth values near 0 are "no reliable blocker" (uninitialized/corner
+    // garbage on this driver); never occlude against them.
+    if (m < 0.001) return true;
+    return frontZ <= m;
+}
+
+void main() {
+    uint i = gl_GlobalInvocationID.x;
+    if (i >= params.counts.x) return;
+
+    GpuInstance inst = instances[i];
+    if (inst.meshId == kInvalidSlot) return;
+    GpuMeshRecord mesh = meshes[inst.meshId];
+    vec3 center = (inst.model * vec4(mesh.boundsCenterRadius.xyz, 1.0)).xyz;
+    float radius = mesh.boundsCenterRadius.w;
+
+    bool visible = frustumTest(center, radius);
+    if (visible && params.clipNearFar.w > 0.5) {
+        visible = hzbTest(center, radius, params.cameraPos.xyz);
+    }
+    flags[i] = visible ? 1u : 0u;
+}

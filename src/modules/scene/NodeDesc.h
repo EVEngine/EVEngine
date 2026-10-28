@@ -1,4 +1,8 @@
 #pragma once
+#include "common/Export.h"
+
+
+#include "common/Identity.h"
 
 #include <string>
 #include <utility>
@@ -14,6 +18,14 @@ class SceneHost;
  */
 struct NodeDesc {
     std::string id;
+    /**
+     * @brief Optional persisted object identity.
+     *
+     * `id` remains the legacy host-local locator used by scripts and
+     * reconciliation. This UUID is the identity that may cross a save/load
+     * or process boundary; it is never an ECS entity id.
+     */
+    eve::SceneObjectId persistentId;
     /** @brief Reconciliation key; defaults to id when empty. */
     std::string key;
     std::string name;
@@ -32,38 +44,52 @@ struct NodeDesc {
 
     std::vector<NodeDesc> children;
 
+    /** @brief With id. */
     NodeDesc &withId(std::string v) {
         id = std::move(v);
         return *this;
     }
+    /** @brief Assign a stable persisted scene-object UUID. */
+    NodeDesc &withPersistentId(eve::SceneObjectId v) {
+        persistentId = v;
+        return *this;
+    }
+    /** @brief With key. */
     NodeDesc &withKey(std::string v) {
         key = std::move(v);
         return *this;
     }
+    /** @brief With name. */
     NodeDesc &withName(std::string v) {
         name = std::move(v);
         return *this;
     }
+    /** @brief With space. */
     NodeDesc &withSpace(std::string v) {
         space = std::move(v);
         return *this;
     }
+    /** @brief With visible. */
     NodeDesc &withVisible(bool v) {
         visible = v;
         return *this;
     }
+    /** @brief With tag. */
     NodeDesc &withTag(std::string v) {
         tags.push_back(std::move(v));
         return *this;
     }
+    /** @brief With tags. */
     NodeDesc &withTags(std::vector<std::string> v) {
         tags = std::move(v);
         return *this;
     }
+    /** @brief With layer. */
     NodeDesc &withLayer(int v) {
         layer = v;
         return *this;
     }
+    /** @brief With bounds. */
     NodeDesc &withBounds(float minX, float minY, float minZ, float maxX, float maxY,
                          float maxZ) {
         bminX = minX;
@@ -75,42 +101,52 @@ struct NodeDesc {
         hasBounds = true;
         return *this;
     }
+    /** @brief With position. */
     NodeDesc &withPosition(float px, float py, float pz = 0.f) {
         x = px;
         y = py;
         z = pz;
         return *this;
     }
+    /** @brief With rotation. */
     NodeDesc &withRotation(float y_, float p = 0.f, float r = 0.f) {
         yaw = y_;
         pitch = p;
         roll = r;
         return *this;
     }
+    /** @brief With scale. */
     NodeDesc &withScale(float s) {
         sx = sy = sz = s;
         return *this;
     }
+    /** @brief With scale xyz. */
     NodeDesc &withScaleXYZ(float sx_, float sy_, float sz_) {
         sx = sx_;
         sy = sy_;
         sz = sz_;
         return *this;
     }
+    /** @brief Child. */
     NodeDesc &child(NodeDesc c) {
         children.push_back(std::move(c));
         return *this;
     }
 
+    /** @brief Reconcile key. */
     const std::string &reconcileKey() const { return key.empty() ? id : key; }
 };
 
-NodeDesc node(std::string id, std::vector<NodeDesc> children = {}, std::string name = "");
-NodeDesc group(std::vector<NodeDesc> children = {}, std::string id = "");
+/** @brief Node. */
+EVENGINE_API_PLATFORM NodeDesc node(std::string id, std::vector<NodeDesc> children = {}, std::string name = "");
+/** @brief Group. */
+EVENGINE_API_PLATFORM NodeDesc group(std::vector<NodeDesc> children = {}, std::string id = "");
 /** @brief Conditional: include `child` only when `cond` is true (empty group otherwise). */
-NodeDesc when(bool cond, NodeDesc child);
-NodeDesc whenElse(bool cond, NodeDesc ifTrue, NodeDesc ifFalse);
+EVENGINE_API_PLATFORM NodeDesc when(bool cond, NodeDesc child);
+/** @brief When else. */
+EVENGINE_API_PLATFORM NodeDesc whenElse(bool cond, NodeDesc ifTrue, NodeDesc ifFalse);
 
+/** @brief Applies tree. */
 void applyTree(SceneHost *host, NodeDesc root);
 /** @brief Key-aware patch when structure matches; else full replace. Returns true if full rebuild. */
 bool applyTreeReconcile(SceneHost *host, NodeDesc root);

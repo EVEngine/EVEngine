@@ -15,6 +15,81 @@ particles.update(dt);
 particles.render(gfx);
 ```
 
+## 配置热重载观察
+
+`setAutoReload(true)`（默认开启）后，模块会在 `pollConfigs()` 或模块更新阶段
+观察绑定配置文件的修改时间。`getConfigReloadObservation()` 返回最近一次明确观察
+到的状态字符串：`"unbound"`（没有绑定配置文件）、
+`"mtime_polling_unchanged"`（文件未改变）、`"mtime_polling_reloaded"`（已重新加载）、
+`"mtime_unavailable"`（无法取得文件修改时间）或
+`"mtime_polling_reload_failed"`（检测到变化但重新加载失败）。该接口只报告观察结果，
+不会代替 `reloadConfig()`；读取失败时发射器仍保留原配置，调用方可据此记录诊断或重试。
+
+## 版本化多发射器特效资产
+
+复杂特效应保存为 `eve.particle-effect` 资产，而不是让玩法脚本逐个拼装发射器。当前接受 schema **v1** 与 **v2**（更高版本失败关闭）。支持版本上的未知字段会被忽略；重名层、无效配置或坏路由/时间线引用会拒绝实例化。
+
+- **v1**：命名层、嵌入式 `emitter` 或外部 `config`、局部偏移/旋转、禁用层、参数默认值与逐层覆盖。
+- **v2**：在 v1 之上增加 `eventRoutes`（编译为子发射器）与 `timeline`（`duration` / `looping` / `cues`）。v1 资产也可选携带这两块字段。
+
+参考特效包见 `examples/particle-effects/`（`fire` / `smoke` / `impact` / `trail` / `weather`）。
+
+```json
+{
+  "type": "eve.particle-effect",
+  "version": 2,
+  "parameters": { "intensity": 1.0 },
+  "eventRoutes": [
+    { "from": "core", "on": "death", "to": "smoke", "inheritVelocity": 0.2 }
+  ],
+  "timeline": {
+    "duration": 1.2,
+    "looping": false,
+    "cues": [
+      { "time": 0.0, "action": "emit", "emitter": "core", "count": 24 },
+      { "time": 0.2, "action": "setParameter", "parameter": "intensity", "value": 1.5 }
+    ]
+  },
+  "emitters": [
+    {
+      "name": "core",
+      "offset": [0, -6],
+      "emitter": {
+        "buffer": 128,
+        "preset": "fire",
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "size", "scale": 1.0 }
+        ]
+      }
+    },
+    { "name": "smoke", "config": "emitters/smoke.json" }
+  ]
+}
+```
+
+时间线 `action`：`start` / `stop` / `pause` / `reset` / `emit` / `setParameter`。`Particles.update` / `advance` 会推进已 `start` 且带时间线的特效时钟。
+
+```squirrel
+local impact = particles.newEffectFromFile("effects/impact.effect.json");
+if (impact == null) {
+    print(particles.getLastEffectError() + "\n");
+} else {
+    impact.setPosition(480, 320);
+    impact.setRotation(0.5);
+    impact.setFloatParameter("intensity", 1.4);
+    impact.start();
+    local sparks = impact.getEmitterByName("sparks"); // 仍可精调单层
+}
+```
+
+`newEffectFromText()` 供编辑器预览未落盘的 JSON。组对象提供 `setPosition`、`setRotation`、`setScale`、`setLayer`、`setVisible`、`start`、`pause`、`stop`、`reset`、命名层 `emit`、`updateTimeline` / `getTimelineSeconds` / `isTimelinePlaying`，以及事务式 `reloadFromFile`（解析失败时保留旧实例与世界变换）。组销毁时会一起回收所拥有的发射器。短命玩法特效可用 `ParticleEmitterPool.acquire/recycle`；`idleCount()` 返回池中空闲发射器数量，`clear()` 释放全部空闲实例。
+
+### SDF 碰撞与运动向量策略
+
+`IParticleSdfField`（`common/ParticleSdf.h`）是借用的 2D 有符号距离接口；`setSdfField` + `setCollision("bounce"|"kill"|"stop", …)` 在 CPU 路径采样。GPU 常驻回退原因为 `sdf`。
+
+`setMotionVectorPolicy("none"|"velocity"|"spawn_delta")` 记录资产策略，`getMotionVectorPolicy()` 读回规范化后的策略名；在图形后端真正写入速度缓冲前，`isMotionVectorActive()` 恒为 false。
+
 ## 绑定到动态骨骼
 
 粒子仍是 2D。支持多种运行时骨骼源；每帧 `particles.update` 会自动 `syncAttach`。
@@ -179,6 +254,80 @@ JSON 等价配置：
 - `noise` 为 CPU 值噪声湍流（强度/频率/时间流速），适合烟雾、火焰的自然扰动。
 - `maxDeltaTime` 限制单帧模拟步长，防止卡顿后的粒子爆炸。
 
+## 可复现播放、固定步进与按距离发射
+
+需要录制回放、网络同步、慢动作或稳定拖尾时，可显式控制粒子时间线：
+
+```squirrel
+local trail = particles.newEmitter(512);
+trail.setRandomSeed(20260826);             // 每次 start() 重放相同随机序列
+trail.setAutoRandomSeed(false);
+trail.setEmitterLifetime(1.5);
+trail.setLooping(true);                    // 有限时间线循环，burst 也会重新触发
+trail.setPlaybackSpeed(0.5);               // 半速播放；0 = 冻结
+trail.setFixedTimeStep(1.0 / 120.0, 8);    // 固定步长 + 每帧最多追 8 步
+trail.setEmissionRateOverDistance(0.25);   // 每移动 4 个世界单位发射 1 个
+trail.start();
+```
+
+JSON 等价配置：
+
+```json
+{
+  "randomSeed": 20260826,
+  "autoRandomSeed": false,
+  "emitterLife": 1.5,
+  "looping": true,
+  "playbackSpeed": 0.5,
+  "fixedTimeStep": 0.008333333,
+  "maxSubSteps": 8,
+  "emissionRateOverDistance": 0.25
+}
+```
+
+- 固定种子会让寿命、速度、方向、大小、旋转、发射形状和序列帧起点等随机采样可复现；`autoRandomSeed: true`（默认）则每次 `start()` 生成新序列。
+- 固定步进由 `maxSubSteps` 限制追帧工作量，超过上限的时间债务会被丢弃，避免暂停恢复后形成长时间尖峰。
+- 按距离发射会沿上一位置到当前位置的线段均匀插值，世界空间拖尾不会因帧率变化形成粒子团。第一次更新只建立运动基线，不会补发创建前的路径。
+
+## 质量等级、预算、剔除与性能统计
+
+大规模战斗或天气效果应通过运行时预算稳定降级，而不是等粒子缓冲溢出：
+
+```squirrel
+particles.setQualityLevel(2);       // 0=最低，3=最高
+particles.setBudget(50000, 256);    // 全局存活粒子软上限、每帧模拟发射器上限；0=不限
+
+local heroFx = particles.newEmitter(2048);
+heroFx.setPriority(100);            // 高优先级先获得模拟/生成预算
+heroFx.setMinimumQuality(0);        // 所有质量等级都保留
+heroFx.setCullingMode("always");    // 即使离屏也继续模拟
+heroFx.setMaxSpawnPerFrame(256);
+
+local ambience = particles.newEmitter(8192);
+ambience.setPriority(-10);
+ambience.setMinimumQuality(2);
+ambience.setCullingMode("pause");  // 离屏或超出距离时冻结
+ambience.setCullDistance(1800);
+ambience.setMaxSpawnPerFrame(96);
+```
+
+JSON 发射器策略：
+
+```json
+{
+  "priority": -10,
+  "minimumQuality": 2,
+  "cullingMode": "pause",
+  "cullDistance": 1800,
+  "maxSpawnPerFrame": 96
+}
+```
+
+- 发射器按 `priority` 从高到低分配每帧模拟器数量和剩余粒子空间；总粒子数是软上限，调低预算不会立即删除已经存活的粒子，但会停止超额生成，让它们自然死亡。
+- `cullingMode`：`"automatic"`（默认，仅跳过离屏且为空的发射器）、`"pause"`（离屏时冻结全部模拟）、`"always"`（关键玩法效果始终模拟）。渲染阶段仍会跳过确定不可见的粒子。
+- `minimumQuality` 高于当前全局质量等级时，发射器冻结且不渲染；恢复质量后继续运行，不破坏已有粒子状态。
+- 每次 `update`/`render` 后可读取 `getLastSimulatedEmitters()`、`getLastCulledEmitters()`、`getLastBudgetSkippedEmitters()`、`getLastParticleCount()`、`getLastSpawnedParticles()`、`getLastDroppedSpawns()`、`getLastRenderedParticles()`、`getLastSimulationMs()` 与 `getLastRenderMs()`，用于 HUD、自动伸缩和性能回归。
+
 ## 碰撞与子发射器
 
 ```squirrel
@@ -196,7 +345,41 @@ sparks.addSubEmitter(smoke, "death", 0.3);  // 继承 30% 速度
 
 JSON：`collision: {mode, radius, restitution, lifetimeLoss}`、`collisionBounds: {enabled, minX, minY, maxX, maxY}`、`worldCollision: true`。子发射器目前通过脚本 `addSubEmitter(target, trigger, inherit)` 关联（trigger 为 `"birth"` / `"death"` / `"collision"`）。
 
-拖尾：`setRenderMode("stretched", factor)` 或 JSON `renderMode: "stretched"` + `stretch`，粒子沿速度方向拉伸成彗星/流光。
+精灵朝向统一由 `setRenderMode` 控制：`"billboard"` 使用粒子自身旋转，`"axis"` 配合 `setRenderAxis(degrees)` 固定到屏幕空间轴，`"stretched"`（也接受 `"velocity"`）按速度方向拉伸。JSON 对应 `renderMode`、`renderAxis` 和 `stretch`。
+
+透明粒子可用 `setSortMode("none" | "oldest" | "youngest" | "distance")` 选择稳定的逐发射器提交顺序，`getSortMode()` 返回规范化后的策略。`distance` 在有相机时按远到近排列。CPU 路径按索引重排后提交；GPU 常驻路径在压缩后的 SSBO 上做索引 bitonic 排序，绘制时通过 sorted-index 间接访问，不移动粒子缓冲本身。`distance` 在无相机时退化为无序绘制。
+
+连续拖尾使用 `setRibbon(width, minSegmentLength)`，它按稳定的粒子出生顺序连接相邻控制点，跳过过短段，并沿段方向生成带宽度的纹理四边形；JSON 为 `ribbon: {width, minSegmentLength}`。CPU 路径按存活数组邻接连接；GPU 常驻路径用 spawn `birthSerial` 做索引排序后再生成段，适合配合 `setEmissionRateOverDistance` 制作弹道、刀光和移动轨迹。
+
+`setSoftParticles(true, depth, fadeDistance)` 让常驻粒子采样当前 G-buffer 的线性场景深度，在与几何相交或被遮挡时平滑衰减 alpha；JSON 为 `softParticles: {enabled, depth, fadeDistance}`，深度值均为 `[0,1]` 线性深度。`isSoftParticlesActive()` 只有在 GPU 常驻渲染器已激活且当前帧确实产生场景深度时才返回 true；纯 2D 帧不会伪造深度，而是保持普通粒子外观。
+
+粒子材质默认是 `unlit`，不受场景灯光影响。`setMaterialMode("lit")` 会让粒子接收现有 2D 环境光和点光/方向光；配合 `setNormalTexture(normalTex)` 时使用切线空间法线贴图，否则使用无贴图的逐粒子中心光照。JSON 可写为：
+
+```json
+{
+  "material": {
+    "mode": "lit",
+    "normalTexture": "particles/smoke-normal.png"
+  }
+}
+```
+
+Lit/法线贴图目前明确使用 CPU 粒子模拟加 GPU 2D lit 绘制；即使请求了 `gpuSimulation`，也会安全回退，不会静默忽略灯光。切回 `unlit` 后可重新满足 GPU 常驻条件。
+
+`setMaterialMode("distortion")` 把粒子纹理解释为屏幕空间位移场：R/G 的 0.5 表示零偏移，0/1 表示负/正方向，A 控制羽化覆盖；`setDistortionStrength(pixels)`（`getDistortionStrength()` 可读回）设置最大折射像素数。它采样同一帧已解析的 3D 场景颜色，因此纯 2D 帧或离屏 Canvas 不会伪造背景。JSON 示例：`material: {mode: "distortion", distortionStrength: 12}`。Distortion 当前使用 CPU 粒子模拟和专用 GPU 合成管线。
+
+运行时诊断可读取 `getSimulationBackend()`（`"cpu"` / `"gpu"`）和 `getGpuFallbackReason()`。后者在 GPU 已激活时为空；可返回 `disabled`、`backend_unavailable`、`pending_activation`，或具体功能原因：`canvas`、`custom_shader`、`collision`、`sdf`、`force_fields`、`sub_emitters`、`particle_lights`、`curves`、`lit_material`、`distortion_material`。`isGpuFeatureSetSupported()` 只检查当前功能组合，不把机器是否支持 Vulkan resident 后端混在一起。
+
+玩法和效果资产可通过命名浮点参数实时驱动 emitter，无需重建或覆盖基础配置：
+
+```squirrel
+fire.setFloatParameter("intensity", 1.5);
+fire.bindFloatParameter("intensity", "emission", 1.0, 0.0);
+fire.bindFloatParameter("intensity", "speed", 0.5, 0.25);
+fire.bindFloatParameter("intensity", "size", 0.35, 0.65);
+```
+
+支持的 target 是 `emission`、`speed`、`size`、`playback`，解析公式为 `max(0, value * scale + offset)`；参数缺失或未绑定时倍率为 1。JSON 使用 `parameters` 对象和 `parameterBindings` 数组。这些值在 CPU 与 GPU resident 的生成输入上保持一致，适合武器充能、天气强度、角色状态与关卡脚本驱动。
 
 健壮性：`overflowMode`（`"drop"` 默认 / `"pause"` 暂停发射直到有空位 / `"warn"` 日志提示）；`setMaxDeltaTime` 限制单帧步长；带相机的发射器在屏幕外且无存活粒子时会跳过模拟。
 
@@ -220,7 +403,7 @@ JSON：`forceFields: [{x, y, radius, strength, falloff}]`；`lights: {enabled, m
 
 ## GPU 加速模拟
 
-`setGpuSimulation(true)` 或 JSON `"gpuSimulation": true` 可为单个发射器开启 GPU 模拟：每粒子的运动积分（重力、阻尼、限速、径向/切向加速度、速度帧、噪声湍流、旋转、序列帧推进、寿命衰减）在计算着色器中执行，生成与回收、碰撞、子发射器仍由 CPU 处理。不可用（无 GPU 设备/计算管线失败）时自动回退到 CPU 模拟，行为保持一致。
+`setGpuSimulation(true)` 或 JSON `"gpuSimulation": true` 会请求常驻 GPU 后端。首次可提交帧把当前新生粒子上传到后端拥有的多帧 SSBO；之后更新、死亡剔除、存活压缩和 `VkDrawIndirectCommand` 都在同一帧命令缓冲内完成。渲染直接读取压缩后的 SSBO，不逐帧回读粒子状态，也不为每个发射器单独提交或等待队列。CPU 只维护确定性的发射调度、预算和寿命数量估计。
 
 ```squirrel
 local embers = particles.newEmitter(20000);  // 上万粒子场景
@@ -229,11 +412,19 @@ embers.setGravity(0, 30);
 embers.start();
 ```
 
-实现说明：粒子状态以 16 个 float/粒子存放在 SSBO（`ParticleGpuKernel.h`），每帧 upload → dispatch（64 线程/组）→ readback 后走原有渲染路径；渲染仍是 CPU 批量四边形，因此收益集中在把每粒子物理计算移到 GPU。该模式下暂不参与 GPU 的项：力场、噪声外的 CPU 专属逻辑仍在 CPU 侧生效（碰撞等）。GLSL 内核可通过 `glslc` 单独编译验证（`ParticleGpuKernel.h` 内注释含布局说明）。
+调用 `isGpuSimulationActive()` 可区分“资产请求 GPU”与“本帧已经迁移到 GPU”。`particles.getLastGpuResidentEmitters()` 和 `particles.getLastGpuResidentParticles()` 可用于性能 HUD 和自动质量伸缩。后者是 CPU 侧精确寿命估计；后端的存活、生成、死亡、丢弃和间接实例计数采用帧槽延迟读数，不会阻塞当前帧。
+
+当前常驻 GPU 后端覆盖基础点/线/矩形/椭圆发射、重力、线性/径向/切向加速度、阻尼、限速、噪声、本地/世界空间、旋转、尺寸和起止颜色、flipbook、拉伸、ribbon（birthSerial 排序段）、oldest/youngest/distance 透明排序与常用混合模式。需要玩法回调或逐粒子 CPU 状态的功能会自动保留在确定性 CPU 后端，包括碰撞、力场、子发射器、粒子灯光、自定义 shader/canvas，以及自定义速度/尺寸/旋转曲线和多段颜色渐变。没有可用图形后端时也安全回退 CPU。
+
+着色器源位于 `graphics/shaders/particle_resident.*`（含 `particle_resident_sort.comp`）；修改后运行 `python scripts/compile_particle_gpu_shaders.py` 更新随引擎编译的 SPIR-V 与 include 文件。
 
 ## 对象关系与调用时机
 
 `Particles` 管理 Emitter 及配置、模拟、渲染系统；Emitter 持有容量、发射配置与运行状态。模块 update 统一推进所有 emitter（含骨骼绑定同步与蒙皮表面采样），render 按 layer 提交。
+
+`applyUnderwaterParticles(ambience,transition,active,transitionFx,entered,exited)` 将 Pcg 水下状态接到两个借用
+Emitter。ambience 在水下可见并运行、离水停止并隐藏；启用过渡效果且本帧 entered/exited 时，transition
+会停止、复位播放状态并重新启动。entered 与 exited 同时为真会在任何修改前被拒绝。
 
 帧序建议：动画 `computeWorld` → `particles.update(dt)` → `particles.render(gfx)`。
 
@@ -259,25 +450,48 @@ embers.start();
 - 骨骼绑定后位置不对：检查是否先更新姿态（`pose.computeWorld(sk)` / `spine.updateWorldTransform()` / IK `forwardKinematics`/`solve`），以及 `plane`/`scale` 是否匹配相机投影。
 - 蒙皮表面无粒子：确认 `setSkinSource` 与 `hasBones` 网格，且过滤器未把候选顶点剔光。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `addBurst()`、`addColorStop()`、`addForceField()`、`addRotationCurvePoint()`、`addSizeCurvePoint()`、`addSubEmitter()`、`addVelocityCurvePoint()`、`applyConfig()`、`applyPreset()`、`attachToBone()`、`attachToBoneByName()`、`attachToSkeleton2D()`、`attachToSkeleton3D()`、`attachToSpineBone()`、`attachToSpineBoneByName()`、`clearBursts()`、`clearColorGradient()`、`clearForceFields()`、`clearRotationCurve()`、`clearSizeCurve()`、`clearSkinSource()`、`clearSubEmitters()`、`clearVelocityCurve()`、`detach()`、`emit()`、`emitFromSkin()`、`getAttachBone()`、`getAttachKind()`、`getAutoReload()`、`getBlendMode()`、`getBufferSize()`、`getConfigPath()`、`getCount()`、`getDirection()`、`getGpuSimulation()`、`getLightsEnabled()`、`getPrewarmSeconds()`、`getShader()`
-- `getEmissionAreaType()`、`getEmissionAreaX()`、`getEmissionAreaY()`、`getEmissionRate()`、`getEmitterCount()`、`getEmitterLifetime()`、`getLayer()`、`getName()`
-- `getParticleHeight()`、`getParticleLifetimeMax()`、`getParticleLifetimeMin()`、`getParticleWidth()`、`getSizeVariation()`、`getSpread()`、`getX()`、`getY()`
-- `hasSkinSource()`、`isActive()`、`isAttached()`、`isPaused()`、`isStopped()`、`isVisible()`、`loadConfig()`、`moveTo()`、`newEmitter()`、`newEmitterFromFile()`
-- `pause()`、`pollConfigs()`、`reloadConfig()`、`render()`、`reset()`、`setAttachOffset()`、`setAttachPlane()`、`setAttachScale()`、`setAutoReload()`、`setCamera()`、`setCanvas()`
-- `setBlendMode()`、`setCollision()`、`setCollisionBounds()`、`setColorEnd()`、`setColorStart()`、`setDamping()`、`setDirection()`、`setEmissionArea()`、`setEmissionRate()`、`setEmitterLife()`、`setEmitterLifetime()`、`setEmitterTime()`、`setFlipbook()`、`setGpuSimulation()`、`setGravity()`、`setInheritVelocity()`、`setLights()`、`setLimitVelocity()`、`setMaxDeltaTime()`、`setNoise()`、`setOverflowMode()`、`setPrewarm()`、`setRenderMode()`、`setShader()`、`setSimulationSpace()`、`setWorldCollision()`
-- `setFollowBoneRotation()`、`setLayer()`、`setLinearAcceleration()`、`setParticleLife()`、`setParticleLifetime()`、`setParticleSize()`、`setPosition()`、`setRadialAcceleration()`、`setSizeVariation()`
-- `setSizes()`、`setSkinBoneFilter()`、`setSkinBoneFilterByName()`、`setSkinPlane()`、`setSkinScale()`、`setSkinSource()`、`setSpeed()`、`setSpin()`、`setSpread()`、`setStartRotation()`、`setTangentialAcceleration()`、`setTexture()`、`setVisible()`、`start()`
-- `stop()`、`syncAttach()`、`update()`
-
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/particles/`](../../../src/modules/particles/)
-**相关测试：** [`test/particles.cpp`](../../../test/particles.cpp)、[`test/particles_attach_skin.cpp`](../../../test/particles_attach_skin.cpp)、[`test/particles_dynamic_bones.cpp`](../../../test/particles_dynamic_bones.cpp)、[`test/particles_attach_more.cpp`](../../../test/particles_attach_more.cpp)、[`test/particles_attach_extra.cpp`](../../../test/particles_attach_extra.cpp)。
+**相关测试：** [`test/integration/asset-import/asset_import_graphics_tests.cpp`](../../../test/integration/asset-import/asset_import_graphics_tests.cpp)、[`test/integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp`](../../../test/integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp)、[`test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp`](../../../test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp)、[`test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp`](../../../test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp)、[`test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp`](../../../test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp)、[`test/integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp`](../../../test/integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp)、[`test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp`](../../../test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp)、[`test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp`](../../../test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp)。
+
+`applyUnderwaterSurfaceVfx(surfaceVfx,active)` 对应 Pcg `SetHDRPVisualEffectsState` 的反向水下开关：水面时
+显示并启动调用者拥有的天气/VFX emitter，潜水时停止并隐藏。调用可对一组 surface emitter 逐个执行；函数
+同步借用对象且不保存指针，空对象在修改前返回失败。
+
+`applyGroundParticleCulling(emitter,playerTag,visitorTag,entered,exited)` 对应 Pcg
+`GroundParticlesCulling` 的玩家触发式粒子开关。创建区域时，Box 触发器的完整尺寸使用 Pcg 的 `Radius`
+三轴值，Sphere 触发器直接使用 `Radius`；Shape 必须设为 sensor，并把稳定的玩家标签从 `World3D`
+begin/end 事件传给此函数。组件启用时先调用 `emitter.stop()`；匹配玩家标签的 enter 启动 emitter，exit
+停止 emitter，无关访客保持原状态。函数只在调用期间借用 emitter，不保存指针；空 emitter、零玩家标签，
+或同时设置 enter/exit 会在修改前返回失败。
+
+`shiftWorldSpaceParticles(emitter,shiftX,shiftY)` 对应 Pcg
+`FloatingPointFixParticleSystem` 与 `TerrainLoaderManager.SetOrigin` 的存量粒子修正。调用者计算本次世界原点
+增量，并在下一次粒子 update/render 前调用；函数从所有存活粒子位置减去该增量，同时保留 emitter 位置、
+速度、寿命以及播放/暂停状态。返回值是本次覆盖的 CPU 与 GPU-resident 存活粒子总数。GPU 粒子位移会累计到
+下一次 resident update，提交成功后清零；若后端在提交前停用，待提交偏移也随其状态一同清除。
+只有 `simulationSpace="world"` 的 emitter 可调用，本地空间 emitter 和非有限增量会在修改前失败。对于把
+3D X/Z 投影到粒子 X/Y 平面的项目，参数 `shiftY` 对应世界 Z 增量；Pcg 的垂直世界 Y 原点保持不变。
+
+### Pcg 随机粒子材质
+
+`eve.PcgMaterialSelector()` 保存调用者提供的借用纹理列表。`add(texture)` 添加候选，`clear()` 清空，
+`count()` 返回数量；`selectAndApply(emitter,seed)` 使用显式 seed 确定性选择并应用到粒子发射器。为忠实对应
+Pcg `RandomMaterialSelector` 的 `Random.Range(1, materials.Count)`，索引 0 被保留且永不选择；因此至少
+需要两个非空候选。失败返回标准 `Result`，不会修改 emitter 原有纹理。
+
+### CPU 烘焙录制的身份与外观基础
+
+`Particle::birthSerial` 在所属 `Sim` 生命周期内唯一，随存活粒子压缩移动；
+停止、重启和重置不重置计数。0 表示未出生或计数耗尽，耗尽后拒绝新出生。
+不同 Sim 的编号不具有全局唯一性，录制资产必须同时记录发射器/录制会话身份。
+此合同仅适用于 CPU 粒子，不能据此读取 GPU resident 状态。
+
+原生 `evaluateParticleAppearance` 与实时 sprite 渲染共用外观计算，返回像素矩形、
+角度旋转、颜色和 atlas UV 的独立数值，不保留输入或图形资源引用。
+它不推进模拟、不调用脚本；调用期间 Config 和 Particle 必须稳定。
+录制时还必须校验输出数值并另外记录资源身份；这组基础接口尚不代表完整粒子资产录制和重放入口。

@@ -1,39 +1,59 @@
 #pragma once
 
+/**
+ * @file QuestSystem.h
+ * @brief 目标追踪器的状态机与匹配行为。
+ *
+ * Tracker 的写操作薄转发到这里；事件入队到 Tracker 自己的队列（pending）。
+ * 本系统无 ECS 依赖、无 rpg.update(dt) 驱动——进度只由 notify 推进。
+ */
+
+#include "rpg/QuestTypes.h"
+
 #include <string>
+#include <vector>
+
+#include "common/Export.h"
 
 namespace eve::rpg {
 
 class Tracker;
 struct QuestDefinition;
-struct QuestRuntime;
 
-/** @brief 通用任务状态机与 topic/target 事件计数器。 */
-class QuestSystem {
+/** @brief EVENGINE_API_PLATFORM public API. */
+class EVENGINE_API_PLATFORM QuestSystem {
 public:
-    /** @brief 补建新定义并解锁满足前置条件的自动任务。 */
-    static void syncAuto(Tracker& tracker);
-    /** @brief 手动激活 inactive 任务。 */
-    static bool activate(Tracker& tracker, const std::string& id);
-    /** @brief 返回激活失败原因；空字符串表示可以激活。 */
-    static std::string canActivateReason(const Tracker& tracker, const std::string& id);
-    /** @brief 向全部活跃任务广播一个计数事件。 */
-    static void notify(Tracker& tracker, const std::string& topic, const std::string& target, int amount);
-    /** @brief 领取 ready 任务并进入 completed。 */
-    static bool claim(Tracker& tracker, const std::string& id);
-    /** @brief 清空任务进度并按当前前置条件重置状态。 */
-    static bool reset(Tracker& tracker, const std::string& id);
-    /** @brief 将可失败状态转为 failed 并记录原因。 */
-    static bool fail(Tracker& tracker, const std::string& id, const std::string& reason);
+    /** @brief 补建 Registry 里尚不在 Tracker 上的条目，并解开前置已齐的 locked 条目。 */
+    static void syncAuto(Tracker *t);
 
-private:
-    static void emit(Tracker& tracker, const std::string& id, const std::string& action,
-                     const std::string& objective = {}, const std::string& topic = {}, const std::string& target = {},
-                     int amount = 0, const std::string& reason = {});
-    static bool requiresMet(const Tracker& tracker, const QuestDefinition& definition);
-    static void createRuntime(Tracker& tracker, const QuestDefinition& definition);
-    static void finishIfReady(Tracker& tracker, QuestRuntime& runtime, const QuestDefinition& definition);
-    static void unlock(Tracker& tracker);
+    /** @brief def 的全部 requires 在本 Tracker 上均已 completed（谓词查询）。 */
+    static bool hasMetRequirements(const Tracker &t, const QuestDefinition &def);
+
+    /** @brief 解锁后的落点：startPolicy==auto → "active"，否则 "inactive"。 */
+    static std::string stateForUnlocked(const QuestDefinition &def);
+
+    /** @brief 激活：仅 inactive 且前置已齐时成功；否则 push reject 并返回 false（compatibility facade (脚本兼容门面)）。 */
+    static bool activate(Tracker *t, const std::string &id, std::string *reason = nullptr);
+    /** @brief 是否可激活（谓词查询，可返回 reason）。 */
+    static bool canActivate(Tracker *t, const std::string &id, std::string *reason = nullptr);
+    /** @brief 不可激活的原因（"" 可激活，否则 unknown/locked/alreadyActive/alreadyCompleted/failed/ready）。 */
+    static std::string canActivateReason(Tracker *t, const std::string &id);
+
+    /** @brief 报告事实 (topic, target, amount)；只推进 state==active 的条目。 */
+    static void notify(Tracker *t, const std::string &topic, const std::string &target, int amount);
+
+    /** @brief 仅 state==ready 时成功 → completed 并触发解锁；否则 reject（compatibility facade (脚本兼容门面)）。 */
+    static bool claim(Tracker *t, const std::string &id, std::string *reason = nullptr);
+
+    /** @brief 进度清零并按当前 requires 回落 locked/inactive/active；不级联（compatibility facade (脚本兼容门面)）。 */
+    static bool reset(Tracker *t, const std::string &id);
+    /** @brief abandon/fail → failed；对 completed/failed/locked/未知 id 为 reject（compatibility facade (脚本兼容门面)）。 */
+    static bool abandon(Tracker *t, const std::string &id);
+    /** @brief Fail. */
+    static bool fail(Tracker *t, const std::string &id, const std::string &reason);
+
+    /** @brief 把 Tracker 的 pending 移动并清空到 out。 */
+    static void pollEvents(Tracker *t, std::vector<QuestEvent> &out);
 };
 
 }  // namespace eve::rpg

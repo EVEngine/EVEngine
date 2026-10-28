@@ -1,8 +1,10 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
-#include "graphics/Canvas.h"
-#include "graphics/Texture.h"
+#include "common/RenderTypes.h"
+#include "map/TileLayerRef.h"
 #include "map/TileOrientation.h"
 
 #include <cstdint>
@@ -13,27 +15,45 @@ namespace eve::graphics {
 class Graphics;
 class Camera2D;
 class Canvas;
+class Texture;
 }  // namespace eve::graphics
 
 namespace eve::map {
+
+using eve::Color;
 
 /**
  * @brief ECS tile layer entity. Script mutates tile GIDs / tileset / draw; TileRenderSystem
  * batch-draws atlas quads (or solid debug colors when no texture).
  *
- * GID 0 = empty. Tiled flip flags (high bits) are masked on read/draw.
+ * GID 0 = empty. Integer tile APIs preserve all 32 bits, including Tiled flip
+ * flags. A negative int is a signed transport of those bits, not an erase code.
+ * Use tileGid() to inspect the identity without flags, and 0 to erase.
  */
-class TileLayer : public ecs::Entity {
+class EVENGINE_API_WORLD TileLayer : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(TileLayer, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /**
+     * @brief 这一层的稳定身份：ECS 槽位 + 换代号。
+     *
+     * 地块碰撞这类"按层发布数据"的通路用它代替裸指针：脚本也能拿到同一个数
+     * （`eve.TileLayer.getEntityId()`），所以脚本实现既认得出自己那一层，也看得懂过期引用。
+     */
+    [[nodiscard]] TileLayerRef layerRef() const noexcept { return TileLayerRef{id, generation}; }
+
+    /** @brief Config public API. */
     struct Config {
         int mapW = 0;
         int mapH = 0;
         float tileW = 32.f;
         float tileH = 32.f;
+        float cellGapX = 0.f;
+        float cellGapY = 0.f;
         float originX = 0.f;
         float originY = 0.f;
         MapOrientation orientation = MapOrientation::Orthogonal;
@@ -44,10 +64,114 @@ public:
     };
 
     struct Tiles {
+        /** @brief Chunk public API. */
+        struct Chunk {
+            int nonEmpty = 0;
+        };
+
+        static constexpr int kChunkSize = 32;
         std::vector<uint32_t> gids;
+        std::vector<Chunk> chunks;
+        int chunkColumns = 0;
+        int chunkRows = 0;
+        uint64_t revision = 1;
+        std::vector<int> terrainIds;
     };
 
     struct Tileset {
+        /** @brief AnimationFrame public API. */
+        struct AnimationFrame {
+            int gid = 0;
+            int durationMs = 100;
+        };
+
+        /** @brief Animation public API. */
+        struct Animation {
+            int gid = 0;
+            std::vector<AnimationFrame> frames;
+        };
+
+        /** @brief TerrainRule public API. */
+        struct TerrainRule {
+            int gid = 0;
+            int terrain = 0;
+            int neighborMask = 0;
+            int weight       = 1;
+        };
+
+        /** @brief Versioned logical terrain family consumed by the canonical resolver. */
+        struct TerrainFamily {
+            int         terrain = 0;
+            std::string kind    = "terrain";
+            uint32_t    seed    = 0;
+        };
+
+        /** @brief CustomData public API. */
+        struct CustomData {
+            int gid = 0;
+            std::string name;
+            std::string type;
+            std::string value;
+        };
+
+        /** @brief Per-GID visual metadata emitted by a project-defined asset pipeline. */
+        struct Visual {
+            /** @brief Subtile public API. */
+            struct Subtile {
+                int   x       = 0;
+                int   y       = 0;
+                int   width   = 0;
+                int   height  = 0;
+                float offsetX = 0.f;
+                float offsetY = 0.f;
+            };
+
+            /** @brief SubtileFrame public API. */
+            struct SubtileFrame {
+                std::vector<Subtile> parts;
+                int                  durationMs = 500;
+            };
+
+            /** @brief CollisionShape public API. */
+            struct CollisionShape {
+                float x      = 0.f;
+                float y      = 0.f;
+                float width  = 0.f;
+                float height = 0.f;
+            };
+
+            int gid = 0;
+            int x = 0;
+            int y = 0;
+            int width = 0;
+            int height = 0;
+            float pivotX = 0.f;
+            float pivotY = 0.f;
+            float sortBias = 0.f;
+            int footprintW = 1;
+            int footprintH = 1;
+            bool walkable = true;
+            bool                        opaque        = false;
+            float cost = 1.f;
+            uint8_t                     enterMask     = 0xff;
+            uint8_t                     exitMask      = 0xff;
+            uint32_t                    semanticFlags = 0;
+            std::vector<SubtileFrame>   subtileFrames;
+            std::vector<CollisionShape> collisionShapes;
+        };
+
+        /** @brief One Tiled atlas selected by the greatest firstGid not exceeding a GID. */
+        struct Atlas {
+            graphics::Texture *texture  = nullptr;
+            int                firstGid = 1;
+            int                columns  = 1;
+            int                tileW    = 32;
+            int                tileH    = 32;
+            int                margin   = 0;
+            int                spacing  = 0;
+            std::string        imagePath;
+        };
+
         graphics::Texture *texture = nullptr;
         int firstGid = 1;
         int columns = 1;
@@ -55,6 +179,12 @@ public:
         int tileH = 32;
         int margin = 0;
         int spacing = 0;
+        std::vector<Visual> visuals;
+        std::vector<Animation> animations;
+        std::vector<TerrainRule> terrainRules;
+        std::vector<TerrainFamily> terrainFamilies;
+        std::vector<CustomData> customData;
+        std::vector<Atlas>         atlases;
     };
 
     struct Draw {
@@ -62,12 +192,24 @@ public:
         graphics::Camera2D *camera = nullptr;
         int layer = 0;
         bool visible = true;
+        /**
+         * @brief When true, tiles receive Light2D (GPU lit2d with flat normals, or
+         * CPU modulate when drawn without a texture). Default false keeps legacy unlit maps.
+         */
+        bool receiveLight = false;
         Color tint{1.f, 1.f, 1.f, 1.f};
+        /** @brief World-size multiplier for atlas-pixel visuals (UV unchanged). */
+        float visualScaleX = 1.f;
+        float visualScaleY = 1.f;
     };
 
     struct Resource {
         std::string path;
         std::string texturePath;
+        std::vector<std::string> dependencyPaths;
+        std::vector<int64_t>     dependencyModtimes;
+        std::string              sourceEngine;
+        std::string              sourceVersion;
         int64_t modtime = -1;
         bool autoReload = true;
     };
@@ -92,6 +234,27 @@ public:
     float getTileWidth();
     float getTileHeight();
     void setTileSize(float tileW, float tileH);
+    /** @brief Sets extra world-space distance between projected cells. */
+    void setCellGap(float gapX, float gapY);
+    /** @brief Sets projected cell pitch as a multiple of the logical tile size. */
+    void setRenderSpacing(float spacingX, float spacingY);
+    /** @brief Horizontal and vertical world-space gaps between projected cells. */
+    float getCellGapX();
+    float getCellGapY();
+    /** @brief Horizontal and vertical projected pitch multipliers. */
+    float getRenderSpacingX();
+    float getRenderSpacingY();
+    /**
+     * @brief Scales atlas-pixel tile visuals into world units when drawing.
+     * @param scaleX Horizontal multiplier. Values <= 0 are treated as 1.
+     * @param scaleY Vertical multiplier. Values <= 0 are treated as 1.
+     * @cost Cheap. Applied while collecting draw items; does not rebuild the atlas.
+     */
+    void setVisualScale(float scaleX, float scaleY);
+    /** @brief Current horizontal visual-to-world scale. */
+    float getVisualScaleX();
+    /** @brief Current vertical visual-to-world scale. */
+    float getVisualScaleY();
 
     /** @brief Resizes the tile grid (existing GIDs preserved where possible). */
     void resize(int mapW, int mapH);
@@ -99,16 +262,81 @@ public:
     /** @brief Tile GID access; 0 = empty. */
     void setTile(int tx, int ty, int gid);
     int getTile(int tx, int ty);
+    /** @brief Fill a clipped rectangular region and publish one tile revision. */
+    void fillRect(int x, int y, int width, int height, int gid);
     /** @brief Fills the whole layer with one GID. */
     void fill(int gid);
     /** @brief Clears the layer to empty. */
     void clear();
+
+    /** @brief Monotonic tile-data revision used by derived navigation/FOV caches. */
+    int getRevision();
+    /** @brief Runtime spatial-index diagnostics. */
+    int getChunkSize();
+    int getChunkCount();
+    int getNonEmptyChunkCount();
+
+    /** @brief Rebuild chunk occupancy after bulk loader writes directly to gids. */
+    void rebuildSpatialIndex();
+
+    /** @brief TileSet v2 animation authoring; frames are selected during map update/render. */
+    void clearTileAnimation(int gid);
+    void addTileAnimationFrame(int gid, int frameGid, int durationMs);
+    int getTileAnimationFrameCount(int gid);
+    /** @brief TileSet v2 typed custom data (stored losslessly as canonical text). */
+    void setTileDataString(int gid, const std::string &name, const std::string &value);
+    void setTileDataNumber(int gid, const std::string &name, float value);
+    void setTileDataBool(int gid, const std::string &name, bool value);
+    std::string getTileDataType(int gid, const std::string &name);
+    std::string getTileDataString(int gid, const std::string &name);
+    float getTileDataNumber(int gid, const std::string &name);
+    bool getTileDataBool(int gid, const std::string &name);
+    /** @brief Register an 8-neighbor terrain rule and paint with local re-resolution. */
+    void setTerrainRule(int gid, int terrain, int neighborMask);
+    /** @brief Defines a deterministic resolver family: terrain, shore, wall or waterfall. */
+    void defineAutotileFamily(int terrain, const std::string &kind, int seed = 0);
+    /** @brief Adds an exact eight-neighbor rule with deterministic variant weight. */
+    void setAutotileRule(int gid, int terrain, int neighborMask, int weight = 1);
+    void clearTerrainRules();
+    void paintTerrain(int x, int y, int terrain);
+    /** @brief Paints a clipped rectangle and resolves one dirty-region revision. */
+    void paintTerrainRect(int x, int y, int width, int height, int terrain);
+    /** @brief Replaces every logical terrain cell and resolves the whole layer. */
+    void fillTerrain(int terrain);
+    /** @brief Erases logical terrain and visual GIDs in a clipped rectangle. */
+    void eraseTerrainRect(int x, int y, int width, int height);
+    int getTerrain(int x, int y);
 
     /** @brief Binds the atlas texture and tile table. */
     void setTileset(graphics::Texture *texture, int firstGid, int columns, int margin = 0,
                     int spacing = 0);
     /** @brief Tile size in pixels of the bound tileset. */
     void setTilesetTileSize(int tileW, int tileH);
+    /**
+     * @brief Defines or replaces one irregular atlas region.
+     * @param gid Global tile id.
+     * @param x Region left in atlas pixels.
+     * @param y Region top in atlas pixels.
+     * @param width Region width in atlas pixels.
+     * @param height Region height in atlas pixels.
+     * @param pivotX Region-space point aligned with the projected tile origin.
+     * @param pivotY Region-space point aligned with the projected tile origin.
+     * @param sortBias Extra painter-order offset in pixels.
+     */
+    void setTileVisual(int gid, int x, int y, int width, int height, float pivotX,
+                       float pivotY, float sortBias = 0.f);
+    /** @brief Removes all irregular per-GID visual metadata. */
+    void clearTileVisuals();
+    /** @brief Number of irregular visual records. */
+    int getTileVisualCount();
+    /** @brief Configures gameplay metadata kept beside a visual record. */
+    void setTileMetadata(int gid, int footprintW, int footprintH, bool walkable,
+                         float cost = 1.f);
+    /** @brief Sets canonical navigation, collision and visibility metadata for one GID. */
+    void setTileNavigationProfile(int gid, bool walkable, float cost, int enterMask, int exitMask, bool opaque,
+                                  int semanticFlags = 0);
+    /** @brief Loads an extensible TileSet manifest without changing map cell data. */
+    bool loadTilesetManifest(const std::string &path);
     /** @brief Bound tileset accessors. */
     graphics::Texture *getTilesetTexture();
     int getTilesetFirstGid();
@@ -124,6 +352,13 @@ public:
 
     void setVisible(bool visible);
     bool isVisible();
+    /**
+     * @brief Enable Light2D shading for this layer's tiles.
+     * @param receive When true, textured tiles use the lit2d path with a flat normal.
+     */
+    void setReceiveLight(bool receive);
+    /** @brief Whether this layer's tiles receive Light2D. */
+    bool getReceiveLight();
 
     void setTint(float r, float g, float b, float a = 1.f);
 

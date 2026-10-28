@@ -1,6 +1,8 @@
 #include "rx/Rx.h"
+#include "common/ScriptBinding.h"
 
-#include "event/Event.h"
+#include "common/SquirrelBinding.h"
+#include "platform_event/PlatformEvent.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -158,10 +160,17 @@ Value callScript(const ssq::Function& fn, const std::vector<Value>& args, bool w
     sq_pushobject(raw, fn.getRaw());
     sq_pushroottable(raw);
     for (const auto& a : args) ssq::detail::pushValue(raw, a);
+    // The payload is a runtime vector, so the shared helper's typed-argument form does not
+    // fit; the count is derived from the pushes instead -- the same rule (R-FACE-7). A
+    // subscriber or operator callback that threw used to be dropped in silence: the failed
+    // call read the same as one that returned nothing, and the stream simply stopped
+    // producing.
+    const SQInteger params = sq_gettop(raw) - top - 1;  // receiver + arguments
     Value result = Value::makeNil();
-    if (SQ_SUCCEEDED(sq_call(raw, static_cast<SQInteger>(args.size() + 1),
-                             wantResult ? SQTrue : SQFalse, SQTrue))) {
+    if (SQ_SUCCEEDED(sq_call(raw, params, wantResult ? SQTrue : SQFalse, SQTrue))) {
         if (wantResult && sq_gettop(raw) > top) result = ssq::detail::popValue<Value>(raw, -1);
+    } else {
+        script::reportScriptCallFailure(raw, "rx.script-callback");
     }
     sq_settop(raw, top);
     return result;
@@ -211,8 +220,8 @@ ObservableV* doMap(ObservableV* self, ssq::Function fn) {
     return new AnonymousObservable<Value>([self, fn](Observer<Value> out) {
         Observer<Value> in;
         in.onNext = [out, fn](const Value& v) { out.next(callScript(fn, {v}, true)); };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<Value>{out};
+        in.onCompleted = detail::ForwardCompleted<Value>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -224,8 +233,8 @@ ObservableV* doFilter(ObservableV* self, ssq::Function pred) {
         in.onNext = [out, pred](const Value& v) {
             if (callScript(pred, {v}, true).toBool()) out.next(v);
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<Value>{out};
+        in.onCompleted = detail::ForwardCompleted<Value>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -241,8 +250,8 @@ ObservableV* doTake(ObservableV* self, int n) {
             out.next(v);
             if (*remaining == 0) out.completed();
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<Value>{out};
+        in.onCompleted = detail::ForwardCompleted<Value>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -259,8 +268,8 @@ ObservableV* doSkip(ObservableV* self, int n) {
             }
             out.next(v);
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<Value>{out};
+        in.onCompleted = detail::ForwardCompleted<Value>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -276,8 +285,8 @@ ObservableV* doFirst(ObservableV* self) {
             out.next(v);
             out.completed();
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<Value>{out};
+        in.onCompleted = detail::ForwardCompleted<Value>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -294,8 +303,8 @@ ObservableV* doDistinctUntilChanged(ObservableV* self) {
             *last = v;
             out.next(v);
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<Value>{out};
+        in.onCompleted = detail::ForwardCompleted<Value>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -315,12 +324,12 @@ public:
     ReactivePropertyV* newProperty(const Value& initial) { return new ReactivePropertyV(initial); }
 
     // Event bridge: fromEvent(name) returns an Observable that forwards matching
-    // messages pushed by pump() (fed from an eve::event::Event queue).
-    ObservableV* fromEvent(const std::string& name) {
+    // messages pushed by pump() (fed from an eve::platform_event::PlatformEvent queue).
+    ObservableV* fromEvent(const std::string& eventName) {
         auto subject = std::make_shared<SubjectV>();
         {
             std::lock_guard<std::mutex> lock(mu_);
-            bridges_[name] = subject;
+            bridges_[eventName] = subject;
         }
         // Return a fresh observable that subscribes to the shared subject. The
         // returned AnonymousObservable is owned by the script; the shared subject
@@ -330,23 +339,21 @@ public:
         });
     }
 
-    void pump(event::Event* ev) {
+    void pump(platform_event::PlatformEvent* ev) {
         if (!ev) return;
-        event::Message* msg = nullptr;
-        while ((msg = ev->poll()) != nullptr) {
-            std::string name = msg->name;
+        while (auto msg = ev->pollOwned()) {
+            std::string eventName = msg->name;
             std::string data;
             for (const auto& a : msg->args) {
-                if (a.type == event::Variant::Type::String) {
+                if (a.type == platform_event::Variant::Type::String) {
                     data = a.s;
                     break;
                 }
             }
-            delete msg;
             std::shared_ptr<SubjectV> subject;
             {
                 std::lock_guard<std::mutex> lock(mu_);
-                auto it = bridges_.find(name);
+                auto it = bridges_.find(eventName);
                 if (it != bridges_.end()) subject = it->second;
             }
             if (subject) subject->onNext(Value::makeString(data));
@@ -376,23 +383,12 @@ void bindCommon(ssq::Class& cls) {
             [](ObservableV* self, ssq::Object n, ssq::Object e, ssq::Object d) {
                 return doSubscribe(self, n, e, d);
             }));
-    cls.addFunc("map",
-        std::function<ObservableV*(ObservableV*, ssq::Function)>(
-            [](ObservableV* self, ssq::Function f) { return doMap(self, f); }));
-    cls.addFunc("filter",
-        std::function<ObservableV*(ObservableV*, ssq::Function)>(
-            [](ObservableV* self, ssq::Function p) { return doFilter(self, p); }));
-    cls.addFunc("take",
-        std::function<ObservableV*(ObservableV*, int)>(
-            [](ObservableV* self, int n) { return doTake(self, n); }));
-    cls.addFunc("skip",
-        std::function<ObservableV*(ObservableV*, int)>(
-            [](ObservableV* self, int n) { return doSkip(self, n); }));
-    cls.addFunc("first",
-        std::function<ObservableV*(ObservableV*)>([](ObservableV* self) { return doFirst(self); }));
-    cls.addFunc("distinctUntilChanged",
-        std::function<ObservableV*(ObservableV*)>(
-            [](ObservableV* self) { return doDistinctUntilChanged(self); }));
+    eve::script::bindPointerMethod(cls, "map", &doMap);
+    eve::script::bindPointerMethod(cls, "filter", &doFilter);
+    eve::script::bindPointerMethod(cls, "take", &doTake);
+    eve::script::bindPointerMethod(cls, "skip", &doSkip);
+    eve::script::bindPointerMethod(cls, "first", &doFirst);
+    eve::script::bindPointerMethod(cls, "distinctUntilChanged", &doDistinctUntilChanged);
 }
 
 }  // namespace
@@ -450,8 +446,8 @@ void Rx::expose(ssq::Table& table) {
 
     auto sub = table.addClass<Subscription>(
         "Subscription", std::function<Subscription*()>([]() -> Subscription* { return nullptr; }), true);
-    sub.addFunc("dispose", &Subscription::dispose);
-    sub.addFunc("isDisposed", &Subscription::isDisposed);
+    eve::script::bindPointerMethod(sub, "dispose", &Subscription::dispose);
+    eve::script::bindPointerMethod(sub, "isDisposed", &Subscription::isDisposed);
 }
 
 void Rx::expose(ssq::Class& cls) {

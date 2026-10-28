@@ -1,54 +1,164 @@
-EVEngine
+# EVEngine
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/examples/ember-guard.gif" width="100%" alt=""></td>
+    <td width="50%"><img src="docs/images/examples/explosion-lab.gif" width="100%" alt=""></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/examples/house-collapse.gif" width="100%" alt=""></td>
+    <td width="50%"><img src="docs/images/examples/ironwarden-retarget.gif" width="100%" alt=""></td>
+  </tr>
+</table>
+
 =======================
+
 Evolutionary Vision Engine
 
 [English](Readme.en.md)
 
+## 简介
+
+**EVEngine（Evolutionary Vision Engine）是一个面向快速迭代与人机协作的开源游戏引擎，以 C++20 和 Vulkan 为基础，用 EveScript（兼容 Squirrel）编写游戏逻辑，支持 2D、第三人称 3D 与 2D/3D 混合游戏。**
+
+项目的目标是缩短「想法 → 可运行的玩法 → 观察与调试 → 修改验证」的距离。让个人开发者和小团队用脚本快速表达玩法，用原生模块承担渲染与模拟，再让编辑工具和 AI Agent 参与实际运行、观察与验证，从原型持续迭代到可发布的游戏。
+
+### 核心特色
+
+- **像写脚本一样开始做游戏。** 类似 LÖVE 的直接运行方式，一个普通目录里的 `config.nut` 与 `main.nut` 就是游戏入口。下载预编译 SDK 即可运行；需要扩展性能代码时，再通过 SDK 的 C++ 动态库插件接入引擎模块。见 [EveScript 教程](docs/usr/EVESCRIPT.md)与[原生插件](examples/native-plugin/)。
+- **边运行、边编辑、边调试。** 内置资源管理与脚本、资源热重载，支持暂停游戏循环、DAP 调试和开发快照，方便反复修改和验证事件、逻辑与过场。声明式 UI 与游戏共享运行时，可以用脚本制作专属编辑工具；脚本类扫描与属性面板支持查看、编辑实例字段，面板可同步显示属性变化。见 [DevLab](examples/devlab/) 与[地形编辑器](examples/terrain-editor/)。
+- **AI 能看到游戏，也能通过接口操作游戏。** 桌面 MCP 工具覆盖脚本 API 查询、错误诊断、状态检查、调试和引擎截图，还提供实体几何多视图、帧缓冲检查与图像拼图，帮助 Agent 根据实际画面定位问题。游戏可以声明操作与观察接口供 Agent 试玩；独立 `eve mcp` 宿主支持创建原生编辑窗口。见 [AI 与 MCP](docs/dev/AI与MCP支持.md)、[AI Game](examples/ai-game/) 和 [AI Editor](examples/ai-editor/)。
+- **2D 资产可以进入真正的 3D 场景。** 除常规 2D 与 3D 渲染外，HD-2D 支持将 Tilemap 挤出为立体地形，把精灵动画作为面向摄像机的角色放入 3D 世界，并接入深度与阴影；也提供 Avatar 分层渲染和 Sprite Stacking，便于组合不同的美术表现。见 [HD-2D 河畔场景](examples/hd2d-riverside/) 与[渲染画廊](docs/images/examples/README.md)。
+- **把可交互的模拟做成玩法材料。** PixelWorld 提供分块的沙、水、火焰等像素物质模拟，以及材料反应、热传导和相变；配套命令回放、检查点分歧诊断与兴趣区增量传输。几何破碎系统则用预切几何、连接图和场驱动断边构建可破坏物体，另有流体、布料与粒子系统。见 [PixelWorld](examples/pixelworld/)、[几何破碎](examples/destruction-basic/) 与[分块破碎](examples/destruction-clusters/)。
+- **角色动画兼顾资源复用与程序控制。** 骨骼动画包含状态机、混合、Root Motion、IK、骨骼映射重定向和 Motion Matching；控制论程序动画支持用目标、阻尼和冲量驱动动态响应。见[动画手册](docs/usr/modules/animation.md)、[重定向示例](examples/ironwarden-retarget/) 与[攀爬 / Motion Matching](examples/climbing-motion-matching/)。
+
+### 内置系统
+
+引擎按模块组织渲染、模拟、玩法与工具，构建时可按配置选择能力。具体接口与接线方式见[模块手册](docs/usr/MODULES.md)。
+
+- **场景与表现：** Tilemap 与地图编辑、2D/3D 摄像机、HD-2D、Avatar 分层、Sprite Stacking、3D 模型与骨骼动画、粒子、UI、音频。
+- **物理与世界：** Box2D / Box3D 物理、流体、绳索与布料、几何破碎、像素物质世界、程序化生成、六边形地图、建筑放置。
+- **玩法与 AI：** RPG 属性 / 效果 / 技能、战斗、背包与装备、对话、NPC 状态树与感知、RTS、战棋、武器与载具。
+- **数据与开发：** 虚拟文件系统、资源导入与 Cook、SQLite / JSON 与存档接口、本地化、网络、脚本 ECS、热重载、运行时编辑与 AI/MCP 工具。
+
+用这些可组合的系统搭起 RPG、动作或策略玩法，再在同一个运行环境里持续编辑、调试与验证，是 EVEngine 的核心开发思路。可从[用户指南](docs/usr/README.md)和可运行示例入手，脚本接口以对应版本的 API 目录为准。
+
 ## 文档导航
 
-- [游戏开发者文档](docs/usr/README.md)：安装、运行与项目结构；[模块使用手册](docs/usr/MODULES.md)逐个说明脚本 API 和示例。
-- [开发者文档](docs/dev/README.md)：架构、模块设计、测试策略与实施记录。
-- [C++ API 参考（Doxygen）](docs/api/html/index.html)：由 `src/` 与 `docs/usr/` 生成，安装 doxygen 后执行 `make docs` 即可（配置见 [`docs/Doxyfile.in`](docs/Doxyfile.in)）。
+### Intel macOS x86_64 原生构建
 
-针对很多游戏引擎开发效率低，难以调试，难以动态快速实现游戏原型，我们这里设计一款非常简单好用的游戏引擎。主要提供对2d、第三人称3d的游戏组件功能，不提供复杂3d游戏引擎中的3d场景管理等功能
+在 Intel Mac 上初始化子模块（`make init/submodules`），安装 Xcode 命令行工具、
+CMake、Ninja 和支持 x86_64 的 Vulkan SDK（含 MoltenVK），然后分别构建：
 
+```sh
+make build/macosx-x86_64-debug JOBS=4
+make build/macosx-x86_64 JOBS=4
+```
 
-设计思路：
+这两个入口显式设置 `CMAKE_OSX_ARCHITECTURES=x86_64`，最低目标版本为 macOS 13.3，
+满足浮点数 `std::format` 所需的系统标准库版本；同时检查宿主、目标和编译器，拒绝其他平台或架构。
+引擎使用 `build/macosx-x86_64[-debug]`；源码依赖构建和安装分别使用
+`build/third-party/macosx-x86_64[-debug]` 和
+`build/third-party-binary/macosx-x86_64[-debug]`。
+预编译依赖按 `macosx-x86_64-Release` 选择，Debug 引擎也使用 Release 依赖。
+只构建依赖可用 `make deps/macosx-x86_64[-debug]`；运行测试可用
+`make test/macosx-x86_64[-debug]`。原有 `make debug` 默认入口保持不变。
 
-1. 采用类似Love2D的解析式引擎，可以直接加载脚本和数据
-2. 内部有众多C++编写的高性能模块，你可以写其他C++库编译成动态链接库来和这些库直接交互
-3. 有完整的开发模块，你自己写的逻辑代码可以直接用GUI的编辑工具进行开发，同时，开发系统也是游戏的运行时，只有发布用的运行时是裁剪掉开发工具的（或者你也可以选择保留供玩家2次创作）
-4. 无需进行资产管理，和hot reload，已经内置了此功能
-5. 可以扫描类，自动为其生成编辑用的GUI
-6. 确保GUI可以即时根据脚本动态创建和同步
-7. 可以暂停游戏循环进行调试
-8. 有很多独立的状态机模型，可以实现局部热更新
-9. 支持3d与2d混合渲染
+CI 使用 `macos-15-intel` 原生 runner，按 `build_type` 选择 Debug、Release 或两者，
+与 Windows ARM64 一样验证引擎及测试程序的编译和链接，要求对应预编译依赖可用。
+编译检查不运行图形测试；SDK 发布另外在两种架构的原生 runner 上验证原生插件和打包游戏。
 
+分别生成 SDK：
 
-内置模型：
-1. 2d tilemap - 并且包含可扩展的地图编辑器
-2. 2d 摄像机
-3. 简单的数据库
-4. box2d / box3d 物理
-5. rpg框架
-6. 可扩展战斗模型组件
-7. 对话框及脚本
-8. avatar分层渲染
-9. 2d 流体引擎（`Physics.newFluid`；另含可交互布料 `newCloth`）
-10. 粒子系统
-11. sprite-stacking的伪3d技术
-12. 真实3d模型渲染
+```sh
+make sdk/macosx-arm64 JOBS=4
+make sdk/macosx-x86_64 JOBS=4
+```
 
+Debug SDK 对应 `sdk/macosx-arm64-debug` 和 `sdk/macosx-x86_64-debug`。
+发布包分别命名为 `eve-sdk-macosx-arm64-<版本>.zip` 和
+`eve-sdk-macosx-x86_64-<版本>.zip`，选择与目标 Mac CPU 匹配的包。
+`TARGET_PLATFORM` 保持 `macosx`，`TARGET_ARCHITECTURE` 标记 CPU 架构。
 
+- 想先直观感受引擎的渲染效果？浏览[示例渲染画廊](docs/images/examples/README.md)——每张截图都由引擎把交换链上实际呈现的一帧原样输出。
+- [游戏开发者文档](docs/usr/README.md)：下载引擎、创建并运行游戏、调试与打包发布；[模块使用手册](docs/usr/MODULES.md) 逐个说明脚本 API 和示例。
+- [在线 API 参考（Doxygen）](https://evengine.github.io/EVEngine/)：随 GitHub Pages 持续发布，包含 C++ API 与用户手册。
+- [开发者文档](docs/dev/README.md)：面向引擎维护者与贡献者，包含架构、模块设计、测试策略与实施记录。
 
-支持以最简单的方式实现一个rpg游戏，并提供对事件、逻辑、过场脚本等快速编辑调试的功能
-比如你可以设定一个脚本，对脚本中的一个函数进行热修改，并且反复执行观看效果
+> **给游戏开发者**：使用 EVEngine 做游戏**不需要编译引擎**。请直接到[官网发布页](https://github.com/EVEngine/EVEngine/releases)下载对应平台的预编译 SDK，解压即可开始创作——无需安装 Git、CMake、C++ 编译器或 Vulkan SDK。只有想修改引擎本身的开发者才需要阅读下文“从源码构建”。
 
+## 快速开始（游戏开发者：下载即用，无需编译）
 
-## 环境要求
+### 1. 从官网下载引擎
 
-### 通用依赖
+前往 [EVEngine 发布页](https://github.com/EVEngine/EVEngine/releases)，选择最新正式版，下载目标平台的 SDK 压缩包：
+
+| 目标平台 | 下载文件 | 说明 |
+|----------|----------|------|
+| Windows | `eve-sdk-win32-<版本>.zip` | Windows 10/11 x64 |
+| Linux | `eve-sdk-linux-<版本>.zip` | Ubuntu 20.04+ 等（需 Vulkan 驱动） |
+| macOS ARM64 | `eve-sdk-macosx-arm64-<版本>.zip` | macOS 13.3+，Apple Silicon |
+| macOS x86_64 | `eve-sdk-macosx-x86_64-<版本>.zip` | macOS 13.3+，Intel |
+| Android | `eve-sdk-android-<版本>.zip` | 在开发机上组装 arm64 APK |
+| iOS | `eve-sdk-ios-<版本>.zip` | 在 macOS 开发机上组装 arm64 .app |
+
+解压后即为一个独立的 SDK 目录，无需安装。以 Windows 为例：
+
+```text
+eve-sdk-win32/
+├── bin/eve.exe          # 引擎运行时
+├── lib/                 # Windows：插件链接库；macOS：运行时动态库
+├── include/eve/         # 原生插件头文件（做纯脚本游戏用不到）
+├── cmake/               # 原生插件 CMake 支持（做纯脚本游戏用不到）
+├── platform/            # 目标平台打包模板（如 Android APK 工程）
+└── share/eve/
+    ├── VERSION          # 引擎版本号
+    ├── TARGET_PLATFORM  # 目标平台标记
+    ├── examples/basic/  # 可运行的参考游戏
+    └── licenses/        # 引擎与第三方许可
+```
+
+### 2. 运行内置示例，验证安装
+
+```sh
+# Windows
+bin\eve.exe run share\eve\examples\basic
+
+# macOS / Linux
+bin/eve run share/eve/examples/basic
+```
+
+### 3. 创建并运行你的第一个游戏
+
+```sh
+bin\eve.exe create mygame     # Windows（macOS / Linux：bin/eve create mygame）
+bin\eve.exe run mygame
+```
+
+`eve create` 会生成最小的游戏模板：`config.nut`（窗口与开发选项）和 `main.nut`（游戏逻辑）。修改 `main.nut` 后保存即可看到热重载效果。游戏目录结构、生命周期回调（`eve_init` / `eve_update` / `eve_render`）、模块用法、调试与发布，详见[用户指南](docs/usr/README.md)。
+
+### 拿到引擎后，你可以做这些事
+
+- **制作 2D / 第三人称 3D / 2D+3D 混合游戏**：Tilemap、摄像机、Box2D/Box3D 物理、粒子、动画、RPG、背包、UI、程序化生成等 40+ 模块，全部通过 EveScript（兼容 Squirrel）调用；先阅读[EveScript 完整教程](docs/usr/EVESCRIPT.md)，逐个模块的接口见[模块使用手册](docs/usr/MODULES.md)。
+- **脚本与资源热重载**：桌面端改完脚本/贴图立即生效；移动端用 `eve dev` 开发服务器把改动推送到真机，无需重装应用。
+- **调试**：暂停游戏循环、断点、监视、快照，支持 VS Code 调试适配器与 AI（MCP）辅助开发。
+- **打包发布**：`eve zip` 把游戏压缩为 `.eve` 归档；`eve package --sdk <SDK目录>` 生成包含运行时与游戏的可分发目录；Android / iOS 用 SDK 自带模板组装 APK / .app。
+- **原生扩展**：需要 C++ 性能代码时，用 SDK 的 CMake 包编写插件动态库（见 `examples/native-plugin`），纯脚本用户完全不需要。
+
+### 需要注意什么
+
+1. **运行时需要 Vulkan 驱动，但不需要 Vulkan SDK**：引擎基于 Vulkan 渲染。Windows 的显卡驱动通常已自带 Vulkan 运行时；macOS 由 SDK 内置 MoltenVK 承担；Linux 需要安装 `mesa-vulkan-drivers`（AMD/Intel）或厂商驱动（NVIDIA）。安装 Git、CMake、编译器、LunarG SDK 只对“从源码构建”有意义。
+2. **SDK 按平台独立、版本需匹配**：每个 SDK 只面向一个目标平台；原生插件必须与宿主平台及 SDK 版本一致，不同平台/版本的 SDK 不能混用。
+3. **正式版与开发版**：Release 与 `main` 分支对应正式版；想尝鲜最新功能或修改引擎，请从源码构建，并基于 `dev` 分支开发。
+4. **许可**：EVEngine 采用双许可，请在使用前阅读[许可证](#许可证)；商用营收超过免费门槛后需要商业授权。
+
+## 从源码构建（引擎开发者 / 贡献者）
+
+> 下面的环境要求与编译步骤只面向需要修改引擎源码、参与引擎开发或自行打包的开发者。普通游戏开发者请使用上方“快速开始”的预编译版本，无需阅读本节。
+
+### 环境要求
+
+#### 通用依赖
 
 | 依赖 | 版本要求 | 说明 |
 |------|----------|------|
@@ -57,21 +167,52 @@ Evolutionary Vision Engine
 | C++ 编译器 | 支持 **C++20** | MSVC / GCC / Clang |
 | Vulkan SDK | **≥ 1.2** | 图形后端；需正确设置环境变量 |
 
-第三方库（SDL2、Box2D、Squirrel、Poco、ImGui、OpenAL Soft、FreeType、GLM、VKBuilder 等）由 CMake 的 `ExternalProject` 自动从 [EVEngine/third-party](https://github.com/EVEngine/third-party) 拉取并编译，一般无需手动安装。
+第三方库由 [EVEngine/third-party 独立发布](https://github.com/EVEngine/third-party/releases)。
+`cmake/third_party_pin.cmake` 同时固定发布 tag 和源码提交。支持的平台默认在配置时下载、
+校验并复用预编译依赖，EVEngine release CI 只构建引擎及 SDK，不再重编这些依赖库（含 Jolt）。
 
-### Windows
+```powershell
+make build/win32-debug
+# 也可提前下载，准备离线依赖目录：
+python scripts/third_party_package.py win32 --configuration Debug
+```
+
+依赖包包括 Windows x64 的 Release/Debug、Linux x86_64、macOS arm64/x86_64、
+Android arm64-v8a 和 iOS arm64 真机。非 Windows 的 Debug 引擎复用 Release 依赖库。
+下载工具校验 SHA256、格式版本、发布 tag、源码提交、平台、架构和库配置；兼容目录直接复用，
+不兼容目录报错且不会覆盖。全部校验成功后才发布安装目录。
+AUTO 模式遇到下载不可用（缺少资产、网络失败等）时明确输出原因并构建固定版本源码；
+校验失败或包不兼容仍报错。PREBUILT 模式要求下载成功。
+
+需要自行编译依赖时明确指定：
+
+```powershell
+make build/win32-debug CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=SOURCE"
+```
+
+默认 `AUTO` 对已提供依赖包的目标使用二进制；Emscripten、iOS 模拟器、其他 Android ABI、
+macOS 通用架构和自定义 sanitizer/code-model 构建使用源码。`PREBUILT` 则要求目标有预编译包。
+原有 `EVENGINE_THIRD_PARTY_BINARY_DIR` 仍可指定兼容的离线/本机依赖目录。
+升级依赖时，先等 third-party 独立 release 上传完成，再更新引擎中的 tag 和提交两个固定值。
+third-party 管理稳定依赖；ECS 和 zeroerr 保留在 external 下独立更新，修改直接进入各自源码仓库。引擎不再保留依赖覆盖头文件或补丁。
+
+zip 包含头文件、静态/动态库、运行时文件、版本信息和许可文件。仍需安装平台构建工具、
+Vulkan SDK、系统开发库，并初始化引擎子模块；配置时也会拉取 ImGui 等直接参与引擎编译的源码。
+各包的编译器、系统和 SDK 兼容基线见[英文构建说明](Readme.en.md)，不兼容的工具链使用源码模式。
+
+#### Windows
 
 | 组件 | 推荐配置 |
 |------|----------|
 | 操作系统 | Windows 10 / 11（x64） |
 | IDE / 工具链 | **Visual Studio 2026**（含「使用 C++ 的桌面开发」工作负载） |
-| CMake 生成器 | `Visual Studio 18 2026`（与仓库根目录 `Makefile` 一致） |
+| CMake 生成器 | 根目录 `Makefile` 的 Windows Debug / Release 目标使用 Ninja + MSVC；手工配置 VS 工程时可选 `Visual Studio 18 2026` |
 | Vulkan SDK | 从 [LunarG](https://vulkan.lunarg.com/) 安装，安装后确认用户环境变量 `VULKAN_SDK`（例如 `C:\VulkanSDK\1.4.357.0`），并把 `%VULKAN_SDK%\Bin` 加入 `PATH`（含 `glslc`）。装完后请**新开终端 / 重启 Cursor** 再 cmake |
 | 可选 | Git for Windows、将 CMake / Ninja 加入 `PATH` |
 
-> 若使用 Visual Studio 2022，可将 `Makefile` 中的生成器改为 `"Visual Studio 17 2022"`。
+> 若使用 Visual Studio 2022，Ninja 目标通过 `cmake/with-msvc.cmd` 定位已安装的 MSVC；手工配置 VS 工程时选择 `"Visual Studio 17 2022"`。
 
-### Linux
+#### Linux
 
 | 组件 | 推荐配置 |
 |------|----------|
@@ -98,14 +239,14 @@ sudo apt install -y \
 # 也可按 LunarG 官方文档安装完整 Vulkan SDK（含 validation layers）
 ```
 
-### macOS
+#### macOS
 
 | 组件 | 推荐配置 |
 |------|----------|
-| 操作系统 | macOS 12+（Apple Silicon / Intel） |
+| 操作系统 | macOS 13.3+（Apple Silicon / Intel，使用对应架构的 SDK） |
 | 工具链 | **Xcode Command Line Tools**（`xcode-select --install`） |
 | CMake | Homebrew：`brew install cmake`（≥ 3.21） |
-| Vulkan | 从 [LunarG](https://vulkan.lunarg.com/) 安装 **macOS Vulkan SDK**（内含 **MoltenVK**） |
+| Vulkan | 从 [LunarG](https://vulkan.lunarg.com/) 安装 **macOS Vulkan SDK**（内含 **MoltenVK**），仅**构建/开发**需要；`dist/eve-sdk/macosx-<arm64|x86_64>` 发布包已内置 Vulkan loader + MoltenVK，玩家机器无需再装 SDK |
 
 配置环境（每次新开终端执行，或写入 `~/.zshrc`）：
 
@@ -119,14 +260,14 @@ ls "$VULKAN_SDK/lib/libvulkan.dylib" "$VULKAN_SDK/lib/libMoltenVK.dylib"
 
 `setup-env.sh` 会设置 `VULKAN_SDK`、`VK_ICD_FILENAMES`（MoltenVK ICD）等。CMake 在 Apple 宿主上**要求**能 `find_package(Vulkan)` 成功，不会回退到 Windows 的 `vulkan-1.lib`。
 
-### Android（arm64-v8a Debug APK）
+#### Android（arm64-v8a Debug APK）
 
 | 组件 | 推荐配置 |
 |------|----------|
 | 宿主 | macOS / Linux（本仓库 Makefile 默认路径面向 macOS Homebrew） |
 | JDK | **OpenJDK 17**（`brew install openjdk@17`） |
 | Android SDK | command-line tools + `platform-tools` + `platforms;android-34` + `build-tools;34.0.0` |
-| NDK | **26.1.10909125**（`sdkmanager "ndk;26.1.10909125"`） |
+| NDK | **27.3.13750724**（`sdkmanager "ndk;27.3.13750724"`） |
 | CMake（SDK） | `cmake;3.22.1`（Gradle 可用；引擎本体用宿主机 CMake/Ninja 交叉编译） |
 | ABI / minSdk | **arm64-v8a** / **24** |
 | 设备 | 支持 **Vulkan** 的真机（模拟器未作为首版验收目标） |
@@ -136,13 +277,13 @@ ls "$VULKAN_SDK/lib/libvulkan.dylib" "$VULKAN_SDK/lib/libMoltenVK.dylib"
 ```sh
 export JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"
 export ANDROID_HOME="$HOME/Library/Android/sdk"
-export ANDROID_NDK="$ANDROID_HOME/ndk/26.1.10909125"
+export ANDROID_NDK="$ANDROID_HOME/ndk/27.3.13750724"
 export PATH="$JAVA_HOME/bin:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
 ```
 
 在 `platform/android/apk/local.properties` 写入（**勿提交**）：
 
-```
+```text
 sdk.dir=/Users/<you>/Library/Android/sdk
 ```
 
@@ -174,7 +315,7 @@ make run/android-debug
 make log/android
 ```
 
-### iOS / iPadOS（arm64 真机，最低 13.0）
+#### iOS / iPadOS（arm64 真机，最低 13.0）
 
 | 组件 | 推荐配置 |
 |------|----------|
@@ -200,7 +341,7 @@ make build/ios-debug
 真机安装 / 运行 / 日志：
 
 ```sh
-# 用 USB 连接 iPad，开启开发者模式与信任此电脑
+# 用 USB 连接 iPad，开启开发者模式并信任此电脑
 make install/ios-debug
 make run/ios-debug
 make log/ios
@@ -213,10 +354,10 @@ make log/ios
 1. **签名**：本机需在 Xcode → Settings → Accounts 登录 Apple ID，并有可用的 Apple Development 证书；`security find-identity -v -p codesigning` 应能看到证书。未设置 `IOS_DEVELOPMENT_TEAM` 时 `make build/ios-debug` 仍可产出未签名 `.app`，但无法安装到真机。若报 `No Account for Team "XXXX"`，说明用的是证书 ID 而非 Team ID（Team ID 是证书主题里的 `OU`）。
 2. **设备**：USB 连接 iPad，开启开发者模式并信任此电脑；`xcrun devicectl list devices` 应显示 `connected`。若提示 `no DDI`，先用 Xcode 打开一次设备窗口以安装 Developer Disk Image。
 3. **依赖**：第三方用 Ninja + `cmake/ios.toolchain.cmake` 交叉编译（SDL UIKit）；失败时可清 `build/third-party/ios-debug` 与 `build/third-party-binary/ios-debug` 后重跑。
-4. **MoltenVK**：当前 LunarG xcframework 可能按 iOS 14+ 构建；真机系统需满足该要求（本机 iPadOS 26 无妨）。
+4. **MoltenVK**：当前 LunarG xcframework 可能按 iOS 14+ 构建；真机系统需满足该要求。
 5. 首版不做模拟器、App Store 分发与多架构 fat binary。
 
-### WSL（同时开发 Windows / Linux）
+#### WSL（同时开发 Windows / Linux）
 
 推荐在 **WSL2（Ubuntu）** 中开发 Linux 目标，在 Windows 主机侧用 Visual Studio 编译 Win32 目标。源码放在 Windows 文件系统（例如 `C:\Users\...\EVEngine`），通过 `/mnt/c/...` 挂载到 WSL。
 
@@ -228,7 +369,48 @@ make log/ios
 4. 若在 WSL 里编译位于 `/mnt/c` 的源码，I/O 可能较慢；追求速度可将仓库 clone 到 WSL 原生文件系统（如 `~/src/EVEngine`），Windows 侧再单独 clone 一份。
 
 
-## 获取源码
+#### Windows / Linux ARM64 原生构建
+
+在 ARM64 宿主上执行，先运行 `make init/submodules`：
+
+| 平台 | Debug | Release |
+| --- | --- | --- |
+| Windows ARM64 | `make build/win32-arm64-debug JOBS=8` | `make build/win32-arm64 JOBS=8` |
+| Linux ARM64 | `make build/linux-arm64-debug JOBS=4` | `make build/linux-arm64 JOBS=4` |
+
+Linux ARM64 的 OBJECT 单体测试程序还需要 `lld`（`sudo apt-get install lld`），
+以便为大型测试链接生成远距离分支跳板；C/C++ 仍由 GCC/G++ 编译，
+引擎程序和 SHARED/按域测试的链接方式不变。
+
+Windows 需要 Visual Studio ARM64 C++ 工具（含 `vcvarsarm64.bat`）、Windows SDK、
+Ninja、Git Bash，以及 Vulkan 头文件、着色器工具和 ARM64 loader 库。
+Windows 命令通过 `cmake/with-msvc.cmd --arm64` 选择原生 MSVC 环境。
+Linux 使用原生 GCC/G++、Ninja，安装与普通 Linux 构建相同的 aarch64 开发依赖。
+这些入口不使用交叉编译工具链，会检查宿主、目标与编译器是否为 ARM64。
+
+third-party 同样从固定版本源码构建为 ARM64；构建入口会先完成依赖编译与安装。
+只构建依赖可用 `make deps/win32-arm64[-debug]` 或
+`make deps/linux-arm64[-debug]`（`[-debug]` 表示可选后缀）。
+依赖缓存位于 `build/third-party/<平台>-arm64[-debug]`，安装位于
+`build/third-party-binary/<平台>-arm64[-debug]`，与已有 x64 目录隔离。
+不要通过 `EVENGINE_THIRD_PARTY_BINARY_DIR` 指向 x64 库。
+
+CMake 直接配置仍使用根目录入口：`-DEVENGINE_NATIVE_ARM64=ON`，
+配合 `-DEVENGINE_BUILD_PLATFORM=win32` 或 `linux`，并指定独立的 `-B` 目录。
+Debug 保留严格警告，Release 使用 OBJECT 链接策略。
+定向测试使用 `make test/win32-arm64-debug DOMAIN=<域>` 或
+`make test/linux-arm64-debug DOMAIN=<域>`；Linux 图形测试仍需显示服务、
+匹配 aarch64 的 Vulkan ICD 和音频后端。原有 `make debug` 默认入口保持不变。
+
+CI 使用 GitHub 托管的 `windows-11-arm` 和 `ubuntu-24.04-arm` 原生 runner，
+复用现有 Windows／Linux 变更范围判断。日常构建 Debug；`build_type=release`
+构建 Release，`build_type=both` 则构建两种配置。任务编译并链接引擎和测试程序，
+第三方依赖必须使用对应 ARM64 的预编译发布包（`EVENGINE_THIRD_PARTY_MODE=PREBUILT`）。
+依赖源码修复和二进制打包由 third-party 仓库负责；缺少包时明确失败，不在这些 CI 任务中重新编译依赖。
+目前这些任务仅检查构建，不运行 ARM64 图形测试，也不增加 SDK 发布打包。
+
+
+### 获取源码
 
 ```sh
 git clone --recurse-submodules https://github.com/EVEngine/EVEngine
@@ -241,8 +423,7 @@ cd EVEngine
 
 首次 CMake 配置时会自动拉取 `third-party`；若目录已存在且含 `CMakeLists.txt`，则直接使用本地副本。ECS 使用子模块 [`external/ECS.hpp`](https://github.com/sunxfancy/ECS.hpp)；IK 使用子模块 [`external/ik.hpp`](https://github.com/sunxfancy/ik.hpp)。
 
-
-## 快速开始（推荐：根目录 Makefile）
+### 快速构建（推荐：根目录 Makefile）
 
 仓库根目录的 `Makefile` 封装了 Windows / Linux / macOS 的 Debug / Release 配置与编译。在已安装 `make` 的环境中（Git Bash、WSL、Linux、macOS）于仓库根目录执行：
 
@@ -270,11 +451,34 @@ make run/android-debug
 make log/android
 ```
 
+#### 加速本地重复构建
+
+如果 `PATH` 中已经安装 `sccache`，CMake 默认会自动发现并按 C/C++ 翻译单元缓存；
+未安装时构建行为不变。可用 `sccache --show-stats` 查看本地命中情况，也可以显式配置：
+
+```sh
+# 强制要求 sccache；找不到时配置直接失败，不静默回退
+make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_COMPILER_CACHE=SCCACHE
+
+# 禁用编译缓存自动检测
+make build/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_COMPILER_CACHE=OFF
+```
+
+编译缓存仍会正常判断依赖并重新链接，不会恢复 CMake/Ninja/Make 构建目录。如果游戏只需要
+部分系统，可同时使用已有模块档位，让未使用模块根本不参与编译：
+
+```sh
+make build/win32-debug \
+  CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE -DEVENGINE_PROFILE=2d"
+```
+
+`minimal`、`2d`、`3d`、`full` 以及逐模块开关见[按需裁剪模块](docs/usr/TRIMMING.md)。
+
 产物目录约定：
 
 | 目标 | 构建目录 | 说明 |
 |------|----------|------|
-| Win32 Release | `build/win32` | VS 工程 + Release 二进制 |
+| Win32 Release | `build/win32` | Ninja + MSVC Release 二进制 |
 | Win32 Debug | `build/win32-debug` | Ninja + MSVC Debug 二进制 |
 | Linux Release | `build/linux` | Unix Makefiles |
 | Linux Debug | `build/linux-debug` | Unix Makefiles |
@@ -285,10 +489,9 @@ make log/android
 
 主程序可执行文件名一般为 `eve`（Windows 下为 `eve.exe`，路径随 VS 的 `Release` / `Debug` 配置子目录变化）。Android 为 SDLActivity 加载的 `libmain.so`（包名 `com.evengine.example`）。
 
+### 分步编译说明
 
-## 分步编译说明
-
-### 1. 配置（Configure）
+#### 1. 配置（Configure）
 
 等价于 Makefile 中的配置步骤，也可手动执行。
 
@@ -324,10 +527,15 @@ cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx -B bu
 | `CMAKE_BUILD_TYPE` | `Debug`（未指定时） | `Debug` 或 `Release`；影响第三方库安装路径后缀（如 `win32-debug`） |
 | `BUILD_PLATFORM` | 按宿主自动选择 | `win32` / `linux` / `macosx` 等 |
 | `BUILD_TESTING` | `ON` | 是否编译单元测试 |
+| `EVENGINE_COMPILER_CACHE` | `AUTO` | `AUTO` 自动使用找到的 `sccache`；`SCCACHE` 强制要求；`OFF` 禁用自动检测 |
+| `EVENGINE_SCCACHE_EXECUTABLE` | 从 `PATH` 自动查找 | 可显式指定 `sccache` 可执行文件路径 |
 
-### 2. 编译第三方依赖（deps）
+#### 2. 编译第三方依赖（deps）
 
 第三方通过自定义目标 `deps` / `third-party` 构建。配置完成后：
+
+默认 AUTO 优先复用固定版本 zip，下载成功时 `deps` 不再编译依赖；
+只有下载不可用或目标没有对应包时才构建源码。SOURCE 可强制源码构建。
 
 ```sh
 # 以 Windows Debug 为例
@@ -342,7 +550,7 @@ cmake --build build/macosx-debug --target deps -j 32
 
 首次编译第三方耗时较长，产物位于 `build/third-party/<平台>[-debug]/` 与 `build/third-party-binary/<平台>[-debug]/`。之后增量构建会复用已安装结果。
 
-### 3. 编译引擎本体
+#### 3. 编译引擎本体
 
 ```sh
 # Windows（需指定 --config，因为是多配置生成器）
@@ -360,28 +568,7 @@ cmake --build build/macosx-debug -j 32
 
 也可直接用前文的 `make build/win32` / `make build/macosx-debug` 等目标一步完成配置 + 编译。
 
-
-## 资源脚本全平台热更新（`eve dev`）
-
-开发调试时，改完脚本 / 资源想立刻看到效果：
-
-- **桌面（macOS / Windows / Linux）**：`eve run <游戏目录>` 默认开启本地 watcher（`config.hotReload`），改 `main.nut` / JSON / 贴图后自动 `dofile` 或重载资源。
-- **移动端（iOS / Android）**：应用包内资源只读，无法直接改设备文件。改在**开发机**上编辑，由设备拉取：
-
-```sh
-# 1. 开发机上启动开发服务器（服务当前游戏目录）
-eve dev --port 8765
-
-# 2. 设备端 config.nut 配置开发机地址（或命令行注入）
-config.devServer = "http://192.168.1.5:8765"   # 开发机局域网 IP
-```
-
-设备端会按清单轮询 `eve dev`，把变更文件下载到可写覆盖目录并复用本地热更新管线（脚本 `dofile`、资源 `tryReload`），无需重装应用。命令行也可用 `eve run --dev-server http://192.168.1.5:8765`。
-
-iOS / Android 构建已默认放行明文 HTTP（开发机内网），见 `platform/ios/Info.plist.in` 与 `platform/android/apk/app/src/main/AndroidManifest.xml`。
-
-
-## 运行单元测试
+### 运行单元测试
 
 默认开启 `BUILD_TESTING`。编译完成后：
 
@@ -396,8 +583,7 @@ make test/macosx
 
 或直接执行对应路径下的 `unit_test` / `unit_test.exe`。
 
-
-## Docker（可选）
+### Docker（可选）
 
 仓库提供基于 Ubuntu 20.04 的 `Dockerfile`（含 `build-essential`、`cmake`、`clang-12` 等）。可用于隔离的 Linux 构建环境：
 
@@ -408,14 +594,13 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
 
 进入容器后，在挂载的源码目录按 Linux 流程配置并编译即可。注意容器内仍需自行准备 Vulkan 相关运行时/SDK（镜像默认未安装完整 Vulkan SDK）。
 
-
-## 常见问题
+### 常见问题
 
 1. **CMake 报找不到 Vulkan**  
    确认已安装 Vulkan SDK，且 `VULKAN_SDK` 指向正确路径；macOS 请 `source ~/VulkanSDK/<version>/setup-env.sh` 后再配置。重新打开终端后再 cmake。
 
 2. **Windows 生成器名称不匹配**  
-   `Makefile` 当前使用 `Visual Studio 18 2026`。若本机是 VS 2022，请改生成器字符串或升级 IDE。
+   Windows Makefile 目标使用 Ninja。手工配置 VS 工程时，请选择已安装的生成器（VS 2026 或 VS 2022）；不要复用由其他生成器配置的构建目录。
 
 3. **首次 `deps` 很慢或网络失败**  
    `third-party` 从 GitHub 拉取。可手动 `git clone https://github.com/EVEngine/third-party` 到仓库根目录的 `third-party/`，再重新配置。
@@ -427,7 +612,7 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
    Makefile 默认 `-j 32`。机器核心较少时可改为 `-j$(nproc)`（Linux）/`-j$(sysctl -n hw.ncpu)`（macOS）或较小数字，避免内存不足。
 
 6. **macOS 窗口/渲染失败**  
-   确认 `VK_ICD_FILENAMES` 指向 MoltenVK ICD（`setup-env.sh` 会设置），且 SDK 的 `lib` 在 `DYLD_LIBRARY_PATH` 中。引擎通过 SDL2 Vulkan surface + MoltenVK 运行，无需单独写 Metal 后端。
+   如果报错是 `Installed Vulkan doesn't implement the VK_KHR_surface extension`（SDL 原文），说明运行时可用的 Vulkan 没有实现 surface 扩展，macOS 上即 MoltenVK 未被加载。**发布包**请确认把 `dist/eve-sdk/macosx-<arm64|x86_64>` 的 `lib/` 一起发给玩家（内含 `libvulkan.1.dylib`、`libMoltenVK.dylib`、`MoltenVK_icd.json`），eve 启动时会自动指向这些文件（`platform/macosx` 的 `bootstrapBundledVulkan`），玩家无需安装 SDK。**开发构建**请确认 `VK_ICD_FILENAMES` 指向 MoltenVK ICD（`setup-env.sh` 会设置），且 SDK 的 `lib` 在 `DYLD_LIBRARY_PATH` 中。引擎通过 SDL2 Vulkan surface + MoltenVK 运行，无需单独写 Metal 后端。
 
 7. **Android APK / 真机**  
    确认 NDK 版本与 Makefile 一致；`local.properties` 的 `sdk.dir` 正确；设备开启 USB 调试且 `adb devices` 可见。首版要求真机 Vulkan；无设备时至少验证 `make build/android-debug` 产出 APK。
@@ -437,7 +622,7 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
 
 ## 项目结构（简要）
 
-```
+```text
 EVEngine/
 ├── CMakeLists.txt      # 主 CMake：平台检测、第三方、子目录
 ├── Makefile            # Windows / Linux / macOS / Android / iOS 快捷入口

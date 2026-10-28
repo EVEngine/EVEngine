@@ -1,0 +1,193 @@
+#include "action/editor/ActionPreviewController.h"
+
+#include <cmath>
+#include <utility>
+
+namespace eve::editor {
+namespace {
+
+Result<void> previewError(EditorStatus status, std::string rule, std::string message) {
+    return eve::editing::failed<void>(status, RuleId(std::move(rule)), std::move(message));
+}
+
+std::string diagnosticMessage(const Status& status, std::string fallback) {
+    if (!status.diagnostics().empty() && !status.diagnostics().front().message().empty())
+        return status.diagnostics().front().message();
+    return fallback;
+}
+
+}  // namespace
+
+ActionPreviewController::ActionPreviewController(ActionTimelineEditor& editor, action::IActionPreviewSink& sink,
+                                                 const action::IActionRootMotionSource* rootMotion)
+    : editor_(editor), sink_(sink), rootMotion_(rootMotion) {}
+
+Result<void> ActionPreviewController::configureProfile(ActionPreviewProfile profile) {
+    auto valid = profile.validate();
+    if (!valid)
+        return previewError(EditorStatus::Rejected, "editor.action.preview.profile",
+                            diagnosticMessage(valid.status(), "Could not validate the preview profile"));
+    profile_ = std::move(profile);
+    return eve::editing::applied<void>();
+}
+
+void ActionPreviewController::clearProfile() noexcept { profile_.reset(); }
+
+Result<void> ActionPreviewController::setRootMotionSampleCount(std::uint32_t sampleCount) {
+    if (sampleCount < 2 || sampleCount > 1024)
+        return previewError(EditorStatus::Rejected, "editor.action.preview.root-samples",
+                            "Root-motion sample count must be between 2 and 1024");
+    rootMotionSampleCount_ = sampleCount;
+    return eve::editing::applied<void>();
+}
+
+action::ActionPreviewCueKind ActionPreviewController::cueKind(const action::ActionTimelineEvent& event) noexcept {
+    if (event.kind == action::ActionTimelineEventKind::StateEnter) return action::ActionPreviewCueKind::StateEnter;
+    if (event.kind == action::ActionTimelineEventKind::StateExit) return action::ActionPreviewCueKind::StateExit;
+    const std::string_view type = event.type.format();
+    if (type == "presentation:vfx") return action::ActionPreviewCueKind::Vfx;
+    if (type == "presentation:audio") return action::ActionPreviewCueKind::Audio;
+    if (type == "presentation:camera") return action::ActionPreviewCueKind::Camera;
+    return action::ActionPreviewCueKind::Gameplay;
+}
+
+Result<action::ActionPreviewFrame> ActionPreviewController::buildFrame(
+    action::ActionPreviewReason reason, Duration previous, Duration current,
+    const std::vector<action::ActionTimelineEvent>& events) const {
+    action::ActionPreviewFrame frame;
+    frame.reason                = reason;
+    frame.animationUri          = editor_.target().timeline().animationUri;
+    Duration rootMotionDuration = editor_.target().timeline().duration;
+    for (const auto& section : editor_.target().timeline().animationSections) {
+        if (current >= section.start && current < section.end) {
+            frame.animationUri = section.animationUri;
+            rootMotionDuration = Duration::fromNanoseconds(section.end.nanoseconds() - section.start.nanoseconds());
+            break;
+        }
+    }
+    frame.previous = previous;
+    frame.current  = current;
+    if (profile_) {
+        frame.previewModelUri     = profile_->previewModelUri;
+        frame.baseMotionUri       = profile_->baseMotionUri;
+        frame.animationProfileUri = profile_->animationProfileUri;
+        frame.boneMaskUri         = profile_->boneMaskUri;
+        frame.footIk              = profile_->footIk;
+        frame.showRootMotion      = profile_->showRootMotion;
+        frame.showGrid            = profile_->showGrid;
+        frame.showSkeleton        = profile_->showSkeleton;
+        frame.showJointNames      = profile_->showJointNames;
+        frame.litShading          = profile_->shading == ActionPreviewShading::Lit;
+    }
+    auto activeBlocks = editor_.target().timeline().activeBlocks(current);
+    if (!activeBlocks) return Result<action::ActionPreviewFrame>::failure(activeBlocks.status());
+    frame.activeBlocks = std::move(activeBlocks).takeValue();
+    frame.cues.reserve(events.size());
+    for (const auto& event : events)
+        frame.cues.push_back({cueKind(event), event.itemId, event.type, event.time, event.payload});
+    if (rootMotion_ && frame.showRootMotion) {
+        auto path = rootMotion_->sampleRootMotion(frame.animationUri, rootMotionDuration, rootMotionSampleCount_);
+        if (!path) return Result<action::ActionPreviewFrame>::failure(path.status());
+        frame.rootMotionState = action::RootMotionPreviewState::Available;
+        frame.rootMotionPath  = std::move(path).takeValue();
+    }
+    return Result<action::ActionPreviewFrame>::success(std::move(frame));
+}
+
+Result<void> ActionPreviewController::refresh() {
+    auto frame = buildFrame(action::ActionPreviewReason::Refresh, editor_.previewTime(), editor_.previewTime(), {});
+    if (!frame)
+        return previewError(EditorStatus::Rejected, "editor.action.preview.root-motion",
+                            diagnosticMessage(frame.status(), "Could not sample root motion"));
+    auto prepared = sink_.prepare(frame.value());
+    if (!prepared)
+        return previewError(EditorStatus::Rejected, "editor.action.preview.prepare",
+                            diagnosticMessage(prepared.status(), "Preview host rejected the frame"));
+    sink_.present(frame.value());
+    lastFrame_ = std::move(frame).takeValue();
+    return eve::editing::applied<void>();
+}
+
+Result<void> ActionPreviewController::seek(Duration time) {
+    if (time < Duration::zero() || time > editor_.target().timeline().duration)
+        return previewError(EditorStatus::Rejected, "editor.action.preview.seek-range",
+                            "Preview seek is outside the timeline");
+    auto frame = buildFrame(action::ActionPreviewReason::Seek, editor_.previewTime(), time, {});
+    if (!frame)
+        return previewError(EditorStatus::Rejected, "editor.action.preview.root-motion",
+                            diagnosticMessage(frame.status(), "Could not sample root motion"));
+    auto prepared = sink_.prepare(frame.value());
+    if (!prepared)
+        return previewError(EditorStatus::Rejected, "editor.action.preview.prepare",
+                            diagnosticMessage(prepared.status(), "Preview host rejected the frame"));
+    auto changed = editor_.seek(time);
+    if (!changed.ok()) {
+        sink_.discardPrepared();
+        return changed;
+    }
+    sink_.present(frame.value());
+    lastFrame_ = std::move(frame).takeValue();
+    return eve::editing::applied<void>();
+}
+
+Result<void> ActionPreviewController::stop() {
+    auto stopped = seek(Duration::zero());
+    if (stopped.ok()) editor_.pause();
+    return stopped;
+}
+
+Result<void> ActionPreviewController::stepFrames(std::int64_t frames, double frameRate) {
+    auto target = editor_.frameStepTarget(frames, frameRate);
+    if (!target.ok()) return Result<void>::failure(target.status());
+    auto stepped = seek(target.value());
+    if (stepped.ok()) editor_.pause();
+    return stepped;
+}
+
+Result<void> ActionPreviewController::jumpToEnd() {
+    auto jumped = seek(editor_.target().timeline().duration);
+    if (jumped.ok()) editor_.pause();
+    return jumped;
+}
+
+Result<std::size_t> ActionPreviewController::update(Duration delta) {
+    auto plan = editor_.planPreview(delta);
+    if (!plan.ok())
+        return eve::editing::failed<std::size_t>(plan.code(), RuleId("editor.action.preview.plan"),
+                                                 "Could not prepare timeline preview advance");
+    if (plan.code() == EditorStatus::NoOp)
+        return Result<std::size_t>::success(0, Status::success(EditorStatus::NoOp));
+    auto frame = buildFrame(action::ActionPreviewReason::Advance, plan.value().previous, plan.value().current,
+                            plan.value().events);
+    if (!frame)
+        return eve::editing::failed<std::size_t>(EditorStatus::Rejected, RuleId("editor.action.preview.root-motion"),
+                                                 diagnosticMessage(frame.status(), "Could not sample root motion"));
+    auto prepared = sink_.prepare(frame.value());
+    if (!prepared)
+        return eve::editing::failed<std::size_t>(
+            EditorStatus::Rejected, RuleId("editor.action.preview.prepare"),
+            diagnosticMessage(prepared.status(), "Preview host rejected the frame"));
+    auto advanced = editor_.applyPreviewPlan(std::move(plan).takeValue());
+    if (!advanced.ok()) {
+        sink_.discardPrepared();
+        return advanced;
+    }
+    sink_.present(frame.value());
+    lastFrame_ = std::move(frame).takeValue();
+    return advanced;
+}
+
+void ActionPreviewController::drawRootMotion(IEditorOverlay& overlay, OverlayPoint origin, float scale) const {
+    if (!lastFrame_ || lastFrame_->rootMotionState != action::RootMotionPreviewState::Available ||
+        !std::isfinite(scale) || scale <= 0.0f)
+        return;
+    for (std::size_t index = 1; index < lastFrame_->rootMotionPath.size(); ++index) {
+        const auto& previous = lastFrame_->rootMotionPath[index - 1];
+        const auto& current  = lastFrame_->rootMotionPath[index];
+        overlay.line({origin.x + previous.x * scale, origin.y + previous.y * scale, origin.z + previous.z * scale},
+                     {origin.x + current.x * scale, origin.y + current.y * scale, origin.z + current.z * scale},
+                     {0x55d6beffU, 2.0f, false});
+    }
+}
+
+}  // namespace eve::editor

@@ -1,22 +1,33 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "common/Capability.h"
+#include "common/Exception.h"
 #include "common/Module.h"
+#include "common/Result.h"
+#include "common/ServiceInterfaces.h"
 #include "common/config.h"
 #include "filesystem/File.h"
 #include "filesystem/FileData.h"
 
-#define EVENGINE_APPDATA_PREFIX ""
+#include <cstdint>
+
 #ifdef EVENGINE_WINDOWS
+#define EVENGINE_APPDATA_PREFIX ""
 #define EVENGINE_APPDATA_FOLDER "EVE"
 #define EVENGINE_PATH_SEPARATOR "/"
 #define EVENGINE_MAX_PATH _MAX_PATH
 #else
 #if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+#define EVENGINE_APPDATA_PREFIX ""
 #define EVENGINE_APPDATA_FOLDER "EVE"
 #elif defined(EVENGINE_LINUX)
+#define EVENGINE_APPDATA_PREFIX ""
 #define EVENGINE_APPDATA_FOLDER "eve"
 #else
 #define EVENGINE_APPDATA_PREFIX "."
@@ -28,10 +39,12 @@
 
 namespace eve::filesystem {
 
-class Filesystem : public Module {
+/** @brief EVENGINE_API_FOUNDATION public API. */
+class EVENGINE_API_FOUNDATION Filesystem : public Module, public eve::service::IFileSystem {
 public:
     Module_REG(Filesystem);
 
+    /** @brief Info public API. */
     struct Info {
         // Numbers will be -1 if they cannot be determined.
         int64_t     size;
@@ -39,8 +52,35 @@ public:
         std::string type;  // file, directory, symlink, other
     };
 
-    Filesystem() {}
+    Filesystem() { eve::cap::provide<eve::service::IFileSystem>(this); }
     virtual ~Filesystem() {}
+
+    bool readFile(const std::string &path, std::vector<uint8_t> &out) override {
+        try {
+            FileData *fd = read(path);
+            if (!fd) return false;
+            const auto *data = static_cast<const uint8_t *>(fd->getData());
+            out.assign(data, data + fd->getSize());
+            delete fd;
+            return true;
+        } catch (const eve::Exception &) {
+            return false;
+        }
+    }
+
+    bool writeFile(const std::string &path, const void *data, size_t size) override {
+        try {
+            write(path, data, int64_t(size));
+            return true;
+        } catch (const eve::Exception &) {
+            return false;
+        }
+    }
+
+    bool fileExists(const std::string &path) override {
+        Info info;
+        return getInfo(path, info);
+    }
 
     virtual void init(const char* arg0) = 0;
 
@@ -60,7 +100,7 @@ public:
      * @param external Bool for whether
      * Android should use external file storage.
      **/
-    virtual void setAndroidSaveExternal(bool useExternal = false) { this->useExternal = useExternal; }
+    virtual void setAndroidSaveExternal(bool external = false) { this->useExternal = external; }
 
     /**
      * @brief Gets whether the Android save is external.
@@ -79,6 +119,8 @@ public:
     /**
      * @brief Sets the path to the game source.
      * This can only be set once.
+     * @return True on success; false when the source was already set or the
+     *         path does not exist (no exception is thrown for these).
      * @param source Path to a directory or a .love-file.
      **/
     virtual bool setSource(std::string source) = 0;
@@ -99,6 +141,11 @@ public:
      **/
     virtual std::string getSource() const = 0;
 
+    /**
+     * @brief Mounts an archive (path or in-memory Data) at a virtual mountpoint.
+     * @return True on success; false when the archive is missing or invalid
+     *         (no exception is thrown for these — check the return value).
+     **/
     virtual bool mount(std::string archive, std::string mountpoint, bool appendToPath = false)                 = 0;
     virtual bool mount(Data *data, std::string archivename, std::string mountpoint, bool appendToPath = false) = 0;
 
@@ -115,7 +162,9 @@ public:
     /** Unmounts a directory previously added via mountRealDirectory(). */
     virtual bool unmountRealDirectory(std::string realDir) = 0;
 
+    /** @brief Unmounts a previously mounted archive. @return True when unmounted. */
     virtual bool unmount(std::string archive) = 0;
+    /** @brief Unmounts a previously mounted in-memory archive. @return True when unmounted. */
     virtual bool unmount(Data *data)          = 0;
 
     /**
@@ -207,6 +256,35 @@ public:
     virtual void append(std::string filename, const void *data, int64_t size) const = 0;
 
     /**
+     * @brief Write a UTF-8 string to a file in the configured save directory.
+     * @param filename Relative save path.
+     * @param text UTF-8 text to write.
+     * @return True when the write succeeds.
+     */
+    bool writeText(const std::string &filename, const std::string &text) const;
+
+    /**
+     * @brief Durably replace a UTF-8 text file in the configured save directory.
+     * @param filename Non-empty relative save path without parent traversal.
+     * @param text UTF-8 bytes to write; the method does not retain this view.
+     * @return Applied after the temporary file and replacement are flushed, or a structured failure.
+     * @remarks The previous target remains intact when writing or flushing the temporary file fails.
+     *          Native desktop/mobile implementations write a sibling temporary file and atomically
+     *          replace the target. WebGPU returns Unsupported because that guarantee is unavailable.
+     * @thread Call on the filesystem owning thread; concurrent writes to the same target are unsupported.
+     * @reentrancy Does not invoke callbacks or script code.
+     */
+    [[nodiscard]] eve::Result<void> writeTextAtomic(std::string_view filename,
+                                                    std::string_view text);
+
+    /**
+     * @brief Read a UTF-8 string from the virtual filesystem.
+     * @param filename Relative virtual path.
+     * @return File contents, or an empty string when the file cannot be read.
+     */
+    std::string readText(const std::string &filename) const;
+
+    /**
      * @brief This "native" method returns a table of all
      * files in a given directory.
      **/
@@ -233,6 +311,17 @@ public:
     virtual void allowMountingForPath(const std::string &path) = 0;
 
     /**
+     * @brief Mount an external OS directory for read-only asset access.
+     *
+     * This convenience method authorizes the path and mounts it without changing
+     * the filesystem write directory. Files remain outside packaged game data.
+     * @param path Absolute OS directory to mount.
+     * @param mountpoint Virtual directory visible to game code.
+     * @return True when the mount succeeds.
+     */
+    bool mountExternalReadOnly(const std::string &path, const std::string &mountpoint);
+
+    /**
      * @brief Gets whether the given full (OS-dependent) path is a directory.
      **/
     virtual bool isRealDirectory(const std::string &path) const;
@@ -248,8 +337,21 @@ public:
      * @brief Watch a virtual or absolute OS path (file or directory).
      * File watches monitor the parent directory and filter by basename.
      * Returns false if the path cannot be resolved to a real directory.
+     * Relative paths may include `..` and are resolved against the working directory.
      **/
     virtual bool watch(std::string path) = 0;
+
+    /**
+     * @brief Watch a real OS directory and report events under a virtual-relative path.
+     * @param realDir Existing OS directory (absolute or cwd-relative).
+     * @param reportPath Path prefix returned by pollWatch (game/VFS relative, posix).
+     * @return Applied when the OS directory watcher is registered; InvalidArgument
+     *         when either path is empty, NotFound when realDir is missing or not a
+     *         directory, Failed when the watcher could not be added.
+     * @cost One OS directory watcher for this directory only (not recursive).
+     **/
+    [[nodiscard]] virtual eve::Result<void> watchRealDirectory(std::string realDir,
+                                                               std::string reportPath) = 0;
 
     /** @brief Stop watching a path previously passed to watch(). */
     virtual bool unwatch(std::string path) = 0;

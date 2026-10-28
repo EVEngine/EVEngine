@@ -2,18 +2,29 @@
 #include "model3d/EveFileSystem.h"
 #include "model3d/ModelRenderer.h"
 
+#include "common/AsyncWork.h"
 #include "common/Data.h"
 #include "common/Exception.h"
+#include "common/Resource.h"
+#include "common/SquirrelBinding.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
+#include "graphics/Graphics.h"
+#include "image/ImageData.h"
 
 #include "medialoader/Exception.h"
 #include "medialoader/model/ModelLoader.h"
 
+#include "model3d/ModelLoader.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <cctype>
+#include <cstdint>
+#include <cstring>
 #include <functional>
+#include <memory>
+#include <vector>
 
 namespace eve {
 namespace model3d {
@@ -59,6 +70,20 @@ medialoader::ModelScene loadOrThrow(medialoader::ModelLoader &loader, const void
     }
 }
 
+constexpr char kEvModelMagic[4] = {'E', 'V', 'M', '1'};
+
+bool unpackEvModel(const void *data, size_t size, const uint8_t **payload, size_t *payloadSize,
+                   std::string *hint) {
+    if (!data || size < 6 || std::memcmp(data, kEvModelMagic, 4) != 0) return false;
+    const auto *bytes = static_cast<const uint8_t *>(data);
+    const uint16_t n = uint16_t(bytes[4]) | (uint16_t(bytes[5]) << 8u);
+    if (n == 0 || size < size_t(6u + n)) return false;
+    hint->assign(reinterpret_cast<const char *>(bytes + 6), n);
+    *payload = bytes + 6 + n;
+    *payloadSize = size - 6 - n;
+    return *payloadSize > 0;
+}
+
 }  // namespace
 
 ModelData *Model3D::newModelData(Data *data, std::string hintExt) {
@@ -76,6 +101,19 @@ ModelData *Model3D::newModelData(Data *data, std::string hintExt,
             hint = ensureDotExt(fd->getExtension());
     }
 
+    const void *encoded = data->getData();
+    size_t encodedSize = data->getSize();
+    if (hint == ".evmodel") {
+        const uint8_t *payload = nullptr;
+        std::string packedHint;
+        if (!unpackEvModel(encoded, encodedSize, &payload, &encodedSize, &packedHint))
+            throw eve::Exception("Invalid or truncated .evmodel envelope");
+        encoded = payload;
+        hint = ensureDotExt(std::move(packedHint));
+    }
+
+    if (hint == ".vrm") hint = ".glb";
+
     // Prefer VFS for sidecar resolution when FileData carries a filename.
     filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
     if (!fs)
@@ -84,7 +122,7 @@ ModelData *Model3D::newModelData(Data *data, std::string hintExt,
     EveFileSystem eveFs(fs);
     medialoader::ModelLoader loader(&eveFs);
 
-    auto scene = loadOrThrow(loader, data->getData(), data->getSize(), hint.c_str(),
+    auto scene = loadOrThrow(loader, encoded, encodedSize, hint.c_str(),
                              toMedialoader(options));
     if (scene.empty())
         throw eve::Exception("Could not decode model data");
@@ -93,32 +131,42 @@ ModelData *Model3D::newModelData(Data *data, std::string hintExt,
     if (auto *fd = dynamic_cast<filesystem::FileData *>(data))
         uri = "file://" + fd->getFilename();
 
-    return new ModelData(std::move(scene), std::move(uri));
+    return new ModelData(std::move(scene), std::move(uri), options.flipUVs);
 }
 
 ModelData *Model3D::newModelDataFromFile(std::string path) {
     return newModelDataFromFile(std::move(path), ModelLoadOptions{});
 }
 
+eve::Result<void> Model3D::requestModelData(const std::string &path) {
+    return requestModelData(path, ModelLoadOptions{});
+}
+
+eve::Result<void> Model3D::requestModelData(const std::string &path, const ModelLoadOptions &options) {
+    if (path.empty())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "Model path must not be empty", "model3d.prefetch"));
+    if (!eve::cap::query<eve::caps::IAsyncWorkExecutor>())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "Model prefetch requires the thread executor", "model3d.prefetch"));
+    if (!ModuleManager::getInstance<filesystem::Filesystem>("Filesystem"))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "Initialize Filesystem on the game thread before model prefetch",
+            "model3d.prefetch"));
+    return eve::ResourceManager::getInstance().request(modelCacheKey(path, options));
+}
+
 ModelData *Model3D::newModelDataFromFile(std::string path, const ModelLoadOptions &options) {
     if (path.empty())
         throw eve::Exception("Model3D::newModelDataFromFile: empty path");
 
-    filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
-    if (!fs)
-        fs = filesystem::Filesystem::create();
-
-    EveFileSystem eveFs(fs);
-    medialoader::ModelLoader loader(&eveFs);
-
-    try {
-        auto scene = loader.loadFromPath(path.c_str(), toMedialoader(options));
-        if (scene.empty())
-            throw eve::Exception("Could not load model: %s", path.c_str());
-        return new ModelData(std::move(scene), "file://" + path);
-    } catch (const medialoader::Exception &e) {
-        throw eve::Exception("%s", e.what());
-    }
+    // Route through the unified resource cache: options are part of the key,
+    // so identical (path, options) requests share one decoded Assimp scene.
+    const std::string key = modelCacheKey(path, options);
+    eve::Resource *resource = eve::ResourceManager::getInstance().get(key);
+    if (!resource)
+        throw eve::Exception("Could not load model: %s", path.c_str());
+    return static_cast<ModelData *>(resource);
 }
 
 graphics::Renderable3D *Model3D::createRenderable(graphics::Graphics *gfx, ModelData *model,
@@ -128,6 +176,41 @@ graphics::Renderable3D *Model3D::createRenderable(graphics::Graphics *gfx, Model
     if (!model)
         throw eve::Exception("Model3D::createRenderable: null ModelData");
     return buildRenderable(*gfx, model, meshIndex);
+}
+
+eve::Result<void> Model3D::prepareFoliageDeformation(ModelData *model, int meshIndex,
+                                                     graphics::Renderable3D *renderable) {
+    if (!model || !renderable)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "model and renderable are required", "model3d.foliage-deformation"));
+    return model3d::prepareFoliageDeformation(*model, meshIndex, *renderable);
+}
+
+bool Model3D::bakeModel(const std::string &sourcePath, const std::string &destinationPath) {
+    if (sourcePath.empty() || destinationPath.empty()) return false;
+    filesystem::Filesystem *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
+    if (!fs) fs = filesystem::Filesystem::create();
+    filesystem::FileData *sourceRaw = fs->read(sourcePath);
+    if (!sourceRaw) return false;
+    eve::script::Owned<filesystem::FileData> source(sourceRaw);
+    if (!source->getData() || source->getSize() == 0) return false;
+    const std::string hint = ensureDotExt(source->getExtension());
+    if (hint.empty() || hint == ".evmodel" || hint.size() > 65535u) return false;
+    std::vector<uint8_t> packed;
+    packed.reserve(6u + hint.size() + source->getSize());
+    packed.insert(packed.end(), kEvModelMagic, kEvModelMagic + 4);
+    const uint16_t n = static_cast<uint16_t>(hint.size());
+    packed.push_back(static_cast<uint8_t>(n & 0xffu));
+    packed.push_back(static_cast<uint8_t>((n >> 8u) & 0xffu));
+    packed.insert(packed.end(), hint.begin(), hint.end());
+    const auto *bytes = static_cast<const uint8_t *>(source->getData());
+    packed.insert(packed.end(), bytes, bytes + source->getSize());
+    try {
+        fs->write(destinationPath, packed.data(), static_cast<int64_t>(packed.size()));
+        return true;
+    } catch (...) {
+        return false;
+    }
 }
 
 void Model3D::expose(ssq::Table &table) {
@@ -141,8 +224,58 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getMaterialCount", &ModelData::getMaterialCount);
     md.addFunc("getVertexCount", &ModelData::getVertexCount);
     md.addFunc("getFaceCount", &ModelData::getFaceCount);
+    md.addFunc("getVertexPosition", &ModelData::getVertexPosition);
+    md.addFunc("getVertexNormal", &ModelData::getVertexNormal);
+    md.addFunc("setVertexNormal",
+               [](ModelData *self, int meshIndex, int vertexIndex, float x, float y, float z) {
+                   auto result = self->setVertexNormal(meshIndex, vertexIndex, x, y, z);
+                   if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
+               });
+    md.addFunc("applyVertexNormals", [](ModelData *self, int meshIndex, std::string kind) {
+        auto result = self->applyVertexNormals(meshIndex, kind);
+        if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
+    });
+    md.addFunc("applyVertexNormalsFrom",
+               [](ModelData *self, int meshIndex, std::string kind, float x, float y, float z) {
+                   auto result = self->applyVertexNormalsFrom(meshIndex, kind, x, y, z);
+                   if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
+               });
+    md.addFunc("bakeNormalMap",
+               [](ModelData *self, int meshIndex, int width, int height, int uvChannel,
+                  std::string space) -> image::ImageData * {
+                   auto baked = self->bakeNormalMap(meshIndex, width, height, uvChannel, space);
+                   if (!baked.ok()) throw eve::Exception("%s", baked.status().describe().c_str());
+                   return std::move(baked).takeValue().release();
+               });
+    md.addFunc("getFaceVertexIndex", &ModelData::getFaceVertexIndex);
     md.addFunc("hasNormals", &ModelData::hasNormals);
     md.addFunc("hasTexCoords", &ModelData::hasTexCoords);
+    md.addFunc("getTexCoordChannelCount", &ModelData::getTexCoordChannelCount);
+    md.addFunc("hasTexCoordChannel", &ModelData::hasTexCoordChannel);
+    md.addFunc("getTexCoord", &ModelData::getTexCoord);
+    auto surfaceUv = table.addClass<SurfaceUv>(
+        "SurfaceUv", std::function<SurfaceUv *()>([]() { return new SurfaceUv(); }), true);
+    surfaceUv.addFunc("getU", [](SurfaceUv *value) { return value->u; });
+    surfaceUv.addFunc("getV", [](SurfaceUv *value) { return value->v; });
+    surfaceUv.addFunc("getBarycentricA", [](SurfaceUv *value) { return value->barycentricA; });
+    surfaceUv.addFunc("getBarycentricB", [](SurfaceUv *value) { return value->barycentricB; });
+    surfaceUv.addFunc("getBarycentricC", [](SurfaceUv *value) { return value->barycentricC; });
+    surfaceUv.addFunc("getTriangleIndex", [](SurfaceUv *value) { return value->triangleIndex; });
+    surfaceUv.addFunc("getUvChannel", [](SurfaceUv *value) { return value->uvChannel; });
+    md.addFunc("mapSurfacePointToUv",
+               [](ModelData *self, int meshIndex, int triangleIndex, float x, float y,
+                  float z, int channel) -> SurfaceUv * {
+                   auto mapped = self->mapSurfacePointToUv(meshIndex, triangleIndex, x, y, z,
+                                                           channel);
+                   if (!mapped.ok()) throw eve::Exception("%s", mapped.status().describe().c_str());
+                   return new SurfaceUv(std::move(mapped).takeValue());
+               });
+    md.addFunc("hasTangents", &ModelData::hasTangents);
+    md.addFunc("getTangent", &ModelData::getTangent);
+    md.addFunc("getBitangent", &ModelData::getBitangent);
+    md.addFunc("getVertexColorChannelCount", &ModelData::getVertexColorChannelCount);
+    md.addFunc("hasVertexColorChannel", &ModelData::hasVertexColorChannel);
+    md.addFunc("getVertexColor", &ModelData::getVertexColor);
     md.addFunc("getMaterialIndex", &ModelData::getMaterialIndex);
     md.addFunc("getMaterialName", &ModelData::getMaterialName);
     md.addFunc("getMaterialBaseColorR", &ModelData::getMaterialBaseColorR);
@@ -153,6 +286,8 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getMaterialRoughnessFactor", &ModelData::getMaterialRoughnessFactor);
     md.addFunc("getMaterialOpacity", &ModelData::getMaterialOpacity);
     md.addFunc("getMaterialTwoSided", &ModelData::getMaterialTwoSided);
+    md.addFunc("getMaterialAlphaMode", &ModelData::getMaterialAlphaMode);
+    md.addFunc("getMaterialAlphaCutoff", &ModelData::getMaterialAlphaCutoff);
     md.addFunc("getMaterialTextureSlotCount", &ModelData::getMaterialTextureSlotCount);
     md.addFunc("getMaterialTexturePath", &ModelData::getMaterialTexturePath);
     md.addFunc("getMaterialTextureEmbeddedIndex", &ModelData::getMaterialTextureEmbeddedIndex);
@@ -172,25 +307,72 @@ void Model3D::expose(ssq::Table &table) {
     md.addFunc("getBoneWeightValue", &ModelData::getBoneWeightValue);
     md.addFunc("getAnimationCount", &ModelData::getAnimationCount);
     md.addFunc("getAnimationName", &ModelData::getAnimationName);
-
-    // Minimal ImageData surface so getEmbeddedTextureImageData results are
-    // usable from scripts (same pattern as the Font module).
-    auto img = table.addClass<image::ImageData>(
-        "ImageData", std::function<image::ImageData *()>([]() -> image::ImageData * { return nullptr; }),
-        true);
-    img.addFunc("getWidth", &image::ImageData::getWidth);
-    img.addFunc("getHeight", &image::ImageData::getHeight);
-    img.addFunc("getFormat", &image::ImageData::getFormat);
-    img.addFunc("getSize", &image::ImageData::getSize);
 }
 
 void Model3D::expose(ssq::Class &cls) {
+    const auto parseOptions = [](ssq::Object object) {
+        auto value = eve::script::valueFromSquirrel(object);
+        if (!value || !value.value().isObject()) throw eve::Exception("Expected model decode options table");
+        ModelLoadOptions options;
+        for (const auto &key : value.value().keys()) {
+            const auto *field = value.value().find(key);
+            if (!field->isBool()) throw eve::Exception("Model decode options must be booleans");
+            const bool flag = field->asBool();
+            if (key == "triangulate")
+                options.triangulate = flag;
+            else if (key == "generateNormalsIfMissing")
+                options.generateNormalsIfMissing = flag;
+            else if (key == "joinIdenticalVertices")
+                options.joinIdenticalVertices = flag;
+            else if (key == "flipUVs")
+                options.flipUVs = flag;
+            else if (key == "improveCacheLocality")
+                options.improveCacheLocality = flag;
+            else
+                throw eve::Exception("Unknown model decode option: %s", key.c_str());
+        }
+        return options;
+    };
+    cls.addFunc("requestModelDataWithOptions",
+                [vm = cls.getHandle(), parseOptions](Model3D *self, const std::string &path, ssq::Object object) {
+                    try {
+                        return eve::script::projectResult(vm, self->requestModelData(path, parseOptions(object)));
+                    } catch (const std::exception &error) {
+                        return eve::script::projectResult(
+                            vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                  error.what(), "model3d.prefetch")));
+                    }
+                });
+    cls.addFunc("loadModelDataWithOptions", [vm = cls.getHandle(), parseOptions](Model3D *self, const std::string &path,
+                                                                                 ssq::Object object) {
+        try {
+            auto  options   = parseOptions(object);
+            auto *model     = self->newModelDataFromFile(path, options);
+            auto  projected = eve::script::projectStatusResult(vm, eve::Status::success());
+            projected.set("value", model);
+            eve::script::markResultHasValue(projected);
+            projected.set("ownership", std::string("borrowed-from-resource-cache"));
+            return projected;
+        } catch (const std::exception &error) {
+            return eve::script::projectStatusResult(
+                vm, eve::Status::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::Failed, error.what(), "model3d.load")));
+        }
+    });
+    cls.addFunc("requestModelData", [vm = cls.getHandle()](Model3D *self, const std::string &path) {
+        return eve::script::projectResult(vm, self->requestModelData(path));
+    });
     cls.addFunc("getName", &Model3D::getName);
     cls.addFunc("newModelData", static_cast<ModelData *(Model3D::*)(Data *, std::string)>(
                                     &Model3D::newModelData));
     cls.addFunc("newModelDataFromFile",
                 static_cast<ModelData *(Model3D::*)(std::string)>(&Model3D::newModelDataFromFile));
     cls.addFunc("createRenderable", &Model3D::createRenderable);
+    cls.addFunc("prepareFoliageDeformation", [vm = cls.getHandle()](Model3D *self, ModelData *model, int meshIndex,
+                                                                    graphics::Renderable3D *renderable) {
+        return script::projectResult(vm, self->prepareFoliageDeformation(model, meshIndex, renderable));
+    });
+    cls.addFunc("bakeModel", &Model3D::bakeModel);
 }
 
 }  // namespace model3d

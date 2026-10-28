@@ -1,0 +1,198 @@
+# 3D 相机控制器（CameraController）
+
+**脚本入口：** `eve.CameraController()`
+
+在 `Camera3D` 之上提供可复用的视角行为：跟随、环绕、俯视、第一人称、过场与锁定。
+模块还提供优先级 Camera Rig、遮挡修正、构图、Impulse Modifier，以及可发送
+`Event` 的 Camera Timeline。`Camera3D` 本身只描述“看哪里”；本模块负责“怎么移动”。
+
+## 基本用法
+
+```squirrel
+cam <- eve.Camera3D();
+cam.setEye(0.0, 3.0, 8.0);
+cam.setTarget(0.0, 1.0, 0.0);
+cam.setFov(50.0);
+cam.setAmbient(0.3, 0.32, 0.34);
+gfx.setDirectionalLight(-0.4, 0.9, 0.35, 1.9, 1.6, 1.3);
+
+ctrl <- eve.CameraController();
+ctrl.setCamera(cam);
+ctrl.setMode("orbit");
+ctrl.setTarget(0.0, 1.0, 0.0);
+ctrl.setRadius(8.0);
+ctrl.setOrbitSpeed(0.6);
+ctrl.snap();
+
+function eve_update(dt) { ctrl.update(dt); }
+```
+
+## Rig 与 Director
+
+Rig 是一份可复用的相机参数快照，Director 会选中优先级最高的 enabled Rig：
+
+```squirrel
+ctrl.setMode("follow");
+ctrl.setOffset(0.0, 2.8, 7.0);
+ctrl.setFov(55.0);
+ctrl.addRig("gameplay", "follow", 10);
+
+ctrl.setMode("orbit");
+ctrl.setRadius(5.0);
+ctrl.setElevation(20.0);
+ctrl.setFov(42.0);
+ctrl.addRig("boss", "orbit", 30);
+
+ctrl.setRigEnabled("boss", false);      // gameplay 自动接管
+ctrl.activateRig("boss", 0.6);          // 显式平滑切换
+ctrl.saveRigState("boss");              // 保存当前参数回 preset
+```
+
+`addRig(name, mode, priority)` 创建时保存当前的 target、offset、lookAhead、构图、
+orbit/first-person 参数、FOV、平滑和限速。`removeRig` 删除，`getActiveRig` 返回当前
+Rig。`setRigPriority` / `setRigEnabled` 可在游戏状态变化时驱动 Director。
+
+## 构图、目标和遮挡
+
+- `setTargetNode(nodeRef)` 直接跟随稳定的 `SceneNodeRef`；传 `null` 后可重新使用
+  `setTarget(x,y,z)`。Scene 的 transform 应先于 camera 更新。
+- `setComposition(x,y)` 设置归一化横纵构图偏移；范围会限制在 `-0.9..0.9`。
+- `setDeadZone(radius)` 让目标在世界空间死区内移动时不推动镜头。
+- `setFov(degrees)` / `getFov()` 管理镜头 FOV，输入限制为 `1..179` 度。
+- `addInput(yawDeltaDeg,pitchDeltaDeg,zoomDelta)` 接收与设备无关的输入增量，统一
+  驱动 orbit / first-person；调用方可从鼠标、手柄或触摸模块提供 delta。
+- `setCollisionEnabled` 开启球形探针；`setCollisionRadius` 设置探针半径，
+  `setCollisionRecovery` 设置遮挡解除后的恢复阻尼。
+- 若 Physics/Box3D 模块存在，探针会自动查询所有存活的 `World3D`，无需逐个注册；
+  `setCollisionMask(mask)` 过滤 category bits，`setCollisionIgnoredBody(id)` 排除玩家刚体，
+  `getCollisionBodyId()` 返回当前命中的动态刚体。Physics 不存在时 camera 仍可独立使用。
+- `addCollisionBox(minX,minY,minZ,maxX,maxY,maxZ)` 注册静态遮挡体，
+  `clearCollisionBoxes` 清空；`isObstructed()` 查询当前状态。
+
+碰撞缩进会立即发生，恢复采用阻尼，避免相机穿墙或解除遮挡时弹跳。
+
+## 锁定（lockon）
+
+`setMode("lockon")` 把镜头放到玩家身后、看向 `setTarget` 与 `setSecondaryTarget`
+的中点。Combat 模块的 `CombatCameraFraming` 拥有同一套数学；本控制器只存储世界坐标，
+不引用 combat 类型。没有 secondary target 时回退为按 offset/yaw 跟在玩家身后。
+
+```squirrel
+ctrl.setMode("lockon");
+ctrl.setTarget(playerX, playerY, playerZ);
+ctrl.setOffset(0.0, 2.0, 6.0);
+ctrl.setLookAhead(0.0, 1.2, 0.0);
+ctrl.setSecondaryTarget(lockX, lockY, lockZ);
+ctrl.snap();
+```
+
+`clearSecondaryTarget()` 清除锁定点。`hasSecondaryTarget()`、`getSecondaryTargetX()`、
+`getSecondaryTargetY()`、`getSecondaryTargetZ()` 读取当前存储的坐标。
+
+## Modifier / Impulse
+
+`addImpulse(positionAmplitude, rotationAmplitude, duration, seed)` 叠加一个确定性、
+随时间衰减的位置与旋转冲击，适合命中、爆炸和落地反馈；`clearImpulses()` 立即清除。
+`addFovImpulse(degrees,duration)` 叠加冲刺/受击常用的 FOV 脉冲。多个 modifier
+可以同时叠加，不会改变 Rig 的基础参数。
+
+动作时间线中的 `presentation:camera` 可直接驱动同一套真实 Impulse。先调用
+`setActionCuesEnabled(true)` 显式把控制器注册为当前动作相机；销毁控制器会自动注销，也可传 `false`
+提前断开。payload 至少包含 LogicalId 格式的 `cue`，并可设置 `positionAmplitude`、
+`rotationAmplitude`、`fovAmplitude`、`durationSeconds` 和确定性 `seed`。未注册控制器时运行时返回
+可观测的 NotFound，不会静默吞掉镜头事件。
+
+```squirrel
+ctrl.setActionCuesEnabled(true);
+// presentation:camera payload 示例：
+// { cue="combat:heavy-impact", positionAmplitude=0.12,
+//   rotationAmplitude=2.5, fovAmplitude=3.0, durationSeconds=0.3, seed=47 }
+```
+
+## Timeline 与 Event
+
+```squirrel
+local cameraEvents = eve.PlatformEvent();
+ctrl.setEventSink(cameraEvents);
+ctrl.clearTimeline();
+ctrl.addTimelineCut(0.0, "gameplay", 0.0);
+ctrl.addTimelineEvent(1.2, "camera.dialogue", "intro");
+ctrl.addTimelineFloat(0.0, "fov", 48.0);
+ctrl.addTimelineFloat(2.0, "fov", 36.0);
+ctrl.addTimelineCut(2.0, "boss", 0.75);
+ctrl.playTimeline(false);
+
+// 既可从共享 Event 队列消费，也可直接从 controller 的 FIFO 队列逐个消费 marker。
+local marker = ctrl.consumeTimelineEvent();
+if (marker != "") print(marker + ": " + ctrl.getTimelineEventData() + "\n");
+```
+
+- `playTimeline(loop)` / `pauseTimeline()` / `stopTimeline()` 控制播放。
+- `seekTimeline(time, fireEvents)` 定位；`getTimelineTime()` 和
+  `isTimelinePlaying()` 查询状态。
+- `addTimelineCut(time, rigName, blendTime)` 添加切镜点。
+- `addTimelineEvent(time, name, data)` 添加 marker。若设置了 `Event` sink，marker
+  同时进入全局事件队列；否则仍可通过 `consumeTimelineEvent()` 读取。单帧跨过多个
+  marker 时不会覆盖，可用 `getPendingTimelineEventCount()` 查询积压数。
+- `addTimelineFloat(time, property, value)` 添加线性属性关键帧；property 支持 `fov`、
+  `radius`、`smooth`、`compositionX`、`compositionY`。
+
+## Camera Asset 与调试快照
+
+`serializeAsset()` 将全部 Rig、cut、marker 和 float track 输出为带 `version` 的 JSON；
+`deserializeAsset(json)` 校验后替换当前配置。游戏可配合 Filesystem/Data 模块把字符串
+保存为 `.camera.json`。`getRigCount()`、`getTimelineDuration()`、
+`getPendingTimelineEventCount()`、`getCollisionBodyId()` 可供编辑器 inspector、测试和
+运行时 HUD 生成轻量调试快照。
+
+## 目标导向指南
+
+### 第三人称跟随玩家
+
+`setMode("follow")` + `setTarget(x, y, z)`（每帧更新为玩家坐标）+
+`setOffset(0, 2.6, 6.0)` + `setSmooth(6.0)`；玩家高速移动时 `setLookAhead`
+让镜头略微前探。
+
+### 过场动画
+
+`setMode("cinematic")` 前用 `addView("front", ...)` 等注册多个命名视角，
+`playSequence(3.0)` 在视角间平滑切换，`stopSequence()` / `isPlaying()` 控制。
+
+## 绑定与行为说明
+
+### `CameraController`
+
+- 绑定：`setCamera(cam)` / `getCamera()`。
+- Action Cue：`setActionCuesEnabled(enabled)` / `getActionCuesEnabled()`。
+- 跟随目标：`setTarget(x,y,z)` / `setTargetNode(nodeRef)` / `getTargetX()` /
+  `getTargetY()` / `getTargetZ()`、`setOffset(x,y,z)`、`setLookAhead(x,y,z)`。
+- 模式：`setMode("follow"|"orbit"|"topdown"|"firstperson"|"cinematic")` / `getMode()`。
+- 环绕：`setRadius`、`setAzimuth`、`setElevation`、`setOrbitSpeed`、`setYaw`、`setPitch`。
+- 平滑：`setSmooth(k)` 同时设置两路阻尼；也可用 `setPositionSmooth(k)` /
+  `setTargetSmooth(k)` 独立控制机位与朝向跟随，再配合 `setMaxSpeed(v)`、`snap()`。
+- 过场（兼容 API）：`addView(name, ex,ey,ez, tx,ty,tz)`、`switchTo(name, blendTime)`、
+  `playSequence(seconds)`、`stopSequence()`、`isPlaying()`。
+- `update(dt)`：每帧驱动（放到 `eve_update`）。
+
+## 生命周期
+
+- `Camera3D` 由脚本创建时默认 active，也可用 `setActive` 控制是否被渲染器采用；
+  控制器只改其 eye/target，不负责渲染。
+- 示例：[`examples/camera-controllers`](../../../examples/camera-controllers/main.nut)。
+
+### PcgFreeCamera
+
+`eve.PcgFreeCamera()` 移植 Pcg 的自由相机。先用 `configure(enabled,lockCursor,holdRightMouse,lookSpeed,moveSpeed,sprintSpeed,scrollIncrease,increaseValue,roll)` 配置，再将设备输入复制到 `eve.PcgFreeCameraInput()` 的 `mouseX`、`mouseY`、`scroll`、`forward`、`right`、`up`、`sprint`、`rightPressed`、`rightReleased`、`leftPressed`、`escapePressed`、`focused` 字段，并调用 `update(camera,input,dt)`。`capture(camera)` / `release()` 显式控制捕获；`setRoll()`、`getCaptured()`、`getSprintSpeed()`、`getYaw()`、`getPitch()`、`getRoll()` 提供状态。cursor 锁定由窗口层根据 `getCaptured()` 和配置执行。
+### PcgCarCameraSetup
+
+`eve.PcgCarCameraProfile()` 保留 Pcg `CarControllerSetup` 的完整车辆相机默认值：目标高度、距离范围、墙面间距、水平/垂直速度、俯仰限制、缩放率、旋转/缩放阻尼、碰撞层以及 rear-lock 和鼠标轴开关。用 `eve.PcgCarCameraSetup().configure(profile)` 原子复制配置，再调用 `apply(controller,camera,focus,initialYaw,initialPitch)` 绑定真实 `CameraController`、`Camera3D` 与稳定 `SceneNodeRef`。每帧将鼠标轴、滚轮、dt、目标移动状态与目标 yaw 传给 `update(controller,mouseX,mouseY,scroll,dt,targetIsMoving,targetYaw)`；控制器负责距离钳制、轨道相机和遮挡恢复。
+
+通用 `CameraController` 同时公开 `getRadius()`、`setRadiusLimits(minimum,maximum)`、`getMinimumRadius()` 和 `getMaximumRadius()`。距离范围更新是结构化 Result；非法范围不会改变现有配置。
+
+Profile 字段名为 `targetHeight`, `distance`, `offsetFromWall`, `maximumDistance`, `minimumDistance`, `horizontalSpeed`, `verticalSpeed`, `minimumPitch`, `maximumPitch`, `zoomRate`, `rotationDamping`, `zoomDamping`, `collisionLayers`, `lockToRearOfTarget`, `allowMouseHorizontal`, `allowMouseVertical`。
+
+### Pcg PhotoMode Camera 权威租约
+
+CameraController.setPhotoModeAuthority(true) 将已通过 setCamera 绑定的控制器注册为照片模式相机字段唯一所有者；传入 false 或销毁控制器时撤销。getPhotoModeAuthority、setCameraRoll、getCameraRoll 和 getPcgCullingDistance 提供状态。照片模式可直接应用 field of view、Pcg culling adjustment、physical aperture、focal length、roll 与 far clip；缺少绑定 Camera3D 时原子失败。
+
+同一权威也接收 Pcg 的全部 20 个 PostFX 字段。BuiltIn、URP 与 HDRP 的模式、质量和模糊区间会完整保存在 `PcgPhotoModePostFxState`；共享曝光、自动曝光、物理镜头和景深参数会同步投影到绑定的 Camera3D，因此直接进入最终场景合成。URP Gaussian 区间或 HDRP 近远区间生成 EVEngine 的对称 focus range，kernel、最大半径和质量生成最大模糊像素。跨域计划后续失败时，这些保存值与实际 Camera3D 状态一起逆序恢复。

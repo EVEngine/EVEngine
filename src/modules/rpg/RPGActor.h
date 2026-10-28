@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @brief RPG 模块的基础实体：把属性 / 状态 / 技能三张表挂到一个 ECS 实体上。
@@ -19,26 +21,45 @@
 #include "rpg/SkillTypes.h"
 
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
 namespace eve::rpg {
 
+class RPGSaveSession;
+class Party;
+
 /** @brief 属性 / 状态 / 技能三表合一的 ECS 实体。 */
-class RPGActor : public ecs::Entity {
+class EVENGINE_API_PLATFORM RPGActor : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(RPGActor, ecs::Entity)
 
+    /** @brief Release. */
     void release() override { ecs::DestroyEntity(this); }
 
-    /** @brief 属性表：任意字符串 -> AttributeValue（base + modifiers）。 */
+    /** @brief 属性组件：AttributeSet 是属性状态与计算的唯一权威真源。 */
     struct Attributes {
-        std::unordered_map<std::string, AttributeValue> values;
+        /** @brief Constructs a Attributes. */
+        Attributes() : values(std::string{}) {}
+
+        ::eve::attributes::AttributeSet values;
     };
 
-    /** @brief 状态（buff/debuff）运行时列表 —— ECS 组件，游戏侧常称 Buffs。 */
+    /**
+     * @brief Status lifecycle component backed by the generic effects container.
+     *
+     * `container` is the only owner of active effect instances. The integer
+     * maps and executor metadata are adapter state for legacy RPG projections;
+     * they are keyed by the canonical string instance id and are copied with
+     * the ECS component for staging/copy operations.
+     */
     struct Statuses {
-        std::vector<StatusInstance> active;
+        ::eve::effects::EffectContainer                         container;
+        std::unordered_map<std::string, StatusExecutorMetadata> metadata;
+        std::unordered_map<std::string, int>                    legacyIdByEffect;
+        std::unordered_map<int, std::string>                    effectByLegacyId;
         int nextInstanceId = 1;
     };
 
@@ -48,23 +69,57 @@ public:
         CastingState casting;
     };
 
-    /** @brief 每个角色独立的等级、经验与可分配点数。 */
+    /** @brief 成长进度：等级 / 经验 / 升级所需经验。 */
     struct Progression {
         int level = 1;
-        int maxLevel = 100;
-        double experience = 0.0;
-        double baseXp = 100.0;
-        double growth = 1.15;
-        int pointsPerLevel = 1;
-        int unspentPoints = 0;
+        double xp = 0.0;
+        double xpToNext = 100.0;  ///< 当前等级的升级阈值
+    };
+
+    /**
+     * @brief 当前资源（hp / mana ...）：current 是运行时瞬时值，上限取同名最终属性。
+     * max 由 attributes 推导（getFinalAttribute(resource)），本组件只存 current。
+     */
+    struct Vitals {
+        std::unordered_map<std::string, double> current;
+    };
+
+    /** @brief 已施加的运行时特征实例。 */
+    struct TraitInstance {
+        int instanceId = 0;
+        std::string traitId;
+        std::string source;
+    };
+
+    /** @brief 该 actor 的活动特征列表（TraitSystem 读写）。 */
+    struct Traits {
+        std::vector<TraitInstance> active;
+        int nextInstanceId = 1;
+    };
+
+    /** @brief 职业：当前职业 id + 已同步学技能的等级上限。 */
+    struct ClassInfo {
+        std::string classId;
+        int skillsSyncedUpTo = 0;  ///< 已处理到该等级的升级学技能
     };
 
     COMPONENT(Attributes, attributes)
     COMPONENT(Statuses, statuses)
     COMPONENT(Skills, skills)
     COMPONENT(Progression, progression)
+    COMPONENT(Vitals, vitals)
+    COMPONENT(Traits, traits)
+    COMPONENT(ClassInfo, classInfo)
 
-    /** @brief 创建一个空白 actor（三张表均为空，按需惰性写入），并纳入 liveActors() 跟踪。 */
+    /**
+     * @brief 创建一个空白 actor（三张表均为空，按需惰性写入）。
+     * @return Borrowed nullable pointer to the ECS-owned actor; null means creation failed.
+     * @ownership The ECS world owns the actor; callers must release it through ECS and never delete it.
+     * @lifetime Valid until actor/world destruction; retain the generation-qualified EntityHandle across frames.
+     * @thread Call on the RPG ECS thread.
+     * @reentrancy The factory invokes no user callbacks; do not re-enter structural ECS mutation while using the
+     * result.
+     */
     static RPGActor *createActor();
 
     /**
@@ -79,8 +134,13 @@ public:
     double getBaseAttribute(const std::string &attribute);
     void modifyBaseAttribute(const std::string &attribute, double delta);
     bool hasAttribute(const std::string &attribute);
-    std::string addAttributeModifier(const std::string &attribute, const std::string &source,
-                                      const std::string &op, double value, int priority = 0);
+    /** @brief Canonical modifier insertion backed by AttributeSet. */
+    [[nodiscard]] eve::Result<ModifierId> addAttributeModifier(AttributeModifier modifier);
+    /** @brief Legacy string modifier insertion facade. */
+    std::string addAttributeModifier(const std::string &attribute, const std::string &source, const std::string &op,
+                                     double value, int priority = 0);
+    /** @brief Canonical modifier removal backed by AttributeSet. */
+    [[nodiscard]] eve::Result<void> removeAttributeModifier(const ModifierId &modifierId);
     bool removeAttributeModifier(const std::string &attribute, const std::string &modifierId);
     int removeAttributeModifiersBySource(const std::string &attribute, const std::string &source);
     int removeAllAttributeModifiersBySource(const std::string &source);
@@ -140,33 +200,113 @@ public:
     std::string getCastingSkillId();
     float getCastProgress();
 
-    /** @brief 配置并重置角色成长曲线与运行时。 */
-    void configureProgression(int level, int maxLevel, float baseXp, float growth,
-                              int pointsPerLevel);
-    /** @brief 增加经验。 @return 本次提升的等级数。 */
-    int gainExperience(float amount);
-    /** @brief 返回当前等级。 */
+    /** @brief 成长进度（LevelSystem 的薄转发）。 */
     int getLevel();
-    /** @brief 返回当前等级内累计经验。 */
-    float getExperience();
-    /** @brief 返回升到下一级所需经验。 */
-    float getExperienceForNextLevel();
-    /** @brief 返回尚未消费的成长点数。 */
-    int getUnspentPoints();
-    /** @brief 消费成长点数，余额不足时返回 false。 */
-    bool spendPoints(int amount);
+    double getXp();
+    double getXpToNext();
+    void setXpToNext(double value);
+    /**
+     * @brief Validate and atomically restore this actor's progression checkpoint.
+     * @param level Positive level.
+     * @param xp Finite, non-negative progress below xpToNext.
+     * @param xpToNext Finite positive threshold for the current level.
+     * @return Applied state, or a structured failure without mutation.
+     * @remarks The actor retains ownership of its progression component and no
+     * level-up event or callback is emitted by restoration.
+     * @thread Call on the actor's owning ECS simulation thread.
+     * @reentrancy No callbacks are invoked.
+     */
+    [[nodiscard]] eve::Result<void> restoreProgression(int level, double xp, double xpToNext);
+    /** @brief 增加经验并可能升级（compatibility facade (脚本兼容门面)；返回是否升级）。 */
+    bool gainXp(double amount);
+
+    /** @brief 生命等当前资源（VitalsSystem 的薄转发，max 取同名最终属性）。 */
+    double getCurrent(const std::string &resource);
+    double getMax(const std::string &resource);
+    void setCurrent(const std::string &resource, double value);
+    double takeDamage(const std::string &resource, double amount, const std::string &source = "");
+    double heal(const std::string &resource, double amount);
+    void revive(const std::string &resource, double amount = -1.0);
+    bool isDead(const std::string &resource);
+
+    /** @brief 特征（TraitSystem 的薄转发）。 */
+    int applyTrait(const std::string &traitId, const std::string &source = "");
+    /** @brief 移除一个特征（compatibility facade (脚本兼容门面)；成功返回 true）。 */
+    bool removeTrait(int instanceId);
+    int removeTraitsBySource(const std::string &source);
+    int removeTraitsByTrait(const std::string &traitId);
+    bool hasTrait(const std::string &traitId);
+    int getTraitCount();
+    int getTraitInstanceIdAt(int index);
+    std::string getTraitIdAt(int index);
+    std::string getTraitSourceAt(int index);
+    double getParamRate(const std::string &param);
+    double getElementRate(const std::string &element);
+    double getStateRate(const std::string &stateId);
+    bool isStateResist(const std::string &stateId);
+    double getExParam(const std::string &exParam);
+    double getAttackSpeed();
+    int getAttackTimesAdd();
+    std::vector<std::string> getAttackElements();
+    std::vector<std::string> getAttackStates();
+
+    /** @brief 职业（ClassSystem 的薄转发）。 */
+    /** @brief 设定职业（compatibility facade (脚本兼容门面)；成功返回 true）。 */
+    bool setClass(const std::string &classId);
+    std::string getClassId();
+    bool hasClass(const std::string &classId);
+    int checkLevelSkills();
+    int getClassLearnCount();
+    std::string getClassLearnSkillIdAt(int index);
+    int getClassLearnLevelAt(int index);
 
     /**
-     * @brief 返回所有通过 createActor() 创建、且当前仍存活的 actor。
+     * @brief Capture this actor at a persistent safe checkpoint.
+     * @return Deterministic schema `eve.rpg.actor-checkpoint` version 1 JSON, or a structured failure.
+     * @remarks The checkpoint stores base attributes, progression, vitals, learned skill ids,
+     * class identity and trait identity. Active effects, casts, cooldowns, runtime events and
+     * raw targets are transient and excluded. Capture is rejected while an effect or cast is active.
+     * @thread Call on the actor's owning ECS simulation thread.
+     * @reentrancy No callbacks or registry mutations are performed.
+     */
+    [[nodiscard]] eve::Result<std::string> checkpointJson() const;
+
+    /**
+     * @brief Validate and atomically restore a safe checkpoint into this preconfigured actor.
+     * @param json UTF-8 JSON produced by checkpointJson().
+     * @return Applied state, or a structured failure without mutation.
+     * @remarks The destination must have no active effect/cast and must use the same class,
+     * trait identities and attribute layout. Skill ids must exist in the current registry.
+     * Cooldowns and casting restore to defaults. Unknown version-1 fields are ignored.
+     * @thread Call on the actor's owning ECS simulation thread.
+     * @reentrancy No callbacks or gameplay events are emitted.
+     */
+    [[nodiscard]] eve::Result<void> restoreCheckpointJson(std::string_view json);
+
+    /**
+     * @brief 返回当前 Table 中所有存活的 RPGActor（含派生类）。
      * StatusSystem::update / SkillSystem::update 用它遍历所有 actor 逐帧推进。
-     * 直接调用继承自 ENTITY 宏的 RPGActor::create() 不会被跟踪——推荐总是用 createActor()。
      *
-     * 实现细节：内部按 ecs::EntityHandle（而非裸指针）跟踪，每次调用通过
-     * ecs::try_get 按 (id, generation) 校验是否仍是同一个存活实体——
-     * 这样当一个 actor 被销毁、其 id 槽位被新 actor 复用时，不会把新实体
-     * 误判为旧的已销毁实体（裸指针 + is_entity_visible 无法区分这种复用）。
+     * 实现细节：由 `ecs::View<RPGActor, Attributes>` + `ViewIterator::entity()`
+     * 收集，不再维护第二份 handle 注册表。跨帧持有身份仍应使用 EntityHandle。
+     * @lifetime 返回的 vector 在下一次 `liveActors()` 调用前保持稳定；其中的指针
+     * 仅在当前帧/当前 View 语义下借用，销毁后勿跨帧保留裸指针。
      */
     static const std::vector<RPGActor *> &liveActors();
+
+private:
+    struct CheckpointCandidate {
+        Attributes attributes;
+        Skills skills;
+        Progression progression;
+        Vitals vitals;
+        ClassInfo classInfo;
+    };
+
+    [[nodiscard]] eve::Result<CheckpointCandidate> prepareCheckpointJson(std::string_view json) const;
+    void commitCheckpoint(CheckpointCandidate candidate) noexcept;
+    friend class RPGSaveSession;
+    friend class Party;
 };
 
 }  // namespace eve::rpg

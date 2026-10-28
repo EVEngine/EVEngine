@@ -1,16 +1,27 @@
 #include "stylize/StyleShaders.h"
 
+#include "stylize/EffectShaders.h"
+
 #include "common/Exception.h"
 #include "graphics/Graphics.h"
 #include "graphics/Shader.h"
 #include "graphics/shaders/mesh3d_toon_frag_spv.inc"
 #include "graphics/shaders/mesh3d_toon_vert_spv.inc"
+#include "stylize/shaders/StylizeWgsl.h"
+#include "stylize/shaders/anime_mesh_frag_spv.inc"
+#include "stylize/shaders/anime_mesh_wgsl.inc"
 #include "stylize/shaders/cartoon_post_frag_spv.inc"
+#include "stylize/shaders/impasto_mesh_frag_spv.inc"
+#include "stylize/shaders/impasto_mesh_vert_spv.inc"
+#include "stylize/shaders/impasto_mesh_wgsl.inc"
 #include "stylize/shaders/ink_mesh_frag_spv.inc"
 #include "stylize/shaders/ink_post_frag_spv.inc"
 #include "stylize/shaders/pixel_post_frag_spv.inc"
+#include "stylize/shaders/stylize_mesh_vert_spv.inc"
 #include "stylize/shaders/watercolor_post_frag_spv.inc"
 #include "stylize/shaders/xray_mesh_frag_spv.inc"
+#include "stylize/shaders/ysa_mesh_frag_spv.inc"
+#include "stylize/shaders/ysa_mesh_wgsl.inc"
 
 #include <algorithm>
 #include <array>
@@ -20,7 +31,16 @@
 namespace eve::stylize {
 namespace {
 
-const std::array<const char *, 5> kStyles = {"cartoon", "watercolor", "ink", "pixel", "xray"};
+const std::array<StyleDefinition, 8> kStyles = {{
+    {"cartoon", true, true, true, false, false, graphics::PostEffectStage::BeforeTonemap, 100},
+    {"watercolor", true, false, true, false, false, graphics::PostEffectStage::AfterTonemap, 200},
+    {"ink", true, true, true, false, false, graphics::PostEffectStage::BeforeTonemap, 110},
+    {"pixel", true, false, true, false, false, graphics::PostEffectStage::AfterTonemap, 300},
+    {"xray", false, true, false, true, false, graphics::PostEffectStage::AfterOpaque, 50},
+    {"anime", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 40},
+    {"ysa", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 40},
+    {"impasto", false, true, false, false, false, graphics::PostEffectStage::AfterOpaque, 40},
+}};
 
 std::vector<uint32_t> copySpv(const uint32_t *data, size_t count) {
     return std::vector<uint32_t>(data, data + count);
@@ -152,63 +172,199 @@ fn fs_main(in: FSIn, @builtin(position) fragPos: vec4f) -> FSOut {
 
 }  // namespace
 
-bool isKnownStyle(const std::string &style) {
-    return std::find(kStyles.begin(), kStyles.end(), style) != kStyles.end();
+const StyleDefinition *findStyleDefinition(const std::string &style) {
+    const auto it = std::find_if(kStyles.begin(), kStyles.end(), [&](const StyleDefinition &def) {
+        return style == def.id;
+    });
+    if (it != kStyles.end()) return &*it;
+    return findEffectDefinition(style);
 }
 
-int styleCount() { return int(kStyles.size()); }
+bool isKnownStyle(const std::string &style) { return findStyleDefinition(style) != nullptr; }
+
+int styleCount() { return int(kStyles.size()) + effectStyleCount(); }
 
 std::string styleIdAt(int index) {
-    if (index < 0 || index >= int(kStyles.size())) return {};
-    return kStyles[size_t(index)];
+    if (index < 0) return {};
+    if (index < int(kStyles.size())) return kStyles[size_t(index)].id;
+    return effectStyleIdAt(index - int(kStyles.size()));
 }
 
 bool styleSupports(const std::string &style, const std::string &feature) {
-    if (!isKnownStyle(style)) return false;
-    if (feature == "post" || feature == "cpu") return true;
-    if (feature == "mesh") return style == "cartoon" || style == "ink" || style == "xray";
-    if (feature == "gbuffer") return true;  // depth/normal available via graphics.RenderControl
+    const StyleDefinition *def = findStyleDefinition(style);
+    if (!def) return false;
+    if (feature == "post") return def->post;
+    if (feature == "mesh") return def->mesh;
+    if (feature == "cpu") return def->cpu;
+    if (feature == "depth") return def->depth;
+    if (feature == "normal") return def->normal;
+    if (feature == "gbuffer") return def->depth || def->normal;
     return false;
 }
 
 namespace {
-const char *kCartoonParams[] = {"bands",    "outlineStrength", "outlineThreshold", "posterize",
-                                "texelW",   "texelH",          "time",             "softEdge",
-                                "outlineWidth", "shadowLift"};
-const char *kWatercolorParams[] = {"blurAmount", "edgeDarken", "paperStrength", "distortion",
-                                   "bleed",      "saturation", "texelW",        "texelH",
-                                   "time",       "granulation"};
-const char *kInkParams[] = {"inkContrast", "washLevels", "edgeThreshold", "diffusion",
-                            "paperR",      "paperG",     "paperB",        "inkDensity",
-                            "texelW",      "texelH",     "time",          "edgeStrength"};
-const char *kPixelParams[] = {"pixelSize", "paletteSteps", "ditherStrength", "toonBands",
-                              "sharpness", "texelW",       "texelH",         "time",
-                              "screenW",   "screenH",      "outline"};
-const char *kXrayParams[] = {"colorR", "colorG", "colorB", "bias",
-                             "screenW", "screenH", "rimPower", "rimStrength", "alpha"};
+// Order is the shared GLSL/WGSL parameter ABI. Seed shader uniforms from this table.
+const StyleParameterDesc kImpastoParams[] = {
+    {"strokeScale", 0.65f, 0.1f, 32.0f},
+    {"normalStrength", 0.88f, 0.0f, 3.0f},
+    {"colorVariation", 0.32f, 0.0f, 0.8f},
+    {"parallax", 0.06f, 0.0f, 0.15f},
+    {"reflectionStrength", 0.78f, 0.0f, 2.0f},
+    {"sdfShadowStrength", 0.0f, 0.0f, 1.0f},
+    {"shadowR", 0.24f, 0.0f, 1.0f},
+    {"shadowG", 0.18f, 0.0f, 1.0f},
+    {"shadowB", 0.48f, 0.0f, 1.0f},
+    {"rimStrength", 0.7f, 0.0f, 3.0f},
+    {"rimErosion", 0.8f, 0.0f, 1.0f},
+    {"packedBrush", 0.0f, 0.0f, 1.0f},
+    {"layer", 0.0f, 0.0f, 3.0f},
+    {"shellWidth", 0.045f, 0.0f, 0.2f},
+    {"shellOffset", 0.0f, -0.2f, 0.2f},
+    {"smoothNormalMode", 0.0f, 0.0f, 2.0f},
+    {"occlusionStrength", 0.0f, 0.0f, 1.0f},
+    {"occlusionRadius", 0.8f, 0.01f, 4.0f},
+    {"sdfFloorY", 0.0f, -1000.0f, 1000.0f},
+    {"sdfOwner", 0.0f, 0.0f, 4.0f},
+    {"sdfSphereAX", 0.0f, -1000.0f, 1000.0f},
+    {"sdfSphereAY", 0.0f, -1000.0f, 1000.0f},
+    {"sdfSphereAZ", 0.0f, -1000.0f, 1000.0f},
+    {"sdfSphereASize", 0.0f, 0.0f, 1000.0f},
+    {"sdfSphereBX", 0.0f, -1000.0f, 1000.0f},
+    {"sdfSphereBY", 0.0f, -1000.0f, 1000.0f},
+    {"sdfSphereBZ", 0.0f, -1000.0f, 1000.0f},
+    {"sdfSphereBSize", 0.0f, 0.0f, 1000.0f},
+    {"sdfBoxX", 0.0f, -1000.0f, 1000.0f},
+    {"sdfBoxY", 0.0f, -1000.0f, 1000.0f},
+    {"sdfBoxZ", 0.0f, -1000.0f, 1000.0f},
+    {"sdfBoxSize", 0.0f, 0.0f, 1000.0f},
+};
+const StyleParameterDesc kYsaParams[] = {
+    {"lightMidpoint", 0.f, -1.f, 1.f},
+    {"lightSmoothness", 0.1f, 0.00001f, 1.f},
+    {"ambientR", 0.254717f, 0.f, 1.f},
+    {"ambientG", 0.254717f, 0.f, 1.f},
+    {"ambientB", 0.254717f, 0.f, 1.f},
+    {"shadowPower", 0.5f, 0.f, 1.f},
+    {"shadowSmoothness", 1.f, 0.00001f, 1.f},
+    {"specularStrength", 0.f, 0.f, 4.f},
+    {"specularMidpoint", 0.9f, -1.f, 1.f},
+    {"specularSmoothness", 0.1f, 0.00001f, 1.f},
+    {"specularR", 1.f, 0.f, 4.f},
+    {"specularG", 1.f, 0.f, 4.f},
+    {"specularB", 1.f, 0.f, 4.f},
+    {"rimStrength", 0.f, 0.f, 4.f},
+    {"rimMidpoint", 0.6f, 0.f, 1.f},
+    {"rimSmoothness", 0.1f, 0.00001f, 1.f},
+    {"rimDynamic", 0.5f, 0.f, 1.f},
+    {"rimR", 1.f, 0.f, 4.f},
+    {"rimG", 0.f, 0.f, 4.f},
+    {"rimB", 0.f, 0.f, 4.f},
+    {"alphaClip", 0.f, 0.f, 1.f},
+    {"rimHideOnShadow", 1.f, 0.f, 1.f},
+    {"linearLighting", 0.f, 0.f, 1.f},
+};
+const StyleParameterDesc kAnimeParams[] = {
+    {"shadowThreshold", -0.08f, -1.f, 1.f},
+    {"shadowSoftness", 0.035f, 0.001f, 0.5f},
+    {"shadowStrength", 1.f, 0.f, 1.f},
+    {"rimStrength", 0.19f, 0.f, 1.f},
+    {"skin", 0.f, 0.f, 1.f},
+    {"hair", 0.f, 0.f, 1.f},
+    {"skinDetail", 1.f, 0.f, 1.f},
+    {"specularStrength", 0.22f, 0.f, 1.f},
+    {"specularPower", 32.f, 1.f, 128.f},
+    {"shadowR", 0.64f, 0.f, 1.f},
+    {"shadowG", 0.66f, 0.f, 1.f},
+    {"shadowB", 0.79f, 0.f, 1.f},
+    {"fillGradient", 0.08f, 0.f, 1.f},
+    {"unlit", 0.f, 0.f, 1.f},
+    {"surfaceSpecular", 0.f, 0.f, 1.f},
+    {"castShadowStrength", 1.f, 0.f, 1.f},
+};
+const StyleParameterDesc kCartoonParams[] = {
+    {"bands", 3.f, 1.f, 16.f},              {"outlineStrength", 1.15f, 0.f, 4.f},
+    {"outlineThreshold", 0.12f, 0.f, 1.f},  {"posterize", 5.f, 1.f, 32.f},
+    {"softEdge", 0.08f, 0.f, 1.f},          {"outlineWidth", 1.5f, 0.5f, 8.f},
+    {"shadowLift", 0.12f, 0.f, 1.f},        {"rimPower", 2.8f, 0.1f, 16.f},
+    {"rimStrength", 0.55f, 0.f, 2.f},
+};
+const StyleParameterDesc kWatercolorParams[] = {
+    {"blurAmount", 2.4f, 0.f, 12.f},      {"edgeDarken", 2.f, 0.f, 5.f},
+    {"paperStrength", 0.65f, 0.f, 1.f},   {"distortion", 0.85f, 0.f, 3.f},
+    {"bleed", 0.62f, 0.f, 1.f},           {"saturation", 0.9f, 0.f, 2.f},
+    {"granulation", 0.65f, 0.f, 1.f},
+};
+const StyleParameterDesc kInkParams[] = {
+    {"inkContrast", 1.35f, 0.f, 4.f},    {"washLevels", 5.f, 1.f, 16.f},
+    {"edgeThreshold", 0.18f, 0.f, 1.f}, {"diffusion", 3.5f, 0.f, 12.f},
+    {"paperR", 0.96f, 0.f, 1.f},         {"paperG", 0.93f, 0.f, 1.f},
+    {"paperB", 0.86f, 0.f, 1.f},         {"inkDensity", 0.75f, 0.f, 2.f},
+    {"edgeStrength", 1.1f, 0.f, 4.f},    {"contrast", 1.25f, 0.f, 4.f},
+    {"rimBoost", 0.65f, 0.f, 2.f},
+};
+const StyleParameterDesc kPixelParams[] = {
+    {"pixelSize", 5.f, 1.f, 64.f},         {"paletteSteps", 6.f, 2.f, 32.f},
+    {"ditherStrength", 0.18f, 0.f, 1.f},  {"toonBands", 3.f, 1.f, 16.f},
+    {"sharpness", 1.f, 0.f, 2.f},          {"outline", 0.9f, 0.f, 4.f},
+};
+const StyleParameterDesc kXrayParams[] = {
+    {"colorR", 1.f, 0.f, 1.f},          {"colorG", 0.62f, 0.f, 1.f},
+    {"colorB", 0.12f, 0.f, 1.f},       {"bias", 0.0002f, 0.f, 0.02f},
+    {"rimPower", 2.2f, 0.1f, 16.f},    {"rimStrength", 0.7f, 0.f, 2.f},
+    {"alpha", 0.82f, 0.f, 1.f},
+};
+
+template <size_t N>
+const StyleParameterDesc *paramAt(const StyleParameterDesc (&params)[N], int index) {
+    return index < 0 || index >= int(N) ? nullptr : &params[size_t(index)];
+}
 }  // namespace
 
 int styleParamCount(const std::string &style) {
+    if (style == "impasto") return int(std::size(kImpastoParams));
+    if (style == "ysa") return int(std::size(kYsaParams));
+    if (style == "anime") return int(std::size(kAnimeParams));
     if (style == "cartoon") return int(sizeof(kCartoonParams) / sizeof(kCartoonParams[0]));
     if (style == "watercolor") return int(sizeof(kWatercolorParams) / sizeof(kWatercolorParams[0]));
     if (style == "ink") return int(sizeof(kInkParams) / sizeof(kInkParams[0]));
     if (style == "pixel") return int(sizeof(kPixelParams) / sizeof(kPixelParams[0]));
     if (style == "xray") return int(sizeof(kXrayParams) / sizeof(kXrayParams[0]));
-    return 0;
+    return effectParamCount(style);
 }
 
 std::string styleParamName(const std::string &style, int index) {
-    if (index < 0 || index >= styleParamCount(style)) return {};
-    if (style == "cartoon") return kCartoonParams[index];
-    if (style == "watercolor") return kWatercolorParams[index];
-    if (style == "ink") return kInkParams[index];
-    if (style == "pixel") return kPixelParams[index];
-    if (style == "xray") return kXrayParams[index];
-    return {};
+    const StyleParameterDesc *desc = styleParameterAt(style, index);
+    return desc ? desc->id : std::string{};
+}
+
+const StyleParameterDesc *styleParameterAt(const std::string &style, int index) {
+    if (style == "impasto") return paramAt(kImpastoParams, index);
+    if (style == "ysa") return paramAt(kYsaParams, index);
+    if (style == "anime") return paramAt(kAnimeParams, index);
+    if (style == "cartoon") return paramAt(kCartoonParams, index);
+    if (style == "watercolor") return paramAt(kWatercolorParams, index);
+    if (style == "ink") return paramAt(kInkParams, index);
+    if (style == "pixel") return paramAt(kPixelParams, index);
+    if (style == "xray") return paramAt(kXrayParams, index);
+    return effectParameterAt(style, index);
+}
+
+const StyleParameterDesc *findStyleParameter(const std::string &style, const std::string &name) {
+    const int count = styleParamCount(style);
+    for (int i = 0; i < count; ++i) {
+        const StyleParameterDesc *desc = styleParameterAt(style, i);
+        if (desc && name == desc->id) return desc;
+    }
+    return nullptr;
 }
 
 void bindPostUniforms(graphics::Shader *shader, const std::string &style) {
     if (!shader) throw eve::Exception("bindPostUniforms: null shader");
+
+    if (isEffectStyle(style)) {
+        bindEffectPostUniforms(shader, style);
+        return;
+    }
 
     if (style == "cartoon") {
         shader->declareFloat("bands");
@@ -313,6 +469,32 @@ void bindPostUniforms(graphics::Shader *shader, const std::string &style) {
 
 void bindMeshUniforms(graphics::Shader *shader, const std::string &style) {
     if (!shader) throw eve::Exception("bindMeshUniforms: null shader");
+    if (style == "impasto") {
+        for (const auto &param : kImpastoParams) {
+            shader->declareFloat(param.id);
+            shader->sendFloat(param.id, param.defaultValue);
+        }
+        return;
+    }
+    if (style == "ysa") {
+        for (const auto &param : kYsaParams) {
+            shader->declareFloat(param.id);
+            shader->sendFloat(param.id, param.defaultValue);
+        }
+        return;
+    }
+    if (style == "anime") {
+        for (const auto &param : kAnimeParams) {
+            shader->declareFloat(param.id);
+            shader->sendFloat(param.id, param.defaultValue);
+        }
+        return;
+    }
+
+    if (isEffectStyle(style)) {
+        bindEffectMeshUniforms(shader, style);
+        return;
+    }
 
     if (style == "cartoon") {
         shader->declareFloat("bands");
@@ -370,8 +552,23 @@ void bindMeshUniforms(graphics::Shader *shader, const std::string &style) {
 
 graphics::Shader *createPostShader(graphics::Graphics *gfx, const std::string &style) {
     if (!gfx) throw eve::Exception("createPostShader: null graphics");
-    if (!isKnownStyle(style))
-        throw eve::Exception("createPostShader: unknown style '%s'", style.c_str());
+    if (isEffectStyle(style)) return createEffectPostShader(gfx, style);
+    const StyleDefinition *def = findStyleDefinition(style);
+    if (!def) throw eve::Exception("createPostShader: unknown style '%s'", style.c_str());
+    if (!def->post)
+        throw eve::Exception("createPostShader: style '%s' has no post technique", style.c_str());
+
+    if (gfx->getBackendName() == "webgpu") {
+        const char *body = style == "cartoon"   ? shaders::kCartoon
+                           : style == "watercolor" ? shaders::kWatercolor
+                           : style == "ink"        ? shaders::kInk
+                                                     : shaders::kPixel;
+        graphics::Shader *sh = gfx->newShaderFromWgsl({}, std::string(shaders::kCommon) + body);
+        if (!sh || !sh->gpuHandle)
+            throw eve::Exception("createPostShader: failed to create '%s' WGSL", style.c_str());
+        bindPostUniforms(sh, style);
+        return sh;
+    }
 
     std::vector<uint32_t> frag;
     if (style == "cartoon")
@@ -392,17 +589,68 @@ graphics::Shader *createPostShader(graphics::Graphics *gfx, const std::string &s
 
 graphics::Shader *createMeshShader(graphics::Graphics *gfx, const std::string &style) {
     if (!gfx) throw eve::Exception("createMeshShader: null graphics");
+    if (isEffectStyle(style)) return createEffectMeshShader(gfx, style);
+
+    if (style == "impasto") {
+        graphics::Shader *shader =
+            gfx->getBackendName() == "webgpu"
+                ? gfx->newMeshShaderFromWgsl(shaders::kImpastoVert, shaders::kImpastoMesh)
+                : gfx->newMeshShaderFromSpv(copySpv(impasto_mesh_vert_spv, impasto_mesh_vert_spv_count),
+                                            copySpv(impasto_mesh_frag_spv, impasto_mesh_frag_spv_count));
+        if (!shader || !shader->gpuHandle)
+            throw eve::Exception("createMeshShader: failed to create impasto mesh shader");
+        bindMeshUniforms(shader, style);
+        return shader;
+    }
+
+    if (style == "ysa") {
+        // Vulkan stylize meshes share the skinning and vertex-color contract
+        // of the backend's standard WebGPU mesh vertex shader.
+        graphics::Shader *shader =
+            gfx->getBackendName() == "webgpu"
+                ? gfx->newMeshShaderFromWgsl({}, std::string(shaders::kMeshCommon) + shaders::kYsaMesh)
+                : gfx->newMeshShaderFromSpv(copySpv(stylize_mesh_vert_spv, stylize_mesh_vert_spv_count),
+                                            copySpv(ysa_mesh_frag_spv, ysa_mesh_frag_spv_count));
+        if (!shader || !shader->gpuHandle) throw eve::Exception("createMeshShader: failed to create ysa mesh shader");
+        bindMeshUniforms(shader, style);
+        return shader;
+    }
+
+    if (style == "anime") {
+        graphics::Shader *shader =
+            gfx->getBackendName() == "webgpu"
+                ? gfx->newMeshShaderFromWgsl({}, std::string(shaders::kMeshCommon) + shaders::kAnimeMesh)
+                : gfx->newMeshShaderFromSpv(copySpv(stylize_mesh_vert_spv, stylize_mesh_vert_spv_count),
+                                            copySpv(anime_mesh_frag_spv, anime_mesh_frag_spv_count));
+        if (!shader || !shader->gpuHandle) throw eve::Exception("createMeshShader: failed to create anime mesh shader");
+        bindMeshUniforms(shader, style);
+        return shader;
+    }
 
     if (style == "cartoon") {
-        auto vert = copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count);
-        auto frag = copySpv(mesh3d_toon_frag_spv, mesh3d_toon_frag_spv_count);
-        graphics::Shader *sh = gfx->newMeshShaderFromSpv(vert, frag);
-        if (!sh || !sh->gpuHandle)
-            throw eve::Exception("createMeshShader: failed to create cartoon mesh shader");
+        if (gfx->getBackendName() == "webgpu") {
+            graphics::Shader *sh =
+                gfx->newMeshShaderFromWgsl({}, std::string(shaders::kMeshCommon) + shaders::kCartoonMesh);
+            if (!sh || !sh->gpuHandle) throw eve::Exception("createMeshShader: failed to create cartoon WGSL");
+            bindMeshUniforms(sh, style);
+            return sh;
+        }
+        auto              vert = copySpv(stylize_mesh_vert_spv, stylize_mesh_vert_spv_count);
+        auto              frag = copySpv(mesh3d_toon_frag_spv, mesh3d_toon_frag_spv_count);
+        graphics::Shader *sh   = gfx->newMeshShaderFromSpv(vert, frag);
+        if (!sh || !sh->gpuHandle) throw eve::Exception("createMeshShader: failed to create cartoon mesh shader");
         bindMeshUniforms(sh, style);
         return sh;
     }
     if (style == "ink") {
+        if (gfx->getBackendName() == "webgpu") {
+            graphics::Shader *sh = gfx->newMeshShaderFromWgsl(
+                {}, std::string(shaders::kMeshCommon) + shaders::kInkMesh);
+            if (!sh || !sh->gpuHandle)
+                throw eve::Exception("createMeshShader: failed to create ink WGSL");
+            bindMeshUniforms(sh, style);
+            return sh;
+        }
         auto vert = copySpv(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv_count);
         auto frag = copySpv(ink_mesh_frag_spv, ink_mesh_frag_spv_count);
         graphics::Shader *sh = gfx->newMeshShaderFromSpv(vert, frag);

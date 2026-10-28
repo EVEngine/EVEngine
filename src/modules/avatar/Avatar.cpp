@@ -1,12 +1,104 @@
 #include "avatar/Avatar.h"
+#include "avatar/Appearance.h"
 #include "avatar/Live2DNullBackend.h"
+#include "avatar/VrmRuntime.h"
+#include "common/SquirrelBinding.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
+#include "inventory/Equipment.h"
 
 #include <algorithm>
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace eve::avatar {
+namespace {
+
+template <class Map>
+std::vector<std::string> sortedKeys(const Map& values) {
+    std::vector<std::string> names;
+    names.reserve(values.size());
+    for (const auto& [name, value] : values) {
+        (void)value;
+        names.push_back(name);
+    }
+    std::sort(names.begin(), names.end());
+    return names;
+}
+
+}  // namespace
+
+void AvatarInstance::ensureParameter(const std::string& name, float value) {
+    if (name.empty()) return;
+    if (parameters_.find(name) == parameters_.end()) {
+        parameterOrder_.push_back(name);
+        parameterMetadata_.emplace(name, ParameterMetadata{value, 0.f, 1.f});
+    }
+    parameters_[name] = value;
+}
+
+bool AvatarInstance::defineParameter(const std::string& name, float defaultValue, float minimum,
+                                     float maximum) {
+    if (name.empty() || minimum > maximum) return false;
+    ensureParameter(name, defaultValue);
+    parameterMetadata_[name] = {defaultValue, minimum, maximum};
+    return true;
+}
+
+float AvatarInstance::getParameterDefault(const std::string& name) const {
+    const auto found = parameterMetadata_.find(name);
+    return found == parameterMetadata_.end() ? 0.f : found->second.defaultValue;
+}
+
+float AvatarInstance::getParameterMinimum(const std::string& name) const {
+    const auto found = parameterMetadata_.find(name);
+    return found == parameterMetadata_.end() ? 0.f : found->second.minimum;
+}
+
+float AvatarInstance::getParameterMaximum(const std::string& name) const {
+    const auto found = parameterMetadata_.find(name);
+    return found == parameterMetadata_.end() ? 1.f : found->second.maximum;
+}
+
+bool AvatarInstance::removeExpression(const std::string& name) {
+    return expressionDefs_.erase(name) > 0;
+}
+
+int AvatarInstance::getExpressionCount() const {
+    int count = static_cast<int>(expressionDefs_.size());
+    if (vrm_)
+        for (const auto& e : vrm_->document.expressions)
+            if (!expressionDefs_.contains(e.name)) ++count;
+    return count;
+}
+
+std::string AvatarInstance::getExpressionName(int index) const {
+    std::vector<std::string> names = sortedKeys(expressionDefs_);
+    if (vrm_)
+        for (const auto& e : vrm_->document.expressions) names.push_back(e.name);
+    std::sort(names.begin(), names.end());
+    names.erase(std::unique(names.begin(), names.end()), names.end());
+    return index < 0 || index >= static_cast<int>(names.size()) ? std::string{}
+                                                               : names[static_cast<size_t>(index)];
+}
+
+bool AvatarInstance::unregisterMotion(const std::string& name) {
+    return motions_.erase(name) > 0;
+}
+
+int AvatarInstance::getMotionCount() const {
+    return static_cast<int>(motions_.size());
+}
+
+std::string AvatarInstance::getMotionName(int index) const {
+    const std::vector<std::string> names = sortedKeys(motions_);
+    return index < 0 || index >= static_cast<int>(names.size()) ? std::string{}
+                                                               : names[static_cast<size_t>(index)];
+}
+
+animation::AnimClip* AvatarInstance::getMotionClip(const std::string& name) const {
+    const auto found = motions_.find(name);
+    return found == motions_.end() ? nullptr : found->second;
+}
 
 Live2DBackendFactory Avatar::live2dFactory_ = &createNullLive2DBackend;
 
@@ -57,6 +149,9 @@ void Avatar::render(graphics::Graphics *gfx) {
     if (!gfx) return;
     std::vector<graphics::DrawItem2D> items;
     graphics::RenderSystem::collectSprites(items);
+    for (AvatarInstance* a : avatars_) {
+        if (a) a->collectLive2DDrawItems(items);
+    }
     graphics::RenderSystem::drawItems(*gfx, items, false);
 }
 
@@ -81,7 +176,16 @@ std::string Avatar::getLive2DBackendName() {
     return n;
 }
 
+bool Avatar::hasLive2DBackend() {
+    ILive2DBackend* tmp = createLive2DBackend();
+    if (!tmp) return false;
+    const bool available = tmp->isRuntimeAvailable();
+    delete tmp;
+    return available;
+}
+
 void Avatar::expose(ssq::Table &table) {
+    exposeAppearance(table);
     auto cls = table.addClass(name, Avatar::create, false);
     expose(cls);
 
@@ -109,6 +213,10 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("hasParameter", &AvatarInstance::hasParameter);
     av.addFunc("getParameterCount", &AvatarInstance::getParameterCount);
     av.addFunc("getParameterName", &AvatarInstance::getParameterName);
+    av.addFunc("defineParameter", &AvatarInstance::defineParameter);
+    av.addFunc("getParameterDefault", &AvatarInstance::getParameterDefault);
+    av.addFunc("getParameterMinimum", &AvatarInstance::getParameterMinimum);
+    av.addFunc("getParameterMaximum", &AvatarInstance::getParameterMaximum);
     av.addFunc("update", &AvatarInstance::update);
     av.addFunc("sync", &AvatarInstance::sync);
     av.addFunc("release", &AvatarInstance::release);
@@ -136,13 +244,28 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("getLayerCount", &AvatarInstance::getLayerCount);
     av.addFunc("getLayerName", &AvatarInstance::getLayerName);
     av.addFunc("hasLayer", &AvatarInstance::hasLayer);
+    av.addFunc("getLayerRenderable", &AvatarInstance::getLayerRenderable);
     av.addFunc("defineExpression", &AvatarInstance::defineExpression);
+    av.addFunc("removeExpression", &AvatarInstance::removeExpression);
+    av.addFunc("getExpressionCount", &AvatarInstance::getExpressionCount);
+    av.addFunc("getExpressionName", &AvatarInstance::getExpressionName);
     av.addFunc("applyExpression", &AvatarInstance::applyExpression);
+    av.addFunc("transitionExpression", &AvatarInstance::transitionExpression);
 
     av.addFunc("loadLive2DModel", &AvatarInstance::loadLive2DModel);
     av.addFunc("getLive2DBackendName", &AvatarInstance::getLive2DBackendName);
     av.addFunc("hasLive2DBackend", &AvatarInstance::hasLive2DBackend);
 
+    av.addFunc("loadVroidModel", [vm = table.getHandle()](AvatarInstance* avatar, const std::string& path) {
+        return eve::script::projectResult(vm, avatar->loadVroidModel(path));
+    });
+    av.addFunc("setHumanoidBoneRotation", [vm = table.getHandle()](AvatarInstance* avatar, const std::string& semantic,
+                                                                   float yaw, float pitch, float roll) {
+        return eve::script::projectResult(vm, avatar->setHumanoidBoneRotation(semantic, yaw, pitch, roll));
+    });
+    av.addFunc("getVroidMeshCount", &AvatarInstance::getVroidMeshCount);
+    av.addFunc("getVroidSpringCount", &AvatarInstance::getVroidSpringCount);
+    av.addFunc("getVroidVersion", &AvatarInstance::getVroidVersion);
     av.addFunc("loadVroidModelPath", &AvatarInstance::loadVroidModelPath);
     av.addFunc("bindVroidModelData", &AvatarInstance::bindVroidModelData);
     av.addFunc("loadMorphNamesFromModel", &AvatarInstance::loadMorphNamesFromModel);
@@ -155,6 +278,117 @@ void Avatar::expose(ssq::Table &table) {
     av.addFunc("getBoundMesh", &AvatarInstance::getBoundMesh);
     av.addFunc("getVroidModelPath", &AvatarInstance::getVroidModelPath);
     av.addFunc("bakeMorphs", &AvatarInstance::bakeMorphs);
+    av.addFunc("bindAnimPlayer", &AvatarInstance::bindAnimPlayer);
+    av.addFunc("bindAnimStateMachine", &AvatarInstance::bindAnimStateMachine);
+    av.addFunc("bindAnimLayerMixer", &AvatarInstance::bindAnimLayerMixer);
+    av.addFunc("setAnimConstraintStack", [](AvatarInstance* a, animation::AnimConstraintStack* stack) -> void {
+        a->setAnimConstraintStack(stack);
+    });
+    av.addFunc("getAnimConstraintStack", &AvatarInstance::getAnimConstraintStack);
+    av.addFunc("setFootIKSolver", [](AvatarInstance* a, animation::FootIKSolver* solver) -> void {
+        a->setFootIKSolver(solver);
+    });
+    av.addFunc("getFootIKSolver", &AvatarInstance::getFootIKSolver);
+    av.addFunc("setDynamicBoneSolver", [](AvatarInstance* a, animation::DynamicBoneSolver* solver) -> void {
+        a->setDynamicBoneSolver(solver);
+    });
+    av.addFunc("getDynamicBoneSolver", &AvatarInstance::getDynamicBoneSolver);
+    av.addFunc("bindAnimSkin", &AvatarInstance::bindAnimSkin);
+    av.addFunc("bindSkinnedPart",
+               [](AvatarInstance* a, int partIndex, const std::string& partName,
+                  graphics::Mesh* mesh, graphics::Material* material,
+                  animation::AnimSkin* skin) -> int {
+                   return static_cast<int>(
+                       a->bindSkinnedPart(partIndex, partName, mesh, material, skin));
+               });
+    av.addFunc("unbindSkinnedPart", [](AvatarInstance* a, int partIndex) -> int {
+        return static_cast<int>(a->unbindSkinnedPart(partIndex));
+    });
+    av.addFunc("getSkinnedPartUpdateMode", [](AvatarInstance* a, int partIndex) -> int {
+        return static_cast<int>(a->getSkinnedPartUpdateMode(partIndex));
+    });
+    av.addFunc("registerMotion", &AvatarInstance::registerMotion);
+    av.addFunc("unregisterMotion", &AvatarInstance::unregisterMotion);
+    av.addFunc("getMotionCount", &AvatarInstance::getMotionCount);
+    av.addFunc("getMotionName", &AvatarInstance::getMotionName);
+    av.addFunc("getMotionClip", &AvatarInstance::getMotionClip);
+    av.addFunc("setMotionBlendTime", &AvatarInstance::setMotionBlendTime);
+    av.addFunc("setApplyRootMotion", &AvatarInstance::setApplyRootMotion);
+    av.addFunc("getApplyRootMotion", &AvatarInstance::getApplyRootMotion);
+    av.addFunc("getRootMotionDeltaX", &AvatarInstance::getRootMotionDeltaX);
+    av.addFunc("getRootMotionDeltaZ", &AvatarInstance::getRootMotionDeltaZ);
+    av.addFunc("getAnimationEventCount", &AvatarInstance::getAnimationEventCount);
+    av.addFunc("getAnimationEventLayer", &AvatarInstance::getAnimationEventLayer);
+    av.addFunc("getAnimationEventName", &AvatarInstance::getAnimationEventName);
+    av.addFunc("getAnimationEventPayload", &AvatarInstance::getAnimationEventPayload);
+    av.addFunc("mapHumanoidBone", &AvatarInstance::mapHumanoidBone);
+    av.addFunc("autoMapHumanoidBones", &AvatarInstance::autoMapHumanoidBones);
+    av.addFunc("getHumanoidBoneName", &AvatarInstance::getHumanoidBoneName);
+    av.addFunc("mapViseme", &AvatarInstance::mapViseme);
+    av.addFunc("setViseme", &AvatarInstance::setViseme);
+    av.addFunc("setLookAtTarget", &AvatarInstance::setLookAtTarget);
+    av.addFunc("setLookAtWeight", &AvatarInstance::setLookAtWeight);
+    av.addFunc("clearLookAtTarget", &AvatarInstance::clearLookAtTarget);
+    av.addFunc("attachToBone", &AvatarInstance::attachToBone);
+    av.addFunc("detachAttachment", &AvatarInstance::detachAttachment);
+    av.addFunc("getAttachmentCount", &AvatarInstance::getAttachmentCount);
+    av.addFunc("linkSceneNode", &AvatarInstance::linkSceneNode);
+    av.addFunc("isSceneLinked", &AvatarInstance::isSceneLinked);
+    av.addFunc("bindEquipment", [](AvatarInstance* a, inventory::EquipmentSet* equipment) -> int {
+        return static_cast<int>(a->bindEquipment(equipment));
+    });
+    av.addFunc("unbindEquipment", [](AvatarInstance* a) -> int {
+        return static_cast<int>(a->unbindEquipment());
+    });
+    av.addFunc("syncEquipmentAppearance", [](AvatarInstance* a) -> int {
+        return static_cast<int>(a->syncEquipmentAppearance());
+    });
+    av.addFunc("getEquipmentVisualItem", &AvatarInstance::getEquipmentVisualItem);
+    av.addFunc("defineEquipmentLayer",
+               [](AvatarInstance* a, const std::string& name, int order,
+                  const std::string& parent) -> int {
+                   return static_cast<int>(a->defineEquipmentLayer(name, order, parent));
+               });
+    av.addFunc("addEquipmentLayerOcclusion",
+               [](AvatarInstance* a, const std::string& outerLayer,
+                  const std::string& innerLayer) -> int {
+                   return static_cast<int>(
+                       a->addEquipmentLayerOcclusion(outerLayer, innerLayer));
+               });
+    av.addFunc("setEquipmentVisualLayer",
+               [](AvatarInstance* a, const std::string& itemId,
+                  const std::string& equipmentSlot, const std::string& wearLayer,
+                  int withinLayerOrder) -> int {
+                   return static_cast<int>(a->setEquipmentVisualLayer(
+                       itemId, equipmentSlot, wearLayer, withinLayerOrder));
+               });
+    av.addFunc("getEquipmentRenderStackCount", &AvatarInstance::getEquipmentRenderStackCount);
+    av.addFunc("getEquipmentRenderStackItem", &AvatarInstance::getEquipmentRenderStackItem);
+    av.addFunc("getEquipmentRenderStackLayer", &AvatarInstance::getEquipmentRenderStackLayer);
+    av.addFunc("defineEquipmentVisual2D",
+               [](AvatarInstance* a, const std::string& itemId, const std::string& equipmentSlot,
+                  const std::string& layerName, ssq::Object textureObj, int zIndex) -> int {
+                   graphics::Texture* texture = textureObj.isNull()
+                                                    ? nullptr
+                                                    : textureObj.toPtrUnsafe<graphics::Texture*>();
+                   return static_cast<int>(a->defineEquipmentVisual2D(
+                       itemId, equipmentSlot, layerName, texture, zIndex));
+               });
+    av.addFunc("defineEquipmentVisual3D",
+               [](AvatarInstance* a, const std::string& itemId, const std::string& equipmentSlot,
+                  graphics::Renderable3D* renderable, const std::string& bone, float ox, float oy,
+                  float oz) -> int {
+                   return static_cast<int>(a->defineEquipmentVisual3D(
+                       itemId, equipmentSlot, renderable, bone, ox, oy, oz));
+               });
+    av.addFunc("defineEquipmentSkinnedVisual3D",
+               [](AvatarInstance* a, const std::string& itemId,
+                  const std::string& equipmentSlot, int partIndex,
+                  const std::string& partName, graphics::Mesh* mesh,
+                  graphics::Material* material, animation::AnimSkin* skin) -> int {
+                   return static_cast<int>(a->defineEquipmentSkinnedVisual3D(
+                       itemId, equipmentSlot, partIndex, partName, mesh, material, skin));
+               });
     av.addFunc("bindTween", &AvatarInstance::bindTween);
     av.addFunc("unbindTween", &AvatarInstance::unbindTween);
     av.addFunc("getBoundTween", &AvatarInstance::getBoundTween);
@@ -173,6 +407,7 @@ void Avatar::expose(ssq::Class &cls) {
     // function pointers make Class::addFunc recurse until stack overflow).
     cls.addFunc("getLive2DBackendName",
                 [](Avatar *) -> std::string { return Avatar::getLive2DBackendName(); });
+    cls.addFunc("hasLive2DBackend", [](Avatar*) -> bool { return Avatar::hasLive2DBackend(); });
 }
 
 }  // namespace eve::avatar

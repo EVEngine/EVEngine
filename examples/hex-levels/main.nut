@@ -17,57 +17,56 @@
 // 运行： make run/<platform>-debug GAME=examples/hex-levels
 // ============================================================================
 
-if (!("layer" in getroottable())) layer <- null;
-if (!("pf" in getroottable())) pf <- null;
-if (!("fov" in getroottable())) fov <- null;
-if (!("revealerId" in getroottable())) revealerId <- -1;
-if (!("path" in getroottable())) path <- null;
-if (!("hash" in getroottable())) hash <- null;
-if (!("inv" in getroottable())) inv <- null;
-if (!("bag" in getroottable())) bag <- null;
-if (!("torchLight" in getroottable())) torchLight <- null;
-if (!("cam" in getroottable())) cam <- null;
-if (!("torchFx" in getroottable())) torchFx <- null;
-if (!("sparkFx" in getroottable())) sparkFx <- null;
-if (!("level" in getroottable())) level <- 1;
-if (!("seed" in getroottable())) seed <- 42;
-if (!("algo" in getroottable())) algo <- "dungeon.bsp";
-if (!("playerTx" in getroottable())) playerTx <- 0;
-if (!("playerTy" in getroottable())) playerTy <- 0;
-if (!("exitTx" in getroottable())) exitTx <- 0;
-if (!("exitTy" in getroottable())) exitTy <- 0;
-if (!("spawnTx" in getroottable())) spawnTx <- 0;
-if (!("spawnTy" in getroottable())) spawnTy <- 0;
-if (!("moveCd" in getroottable())) moveCd <- 0.0;
-if (!("status" in getroottable())) status <- "";
-if (!("logLines" in getroottable())) logLines <- [];
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("loot" in getroottable())) loot <- [];
-if (!("uiBuilt" in getroottable())) uiBuilt <- false;
-if (!("pathLen" in getroottable())) pathLen <- 0;
-if (!("visibleCount" in getroottable())) visibleCount <- 0;
-if (!("exploredCount" in getroottable())) exploredCount <- 0;
-if (!("flowPaths" in getroottable())) flowPaths <- [];
-if (!("fovAlgo" in getroottable())) fovAlgo <- "shadowcast";
-if (!("torchRevealerId" in getroottable())) torchRevealerId <- -1;
-if (!("mudCells" in getroottable())) mudCells <- [];
-if (!("fixturesLoaded" in getroottable())) fixturesLoaded <- false;
-if (!("activeLootTable" in getroottable())) activeLootTable <- "starter";
-if (!("lastCatalogLevel" in getroottable())) lastCatalogLevel <- -1;
-if (!("levelCfg" in getroottable())) levelCfg <- null;
-if (!("featureOn" in getroottable())) featureOn <- {};
-if (!("fovRadius" in getroottable())) fovRadius <- 6;
-if (!("heroPerception" in getroottable())) heroPerception <- 0.0;
-if (!("perceptionScale" in getroottable())) perceptionScale <- 0.0;
-if (!("torchFovRadius" in getroottable())) torchFovRadius <- 3;
-if (!("cellCostValue" in getroottable())) cellCostValue <- 8.0;
-if (!("cellCostStrip" in getroottable())) cellCostStrip <- 4;
-if (!("swarmStarts" in getroottable())) swarmStarts <- 4;
-if (!("levelIdIndex" in getroottable())) levelIdIndex <- 0;
-if (!("facingDeg" in getroottable())) facingDeg <- 0.0;
-if (!("facingHalf" in getroottable())) facingHalf <- 0.0;
-if (!("cornerPeekOn" in getroottable())) cornerPeekOn <- false;
-if (!("camZoom" in getroottable())) camZoom <- 1.0;
+persist layer = null
+persist pf = null
+persist fov = null
+persist revealerId = -1
+persist path = null
+persist hash = null
+persist inv = null
+persist bag = null
+persist torchLight = null
+persist cam = null
+persist torchFx = null
+persist sparkFx = null
+persist level = 1
+persist seed = 42
+persist algo = "dungeon.bsp"
+persist playerTx = 0
+persist playerTy = 0
+persist exitTx = 0
+persist exitTy = 0
+persist spawnTx = 0
+persist spawnTy = 0
+persist moveCd = 0.0
+persist status = ""
+persist logLines = []
+persist loot = []
+persist uiBuilt = false
+persist pathLen = 0
+persist visibleCount = 0
+persist exploredCount = 0
+persist flowPaths = []
+persist fovAlgo = "shadowcast"
+persist torchRevealerId = -1
+persist mudCells = []
+persist fixturesLoaded = false
+persist activeLootTable = "starter"
+persist lastCatalogLevel = -1
+persist levelCfg = null
+persist featureOn = {}
+persist fovRadius = 6
+persist heroPerception = 0.0
+persist perceptionScale = 0.0
+persist torchFovRadius = 3
+persist cellCostValue = 8.0
+persist cellCostStrip = 4
+persist swarmStarts = 4
+persist levelIdIndex = 0
+persist facingDeg = 0.0
+persist facingHalf = 0.0
+persist cornerPeekOn = false
+persist camZoom = 1.0
 
 TILE_W <- 55.0;
 TILE_H <- 57.0;
@@ -121,10 +120,8 @@ function pushLog(text) {
 
 function readTextFile(path) {
     local handle = file(path, "r");
-    local content = "";
-    local n = handle.len();
-    for (local i = 0; i < n; i++)
-        content += handle.readn('b').tochar();
+    if (handle == null) return null;
+    local content = handle.read();
     handle.close();
     return content;
 }
@@ -198,13 +195,28 @@ function applyLevelBootConfig() {
         cam.setZoom(1.0);
         camZoom = 1.0;
     }
-    if ("light" in meta && torchLight != null) {
-        local L = meta.light;
-        if ("radius" in L) torchLight.setRadius(L.radius);
-        if ("color" in L && L.color.len() >= 4)
-            torchLight.setColor(L.color[0], L.color[1], L.color[2], L.color[3]);
-        if (("type" in L) && L.type == "point")
-            torchLight.setType("point");
+    if (torchLight != null) {
+        // Reset every boot so a prior spot level cannot leak into the next.
+        torchLight.setType("point");
+        torchLight.setColor(1.0, 0.78, 0.45, 2.0);
+        torchLight.setRadius(160.0);
+        torchLight.setSpotAngle(30.0);
+        torchLight.setSpotSoftness(0.35);
+        torchLight.setDirection(1.0, 0.0);
+        if ("light" in meta) {
+            local L = meta.light;
+            if ("radius" in L) torchLight.setRadius(L.radius);
+            if ("color" in L && L.color.len() >= 4)
+                torchLight.setColor(L.color[0], L.color[1], L.color[2], L.color[3]);
+            if ("type" in L) {
+                if (L.type == "spot" || L.type == "point" || L.type == "dir")
+                    torchLight.setType(L.type);
+            }
+            if ("spotAngle" in L) torchLight.setSpotAngle(L.spotAngle);
+            if ("spotSoftness" in L) torchLight.setSpotSoftness(L.spotSoftness);
+            if ("dir" in L && L.dir.len() >= 2)
+                torchLight.setDirection(L.dir[0], L.dir[1]);
+        }
     }
     if ("cellCost" in meta) {
         cellCostValue = meta.cellCost.cost;
@@ -239,11 +251,7 @@ function applyProcgenParams(p) {
 }
 
 function keyPressed(name) {
-    local down = keyboard.isDown(name);
-    local key = "k_" + name;
-    local was = (key in prevKeys) ? prevKeys[key] : false;
-    prevKeys[key] <- down;
-    return down && !was;
+    return key_just_pressed(name);
 }
 
 function keyDown(name) {
@@ -436,12 +444,19 @@ function syncHeroVisuals() {
     local lightOn = featureEnabled("light", level == 0 || level >= 3);
     if (torchLight != null) {
         torchLight.setPosition(pos.x + 4.0, pos.y - 2.0);
+        // Spot flashlights follow FOV facing when present; otherwise keep authored dir.
+        if (torchLight.getType() == "spot") {
+            local rad = facingDeg * 3.14159265 / 180.0;
+            torchLight.setDirection(cos(rad), sin(rad));
+        }
         torchLight.setEnabled(lightOn);
         if (lightOn)
             cam.setAmbient(0.04, 0.04, 0.06);
         else
             cam.setAmbient(0.16, 0.16, 0.20);
     }
+    if (layer != null)
+        layer.setReceiveLight(lightOn);
     local fxOn = featureEnabled("particles", level == 0 || level >= 5);
     if (torchFx != null) {
         torchFx.setPosition(pos.x + 4.0, pos.y - 6.0);
@@ -470,22 +485,41 @@ function regenerate() {
     configureHex(layer);
     layer.setCamera(cam);
 
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        status = "参数创建失败: " + paramsResult.status.summary;
+        pushLog(status);
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(seed);
     p.setSize(MAP_W, MAP_H);
     applyProcgenParams(p);
 
-    local out = procgen.newOutput();
+    local outputResult = procgen.newOutput();
+    if (!outputResult.ok) {
+        status = "输出创建失败: " + outputResult.status.summary;
+        pushLog(status);
+        return;
+    }
+    local out = outputResult.value;
     out.setTarget("tilelayer");
     out.setLayer(layer);
     out.setPalette("hex_levels");
-    if (!procgen.generateTo(algo, p, out)) {
-        status = "生成失败: " + procgen.lastError();
+    local outputWriteResult = procgen.generateTo(algo, p, out);
+    if (!outputWriteResult.ok) {
+        status = "生成失败: " + outputWriteResult.status.summary;
         pushLog(status);
         return;
     }
 
-    local grid = procgen.generate(algo, p);
+    local gridResult = procgen.generate(algo, p);
+    if (!gridResult.ok) {
+        status = "网格生成失败: " + gridResult.status.summary;
+        pushLog(status);
+        return;
+    }
+    local grid = gridResult.value;
     spawnTx = -1;
     spawnTy = -1;
     exitTx = -1;
@@ -635,6 +669,10 @@ function tryMove(dx, dy) {
     if (pf == null || !pf.isWalkable(nx, ny)) return false;
     playerTx = nx;
     playerTy = ny;
+    if (dx != 0 || dy != 0) {
+        // Screen Y-down; atan2(dy, dx) matches Light2D / FOV facing degrees.
+        facingDeg = atan2(dy, dx) * 180.0 / 3.14159265;
+    }
     rebuildPath();
     if (level == 0 || featureEnabled("fov", level >= 2)) refreshFov();
     syncHeroVisuals();

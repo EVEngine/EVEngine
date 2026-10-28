@@ -31,7 +31,6 @@ def parse_react(raw: str) -> Tuple[str, Dict[str, Any]]:
         s = raw.find("{", idx)
         if s != -1:
             try:
-                import re
 
                 depth, e = 0, -1
                 for p in range(s, len(raw)):
@@ -111,7 +110,7 @@ class SceneQCBrain:
             tool = decision["tool"]
 
             if tool == TOOL_INSPECT:
-                self._log(f"[act] re-inspect")
+                self._log("[act] re-inspect")
                 report = self.pipeline.inspect_scene(scene_id, rounds_used, targets)
                 history.append({"round": rounds_used, "phase": "inspect", "report": report.to_dict(),
                                 "passed": report.passed})

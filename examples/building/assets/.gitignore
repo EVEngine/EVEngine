@@ -1,0 +1,3 @@
+# Locally extracted Unity source assets. Recreate with ../prepare_assets.py.
+*.png
+provenance.json

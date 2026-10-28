@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-08-26",
+  "counts": {
+    "fallback-contract-inventory": 0,
+    "soft-skip-contracts": 7,
+    "todo-markers-legacy": 5
+  }
+}

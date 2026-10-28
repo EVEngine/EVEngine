@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "avatar/AvatarInstance.h"
 #include "common/Module.h"
@@ -20,16 +22,22 @@ namespace eve::avatar {
  * Image layers are the baseline; Live2D uses a pluggable backend; VRoid
  * wraps Model3D + Renderable3D.
  */
-class Avatar : public Module {
+class EVENGINE_API_DOMAINS Avatar : public Module {
 public:
     Module_REG(Avatar);
+    /** @brief Avatar. */
     Avatar() = default;
+    /** @brief Avatar. */
     ~Avatar() override;
 
+    /** @brief Creates a image avatar. @ownership Caller deletes unless documented otherwise. */
     AvatarInstance *newImageAvatar();
+    /** @brief Creates a live 2 d avatar. @ownership Caller deletes unless documented otherwise. */
     AvatarInstance *newLive2DAvatar();
+    /** @brief Creates a vroid avatar. @ownership Caller deletes unless documented otherwise. */
     AvatarInstance *newVroidAvatar();
 
+    /** @brief Updates . */
     void update(float dt);
     /** @brief Sync all live avatars into renderables. */
     void sync();
@@ -38,6 +46,7 @@ public:
      * (does not present). VRoid uses Renderable3D + gfx.render3D separately.
      */
     void render(graphics::Graphics *gfx);
+    /** @brief Returns the avatar count. */
     int getAvatarCount() const;
 
     /**
@@ -45,11 +54,14 @@ public:
      * Pass nullptr to restore the built-in NullLive2DBackend ("null").
      */
     static void registerLive2DBackend(Live2DBackendFactory factory);
+    /** @brief Live 2 d backend factory. */
     static Live2DBackendFactory live2DBackendFactory();
     /** @brief Always returns a backend: custom factory, else NullLive2DBackend. */
     static ILive2DBackend *createLive2DBackend();
     /** @brief Backend name currently in effect ("null" when using the built-in stub). */
     static std::string getLive2DBackendName();
+    /** @brief True when the active backend is a real rendering runtime, not the null stub. */
+    static bool hasLive2DBackend();
 
 private:
     friend class AvatarInstance;

@@ -1,0 +1,30 @@
+{
+  "sourcePackage": "The Vegetation Engine 12.6.0",
+  "feature": "global colors field",
+  "authoritativeSource": [
+    "Core/Runtime/TVEGlobalVolume.cs",
+    "Core/Shaders/Geometry/Plant Standard Lit.shader:780-783",
+    "Core/Shaders/Geometry/Plant Standard Lit.shader:1465-1484"
+  ],
+  "storage": {
+    "format": "RGBAHalf",
+    "dimension": "2D array",
+    "layers": 9,
+    "wrap": "clamp",
+    "channels": { "rgb": "linear global tint", "a": "color influence" }
+  },
+  "sampling": {
+    "plane": "world XZ or object pivot XZ selected by _ColorsPositionMode",
+    "uv": "TVE_ColorsCoords.zw + TVE_ColorsCoords.xy * position.xz",
+    "slice": "_LayerColorsValue",
+    "disabledLayer": "TVE_ColorsParams",
+    "usageThreshold": 0.5,
+    "lod": 0
+  },
+  "nativeOwnership": {
+    "authority": "VegetationField globals and elements",
+    "gpuAtlas": "derived immutable revisioned render snapshot",
+    "materialState": "selected layer and world-or-pivot switch only",
+    "publication": "after all nine layers convert and upload successfully"
+  }
+}

@@ -1,0 +1,134 @@
+#pragma once
+#include "common/Export.h"
+
+
+#include "editing/EditableTarget.h"
+#include "editing/EditingAuthority.h"
+#include "editing/EditingProperty.h"
+
+#include <map>
+#include <string>
+#include <vector>
+
+namespace eve::graphics {
+class Light3D;
+}
+namespace eve::daynight {
+class DayNight;
+}
+namespace eve::weather {
+class Weather;
+}
+
+namespace eve::lighting_editing {
+
+using CapabilityId       = editing::CapabilityId;
+using DiagnosticSeverity = editing::DiagnosticSeverity;
+using DomainOperation    = editing::DomainOperation;
+using EditRegion         = editing::EditRegion;
+using EditorDiagnostic   = editing::Diagnostic;
+using editing::Result;
+using EditorStatus             = editing::Status;
+using EditorValue              = editing::Value;
+using IDomainOperationTarget   = editing::IDomainOperationTarget;
+using IEditableTarget          = editing::IEditableTarget;
+using IPropertyProvider        = editing::IPropertyProvider;
+using PropertyDescriptor       = editing::PropertyDescriptor;
+using PropertyDescriptorLookup = editing::PropertyDescriptorLookup;
+using PropertyFlag             = editing::PropertyFlag;
+using PropertyPath             = editing::PropertyPath;
+using PropertyReadResult       = editing::PropertyReadResult;
+using PropertyReadState        = editing::PropertyReadState;
+using PropertySchema           = editing::PropertySchema;
+using PropertySetMode          = editing::PropertySetMode;
+using PropertyType             = editing::PropertyType;
+using Revision                 = editing::Revision;
+using RuleId                   = editing::RuleId;
+using SelectionSnapshot        = editing::SelectionSnapshot;
+using TargetDescriptor         = editing::TargetDescriptor;
+using TargetId                 = editing::TargetId;
+using editing::validatePropertyValue;
+
+/** @brief Shared property-document implementation for light and environment targets. */
+class EVENGINE_API_ORCHESTRATION LightingPropertyTargetBase : public ::eve::editing::EditableTargetState,
+                                                              public virtual IEditableTarget,
+                                                              public IDomainOperationTarget,
+                                                              public IPropertyProvider {
+public:
+    /** @brief Target id. */
+    TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
+    TargetDescriptor describe() const override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
+     * Valid until this target is destroyed or mutated. */
+    void*                         queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
+    Result<void>            applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Current revision. */
+    eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
+    PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
+    PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+                                          const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
+                                            const PropertyPath&      path) const override;
+    /** @brief Capture deterministic values for document persistence. */
+    EditorValue snapshotValue() const;
+    /** @brief Atomically load a schema-version-one property snapshot. */
+    Result<void> loadSnapshot(const EditorValue& snapshot);
+    /** @brief Read a typed runtime-neutral property value by path. @return Borrowed pointer into this target, or null.
+     * @lifetime Valid until the target is mutated or destroyed. */
+    const EditorValue* value(const std::string& path) const;
+
+protected:
+    /** @brief Construct a concrete property target from its schema and defaults. */
+    LightingPropertyTargetBase(std::string id, std::string targetType, PropertySchema schema);
+
+private:
+    /** @brief Selection matches. */
+    bool                               selectionMatches(const SelectionSnapshot& selection) const;
+    std::string                        id_;
+    std::string                        targetType_;
+    PropertySchema                     schema_;
+    std::map<std::string, EditorValue> values_;
+};
+
+/** @brief Serializable property target matching graphics::Light3D. */
+class EVENGINE_API_ORCHESTRATION Light3DDocumentTarget final : public LightingPropertyTargetBase {
+public:
+    /** @brief Light 3 d document target. */
+    explicit Light3DDocumentTarget(std::string id);
+    /** @brief Validate direction, shadow and point/directional cross-field rules. */
+    std::vector<EditorDiagnostic> validate() const;
+};
+
+/** @brief Serializable shared environment target for static, DayNight and Weather modes. */
+class EVENGINE_API_ORCHESTRATION EnvironmentDocumentTarget final : public LightingPropertyTargetBase {
+public:
+    /** @brief Environment document target. */
+    explicit EnvironmentDocumentTarget(std::string id);
+    /** @brief Validate mode-dependent atmosphere and weather settings. */
+    std::vector<EditorDiagnostic> validate() const;
+};
+
+/** @brief Optional bridge applying a light document to graphics::Light3D. */
+class EVENGINE_API_ORCHESTRATION Light3DRuntimeApplier {
+public:
+    /** @brief Applies . */
+    Result<void> apply(const Light3DDocumentTarget& document, graphics::Light3D* light) const;
+};
+
+/** @brief Optional bridge applying environment properties to DayNight or Weather. */
+class EVENGINE_API_ORCHESTRATION EnvironmentRuntimeApplier {
+public:
+    /** @brief Applies day night. */
+    Result<void> applyDayNight(const EnvironmentDocumentTarget& document, daynight::DayNight* environment) const;
+    /** @brief Applies weather. */
+    Result<void> applyWeather(const EnvironmentDocumentTarget& document, weather::Weather* environment) const;
+};
+
+}  // namespace eve::lighting_editing

@@ -1,0 +1,212 @@
+{
+  "schema_version": 1,
+  "baseline_sha": "20394d720951b2aa13f035dd9b16104c3de3096e",
+  "configuration": {
+    "platform": "Windows x64",
+    "compiler": "MSVC 19.51",
+    "configuration": "Debug",
+    "generator": "Ninja",
+    "module_linkage": "SHARED",
+    "test_domain_split": true,
+    "jobs": 4,
+    "sample_order": "ABBA",
+    "actual_debug_format": "/Z7",
+    "cmake_cache_launcher_setting": "AUTO",
+    "global_flags": {
+      "CMAKE_CXX_FLAGS": "/DWIN32 /D_WINDOWS /EHsc",
+      "CMAKE_CXX_FLAGS_DEBUG": "/Ob0 /Od /RTC1",
+      "CMAKE_MSVC_DEBUG_INFORMATION_FORMAT": null,
+      "CMAKE_EXE_LINKER_FLAGS": "/machine:x64",
+      "CMAKE_EXE_LINKER_FLAGS_DEBUG": "/debug /INCREMENTAL"
+    }
+  },
+  "method": {
+    "same_physical_source_and_build_paths": true,
+    "cold_scope": "All .obj, .pdb and .ilk under build/test plus unit_test*.exe removed before timing; production and third-party artifacts warmed.",
+    "timed_scope": "Real compile and link of all 25 discovered unit_test_* targets, including migrated unit coverage and test helpers.",
+    "cache_bypass": "Generated build.ninja LAUNCHER sccache wrappers removed; compiler/FLAGS/link switches checked unchanged. SCCACHE_DISABLE alone was ineffective and is not bypass evidence.",
+    "production_artifact_changes": false,
+    "runtime_measured": false,
+    "ilk_size_collected": false
+  },
+  "runs": [
+    {
+      "index": 1,
+      "cohort": "baseline",
+      "status": "complete",
+      "source_sha256": "208f93630f416a2b9b1c6ab4d610e23c692885ef744b10bb134eeb21e5d9cece",
+      "elapsed_seconds": 210.90495050000027,
+      "objects": {
+        "count": 500,
+        "bytes": 2392489349
+      },
+      "executables": {
+        "count": 25,
+        "bytes": 290376704
+      },
+      "primary_unit_pdb": {
+        "count": 25,
+        "bytes": 1059835904
+      },
+      "rebuilt_all_test_pdb": {
+        "count": 26,
+        "bytes": 1061404672
+      },
+      "generated_launcher_bypass": {
+        "removed_wrappers": 2571,
+        "before_sha256": "7367fb8a8d9351590361127401603bf02b3c19307aa9fa608cf7def0950a21c7",
+        "after_sha256": "65014e4238fce9828bbe8f1869e5e48de7e88de1c885b7f3576f4fe4fd927759",
+        "compiler_and_link_switches_unchanged": true
+      },
+      "production_changes": [],
+      "valid": true
+    },
+    {
+      "index": 2,
+      "cohort": "final",
+      "status": "complete",
+      "source_sha256": "a2de235fcf9af5b8c1e232e8f621e929af53f8db65d14a7380207132574e5914",
+      "elapsed_seconds": 195.39761359989643,
+      "objects": {
+        "count": 479,
+        "bytes": 2352430711
+      },
+      "executables": {
+        "count": 25,
+        "bytes": 291266560
+      },
+      "primary_unit_pdb": {
+        "count": 25,
+        "bytes": 1054126080
+      },
+      "rebuilt_all_test_pdb": {
+        "count": 26,
+        "bytes": 1055694848
+      },
+      "generated_launcher_bypass": {
+        "removed_wrappers": 2550,
+        "before_sha256": "b62e758361e371376c3bf2a94c3dd9fc1645cb2af9a9de0e3cb817afeb081d24",
+        "after_sha256": "6651a767b3bd0daf83bc07f0b97ac73f8ebb56a4691faa398789e8112d53829f",
+        "compiler_and_link_switches_unchanged": true
+      },
+      "production_changes": [],
+      "valid": true
+    },
+    {
+      "index": 3,
+      "cohort": "final",
+      "status": "complete",
+      "source_sha256": "a2de235fcf9af5b8c1e232e8f621e929af53f8db65d14a7380207132574e5914",
+      "elapsed_seconds": 195.88730850000866,
+      "objects": {
+        "count": 479,
+        "bytes": 2352430711
+      },
+      "executables": {
+        "count": 25,
+        "bytes": 291266560
+      },
+      "primary_unit_pdb": {
+        "count": 25,
+        "bytes": 1054150656
+      },
+      "rebuilt_all_test_pdb": {
+        "count": 26,
+        "bytes": 1055719424
+      },
+      "generated_launcher_bypass": {
+        "removed_wrappers": 2550,
+        "before_sha256": "b62e758361e371376c3bf2a94c3dd9fc1645cb2af9a9de0e3cb817afeb081d24",
+        "after_sha256": "6651a767b3bd0daf83bc07f0b97ac73f8ebb56a4691faa398789e8112d53829f",
+        "compiler_and_link_switches_unchanged": true
+      },
+      "production_changes": [],
+      "valid": true
+    },
+    {
+      "index": 4,
+      "cohort": "baseline",
+      "status": "complete",
+      "source_sha256": "208f93630f416a2b9b1c6ab4d610e23c692885ef744b10bb134eeb21e5d9cece",
+      "elapsed_seconds": 200.0626797999721,
+      "objects": {
+        "count": 500,
+        "bytes": 2392489349
+      },
+      "executables": {
+        "count": 25,
+        "bytes": 290376704
+      },
+      "primary_unit_pdb": {
+        "count": 25,
+        "bytes": 1059885056
+      },
+      "rebuilt_all_test_pdb": {
+        "count": 26,
+        "bytes": 1061453824
+      },
+      "generated_launcher_bypass": {
+        "removed_wrappers": 2571,
+        "before_sha256": "7367fb8a8d9351590361127401603bf02b3c19307aa9fa608cf7def0950a21c7",
+        "after_sha256": "65014e4238fce9828bbe8f1869e5e48de7e88de1c885b7f3576f4fe4fd927759",
+        "compiler_and_link_switches_unchanged": true
+      },
+      "production_changes": [],
+      "valid": true
+    }
+  ],
+  "summary": {
+    "elapsed_seconds": {
+      "baseline_median": 205.48381514998619,
+      "final_median": 195.64246104995254,
+      "difference": -9.84135410003364,
+      "change_percent": -4.789357299430252
+    },
+    "objects": {
+      "baseline_median": 2392489349.0,
+      "final_median": 2352430711.0,
+      "difference": -40058638.0,
+      "change_percent": -1.6743496900725408
+    },
+    "executables": {
+      "baseline_median": 290376704.0,
+      "final_median": 291266560.0,
+      "difference": 889856.0,
+      "change_percent": 0.30644882586723377
+    },
+    "primary_unit_pdb": {
+      "baseline_median": 1059860480.0,
+      "final_median": 1054138368.0,
+      "difference": -5722112.0,
+      "change_percent": -0.539892948928522
+    },
+    "rebuilt_all_test_pdb": {
+      "baseline_median": 1061429248.0,
+      "final_median": 1055707136.0,
+      "difference": -5722112.0,
+      "change_percent": -0.5390949995755179
+    }
+  },
+  "restoration_status": "verified",
+  "restoration_verification": {
+    "frozen_input_hashes_checked": 387,
+    "hash_mismatches": 0,
+    "shared_build_command": "make build/win32-debug JOBS=4",
+    "shared_build_exit_code": 0,
+    "shared_build_steps": 2506,
+    "shared_main_test_executables": 25,
+    "discovered_case_count": 7275,
+    "shared_focused_ctest": {
+      "total": 22,
+      "failed": 0,
+      "elapsed_seconds": 2.91
+    },
+    "object_full_build_passed": true,
+    "object_focused_ctest": {
+      "total": 22,
+      "failed": 0,
+      "elapsed_seconds": 2.86
+    },
+    "full_runtime_suite_executed": false
+  }
+}

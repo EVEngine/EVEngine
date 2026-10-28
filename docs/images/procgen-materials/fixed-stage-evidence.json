@@ -1,0 +1,69 @@
+{
+  "device": "NVIDIA GeForce RTX 3090",
+  "driver_manifest": "/usr/share/vulkan/icd.d/nvidia_icd.json",
+  "software_rasterizer": false,
+  "capture": "engine MCP eve_screenshot",
+  "seed": 42,
+  "map_size": [
+    1024,
+    1024
+  ],
+  "fixed_stage": {
+    "main.nut": "ede4897680c55ba57213d7d663895546a69616e533b43d08e7c1799b03f9fae7",
+    "config.nut": "785b4a9b8c89f3e8c367f2ff5e035c15620198636708a93838bdb8750d9fe76a",
+    "assets/sphere.bin": "d770029eade9eff298047f316e3a7d7b3ec8499749f096615fa4c7cb1dd5e845",
+    "assets/pedestal.bin": "07775d183127c64d3a74ba1999033aeb63a9e0f665f10efb1a731cf676539447",
+    "assets/env0.png": "4136223e999f68f5f03aea38841eedfb6da3c764b159644c22f45278655c4c27",
+    "assets/env1.png": "2f7650906aec6e44eefabcd1084cf2acbef31101395452f8b64d982d58ff17b9",
+    "assets/env2.png": "d20ba7486b69cb316e3cb80449b5ef11a3d14020905b16e6c15d55c55f927c84",
+    "assets/env3.png": "9db0497d37bf04a1e9cc510f5c6253f02f46c17c10b1893e0b6b1ecbeb019923",
+    "assets/env4.png": "3489a41646aade7e33fd5b716f1b935799f741255431b0a7ed4dbd992e478dfe",
+    "assets/env5.png": "94dae94cb78ca6bf7c59e4bc2949578f556c71e262606287d1ea00a9052982ae",
+    "shaders/studio-backdrop.frag.spv": "32b6fa0eb4bbe724add24d558ad03ad4213535bae345aabc87f3c3ab8b7d0b3b",
+    "shaders/studio-pedestal.frag.spv": "3fb76272b29ed857753f2f9a54338684bb3ecdc0f71f2577a3c571a8cb61f617",
+    "shaders/scene-depth.frag.spv": "3a95c4a56e98cb91ee832f8b86a07be437e44c1566bd226a6979053b2a5fa370",
+    "shaders/display-linear.frag.spv": "ec8be0f98dc836c1c16ab1f2e18a06bacdfe38005eb6ce6a4294e9d0a0d72bdd",
+    "assets/pedestal.gltf": "4ea6e951020d0ea17d3f015b9e67471274d47d08882605ab3e1d3cbc6f2c807b",
+    "assets/marble.gltf": "eae57bcf588fad83fe584c45c18b76eef5b733c17a98eafc14902dfdad316c28",
+    "assets/paint.gltf": "77995d5526135facaa3dd8ce51b23eeaecf9303b70a71291bbe73536f1b77dd9",
+    "assets/cement.gltf": "241a2e70fb6f367acc1efb0100cf40af12014ae8aa3619b3ccd81f628d78d5a1",
+    "assets/cast_iron.gltf": "e9ebf385b97122a75d14ff9f6c12e5b70059ebd611a5d0efabd268b62d032270",
+    "assets/aluminum.gltf": "e9015836ae21acc054b3d63c56e4212ef142ae42667f370a65afca11a19de012",
+    "assets/paper.gltf": "858515f740a19abd4abc2c3e521733601e6d8e2ab4849854bb2a8e4b25a53a7b",
+    "assets/glass.gltf": "6d79e6f4f1098ebf7dcfb0e52b67878a476c5cacafd79e6ee10997c863b64729",
+    "assets/steel.gltf": "821142cee71abe8827699b577fdfd749b2f9f8a5c43eb459a4ed7fb1073fb191",
+    "assets/plastic.gltf": "f88a000dd3a3fe181a775bd3a87c908c362eb77de5c4f2c0da8e6b83a0ef292c",
+    "assets/cloth.gltf": "92861034669ca9e9e1ff448e775c00e62edac124b1dd6b1147963a13056c0824",
+    "assets/rubber.gltf": "f295deee3837a684b5e99230b46325d909a150deeb5bc5b6d7fce8cd16c62246",
+    "assets/metal.gltf": "26cb3d7c9a2fe9505dc8d71b6559359326f50b1eb3130ea5eb1f8e92fc6ca04c",
+    "assets/wood.gltf": "f283cd018f15e25319fb60dd77426cbc2aabc33edaa1831540bcb7c95f6cc467"
+  },
+  "source_sha256": {
+    "src/modules/procgen/texture/EverydayMaterials.cpp": "67e1e2d17e6a547e9aa11dd59a2f3c80be37540b3173c94a4ae7ae92aacf4cb6",
+    "src/modules/procgen/texture/EverydayPatterns.cpp": "0e7f876e37599e44b5351d74ee4342f550e85120cf3f793db9eb380cba8886e0"
+  },
+  "screenshots": {
+    "fixed-stage-before.png": "f9f56b79a4f53a8b0d69adafbd9a6e8979eb07684e2f73bfcf6613c6c8744922",
+    "fixed-stage-after.png": "568ca28c284d9fa30fe1663c1afaf8725c5e6df459fc9b21a8c0d1a24f6879ec",
+    "optical-probe.png": "061e75c95d2e85828d0da7219aa47c7c206eb108776a341f9f4650fd3eb4d674"
+  },
+  "cpu_tests": {
+    "cases": 8,
+    "assertions": 73694,
+    "asan_ubsan": "passed"
+  },
+  "scope": "Current CPU generators and custom shaders; cached engine host. Sphere-only thickness, finite screen-depth trace, analytic studio-only contact shadows; no general mesh transmission or caustics.",
+  "reference_lighting": "AI reference has separate lighting; only GPU before and after have controlled identical stage",
+  "driver": "595.99.02",
+  "optical_probe": "Reflection disabled; visible scene stripes bend and magnify inside sphere",
+  "glass_before_spirv": "a52692e8cebb705eeba67982314964bdbd71aad3a70eaff9981760ba912640c4",
+  "glass_after_spirv": "a549f034db22d872099eec2572a65f5f45beba117589b2cc7dbdaaabea0ff079",
+  "source_gate": {
+    "command": "make check CI_BASE=HEAD",
+    "passed": true,
+    "python_tests": 181,
+    "new_files_included": "isolated temporary git index",
+    "default_origin_dev": "71 historical findings recorded in preceding round; not waived"
+  },
+  "visual_acceptance": "Not yet matched to reference: wood regularity, metal micro-scratches, mineral depth and glass caustics remain"
+}

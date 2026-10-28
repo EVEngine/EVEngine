@@ -1,0 +1,334 @@
+# 对话与剧情（Dialogue）
+
+**脚本入口：** `eve.Dialogue()`
+
+视觉小说式对话舞台：角色注册、打字机台词、选项分支、口型（lip-sync）、表情与
+动作转发。**剧情继续用 Squirrel 写**（函数 / generator），不发明第二套 DSL。
+文案可走 `i18n` 翻译表。
+
+## 基本用法
+
+```squirrel
+dlg <- eve.Dialogue();
+dlg.registerCharacter("alice", "爱丽丝");
+dlg.bindAvatar("alice", aliceAv);       // Avatar 实例
+dlg.show("alice", "left");              // 舞台槽位 left|center|right
+dlg.say("alice", "你好，冒险者。");
+dlg.update(dt);                         // 每帧驱动打字机
+if (dlg.isWaitingAdvance()) dlg.advance();
+```
+
+## 目标导向指南
+
+### 带选项的剧情分支
+
+```squirrel
+dlg.clearChoices();
+dlg.addChoice("yes", "接受委托");
+dlg.addChoice("no", "再想想");
+dlg.presentChoices();
+// 每帧：if (dlg.isWaitingChoice() && 按下1/2) dlg.selectChoice(index);
+if (dlg.getSelectedChoiceId() == "yes") { /* 分支 A */ }
+```
+
+### 用 generator 写整段剧情
+
+`dlg.say(...)` 后 `yield "wait"`，选项阶段 `yield "choice"`——驱动循环消费
+generator 的 yield 值。完整可运行示例见
+[`examples/dialogue`](../../../examples/dialogue/main.nut)（含 i18n + 口型 + Avatar）。
+
+## 绑定与行为说明
+
+### `Dialogue`（模块）
+
+- `getName()`：模块名（"Dialogue"）。
+- 角色：`registerCharacter(id, displayName)`、`hasCharacter`、`getDisplayName`、
+  `getCharacterCount`、`getCharacterId`、`bindAvatar(id, avatar)`、`getAvatar(id)`。
+- 舞台：`show(id, slot)`、`hide`、`isShown`、`getSlot`、`setSlotX/getSlotX`、
+  `setExpression`、`setMotion`、`syncStage()`。
+- 台词：`say(speakerId, text)`、`narrate(text)`、`setTypeSpeed/getTypeSpeed`、
+  `getSpeakerId/getSpeakerName/getFullText/getVisibleText/getPhase`。
+- 口型：`setLipSyncEnabled/isLipSyncEnabled`、`setLipSyncParameter/getLipSyncParameter`、
+  `setLipSyncAmplitude/getLipSyncAmplitude/getLipSyncValue`。
+- 选项：`clearChoices/addChoice(id, label)/presentChoices/isWaitingChoice`、
+  `getChoiceCount/getChoiceId/getChoiceLabel/selectChoice/getSelectedChoiceId`。
+- 变量：`setVar/getVarType/getVarInt/getVarFloat/getVarBool/getVarString/hasVar/clearVar/clearVars`。
+- 条件：`registerCondition(name, fn)/unregisterCondition/evalCondition`。
+- 台词池运行时：pool 内容只由 `DialogueFlow.loadDnutChecked/loadDnutFileChecked` 的统一工作区提交；
+  `getCurrentLineId/getCurrentLineMeta/getCurrentLineTags`。
+- 驱动：`update(dt)`、`reset()`。
+
+### `DialogueUX`（默认呈现辅助）
+
+构建包含 `dialogue` 时，根表同时提供 `dialogueUX`。它不强制使用某一种 UI，
+但为官方 `DefaultDialogueUI` 和自定义 UI 保存一致的呈现状态：
+
+- 历史：`record`、`clearHistory`、`getHistoryCount`、
+  `getHistoryLineId/getHistorySpeaker/getHistoryText`。
+- 富文本：`plainText` 去除 `[pause]`、`[speed]`、`[color]`、`[shake]` 控制标签；
+  `getTextActionCount` 返回控制动作数。
+- 自动播放：`setAutoMode/isAutoMode`、`setAutoDelay/getAutoDelay`、
+  `updateAuto(dt, voicePlaying)`、`resetAutoTimer`。
+- 跳过：`setSkipMode("off"|"read"|"all")`、`getSkipMode`、
+  `markRead/isRead/shouldSkip`。
+
+`make_default_dialogue_ui(dialogue, dialogueUX, ui)` 创建可直接挂载的默认 UI；
+调用返回对象的 `mount()`、每帧 `update(dt)` 和 `render()` 即可。项目可以完全替换
+这个脚本视图，而继续复用 `DialogueUX` 的历史、已读和自动推进状态。
+
+### 皮肤、显示位置与脚本绘制
+
+`DefaultDialogueUI` 随引擎启动脚本一起打包，不需要游戏引用源码目录。
+Dialogue 只拥有台词、打字进度和选项；视图仅保存可丢弃的显示配置。
+因此切换视图时调用 `setPresentation(options)` 和 `mount()`，不调用 `dlg.reset()`。
+
+```squirrel
+local view = make_default_dialogue_ui(dialogue, dialogueUX, ui, "conversation");
+// Keep the image decoder/provider alive while using image-backed UI skins.
+local skinImages = eve.Image();
+view.setPresentation({
+    skin = "skins/moonlight.9.png",
+    x = 40.0, y = 330.0, width = 864.0, height = 184.0,
+    hint = "Space: continue"
+});
+view.mount();
+// Update after dialogue.update(dt). Consume clicks before rebuilding the view.
+local selected = view.consumeChoice(); // -1 means no choice click
+if (selected >= 0) {
+    if (dialogue.selectChoice(selected)) resumeStory();
+} else if (view.update(dt, voicePlaying)) {
+    resumeStory(); // UX auto/skip already advanced Dialogue once.
+}
+view.render(); // Call once in the frame's rendering phase.
+```
+
+- `skin` 使用现有 UI 的原始 Android `.9.png` 支持：一像素透明标记框，
+  上／左黑线标记拉伸区，下／右黑线标记内容区。每条边只支持一段连续标记，
+  不接受 Android 编译后的二进制 nine-patch。角不随面板拉伸，文字在内容边距内布局。
+  无效资源会抛出包含路径的错误，不替换已挂载的 UI 树；修正配置后重新 `mount()`。
+- 省略 `skin` 使用透明布局容器，不带窗口标题栏。`x/y` 是 UI 屏幕像素位置；
+  `width` 控制文字换行，皮肤的 `height` 控制内容滚动区域。
+  默认按钮按实际选项数量生成，没有八项上限。
+- `layout(frame)` 可逐帧返回 `{x, y}`，用于说话人气泡或跟随世界投影点。
+  投影、屏幕边缘约束由游戏决定。尺寸改变时重新挂载。
+- `drawBackground(frame)` 在标准 UI 渲染前同步执行，适合用 `gfx` 画动态边框、
+  波形、尾巴或入场效果；文字与可点击选项仍由 UI 负责。
+- `draw(frame)` 接管整个绘制过程，不调用默认 UI 渲染；此时可传 `uiInstance = null`。
+  自定义绘制器负责字体、换行、选项绘制、命中测试及键盘／触屏输入。
+  `consumeChoice()` 在此模式返回 -1，游戏将自己的输入交给 Dialogue。
+
+```squirrel
+view.setPresentation({
+    draw = function(frame) {
+        paintSpeechBubble(frame.speakerId, frame.speaker, frame.text);
+        foreach (choice in frame.choices)
+            paintChoice(choice.index, choice.id, choice.label);
+    }
+});
+view.mount();
+```
+
+`frame` 是独立快照，字段为 `speakerId/speaker/text/typing/waitingAdvance/idle/choices`；
+`choices` 包含 `index/id/label`。文字已通过 `DialogueUX.plainText` 去掉控制标签。
+回调修改快照不会修改剧情；需要富文本效果的绘制器可直接查询 Dialogue/DialogueUX。
+`draw` 优先于 `drawBackground` 与 `layout`。回调异常直接传播，不能静默吞掉。
+
+所有视图操作及回调在游戏主线程同步执行，不持有引擎锁；回调不得递归调用视图生命周期方法。
+游戏拥有 Dialogue、UX、UI、字体与纹理资源，它们必须覆盖视图使用期。
+离开场景调用 `unmount()` 隐藏宿主并释放回调引用；皮肤缓存仍由 UI 拥有。
+不要把视图、回调或 GPU 资源写入剧情存档：恢复后从配置重建视图。
+不提供 UI 模块的构建可以只使用 `draw`，不引入 Dialogue 到 UI/Graphics 的原生依赖。
+
+`examples/dialogue` 提供月夜圆角皮肤、信笺边框皮肤与脚本通讯面板；按 4／5／6
+切换，保留当前台词和选项。选项支持鼠标按钮与原有数字键。
+皮肤源码位于 `examples/dialogue/skins/generate.py`，可确定性重新生成。
+
+### `DialogueVoice`（语音与音频口型）
+
+根表 `dialogueVoice` 管理按 `lineId + locale` 定位的语音。项目先用
+`sound.newSoundDataFromFile` 与 `audio.newSource` 创建 Source，再调用
+`bindSource(lineId, locale, source)`；无音频设备的测试也可用
+`registerClip(lineId, locale, duration, envelopeCsv)` 注册时长和振幅轨。
+
+- 资产：`registerClip`、`bindSource`、`hasClip`、`clear`。
+- 播放：`play(lineId, locale)`、`stop`、`update(dt)`、`isPlaying`、
+  `getTime/getDuration/getCurrentLineId`。
+- 自动推进：`shouldAutoAdvance()` 在语音达到结尾后返回 true。
+- 口型：`getAmplitude()` 读取预计算振幅包络，采样率由
+  `setEnvelopeRate/getEnvelopeRate` 控制。可把返回值传给 Avatar 参数。
+
+locale 精确匹配失败时回退到空 locale 的默认语音。Source 的生命周期仍由游戏持有，
+切换台词或销毁 `DialogueVoice` 时会停止当前 Source。
+
+### `DialogueFlow`（参数化流程与内容工具）
+
+`dialogueFlow` 将 `.dnut` 中的 `conversation` 块编译为带稳定 node ID 的资产，并用
+可保存的显式 Runner 执行。台词池与 conversation 块可以共存于同一文件。
+
+```dnut
+schema "eve.dnut"
+version 1
+conversation common.greeting version=1 entry=decide {
+parameter speaker string required
+parameter listener string required
+parameter location string required
+node decide branch {
+route friendly when="score(speaker, listener, location) >= threshold(speaker.personality)" target=friendly
+route formal target=formal
+}
+node friendly line speaker=speaker pool=greeting.friendly i18n=dialogue.greeting.friendly next=end
+node formal line speaker=speaker text="Good day, {listener.name}." next=end
+node end end
+}
+```
+
+`command` 节点和 `choice` route 可重复声明结构化世界状态变更，例如
+`mutation(subject="player", key="quest.accepted", kind="set", value=true, persistent=true)`。
+`kind` 支持 `set/remove/addTag/removeTag/addNumber`；未知字段、缺失 subject/key、类型错误以及
+不适用于该 kind 的 value 都是编译错误，不会降级或静默忽略。
+
+- 内容：`loadDnutChecked/loadDnutFileChecked`、`importYarnChecked/importTweeChecked`、`clear`、
+  `getConversationCount()`、`getConversationId(index)`、`hasConversation`；失败详情通过诊断查询 API 获取。
+- 外部格式：Yarn Spinner 节点和 Twine Twee 3 passages 会转换为相同的稳定节点模型；
+  角色前缀、参数占位符、双向 Twine 链接、Yarn shortcut options、`jump/stop/wait/call/set`
+  命令以及 `#line:/#voice:` 标签都会保留，并进入统一的引用校验流程。Twee 的
+  `StoryTitle/StoryData` 元数据 passages 会自动忽略。
+- 校验：`getDiagnosticCount`、`getDiagnosticSeverity/getDiagnosticCode/getDiagnosticPath/getDiagnosticLine/getDiagnosticColumn/getDiagnosticAssetPath/getDiagnosticMessage`；编译检查
+  重复或缺失 ID、无效引用，并报告不可达节点。
+- 工具链：相同 source ID、相同内容的 `loadDnutChecked` 会命中内存增量缓存，
+  `getLastLoadChanged()` 可判断是否重编译；`removeSourceChecked(path)` 卸载该来源产生的资产；
+  `lintAllChecked()` 批量检查全库并验证跨文件 call；`renameConversationChecked/renameNodeChecked` 自动改写引用，
+  同时提升资产版本以显式拒绝不兼容的旧执行游标。
+- 热重载：`reloadDnutChecked(source, sourceId)` 在临时工作区编译并执行全库跨文件引用校验；
+  编译、引用校验或活动游标迁移任一失败时，会保留旧资产和旧执行位置。成功时则结合
+  `registerMigrationChecked` 恢复当前对话和全部调用栈。普通 `loadDnutChecked` 仍允许按任意顺序初次
+  装入互相引用的文件，全部装入后用 `lintAllChecked()` 做一次完整校验。
+- 本地化：`exportLocalizationCsv()` 返回带 conversation/node 稳定 ID、i18n key、
+  speaker、源文和 voice key 的 RFC4180 CSV。
+- 回导与配音：`importLocalizationCsvChecked(csv, defaultLocale)` 接受 `i18n_key/locale/translation`
+  以及可选的 `voice/status/duration` 列；`setLocale/getLocale` 控制当前语言，读取当前
+  `getText/getVoice` 时按精确 locale、语言代码、默认 locale 依次回退。
+  `exportMissingLocalizationCsv(locale)` 生成待翻译清单，
+  `exportVoiceRecordingCsv(locale)` 生成并可再次回导的录音清单，包含角色、源文、译文、
+  voice key、录制状态和时长；当前行可用 `getVoiceStatus/getVoiceDuration` 读取回导结果，
+  将时长直接交给 `dialogueVoice.registerVoice` 即可驱动语音结束自动推进。
+- 内容包提交前可调用 `validateLocalization(i18n, locale)`，逐节点验证 `i18n` 引用在指定
+  精确语言中存在；该检查故意不接受默认语言回退，并返回结构化 Result 和节点路径。
+- 执行：产品路径使用 `startChecked(id, bindings)`、`advanceChecked()` 和 `select(routeId)` 的
+  结构化 Result；`start(id, bindings)` / `advance()` 仅作兼容投影；`isActive/isBlocked`、
+  `getActiveConversationId/getNodeId/getNodeKind`。
+- 异步命令：command handler 返回 blocked 后，用 `getPendingCommandRequestId()` 保存当前稳定
+  request ID；完成时调用 `resumeCommandChecked(requestId, value)`。错误、过期或重复的 ID
+  会返回结构化冲突诊断且不移动游标；等待命令期间 `advanceChecked()` 不会越过该节点。
+- 当前节点：`getSpeaker/getText/getPool/getI18nKey/getVoice`、
+  `getRouteCount/getRouteId/getRouteText`。route ID 是稳定控制标识，显示文本与 i18n key 独立。
+- 手动异步桥：`setManualCommandMode(true)` 让没有原生 handler 的 command 明确进入 blocked，
+  供脚本在外部工作完成后用 `resumeCommandChecked` 恢复；关闭后缺失 handler 仍是运行错误。
+- 复杂条件：`setExpressionEvaluatorChecked(fn)` 注册纯计算函数，fn 接收
+  `{ expression, bindings, locals }` 并返回 bool 或结构化值；
+  `clearExpressionEvaluator` 解除注册。表达式文本不会被编译器限制成简单比较式。
+- 脚本存档：`captureStateJsonChecked()` 返回包含 JSON 的结构化 Result；
+  `restoreStateJsonChecked(json)` 恢复当前节点、参数、局部值、pending command 和完整调用栈。
+  资产升级后用 `registerMigrationChecked(oldAssetId, oldVersion, currentAssetId, nodeMap)`
+  显式登记迁移，其中 `nodeMap` 是逗号分隔的 `old:new` 对；未改名的稳定节点无需列出。
+  迁移会事务式覆盖当前帧和全部调用帧，任何缺失规则或目标节点都会拒绝恢复；
+  `clearMigrations()` 清除规则。
+- 参数化文本：本地化回退完成后，`getText()` 会以 locals 优先、bindings 次之的顺序
+  渲染 `{speaker.name}` 等路径；支持 `{path??fallback}`，以及 `|upper`、`|lower`、
+  `|capitalize` 修饰。找不到且没有默认文本的占位符会原样保留，便于内容 QA 发现缺参。
+- 人物语气：`addToneRule(expression, prefix, suffix, find, replacement)` 添加有序规则；
+  expression 复用 `setExpressionEvaluatorChecked`，因此可以读取人物性格、关系、疲劳或剧情状态，
+  对渲染后的文本加前后缀或做词语替换。多个命中规则依次叠加，
+  `clearToneRules()` 可在场景或角色配置切换时清空。
+- 发布给 MCP / 玩法协议：`publishGameplay(instanceId, ownerId)` 把本运行器交给共享玩法协议
+  （`eve_gameplay` 工具的 `observe/actions/submit/advance/events`），返回 `{ ok, message }`。
+  `instanceId` / `ownerId` 必须是规范持久 id（UUID 文本）。运行器一次只跑一个对话，
+  所以重复发布返回 `conflict` 并报出已占用它的实例；`unpublishGameplay(instanceId)` 取消发布，
+  `clearGameplayControls()` 一次清空，`getGameplayControlCount()` 读取当前发布数量（0 或 1）。
+  发布后的动作词表就是本模块自己的操作：`dialogue:start{conversation}`、
+  `dialogue:advance`、`dialogue:select{route}`；观察结果给出当前节点、说话人、文本与
+  **路由词表**（`routes`），agent 据此挑 route id 而不必猜。自动化启动没有 Squirrel 调用帧，
+  因此以空绑定表开始（观察结果里 `bindings` 为 `empty`），读取 bindings 的条件按"缺失"求值。
+
+Runner 在 line、choice、wait 和异步 command 边界暂停；C++ API 的
+`captureStateChecked/restoreStateChecked` 保存资产版本、node ID、bindings、locals 和子对话调用栈。
+
+### 用脚本提供世界状态（条件与写入，都不用写 C++）
+
+对话的条件求值与状态写入都走"由消费者拥有的"两个契约，它们**都可以由脚本对象回答**：
+
+```squirrel
+class WorldState {
+    // 六个问询方法名与接口一致；只需要实现你真正负责的那几类。
+    function state(subject, key) {
+        if (key == "gold") return goldOf(subject)
+        return null            // null = "这一问不归我"，调用方会继续问下一个 provider
+    }
+    function hasTag(subject, tag) { return tag == "wanted" }   // 布尔；null 表示不拥有
+}
+
+class WorldWrites {
+    // 返回值 = 实际改了几条（0 条 → NoOp）；要么整批生效，要么在改动前抛错。
+    function applyStateMutations(payload) {
+        // payload.transactionId / correlationId / causationId
+        // payload.mutations[i] = { subject, key, value, kind = "set"|"remove"|"addTag"|"removeTag"|"addNumber", persistent }
+        local changed = 0
+        foreach (m in payload.mutations) { if (applyOne(m)) changed += 1 }
+        return changed
+    }
+}
+
+eve.provider.publishFor("eve.state.IStateQuery", "game.world-state", WorldState())
+eve.provider.publishFor("eve.state.IStateMutation", "game.world-writes", WorldWrites())
+```
+
+- **查询 provider 不会顶掉别人**：条件求值先问单实现、再按优先级问 listener，第一个给出非空答案的赢。
+  所以脚本补的是"原生 provider 不拥有的那些键"，`null` 与"已知 false"是两件事。
+- **写入 provider 是单实现槽位**：发布它会顶掉当前实现，并在 `eve.log` 里留一行 `warn`。
+- 失败不静默：查询接口本身没有失败通道（`null` 的语义是"不拥有"），所以脚本抛错或答案形状不对时
+  按"不拥有"返回**并计数 + 上报**（C++ 侧 `eve::dialogue::scriptStateQueryFailures()`）；写入的失败
+  直接以结构化 `Result` 传出（抛错 = `Failed`，返回值不是"改了几条" = `Rejected`），消费方靠它判断
+  写入成没成功。
+
+### `ConversationDocument`（可组合编辑数据）
+
+引擎不内置固定的对话编辑器。`dialogueFlow.newDocument(id)` 创建 UI 无关的可变图文档，
+`getDocument(id)` 返回运行资产的可编辑副本；项目可用任意 MVVM/UI 组件组合节点列表、
+画布、Inspector、诊断面板与游戏内剧情工具。只有 `applyDocumentChecked(document)` 校验整个工作区
+成功后才事务式替换运行资产。
+
+```squirrel
+local doc = dialogueFlow.newDocument("quest.intro");
+doc.addNode("welcome", "line");
+doc.setEntry("welcome");
+doc.setField("welcome", "text", "Welcome, {player.name}.");
+doc.setField("welcome", "next", "end");
+
+// Inspector 不硬编码字段：按 node kind 的 schema 动态生成控件。
+for (local i = 0; i < doc.getFieldCount("welcome"); ++i) {
+    local key = doc.getFieldName("welcome", i);
+    local hint = doc.getFieldKind("welcome", i); // string|multiline|node|asset|json
+    // viewModel.addEditor(key, hint, doc.getField("welcome", key));
+}
+if (doc.validate()) dialogueFlow.applyDocumentChecked(doc);
+```
+
+- 文档：`getId/setId`、`getVersion/setVersion`、`getEntry/setEntry`、
+  `getParameterCount/getParameter/addParameter/removeParameter`。
+- 节点：`getNodeCount/getNodeId/hasNode/addNode/removeNode/renameNode`、
+  `getNodeKind/setNodeKind`。节点类型为 `line|branch|choice|call|command|wait|end`。
+- 反射式 Inspector：`getFieldCount/getFieldName/getFieldKind/getField/setField`；
+  `arguments` 字段以 JSON object 编辑，其余字段为字符串或资源/节点引用。
+- 连线：`getRouteCount/getRouteLabel/getRouteTarget/addRoute/setRoute/removeRoute`；
+  route 适用于 branch 与 choice，节点改名或删除会同步维护引用。
+- 结构化诊断：`validate`、`getDiagnosticCount/getDiagnosticSeverity/getDiagnosticCode/getDiagnosticPath`
+  `/getDiagnosticLine/getDiagnosticColumn/getDiagnosticAssetPath/getDiagnosticMessage`。
+- Registry 桥接：`DialogueFlow.newDocument/getDocument/applyDocumentChecked`。文档只是数据类，
+  不依赖 editor 或 ui 模块，因此同一资产可被桌面编辑器、游戏内工具、自动化生成器和测试复用。
+
+## 生命周期
+
+- 角色注册幂等（重复注册覆盖显示名）；`bindAvatar` 接受 `avatar.newImageAvatar()`
+  等任何 `AvatarInstance`。
+- `update(dt)` 推进打字机/口型/舞台同步；选项选择前先 `isWaitingChoice()` 判空。
+- `.dnut` 只通过 `DialogueFlow` 的 checked API 编译；pool 与 conversation 共享一次解析、校验和原子提交。

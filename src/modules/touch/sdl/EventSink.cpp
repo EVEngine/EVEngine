@@ -1,3 +1,4 @@
+// eve-hot-path
 // Feeds SDL finger events into the touch module's press state.
 //
 // This lived in the SDL event pump, which therefore had to know about the touch
@@ -5,43 +6,47 @@
 //
 // SDL also exposes touch state through query functions, but some backends
 // update those on another thread, so press state is only ever advanced from
-// here.
+// here. The Touch module binds itself as owner at construction so the hot path
+// never looks up ModuleManager. DPI conversion uses the SDL window id on the
+// finger event (no Window module reverse dependency).
 
 #include "common/Capability.h"
-#include "common/Module.h"
 #include "common/config.h"
-#include "event/PlatformEventSink.h"
-#include "touch/Touch.h"
+#include "platform_event/PlatformEventSink.h"
+#include "touch/sdl/EventSinkOwner.h"
 #include "touch/sdl/Touch.h"
-#include "window/Window.h"
 
 #include <SDL2/SDL_events.h>
+#include <SDL2/SDL_video.h>
 
 namespace eve::touch::sdl {
 namespace {
 
+Touch *g_touch = nullptr;
+
 #ifndef EVENGINE_MACOSX
 /** SDL reports normalized finger coordinates; the engine works in pixels. */
-void normalizedToDPICoords(double *x, double *y) {
+void normalizedToDPICoords(const SDL_TouchFingerEvent &finger, double *x, double *y) {
     double w = 1.0, h = 1.0;
-    if (auto *win = eve::ModuleManager::getInstance<eve::window::Window>("Window")) {
-        w = win->getWidth();
-        h = win->getHeight();
+    if (SDL_Window *native = SDL_GetWindowFromID(finger.windowID)) {
+        int iw = 0, ih = 0;
+        SDL_GetWindowSize(native, &iw, &ih);
+        if (iw > 0) w = iw;
+        if (ih > 0) h = ih;
     }
     if (x) *x = (*x) * w;
     if (y) *y = (*y) * h;
 }
 #endif
 
-class TouchEventSink : public eve::event::IPlatformEventSink {
+class TouchEventSink : public eve::platform_event::IPlatformEventSink {
 public:
-    bool observePlatformEvent(const void *nativeEvent) override {
+    bool shouldConsumePlatformEvent(const void *nativeEvent) override {
         const auto &e = *static_cast<const SDL_Event *>(nativeEvent);
         if (e.type != SDL_FINGERDOWN && e.type != SDL_FINGERUP && e.type != SDL_FINGERMOTION)
             return false;
 
-        auto *touchMod = dynamic_cast<Touch *>(
-            eve::ModuleManager::getInstance<eve::touch::Touch>("Touch"));
+        auto *touchMod = g_touch;
         if (!touchMod) return false;
 
         eve::touch::Touch::TouchInfo info{};
@@ -52,8 +57,8 @@ public:
         info.dy = e.tfinger.dy;
         info.pressure = e.tfinger.pressure;
 #ifndef EVENGINE_MACOSX
-        normalizedToDPICoords(&info.x, &info.y);
-        normalizedToDPICoords(&info.dx, &info.dy);
+        normalizedToDPICoords(e.tfinger, &info.x, &info.y);
+        normalizedToDPICoords(e.tfinger, &info.dx, &info.dy);
 #endif
         touchMod->onEvent(e.type, info);
         // Finger events update state only; they produce no queued Message.
@@ -64,10 +69,13 @@ public:
 struct Register {
     Register() {
         static TouchEventSink sink;
-        eve::cap::addListener<eve::event::IPlatformEventSink>(
-            &sink, eve::event::IPlatformEventSink::kInput);
+        eve::cap::addListener<eve::platform_event::IPlatformEventSink>(&sink,
+                                                                       eve::platform_event::IPlatformEventSink::kInput);
     }
 } g_register;
 
 }  // namespace
+
+void bindTouchEventSinkOwner(Touch *owner) noexcept { g_touch = owner; }
+
 }  // namespace eve::touch::sdl

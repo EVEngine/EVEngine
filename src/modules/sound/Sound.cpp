@@ -4,6 +4,7 @@
 
 #include "common/Exception.h"
 #include "common/config.h"
+#include "common/Resource.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 
@@ -123,9 +124,9 @@ template <typename T>
 std::unique_ptr<medialoader::Decoder> tryMake(const char *data, size_t size, int bufferSize) {
     try {
         return std::unique_ptr<medialoader::Decoder>(new T(data, size, bufferSize));
-    } catch (const medialoader::Exception &) {
-        return nullptr;
     } catch (...) {
+        // Every decoder failure has the same fallback; one catch avoids a
+        // redundant typed exception handler in each decoder specialization.
         return nullptr;
     }
 }
@@ -206,6 +207,16 @@ SoundData *Sound::newSoundData(Data *data) {
     }
 }
 
+SoundData *Sound::newSoundDataFromFile(std::string path) {
+    if (path.empty())
+        throw eve::Exception("Sound::newSoundDataFromFile: empty path");
+
+    eve::Resource *resource = eve::ResourceManager::getInstance().get(path);
+    if (!resource)
+        throw eve::Exception("Could not load sound file: %s", path.c_str());
+    return static_cast<SoundData *>(resource);
+}
+
 SoundData *Sound::newSoundDataEmpty(int samples, int rate, int bitDepth, int channels) {
     if (samples < 0)
         throw eve::Exception("Invalid sample count");
@@ -246,6 +257,7 @@ void Sound::expose(ssq::Class& cls) {
     cls.addFunc("newDecoder", &Sound::newDecoder);
     cls.addFunc("newSoundData", &Sound::newSoundData);
     cls.addFunc("newSoundDataFromDecoder", &Sound::newSoundDataFromDecoder);
+    cls.addFunc("newSoundDataFromFile", &Sound::newSoundDataFromFile);
     cls.addFunc("newSoundDataEmpty", &Sound::newSoundDataEmpty);
 }
 

@@ -1,8 +1,8 @@
 # Orchestrate a release started by a GitHub Pre-release:
-#   start → strict tests (debug+release) → SDK zips → finish
+#   start → strict tests (debug+release) → SDK zips → finish (opens PRs)
 # See docs/dev/发布流程.md and scripts/release.py.
 
-name: Release
+name: Release CI
 
 on:
   release:
@@ -21,23 +21,28 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
+  checks: write
+  id-token: write
 
 jobs:
   start:
     name: start (version + branch)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     outputs:
       tag: ${{ steps.go.outputs.tag }}
       branch: ${{ steps.go.outputs.branch }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           ref: ${{ github.event.release.tag_name || inputs.tag }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Start release
+        timeout-minutes: 10
         id: go
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -52,16 +57,15 @@ jobs:
           echo "branch=$TAG" >> "$GITHUB_OUTPUT"
 
   strict-tests:
-    name: strict tests
+    name: Full release validation
     needs: start
-    uses: ./.github/workflows/ci.yml
+    uses: ./.github/workflows/release-ci.yml
     with:
-      build_type: both
       ref: ${{ needs.start.outputs.branch }}
     secrets: inherit
 
   sdk:
-    name: SDK pack
+    name: SDKs (all platforms and architectures)
     needs: [start, strict-tests]
     uses: ./.github/workflows/sdk-release.yml
     with:
@@ -70,18 +74,21 @@ jobs:
     secrets: inherit
 
   finish:
-    name: finish (promote + rebase dev)
+    name: finish (open PRs)
     needs: [start, sdk]
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           ref: ${{ needs.start.outputs.branch }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Finish release
+        timeout-minutes: 10
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CI: "true"
@@ -89,5 +96,4 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin main dev "${{ needs.start.outputs.tag }}" || true
           python3 scripts/release.py finish --tag "${{ needs.start.outputs.tag }}"

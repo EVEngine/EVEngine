@@ -1,0 +1,463 @@
+#pragma once
+
+#include "procgen/PointDelta.h"
+
+#include <cstdint>
+#include <deque>
+#include <functional>
+#include <optional>
+#include <string>
+#include <thread>
+#include <unordered_map>
+#include <vector>
+
+namespace eve::procgen {
+
+/** @brief One immutable runtime-generation cell request returned to script. */
+class EVENGINE_API_DOMAINS ProcgenCellRequest {
+public:
+    /** @brief Returns the level. */
+    int      getLevel() const;
+    /** @brief Returns the x. */
+    int      getX() const;
+    /** @brief Returns the z. */
+    int      getZ() const;
+    /** @brief Returns the seed. */
+    uint32_t getSeed() const;
+    /** @brief Unique scheduler ticket used to reject stale asynchronous completions. */
+    uint64_t getTicket() const;
+    /** @brief Returns the min x. */
+    float    getMinX() const;
+    /** @brief Returns the min z. */
+    float    getMinZ() const;
+    /** @brief Returns the max x. */
+    float    getMaxX() const;
+    /** @brief Returns the max z. */
+    float    getMaxZ() const;
+
+private:
+    friend class RuntimeGeneration;
+    int      level_    = 0;
+    int      x_        = 0;
+    int      z_        = 0;
+    uint32_t seed_     = 1;
+    uint64_t ticket_   = 0;
+    uint64_t schedulerId_ = 0;
+    float    cellSize_ = 1.f;
+};
+
+/**
+ * @brief Copyable generation input issued by one RuntimeGeneration scheduler.
+ *
+ * Workers own copies of this value and never access scheduler state. The ticket
+ * is validated only when a completion returns to the scheduler-owning thread.
+ */
+class EVENGINE_API_DOMAINS ProcgenGenerationJob {
+public:
+    /** @brief Return the hierarchical grid level captured at issue time. */
+    int getLevel() const;
+    /** @brief Return the cell X coordinate captured at issue time. */
+    int getX() const;
+    /** @brief Return the cell Z coordinate captured at issue time. */
+    int getZ() const;
+    /** @brief Return the deterministic seed derived from world seed, level and coordinates. */
+    uint32_t getSeed() const;
+    /** @brief Return the ticket; valid only together with this job's private scheduler identity. */
+    uint64_t getTicket() const;
+    /** @brief Return the captured lower world-space X bound. */
+    float getMinX() const;
+    /** @brief Return the captured lower world-space Z bound. */
+    float getMinZ() const;
+    /** @brief Return the captured upper world-space X bound. */
+    float getMaxX() const;
+    /** @brief Return the captured upper world-space Z bound. */
+    float getMaxZ() const;
+
+private:
+    friend class RuntimeGeneration;
+    int      level_       = 0;
+    int      x_           = 0;
+    int      z_           = 0;
+    uint32_t seed_        = 1;
+    uint64_t ticket_      = 0;
+    uint64_t schedulerId_ = 0;
+    float    cellSize_    = 1.f;
+};
+
+/** @brief Owning worker result returned to a RuntimeGeneration scheduler. */
+class EVENGINE_API_DOMAINS ProcgenGenerationCompletion {
+public:
+    /**
+     * @brief Package a job and generated points without touching scheduler state.
+     * @param job Copyable immutable job originally issued by the scheduler.
+     * @param output Owning generated point snapshot moved into the completion.
+     * @thread Worker-safe; mutates no scheduler or shared state.
+     */
+    ProcgenGenerationCompletion(ProcgenGenerationJob job, PointSet output);
+
+private:
+    friend class RuntimeGeneration;
+    ProcgenGenerationJob job_;
+    PointSet             output_;
+};
+
+/**
+ * @brief View-driven partition and hierarchical procedural generation scheduler.
+ *
+ * updateSource computes desired cells for every configured level. nextGenerate
+ * and nextCleanup provide bounded work queues; completeGeneration atomically
+ * publishes a cell output. The scheduler owns no scene or graphics objects.
+ * All state access is owner-thread-only. Only jobs and completions may cross
+ * worker boundaries; their private process-local identity is never serialized.
+ * Destroying the scheduler does not invalidate owning worker data, but its jobs
+ * cannot be committed to a replacement scheduler. No callbacks are invoked.
+ */
+class EVENGINE_API_DOMAINS RuntimeGeneration {
+public:
+    /** @brief Create a scheduler with a stable world seed. */
+    explicit RuntimeGeneration(uint32_t worldSeed = 1);
+    RuntimeGeneration(const RuntimeGeneration&)            = delete;
+    RuntimeGeneration& operator=(const RuntimeGeneration&) = delete;
+    RuntimeGeneration(RuntimeGeneration&&)                 = delete;
+    RuntimeGeneration& operator=(RuntimeGeneration&&)      = delete;
+
+    /** @brief Remove levels, cells, queues and outputs while retaining the world seed. */
+    void clear();
+    /**
+     * @brief Add a hierarchical grid level.
+     * @param cellSize World-space XZ cell size.
+     * @param generationRadius Distance around the source that requests generation.
+     * @param cleanupMultiplier Cleanup radius divided by generation radius; must be at least 1.
+     * @return Level index, or -1 for invalid settings.
+     */
+    int addLevel(float cellSize, float generationRadius, float cleanupMultiplier);
+    /** @brief Returns the level count. */
+    int getLevelCount() const;
+    /** @brief Returns the level cell size. */
+    float getLevelCellSize(int level) const;
+    /** @brief Returns the level generation radius. */
+    float getLevelGenerationRadius(int level) const;
+    /** @brief Returns the level cleanup radius. */
+    float getLevelCleanupRadius(int level) const;
+
+    /** @brief Weight favoring cells in front of the source, clamped to [0,1]. */
+    void  setDirectionWeight(float weight);
+    /** @brief Returns the direction weight. */
+    float getDirectionWeight() const;
+    /** @brief Maximum simultaneously issued generation requests. */
+    void setMaxGenerating(int count);
+    /** @brief Returns the max generating. */
+    int  getMaxGenerating() const;
+    /** @brief Maximum active plus in-flight cells; zero disables the resident-cell limit. */
+    void setMaxActiveCells(int count);
+    /** @brief Return the resident-cell limit, or zero when unlimited. */
+    int getMaxActiveCells() const;
+    /** @brief Set the maximum points allowed in one generated cell; zero disables the limit. */
+    void setMaxPointsPerCell(int count);
+    /** @brief Return the per-cell point limit, or zero when unlimited. */
+    int getMaxPointsPerCell() const;
+    /** @brief Set the total point limit across active cell outputs; zero disables the limit. */
+    void setMaxResidentPoints(int count);
+    /** @brief Return the total resident-point limit, or zero when unlimited. */
+    int getMaxResidentPoints() const;
+    /** @brief Return points retained by active or not-yet-acknowledged cleanup cells. */
+    int getResidentPointCount() const;
+    /** @brief Return generation or restore outputs rejected by point budgets. */
+    int getRejectedOutputCount() const;
+    /**
+     * @brief Schedule lowest-priority active cells for cleanup until at most target points remain.
+     * @return Number of cells newly scheduled for cleanup.
+     */
+    int trimToResidentPoints(int target);
+    /** @brief Set retries after the initial generation attempt; zero fails immediately. */
+    void setMaxGenerationRetries(int count);
+    /** @brief Return retries allowed after the initial generation attempt. */
+    int getMaxGenerationRetries() const;
+    /** @brief CPU issue budget in milliseconds for one frame; zero disables the limit. */
+    void  setFrameTimeBudget(float milliseconds);
+    /** @brief Returns the frame time budget. */
+    float getFrameTimeBudget() const;
+    /** @brief Start a new budget window before consuming generation requests. */
+    void beginFrame();
+    /**
+     * @brief Limit source-refresh planning work performed by one call.
+     * @param candidateCells
+     * Bounding-grid candidates examined per call; zero preserves synchronous refresh.
+     *
+     * A positive budget
+     * stages desired cells without changing published queues until one complete source snapshot
+     * commits. Source
+     * changes arriving during a plan are coalesced into a later snapshot instead of restarting it.
+     */
+    void setRefreshWorkBudget(int candidateCells);
+    /** @brief Return the per-call source-refresh candidate budget, or zero when synchronous. */
+    int getRefreshWorkBudget() const;
+    /** @brief Return whether a staged source snapshot still needs planning work. */
+    bool isRefreshPending() const;
+    /** @brief Return the latest source revision atomically published into generation and cleanup queues. */
+    uint64_t getCommittedRefreshRevision() const;
+    /**
+     * @brief Advance a budgeted source refresh without changing the requested sources.
+     * @return Candidate
+     * cells examined in this call; query isRefreshPending to distinguish completion.
+     * @thread Call synchronously
+     * on the scheduler-owning thread.
+     */
+    [[nodiscard]] Result<uint64_t> continueGenerationRefresh();
+
+    /**
+     * @brief Recompute desired cells for a generation source.
+     * @param x,z World position.
+     * @param directionX,directionZ Horizontal view direction; zero disables direction priority.
+     */
+    void updateSource(float x, float z, float directionX, float directionZ);
+    /** @brief Add or update a named generation source, then rebuild desired cells. */
+    bool setGenerationSource(const std::string& id, float x, float z, float directionX,
+                             float directionZ, float radiusScale = 1.f);
+    /** @brief Removes generation source. */
+    bool removeGenerationSource(const std::string& id);
+    /** @brief Clears generation sources. */
+    void clearGenerationSources();
+    /** @brief Returns the generation source count. */
+    int  getGenerationSourceCount() const;
+    /** @brief Returns the generation source id. */
+    std::string getGenerationSourceId(int index) const;
+    /** @brief Re-evaluate generation/cleanup queues from every registered source. */
+    void refreshGenerationSources();
+
+    /**
+     * @brief Enable view-cone scheduling.
+     * @param halfAngleDegrees Horizontal cone half angle in [1,180].
+     * @param behindRadius Cells nearer than this distance generate even outside the cone.
+     */
+    void setFrustumCulling(bool enabled, float halfAngleDegrees, float behindRadius);
+    /** @brief True when frustum culling enabled. */
+    bool  isFrustumCullingEnabled() const;
+    /** @brief Returns the frustum half angle. */
+    float getFrustumHalfAngle() const;
+    /** @brief Returns the frustum behind radius. */
+    float getFrustumBehindRadius() const;
+
+    /** @brief Returns the pending generate count. */
+    int                 getPendingGenerateCount() const;
+    /** @brief Returns the generating count. */
+    int                 getGeneratingCount() const;
+    /** @brief Returns the active cell count. */
+    int                 getActiveCellCount() const;
+    /** @brief Returns the pending cleanup count. */
+    int                 getPendingCleanupCount() const;
+    /** @brief Return issued generation requests invalidated before completion. */
+    int                 getCancelledGenerationCount() const;
+    /** @brief Return cells stopped after exhausting the generation retry policy. */
+    int                 getFailedCellCount() const;
+    /** @brief Reset and requeue all terminally failed cells still tracked by the scheduler. */
+    int                 retryFailedCells();
+    /**
+     * @brief Issue one owning worker job, or an empty optional when no work is currently admissible.
+     * @return Job query result; failure means the call was made off the scheduler-owning thread.
+     * @thread Scheduler-owning thread only.
+     * @reentrant Not reentrant for this RuntimeGeneration.
+     */
+    [[nodiscard]] Result<std::optional<ProcgenGenerationJob>> nextGenerationJob();
+    /**
+     * @brief Atomically publish an owning worker completion.
+     * @param completion Job identity and generated output, both consumed by this call.
+     * @return New cell revision, or structured stale/thread/budget failure.
+     * @thread Scheduler-owning thread only; workers must enqueue the completion for its owner.
+     * @reentrant Not reentrant for this RuntimeGeneration.
+     */
+    [[nodiscard]] Result<uint64_t> completeGenerationJob(ProcgenGenerationCompletion completion);
+    /**
+     * @brief Report an issued job failure and apply the bounded retry policy.
+     * @param job Immutable copy of the issued job.
+     * @return Success when the matching ticket was requeued or made terminal.
+     * @thread Scheduler-owning thread only.
+     * @reentrant Not reentrant for this RuntimeGeneration.
+     */
+    [[nodiscard]] Result<void> failGenerationJob(const ProcgenGenerationJob& job);
+    /**
+     * @brief Claim an owning cleanup ticket, or an empty optional when no cleanup is pending.
+     * @return Independent request value or a structured wrong-thread diagnostic.
+     * @thread Scheduler-owning thread only; not reentrant. No callbacks are invoked.
+     * @ownership Copies survive scheduler destruction, but cannot commit to another scheduler.
+     */
+    [[nodiscard]] Result<std::optional<ProcgenCellRequest>> nextCleanupRequest();
+    /**
+     * @brief Commit one cleanup ticket after consumers have removed its generated content.
+     * @param request Owning ticket borrowed only for this call; never retained.
+     * @return Erased cell count or structured stale/foreign/thread failure without mutation.
+     * @thread Scheduler-owning thread only; not reentrant. No callbacks are invoked.
+     */
+    [[nodiscard]] Result<uint64_t> completeCleanupRequest(const ProcgenCellRequest& request);
+    /** @brief Return whether the caller is the thread that constructed this scheduler. */
+    bool isOwnerThread() const noexcept;
+
+    /** @brief Compatibility facade returning a heap request; prefer nextGenerationJob(). */
+    ProcgenCellRequest* nextGenerate();
+    /** @brief Compatibility-only heap projection of nextCleanupRequest; caller owns the returned request. */
+    ProcgenCellRequest* nextCleanup();
+    /**
+     * @brief Test whether an issued generation or cleanup request still owns its scheduler ticket.
+     * @param request Borrowed immutable request; null is never current.
+     * @return True while the matching cell, state and ticket still accept work for this request.
+     * @thread Call on the scheduler-owning thread between cooperative generation stages.
+     */
+    bool isRequestCurrent(const ProcgenCellRequest* request) const;
+    /** @brief Compatibility-only bool projection of completeGenerationJob; request and output are borrowed. */
+    bool completeGeneration(ProcgenCellRequest* request, PointSet* output);
+    /** @brief Compatibility-only bool projection of failGenerationJob; request is borrowed. */
+    bool failGeneration(ProcgenCellRequest* request);
+    /** @brief Compatibility-only bool projection of completeCleanupsAtomic; request is borrowed. */
+    bool completeCleanup(ProcgenCellRequest* request);
+    /**
+     * @brief Atomically acknowledge several cleanup tickets owned by this scheduler.
+     * @param requests
+     * Non-empty unique cleanup requests.
+     * @return Number of erased cells, or a structured failure with no cell
+     * changed.
+     * @ownership Request references are borrowed only for this call and are not retained.
+     *
+     * @thread Call synchronously on the scheduler-owning thread.
+     * @reentrant Not reentrant for this
+     * RuntimeGeneration.
+     */
+    [[nodiscard]] Result<uint64_t> completeCleanupsAtomic(const std::vector<const ProcgenCellRequest*>& requests);
+
+    bool      hasCell(int level, int x, int z) const;
+    /** @brief Returns the cell output. */
+    PointSet* getCellOutput(int level, int x, int z) const;
+    /** @brief Returns the cell revision. */
+    uint64_t  getCellRevision(int level, int x, int z) const;
+    /**
+     * @brief Atomically replace an active cell through an identity-based delta.
+     * @param expectedRevision Exact active revision observed by the caller.
+     * @param output Complete desired snapshot whose points have unique non-zero ids.
+     * @return The committed revision, or a structured stale/schema/budget failure.
+     */
+    [[nodiscard]] Result<uint64_t> applyCellUpdate(int level, int x, int z, uint64_t expectedRevision,
+                                                   const PointSet& output);
+    /**
+     * @brief Assign deterministic identities to a legacy active cell atomically.
+     * @return The committed revision; no revision is consumed when validation fails.
+     */
+    [[nodiscard]] Result<uint64_t> migrateCellPointIds(int level, int x, int z, uint64_t expectedRevision);
+    /**
+     * @brief Return a caller-owned copy of the latest committed delta, or null when unavailable.
+     * @ownership Owned; the caller must delete the returned delta. Script bindings transfer ownership to the VM.
+     * @return A heap object owned by the caller; script bindings transfer ownership to the VM.
+     */
+    PointDelta* getCellDelta(int level, int x, int z) const;
+    /** @brief Serialize one active cell cache entry in a deterministic versioned format. */
+    std::string serializeCell(int level, int x, int z) const;
+    /** @brief Atomically restore one cell produced by serializeCell for this world seed. */
+    bool deserializeCell(const std::string& definition);
+    /** @brief Debug report. */
+    std::string debugReport() const;
+
+private:
+    friend class Procgen;
+
+    struct Level {
+        float cellSize        = 1.f;
+        float generationRadius = 1.f;
+        float cleanupRadius    = 1.f;
+    };
+    enum class State { Pending, Generating, Active, Cleanup, Failed };
+    struct CellKey {
+        int level = 0;
+        int x     = 0;
+        int z     = 0;
+        /** @brief Operator ==. */
+        bool operator==(const CellKey& other) const {
+            return level == other.level && x == other.x && z == other.z;
+        }
+    };
+    struct CellKeyHash {
+        /** @brief Operator . */
+        size_t operator()(const CellKey& key) const;
+    };
+    struct Cell {
+        State    state    = State::Pending;
+        float    priority = 0.f;
+        uint64_t revision = 0;
+        uint64_t ticket   = 0;
+        int      failures = 0;
+        bool     trimmed  = false;
+        PointSet output;
+        PointDelta delta;
+        bool       hasDelta = false;
+    };
+    struct Source {
+        float x           = 0.f;
+        float z           = 0.f;
+        float directionX  = 0.f;
+        float directionZ  = 0.f;
+        float radiusScale = 1.f;
+    };
+    struct RefreshPlan {
+        uint64_t                                        revision = 0;
+        std::vector<Level>                              levels;
+        std::vector<Source>                             sources;
+        std::unordered_map<CellKey, float, CellKeyHash> desiredPriorities;
+        float                                           directionWeight     = 0.f;
+        float                                           frustumHalfAngle    = 180.f;
+        float                                           coneCosine          = -1.f;
+        float                                           frustumBehindRadius = 0.f;
+        bool                                            frustumCulling      = false;
+        size_t                                          sourceIndex         = 0;
+        size_t                                          levelIndex          = 0;
+        int                                             minX                = 0;
+        int                                             maxX                = -1;
+        int                                             minZ                = 0;
+        int                                             maxZ                = -1;
+        int                                             cellX               = 0;
+        int                                             cellZ               = 0;
+        bool                                            rangeReady          = false;
+    };
+
+    ProcgenCellRequest                                 makeRequest(const CellKey& key) const;
+    ProcgenGenerationJob                               makeGenerationJob(const CellKey& key) const;
+    std::optional<ProcgenGenerationJob>                issueGenerationJob();
+    [[nodiscard]] Result<std::reference_wrapper<Cell>> validateGenerationJob(const ProcgenGenerationJob& job);
+    void                       transitionCellState(Cell& cell, State nextState);
+    void                       requestGenerationRefresh();
+    void                       startRefreshPlan();
+    uint64_t                   advanceRefreshPlan(uint64_t candidateBudget);
+    void                       commitRefreshPlan(const RefreshPlan& plan);
+    [[nodiscard]] Result<void> validateCleanups(const std::vector<const ProcgenCellRequest*>& requests) const;
+    void                       eraseValidatedCleanups(const std::vector<const ProcgenCellRequest*>& requests);
+    uint32_t            cellSeed(const CellKey& key) const;
+    void                sortQueues();
+
+    uint32_t worldSeed_       = 1;
+    std::thread::id                                ownerThread_;
+    const uint64_t                                 schedulerId_;
+    float    directionWeight_ = 0.25f;
+    int      maxGenerating_   = 4;
+    int      maxActiveCells_  = 0;
+    int      maxPointsPerCell_      = 0;
+    int      maxResidentPoints_     = 0;
+    int      rejectedOutputCount_   = 0;
+    int      cancelledGenerationCount_ = 0;
+    int      maxGenerationRetries_ = 3;
+    float    frameTimeBudgetMs_ = 0.f;
+    uint64_t frameStartedNs_    = 0;
+    int                                            refreshWorkBudget_        = 0;
+    uint64_t                                       sourceRevision_           = 0;
+    uint64_t                                       committedRefreshRevision_ = 0;
+    std::optional<RefreshPlan>                     refreshPlan_;
+    bool     frustumCulling_    = false;
+    float    frustumHalfAngle_  = 60.f;
+    float    frustumBehindRadius_ = 0.f;
+    std::vector<Level> levels_;
+    std::unordered_map<std::string, Source> sources_;
+    std::vector<std::string> sourceOrder_;
+    std::unordered_map<CellKey, Cell, CellKeyHash> cells_;
+    std::deque<CellKey>                            generateQueue_;
+    std::deque<CellKey>                            cleanupQueue_;
+    int                                            generatingCount_ = 0;
+    int                                            activeCellCount_ = 0;
+    uint64_t             nextTicket_ = 0;
+};
+
+}  // namespace eve::procgen

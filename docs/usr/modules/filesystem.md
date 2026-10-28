@@ -1,5 +1,7 @@
 # 文件系统与热重载模块
 
+[English](../../en/usr/modules/filesystem.md)
+
 **脚本入口：** `eve.Filesystem()`
 
 通过统一虚拟文件系统读写、枚举、挂载并监视游戏资源。
@@ -27,7 +29,7 @@ fs.watch("config/game.json");
 
 ### 热更新配置
 
-对配置文件调用 `fs.watch(path)`，在更新阶段轮询 `pollWatch()`；返回变化后读取 `getLastWatchPath()` 并重新解析。资源对象可登记到 `hot`，但热更新回调中只替换成功加载的新对象，失败时保留旧对象。
+对配置文件调用 `fs.watch(path)`，在更新阶段轮询 `pollWatch()`；返回变化后读取 `getLastWatchPath()` 并重新解析。用 `hot.watchTree(root)` 递归监视内容目录时，若运行期间收到新建目录事件，再调用 `hot.watchNewDirectory(path)`，它会为该目录及其当前子目录补注册监视。`root` 可以是 VFS 路径、`.`、含 `..` 的相对路径，或绝对 OS 目录；`..` 按真实工作目录解析，不依赖 PhysFS。`config.hotReloadWatch`（字符串或字符串数组，默认 `["."]`）决定启动时监视哪些根。资源对象可登记到 `hot`，但热更新回调中只替换成功加载的新对象，失败时保留旧对象。
 
 ### 远程热更新（`eve dev` + 全平台）
 
@@ -57,10 +59,14 @@ fs.watch("config/game.json");
 - `append()`、`areSymlinksEnabled()`、`bind()`、`createDirectory()`、`getAppdataDirectory()`、`getCRequirePath()`、`getDirectoryItems()`、`getExecutablePath()`
 - `getIdentity()`、`getLastWatchPath()`、`getLastWatchRealPath()`、`getName()`、`getRealDirectory()`、`getRequirePath()`、`getSaveDirectory()`、`getSource()`
 - `getSourceBaseDirectory()`、`getUserDirectory()`、`getWatchCount()`、`getWorkingDirectory()`、`isAndroidSaveExternal()`、`isFused()`、`isRealDirectory()`、`newFile()`
-- `newFileData()`、`pollWatch()`、`read()`、`remove()`、`setAndroidSaveExternal()`、`setFused()`、`setIdentity()`、`setSource()`
-- `setSymlinksEnabled()`、`setupWriteDirectory()`、`tryReload()`、`unbind()`、`unwatch()`、`unwatchAll()`、`watch()`、`watchTree()`
+- `newFileData()`、`pollWatch()`、`read()`、`readText()`、`remove()`、`setAndroidSaveExternal()`、`setFused()`、`setIdentity()`、`setSource()`
+- `setSymlinksEnabled()`、`setupWriteDirectory()`、`tryReload()`、`unbind()`、`unwatch()`、`unwatchAll()`、`watch()`、`watchTree()`、`watchNewDirectory()`
 - `startRemoteSync()`、`stopRemoteSync()`、`isRemoteSyncing()`、`remoteSyncStatus()`、`pollRemoteChange()`、`setRemoteHotDir()`
-- `write()`
+- `write()`、`writeText()`、`writeTextAtomic()`、`mountExternalReadOnly()`
+
+玩家存档应使用 `writeTextAtomic(relativePath, text)`：原生平台先写同目录临时文件并刷新，
+再原子替换目标，写入阶段失败时保留旧文件。路径必须位于配置的保存目录内且不能包含父级穿越。
+WebGPU 当前无法提供同等级替换保证，会明确返回失败；普通缓存或可重建输出仍可使用 `writeText()`。
 
 ## 使用要点
 
@@ -70,3 +76,17 @@ fs.watch("config/game.json");
 
 **源码：** [`src/modules/filesystem/`](../../../src/modules/filesystem/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `filesystem`。
+
+## 不可变文件准备
+
+`filesystem.requestPreparedFile(path)` 返回结构化 Result，提交 CPU 读取；需要已初始化的 filesystem
+和 thread 资源执行器。重复请求使用 ResourceManager 的同一缓存键。C++ `readPreparedFile(path, limit)`
+等待已有任务或同步加载，返回共享只读 FileData；缓存卸载/重载不使已持有的快照失效。
+单文件上限 1 GiB，调用者的更小 limit 额外检查；空路径和保留的 `?` 后缀被拒绝。
+提交及同步读取在游戏线程，工作线程不访问 VM/GPU；文件系统销毁前必须排空任务。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](filesystem/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+`getName()` 返回模块名称，适合诊断日志；它不代表所管理资源的标识。

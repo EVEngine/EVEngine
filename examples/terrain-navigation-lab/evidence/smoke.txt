@@ -1,0 +1,4 @@
+Smoke: 1 example(s), alive window 15s, minimum 2s, binary /workspace/EVEngine/build/cloud-minimal/src/engine/eve
+PASS  terrain-navigation-lab  (alive through the 15s window)
+
+Summary: 1 passed, 0 failed (each example must stay alive >= 2s with no error markers)

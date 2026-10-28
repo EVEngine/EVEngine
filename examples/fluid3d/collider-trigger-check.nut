@@ -1,0 +1,21 @@
+local definition = checked(fluids.volumeDefaults());
+definition.settings.gravity = [0.0, 0.0, 0.0];
+definition.particles = [];
+local localSolver = checked(fluids.newVolumeSimulator(definition));
+local particle = checked(fluids.volumeEmissionDefaults()).description.prototype;
+particle.position = [0.2, 0.5, 0.0];
+checked(localSolver.emit([particle]));
+local trigger = checked(fluids.volumeColliderDefaults());
+trigger.label = 81;
+trigger.center = [0.0, 0.5, 0.0];
+trigger.radius = 0.5;
+trigger.isTrigger = true;
+checked(localSolver.setColliders([trigger]));
+checked(localSolver.step(1.0 / 120.0, 1));
+local contacts = checked(localSolver.contacts());
+local state = checked(localSolver.snapshot());
+if (contacts.len() != 1) throw "trigger contact count: " + contacts.len();
+if (contacts[0].colliderLabel != 81) throw "trigger contact label mismatch";
+if (abs(state.particles[0].position[0] - 0.2) > 0.000001)
+    throw "trigger enforced collision projection";
+::colliderTriggerPass <- true;

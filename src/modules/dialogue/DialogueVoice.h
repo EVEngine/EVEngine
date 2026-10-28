@@ -1,0 +1,78 @@
+#pragma once
+#include "common/Export.h"
+
+
+#include "common/Module.h"
+
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+namespace eve::audio {
+class Source;
+}
+
+namespace eve::dialogue {
+
+/** @brief Localized voice assets, duration-based advance, and amplitude lip sync. */
+class EVENGINE_API_ORCHESTRATION DialogueVoice : public Module {
+public:
+    Module_REG(DialogueVoice);
+    /** @brief Dialogue voice. */
+    ~DialogueVoice() override;
+
+    /** @brief Register clip metadata; envelope is comma-separated 0..1 amplitudes. */
+    bool registerClip(const std::string& lineId, const std::string& locale, float duration,
+                      const std::string& envelope);
+    /** @brief Bind a playable Audio Source; the caller retains source ownership. */
+    bool bindSource(const std::string& lineId, const std::string& locale, audio::Source* source);
+    /** @brief True when clip. */
+    bool hasClip(const std::string& lineId, const std::string& locale) const;
+    /** @brief Clears . */
+    void clear();
+
+    /** @brief Play. */
+    bool play(const std::string& lineId, const std::string& locale);
+    /** @brief Stops . */
+    void stop();
+    /** @brief Updates . */
+    void update(float dt);
+    /** @brief True when playing. */
+    bool isPlaying() const;
+    /** @brief Returns the time. */
+    float getTime() const;
+    /** @brief Returns the duration. */
+    float getDuration() const;
+    /** @brief Returns the amplitude. */
+    float getAmplitude() const;
+    /** @brief Should auto advance. */
+    bool shouldAutoAdvance() const;
+    /** @brief Returns the current line id. */
+    std::string getCurrentLineId() const { return currentLineId_; }
+    /** @brief Sets the envelope rate. */
+    void setEnvelopeRate(float samplesPerSecond);
+    /** @brief Returns the envelope rate. */
+    float getEnvelopeRate() const { return envelopeRate_; }
+
+private:
+    struct Clip {
+        std::string lineId;
+        std::string locale;
+        float duration = 0.f;
+        std::vector<float> envelope;
+        audio::Source* source = nullptr;
+    };
+
+    static std::string key(const std::string& lineId, const std::string& locale);
+    Clip* resolve(const std::string& lineId, const std::string& locale);
+    const Clip* resolve(const std::string& lineId, const std::string& locale) const;
+
+    std::unordered_map<std::string, Clip> clips_;
+    Clip* current_ = nullptr;
+    std::string currentLineId_;
+    float elapsed_ = 0.f;
+    float envelopeRate_ = 30.f;
+    bool simulatedPlaying_ = false;
+};
+
+}  // namespace eve::dialogue

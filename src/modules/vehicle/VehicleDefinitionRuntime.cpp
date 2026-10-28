@@ -1,0 +1,865 @@
+#include "vehicle/VehicleDefinitionRuntime.h"
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <limits>
+#include <set>
+#include <stdexcept>
+#include <unordered_map>
+#include <utility>
+#include "common/Value.h"
+#include "common/ValueRead.h"
+#include "orders/CommandQueue.h"
+#include "vehicle/Vehicle.h"
+#include "vehicle/VehicleEffects.h"
+#include "vehicle/VehicleOrderQueueAdapter.h"
+
+// VehicleDefinitionRuntime.cpp
+namespace eve::vehicle {
+namespace {
+
+eve::LogicalId vehicleSchema() {
+    static const eve::LogicalId value = [] {
+        const auto parsed = eve::LogicalId::parse("vehicle:runtime");
+        if (!parsed) throw std::logic_error("invalid built-in vehicle snapshot schema");
+        return *parsed;
+    }();
+    return value;
+}
+
+eve::Result<eve::definition::DefinitionHandle> currentHandle(eve::definitions::DefinitionRegistry& registry,
+                                                             const eve::DefinitionRef&             reference) {
+    const auto& logical = reference.id();
+    return registry.handle(std::string(logical.namespaceName()), std::string(logical.name()));
+}
+
+const eve::Value* field(const eve::Value::Object& object, std::string_view name) {
+    const auto it = object.find(std::string(name));
+    return it == object.end() ? nullptr : &it->second;
+}
+
+bool readString(const eve::Value::Object& object, std::string_view name, std::string& result, bool required = false) {
+    if (!field(object, name)) return !required;
+    auto parsed = required ? eve::readNonEmptyStringMember(object, name) : eve::readStringMember(object, name);
+    if (!parsed) return false;
+    result = std::move(parsed.value());
+    return true;
+}
+
+bool readNumber(const eve::Value::Object& object, std::string_view name, float& result, float fallback) {
+    const auto* value = field(object, name);
+    if (value == nullptr) {
+        result = fallback;
+        return true;
+    }
+    double number = 0.0;
+    if (const auto* real = value->getIf<double>())
+        number = *real;
+    else if (const auto* integer = value->getIf<std::int64_t>())
+        number = static_cast<double>(*integer);
+    else
+        return false;
+    if (!std::isfinite(number) || number < 0.0 || number > std::numeric_limits<float>::max()) return false;
+    result = static_cast<float>(number);
+    return true;
+}
+
+bool readSignedNumber(const eve::Value::Object& object, std::string_view name, float& result, float fallback) {
+    const auto* value = field(object, name);
+    if (!value) {
+        result = fallback;
+        return true;
+    }
+    auto parsed = eve::readFiniteFloatValue(*value);
+    if (!parsed) return false;
+    result = parsed.value();
+    return true;
+}
+
+bool readBool(const eve::Value::Object& object, std::string_view name, bool& result, bool fallback) {
+    const auto* value = field(object, name);
+    if (!value) {
+        result = fallback;
+        return true;
+    }
+    auto parsed = eve::readBoolValue(*value);
+    if (!parsed) return false;
+    result = parsed.value();
+    return true;
+}
+
+}  // namespace
+
+eve::Result<VehicleDefinition> parseVehicleDefinition(const eve::definitions::Definition& source) {
+    auto parsed = eve::Value::fromJson(source.json);
+    if (!parsed) return eve::Result<VehicleDefinition>::failure(parsed.status());
+    const auto* object = parsed.value().getIf<eve::Value::Object>();
+    if (object == nullptr)
+        return eve::Result<VehicleDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle definition must be an object", "json",
+                                   {}, "vehicle.definition_runtime"));
+
+    VehicleDefinition result;
+    result.id = source.id;
+    if (!readString(*object, "category", result.category) || !readString(*object, "mobility", result.mobility))
+        return eve::Result<VehicleDefinition>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "vehicle category and mobility must be strings", "definition", {},
+            "vehicle.definition_runtime"));
+    if (!readNumber(*object, "maxSpeed", result.maxSpeed, result.maxSpeed) ||
+        !readNumber(*object, "accel", result.accel, result.accel) ||
+        !readNumber(*object, "turnRate", result.turnRate, result.turnRate) ||
+        !readNumber(*object, "radius", result.radius, result.radius) ||
+        !readNumber(*object, "maxHealth", result.maxHealth, result.maxHealth) || result.radius <= 0.f ||
+        result.maxHealth < 0.f)
+        return eve::Result<VehicleDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle numeric definition field is invalid",
+                                   "definition", {}, "vehicle.definition_runtime"));
+
+    if (const auto* physics = field(*object, "physics")) {
+        const auto* physicsObject = physics->getIf<eve::Value::Object>();
+        if (physicsObject == nullptr)
+            return eve::Result<VehicleDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle physics must be an object",
+                                       "physics", {}, "vehicle.definition_runtime"));
+        if (!readNumber(*physicsObject, "maxSpeed", result.maxSpeed, result.maxSpeed) ||
+            !readNumber(*physicsObject, "accel", result.accel, result.accel) ||
+            !readNumber(*physicsObject, "turnRate", result.turnRate, result.turnRate) ||
+            !readNumber(*physicsObject, "radius", result.radius, result.radius))
+            return eve::Result<VehicleDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle physics numeric field is invalid",
+                                       "physics", {}, "vehicle.definition_runtime"));
+    }
+
+    if (const auto* zones = field(*object, "armorZones")) {
+        const auto* array = zones->getIf<eve::Value::Array>();
+        if (array == nullptr)
+            return eve::Result<VehicleDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "armorZones must be an array",
+                                       "armorZones", {}, "vehicle.definition_runtime"));
+        for (std::size_t index = 0; index < array->size(); ++index) {
+            const auto* item = (*array)[index].getIf<eve::Value::Object>();
+            if (item == nullptr)
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "armor zone must be an object",
+                                           "armorZones", {}, "vehicle.definition_runtime"));
+            ArmorZone zone;
+            if (!readString(*item, "name", zone.name) || !readString(*item, "node", zone.node) ||
+                !readNumber(*item, "mult", zone.mult, zone.mult) || zone.name.empty())
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "armor zone fields are invalid",
+                                           "armorZones", {}, "vehicle.definition_runtime"));
+            result.armorZones.push_back(std::move(zone));
+        }
+    }
+
+    if (const auto* mounts = field(*object, "mounts")) {
+        const auto* array = mounts->getIf<eve::Value::Array>();
+        if (array == nullptr)
+            return eve::Result<VehicleDefinition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                  "mounts must be an array", "mounts",
+                                                                                  {}, "vehicle.definition_runtime"));
+        for (std::size_t index = 0; index < array->size(); ++index) {
+            const auto* item = (*array)[index].getIf<eve::Value::Object>();
+            if (item == nullptr)
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "mount must be an object", "mounts",
+                                           {}, "vehicle.definition_runtime"));
+            MountDef mount;
+            mount.name = "mount" + std::to_string(index);
+            if (!readString(*item, "name", mount.name) || !readString(*item, "weapon", mount.weapon) ||
+                !readString(*item, "type", mount.type) || !readString(*item, "aimMode", mount.aimMode) ||
+                !readSignedNumber(*item, "yawMin", mount.yawMin, mount.yawMin) ||
+                !readSignedNumber(*item, "yawMax", mount.yawMax, mount.yawMax) ||
+                !readSignedNumber(*item, "pitchMin", mount.pitchMin, mount.pitchMin) ||
+                !readSignedNumber(*item, "pitchMax", mount.pitchMax, mount.pitchMax) ||
+                !readNumber(*item, "rotSpeed", mount.rotSpeed, mount.rotSpeed) ||
+                !readNumber(*item, "firingArc", mount.firingArc, mount.firingArc))
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "mount definition field is invalid",
+                                           "mounts", {}, "vehicle.definition_runtime"));
+            if (const auto* limits = field(*item, "limits")) {
+                const auto* values = limits->getIf<eve::Value::Array>();
+                if (values == nullptr || values->size() < 4)
+                    return eve::Result<VehicleDefinition>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "mount limits must contain four numbers", "mounts.limits",
+                        {}, "vehicle.definition_runtime"));
+                float* output[] = {&mount.yawMin, &mount.yawMax, &mount.pitchMin, &mount.pitchMax};
+                for (std::size_t limit = 0; limit < 4; ++limit) {
+                    const auto*  real    = (*values)[limit].getIf<double>();
+                    const auto*  integer = (*values)[limit].getIf<std::int64_t>();
+                    const double number  = real      ? *real
+                                           : integer ? static_cast<double>(*integer)
+                                                     : std::numeric_limits<double>::quiet_NaN();
+                    if (!std::isfinite(number) || number < -std::numeric_limits<float>::max() ||
+                        number > std::numeric_limits<float>::max())
+                        return eve::Result<VehicleDefinition>::failure(
+                            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "mount limit is not finite",
+                                                   "mounts.limits", {}, "vehicle.definition_runtime"));
+                    *output[limit] = static_cast<float>(number);
+                }
+            }
+            result.mounts.push_back(std::move(mount));
+        }
+    }
+
+    if (const auto* suspension = field(*object, "suspension")) {
+        const auto* value = suspension->getIf<eve::Value::Object>();
+        if (value == nullptr)
+            return eve::Result<VehicleDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "suspension must be an object",
+                                       "suspension", {}, "vehicle.definition_runtime"));
+        if (!readNumber(*value, "maxTravel", result.suspension.maxTravel, result.suspension.maxTravel) ||
+            !readNumber(*value, "driveForce", result.suspension.driveForce, result.suspension.driveForce) ||
+            !readNumber(*value, "lateralGrip", result.suspension.lateralGrip, result.suspension.lateralGrip) ||
+            !readNumber(*value, "wheelInertia", result.suspension.wheelInertia, result.suspension.wheelInertia) ||
+            !readNumber(*value, "tireFriction", result.suspension.tireFriction, result.suspension.tireFriction) ||
+            !readNumber(*value, "longitudinalStiffness", result.suspension.longitudinalStiffness,
+                        result.suspension.longitudinalStiffness) ||
+            !readNumber(*value, "corneringStiffness", result.suspension.corneringStiffness,
+                        result.suspension.corneringStiffness) ||
+            !readNumber(*value, "rollingResistance", result.suspension.rollingResistance,
+                        result.suspension.rollingResistance) ||
+            !readNumber(*value, "brakeTorque", result.suspension.brakeTorque, result.suspension.brakeTorque) ||
+            !readNumber(*value, "maxSteerAngle", result.suspension.maxSteerAngle, result.suspension.maxSteerAngle) ||
+            !readNumber(*value, "supportAcceleration2D", result.suspension.supportAcceleration2D,
+                        result.suspension.supportAcceleration2D) ||
+            result.suspension.wheelInertia <= 0 || result.suspension.maxSteerAngle > 1.4f)
+            return eve::Result<VehicleDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "suspension numeric field is invalid",
+                                       "suspension", {}, "vehicle.definition_runtime"));
+        if (const auto* wheels = field(*value, "wheels")) {
+            const auto* array = wheels->getIf<eve::Value::Array>();
+            if (array == nullptr)
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "suspension wheels must be an array",
+                                           "suspension.wheels", {}, "vehicle.definition_runtime"));
+            for (std::size_t index = 0; index < array->size(); ++index) {
+                const auto* item = (*array)[index].getIf<eve::Value::Object>();
+                if (item == nullptr)
+                    return eve::Result<VehicleDefinition>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "wheel must be an object",
+                                               "suspension.wheels", {}, "vehicle.definition_runtime"));
+                SuspensionWheel wheel;
+                if (!readSignedNumber(*item, "x", wheel.x, wheel.x) ||
+                    !readSignedNumber(*item, "y", wheel.y, wheel.y) ||
+                    !readSignedNumber(*item, "z", wheel.z, wheel.z) ||
+                    !readNumber(*item, "radius", wheel.radius, wheel.radius) ||
+                    !readNumber(*item, "rest", wheel.restLength, wheel.restLength) ||
+                    !readNumber(*item, "stiffness", wheel.stiffness, wheel.stiffness) ||
+                    !readNumber(*item, "damping", wheel.damping, wheel.damping) ||
+                    !readBool(*item, "drive", wheel.drive, wheel.drive) ||
+                    !readBool(*item, "steer", wheel.steer, wheel.steer))
+                    return eve::Result<VehicleDefinition>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "wheel definition field is invalid", "suspension.wheels",
+                        {}, "vehicle.definition_runtime"));
+                result.suspension.wheels.push_back(wheel);
+            }
+        }
+    }
+
+    if (const auto* seats = field(*object, "seats")) {
+        const auto* array = seats->getIf<eve::Value::Array>();
+        if (array == nullptr)
+            return eve::Result<VehicleDefinition>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                                  "seats must be an array", "seats", {},
+                                                                                  "vehicle.definition_runtime"));
+        for (std::size_t index = 0; index < array->size(); ++index) {
+            const auto* item = (*array)[index].getIf<eve::Value::Object>();
+            if (item == nullptr)
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "seat must be an object", "seats", {},
+                                           "vehicle.definition_runtime"));
+            SeatDef seat;
+            seat.name = "passenger" + std::to_string(index);
+            if (!readString(*item, "name", seat.name) || !readString(*item, "driver", seat.driver) ||
+                !readString(*item, "cameraMode", seat.cameraMode))
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "seat definition field is invalid",
+                                           "seats", {}, "vehicle.definition_runtime"));
+            if (const auto* mount = field(*item, "mountIndex")) {
+                const auto* integer = mount->getIf<std::int64_t>();
+                if (integer == nullptr || *integer < std::numeric_limits<int>::min() ||
+                    *integer > std::numeric_limits<int>::max())
+                    return eve::Result<VehicleDefinition>::failure(
+                        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "seat mountIndex is invalid",
+                                               "seats.mountIndex", {}, "vehicle.definition_runtime"));
+                seat.mountIndex = static_cast<int>(*integer);
+            }
+            result.seats.push_back(std::move(seat));
+        }
+    }
+    if (const auto* tags = field(*object, "tags")) {
+        const auto* array = tags->getIf<eve::Value::Array>();
+        if (array == nullptr)
+            return eve::Result<VehicleDefinition>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle tags must be an array", "tags",
+                                       {}, "vehicle.definition_runtime"));
+        for (const auto& item : *array) {
+            const auto* text = item.getIf<std::string>();
+            if (text == nullptr || text->empty())
+                return eve::Result<VehicleDefinition>::failure(
+                    eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle tag is invalid", "tags", {},
+                                           "vehicle.definition_runtime"));
+            result.tags.push_back(*text);
+        }
+    }
+    return eve::Result<VehicleDefinition>::success(std::move(result));
+}
+
+namespace {
+
+eve::Value encodeState(const VehicleRuntimeState& state) {
+    return eve::Value(eve::Value::Object{
+        {"destroyed", eve::Value(state.destroyed)},
+        {"faction", eve::Value(state.faction)},
+        {"heading", eve::Value(static_cast<double>(state.heading))},
+        {"health", eve::Value(static_cast<double>(state.health))},
+        {"speed", eve::Value(static_cast<double>(state.speed))},
+        {"x", eve::Value(static_cast<double>(state.x))},
+        {"y", eve::Value(static_cast<double>(state.y))},
+    });
+}
+
+eve::Result<VehicleRuntimeState> decodeState(const eve::Value& value) {
+    const auto* object = value.getIf<eve::Value::Object>();
+    if (object == nullptr)
+        return eve::Result<VehicleRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle runtime state must be an object",
+                                   "state", {}, "vehicle.definition_runtime"));
+    static const std::set<std::string> fields = {"destroyed", "faction", "heading", "health", "speed", "x", "y"};
+    for (const auto& [name, unused] : *object) {
+        (void)unused;
+        if (!fields.contains(name))
+            return eve::Result<VehicleRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "unknown vehicle runtime state field",
+                                       "state." + name, {}, "vehicle.definition_runtime"));
+    }
+    for (const auto& name : fields)
+        if (!object->contains(name))
+            return eve::Result<VehicleRuntimeState>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle runtime state is missing a field",
+                                       "state." + name, {}, "vehicle.definition_runtime"));
+    auto number = [&](std::string_view name, float& output, bool allowNegative) -> bool {
+        const auto* real = object->at(std::string(name)).getIf<double>();
+        if (real == nullptr || !std::isfinite(*real) || (!allowNegative && *real < 0.0) ||
+            *real < -std::numeric_limits<float>::max() || *real > std::numeric_limits<float>::max())
+            return false;
+        output = static_cast<float>(*real);
+        return true;
+    };
+    const auto*         destroyed = object->at("destroyed").getIf<bool>();
+    const auto*         faction   = object->at("faction").getIf<std::string>();
+    VehicleRuntimeState result;
+    if (destroyed == nullptr || faction == nullptr || !number("heading", result.heading, false) ||
+        !number("health", result.health, false) || !number("speed", result.speed, false) ||
+        !number("x", result.x, true) || !number("y", result.y, true))
+        return eve::Result<VehicleRuntimeState>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle runtime state field is invalid",
+                                   "state", {}, "vehicle.definition_runtime"));
+    result.destroyed = *destroyed;
+    result.faction   = *faction;
+    return eve::Result<VehicleRuntimeState>::success(std::move(result));
+}
+
+}  // namespace
+
+eve::Result<VehicleDefinitionRuntime> VehicleDefinitionRuntime::create(eve::definitions::DefinitionRegistry& registry,
+                                                                       eve::DefinitionRef                    definition,
+                                                                       eve::PersistentId                     instanceId,
+                                                                       eve::definition::ReloadPolicy         policy) {
+    if (!definition.id().isValid() || definition.id().namespaceName() != "vehicle")
+        return eve::Result<VehicleDefinitionRuntime>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "vehicle definition reference must use vehicle namespace",
+            "definition", {}, "vehicle.definition_runtime"));
+    auto handle = currentHandle(registry, definition);
+    if (!handle) return eve::Result<VehicleDefinitionRuntime>::failure(handle.status());
+    auto resolved = registry.resolveHandle(handle.value());
+    if (!resolved) return eve::Result<VehicleDefinitionRuntime>::failure(resolved.status());
+    auto typed = parseVehicleDefinition(resolved.value().get());
+    if (!typed) return eve::Result<VehicleDefinitionRuntime>::failure(typed.status());
+    VehicleRuntimeState defaults;
+    defaults.health = typed.value().maxHealth;
+    auto runtime    = eve::definition::RuntimeInstance<VehicleRuntimeState>::create(instanceId, std::move(definition),
+                                                                                    handle.value().generation, defaults);
+    if (!runtime) return eve::Result<VehicleDefinitionRuntime>::failure(runtime.status());
+    return eve::Result<VehicleDefinitionRuntime>::success(
+        VehicleDefinitionRuntime(registry, std::move(runtime).takeValue(), policy));
+}
+
+eve::Result<VehicleDefinitionRuntime> VehicleDefinitionRuntime::create(eve::definitions::DefinitionRegistry& registry,
+                                                                       std::string_view              definitionId,
+                                                                       eve::PersistentId             instanceId,
+                                                                       eve::definition::ReloadPolicy policy) {
+    auto logical = eve::LogicalId::fromParts("vehicle", definitionId);
+    if (!logical)
+        return eve::Result<VehicleDefinitionRuntime>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle id is not a valid logical name",
+                                   "definitionId", {}, "vehicle.definition_runtime"));
+    auto reference = eve::DefinitionRef::fromId(*logical);
+    if (!reference) return eve::Result<VehicleDefinitionRuntime>::failure(reference.status());
+    return create(registry, std::move(reference).takeValue(), instanceId, policy);
+}
+
+eve::Result<VehicleDefinitionRuntime> VehicleDefinitionRuntime::create(Vehicle& module, std::string_view definitionId,
+                                                                       eve::PersistentId             instanceId,
+                                                                       eve::definition::ReloadPolicy policy) {
+    return create(module.definitionRegistry(), definitionId, instanceId, policy);
+}
+
+const eve::definition::InstanceIdentity& VehicleDefinitionRuntime::identity() const noexcept {
+    return runtime_.identity();
+}
+
+const VehicleRuntimeState& VehicleDefinitionRuntime::state() const noexcept { return runtime_.state(); }
+
+VehicleRuntimeState& VehicleDefinitionRuntime::state() noexcept { return runtime_.state(); }
+
+eve::definition::DefinitionHandle VehicleDefinitionRuntime::definitionHandle() const noexcept {
+    return runtime_.identity().definitionHandle();
+}
+
+eve::Result<VehicleDefinition> VehicleDefinitionRuntime::definition() const {
+    if (registry_ == nullptr)
+        return eve::Result<VehicleDefinition>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle definition registry is not bound",
+                                   "registry", {}, "vehicle.definition_runtime"));
+    auto resolved = registry_->resolveHandle(definitionHandle());
+    if (!resolved) return eve::Result<VehicleDefinition>::failure(resolved.status());
+    return parseVehicleDefinition(resolved.value().get());
+}
+
+void VehicleDefinitionRuntime::setActive(bool active) noexcept { runtime_.setActive(active); }
+
+bool VehicleDefinitionRuntime::isActive() const noexcept { return runtime_.isActive(); }
+
+eve::Result<void> VehicleDefinitionRuntime::applyTo(VehicleEntity* entity) const {
+    if (entity == nullptr)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "vehicle runtime cannot project to a null VehicleEntity", "entity",
+            {}, "vehicle.definition_runtime"));
+    auto typed = definition();
+    if (!typed) return eve::Result<void>::failure(typed.status());
+    try {
+        auto definitionOwner = std::make_shared<const VehicleDefinition>(typed.value());
+        auto identity        = *entity->identity();
+        auto definition      = *entity->definition();
+        auto binding         = *entity->definitionBinding();
+        auto motion          = *entity->motion();
+        auto health          = *entity->health();
+        auto flags           = *entity->stateFlags();
+
+        identity.id          = this->identity().instanceId.format();
+        identity.defId       = this->identity().definition.id().name();
+        identity.faction     = state().faction;
+        definition.owned     = std::move(definitionOwner);
+        definition.def       = definition.owned.get();
+        binding.identity     = this->identity();
+        binding.reloadPolicy = policy_;
+        binding.active       = isActive();
+        motion.x             = state().x;
+        motion.y             = state().y;
+        motion.heading       = state().heading;
+        motion.speed         = state().speed;
+        motion.arrived       = false;
+        health.maxHp         = typed.value().maxHealth;
+        health.hp            = std::clamp(state().health, 0.f, health.maxHp);
+        flags.destroyed      = state().destroyed;
+
+        using std::swap;
+        swap(*entity->identity(), identity);
+        swap(*entity->definition(), definition);
+        swap(*entity->definitionBinding(), binding);
+        swap(*entity->motion(), motion);
+        swap(*entity->health(), health);
+        swap(*entity->stateFlags(), flags);
+        return eve::Result<void>::success();
+    } catch (const std::exception&) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                                                 "vehicle runtime projection allocation failed",
+                                                                 "entity", {}, "vehicle.definition_runtime"));
+    }
+}
+
+eve::Result<eve::definition::ReloadOutcome> VehicleDefinitionRuntime::reload(eve::definition::ReloadPolicy policy) {
+    if (registry_ == nullptr)
+        return eve::Result<eve::definition::ReloadOutcome>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "vehicle definition registry is not bound",
+                                   "registry", {}, "vehicle.definition_runtime"));
+    auto next = currentHandle(*registry_, identity().definition);
+    if (!next) return eve::Result<eve::definition::ReloadOutcome>::failure(next.status());
+    auto resolved = registry_->resolveHandle(next.value());
+    if (!resolved) return eve::Result<eve::definition::ReloadOutcome>::failure(resolved.status());
+    auto typed = parseVehicleDefinition(resolved.value().get());
+    if (!typed) return eve::Result<eve::definition::ReloadOutcome>::failure(typed.status());
+    VehicleRuntimeState defaults;
+    defaults.health       = typed.value().maxHealth;
+    const float maxHealth = typed.value().maxHealth;
+    auto        rebuild   = [maxHealth](const VehicleRuntimeState& oldState, const eve::definition::InstanceIdentity&,
+                               const eve::definition::DefinitionHandle&) {
+        VehicleRuntimeState rebuilt = oldState;
+        rebuilt.health              = std::clamp(oldState.health, 0.f, maxHealth);
+        return eve::Result<VehicleRuntimeState>::success(std::move(rebuilt));
+    };
+    auto result = runtime_.reload(next.value(), policy, defaults, std::move(rebuild));
+    if (result.ok()) policy_ = policy;
+    return result;
+}
+
+eve::Result<eve::SnapshotEnvelope> VehicleDefinitionRuntime::snapshot(
+    eve::Revision revision, eve::SimulationTick tick, const eve::SnapshotHashProvider& hashProvider) const {
+    const eve::definition::RuntimeStateEncoder<VehicleRuntimeState> encoder = [](const VehicleRuntimeState& value) {
+        return eve::Result<eve::Value>::success(encodeState(value));
+    };
+    return eve::definition::snapshotRuntimeInstance(runtime_, "vehicle.runtime", vehicleSchema(), eve::SchemaVersion(1),
+                                                    revision, tick, hashProvider, encoder);
+}
+
+eve::Result<std::string> VehicleDefinitionRuntime::snapshotJson(eve::Revision revision, eve::SimulationTick tick,
+                                                                const eve::SnapshotHashProvider& hashProvider) const {
+    auto result = snapshot(revision, tick, hashProvider);
+    if (!result) return eve::Result<std::string>::failure(result.status());
+    return std::move(result).andThen(
+        [](eve::SnapshotEnvelope&& value) { return eve::serializeSnapshotEnvelope(value); });
+}
+
+eve::Result<void> VehicleDefinitionRuntime::restore(const eve::SnapshotEnvelope&     snapshotValue,
+                                                    const eve::SnapshotHashProvider& hashProvider) {
+    if (registry_ == nullptr)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "vehicle definition registry is not bound", "registry",
+                                                                 {}, "vehicle.definition_runtime"));
+    auto current = currentHandle(*registry_, identity().definition);
+    if (!current) return eve::Result<void>::failure(current.status());
+    if (current.value() != definitionHandle())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "vehicle snapshot cannot restore against a replaced definition",
+            "definitionGeneration", {}, "vehicle.definition_runtime"));
+    const eve::definition::RuntimeStateDecoder<VehicleRuntimeState> decoder = decodeState;
+    return eve::definition::restoreRuntimeInstance(runtime_, snapshotValue, "vehicle.runtime", vehicleSchema(),
+                                                   eve::SchemaVersion(1), hashProvider, decoder);
+}
+
+}  // namespace eve::vehicle
+
+// VehicleEffects.cpp
+namespace eve::vehicle {
+namespace {
+
+const char* kindTag(VehicleEffectKind kind) {
+    switch (kind) {
+        case VehicleEffectKind::Damage: return "vehicle:damage";
+        case VehicleEffectKind::Repair: return "vehicle:repair";
+        case VehicleEffectKind::Disable: return "vehicle:disable";
+    }
+    return "vehicle:unknown";
+}
+
+double zoneMultiplier(const VehicleEffectTarget& target, const std::vector<std::string>& tags) {
+    const auto has = [&tags](const std::string& tag) { return std::find(tags.begin(), tags.end(), tag) != tags.end(); };
+    if (has("vehicle:zone:front")) return target.frontArmorMultiplier;
+    if (has("vehicle:zone:rear")) return target.rearArmorMultiplier;
+    return target.sideArmorMultiplier;
+}
+
+}  // namespace
+
+eve::Result<void> VehicleEffectExecutor::validate(const VehicleEffectTarget& target) const {
+    if (!std::isfinite(target.hull) || !std::isfinite(target.maxHull) || target.maxHull <= 0.0 || target.hull < 0.0 ||
+        target.hull > target.maxHull || target.frontArmorMultiplier < 0.0 || target.sideArmorMultiplier < 0.0 ||
+        target.rearArmorMultiplier < 0.0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "vehicle effect target state is invalid", "target"));
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> VehicleEffectExecutor::applyImmediate(VehicleEffectTarget&           target,
+                                                        const effects::EffectInstance& effect) const {
+    auto valid = validate(target);
+    if (!valid) return valid;
+    if (effect.hasTag("vehicle:disable")) target.disabled = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<VehicleEffectUpdate> VehicleEffectExecutor::settle(VehicleEffectTarget&         target,
+                                                               effects::EffectUpdateSummary lifecycle) const {
+    auto valid = validate(target);
+    if (!valid) return eve::Result<VehicleEffectUpdate>::failure(valid.status());
+    VehicleEffectUpdate result;
+    result.lifecycle = std::move(lifecycle);
+    for (const auto& tick : result.lifecycle.periodicTicks) {
+        if (tick.stackCount == 0 || tick.magnitude < 0.0 || !std::isfinite(tick.magnitude))
+            return eve::Result<VehicleEffectUpdate>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "vehicle periodic effect value is invalid", "periodic"));
+        const double amount = tick.magnitude * static_cast<double>(tick.stackCount);
+        if (!std::isfinite(amount))
+            return eve::Result<VehicleEffectUpdate>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "vehicle periodic settlement overflows", "periodic"));
+        const auto has = [&tick](const char* tag) {
+            return std::find(tick.tags.begin(), tick.tags.end(), tag) != tick.tags.end();
+        };
+        if (has("vehicle:repair")) {
+            target.hull = std::min(target.maxHull, target.hull + amount);
+        } else if (has("vehicle:disable")) {
+            target.disabled = true;
+        } else {
+            const double damage = amount * zoneMultiplier(target, tick.tags);
+            if (!std::isfinite(damage))
+                return eve::Result<VehicleEffectUpdate>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "vehicle armor settlement overflows", "periodic"));
+            target.hull = std::max(0.0, target.hull - damage);
+            if (damage >= target.maxHull * 0.5) {
+                ++target.criticalHits;
+                ++result.criticalHits;
+            }
+        }
+        ++result.settled;
+    }
+    return eve::Result<VehicleEffectUpdate>::success(std::move(result), eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<effects::EffectHandle> VehicleEffectAdapter::apply(const VehicleEffectDefinition& definition,
+                                                               eve::SubjectRef                subject) {
+    if (definition.id.empty() || !subject.isValid() || definition.armorZone.empty())
+        return eve::Result<effects::EffectHandle>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "vehicle effect requires id, zone and valid subject", "effect"));
+    effects::EffectDefinition common;
+    common.id        = definition.id;
+    common.stackKey  = definition.id;
+    common.duration  = definition.duration;
+    common.period    = definition.period;
+    common.magnitude = definition.magnitude;
+    common.policy    = definition.policy;
+    common.tags      = definition.tags;
+    common.tags.push_back(kindTag(definition.kind));
+    common.tags.push_back("vehicle:zone:" + definition.armorZone);
+    auto valid = common.validate();
+    if (!valid) return eve::Result<effects::EffectHandle>::failure(valid.status());
+    auto candidate = container_.clone();
+    auto applied   = candidate.apply(common, subject.format(), definition.source);
+    if (!applied) return eve::Result<effects::EffectHandle>::failure(applied.status());
+    const std::string id       = std::move(applied).takeValue();
+    const auto*       instance = candidate.find(id);
+    if (!instance)
+        return eve::Result<effects::EffectHandle>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvariantViolation, "vehicle effect candidate disappeared", "effect"));
+    auto targetCandidate = target_;
+    auto immediate       = executor_.applyImmediate(targetCandidate, *instance);
+    if (!immediate) return eve::Result<effects::EffectHandle>::failure(immediate.status());
+    auto handle = candidate.handleFor(id);
+    if (!handle) return eve::Result<effects::EffectHandle>::failure(handle.status());
+    target_    = std::move(targetCandidate);
+    container_ = std::move(candidate);
+    return eve::Result<effects::EffectHandle>::success(std::move(handle).takeValue(),
+                                                       eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> VehicleEffectAdapter::remove(effects::EffectHandle handle) {
+    auto resolved = container_.resolve(handle);
+    if (!resolved) return eve::Result<void>::failure(resolved.status());
+    return container_.remove(handle.instanceId);
+}
+
+eve::Result<VehicleEffectUpdate> VehicleEffectAdapter::advance(const eve::SimulationStep& step) {
+    auto candidate = container_.clone();
+    auto lifecycle = effects::EffectExecutor{}.advance(candidate, step);
+    if (!lifecycle) return eve::Result<VehicleEffectUpdate>::failure(lifecycle.status());
+    auto targetCandidate = target_;
+    auto settled         = executor_.settle(targetCandidate, std::move(lifecycle).takeValue());
+    if (!settled) return settled;
+    auto result = std::move(settled).takeValue();
+    target_     = std::move(targetCandidate);
+    container_  = std::move(candidate);
+    return eve::Result<VehicleEffectUpdate>::success(std::move(result), eve::Status::success(eve::StatusCode::Applied));
+}
+
+VehicleEffectSnapshot VehicleEffectAdapter::snapshot() const { return {container_.snapshot(), target_}; }
+
+eve::Result<void> VehicleEffectAdapter::restore(const VehicleEffectSnapshot& snapshotValue) {
+    auto valid = executor_.validate(snapshotValue.target);
+    if (!valid) return valid;
+    auto restored = container_.restore(snapshotValue.effects);
+    if (!restored) return restored;
+    target_ = snapshotValue.target;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<const effects::EffectInstance*> VehicleEffectAdapter::resolve(effects::EffectHandle handle) const {
+    return container_.resolve(handle);
+}
+
+}  // namespace eve::vehicle
+
+// VehicleOrderQueueAdapter.cpp
+namespace eve::vehicle {
+
+namespace {}  // namespace
+
+struct VehicleOrderQueueAdapter::Impl {
+    orders::CommandQueue                          queue;
+    std::unordered_map<std::string, VehicleOrder> payloads;
+};
+
+void VehicleOrderQueueAdapter::pruneTerminalPayloads() {
+    for (auto it = impl_->payloads.begin(); it != impl_->payloads.end();) {
+        auto                 recordRef = impl_->queue.find(it->first);
+        const orders::Order* record    = recordRef ? &recordRef->get() : nullptr;
+        if (record == nullptr ||
+            (record->state != orders::OrderState::Queued && record->state != orders::OrderState::Active)) {
+            it = impl_->payloads.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+VehicleOrderQueueAdapter::VehicleOrderQueueAdapter() : impl_(std::make_unique<Impl>()) {}
+
+VehicleOrderQueueAdapter::~VehicleOrderQueueAdapter() = default;
+
+VehicleOrderQueueAdapter::VehicleOrderQueueAdapter(const VehicleOrderQueueAdapter& other)
+    : impl_(std::make_unique<Impl>(*other.impl_)) {}
+
+VehicleOrderQueueAdapter& VehicleOrderQueueAdapter::operator=(const VehicleOrderQueueAdapter& other) {
+    if (this != &other) *impl_ = *other.impl_;
+    return *this;
+}
+
+VehicleOrderQueueAdapter::VehicleOrderQueueAdapter(VehicleOrderQueueAdapter&&) noexcept = default;
+
+VehicleOrderQueueAdapter& VehicleOrderQueueAdapter::operator=(VehicleOrderQueueAdapter&&) noexcept = default;
+
+eve::Result<std::string> VehicleOrderQueueAdapter::append(const VehicleOrder& order, int priority,
+                                                          double timeoutSeconds) {
+    auto id = impl_->queue.append(vehicleOrderTypeName(order.type), priority, timeoutSeconds);
+    if (!id) return id;
+    const std::string key = std::move(id).takeValue();
+    impl_->payloads.emplace(key, order);
+    return eve::Result<std::string>::success(std::move(key), eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<std::string> VehicleOrderQueueAdapter::replace(const VehicleOrder& order, int priority,
+                                                           double timeoutSeconds) {
+    auto id = impl_->queue.replace(vehicleOrderTypeName(order.type), priority, timeoutSeconds);
+    if (!id) return id;
+    const std::string key = std::move(id).takeValue();
+    pruneTerminalPayloads();
+    impl_->payloads.emplace(key, order);
+    return eve::Result<std::string>::success(std::move(key), eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<std::string> VehicleOrderQueueAdapter::interrupt(const VehicleOrder& order, int priority,
+                                                             double timeoutSeconds) {
+    auto id = impl_->queue.interrupt(vehicleOrderTypeName(order.type), priority, timeoutSeconds);
+    if (!id) return id;
+    const std::string key = std::move(id).takeValue();
+    pruneTerminalPayloads();
+    impl_->payloads.emplace(key, order);
+    return eve::Result<std::string>::success(std::move(key), eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> VehicleOrderQueueAdapter::completeCurrent() {
+    auto           currentRef = impl_->queue.current();
+    orders::Order* current    = currentRef ? &currentRef->get() : nullptr;
+    if (current == nullptr)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "vehicle order queue has no active order", "order", {}, "vehicle.orders"));
+    auto completed = impl_->queue.complete(current->id);
+    if (completed) pruneTerminalPayloads();
+    return completed;
+}
+
+eve::Result<void> VehicleOrderQueueAdapter::failCurrent(const std::string& reason) {
+    auto           currentRef = impl_->queue.current();
+    orders::Order* current    = currentRef ? &currentRef->get() : nullptr;
+    if (current == nullptr)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "vehicle order queue has no active order", "order", {}, "vehicle.orders"));
+    auto failed = impl_->queue.fail(current->id, reason);
+    if (failed) pruneTerminalPayloads();
+    return failed;
+}
+
+eve::Result<void> VehicleOrderQueueAdapter::cancel(const std::string& id, const std::string& reason) {
+    auto cancelled = impl_->queue.cancel(id, reason);
+    if (cancelled) pruneTerminalPayloads();
+    return cancelled;
+}
+
+void VehicleOrderQueueAdapter::update(double dtSeconds) {
+    auto updated = impl_->queue.update(dtSeconds);
+    updated.ignore("VehicleOrderQueueAdapter exposes a legacy void update boundary");
+    pruneTerminalPayloads();
+}
+
+void VehicleOrderQueueAdapter::clear() {
+    impl_->queue.clear();
+    impl_->payloads.clear();
+}
+
+const VehicleOrder* VehicleOrderQueueAdapter::current() const {
+    auto                 recordRef = impl_->queue.current();
+    const orders::Order* record    = recordRef ? &recordRef->get() : nullptr;
+    if (record == nullptr) return nullptr;
+    const auto it = impl_->payloads.find(record->id);
+    return it == impl_->payloads.end() ? nullptr : &it->second;
+}
+
+int VehicleOrderQueueAdapter::activeOrQueuedCount() const {
+    int count = 0;
+    for (int i = 0; i < impl_->queue.orderCount(); ++i) {
+        auto                 recordRef = impl_->queue.orderAt(i);
+        const orders::Order* record    = recordRef ? &recordRef->get() : nullptr;
+        if (record != nullptr &&
+            (record->state == orders::OrderState::Queued || record->state == orders::OrderState::Active)) {
+            ++count;
+        }
+    }
+    return count;
+}
+
+void VehicleOrderQueueAdapter::syncCompatibility(VehicleEntity::Orders& legacy) const {
+    legacy.queue.clear();
+    legacy.current = -1;
+    for (int i = 0; i < impl_->queue.orderCount(); ++i) {
+        auto                 recordRef = impl_->queue.orderAt(i);
+        const orders::Order* record    = recordRef ? &recordRef->get() : nullptr;
+        if (record == nullptr ||
+            (record->state != orders::OrderState::Queued && record->state != orders::OrderState::Active)) {
+            continue;
+        }
+        const auto it = impl_->payloads.find(record->id);
+        if (it == impl_->payloads.end()) continue;
+        if (record->state == orders::OrderState::Active) legacy.current = static_cast<int>(legacy.queue.size());
+        legacy.queue.push_back(it->second);
+    }
+}
+
+VehicleEntity::Orders::Orders() : adapter(std::make_unique<VehicleOrderQueueAdapter>()) {}
+
+VehicleEntity::Orders::~Orders() = default;
+
+VehicleEntity::Orders::Orders(const Orders& other)
+    : queue(other.queue),
+      current(other.current),
+      adapter(other.adapter == nullptr ? std::make_unique<VehicleOrderQueueAdapter>()
+                                       : std::make_unique<VehicleOrderQueueAdapter>(*other.adapter)) {}
+
+VehicleEntity::Orders& VehicleEntity::Orders::operator=(const Orders& other) {
+    if (this == &other) return *this;
+    queue   = other.queue;
+    current = other.current;
+    if (other.adapter == nullptr) {
+        adapter = std::make_unique<VehicleOrderQueueAdapter>();
+    } else if (adapter == nullptr) {
+        adapter = std::make_unique<VehicleOrderQueueAdapter>(*other.adapter);
+    } else {
+        *adapter = *other.adapter;
+    }
+    return *this;
+}
+
+VehicleEntity::Orders::Orders(Orders&&) noexcept = default;
+
+VehicleEntity::Orders& VehicleEntity::Orders::operator=(Orders&&) noexcept = default;
+
+}  // namespace eve::vehicle

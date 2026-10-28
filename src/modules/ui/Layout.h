@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "ui/UIHost.h"
 
@@ -19,6 +21,7 @@ namespace eve::ui {
  */
 
 /** One flex item as seen by the arrange pass (already measured). */
+/** @brief FlexItemSpec public API. */
 struct FlexItemSpec {
     float basisMain = 0.f;        // measured content size on main axis
     float basisCross = 0.f;       // measured content size on cross axis
@@ -27,6 +30,9 @@ struct FlexItemSpec {
     float marginCrossBefore = 0.f;
     float marginCrossAfter = 0.f;
     float flexGrow = 0.f;
+    float flexShrink = 1.f;       // negative free space weight; 0 keeps basis fixed
+    float flexBasis = -1.f;       // >=0 overrides measured basis before min/max
+    float aspectRatio = 0.f;      // width / height; derives an automatic cross size
     bool isSpacer = false;        // default grow = 1
     bool absolute = false;        // excluded from flex flow
     float anchorMain = 0.f;       // 0..1 anchor point inside content box
@@ -46,6 +52,7 @@ struct FlexItemSpec {
 };
 
 /** Content rect (margins excluded), relative to the container content box. */
+/** @brief FlexRect public API. */
 struct FlexRect {
     float x = 0.f;
     float y = 0.f;
@@ -53,27 +60,58 @@ struct FlexRect {
     float h = 0.f;
 };
 
+/** @brief FlexResult public API. */
 struct FlexResult {
     std::vector<FlexRect> items;  // one per non-absolute item, same order
     float contentW = 0.f;         // total outer extent on X
     float contentH = 0.f;         // total outer extent on Y
+    float overflowMain = 0.f;      // unresolved main-axis deficit after shrink/min limits
 };
 
 /**
  * Distribute flex items along main/cross axis. Pure — no ImGui state touched,
  * so it can be unit-tested headlessly.
  */
-FlexResult flexArrange(bool row, float gap, float availMain, float availCross,
-                       FlexAlign containerAlign, FlexJustify justify,
-                       const std::vector<FlexItemSpec> &items);
+/** @brief Flex arrange. */
+EVENGINE_API_WORLD FlexResult flexArrange(bool row, float gap, float availMain, float availCross,
+                                          FlexAlign containerAlign, FlexJustify justify,
+                                          const std::vector<FlexItemSpec> &items, bool wrap = false,
+                                          float crossGap = -1.f);
+
+/** @brief GridItemSpec public API. */
+struct GridItemSpec {
+    float basisW = 0.f;
+    float basisH = 0.f;
+    float marginL = 0.f;
+    float marginT = 0.f;
+    float marginR = 0.f;
+    float marginB = 0.f;
+    float aspectRatio = 0.f;
+    int columnSpan = 1;
+};
+
+/** @brief GridResult public API. */
+struct GridResult {
+    std::vector<FlexRect> items;
+    float contentW = 0.f;
+    float contentH = 0.f;
+    float overflowX = 0.f;
+};
+
+/** @brief Places source-ordered items into equal-width fixed columns. */
+EVENGINE_API_WORLD GridResult gridArrange(int columns, float columnGap, float rowGap, float availWidth,
+                                          const std::vector<GridItemSpec> &items);
 
 /** Measure one node (recursively) and fill UINode::measuredW/H. */
+/** @brief Measure node. */
 void measureNode(UIHost::Tree &tree, int index);
 
 /** Measure the whole tree from its root. */
-void measureTree(UIHost::Tree &tree);
+/** @brief Measure tree. */
+EVENGINE_API_WORLD void measureTree(UIHost::Tree &tree);
 
 /** Flow measure helpers for non-flex containers (Window/Group/Child/Header). */
+/** @brief Measure flow children. */
 void measureFlowChildren(UIHost::Tree &tree, int firstChild, float *outW, float *outH);
 
 }  // namespace eve::ui

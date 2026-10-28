@@ -121,7 +121,7 @@ public:
                       const std::vector<std::uint32_t> &inTris,
                       const std::vector<std::uint32_t> &verts,
                       std::vector<std::uint32_t> &outTris, float &outError)
-        : srcPos_(positions), outTris_(outTris), outError_(outError), verts_(verts) {
+        : srcPos_(positions), verts_(verts), outTris_(outTris), outError_(outError) {
         tris_ = inTris;
         pos_ = positions;      // mutable working copy for flip tests
         initPos_ = positions;  // original positions for the error metric
@@ -173,7 +173,7 @@ public:
                 outTris_.push_back(c);
             }
         }
-        outError_ = std::sqrt(maxCost);
+        outError_ = static_cast<float>(std::sqrt(maxCost));
     }
 
 private:
@@ -430,7 +430,7 @@ bool VirtualGeometryBuilder::build(const MeshInput &in, const Options &opt,
             std::uint32_t pid = static_cast<std::uint32_t>(clusters.size() + groupIndex);
             std::size_t hi = std::min(current.size(), g + mergeF);
             for (std::size_t k = g; k < hi; ++k) {
-                current[k].parent = pid;
+                clusters[baseId + k].parent         = pid;
                 parents[groupIndex].children[k - g] = baseId + static_cast<std::uint32_t>(k);
             }
         }

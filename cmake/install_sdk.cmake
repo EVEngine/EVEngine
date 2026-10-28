@@ -8,6 +8,25 @@ include(GNUInstallDirs)
 set(EVENGINE_SDK_VERSION
     "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}")
 
+# load_third_party resolves both downloaded and source-built install trees.
+file(TO_CMAKE_PATH "${EVENGINE_TP_INSTALL_PREFIX}" _eve_sdk_tp_prefix)
+if(NOT _eve_sdk_tp_prefix)
+    message(FATAL_ERROR "SDK install requires a resolved EVENGINE_TP_INSTALL_PREFIX")
+endif()
+
+set(EVENGINE_TARGET_ARCHITECTURE "")
+if(BUILD_PLATFORM STREQUAL "macosx")
+    if(CMAKE_OSX_ARCHITECTURES)
+        set(EVENGINE_TARGET_ARCHITECTURE "${CMAKE_OSX_ARCHITECTURES}")
+    else()
+        string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" EVENGINE_TARGET_ARCHITECTURE)
+    endif()
+    if(NOT EVENGINE_TARGET_ARCHITECTURE MATCHES "^(arm64|x86_64)$")
+        message(FATAL_ERROR "macOS SDKs require one architecture: arm64 or x86_64")
+    endif()
+    install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/share/eve/TARGET_ARCHITECTURE\" \"${EVENGINE_TARGET_ARCHITECTURE}\\n\")")
+endif()
+
 # ---- Host binary ----
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     install(TARGETS ${EVENGINE_NATIVE_TARGET}
@@ -46,39 +65,184 @@ else()
     )
 endif()
 
+# macOS: eve links several dynamic libraries (zlib/PNG/... from the
+# third-party tree) plus the Vulkan loader from the LunarG SDK. Bundle every
+# third-party *.dylib into the SDK and give eve an @loader_path rpath so the
+# installed binary runs without the build environment. The Vulkan loader +
+# MoltenVK are bundled by cmake/macosx_bundle_vulkan.cmake, so players do not
+# need to install the Vulkan SDK. SDL2 is linked statically.
+if(BUILD_PLATFORM STREQUAL "macosx")
+    set(_eve_mac_tp_lib "${_eve_sdk_tp_prefix}/lib")
+    install(CODE "
+        file(MAKE_DIRECTORY \"\${CMAKE_INSTALL_PREFIX}/lib\")
+        file(GLOB _eve_tp_dylibs \"${_eve_mac_tp_lib}/*.dylib\")
+        foreach(_eve_dylib IN LISTS _eve_tp_dylibs)
+            file(COPY \"\${_eve_dylib}\" DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\")
+        endforeach()
+    ")
+    install(SCRIPT "${CMAKE_SOURCE_DIR}/cmake/macosx_bundle_vulkan.cmake")
+    set_target_properties(${EVENGINE_NATIVE_TARGET} PROPERTIES
+        # SDK layout is bin/eve + lib/ (-> ../lib). `eve package` copies the
+        # lib/ tree next to eve as <out>/lib (-> @loader_path/lib). Keep both
+        # so the same binary runs from the SDK and from a packaged game.
+        INSTALL_RPATH "@loader_path/../lib;@loader_path/lib;@loader_path"
+    )
+endif()
+
+# Windows: bundle the runtime DLLs (Vulkan loader + VC redist) next to eve.exe
+# so a packaged game is self-contained and can be produced from ANY host
+# (Linux/macOS cross-packaging included) without a Visual Studio install.
+if(BUILD_PLATFORM STREQUAL "win32")
+    # Install scripts run later; preserve the configured target architecture.
+    if(EVENGINE_NATIVE_ARM64)
+        install(CODE "set(EVE_RUNTIME_ARCH arm64)")
+    else()
+        install(CODE "set(EVE_RUNTIME_ARCH x64)")
+    endif()
+    install(SCRIPT "${CMAKE_SOURCE_DIR}/cmake/win32_bundle_runtime.cmake")
+endif()
+
 # ---- Public headers (engine common + module façades) ----
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/engine/common/"
     DESTINATION include/eve/common
     FILES_MATCHING
         PATTERN "*.h"
         PATTERN "*.hpp"
+        PATTERN "ModuleRegistryState.h" EXCLUDE
 )
 install(FILES "${CMAKE_BINARY_DIR}/src/engine/common/config.h"
     DESTINATION include/eve/common
 )
 
-set(_eve_module_dirs
-    animation audio data event filesystem graphics image ik joystick keyboard mouse
-    model3d network particles plugins sound spatial timer touch ui window
+# EVEngine's public Assert.h (and therefore Result.h / Module.h) exposes the
+# zeroerr assertion types. Ship that public header dependency so native plugin
+# consumers can compile against the installed SDK without a source checkout.
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/external/zeroerr/include/zeroerr/"
+    DESTINATION include/zeroerr
+    FILES_MATCHING
+        PATTERN "*.h"
+        PATTERN "*.hpp"
 )
-foreach(_eve_mod IN LISTS _eve_module_dirs)
-    if(EXISTS "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}")
-        install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod}/"
-            DESTINATION include/eve/${_eve_mod}
+
+# Public module headers: export exactly the modules this build enabled, so the
+# SDK's API surface always matches the target runtime. Single source of truth is
+# cmake/module_manifest.cmake (EVE_ENABLED_MODULES); CORE modules (common /
+# cmdline / devtools) live under src/engine and have no src/modules/<name> dir.
+# Nested authoring facets install to include/eve/<host>/editing (matching
+# #include "host/editing/Header.h"); the host package excludes those child dirs.
+if(NOT DEFINED EVE_ENABLED_MODULES)
+    # Defensive fallback when included outside the engine configure: every dir.
+    file(GLOB _eve_all_module_dirs RELATIVE "${CMAKE_SOURCE_DIR}/src/modules"
+        "${CMAKE_SOURCE_DIR}/src/modules/*")
+    set(EVE_ENABLED_MODULES ${_eve_all_module_dirs})
+endif()
+foreach(_eve_mod IN LISTS EVE_ENABLED_MODULES)
+    if(EVE_MODULE_${_eve_mod}_CORE)
+        continue()
+    endif()
+    eve_module_scan_dir("${_eve_mod}" _eve_mod_dir)
+    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod_dir}")
+        continue()
+    endif()
+    eve_module_nested_scan_excludes("${_eve_mod}" _eve_nested_heads)
+    set(_eve_install_excludes
+        PATTERN "sdl" EXCLUDE
+        PATTERN "vulkan" EXCLUDE
+        PATTERN "webgpu" EXCLUDE
+        PATTERN "physfs" EXCLUDE
+        PATTERN "openal" EXCLUDE
+        PATTERN "imgui" EXCLUDE
+        PATTERN "cppfs" EXCLUDE
+        PATTERN "include_shim" EXCLUDE)
+    foreach(_eve_nested IN LISTS _eve_nested_heads)
+        list(APPEND _eve_install_excludes PATTERN "${_eve_nested}" EXCLUDE)
+    endforeach()
+    # UiMotionSinks.h includes animation/MotionTypes.h and its .cpp is omitted when
+    # animation is trimmed; do not install a header the UI-only SDK cannot satisfy.
+    if(_eve_mod STREQUAL "ui")
+        list(FIND EVE_ENABLED_MODULES animation _eve_sdk_anim_idx)
+        if(_eve_sdk_anim_idx EQUAL -1)
+            list(APPEND _eve_install_excludes PATTERN "UiMotionSinks.h" EXCLUDE)
+        endif()
+    endif()
+    install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod_dir}/"
+        DESTINATION include/eve/${_eve_mod_dir}
+        FILES_MATCHING
+            PATTERN "*.h"
+            PATTERN "*.hpp"
+            ${_eve_install_excludes}
+    )
+endforeach()
+
+# ---- Licenses -----------------------------------------------------------
+# Distribution must carry attribution for the engine AND every third-party
+# component. Root licenses are required; vendored-source licenses under
+# external/* and third-party/ are best-effort (both may be absent on machines
+# that use a prebuilt third-party tree).
+install(FILES
+    "${CMAKE_SOURCE_DIR}/LICENSE"
+    "${CMAKE_SOURCE_DIR}/LICENSE-COMMERCIAL"
+    "${CMAKE_SOURCE_DIR}/LICENSE-OPENSOURCE"
+    DESTINATION share/eve/licenses
+)
+if(EXISTS "${CMAKE_SOURCE_DIR}/src/modules/ui/fonts/FontAwesome.ttf")
+    install(FILES "${CMAKE_SOURCE_DIR}/src/modules/ui/fonts/FontAwesome.ttf"
+        DESTINATION share/eve/fonts)
+    install(FILES "${CMAKE_SOURCE_DIR}/src/modules/ui/fonts/LICENSE.txt"
+        DESTINATION share/eve/licenses
+        RENAME FontAwesome-4.7.0-LICENSE.txt)
+endif()
+foreach(_eve_lic_src IN ITEMS
+    "${CMAKE_SOURCE_DIR}/external"
+    "${CMAKE_SOURCE_DIR}/third-party"
+)
+    if(EXISTS "${_eve_lic_src}")
+        install(DIRECTORY "${_eve_lic_src}/"
+            DESTINATION share/eve/licenses
             FILES_MATCHING
-                PATTERN "*.h"
-                PATTERN "*.hpp"
-                PATTERN "sdl" EXCLUDE
-                PATTERN "vulkan" EXCLUDE
-                PATTERN "webgpu" EXCLUDE
-                PATTERN "physfs" EXCLUDE
-                PATTERN "openal" EXCLUDE
-                PATTERN "imgui" EXCLUDE
-                PATTERN "cppfs" EXCLUDE
-                PATTERN "include_shim" EXCLUDE
+                PATTERN "LICENSE*"
+                PATTERN "LICENCE*"
+                PATTERN "COPYING*"
+                PATTERN "NOTICE*"
+                PATTERN ".git" EXCLUDE
         )
     endif()
 endforeach()
+
+# ---- Reference example ----------------------------------------------------
+# Ship a runnable reference game so SDK consumers can see the layout without
+# cloning the repository. `eve run` in a folder with no main.nut still falls
+# back to the embedded demo.
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples/basic"
+    DESTINATION share/eve/examples
+)
+
+# ---- Reusable rendering styles -------------------------------------------
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/assets/styles/"
+    DESTINATION share/eve/styles
+    COMPONENT styles
+)
+
+# ---- Agent knowledge pack (this SDK build, no engine git tree required) ----
+# eve-api.json / eve-api.d.ts are generated next to BindingContracts.generated.cpp.
+install(FILES
+    "${CMAKE_BINARY_DIR}/src/engine/common/eve-api.json"
+    "${CMAKE_BINARY_DIR}/src/engine/common/eve-api.d.ts"
+    DESTINATION share/eve/ai
+)
+install(FILES "${CMAKE_SOURCE_DIR}/.cursor/skills/evescript/SKILL.md"
+    DESTINATION share/eve/ai
+)
+install(FILES "${CMAKE_SOURCE_DIR}/.cursor/skills/evescript/SKILL.md"
+    DESTINATION .cursor/skills/evescript
+)
+install(FILES "${CMAKE_SOURCE_DIR}/cmake/sdk/llms.txt"
+    DESTINATION .
+    RENAME llms.txt
+)
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/tools/eve-mcp/"
+    DESTINATION share/eve/ai/eve-mcp
+)
 
 # ---- Target-platform packaging template only ----
 set(_eve_plat_src "${CMAKE_SOURCE_DIR}/platform/${BUILD_PLATFORM}")
@@ -113,24 +277,40 @@ endif()
 
 # ---- Android runtime shared libs needed to assemble an APK ----
 if(BUILD_PLATFORM STREQUAL "android")
-    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-        set(_eve_tp_lib "${EVENGINE_THIRD_PARTY_BINARY_DIR}")
-    else()
-        set(_eve_tp_lib "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}")
-    endif()
-    if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(_eve_tp_lib "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug")
-    endif()
-    if(EXISTS "${_eve_tp_lib}/lib/libSDL2.so")
-        install(FILES "${_eve_tp_lib}/lib/libSDL2.so" DESTINATION lib)
-    endif()
-    if(EXISTS "${_eve_tp_lib}/lib/libhidapi.so")
-        install(FILES "${_eve_tp_lib}/lib/libhidapi.so" DESTINATION lib)
-    endif()
-    # libc++_shared.so from NDK (best-effort; packaging docs note NDK fallback)
+    set(_eve_tp_lib "${_eve_sdk_tp_prefix}")
+    # `deps` is built after the first configure on clean CI runners, so these
+    # files do not exist while install rules are being generated. Resolve them
+    # at install time and fail instead of publishing an unusable Android SDK.
+    install(CODE "
+        set(_eve_android_tp_lib \"${_eve_tp_lib}/lib\")
+        foreach(_eve_required_lib IN ITEMS libSDL2.so)
+            if(NOT EXISTS \"\${_eve_android_tp_lib}/\${_eve_required_lib}\")
+                message(FATAL_ERROR
+                    \"Android SDK runtime library missing: \${_eve_android_tp_lib}/\${_eve_required_lib}\")
+            endif()
+            file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\" TYPE FILE
+                FILES \"\${_eve_android_tp_lib}/\${_eve_required_lib}\")
+        endforeach()
+        if(EXISTS \"\${_eve_android_tp_lib}/libhidapi.so\")
+            file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\" TYPE FILE
+                FILES \"\${_eve_android_tp_lib}/libhidapi.so\")
+        endif()
+    ")
+    # libc++_shared.so from the NDK must match the SDK's configured ABI.
     if(DEFINED ANDROID_NDK AND EXISTS "${ANDROID_NDK}")
+        if(ANDROID_ABI STREQUAL "arm64-v8a")
+            set(_eve_android_ndk_triple "aarch64-linux-android")
+        elseif(ANDROID_ABI STREQUAL "armeabi-v7a")
+            set(_eve_android_ndk_triple "arm-linux-androideabi")
+        elseif(ANDROID_ABI STREQUAL "x86_64")
+            set(_eve_android_ndk_triple "x86_64-linux-android")
+        elseif(ANDROID_ABI STREQUAL "x86")
+            set(_eve_android_ndk_triple "i686-linux-android")
+        else()
+            message(FATAL_ERROR "Unsupported Android ABI for libc++_shared.so: ${ANDROID_ABI}")
+        endif()
         file(GLOB _eve_cxx_shared
-            "${ANDROID_NDK}/toolchains/llvm/prebuilt/*/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so")
+            "${ANDROID_NDK}/toolchains/llvm/prebuilt/*/sysroot/usr/lib/${_eve_android_ndk_triple}/libc++_shared.so")
         if(_eve_cxx_shared)
             list(GET _eve_cxx_shared 0 _eve_cxx_one)
             install(FILES "${_eve_cxx_one}" DESTINATION lib)
@@ -139,36 +319,35 @@ if(BUILD_PLATFORM STREQUAL "android")
 endif()
 
 # ---- Selected third-party headers needed to compile plugins (SSQ bindings) ----
-if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-    set(_eve_tp_inc "${EVENGINE_THIRD_PARTY_BINARY_DIR}")
-else()
-    set(_eve_tp_inc "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}")
-endif()
-if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(_eve_tp_inc "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug")
-endif()
-if(EXISTS "${_eve_tp_inc}/include")
-    foreach(_eve_hdr_dir IN ITEMS simplesquirrel squirrel SQLiteCpp)
-        if(EXISTS "${_eve_tp_inc}/include/${_eve_hdr_dir}")
-            install(DIRECTORY "${_eve_tp_inc}/include/${_eve_hdr_dir}"
-                DESTINATION include
-            )
-        endif()
-    endforeach()
-    # Flat squirrel headers sometimes live at include/*.h
-    file(GLOB _eve_sq_headers
-        "${_eve_tp_inc}/include/squirrel.h"
-        "${_eve_tp_inc}/include/sqstdio.h"
-        "${_eve_tp_inc}/include/sqstdblob.h"
-        "${_eve_tp_inc}/include/sqstdmath.h"
-        "${_eve_tp_inc}/include/sqstdsystem.h"
-        "${_eve_tp_inc}/include/sqstdstring.h"
-        "${_eve_tp_inc}/include/sqconfig.h"
-    )
-    if(_eve_sq_headers)
-        install(FILES ${_eve_sq_headers} DESTINATION include)
+set(_eve_tp_inc "${_eve_sdk_tp_prefix}")
+get_filename_component(_eve_tp_inc "${_eve_tp_inc}" ABSOLUTE)
+# The third-party tree is built by the deps target *after* configure, so the
+# existence check must run at install time, not configure time (a configure-time
+# guard silently drops these headers on fresh CI builds).
+install(CODE "
+    set(_eve_tp_inc \"${_eve_tp_inc}\")
+    if(EXISTS \"\${_eve_tp_inc}/include\")
+        file(MAKE_DIRECTORY \"\${CMAKE_INSTALL_PREFIX}/include\")
+        foreach(_eve_hdr_dir IN ITEMS simplesquirrel squirrel SQLiteCpp)
+            if(EXISTS \"\${_eve_tp_inc}/include/\${_eve_hdr_dir}\")
+                file(COPY \"\${_eve_tp_inc}/include/\${_eve_hdr_dir}\"
+                     DESTINATION \"\${CMAKE_INSTALL_PREFIX}/include\")
+            endif()
+        endforeach()
+        # Flat squirrel headers sometimes live at include/*.h
+        foreach(_eve_sq_hdr IN ITEMS squirrel.h sqstdio.h sqstdblob.h sqstdmath.h sqstdsystem.h sqstdstring.h sqconfig.h)
+            if(EXISTS \"\${_eve_tp_inc}/include/\${_eve_sq_hdr}\")
+                file(COPY \"\${_eve_tp_inc}/include/\${_eve_sq_hdr}\"
+                     DESTINATION \"\${CMAKE_INSTALL_PREFIX}/include\")
+            endif()
+        endforeach()
     endif()
-endif()
+")
+
+# Plugins use the same member and stateless binding templates as the engine.
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/third-party/simplesquirrel/include/simplesquirrel"
+    DESTINATION include)
+install(FILES "${CMAKE_SOURCE_DIR}/external/ECS.hpp/src/ECS.hpp" DESTINATION include OPTIONAL)
 
 # ---- Marker files ----
 install(CODE "

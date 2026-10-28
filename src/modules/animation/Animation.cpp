@@ -1,30 +1,101 @@
 #include "animation/Animation.h"
+#include "animation/AnimationBindings.h"
 #include "animation/AnimClip.h"
+#include "animation/AnimClipRegistry.h"
+#include "animation/AnimBatch.h"
+#include "animation/AnimConstraintStack.h"
 #include "animation/AnimImporter.h"
+#include "animation/AnimLattice.h"
+#include "animation/AnimLayerMixer.h"
 #include "animation/AnimPlayer.h"
+#include "animation/AnimGraph.h"
 #include "animation/AnimPose.h"
+#include "animation/DynamicBoneSolver.h"
+#include "animation/HairDynamicBones.h"
+#include "animation/FootIKSolver.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
 #include "animation/AnimStateMachine.h"
 #include "animation/AnimTrail.h"
+#include "animation/AnimSyncGroup.h"
 #include "animation/ControlAnim.h"
 #include "animation/ControlPose.h"
+#include "animation/PhysicalBalancePose.h"
+#include "animation/MotionBuilder.h"
+#include "animation/MotionSequence.h"
+#include "animation/MotionScriptBindings.h"
 #include "animation/MotionDatabase.h"
 #include "animation/MotionMatcher.h"
-#include "animation/SpriteAnim.h"
-#include "animation/SpriteClip.h"
-#include "animation/SpriteSheet.h"
+#include "animation/MotionRuntime.h"
+#include "animation/Tween.h"
 #include "animation/SpineAnim.h"
 #include "animation/SpineAtlas.h"
 #include "animation/SpineSkeleton.h"
 #include "animation/SpineSkeletonData.h"
+#include "animation/SpriteAnim.h"
+#include "animation/SpriteClip.h"
+#include "animation/SpriteSheet.h"
+
+#include "common/Exception.h"
+#include "common/Profile.h"
+#include "graphics/Graphics.h"
+#include "graphics/Texture.h"
+#include "graphics/Mesh.h"
+#include "image/Image.h"
+#include "image/ImageData.h"
+#include "data/DataModule.h"
+#include "data/JsonDocument.h"
+#include "filesystem/Filesystem.h"
+#include "filesystem/FileData.h"
+#include <Poco/JSON/Array.h>
+#include <Poco/JSON/Object.h>
 
 #include <algorithm>
+#include <cmath>
+#include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace eve::animation {
 
+namespace {
+
+void copyFloatArray(ssq::Array arr, std::vector<float> &out) {
+    const size_t n = arr.size();
+    out.resize(n);
+    for (size_t i = 0; i < n; ++i) out[i] = arr.get<float>(i);
+}
+
+void bindPositionsFromArray(AnimLattice *self, ssq::Array arr) {
+    std::vector<float> pos;
+    copyFloatArray(arr, pos);
+    if (pos.size() % 3u != 0) {
+        throw Exception("AnimLattice.bindPositionsFromArray: array size must be a multiple of 3");
+    }
+    self->bindPositions(pos.data(), static_cast<int>(pos.size() / 3u));
+}
+
+bool updateDeformedPositionsFromArray(AnimLattice *self, ssq::Array arr) {
+    std::vector<float> pos;
+    copyFloatArray(arr, pos);
+    return self->updateDeformedPositions(pos);
+}
+
+bool updateDeformedNormalsFromArray(AnimLattice *self, ssq::Array posArr, ssq::Array nrmArr) {
+    std::vector<float> pos;
+    std::vector<float> nrm;
+    copyFloatArray(posArr, pos);
+    copyFloatArray(nrmArr, nrm);
+    return self->updateDeformedNormals(pos, nrm);
+}
+
+}  // namespace
+
 Module_IMPL(Animation, new Animation());
+
+// Defaulted out of line: `SpriteSheet.h` is included above, so the destructor of
+// `unique_ptr<SpriteSheet>` (needed for this constructor's exception specification)
+// sees a complete type; Animation.h only forward-declares `SpriteSheet`.
+Animation::Animation() = default;
 
 Animation::~Animation() {
     // Owned players may outlive the module if script GC still holds them; detach.
@@ -40,6 +111,8 @@ Animation::~Animation() {
         if (a) a->setOwner(nullptr);
     }
     spineAnims_.clear();
+    // 脚本 motion sink 适配器由本模块持有（motion 槽位借用 sink 指针），析构时一起撤。
+    clearScriptMotionSinkAdapters();
 }
 
 Tween *Animation::newTween(float duration) {
@@ -49,6 +122,209 @@ Tween *Animation::newTween(float duration) {
 }
 
 SpriteSheet *Animation::newSpriteSheet() { return new SpriteSheet(); }
+
+SpriteSheet *Animation::newSpriteSheetFromSequence(graphics::Graphics *gfx,
+                                                    const std::string &pattern, int first,
+                                                    int last, int columns) {
+    if (!gfx) throw Exception("Animation.newSpriteSheetFromSequence: gfx is null");
+    const size_t marker = pattern.find("{n}");
+    if (marker == std::string::npos)
+        throw Exception("Animation.newSpriteSheetFromSequence: pattern must contain '{n}'");
+    if (first < 0 || last < first)
+        throw Exception("Animation.newSpriteSheetFromSequence: expected 0 <= first <= last");
+
+    const int count = last - first + 1;
+    if (columns <= 0) columns = static_cast<int>(std::ceil(std::sqrt(float(count))));
+    if (columns <= 0)
+        throw Exception("Animation.newSpriteSheetFromSequence: columns must be > 0");
+    const std::string cacheKey = pattern + "#" + std::to_string(first) + ":" +
+                                 std::to_string(last) + ":" + std::to_string(columns);
+    auto cached = spriteSequenceCache_.find(cacheKey);
+    if (cached != spriteSequenceCache_.end()) return cached->second->clone();
+    const int rows = (count + columns - 1) / columns;
+
+    image::Image *images = image::Image::create();
+    std::vector<image::ImageData *> frames;
+    struct Bounds { int x = 0, y = 0, w = 1, h = 1; };
+    std::vector<Bounds> bounds;
+    frames.reserve(static_cast<size_t>(count));
+    int frameW = 0, frameH = 0;
+    int packedW = 1, packedH = 1;
+    for (int n = first; n <= last; ++n) {
+        std::string path = pattern;
+        path.replace(marker, 3, std::to_string(n));
+        image::ImageData *frame = images->newImageDataFromFile(path);
+        if (!frame) throw Exception("Animation.newSpriteSheetFromSequence: failed '%s'", path.c_str());
+        if (frame->getFormat() != "RGBA8")
+            throw Exception("Animation.newSpriteSheetFromSequence: '%s' must be RGBA8", path.c_str());
+        if (frames.empty()) {
+            frameW = frame->getWidth();
+            frameH = frame->getHeight();
+        } else if (frame->getWidth() != frameW || frame->getHeight() != frameH) {
+            throw Exception("Animation.newSpriteSheetFromSequence: frame size mismatch at '%s'",
+                            path.c_str());
+        }
+        frames.push_back(frame);
+        int minX = frameW, minY = frameH, maxX = -1, maxY = -1;
+        for (int py = 0; py < frameH; ++py) {
+            for (int px = 0; px < frameW; ++px) {
+                if (frame->getPixel(px, py).a <= 1.f / 255.f) continue;
+                minX = std::min(minX, px); minY = std::min(minY, py);
+                maxX = std::max(maxX, px); maxY = std::max(maxY, py);
+            }
+        }
+        Bounds b;
+        if (maxX >= minX && maxY >= minY)
+            b = {minX, minY, maxX - minX + 1, maxY - minY + 1};
+        bounds.push_back(b);
+        packedW = std::max(packedW, b.w);
+        packedH = std::max(packedH, b.h);
+    }
+
+    constexpr int padding = 1;
+    const int cellW = packedW + padding * 2;
+    const int cellH = packedH + padding * 2;
+    std::unique_ptr<image::ImageData> atlas(
+        images->newImageData(columns * cellW, rows * cellH, "RGBA8"));
+    auto *sheet = new SpriteSheet();
+    try {
+        for (int i = 0; i < count; ++i) {
+            const int cellX = (i % columns) * cellW;
+            const int cellY = (i / columns) * cellH;
+            const int x = cellX + padding;
+            const int y = cellY + padding;
+            image::ImageData *frame = frames[static_cast<size_t>(i)];
+            const Bounds &b = bounds[size_t(i)];
+            atlas->paste(frame, x, y, b.x, b.y, b.w, b.h);
+            atlas->paste(frame, x, cellY, b.x, b.y, b.w, 1);
+            atlas->paste(frame, x, y + b.h, b.x, b.y + b.h - 1, b.w, 1);
+            atlas->paste(frame, cellX, y, b.x, b.y, 1, b.h);
+            atlas->paste(frame, x + b.w, y, b.x + b.w - 1, b.y, 1, b.h);
+            atlas->paste(frame, cellX, cellY, b.x, b.y, 1, 1);
+            atlas->paste(frame, x + b.w, cellY, b.x + b.w - 1, b.y, 1, 1);
+            atlas->paste(frame, cellX, y + b.h, b.x, b.y + b.h - 1, 1, 1);
+            atlas->paste(frame, x + b.w, y + b.h, b.x + b.w - 1, b.y + b.h - 1, 1, 1);
+            sheet->addFrameTrimmed(std::to_string(first + i), x, y, b.w, b.h,
+                                   frameW, frameH, b.x, b.y);
+        }
+        sheet->setTexture(gfx->newTextureFromImageData(atlas.get()));
+        spriteSequenceCache_[cacheKey].reset(sheet->clone());
+    } catch (...) {
+        delete sheet;
+        throw;
+    }
+    return sheet;
+}
+
+int Animation::getSpriteSequenceCacheCount() const { return int(spriteSequenceCache_.size()); }
+int Animation::getSpriteSequenceCacheBytes() const {
+    int bytes = 0;
+    for (const auto &entry : spriteSequenceCache_) {
+        auto *texture = entry.second->getTexture();
+        if (texture) bytes += texture->getWidth() * texture->getHeight() * 4;
+    }
+    return bytes;
+}
+void Animation::clearSpriteSequenceCache() { spriteSequenceCache_.clear(); }
+
+SpriteSheet *Animation::newSpriteSheetFromAtlasJson(graphics::Graphics *gfx,
+                                                     const std::string &texturePath,
+                                                     const std::string &jsonPath) {
+    if (!gfx) throw Exception("Animation.newSpriteSheetFromAtlasJson: gfx is null");
+    auto *fs = ModuleManager::getInstance<filesystem::Filesystem>("Filesystem");
+    if (!fs) fs = filesystem::Filesystem::create();
+    std::unique_ptr<filesystem::FileData> file(fs->read(jsonPath));
+    std::string text(static_cast<const char *>(file->getData()), size_t(file->getSize()));
+    auto *dm = data::DataModule::create();
+    std::string error;
+    std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(text, &error));
+    if (!doc || !doc->isObject()) throw Exception("Atlas JSON: %s", error.c_str());
+    auto root = doc->object();
+    if (!root->has("frames")) throw Exception("Atlas JSON: missing frames");
+    auto frames = root->getObject("frames");
+    if (!frames) throw Exception("Atlas JSON: frames must be an object");
+    // TexturePacker JSON Hash stores logical (unrotated) frame.w/h even for
+    // clockwise-packed frames. Normalize pixels once at import, keeping the
+    // ordinary Quad/Sprite2D UV and trimmed-layout contract unchanged.
+    bool       normalize = false;
+    int        cellW = 0, cellH = 0;
+    const auto names = frames->getNames();
+    for (const auto &name : names) {
+        auto      item = frames->getObject(name);
+        auto      rect = item->getObject("frame");
+        const int w = rect->getValue<int>("w"), h = rect->getValue<int>("h");
+        if (w <= 0 || h <= 0)
+            throw Exception("Atlas JSON '%s', frame '%s': invalid frame dimensions", jsonPath.c_str(), name.c_str());
+        normalize |= item->optValue<bool>("rotated", false);
+        cellW = std::max(cellW, w);
+        cellH = std::max(cellH, h);
+    }
+    // Image::newImageDataFromFile borrows from ResourceManager's cache.
+    image::ImageData                 *source = nullptr;
+    std::unique_ptr<image::ImageData> atlas;
+    int                               columns = 1;
+    if (normalize) {
+        if (cellW > 16382 || cellH > 16382)
+            throw Exception("Atlas JSON '%s': normalized frame exceeds 16384 pixels including padding",
+                            jsonPath.c_str());
+        cellW += 2;
+        cellH += 2;
+        auto *images      = image::Image::create();
+        source            = images->newImageDataFromFile(texturePath);
+        columns           = static_cast<int>(std::ceil(std::sqrt(double(names.size()))));
+        const size_t rows = (names.size() + size_t(columns) - 1) / size_t(columns);
+        if (size_t(cellW) * size_t(columns) > 16384 || size_t(cellH) * rows > 16384)
+            throw Exception("Atlas JSON '%s': normalized atlas exceeds 16384 pixels; split the atlas",
+                            jsonPath.c_str());
+        atlas.reset(images->newImageData(cellW * columns, cellH * int(rows), "RGBA8"));
+    }
+    auto *sheet = new SpriteSheet();
+    try {
+        int index = 0;
+        for (const auto &name : names) {
+            auto      item = frames->getObject(name);
+            auto rect = item->getObject("frame");
+            auto src = item->getObject("spriteSourceSize");
+            auto size = item->getObject("sourceSize");
+            const int w = rect->getValue<int>("w"), h = rect->getValue<int>("h");
+            int       x = rect->getValue<int>("x"), y = rect->getValue<int>("y");
+            const int sourceW = size ? size->getValue<int>("w") : w;
+            const int sourceH = size ? size->getValue<int>("h") : h;
+            const int offsetX = src ? src->getValue<int>("x") : 0;
+            const int offsetY = src ? src->getValue<int>("y") : 0;
+            if (sourceW < w || sourceH < h || offsetX < 0 || offsetY < 0 || offsetX > sourceW - w ||
+                offsetY > sourceH - h || (src && (src->getValue<int>("w") != w || src->getValue<int>("h") != h)))
+                throw Exception("Atlas JSON '%s', frame '%s': inconsistent trimmed layout", jsonPath.c_str(),
+                                name.c_str());
+            if (normalize) {
+                const bool rotated = item->optValue<bool>("rotated", false);
+                const int  packedW = rotated ? h : w, packedH = rotated ? w : h;
+                if (x < 0 || y < 0 || packedW > source->getWidth() || packedH > source->getHeight() ||
+                    x > source->getWidth() - packedW || y > source->getHeight() - packedH)
+                    throw Exception("Atlas JSON '%s', frame '%s': packed rectangle outside texture", jsonPath.c_str(),
+                                    name.c_str());
+                const int dx = (index % columns) * cellW + 1;
+                const int dy = (index / columns) * cellH + 1;
+                // Include one extruded border pixel to prevent linear-filter bleed.
+                for (int py = -1; py <= h; ++py) {
+                    for (int px = -1; px <= w; ++px) {
+                        const int u  = std::clamp(px, 0, w - 1);
+                        const int v  = std::clamp(py, 0, h - 1);
+                        const int sx = x + (rotated ? h - 1 - v : u);
+                        const int sy = y + (rotated ? u : v);
+                        atlas->setPixel(dx + px, dy + py, source->getPixel(sx, sy));
+                    }
+                }
+                x = dx;
+                y = dy;
+            }
+            sheet->addFrameTrimmed(name, x, y, w, h, sourceW, sourceH, offsetX, offsetY);
+            ++index;
+        }
+        sheet->setTexture(normalize ? gfx->newTextureFromImageData(atlas.get()) : gfx->newTextureFromFile(texturePath));
+    } catch (...) { delete sheet; throw; }
+    return sheet;
+}
 
 SpriteClip *Animation::newSpriteClip(const std::string &name) { return new SpriteClip(name); }
 
@@ -117,8 +393,45 @@ AnimSkeleton *Animation::newSkeleton() { return new AnimSkeleton(); }
 AnimClip *Animation::newClip(const std::string &name) { return new AnimClip(name); }
 
 AnimPose *Animation::newPose(int boneCount) { return new AnimPose(boneCount); }
+AnimBatch *Animation::newBatch() { return new AnimBatch(); }
+AnimConstraintStack *Animation::newConstraintStack(AnimSkeleton *skeleton) {
+    return new AnimConstraintStack(skeleton);
+}
+DynamicBoneSolver *Animation::newDynamicBoneSolver(AnimSkeleton *skeleton) {
+    return new DynamicBoneSolver(skeleton);
+}
+
+int Animation::setupHairChain(DynamicBoneSolver *solver, const std::string &rootBone,
+                              const std::string &tipBone, float stiffness, float damping,
+                              float inertia, float endLength, bool selfCollision) {
+    if (!solver) return -1;
+    hair::ChainDesc desc;
+    desc.rootBone = rootBone;
+    desc.tipBone = tipBone;
+    desc.stiffness = stiffness;
+    desc.damping = damping;
+    desc.inertia = inertia;
+    desc.endLength = endLength;
+    desc.selfCollision = selfCollision;
+    auto result = hair::addChain(*solver, desc);
+    return result ? result.value() : -1;
+}
+
+int Animation::setupHairHeadCollider(DynamicBoneSolver *solver, const std::string &boneName,
+                                     float radius) {
+    if (!solver) return -1;
+    auto result = hair::addHeadCollider(*solver, boneName, radius);
+    return result ? result.value() : -1;
+}
+FootIKSolver *Animation::newFootIKSolver(AnimSkeleton *skeleton) { return new FootIKSolver(skeleton); }
+AnimSyncGroup *Animation::newSyncGroup() { return new AnimSyncGroup(); }
 
 AnimPlayer *Animation::newPlayer(AnimSkeleton *skeleton) { return new AnimPlayer(skeleton); }
+AnimGraph *Animation::newGraph(AnimSkeleton *skeleton) { return new AnimGraph(skeleton); }
+
+AnimBoneMask* Animation::newBoneMask(AnimSkeleton* skeleton) { return new AnimBoneMask(skeleton); }
+
+AnimLayerMixer* Animation::newLayerMixer(AnimSkeleton* skeleton) { return new AnimLayerMixer(skeleton); }
 
 AnimStateMachine *Animation::newStateMachine(AnimSkeleton *skeleton) {
     return new AnimStateMachine(skeleton);
@@ -138,37 +451,80 @@ ControlAnim *Animation::newControlAnim(float frequencyHz, float dampingZeta, flo
 
 ControlPose *Animation::newControlPose(AnimSkeleton *skeleton) { return new ControlPose(skeleton); }
 
-AnimSkeleton *Animation::newSkeletonFromModel(eve::model3d::ModelData *model) {
-    return AnimImporter::loadSkeletonFromModel(model);
+PhysicalBalancePose* Animation::newPhysicalBalancePose(AnimSkeleton* skeleton) {
+    return new PhysicalBalancePose(skeleton);
 }
 
-AnimClip *Animation::newClipFromModel(eve::model3d::ModelData *model, AnimSkeleton *skeleton,
-                                      int animIndex) {
-    return AnimImporter::loadClipFromModel(model, skeleton, animIndex);
-}
-
-AnimSkeleton *Animation::newSkeletonFromEvaFile(const std::string &path) {
+AnimSkeleton *Animation::newSkeletonFromAnimationFixtureText(const std::string &path) {
     AnimSkeleton *sk = nullptr;
     AnimClip *clip   = nullptr;
-    AnimImporter::importEvaFile(path, &sk, &clip);
+    AnimImporter::importAnimationFixtureTextFile(path, &sk, &clip);
     delete clip;
     return sk;
 }
 
-AnimClip *Animation::newClipFromEvaFile(const std::string &path) {
+AnimClip *Animation::newClipFromAnimationFixtureText(const std::string &path) {
     AnimSkeleton *sk = nullptr;
     AnimClip *clip   = nullptr;
-    AnimImporter::importEvaFile(path, &sk, &clip);
+    AnimImporter::importAnimationFixtureTextFile(path, &sk, &clip);
     delete sk;
+    if (clip) AnimClipRegistry::registerPath(path, clip);
     return clip;
 }
 
-AnimSkin *Animation::newSkinFromModel(eve::model3d::ModelData *model, int meshIndex,
-                                      AnimSkeleton *skeleton) {
-    return AnimSkin::fromModel(model, meshIndex, skeleton);
+AnimLattice *Animation::newLattice(int divX, int divY, int divZ) {
+    return new AnimLattice(divX, divY, divZ);
 }
 
 AnimTrail *Animation::newTrail(int capacity) { return new AnimTrail(capacity); }
+
+MotionBuilder Animation::motion(float from, float to, float duration) {
+    return MotionBuilder(motions_, from, to, duration);
+}
+
+MotionVec2Builder Animation::motionVec2(MotionVec2 from, MotionVec2 to, float duration) {
+    return MotionVec2Builder(motions_, from, to, duration);
+}
+
+MotionVec3Builder Animation::motionVec3(MotionVec3 from, MotionVec3 to, float duration) {
+    return MotionVec3Builder(motions_, from, to, duration);
+}
+
+MotionSequence Animation::sequence() { return MotionSequence(motions_); }
+
+MotionBuilder Animation::punch(float from, float strength, float duration) {
+    return MotionBuilder(motions_, from, strength, duration).style(MotionStyle::Punch);
+}
+
+MotionBuilder Animation::shake(float from, float strength, float duration) {
+    return MotionBuilder(motions_, from, strength, duration).style(MotionStyle::Shake);
+}
+
+MotionVec2Builder Animation::punchVec2(MotionVec2 from, MotionVec2 strength, float duration) {
+    return MotionVec2Builder(motions_, from, strength, duration).style(MotionStyle::Punch);
+}
+
+MotionVec2Builder Animation::shakeVec2(MotionVec2 from, MotionVec2 strength, float duration) {
+    return MotionVec2Builder(motions_, from, strength, duration).style(MotionStyle::Shake);
+}
+
+MotionVec3Builder Animation::punchVec3(MotionVec3 from, MotionVec3 strength, float duration) {
+    return MotionVec3Builder(motions_, from, strength, duration).style(MotionStyle::Punch);
+}
+
+MotionVec3Builder Animation::shakeVec3(MotionVec3 from, MotionVec3 strength, float duration) {
+    return MotionVec3Builder(motions_, from, strength, duration).style(MotionStyle::Shake);
+}
+
+MotionColorBuilder Animation::motionColor(MotionColor from, MotionColor to, float duration) {
+    return MotionColorBuilder(motions_, from, to, duration);
+}
+
+MotionQuatBuilder Animation::motionQuat(MotionQuat from, MotionQuat to, float duration) {
+    return MotionQuatBuilder(motions_, from, to, duration);
+}
+
+
 
 void Animation::registerTween(Tween *t) {
     if (!t) return;
@@ -211,25 +567,94 @@ void Animation::unregisterSpineAnim(SpineAnim *a) {
     if (a->owner() == this) a->setOwner(nullptr);
 }
 
-void Animation::update(float dt) {
+eve::Result<void> Animation::advance(const eve::SimulationStep &step) {
+    if (step.delta.nanoseconds() < 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "animation simulation delta must be non-negative"));
+    if (hasLastTick_ && step.tick <= lastTick_)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "animation simulation tick must advance monotonically"));
+
+    const float dt = static_cast<float>(step.delta.seconds());
+    if (!std::isfinite(dt))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "animation simulation delta is outside float range"));
+
+    // Preflight every live child before mutating any of them. A child may also
+    // be driven directly by a caller, so the host must preserve all-or-none
+    // behavior when one child has already consumed this tick.
+    for (Tween *t : tweens_) {
+        if (t && t->isActive() && t->hasCurrentTick() && step.tick <= t->currentTick())
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "animation Tween child already consumed this tick"));
+    }
+    for (SpriteAnim *a : spriteAnims_) {
+        if (a && a->isPlaying() && a->hasCurrentTick() && step.tick <= a->currentTick())
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "animation SpriteAnim child already consumed this tick"));
+    }
+    for (SpineAnim *a : spineAnims_) {
+        if (a && a->isPlaying() && a->hasCurrentTick() && step.tick <= a->currentTick())
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Conflict, "animation SpineAnim child already consumed this tick"));
+    }
+    if (motions_.hasCurrentTick() && step.tick <= motions_.currentTick())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "animation MotionRuntime already consumed this tick"));
+
     // Copy pointer lists: destructors during update must not invalidate iteration.
     std::vector<Tween *> tweenSnap = tweens_;
     for (Tween *t : tweenSnap) {
         if (!t) continue;
-        if (t->isActive()) t->update(dt);
+        if (t->isActive()) {
+            auto result = t->advance(step);
+            if (!result) return eve::Result<void>::failure(result.status());
+        }
     }
     std::vector<SpriteAnim *> spriteSnap = spriteAnims_;
     for (SpriteAnim *a : spriteSnap) {
-        if (a && a->isPlaying()) a->update(dt);
+        if (a && a->isPlaying()) {
+            auto result = a->advance(step);
+            if (!result) return eve::Result<void>::failure(result.status());
+        }
     }
     std::vector<SpineAnim *> spineSnap = spineAnims_;
     for (SpineAnim *a : spineSnap) {
-        if (a && a->isPlaying()) a->update(dt);
+        if (a && a->isPlaying()) {
+            auto result = a->advance(step);
+            if (!result) return eve::Result<void>::failure(result.status());
+        }
     }
+
+    {
+        auto result = motions_.advance(step);
+        if (!result) return eve::Result<void>::failure(result.status());
+    }
+
+    lastTick_    = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void Animation::update(float dt) {
+    EV_PROFILE_MODULE("animation", "Animation::update");
+    auto duration = eve::Duration::fromSeconds(dt);
+    if (!duration) {
+        duration.ignore("legacy animation update received an invalid duration");
+        return;
+    }
+    auto nextTick = hasLastTick_ ? lastTick_.incremented() : std::optional<eve::SimulationTick>(eve::SimulationTick(1));
+    if (!nextTick) {
+        eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "animation simulation tick overflow"))
+            .ignore("legacy animation update tick overflow");
+        return;
+    }
+    advance({*nextTick, std::move(duration).takeValue()}).ignore("legacy animation update facade");
 }
 
 int Animation::getActiveCount() const {
-    int n = 0;
+    int n = motions_.activeCount();
     for (const Tween *t : tweens_) {
         if (t && t->isActive()) ++n;
     }
@@ -265,6 +690,7 @@ void Animation::clearAll() {
 void Animation::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Animation::create, false);
     expose(cls);
+    exposeMotionScriptBindings(table, cls);
 
     auto tw = table.addClass<Tween>(
         "Tween", std::function<Tween *()>([]() -> Tween * { return nullptr; }), true);
@@ -319,6 +745,8 @@ void Animation::expose(ssq::Table &table) {
     sk.addFunc("setBindPosition", &AnimSkeleton::setBindPosition);
     sk.addFunc("setBindRotation", &AnimSkeleton::setBindRotation);
     sk.addFunc("setBindScale", &AnimSkeleton::setBindScale);
+    sk.addFunc("setBoneLodLimit", &AnimSkeleton::setBoneLodLimit);
+    sk.addFunc("getBoneLodLimit", &AnimSkeleton::getBoneLodLimit);
     sk.addFunc("getBindPositionX", &AnimSkeleton::getBindPositionX);
     sk.addFunc("getBindPositionY", &AnimSkeleton::getBindPositionY);
     sk.addFunc("getBindPositionZ", &AnimSkeleton::getBindPositionZ);
@@ -331,25 +759,7 @@ void Animation::expose(ssq::Table &table) {
     sk.addFunc("getBindScaleZ", &AnimSkeleton::getBindScaleZ);
     sk.addFunc("applyBindPose", &AnimSkeleton::applyBindPose);
 
-    auto clip = table.addClass<AnimClip>(
-        "AnimClip", std::function<AnimClip *()>([]() -> AnimClip * { return nullptr; }), true);
-    clip.addFunc("setName", &AnimClip::setName);
-    clip.addFunc("getName", &AnimClip::getName);
-    clip.addFunc("setDuration", &AnimClip::setDuration);
-    clip.addFunc("getDuration", &AnimClip::getDuration);
-    clip.addFunc("setLoop", &AnimClip::setLoop);
-    clip.addFunc("getLoop", &AnimClip::getLoop);
-    clip.addFunc("setSampleRate", &AnimClip::setSampleRate);
-    clip.addFunc("getSampleRate", &AnimClip::getSampleRate);
-    clip.addFunc("addPositionKey", &AnimClip::addPositionKey);
-    clip.addFunc("addRotationKey", &AnimClip::addRotationKey);
-    clip.addFunc("addScaleKey", &AnimClip::addScaleKey);
-    clip.addFunc("getPositionKeyCount", &AnimClip::getPositionKeyCount);
-    clip.addFunc("getRotationKeyCount", &AnimClip::getRotationKeyCount);
-    clip.addFunc("getScaleKeyCount", &AnimClip::getScaleKeyCount);
-    clip.addFunc("applyPlanarRootMotion", &AnimClip::applyPlanarRootMotion);
-    clip.addFunc("sample", &AnimClip::sample);
-    clip.addFunc("wrapTime", &AnimClip::wrapTime);
+    exposeAnimClipBindings(table);
 
     auto pose = table.addClass<AnimPose>(
         "AnimPose", std::function<AnimPose *()>([]() -> AnimPose * { return nullptr; }), true);
@@ -371,6 +781,8 @@ void Animation::expose(ssq::Table &table) {
     pose.addFunc("getLocalScaleY", &AnimPose::getLocalScaleY);
     pose.addFunc("getLocalScaleZ", &AnimPose::getLocalScaleZ);
     pose.addFunc("computeWorld", &AnimPose::computeWorld);
+    pose.addFunc("aimBone", &AnimPose::aimBone);
+    pose.addFunc("solveTwoBoneIK", &AnimPose::solveTwoBoneIK);
     pose.addFunc("getWorldPositionX", &AnimPose::getWorldPositionX);
     pose.addFunc("getWorldPositionY", &AnimPose::getWorldPositionY);
     pose.addFunc("getWorldPositionZ", &AnimPose::getWorldPositionZ);
@@ -380,6 +792,37 @@ void Animation::expose(ssq::Table &table) {
     pose.addFunc("getWorldRotationW", &AnimPose::getWorldRotationW);
     pose.addFunc("getWorldMatrixElement", &AnimPose::getWorldMatrixElement);
 
+    auto batch = table.addClass<AnimBatch>(
+        "AnimBatch", std::function<AnimBatch *()>([]() -> AnimBatch * { return nullptr; }), true);
+    batch.addFunc("add", &AnimBatch::add);
+    batch.addFunc("clear", &AnimBatch::clear);
+    batch.addFunc("getCount", &AnimBatch::getCount);
+    batch.addFunc("evaluate", &AnimBatch::evaluate);
+    batch.addFunc("getLastWorkerCount", &AnimBatch::getLastWorkerCount);
+
+    auto constraints = table.addClass<AnimConstraintStack>(
+        "AnimConstraintStack", std::function<AnimConstraintStack *()>([]() -> AnimConstraintStack * { return nullptr; }),
+        true);
+    constraints.addFunc("clear", &AnimConstraintStack::clear);
+    constraints.addFunc("getCount", &AnimConstraintStack::getCount);
+    constraints.addFunc("setSkeleton", &AnimConstraintStack::setSkeleton);
+    constraints.addFunc("getSkeleton", &AnimConstraintStack::getSkeleton);
+    constraints.addFunc("addAim", &AnimConstraintStack::addAim);
+    constraints.addFunc("addTwoBoneIK", &AnimConstraintStack::addTwoBoneIK);
+    constraints.addFunc("addFootIK", &AnimConstraintStack::addFootIK);
+    constraints.addFunc("apply", &AnimConstraintStack::apply);
+
+    auto sync = table.addClass<AnimSyncGroup>(
+        "AnimSyncGroup", std::function<AnimSyncGroup *()>([]() -> AnimSyncGroup * { return nullptr; }), true);
+    sync.addFunc("addPlayer", &AnimSyncGroup::addPlayer);
+    sync.addFunc("clear", &AnimSyncGroup::clear);
+    sync.addFunc("getCount", &AnimSyncGroup::getCount);
+    sync.addFunc("setLeader", &AnimSyncGroup::setLeader);
+    sync.addFunc("getLeader", &AnimSyncGroup::getLeader);
+    sync.addFunc("update", &AnimSyncGroup::update);
+    sync.addFunc("getPhase", &AnimSyncGroup::getPhase);
+    sync.addFunc("getUsedMarkerSync", &AnimSyncGroup::getUsedMarkerSync);
+
     auto skin = table.addClass<AnimSkin>(
         "AnimSkin", std::function<AnimSkin *()>([]() -> AnimSkin * { return nullptr; }), true);
     skin.addFunc("getVertexCount", &AnimSkin::getVertexCount);
@@ -388,35 +831,149 @@ void Animation::expose(ssq::Table &table) {
     skin.addFunc("getSkeletonBone", &AnimSkin::getSkeletonBone);
     skin.addFunc("getSkinBoneName", &AnimSkin::getSkinBoneName);
     skin.addFunc("getInverseBindElement", &AnimSkin::getInverseBindElement);
+    skin.addFunc("updateMatrixPalette", &AnimSkin::updateMatrixPalette);
+    skin.addFunc("getMatrixPaletteElement", &AnimSkin::getMatrixPaletteElement);
+    skin.addFunc("bindGpuMesh", &AnimSkin::bindGpuMesh);
+    skin.addFunc("updateGpuMesh", &AnimSkin::updateGpuMesh);
     skin.addFunc("getBindPositionX", &AnimSkin::getBindPositionX);
     skin.addFunc("getBindPositionY", &AnimSkin::getBindPositionY);
     skin.addFunc("getBindPositionZ", &AnimSkin::getBindPositionZ);
     skin.addFunc("getVertexBone", &AnimSkin::getVertexBone);
+    skin.addFunc("getVertexSkinJoint", &AnimSkin::getVertexSkinJoint);
     skin.addFunc("getVertexWeight", &AnimSkin::getVertexWeight);
     skin.addFunc("updateSkinnedPositions", &AnimSkin::updateSkinnedPositions);
     skin.addFunc("hasSkinnedPositions", &AnimSkin::hasSkinnedPositions);
     skin.addFunc("getSkinnedPositionX", &AnimSkin::getSkinnedPositionX);
     skin.addFunc("getSkinnedPositionY", &AnimSkin::getSkinnedPositionY);
     skin.addFunc("getSkinnedPositionZ", &AnimSkin::getSkinnedPositionZ);
+    skin.addFunc("getSkinnedPositions", &AnimSkin::getSkinnedPositions);
+    skin.addFunc("updateSkinnedNormals", &AnimSkin::updateSkinnedNormals);
+    skin.addFunc("hasSkinnedNormals", &AnimSkin::hasSkinnedNormals);
+    skin.addFunc("getSkinnedNormals", &AnimSkin::getSkinnedNormals);
+    skin.addFunc("applyToMesh",
+                 std::function<bool(AnimSkin *, graphics::Graphics *,
+                                    graphics::Mesh *, AnimPose *)>(
+                     &AnimSkin::applyToMesh));
 
-    auto player = table.addClass<AnimPlayer>(
-        "AnimPlayer", std::function<AnimPlayer *()>([]() -> AnimPlayer * { return nullptr; }),
+    auto lattice = table.addClass<AnimLattice>(
+        "AnimLattice", std::function<AnimLattice *()>([]() -> AnimLattice * { return nullptr; }),
         true);
-    player.addFunc("play", &AnimPlayer::play);
-    player.addFunc("crossFade", &AnimPlayer::crossFade);
-    player.addFunc("stop", &AnimPlayer::stop);
-    player.addFunc("pause", &AnimPlayer::pause);
-    player.addFunc("resume", &AnimPlayer::resume);
-    player.addFunc("setSpeed", &AnimPlayer::setSpeed);
-    player.addFunc("getSpeed", &AnimPlayer::getSpeed);
-    player.addFunc("setTime", &AnimPlayer::setTime);
-    player.addFunc("getTime", &AnimPlayer::getTime);
-    player.addFunc("setLoop", &AnimPlayer::setLoop);
-    player.addFunc("getLoop", &AnimPlayer::getLoop);
-    player.addFunc("isPlaying", &AnimPlayer::isPlaying);
-    player.addFunc("isPaused", &AnimPlayer::isPaused);
-    player.addFunc("getPose", &AnimPlayer::getPose);
-    player.addFunc("update", &AnimPlayer::update);
+    lattice.addFunc("setDivisions", &AnimLattice::setDivisions);
+    lattice.addFunc("getDivisionsX", &AnimLattice::getDivisionsX);
+    lattice.addFunc("getDivisionsY", &AnimLattice::getDivisionsY);
+    lattice.addFunc("getDivisionsZ", &AnimLattice::getDivisionsZ);
+    lattice.addFunc("setSize", &AnimLattice::setSize);
+    lattice.addFunc("getSizeX", &AnimLattice::getSizeX);
+    lattice.addFunc("getSizeY", &AnimLattice::getSizeY);
+    lattice.addFunc("getSizeZ", &AnimLattice::getSizeZ);
+    lattice.addFunc("setOrigin", &AnimLattice::setOrigin);
+    lattice.addFunc("getOriginX", &AnimLattice::getOriginX);
+    lattice.addFunc("getOriginY", &AnimLattice::getOriginY);
+    lattice.addFunc("getOriginZ", &AnimLattice::getOriginZ);
+    lattice.addFunc("setClamp", &AnimLattice::setClamp);
+    lattice.addFunc("getClamp", &AnimLattice::getClamp);
+    lattice.addFunc("getPointCount", &AnimLattice::getPointCount);
+    lattice.addFunc("setPointScale", &AnimLattice::setPointScale);
+    lattice.addFunc("setPointOffset", &AnimLattice::setPointOffset);
+    lattice.addFunc("setScale", &AnimLattice::setScale);
+    lattice.addFunc("reset", &AnimLattice::reset);
+    lattice.addFunc("getPointScaleX", &AnimLattice::getPointScaleX);
+    lattice.addFunc("getPointScaleY", &AnimLattice::getPointScaleY);
+    lattice.addFunc("getPointScaleZ", &AnimLattice::getPointScaleZ);
+    lattice.addFunc("getPointOffsetX", &AnimLattice::getPointOffsetX);
+    lattice.addFunc("getPointOffsetY", &AnimLattice::getPointOffsetY);
+    lattice.addFunc("getPointOffsetZ", &AnimLattice::getPointOffsetZ);
+    lattice.addFunc("bindModel", &AnimLattice::bindModel);
+    lattice.addFunc("bindPositionsFromArray",
+                    std::function<void(AnimLattice *, ssq::Array)>(bindPositionsFromArray));
+    lattice.addFunc("clearBind", &AnimLattice::clearBind);
+    lattice.addFunc("getVertexCount", &AnimLattice::getVertexCount);
+    lattice.addFunc("getBindPositionX", &AnimLattice::getBindPositionX);
+    lattice.addFunc("getBindPositionY", &AnimLattice::getBindPositionY);
+    lattice.addFunc("getBindPositionZ", &AnimLattice::getBindPositionZ);
+    lattice.addFunc(
+        "updateDeformedPositions",
+        static_cast<bool (AnimLattice::*)()>(&AnimLattice::updateDeformedPositions));
+    lattice.addFunc(
+        "updateDeformedPositionsFromArray",
+        std::function<bool(AnimLattice *, ssq::Array)>(updateDeformedPositionsFromArray));
+    lattice.addFunc(
+        "updateDeformedNormalsFromArray",
+        std::function<bool(AnimLattice *, ssq::Array, ssq::Array)>(
+            updateDeformedNormalsFromArray));
+    lattice.addFunc("hasDeformedPositions", &AnimLattice::hasDeformedPositions);
+    lattice.addFunc("hasDeformedNormals", &AnimLattice::hasDeformedNormals);
+    lattice.addFunc("getDeformedPositionX", &AnimLattice::getDeformedPositionX);
+    lattice.addFunc("getDeformedPositionY", &AnimLattice::getDeformedPositionY);
+    lattice.addFunc("getDeformedPositionZ", &AnimLattice::getDeformedPositionZ);
+    lattice.addFunc("getDeformedPositions", &AnimLattice::getDeformedPositions);
+    lattice.addFunc("getDeformedNormals", &AnimLattice::getDeformedNormals);
+
+    exposeAnimPlayerBindings(table);
+    exposePhysicalBalancePoseBindings(table);
+
+    auto graph = table.addClass<AnimGraph>(
+        "AnimGraph", std::function<AnimGraph *()>([]() -> AnimGraph * { return nullptr; }), true);
+    graph.addFunc("addClip", &AnimGraph::addClip);
+    graph.addFunc("addBlend", &AnimGraph::addBlend);
+    graph.addFunc("addAdditive", &AnimGraph::addAdditive);
+    graph.addFunc("addLayer", &AnimGraph::addLayer);
+    graph.addFunc("addOneShot", &AnimGraph::addOneShot);
+    graph.addFunc("addBlendSpace1D", &AnimGraph::addBlendSpace1D);
+    graph.addFunc("addBlendSpace2D", &AnimGraph::addBlendSpace2D);
+    graph.addFunc("addBlendSpace1DPoint", &AnimGraph::addBlendSpace1DPoint);
+    graph.addFunc("addBlendSpace2DPoint", &AnimGraph::addBlendSpace2DPoint);
+    graph.addFunc("setBoneMask", &AnimGraph::setBoneMask);
+    graph.addFunc("clearBoneMask", &AnimGraph::clearBoneMask);
+    graph.addFunc("setRoot", &AnimGraph::setRoot);
+    graph.addFunc("getRoot", &AnimGraph::getRoot);
+    graph.addFunc("getNodeCount", &AnimGraph::getNodeCount);
+    graph.addFunc("setWeight", &AnimGraph::setWeight);
+    graph.addFunc("setPosition1D", &AnimGraph::setPosition1D);
+    graph.addFunc("setPosition2D", &AnimGraph::setPosition2D);
+    graph.addFunc("setSpeed", &AnimGraph::setSpeed);
+    graph.addFunc("trigger", &AnimGraph::trigger);
+    graph.addFunc("isOneShotActive", &AnimGraph::isOneShotActive);
+    graph.addFunc("setAdditiveReference", &AnimGraph::setAdditiveReferenceCompat);
+    graph.addFunc("getAdditiveReference", &AnimGraph::getAdditiveReference);
+    graph.addFunc("getPose", &AnimGraph::getPose);
+    graph.addFunc("update", &AnimGraph::update);
+
+    auto mask = table.addClass<AnimBoneMask>(
+        "AnimBoneMask", std::function<AnimBoneMask*()>([]() -> AnimBoneMask* { return nullptr; }), true);
+    mask.addFunc("setAll", &AnimBoneMask::setAll);
+    mask.addFunc("setBoneWeight", &AnimBoneMask::setBoneWeight);
+    mask.addFunc("setBoneWeightByName", &AnimBoneMask::setBoneWeightByName);
+    mask.addFunc("setBoneAndChildren", &AnimBoneMask::setBoneAndChildren);
+    mask.addFunc("getBoneWeight", &AnimBoneMask::getBoneWeight);
+    mask.addFunc("getBoneCount", &AnimBoneMask::getBoneCount);
+
+    auto mixer = table.addClass<AnimLayerMixer>(
+        "AnimLayerMixer", std::function<AnimLayerMixer*()>([]() -> AnimLayerMixer* { return nullptr; }), true);
+    mixer.addFunc("setBasePlayer", &AnimLayerMixer::setBasePlayer);
+    mixer.addFunc("setBaseGraph", &AnimLayerMixer::setBaseGraph);
+    mixer.addFunc("setBaseStateMachine", &AnimLayerMixer::setBaseStateMachine);
+    mixer.addFunc("getBasePlayer", &AnimLayerMixer::getBasePlayer);
+    mixer.addFunc("addLayer", &AnimLayerMixer::addLayer);
+    mixer.addFunc("addGraphLayer", &AnimLayerMixer::addGraphLayer);
+    mixer.addFunc("addStateMachineLayer", &AnimLayerMixer::addStateMachineLayer);
+    mixer.addFunc("removeLayer", &AnimLayerMixer::removeLayer);
+    mixer.addFunc("setLayerWeight", &AnimLayerMixer::setLayerWeight);
+    mixer.addFunc("setLayerEnabled", &AnimLayerMixer::setLayerEnabled);
+    mixer.addFunc("setLayerAdditiveReference", &AnimLayerMixer::setLayerAdditiveReferenceCompat);
+    mixer.addFunc("getLayerCount", &AnimLayerMixer::getLayerCount);
+    mixer.addFunc("getLayerName", &AnimLayerMixer::getLayerName);
+    mixer.addFunc("getLayerWeight", &AnimLayerMixer::getLayerWeight);
+    mixer.addFunc("getLayerEnabled", &AnimLayerMixer::getLayerEnabled);
+    mixer.addFunc("getLayerMode", &AnimLayerMixer::getLayerMode);
+    mixer.addFunc("getLayerAdditiveReference", &AnimLayerMixer::getLayerAdditiveReference);
+    mixer.addFunc("update", &AnimLayerMixer::update);
+    mixer.addFunc("getPose", &AnimLayerMixer::getPose);
+    mixer.addFunc("getEventCount", &AnimLayerMixer::getEventCount);
+    mixer.addFunc("getEventLayer", &AnimLayerMixer::getEventLayer);
+    mixer.addFunc("getEventName", &AnimLayerMixer::getEventName);
+    mixer.addFunc("getEventPayload", &AnimLayerMixer::getEventPayload);
+    mixer.addFunc("clearEvents", &AnimLayerMixer::clearEvents);
 
     auto sm = table.addClass<AnimStateMachine>(
         "AnimStateMachine",
@@ -443,52 +1000,7 @@ void Animation::expose(ssq::Table &table) {
     sm.addFunc("isBlending", &AnimStateMachine::isBlending);
     sm.addFunc("update", &AnimStateMachine::update);
 
-    auto db = table.addClass<MotionDatabase>(
-        "MotionDatabase",
-        std::function<MotionDatabase *()>([]() -> MotionDatabase * { return nullptr; }), true);
-    db.addFunc("addFeatureBone", &MotionDatabase::addFeatureBone);
-    db.addFunc("addFeatureBoneByName", &MotionDatabase::addFeatureBoneByName);
-    db.addFunc("setRootBone", &MotionDatabase::setRootBone);
-    db.addFunc("getRootBone", &MotionDatabase::getRootBone);
-    db.addFunc("setRootBoneByName", &MotionDatabase::setRootBoneByName);
-    db.addFunc("addClip", &MotionDatabase::addClip);
-    db.addFunc("getClipCount", &MotionDatabase::getClipCount);
-    db.addFunc("bake", &MotionDatabase::bake);
-    db.addFunc("isBaked", &MotionDatabase::isBaked);
-    db.addFunc("getFrameCount", &MotionDatabase::getFrameCount);
-    db.addFunc("getFeatureSize", &MotionDatabase::getFeatureSize);
-    db.addFunc("getFrameTime", &MotionDatabase::getFrameTime);
-    db.addFunc("getFrameClipIndex", &MotionDatabase::getFrameClipIndex);
-    db.addFunc("getFeatureBoneCount", &MotionDatabase::getFeatureBoneCount);
-    db.addFunc("getFeatureBone", &MotionDatabase::getFeatureBone);
-
-    auto mm = table.addClass<MotionMatcher>(
-        "MotionMatcher",
-        std::function<MotionMatcher *()>([]() -> MotionMatcher * { return nullptr; }), true);
-    mm.addFunc("setDesiredVelocity", &MotionMatcher::setDesiredVelocity);
-    mm.addFunc("getDesiredVelocityX", &MotionMatcher::getDesiredVelocityX);
-    mm.addFunc("getDesiredVelocityZ", &MotionMatcher::getDesiredVelocityZ);
-    mm.addFunc("setDesiredYaw", &MotionMatcher::setDesiredYaw);
-    mm.addFunc("getDesiredYaw", &MotionMatcher::getDesiredYaw);
-    mm.addFunc("setSearchInterval", &MotionMatcher::setSearchInterval);
-    mm.addFunc("getSearchInterval", &MotionMatcher::getSearchInterval);
-    mm.addFunc("setBlendTime", &MotionMatcher::setBlendTime);
-    mm.addFunc("getBlendTime", &MotionMatcher::getBlendTime);
-    mm.addFunc("setTrajectoryWeight", &MotionMatcher::setTrajectoryWeight);
-    mm.addFunc("getTrajectoryWeight", &MotionMatcher::getTrajectoryWeight);
-    mm.addFunc("setPoseWeight", &MotionMatcher::setPoseWeight);
-    mm.addFunc("getPoseWeight", &MotionMatcher::getPoseWeight);
-    mm.addFunc("setVelocityWeight", &MotionMatcher::setVelocityWeight);
-    mm.addFunc("getVelocityWeight", &MotionMatcher::getVelocityWeight);
-    mm.addFunc("setIgnoreRadius", &MotionMatcher::setIgnoreRadius);
-    mm.addFunc("getIgnoreRadius", &MotionMatcher::getIgnoreRadius);
-    mm.addFunc("getMatchedFrame", &MotionMatcher::getMatchedFrame);
-    mm.addFunc("getMatchedClipIndex", &MotionMatcher::getMatchedClipIndex);
-    mm.addFunc("getMatchedTime", &MotionMatcher::getMatchedTime);
-    mm.addFunc("getLastSearchCost", &MotionMatcher::getLastSearchCost);
-    mm.addFunc("getPose", &MotionMatcher::getPose);
-    mm.addFunc("search", &MotionMatcher::search);
-    mm.addFunc("update", &MotionMatcher::update);
+    exposeMotionMatcherBindings(table);
 
     auto ca = table.addClass<ControlAnim>(
         "ControlAnim", std::function<ControlAnim *()>([]() -> ControlAnim * { return nullptr; }),
@@ -533,6 +1045,73 @@ void Animation::expose(ssq::Table &table) {
     cp.addFunc("getPose", &ControlPose::getPose);
     cp.addFunc("getTargetPose", &ControlPose::getTargetPose);
     cp.addFunc("update", &ControlPose::update);
+
+    auto solver = table.addClass<DynamicBoneSolver>(
+        "DynamicBoneSolver",
+        std::function<DynamicBoneSolver *()>([]() -> DynamicBoneSolver * { return nullptr; }), true);
+    solver.addFunc("addChain", &DynamicBoneSolver::addChain);
+    solver.addFunc("addChainByName", &DynamicBoneSolver::addChainByName);
+    solver.addFunc("getChainCount", &DynamicBoneSolver::getChainCount);
+    solver.addFunc("clearChains", &DynamicBoneSolver::clearChains);
+    solver.addFunc("setChainEnabled", &DynamicBoneSolver::setChainEnabled);
+    solver.addFunc("isChainEnabled", &DynamicBoneSolver::isChainEnabled);
+    solver.addFunc("setChainFreezeAxis", &DynamicBoneSolver::setChainFreezeAxis);
+    solver.addFunc("setChainSelfCollision", &DynamicBoneSolver::setChainSelfCollision);
+    solver.addFunc("setChainParticleParameters", &DynamicBoneSolver::setChainParticleParameters);
+    solver.addFunc("setChainEndLength", &DynamicBoneSolver::setChainEndLength);
+    solver.addFunc("setChainEndOffset", &DynamicBoneSolver::setChainEndOffset);
+    solver.addFunc("clearChainEnd", &DynamicBoneSolver::clearChainEnd);
+    solver.addFunc("setGlobalGravity", &DynamicBoneSolver::setGlobalGravity);
+    solver.addFunc("setExternalForce", &DynamicBoneSolver::setExternalForce);
+    solver.addFunc("getGlobalGravityX", &DynamicBoneSolver::getGlobalGravityX);
+    solver.addFunc("getGlobalGravityY", &DynamicBoneSolver::getGlobalGravityY);
+    solver.addFunc("getGlobalGravityZ", &DynamicBoneSolver::getGlobalGravityZ);
+    solver.addFunc("setWeight", &DynamicBoneSolver::setWeight);
+    solver.addFunc("getWeight", &DynamicBoneSolver::getWeight);
+    solver.addFunc("setUpdateRate", &DynamicBoneSolver::setUpdateRate);
+    solver.addFunc("getUpdateRate", &DynamicBoneSolver::getUpdateRate);
+    solver.addFunc("setTeleportThreshold", &DynamicBoneSolver::setTeleportThreshold);
+    solver.addFunc("getTeleportThreshold", &DynamicBoneSolver::getTeleportThreshold);
+    solver.addFunc("setObjectMoveResponse", &DynamicBoneSolver::setObjectMoveResponse);
+    solver.addFunc("getObjectMoveResponse", &DynamicBoneSolver::getObjectMoveResponse);
+    solver.addFunc("setDistanceReference", &DynamicBoneSolver::setDistanceReference);
+    solver.addFunc("setDistanceLimit", &DynamicBoneSolver::setDistanceLimit);
+    solver.addFunc("isChainSleeping", &DynamicBoneSolver::isChainSleeping);
+    solver.addFunc("addColliderSphere", &DynamicBoneSolver::addColliderSphere);
+    solver.addFunc("addBoneColliderSphere", &DynamicBoneSolver::addBoneColliderSphere);
+    solver.addFunc("addColliderCapsule", &DynamicBoneSolver::addColliderCapsule);
+    solver.addFunc("addBoneColliderCapsule", &DynamicBoneSolver::addBoneColliderCapsule);
+    solver.addFunc("clearColliders", &DynamicBoneSolver::clearColliders);
+    solver.addFunc("getColliderCount", &DynamicBoneSolver::getColliderCount);
+    solver.addFunc("removeCollider", &DynamicBoneSolver::removeCollider);
+    solver.addFunc("setColliderEnabled", &DynamicBoneSolver::setColliderEnabled);
+    solver.addFunc("setColliderInside", &DynamicBoneSolver::setColliderInside);
+    solver.addFunc("setColliderRadius", &DynamicBoneSolver::setColliderRadius);
+    solver.addFunc("reset", &DynamicBoneSolver::reset);
+    solver.addFunc("update", &DynamicBoneSolver::update);
+    auto footIK = table.addClass<FootIKSolver>(
+        "FootIKSolver", std::function<FootIKSolver *()>([]() -> FootIKSolver * { return nullptr; }), true);
+    footIK.addFunc("setSkeleton", &FootIKSolver::setSkeleton);
+    footIK.addFunc("getSkeleton", &FootIKSolver::getSkeleton);
+    footIK.addFunc("setPelvisBone", &FootIKSolver::setPelvisBone);
+    footIK.addFunc("configureLeftLeg", &FootIKSolver::configureLeftLeg);
+    footIK.addFunc("configureRightLeg", &FootIKSolver::configureRightLeg);
+    footIK.addFunc("configureLeftToe", &FootIKSolver::configureLeftToe);
+    footIK.addFunc("configureRightToe", &FootIKSolver::configureRightToe);
+    footIK.addFunc("setGroundQuery", &FootIKSolver::setGroundQuery);
+    footIK.addFunc("setLeftContact", &FootIKSolver::setLeftContact);
+    footIK.addFunc("setRightContact", &FootIKSolver::setRightContact);
+    footIK.addFunc("setMaxPelvisOffset", &FootIKSolver::setMaxPelvisOffset);
+    footIK.addFunc("setMinGroundNormalY", &FootIKSolver::setMinGroundNormalY);
+    footIK.addFunc("setPositionResponse", &FootIKSolver::setPositionResponse);
+    footIK.addFunc("setRotationResponse", &FootIKSolver::setRotationResponse);
+    footIK.addFunc("setContactGraceTime", &FootIKSolver::setContactGraceTime);
+    footIK.addFunc("setFootLockEnabled", &FootIKSolver::setFootLockEnabled);
+    footIK.addFunc("setFootLockThresholds", &FootIKSolver::setFootLockThresholds);
+    footIK.addFunc("isLeftFootLocked", &FootIKSolver::isLeftFootLocked);
+    footIK.addFunc("isRightFootLocked", &FootIKSolver::isRightFootLocked);
+    footIK.addFunc("reset", &FootIKSolver::reset);
+    footIK.addFunc("apply", &FootIKSolver::apply);
 
     auto trail = table.addClass<AnimTrail>(
         "AnimTrail", std::function<AnimTrail *()>([]() -> AnimTrail * { return nullptr; }), true);
@@ -579,6 +1158,8 @@ void Animation::expose(ssq::Table &table) {
     sheet.addFunc("addFrame", &SpriteSheet::addFrame);
     sheet.addFunc("setGrid", &SpriteSheet::setGrid);
     sheet.addFunc("clear", &SpriteSheet::clear);
+    sheet.addFunc("setTexture", &SpriteSheet::setTexture);
+    sheet.addFunc("getTexture", &SpriteSheet::getTexture);
     sheet.addFunc("getFrameCount", &SpriteSheet::getFrameCount);
     sheet.addFunc("findFrame", &SpriteSheet::findFrame);
     sheet.addFunc("getFrameName", &SpriteSheet::getFrameName);
@@ -586,6 +1167,10 @@ void Animation::expose(ssq::Table &table) {
     sheet.addFunc("getFrameY", &SpriteSheet::getFrameY);
     sheet.addFunc("getFrameWidth", &SpriteSheet::getFrameWidth);
     sheet.addFunc("getFrameHeight", &SpriteSheet::getFrameHeight);
+    sheet.addFunc("getFrameSourceWidth", &SpriteSheet::getFrameSourceWidth);
+    sheet.addFunc("getFrameSourceHeight", &SpriteSheet::getFrameSourceHeight);
+    sheet.addFunc("getFrameOffsetX", &SpriteSheet::getFrameOffsetX);
+    sheet.addFunc("getFrameOffsetY", &SpriteSheet::getFrameOffsetY);
     sheet.addFunc("applyToQuad", &SpriteSheet::applyToQuad);
 
     auto sclip = table.addClass<SpriteClip>(
@@ -597,6 +1182,11 @@ void Animation::expose(ssq::Table &table) {
     sclip.addFunc("getLoop", &SpriteClip::getLoop);
     sclip.addFunc("addFrame", &SpriteClip::addFrame);
     sclip.addFunc("addFrameByName", &SpriteClip::addFrameByName);
+    sclip.addFunc("addRange", &SpriteClip::addRange);
+    sclip.addFunc("setFPS", &SpriteClip::setFPS);
+    sclip.addFunc("getFPS", &SpriteClip::getFPS);
+    sclip.addFunc("addEvent", &SpriteClip::addEvent);
+    sclip.addFunc("getEvent", &SpriteClip::getEvent);
     sclip.addFunc("clear", &SpriteClip::clear);
     sclip.addFunc("getFrameCount", &SpriteClip::getFrameCount);
     sclip.addFunc("getSheetFrame", &SpriteClip::getSheetFrame);
@@ -611,11 +1201,23 @@ void Animation::expose(ssq::Table &table) {
     sanim.addFunc("setSheet", &SpriteAnim::setSheet);
     sanim.addFunc("getSheet", &SpriteAnim::getSheet);
     sanim.addFunc("play", &SpriteAnim::play);
+    sanim.addFunc("playReverse", &SpriteAnim::playReverse);
     sanim.addFunc("stop", &SpriteAnim::stop);
     sanim.addFunc("pause", &SpriteAnim::pause);
     sanim.addFunc("resume", &SpriteAnim::resume);
     sanim.addFunc("setSpeed", &SpriteAnim::setSpeed);
     sanim.addFunc("getSpeed", &SpriteAnim::getSpeed);
+    sanim.addFunc("addSpeedCurveKey", &SpriteAnim::addSpeedCurveKey);
+    sanim.addFunc("clearSpeedCurve", &SpriteAnim::clearSpeedCurve);
+    sanim.addFunc("resetSpeedCurve", &SpriteAnim::resetSpeedCurve);
+    sanim.addFunc("setSpeedCurveLoop", &SpriteAnim::setSpeedCurveLoop);
+    sanim.addFunc("setSpeedCurveInterpolation", &SpriteAnim::setSpeedCurveInterpolation);
+    sanim.addFunc("getSpeedCurveValue", &SpriteAnim::getSpeedCurveValue);
+    sanim.addFunc("setFrame", &SpriteAnim::setFrame);
+    sanim.addFunc("step", &SpriteAnim::step);
+    sanim.addFunc("playOnce", &SpriteAnim::playOnce);
+    sanim.addFunc("queue", &SpriteAnim::queue);
+    sanim.addFunc("consumeEvent", &SpriteAnim::consumeEvent);
     sanim.addFunc("setTime", &SpriteAnim::setTime);
     sanim.addFunc("getTime", &SpriteAnim::getTime);
     sanim.addFunc("setLoop", &SpriteAnim::setLoop);
@@ -623,12 +1225,16 @@ void Animation::expose(ssq::Table &table) {
     sanim.addFunc("isPlaying", &SpriteAnim::isPlaying);
     sanim.addFunc("isPaused", &SpriteAnim::isPaused);
     sanim.addFunc("isFinished", &SpriteAnim::isFinished);
+    sanim.addFunc("getLoopCount", &SpriteAnim::getLoopCount);
+    sanim.addFunc("consumeCompleted", &SpriteAnim::consumeCompleted);
+    sanim.addFunc("consumeLooped", &SpriteAnim::consumeLooped);
     sanim.addFunc("getClip", &SpriteAnim::getClip);
     sanim.addFunc("getClipFrame", &SpriteAnim::getClipFrame);
     sanim.addFunc("getSheetFrame", &SpriteAnim::getSheetFrame);
     sanim.addFunc("bindQuad", &SpriteAnim::bindQuad);
     sanim.addFunc("unbindQuad", &SpriteAnim::unbindQuad);
     sanim.addFunc("getBoundQuad", &SpriteAnim::getBoundQuad);
+    sanim.addFunc("bindSprite", &SpriteAnim::bindSprite);
     sanim.addFunc("applyToQuad", &SpriteAnim::applyToQuad);
     sanim.addFunc("update", &SpriteAnim::update);
 
@@ -755,6 +1361,11 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("getName", &Animation::getName);
     cls.addFunc("newTween", &Animation::newTween);
     cls.addFunc("newSpriteSheet", &Animation::newSpriteSheet);
+    cls.addFunc("newSpriteSheetFromSequence", &Animation::newSpriteSheetFromSequence);
+    cls.addFunc("newSpriteSheetFromAtlasJson", &Animation::newSpriteSheetFromAtlasJson);
+    cls.addFunc("getSpriteSequenceCacheCount", &Animation::getSpriteSequenceCacheCount);
+    cls.addFunc("getSpriteSequenceCacheBytes", &Animation::getSpriteSequenceCacheBytes);
+    cls.addFunc("clearSpriteSequenceCache", &Animation::clearSpriteSequenceCache);
     cls.addFunc("newSpriteClip", &Animation::newSpriteClip);
     cls.addFunc("newSpriteAnim", &Animation::newSpriteAnim);
     cls.addFunc("newSpineAtlas", &Animation::newSpineAtlas);
@@ -768,20 +1379,33 @@ void Animation::expose(ssq::Class &cls) {
     cls.addFunc("newSkeleton", &Animation::newSkeleton);
     cls.addFunc("newClip", &Animation::newClip);
     cls.addFunc("newPose", &Animation::newPose);
+    cls.addFunc("newBatch", &Animation::newBatch);
+    cls.addFunc("newConstraintStack", &Animation::newConstraintStack);
+    cls.addFunc("newDynamicBoneSolver", &Animation::newDynamicBoneSolver);
+    cls.addFunc("setupHairChain", &Animation::setupHairChain);
+    cls.addFunc("setupHairHeadCollider", &Animation::setupHairHeadCollider);
+    cls.addFunc("newFootIKSolver", &Animation::newFootIKSolver);
+    cls.addFunc("newSyncGroup", &Animation::newSyncGroup);
     cls.addFunc("newPlayer", &Animation::newPlayer);
+    cls.addFunc("newGraph", &Animation::newGraph);
+    cls.addFunc("newBoneMask", &Animation::newBoneMask);
+    cls.addFunc("newLayerMixer", &Animation::newLayerMixer);
     cls.addFunc("newStateMachine", &Animation::newStateMachine);
     cls.addFunc("newMotionDatabase", &Animation::newMotionDatabase);
     cls.addFunc("newMotionMatcher", &Animation::newMotionMatcher);
     cls.addFunc("newControlAnim", &Animation::newControlAnim);
     cls.addFunc("newControlPose", &Animation::newControlPose);
-    cls.addFunc("newSkeletonFromModel", &Animation::newSkeletonFromModel);
-    cls.addFunc("newClipFromModel", &Animation::newClipFromModel);
-    cls.addFunc("newSkeletonFromEvaFile", &Animation::newSkeletonFromEvaFile);
-    cls.addFunc("newClipFromEvaFile", &Animation::newClipFromEvaFile);
-    cls.addFunc("newSkinFromModel", &Animation::newSkinFromModel);
+    cls.addFunc("newPhysicalBalancePose", &Animation::newPhysicalBalancePose);
+    cls.addFunc("newSkeletonFromAnimationFixtureText", &Animation::newSkeletonFromAnimationFixtureText);
+    cls.addFunc("newClipFromAnimationFixtureText", &Animation::newClipFromAnimationFixtureText);
+    cls.addFunc("newLattice", &Animation::newLattice);
+#if defined(EVE_ANIMATION_MODEL3D)
+    exposeAnimationModelImportBindings(cls);
+#endif
     cls.addFunc("newTrail", &Animation::newTrail);
     cls.addFunc("update", &Animation::update);
     cls.addFunc("getTweenCount", &Animation::getTweenCount);
+    cls.addFunc("getMotionCount", &Animation::getMotionCount);
     cls.addFunc("getSpriteAnimCount", &Animation::getSpriteAnimCount);
     cls.addFunc("getSpineAnimCount", &Animation::getSpineAnimCount);
     cls.addFunc("getActiveCount", &Animation::getActiveCount);

@@ -9,8 +9,7 @@ Both expose the same surface so the orchestrator stays engine-agnostic.
 
 from __future__ import annotations
 
-import sys
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from .config import load_scene_director_source
 

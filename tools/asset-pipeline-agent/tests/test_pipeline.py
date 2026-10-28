@@ -13,7 +13,7 @@ from asset_pipeline_agent.cache import AssetCache, md5_of
 from asset_pipeline_agent.config import load_config
 from asset_pipeline_agent.models import parse_json_block
 from asset_pipeline_agent.parser import RequirementParser
-from asset_pipeline_agent.report import AssetRequest, Candidate
+from asset_pipeline_agent.report import AssetRequest
 from asset_pipeline_agent.sources import DryRunSource
 
 

@@ -5,6 +5,14 @@ build/test/run commands live in [`Readme.en.md`](Readme.en.md) and the root
 [`Makefile`](Makefile) — use those; the notes below cover the non-obvious platform
 caveats. The Cursor Cloud VM is Linux; on a Windows host use the Windows section.
 
+Game-script agents: read [`.cursor/skills/evescript/SKILL.md`](.cursor/skills/evescript/SKILL.md)
+and [`docs/dev/AI知识补偿.md`](docs/dev/AI知识补偿.md). Look up EveScript APIs with MCP
+`eve_api_search` / `eve_api_get` (or `python3 scripts/generate_binding_contracts.py --json-output eve-api.json`).
+Do not invent Unity/Godot APIs. Do not use `eve_eval` as the official gameplay path.
+
+> CI 问题调试：本地复现 / WSL2 / SSH 到 Mac mini 的完整手册见本机
+> `.local-debug/CI-DEBUG-PLAYBOOK.md`（含私有机器信息，**勿提交到 GitHub**）。
+
 ## Cursor Cloud specific instructions
 
 On this Linux VM the host target is `build/linux-debug`.
@@ -25,6 +33,15 @@ compiler override.
 ### Building
 - `make debug` configures + builds `build/linux-debug` (equivalently: cmake configure,
   then `--target deps`, then the engine).
+- Debug has two compiler profiles (`EVENGINE_DEBUG_LEVEL` / Makefile `DEBUG_LEVEL`):
+  **`normal`** (default, CI) = GCC/Clang `-g0 -O2` (MSVC `/Od`, no `/Zi`) so sccache
+  does not store DWARF-bloated `.o` into GitHub Actions cache; **`detail`** =
+  `-g2 -O1` (MSVC `/Zi /O1`) for richer DWARF when triaging. MSVC normal stays
+  `/Od` because `/O2` cold-compiles past the Windows CI build-step budget.
+  Example: `make debug DEBUG_LEVEL=detail JOBS=4`. Asserts stay on for
+  `CONFIG:Debug` either way.
+  ASan/UBSan is a separate RelWithDebInfo lane with `-O1 -g1` (line tables for
+  sanitizer stacks; not full `-g`, not `-g0`).
 - The first configure downloads the `third-party/` sources from GitHub and the `deps`
   target compiles them (SDL2, Poco, OpenAL, Box2D/box3d, FreeType, …). This is slow the
   first time and cached afterward. `build/` is git-ignored and tied to its source tree.
@@ -41,7 +58,7 @@ export XDG_RUNTIME_DIR=/tmp/xdg-runtime && mkdir -p "$XDG_RUNTIME_DIR" && chmod 
 export ALSOFT_DRIVERS=null                                     # OpenAL Soft null backend (no audio card)
 ```
 
-- Unit tests (full suite, ~1400 tests, a couple of minutes):
+- Unit tests (full suite, ~1500 per-case tests, a couple of minutes):
   `VK_ICD_FILENAMES=... ALSOFT_DRIVERS=... xvfb-run -a make test/linux-debug`
 - `make test/*` runs tests per case (process-isolated; this is the fast path on
   CI) and injects fast headless defaults for ClassicScenes
@@ -53,14 +70,17 @@ export ALSOFT_DRIVERS=null                                     # OpenAL Soft nul
   `docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md`.
 - Run an example (long-lived GUI loop — use `timeout` for a smoke run):
   `cd examples/basic && VK_ICD_FILENAMES=... ALSOFT_DRIVERS=... XDG_RUNTIME_DIR=... xvfb-run -a ../../build/linux-debug/src/engine/eve run`
-- `scripts/smoke_examples.sh <name>` launches an example headless and greps for error
-  markers (PASS/FAIL) — a good quick check under `xvfb-run`.
+- `scripts/smoke_examples.sh <name>` launches an example headless, requires it to stay
+  alive for `MIN_RUN_SECONDS` (default 2s) and greps for error markers (PASS/FAIL) — a
+  good quick check under `xvfb-run`. `python3 scripts/check_examples.py` (or
+  `make check/examples`) validates the `examples/` layout half of the same contract.
 - The benign `[ALSOFT] Failed to set real-time priority` warning is expected on this VM.
 
 ### Capturing a rendered frame (visual artifact)
-There is no on-screen display; grab the framebuffer from a manual Xvfb display:
-`Xvfb :99 -screen 0 800x600x24 &` then run `eve` with `DISPLAY=:99`, and
-`ffmpeg -f x11grab -video_size 800x600 -i :99 -frames:v 1 out.png`.
+Do not capture Xvfb's framebuffer or use it as visual-correctness evidence; that
+path is unreliable. Start `eve`, connect to the engine's built-in MCP endpoint,
+and use the engine-owned screenshot function. Xvfb may only provide an SDL
+display for automated non-visual tests; it is not a screenshot backend.
 
 ## Windows (native) instructions
 
@@ -89,12 +109,79 @@ automatically; on Windows it is a manual step):
 ```powershell
 git submodule update --init --recursive
 ```
+(equivalently `make init/submodules`). `third-party/` itself is not a
+submodule: the first cmake configure clones it at the pinned commit
+(`EVENGINE_THIRD_PARTY_PIN` in `CMakeLists.txt`) and verifies any existing
+checkout is on that commit.
 
 ### Building
 - Debug (Ninja + MSVC `cl`, fastest local iteration):
-  `make build/win32-debug`
+  `make build/win32-debug`. This matches the CI windows debug job, including
+  `-DEVENGINE_ENABLE_STRICT_WARNINGS=ON` (MSVC `/W4 /WX`). Opt out with
+  `CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_STRICT_WARNINGS=OFF`.
+- Before opening a PR, run the same source-only job CI runs:
+  `make check` (needs `python3`, `ruff`, `pillow`, clang-format 18 / `git clang-format`).
+  Then `make test/win32-debug` (or `FILTER=<prefix>`) for the host test lane.
 - Release (Visual Studio generator):
   `make build/win32`
+- **Module linkage policy**: `EVENGINE_MODULE_LINKAGE=SHARED` (one DLL per link
+  group) is the default, and the full suite is green under it on Windows and
+  Linux (5561 cases on Windows), so iterating on a domain test relinks a test
+  executable instead of the whole engine. Anything that ships an artifact must
+  pass `OBJECT` explicitly (the release Makefile config `WIN32_CMAKE_ARGS` pins
+  it, so `make build/win32` and `make sdk/win32`), because the shipped artifact
+  must be a single exe with no engine DLLs beside it; the debug SDK intentionally
+  follows the development configuration and therefore ships the link-group DLLs.
+  macOS, iOS, Android and WebAssembly keep the archive route: a mobile app bundle
+  cannot be told where to find seven group libraries, and macOS additionally needs
+  its platform support library (`EVPlatformMacOSX`) linked into the group that
+  calls it before the dynamic route can work there. Every piece of process-level
+  state that used to be duplicated per link unit (SDL video, box2d/box3d world
+  registries, ImGui's context, the header-only ECS default table) now has exactly
+  one owner; the per-family inventory, the third-party/submodule patches and the
+  traps are in
+  `docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md` §7.25.
+- **Annotating a declaration for the SHARED split.** When you add a symbol that
+  crosses a link-group boundary (a new module API, or new dev code that a higher
+  group or a test uses), the declaration needs `EVENGINE_API_<GROUP>` — ELF group
+  libraries export default-visibility symbols anyway, so *only* the Windows job
+  notices a missing macro (`LNK2019`/`LNK2001` + `LNK1120`). Four rules that each
+  cost a full CI cycle to learn:
+  1. The header must be able to see `common/Export.h`; otherwise the macro parses
+     as a type name (`C2079 ... uses undefined class 'eve::rpg::EVENGINE_API_PLATFORM'`)
+     and breaks **every** platform.
+  2. Annotate the whole family the linker will reach, not just the one symbol CI
+     named: one target fails per run.
+  3. Check the class before using a class-level macro. A class that holds a
+     `unique_ptr`/`optional` member whose type this header only forward declares
+     must declare its constructor, destructor and move operations *out of line*
+     (defaulted in the `.cpp` that sees the complete type); an in-class
+     `= default` makes the export pull in the member's deleter
+     (`C2027 use of undefined type` + `C2338 can't delete an incomplete type`).
+     A class with an implicitly deleted copy assignment needs those two spelled
+     `= delete` (`C2280`). Never put a class-level macro on a class with an
+     `inline static` data member (`C2491`).
+  4. Local compile checks lie unless the translation units actually rebuild:
+     Ninja's "unscanned" dependency tracking does not reliably recompile a `.cpp`
+     after a header edit, so touch every `.cpp` that includes the header (or
+     delete their `.obj`) before building. Details and the full trap list: §7.31
+     and §7.32 of the same spec.
+- **Run the full suite in CI, not locally.** Locally, verify the *link* (build
+  both routes plus `make check`) and let CI run every platform's cases. A local
+  full `ctest` starts thousands of test executables, so one group library that
+  failed to link turns into thousands of modal loader dialogs ("找不到
+  EVWorld.dll") that take over the desktop, and it is the same suite CI runs
+  anyway on a clean merge ref. Use `make test/<platform> DOMAIN=<domain>` when a
+  single domain really needs running locally. Details: §7.30 of the same spec.
+- **Test suite shape**: `EVENGINE_TEST_DOMAIN_SPLIT` decides whether the suite is
+  one executable per domain (`unit_test_<domain>`, ctest label of the same name)
+  or a single `unit_test`. It defaults to the linkage: `ON` for SHARED, where each
+  executable is a thin consumer of the group libraries, and `OFF` for OBJECT,
+  where every executable would statically contain the whole engine -- 30 of those
+  plus their incremental-link state measured 93 GB on Windows, against 0.4 GB exe
+  + 0.4 GB pdb for the monolithic binary. Pass the option explicitly to force
+  either shape; `make test/<platform> DOMAIN=<domain>` and
+  `make unit-test/<platform> DOMAIN=<domain>` only apply to the split shape.
 - Do not invoke `cl.exe` manually outside a Developer prompt; the `cmake\with-msvc.cmd`
   wrapper calls vcvars64 before CMake so the MSVC compiler and STL are found.
 - First build compiles third-party through the `deps` target — slow once, cached
@@ -138,3 +225,290 @@ make wsl/linux-debug
 - Parameter validation and internal invariants use `EV_PARAM_CHECK` / `EV_ASSERT`
   from `src/engine/common/Assert.h` (zeroerr-backed): enabled in Debug, compiled
   out in Release unless the build is configured with `-DEVENGINE_ENABLE_ASSERTS=ON`.
+
+## Debugging playbook
+
+These rules come from hard-won experience on this repo (Vulkan/GPU work on a
+hybrid-GPU Windows host). Follow them before blaming hardware, drivers, or SDK
+versions.
+
+### Principles (user-mandated)
+- **Search first, guess second.** When stuck, look up the actual API contract and
+  constraints (official Vulkan docs, Stack Overflow, vendor release notes) before
+  concluding "driver bug", "GPU poisoned", or "SDK version issue". Unverified
+  device/driver theories are almost always wrong.
+- **Enable the validation layer early.** `EVENGINE_VULKAN_VALIDATION=1`
+  (any value except "0") turns on Khronos validation at instance creation; it
+  prints VUIDs that name the exact rule being violated. It is 5-20x slower, so
+  use it for short targeted test runs only.
+- **Reduce to a minimal reproduction first.** Build the smallest test that
+  exercises the suspected code path before touching production code paths.
+- **Rule out upstream layers before the GPU.** If SDL/third-party/init code is in
+  the path, prove whether it is the cause with a tiny probe before spending time
+  on driver diagnostics.
+- **Empirically verify driver behavior.** Never assert "AMD does X" from memory;
+  check the feature bits, the validation output, and at least one other device
+  (see `EVENGINE_GPU_DEVICE=integrated|discrete|first`) before changing driver-
+  specific branches.
+
+### Repo-specific crash backtrace
+- The engine installs a Windows unhandled-exception filter that prints a
+  symbolized stack trace: `src/engine/common/CrashHandler.h` →
+  `eve::installCrashHandler()`. It is wired into BOTH `src/engine/main.cpp`
+  (the `eve` binary) and `test/main.cpp` (unit_test; `test/CMakeLists.txt`
+  links `EVBacktrace` on WIN32).
+- If a test crashes and prints nothing but a bare exit code (e.g.
+  `0xC0000005` = access violation), the handler is not active in that binary.
+  Verify with `rg -a "\[crash\] code=" <binary>`.
+- `eve` supports `EVE_TEST_CRASH=1` to force an access violation right after
+  startup so the handler output can be verified.
+
+### Reading a backward-cpp stack
+- backward prints "most recent call last": frame #N+1 called #N.
+- Frames below `KiUserExceptionDispatcher` (`RtlLocateExtendedFeature`,
+  `_chkstk`, `_C_specific_handler`, `strncpy`, `UnhandledExceptionFilter`) are
+  exception-dispatch machinery, not the cause. The frame directly ABOVE
+  `KiUserExceptionDispatcher` is the crash site.
+- An AV whose exception address is inside the module usually means a bad memory
+  READ (e.g. dereferencing a NULL/garbage struct member); a low address like
+  `0x0` means call-through-NULL.
+
+### Isolation patterns that work here
+- **Probe test**: a self-contained TEST_CASE that calls the underlying API
+  directly (SDL window + Vulkan surface creation, or a minimal `vkCmdDraw`
+  through the exact pipeline) and ignores the engine state. If the probe passes
+  but the engine path crashes, the bug is in engine state, not the library.
+- **Check what a merged feature actually did**: a commit can be in the branch
+  (`git merge-base --is-ancestor`) yet not affect the binary you run (e.g. the
+  backtrace handler existed for `eve` but not `unit_test`). Verify the produced
+  artifact, not just the git history.
+- **Include-path tracing**: MSVC emits `注意: 包含文件:` (/showIncludes) lines —
+  grep the build log for the header in question to see which copy was picked.
+- **SDL gotcha**: `<SDL2/SDL.h>` does NOT include `SDL_vulkan.h`; include it
+  explicitly for Vulkan entry points, or you get C3861 "identifier not found".
+
+### When behavior regresses mysteriously
+- **Stale objects are a real failure mode here.** The Ninja targets use
+  "unscanned" dependency tracking (`CXX_COMPILER__*_unscanned_Debug`), so a
+  HEADER edit does NOT reliably trigger recompiles of every TU that includes
+  it. After changing a widely-included header (e.g. `vulkan/Graphics.h`), a
+  deterministic nonsense crash (garbage member values, "Invalid device" from a
+  long-stable call) often means some TU still encodes the old class layout.
+  `--target clean` is not enough here: delete the build dir
+  (`Remove-Item build/win32-debug -Recurse -Force`) and reconfigure with
+  `-DEVENGINE_THIRD_PARTY_BINARY_DIR=<prebuilt deps>` plus the download options
+  OFF (assets are pre-seeded), then rebuild, before deep-diving. To make header
+  edits visible again, touch every TU that includes the header (or switch those
+  targets off unscanned mode).
+- The build reuses a read-only prebuilt third-party install
+  (`C:/Users/xiaofans/Workspace/Agents/EVEngine/build/third-party-binary/
+  win32-debug`). Check its lib timestamps (`Get-Item ... | Select LastWriteTime`)
+  when third-party behavior unexpectedly changes.
+- A deterministic crash inside an SDL call that works in a probe points at
+  engine-side state (e.g. `SDL_InitSubSystem`/`SDL_QuitSubSystem` pairing, the
+  SDL global `_this`, or window flags) — instrument the state before touching
+  the SDL/driver layer.
+
+## Third-party source ownership (mandatory)
+
+- **Dependency fixes belong in the owning source repository.** Modify and commit
+  the dependency's actual sources, then update the consuming revision. Do not
+  modify third-party code through patch files, `git apply`, CMake `PATCH_COMMAND`,
+  configure/build-time text replacement, or overwrite/override header directories.
+  Generated replacement headers, include-path shadowing and copied modified
+  dependency implementations are equally prohibited; moving such a workaround
+  into another directory or into the third-party aggregate does not satisfy this
+  rule. Source builds, prebuilt packages and SDK consumers must use the same
+  canonical dependency implementation.
+- **Keep dependency development ownership explicit.** Stable bundled dependencies
+  are managed by the `third-party` repository. ECS and zeroerr remain independently
+  developed submodules under `external/ECS.hpp` and `external/zeroerr`; do not move
+  them into the third-party aggregate or tie their updates to its release pin.
+  Apply their fixes directly in their respective repositories and update their
+  engine submodule revisions independently.
+- **Complete the migration when removing a workaround.** Update build/include and
+  SDK install rules to consume the canonical sources, remove the obsolete patch,
+  override directory and application/generation steps, and verify the affected
+  source, package and linkage contracts. Do not leave a second implementation as
+  a compatibility shortcut.
+
+## Collaboration conventions (multi-agent parallel work)
+
+These rules exist to keep several agents working in the same tree without
+stepping on each other. `docs/dev/模块编排与裁剪架构.md` explains the layering
+model behind them. For shrinking merge-conflict hotspots while keeping one
+composed dependency contract, see
+`docs/dev/superpowers/specs/2026-10-10-decentralize-conflict-hotspots.md`.
+
+- **Cross-module calls go through interfaces, not includes.** When a lower
+  module must reach a higher one (e.g. `filesystem` reaching `graphics`), the
+  consumer declares an interface (in `src/engine/common/` or its own module),
+  the provider registers it via `eve::cap::provide/query`
+  (`src/engine/common/Capability.h`). Do not add a new upward `#include` —
+  `scripts/module_depgraph.py --check` (CI `layering` job) fails on it.
+- **One manifest, one boot list.** New modules are declared only through the
+  composed `cmake/module_manifest.cmake` tree (ordered `include` fragments
+  under `cmake/module_manifest/`); the link list, third-party closure and
+  `eve.moduleList` are derived. Do not hand-edit `EVELIBS` / `ThirdParty` /
+  `load.nut` module wiring, and do not add a second declaration channel.
+  Prefer putting a host package's `eve_declare_module` lines in that host's
+  fragment so unrelated modules do not edit the same file. Domain satellites
+  live under the host package (`src/modules/<host>/editing`, `editor`,
+  `graphics`, `physics`, `fx`, …) — do not add a new top-level `*_editing` /
+  `*_editor` / `asset_*` / `pixelworld_*` / `buildingfx` directory.
+  Runtime-only profiles exclude authoring directories (`editing` / `editor` /
+  `graphics_editing`) by leaf name; optional runtime satellites stay
+  independently switchable.
+- **Keep public headers free of cross-module includes.** Prefer forward
+  declarations and Pimpl so a low-level type change does not recompile every
+  dependent module. Check `python3 scripts/module_depgraph.py` for `*` marks
+  (leaks into a module's own headers).
+- **Group cohesive implementation, split contention hotspots.** A stable,
+  cohesive `.cpp` may grow when combining closely related small TUs reduces
+  repeated debug information and build overhead. Above 2000 lines, review
+  unrelated responsibilities, edit frequency, and concurrent ownership.
+  At 5000 lines or more, decide whether to split along stable sections based on
+  that review. Do not merge actively edited files owned by different agents
+  merely to reduce the OBJ count. Shared catalogues still put module-scoped
+  user-manual topics in module-owned fragments
+  (`cmake/module_manifest/modules/<host>.cmake`), and keep only
+  order/composition in the hub file. Architecture shape checks are code-first
+  (`scripts/check_architecture_contracts.py`); do not reintroduce a parallel
+  JSON catalogue.
+- **Mechanical cross-module sweeps are their own PR.** Repo-wide renames,
+  export-macro annotation, and Doxygen sweeps must not ride along inside a
+  feature branch; land them alone (preferably batched by host package) so
+  they do not collide with unrelated editor/header edits.
+- **Formatting is enforced on changed lines of existing files.** `make check`
+  (and CI) run `.github/scripts/check-format.sh` (clang-format-18, `.clang-format`)
+  with `git clang-format`; pre-existing debt in untouched regions does not block
+  a PR, and brand-new files are skipped with a warning. Before committing, run
+  `git clang-format` (formats only your changed lines) and format new files by
+  hand; never reformat whole files unrelated to your change.
+- **Tests stay per-module.** New tests go into their own file under `test/`
+  (zeroerr cases; each case is process-isolated via CTest). Do not grow a
+  shared test main.
+  Ordinary `test/unit/<module>/` C++ files are discovered without registration;
+  exceptional classifications and integration ownership belong in source-local
+  `eve-test-policy` comments. There is no central Test Levels JSON; see `test/README.md`.
+- **Native MCP tools own their family.** Declare `EVE_MCP_TOOL_FAMILY` beside
+  a provider's schema and handler. Composition is generated from compiled sources;
+  do not append new families to `McpServer.cpp` schema arrays or dispatch chains.
+  The protocol host keeps lifecycle and filtering. See `docs/dev/AI与MCP支持.md`.
+- **Build rules and guides have owners.** Platform recipes live under
+  `cmake/platforms/`, feature checks under `cmake/tasks/`, and module-specific
+  settings beside their sources in `BuildSettings.cmake`. Keep declaration and
+  dependency wiring in the existing module manifest. Extend graphics topic
+  pages under `docs/usr/modules/graphics/` rather than growing the overview.
+- **Examples are a tested surface.** A new `examples/<name>/` must be runnable
+  (`main.nut` + a `config.nut` that assigns the engine `config` table), or be
+  listed with a reason in `scripts/check_examples.py`'s `NON_RUNNABLE_EXAMPLES`;
+  it must own a `README.md`; overview rows are optional documentation maintenance. `make check/examples`
+  (source-quality) enforces that layout, and `scripts/smoke_examples.sh` launches
+  every runnable example in CI for at least `MIN_RUN_SECONDS` (2s) — dying early,
+  exiting non-zero, or printing an error marker fails the job. Run
+  `MIN_RUN_SECONDS=2 bash scripts/smoke_examples.sh <name>` before claiming an
+  example works.
+- **Repository scripts are UTF-8 on every host.** CI runs them on Linux, where
+  stdout/stderr are UTF-8; on Windows a *redirected* stream falls back to the
+  ANSI code page (cp936/GBK on a Chinese Windows), so printing a character that
+  code page cannot encode (`↔`, `²`, `³`, `⇒`, `•`, emoji — all common in this
+  repository) raises `UnicodeEncodeError` and turns a checker into a traceback.
+  The mirror image is input: `Path.read_text()` without `encoding=` decodes
+  UTF-8 repository text as cp936 and raises `UnicodeDecodeError`.
+  - Every `scripts/*.py` program (a module with an `if __name__ == "__main__":`
+    block) calls `utf8_stdio.enable_utf8_stdio()` as the first statement of that
+    block — never at import time, so importing a script module stays free of
+    side effects.
+  - Text file I/O always passes `encoding="utf-8"` explicitly.
+  - Decode a child process with the encoding that child actually writes: `git`
+    output is UTF-8, so its call sites pass `encoding="utf-8"`.
+  - `scripts/tests/test_utf8_stdio.py` enforces all of the above and runs in the
+    CI script-test step; `python3 -X utf8 -m unittest discover -s scripts/tests
+    -p "test_*.py"` is the local equivalent.
+- **PR granularity.** An interface change ships as one PR that updates the
+  interface, every backend and every consumer — no intermediate commits that
+  break CI. Use `codex/` branch prefixes for agent work. Run `make check`
+  before pushing; it is the Source quality job. Host compile/test (`make
+  build/<plat>-debug` and `make test`) is the other half of a typical PR.
+
+## Mandatory architecture rules for refactoring agents
+
+Before changing a public API, ECS model, persistent format, module boundary, or
+cross-domain lifecycle, read and follow:
+
+- `docs/dev/重构代码质量与系统完整性规范.md`
+- `docs/dev/领域短根继承与跨域组合架构.md`
+- `docs/dev/Result检查与不得丢弃返回值规范.md`
+- `docs/dev/模块接口契约与机制选型规范.md`
+- `docs/dev/模块边界审查清单.md`（对单个模块执行上述规范的逐项判据与取证方式；
+  机械取证器 `python3 scripts/module_boundary_audit.py --findings`，只读报告，不做门禁）
+- `docs/dev/2026-08-26-architecture-consolidation-checklist.md`
+
+These are requirements, not optional design suggestions:
+
+- Do not add ambiguous operation-result `bool`, `nullptr/false + lastError`, or
+  discardable critical return values. Use structured `Result`, strong status
+  enums, and `[[nodiscard]]` according to the Result specification.
+- Domain types use short inheritance roots. Orthogonal state/capability uses
+  components; cross-domain relationships use typed Link/Handle. Do not create a
+  universal GameObject, GameplaySubject, or GameplayActor root.
+- Each mutable fact has one authoritative owner. For every Link define ownership,
+  stale detection, both destruction orders, and restore/hot-reload rebuilding.
+- Before implementing an ECS System, record its entity/type scope, View,
+  read/write component sets, structural mutations, events, services, and phase.
+  Use deferred structural mutation while iterating views.
+- Inject simulation time, dt, and named RNG streams. State the determinism or
+  tolerance contract for replay, serialization, networking, and backend parity.
+- Document public API ownership/lifetime, thread affinity, and callback reentrancy.
+  Never retain temporary raw pointers across frames/tasks or invoke unknown
+  callbacks/scripts while holding a lock.
+- Persistent/cross-process data requires schema id, version, unknown-field policy,
+  and migration. Restore/import must not leave partially mutated observable state.
+- An optional dependency is only optional after tests cover both provider-present
+  and provider-absent configurations. Fallbacks must be explicit and observable.
+- Interface implementations share contract tests. Cross-module refactors include
+  a composition test and relevant trimmed-build profile, plus failure injection
+  for important lifecycle and transaction paths.
+- New TODO/HACK/FALLBACK/ALLOWLIST/soft-skip entries require an issue, owner,
+  reason, and removal condition or expiry. Do not create a second source of truth
+  as a compatibility shortcut.
+- A module's outward boundary is declared across the six faces (capability in/out,
+  ECS+Link data, events, script bindings, tool protocol). New or changed modules
+  need a `module-interface` catalogue entry; a module's trim claim must name its
+  layer (L1 compile / L2 link / L3 runtime / L4 observable) and cite symbol-reference
+  or trimmed-build evidence — never the `#include` graph alone.
+- Connection mechanism is derived from four axes (cardinality, frequency, observer
+  knowability, atomicity), not preference. Hot-path files must be declared and must
+  not do per-frame string-keyed lookups. `getModInst` / `requireModInst` belong to
+  non-runtime profiles only; do not add them to runtime module code.
+- Cost is part of the API shape. Expensive operations are two-step, return an
+  opaque token, or go through a builder; cheap ones get no ceremony; never separate
+  cost tiers with a default argument. Expensive public APIs carry `@cost` worded as
+  a relative magnitude and amortization dimension. Do not create a second, cheaper
+  way to perform the same operation.
+
+In the final handoff, report which of these rules applied, what was verified, and
+any deliberate exception. An exception requires explicit user approval; an agent
+must not silently waive these requirements.
+
+### Mandatory top-level architecture gate
+
+Before handing off a refactor, run the source-only gate CI uses:
+
+```sh
+make check
+```
+
+That includes architecture contracts against `CI_BASE` (default `origin/dev`).
+Override with `make check CI_BASE=<sha>` — CI passes the pull-request base SHA.
+`make check/architecture-contracts` is a **changed-line code lint**
+(`scripts/check_architecture_contracts.py`: api-shape, raw-pointer lifetime
+tags, runtime `getModInst` ban, hot-path primitive ban, `@cost`). There is no
+JSON contract catalogue — do not reintroduce hand-copied `provides`/`requires`/
+`systems` lists. Hot-path files declare `// eve-hot-path` in leading comments. Directory policies live in a local `.eve-hot-path` file containing `eve.hot-path-directory/v1:*.cpp`.
+See `docs/dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md`.
+A compatibility facade may retain a legacy shape only when the public
+documentation states that it is compatibility-only and the canonical
+Result/status API is the inward implementation. New debt markers still require the
+owner/issue/reason/expiry/removal metadata enforced by `check/quality-metadata`.

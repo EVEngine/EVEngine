@@ -37,20 +37,17 @@ pool.submitPush(channel, "done", 100);
 - 忽略 `hasFailed()` / `getError()`：失败任务会悄悄丢结果。
 - 并发任务使用相同 Event 名称：业务监听仍按队列消费；`asyncPost()` 的 Promise 按具体 Task 关联，不会因同名事件乱序而串线。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `clear()`、`demand()`、`getChannel()`、`getCount()`、`getError()`、`getHardwareConcurrency()`、`getName()`、`getPendingCount()`
-- `getPool()`、`getStatus()`、`getWorkerCount()`、`hasData()`、`hasFailed()`、`isDone()`、`isRunning()`、`newChannel()`
-- `newThreadPool()`、`pop()`、`postMain()`、`push()`、`stop()`、`submitPost()`、`submitPush()`、`submitSleep()`
-- `supply()`、`wait()`、`waitAll()`
-
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/thread/`](../../../src/modules/thread/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `thread`。
+
+## 资源解码并发
+
+ResourceManager 使用的 IAsyncWorkExecutor 拥有独立资源池，工作线程数为
+`min(8, max(1, hardwareConcurrency))`，限制大型解码的并发内存及 CPU 争用。
+普通 `getPool()` 和显式创建的池不受此限制。thread 销毁时先撤销执行器提供者，再等待
+资源任务完成；任务不能在工作线程创建模块或操作图形/脚本状态。

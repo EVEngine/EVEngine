@@ -1,15 +1,26 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <array>
 #include <cstddef>
 #include <cstdint>
 #include <map>
+#include <span>
 #include <string>
 #include <vector>
+#include "common/Result.h"
+#include "graphics/BlendMode.h"
+#include "graphics/MeshShaderRasterState.h"
 
-#include <glm/mat4x4.hpp>
+// Incomplete glm::mat4 is enough for const-reference parameters.
+#include <glm/fwd.hpp>
 
 namespace eve::graphics {
+class Texture;
+namespace vulkan {
+class Graphics;
+}
 
 /**
  * @brief Custom GPU program.
@@ -27,11 +38,13 @@ namespace eve::graphics {
  * **Stylized grass** (`newGrassShader`): Mesh3D layout + CSM shadow bindings.
  *   Alpha-tested billboards (depth write on). See graphics/Grass.h.
  */
-class Shader {
+class EVENGINE_API_BACKENDS Shader {
 public:
     static constexpr int kMaxFloats = 32;
+    static constexpr std::size_t kMaxMeshTextures = 4;
     static constexpr uint32_t kPushConstantBytes = uint32_t(kMaxFloats * sizeof(float));
 
+    /** @brief Kind public API. */
     enum class Kind { eSprite2D, eMesh3D };
 
     enum ShaderType {
@@ -61,6 +74,15 @@ public:
     void setXray(bool x) { isXray_ = x; }
     bool isXray() const { return isXray_; }
 
+    /** @brief Backend-owned surface state retained across pipeline recreation. */
+    BlendMode meshBlend = BlendMode::Opaque;
+    /** @brief Backend-owned depth-write state for custom mesh programs. */
+    bool meshDepthWrite = true;
+    /** @brief Backend-owned culling state for custom mesh programs. */
+    bool meshDoubleSided = true;
+    /** @brief Read the committed raster snapshot; render-thread affinity matches the owning Graphics. */
+    const MeshShaderRasterState &meshRasterState() const noexcept { return meshRaster_; }
+
     /** @brief Reserve sequential float slots in the push-constant block. Returns start index. */
     int declareFloat(const std::string &name);
     int declareVec2(const std::string &name);
@@ -83,8 +105,41 @@ public:
     int getUniformFloatCount(const std::string &name) const;
 
     const float *pushConstantData() const { return floats_.data(); }
+    /** @brief Replace the entire fixed push-constant ABI without name lookup or allocation.
+     * @param values
+     * Borrowed values copied immediately; no storage is retained.
+     * @thread Graphics thread only, before draw
+     * submission. Existing named slots retain their offsets;
+     * the complete block is reserved and no further named
+     * slots can be declared. */
+    void     setPushConstantBlock(const std::array<float, kMaxFloats> &values) noexcept;
     uint32_t pushConstantSize() const { return uint32_t(usedFloats_ * sizeof(float)); }
+    /** @brief Replace all declared float slots atomically without name lookup.
+     * @param values Finite values matching usedFloats(); borrowed only until return.
+     * @return Success or InvalidArgument, preserving old values on failure.
+     * @thread Graphics-owner thread only, non-reentrant, no callbacks or retained input.
+     */
+    [[nodiscard]] Result<void> sendFloatBlock(std::span<const float> values);
     int usedFloats() const { return usedFloats_; }
+
+    /**
+     * @brief Assign a borrowed custom-mesh texture to a portable slot in `[0,4)`.
+     * @param slot Portable custom-mesh texture slot.
+     * @param texture Borrowed texture; null clears the slot.
+     * @return Success or InvalidArgument for an out-of-range slot.
+     * @lifetime The caller owns the texture and must keep it alive while assigned and used by a draw.
+     * @thread Graphics thread only; do not call while the shader is being submitted on another thread.
+     */
+    [[nodiscard]] Result<void> setMeshTexture(std::size_t slot, Texture *texture);
+    /**
+     * @brief Return the borrowed texture assigned to a custom-mesh slot, or null.
+     * @param slot Portable custom-mesh texture slot.
+     * @return Non-owning pointer valid while the caller-owned texture remains alive and assigned.
+     * @thread Graphics thread only.
+     */
+    Texture *meshTexture(std::size_t slot) const {
+        return slot < meshTextures_.size() ? meshTextures_[slot] : nullptr;
+    }
 
     const std::vector<uint32_t> &vertexSpirv() const { return vertSpv_; }
     const std::vector<uint32_t> &fragmentSpirv() const { return fragSpv_; }
@@ -98,6 +153,8 @@ public:
     void *gpuHandle = nullptr;
 
 private:
+    friend class vulkan::Graphics;
+    MeshShaderRasterState meshRaster_;
     struct Uniform {
         int index = 0;
         int floatCount = 0;
@@ -113,6 +170,7 @@ private:
     std::vector<uint32_t> fragSpv_;
     std::map<std::string, Uniform> uniforms_;
     std::array<float, kMaxFloats> floats_{};
+    std::array<Texture *, kMaxMeshTextures> meshTextures_{};
     int usedFloats_ = 0;
 };
 

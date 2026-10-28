@@ -1,0 +1,167 @@
+#pragma once
+
+#include "editing/EditableTarget.h"
+#include "editing/EditingAuthority.h"
+#include "editing/EditingProperty.h"
+#include "virtualgeometry/Builder.h"
+
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
+
+namespace eve::virtualgeometry {
+struct VirtualGeometryAsset;
+}
+
+namespace eve::virtualgeometry_editing {
+
+using CapabilityId       = editing::CapabilityId;
+using DiagnosticSeverity = editing::DiagnosticSeverity;
+using DomainOperation    = editing::DomainOperation;
+using EditRegion         = editing::EditRegion;
+using EditorDiagnostic   = editing::Diagnostic;
+using editing::Result;
+using EditorStatus                  = editing::Status;
+using EditorValue                   = editing::Value;
+using IDomainOperationTarget        = editing::IDomainOperationTarget;
+using IDomainOperationTargetStaging = editing::IDomainOperationTargetStaging;
+using IEditableTarget               = editing::IEditableTarget;
+using IPropertyProvider             = editing::IPropertyProvider;
+using ObjectId                      = editing::ObjectId;
+using PropertyDescriptor            = editing::PropertyDescriptor;
+using PropertyFlag                  = editing::PropertyFlag;
+using PropertyPath                  = editing::PropertyPath;
+using PropertyReadResult            = editing::PropertyReadResult;
+using PropertyReadState             = editing::PropertyReadState;
+using PropertySchema                = editing::PropertySchema;
+using PropertySetMode               = editing::PropertySetMode;
+using PropertyType                  = editing::PropertyType;
+using Revision                      = editing::Revision;
+using RuleId                        = editing::RuleId;
+using SelectionSnapshot             = editing::SelectionSnapshot;
+using TargetDescriptor              = editing::TargetDescriptor;
+using TargetId                      = editing::TargetId;
+using editing::validatePropertyValue;
+
+/** @brief Authored virtual-geometry import and LOD-preview settings. */
+struct VirtualGeometryImportValue {
+    std::string                                      sourceAsset;
+    virtualgeometry::VirtualGeometryBuilder::Options builder;
+    float                                            previewFov      = 60.f;
+    int                                              previewHeight   = 1080;
+    float                                            errorPixels     = 1.f;
+    float                                            nearDistance    = 1.f;
+    float                                            farDistance     = 1000.f;
+    int                                              distanceSamples = 32;
+};
+
+/** @brief Revisioned VirtualGeometry importer preset. */
+class EVENGINE_API_ORCHESTRATION VirtualGeometryDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                                       public virtual IEditableTarget,
+                                                                       public IDomainOperationTarget,
+                                                                       public IDomainOperationTargetStaging,
+                                                                       public IPropertyProvider {
+public:
+    /** @brief Virtual geometry document target. */
+    explicit VirtualGeometryDocumentTarget(std::string id);
+    /** @brief Target id. */
+    TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
+    TargetDescriptor describe() const override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime
+     * Valid until this target is destroyed or mutated. */
+    void*                                   queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
+    Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
+    std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
+    Result<void>                commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Current revision. */
+    eve::Result<eve::Revision>        currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
+    PropertySchema                    schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
+    PropertyReadResult                read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
+    Result<DomainOperation>     makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+                                              const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
+    Result<DomainOperation>     makeReset(const SelectionSnapshot& selection,
+                                                const PropertyPath&      path) const override;
+    /** @brief Value. */
+    const VirtualGeometryImportValue& value() const { return value_; }
+    /** @brief Validate builder invariants, CPU budgets and preview sweep. */
+    std::vector<EditorDiagnostic> validate() const;
+    /** @brief Snapshot value. */
+    EditorValue                   snapshotValue() const;
+    /** @brief Loads snapshot. */
+    Result<void>            loadSnapshot(const EditorValue& snapshot);
+
+private:
+    /** @brief Matches. */
+    bool                          matches(const SelectionSnapshot& selection) const;
+    /** @brief Content value. */
+    EditorValue                   contentValue() const;
+    /** @brief Replacement. */
+    Result<DomainOperation> replacement(EditorValue content, std::string property) const;
+    std::string                   id_;
+    VirtualGeometryImportValue    value_;
+};
+
+/** @brief Owned neutral triangle mesh supplied by an importer/AssetDB adapter. */
+struct VirtualGeometryMeshData {
+    std::vector<float>         positions, normals;
+    std::vector<std::uint32_t> indices;
+};
+
+/** @brief Asset resolver boundary for VirtualGeometry preprocessing. */
+class IVirtualGeometryMeshResolver {
+public:
+    /** @brief Releases IVirtualGeometryMeshResolver resources. */
+    virtual ~IVirtualGeometryMeshResolver() = default;
+    /** @brief Return an owned triangulated mesh for one asset generation. */
+    virtual Result<VirtualGeometryMeshData> resolve(const std::string& assetId) const = 0;
+};
+
+/** @brief One sample in the logarithmic camera-distance LOD cost curve. */
+struct VirtualGeometryLodSample {
+    float            distance  = 0;
+    int              clusters  = 0;
+    std::uint64_t    triangles = 0;
+    std::vector<int> levelHistogram;
+};
+
+/** @brief Immutable quality/cost report for a built virtual-geometry generation. */
+struct VirtualGeometryBuildArtifact {
+    Revision                              sourceRevision  = 0;
+    int                                   vertices        = 0;
+    std::uint64_t                         sourceTriangles = 0, storedTriangles = 0;
+    int                                   clusters = 0, maxLod = 0, roots = 0;
+    std::uint64_t                         checksum = 0;
+    std::vector<VirtualGeometryLodSample> lodCurve;
+};
+
+/** @brief Candidate-first CPU cluster-DAG builder and LOD preview service. */
+class EVENGINE_API_ORCHESTRATION VirtualGeometryBuildRuntime {
+public:
+    /** @brief Virtual geometry build runtime. */
+    VirtualGeometryBuildRuntime();
+    /** @brief Virtual geometry build runtime. */
+    ~VirtualGeometryBuildRuntime();
+    /** @brief Resolve, validate and build fully before replacing the active asset. */
+    Result<VirtualGeometryBuildArtifact> build(const VirtualGeometryDocumentTarget& document,
+                                                     const IVirtualGeometryMeshResolver&  resolver);
+    /** @brief Access the published asset. @return Borrowed pointer owned by this runtime, or null. @lifetime Valid
+     * until the next build or runtime destruction. */
+    const virtualgeometry::VirtualGeometryAsset* asset() const { return asset_.get(); }
+    /** @brief Revision. */
+    Revision                                     revision() const { return revision_; }
+
+private:
+    std::unique_ptr<virtualgeometry::VirtualGeometryAsset> asset_;
+    Revision                                               revision_ = 0;
+};
+
+}  // namespace eve::virtualgeometry_editing

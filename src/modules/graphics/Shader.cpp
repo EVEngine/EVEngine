@@ -1,13 +1,38 @@
 #include "graphics/Shader.h"
 #include "common/Exception.h"
 
+#include <algorithm>
+#include <cmath>
 #include <cstring>
+#include <glm/mat4x4.hpp>
 
 namespace eve::graphics {
+
+Result<void> Shader::setMeshTexture(std::size_t slot, Texture *texture) {
+    if (slot >= meshTextures_.size())
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "custom mesh texture slot is outside [0,4)", {}, {}, "graphics.shader"));
+    meshTextures_[slot] = texture;
+    return Result<void>::success();
+}
 
 Shader::Shader() = default;
 
 Shader::~Shader() = default;
+
+Result<void> Shader::sendFloatBlock(std::span<const float> values) {
+    if (values.size() != static_cast<std::size_t>(usedFloats_) ||
+        !std::all_of(values.begin(), values.end(), [](float value) { return std::isfinite(value); }))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Shader float block size or values invalid", "graphics.shader"));
+    std::copy(values.begin(), values.end(), floats_.begin());
+    return Result<void>::success();
+}
+
+void Shader::setPushConstantBlock(const std::array<float, kMaxFloats> &values) noexcept {
+    floats_     = values;
+    usedFloats_ = kMaxFloats;
+}
 
 int Shader::declareUniform(const std::string &name, int floatCount) {
     if (name.empty()) throw Exception("Shader::declare: empty uniform name");

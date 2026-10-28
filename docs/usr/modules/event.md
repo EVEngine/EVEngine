@@ -1,21 +1,21 @@
 # 事件模块
 
-**脚本入口：** `eve.Event()`
+**脚本入口：** `eve.PlatformEvent()`
 
 泵送平台事件，并用字符串消息队列在模块或线程之间传递通知。
 
 ## 基本用法
 
 ```squirrel
-local events = eve.Event();
-events.push("quest-complete", "intro");
+local events = eve.PlatformEvent();
+events.pushData("quest-complete", "intro");
 local name = events.poll();
 if (name == "quest-complete") showReward();
 ```
 
 ## 对象关系与调用时机
 
-`Event` 同时承接 SDL 平台事件泵和简单字符串消息队列。平台输入由 `pump()` 收集；业务消息由 `pushData()` 写入并由 `poll()` / `pollData()` 取出。默认循环已泵送事件，游戏一般只消费队列。
+`PlatformEvent` 承接 SDL 平台事件泵和简单字符串消息队列。平台输入由 `pump()` 收集；业务消息由 `pushData()` 写入并由 `poll()` / `pollData()` 取出。默认循环已泵送事件，游戏一般只消费队列。可重放的领域事件使用独立的 `GameEvent` 日志。
 
 ## 目标导向指南
 
@@ -33,17 +33,10 @@ if (name == "quest-complete") showReward();
 - 把队列当状态存储：队列是一次性的；持久状态应放组件或游戏模型。
 - 在渲染阶段消费事件：会造成帧内顺序不稳定，应在更新阶段完成。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `getLastData()`、`getName()`、`poll()`、`pollData()`、`pump()`、`pushData()`
-
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
-**源码：** [`src/modules/event/`](../../../src/modules/event/)
+**源码：** [`src/modules/platform_event/`](../../../src/modules/platform_event/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `event`。

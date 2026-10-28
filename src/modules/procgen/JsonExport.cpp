@@ -47,6 +47,8 @@ std::string gridToJson(const Grid2D &grid) {
             << escapeJson(grid.getObjectType(i)) << "\",\"x\":" << grid.getObjectX(i)
             << ",\"y\":" << grid.getObjectY(i) << ",\"width\":" << grid.getObjectWidth(i)
             << ",\"height\":" << grid.getObjectHeight(i) << ",\"gid\":" << grid.getObjectGid(i)
+            << ",\"asset\":\"" << escapeJson(grid.getObjectAsset(i)) << "\",\"rotation\":"
+            << grid.getObjectRotation(i) << ",\"flags\":" << grid.getObjectFlags(i)
             << '}';
     }
     oss << "]}";

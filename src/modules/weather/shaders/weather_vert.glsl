@@ -20,6 +20,7 @@ layout(location = 2) out vec4 vTint;
 layout(location = 3) out vec3 vWorldPos;
 layout(location = 4) out vec3 vCameraPos;
 layout(location = 5) out vec3 vViewPos;
+layout(location = 6) out float vParticle;
 
 float hash12(vec2 p) {
     vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -28,34 +29,47 @@ float hash12(vec2 p) {
 }
 
 void main() {
-    // Push-constant slots: 0=time 1=windX 2=windZ 3=speed 4=length 5=width 6=intensity.
-    float H = 20.0;
+    // 12 = particle kind: rain 0, snow 1, wind 2.
+    float kind = u.data[12];
     float phase = hash12(inPos.xz * 0.5 + vec2(floor(inPos.y * 0.7), 13.0));
-    float t = u.data[0] * u.data[3] + phase * H;
-    float yOff = fract(t / H) * H;
-
-    vec3 base = inPos;
-    base.y -= yOff;
-    // Wind tilt grows toward the ground.
-    float lift = clamp(base.y / H, 0.0, 1.0);
-    base.x += u.data[1] * lift * u.data[4] * 0.5;
-    base.z += u.data[2] * lift * u.data[4] * 0.5;
-    // Gentle gust sway for snow.
-    float sway = sin(u.data[0] * 1.2 + phase * 6.2831) * 0.06 * u.data[4];
-    base.x += sway * u.data[1];
-    base.z += sway * u.data[2];
-
-    // Camera-facing billboard basis.
-    vec3 right = normalize(vec3(ubo.view[0][0], ubo.view[1][0], ubo.view[2][0]));
-    vec3 up = normalize(vec3(ubo.view[0][1], ubo.view[1][1], ubo.view[2][1]));
-    vec3 pos = base + right * inUV.x * u.data[5] + up * inUV.y * u.data[4];
-
+    float speed = u.data[3] * inNormal.z;
+    vec3 velocity = vec3(u.data[1], -speed, u.data[2]);
+    vec3 base = inPos + vec3(u.data[13], -speed * u.data[0], u.data[14]);
+    if (kind > 1.5) base = inPos; // Wind strands stay anchored; only their light moves.
+    base.xz = mod(base.xz - ubo.cameraPos.xz + 26.0, 52.0) - 26.0 + ubo.cameraPos.xz;
+    base.y = mod(base.y - ubo.cameraPos.y + 10.0, 20.0) - 10.0 + ubo.cameraPos.y;
+    if (kind > 0.5 && kind < 1.5) {
+        float flutter = u.data[0] * 1.7 + phase * 6.283185;
+        base.x += sin(flutter) * 0.32;
+        base.z += cos(flutter * 0.73) * 0.24;
+    }
+    vec3 cameraRight = vec3(ubo.view[0][0], ubo.view[1][0], ubo.view[2][0]);
+    vec3 cameraUp = vec3(ubo.view[0][1], ubo.view[1][1], ubo.view[2][1]);
+    vec3 up = -normalize(velocity);
+    vec3 sight = ubo.cameraPos.xyz - base;
+    vec3 side = cross(up, sight);
+    vec3 right = dot(side, side) > 0.0001 ? normalize(side) : cameraRight;
+    if (kind > 0.5 && kind < 1.5) {
+        // Snow faces the view plane, independent of its fall direction.
+        float angle = phase * 6.283185 + u.data[0] * 0.35;
+        right = cameraRight * cos(angle) + cameraUp * sin(angle);
+        up = -cameraRight * sin(angle) + cameraUp * cos(angle);
+    }
+    float size = inNormal.x;
+    float widthScale = kind > 0.5 && kind < 1.5 ? size : inNormal.y;
+    vec3 pos = base + right * inUV.x * u.data[5] * widthScale
+                    + up * (inUV.y - 0.5) * u.data[4] * size;
     vec4 world = ubo.model * vec4(pos, 1.0);
     gl_Position = ubo.mvp * vec4(pos, 1.0);
     vWorldPos = world.xyz;
     vViewPos = (ubo.view * world).xyz;
-    vUV = inUV;
+    // Geometry offsets and texture coordinates have different domains.
+    vUV = vec2(inUV.x + 0.5, inUV.y);
+    float distanceFade = smoothstep(1.0, 3.0, length(sight));
+    float edgeFade = 1.0 - smoothstep(20.0, 26.0, max(abs(base.x - ubo.cameraPos.x), abs(base.z - ubo.cameraPos.z)));
     vTint = ubo.tint;
+    vTint.a *= distanceFade * edgeFade;
     vCameraPos = ubo.cameraPos.xyz;
     vNormal = inNormal;
+    vParticle = phase;
 }

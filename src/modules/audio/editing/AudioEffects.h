@@ -1,0 +1,85 @@
+#pragma once
+#include "common/Export.h"
+
+
+#include "audio/editing/AudioTarget.h"
+
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
+
+namespace eve::audio_editing {
+
+/** @brief Stable effect instance with normalized dry/wet mix and typed parameters. */
+struct AudioEffectRecord {
+    StableId id;
+    std::string type;
+    bool bypass = false;
+    double mix = 1.0;
+    EditorValue parameters = EditorValue::Object{};
+};
+
+/** @brief Revisioned reversible serial effect chain independent of an audio backend. */
+class EVENGINE_API_BACKENDS AudioEffectChainTarget final : public ::eve::editing::EditableTargetState,
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IDomainOperationTargetStaging {
+public:
+    /** @brief Audio effect chain target. */
+    explicit AudioEffectChainTarget(std::string id);
+    /** @brief Target id. */
+    TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
+    TargetDescriptor describe() const override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
+    void* queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
+    std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Enumerate effect records in processing order. */
+    std::vector<AudioEffectRecord> effects() const;
+    /** @brief Plan effect creation or replacement. */
+    Result<DomainOperation> makeSet(const AudioEffectRecord& effect) const;
+    /** @brief Plan effect removal. */
+    Result<DomainOperation> makeDelete(const StableId& id) const;
+    /** @brief Plan complete processing-order replacement. */
+    Result<DomainOperation> makeReorder(const std::vector<StableId>& order) const;
+    /** @brief Report invalid parameter ranges and unsafe chain budgets. */
+    std::vector<EditorDiagnostic> validate() const;
+    /** @brief Capture deterministic schema-version-one effect chain. */
+    EditorValue snapshotValue() const;
+    /** @brief Atomically load a validated effect chain. */
+    Result<void> loadSnapshot(const EditorValue& snapshot);
+    /** @brief Plan assigning this chain snapshot to an existing mixer bus. */
+    Result<DomainOperation> makeAssignToBus(const AudioMixerTarget& mixer,
+                                                   const ObjectId& bus) const;
+private:
+    std::string                           id_;
+    std::map<StableId, AudioEffectRecord> effects_;
+    std::vector<StableId> order_;
+};
+
+/** @brief Runtime backend boundary for atomic effect-chain publication. */
+class IAudioEffectChainSink {
+public:
+    /** @brief Releases IAudioEffectChainSink resources. */
+    virtual ~IAudioEffectChainSink() = default;
+    /** @brief Publish. */
+    virtual Result<void> publish(const std::string& chain, Revision revision,
+                                       const std::vector<AudioEffectRecord>& effects) = 0;
+};
+
+/** @brief Rejects invalid/stale chains before runtime publication. */
+class EVENGINE_API_BACKENDS AudioEffectChainPublisher {
+public:
+    /** @brief Publish. */
+    Result<void> publish(const AudioEffectChainTarget& chain,
+                               Revision expectedRevision,
+                               IAudioEffectChainSink& sink) const;
+};
+
+}  // namespace eve::audio_editing

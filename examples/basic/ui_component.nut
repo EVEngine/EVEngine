@@ -1,19 +1,26 @@
 // Declarative UIComponent demo (use as main.nut).
 
+class HealthReadout extends eve.UIComponent {
+    function build() {
+        local u = ui()
+        u.text("HP " + props.hp, "hp")
+        u.progress(props.hp / 100.0, "bar", props.hp + "%")
+    }
+}
+
 class HudPanel extends eve.UIComponent {
-    hp = 100
-    volume = 0.5
+    readout = null
     constructor(uiRef) {
-        base.constructor(uiRef)
-        hp = 100
-        volume = 0.5
+        base.constructor(uiRef, { title = "HUD" })
+        state.hp <- 100
+        state.volume <- 0.5
+        readout = HealthReadout(uiRef)
     }
     function build() {
         local u = ui()
-        u.beginWindow("HUD", "root")
-        u.text("HP " + hp, "hp")
-        u.progress(hp / 100.0, "bar", hp + "%")
-        u.slider("Vol", volume, 0.0, 1.0, "vol")
+        u.beginWindow(props.title, "root")
+        renderChild(readout, { hp = state.hp })
+        u.slider("Vol", state.volume, 0.0, 1.0, "vol")
         u.button("Hurt", "hurt")
         u.end()
     }
@@ -28,17 +35,16 @@ eve_update = function(dt) {
     local c = ui.consumeClick();
     while (c != "") {
         if (c == "hud/hurt") {
-            hud.hp -= 10;
-            if (hud.hp < 0) hud.hp = 0;
-            hud.setState();
-            hud.updateIfDirty();
+            local nextHp = hud.state.hp - 10;
+            if (nextHp < 0) nextHp = 0;
+            hud.setState({ hp = nextHp });
         }
         c = ui.consumeClick();
     }
     local ch = ui.consumeChange();
     while (ch != "") {
         if (ch == "hud/vol") {
-            hud.volume = ui.getValue("vol");
+            hud.setState({ volume = ui.getValue("vol") });
         }
         ch = ui.consumeChange();
     }

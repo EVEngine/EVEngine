@@ -11,19 +11,6 @@ Cursor::Cursor(image::ImageData *data, int hotx, int hoty)
 	, is_custom(true)
 	, systemType("")
 {
-	Uint32 rmask, gmask, bmask, amask;
-#ifdef EVE_BIG_ENDIAN
-	rmask = 0xFF000000;
-	gmask = 0x00FF0000;
-	bmask = 0x0000FF00;
-	amask = 0x000000FF;
-#else
-	rmask = 0x000000FF;
-	gmask = 0x0000FF00;
-	bmask = 0x00FF0000;
-	amask = 0xFF000000;
-#endif
-
 	// int w = data->getWidth();
 	// int h = data->getHeight();
 	// int pitch = w * 4;

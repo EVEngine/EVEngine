@@ -1,123 +1,95 @@
 # EVEngine ARPG 框架设计
 
-状态：核心闭环已实现
+更新：2026-10-28。基线：`origin/dev` 的 `900ee612c`。
 
-## 设计来源与取舍
+状态：已有通用能力与战斗基础；ARPG 跨模块游戏闭环待集成验收。本文描述合并后的模块归属和后续设计，不代表完整游戏已经运行通过。
 
-框架吸收了几类经典 ARPG 的共同结构，而不是复制某一款游戏的数值：
+## 合并决策
 
-- Diablo 类循环：击杀 → 掉落 → 装备 → 强化角色 → 挑战更强敌人。
-- Path of Exile 类数据模型：属性名、效果、技能、标签和内容 id 都是数据，不用固定枚举。
-- MMORPG/Gameplay Ability System 类能力模型：属性、持续效果、技能消耗/冷却/施法、结算事件相互分离。
-- Utility AI：AI 只根据黑板输入给动作评分；感知、寻路和动画仍由 scene/map/animation 模块负责。
-- 任务目标观察器：战斗、拾取、对话等系统只发 `(topic, target, amount)`，任务系统不反向依赖它们。
+合并前原型保存在 `a3be8a862`。dev 已实现同名任务系统，并将属性、效果、动作、结算、存档拆为独立领域，因此采用 dev 的实现和测试，移除原型的重复运行时。原型提交仅用于设计追溯，不应直接恢复到当前构建。
 
-核心原则是“定义与运行时分离、系统间用事件连接、随机过程可设种子、存档只保存运行时”。这样既能做
-小型纯 Squirrel 游戏，也能由 C++ 插件替换公式或增加更复杂的规则。
+| 原型入口 | 合并后采用的实现 | 迁移注意 |
+| --- | --- | --- |
+| `CombatSystem::dealDamage` | `combat` + `settlement`；RPG 使用 `RPGSettlementAdapter` | 命中检测、数值计算、资源提交分别负责，不能靠直接修改基础生命值实现伤害 |
+| `ProgressionSystem` | `rpg::LevelSystem` | 使用 level/xp/xpToNext；原型最大等级和分配点不是现有保证 |
+| `QuestSystem` / `Tracker` | dev 同名实现 | 保留 dev 的校验、事件与奖励接口 |
+| `LootRegistry` / `LootRoll` | `rpg::LootSystem` | 注入随机流、逐条概率掉落并入 Bag；不等同于原型权重抽取、luck 和唯一抽取 |
+| `EquipmentSet::synchronizeAttributes` | `rpg::EquipmentSystem::syncEquipModifiers` | 按物品注册加成、按槽位管理 modifier source；inventory 不反向依赖 rpg |
+| `StateCodec` | `RPGSaveSession` / `RPGGameSaveParticipant` | 使用既有准备与提交边界，不恢复原型破坏式读档 |
+| `UtilityBrain` | `CombatEnemyIntentSource` 作为现有简单敌人入口 | 现有距离分段、预警、恢复行为不等同于通用 Utility AI |
 
-## 模块图
+原型示例与七项测试依赖已撤下的 API；此次采用 dev 的 `examples/rpg` 与领域测试，不能把原型的历史测试结果视为本次合并验证。
 
-```text
-输入 / Scene / Map
-        │ 黑板输入
-        ▼
-   Utility AI ──────► SkillSystem
-                          │ cast event
-                          ▼
-Status/Effect ─tick─► CombatSystem ─kill─► Quest Tracker
-       │                  │                    │ rewards
-       ▼                  ▼                    ▼
-AttributeSystem      ProgressionSystem   LootSystem ─► Inventory
-       ▲                                      │
-       └──── EquipmentSet attr.* 同步 ◄────────┘
+## 模块与状态所有权
 
-StateCodec: Actor + Progression + Skills + Statuses + Quest Tracker
+| 模块 | 权威状态 / 职责 | ARPG 组合方式 |
+| --- | --- | --- |
+| `attributes` / `effects` | 属性计算、效果容器 | RPGActor 适配已有容器，避免额外缓存成为第二份权威状态 |
+| `action` | 动作定义、执行阶段、能力请求、时间线 | 玩家与 AI 都提交能力意图；技能配置映射到动作定义 |
+| `combat` | 角色运动、近战命中、锁定、防御窗口、连招与打击反馈 | 宿主接线 `CombatLoop`，把命中事实交给选定的结算适配器 |
+| `settlement` | 统一结算协议及流水线 | 同一目标资源只走一个正式提交路径 |
+| `rpg` | Vitals、成长、职业、任务、装备属性适配、RPG 存档 | 维护长期角色进度；实时战斗与回合制 Battle 不并行扣同一份血 |
+| `inventory` | Bag、装备栏、物品数量与实例 | 负责物品所有权，RPG 负责其属性含义 |
+| 场景、物理、动画与表现 | 空间查询、碰撞、姿态、音画 | 通过已有接口组合，不把表现依赖塞进 action 核心 |
+
+```mermaid
+flowchart TD
+    Input[玩家输入 / 敌人意图] --> Action[action 能力与动作时间线]
+    Action --> Combat[combat 命中与窗口]
+    Combat --> Settlement[settlement 计算与提交]
+    Settlement --> Resources[角色资源权威状态]
+    Resources --> Facts[已提交的死亡 / 奖励事实]
+    Facts --> Quest[任务 Tracker]
+    Facts --> Level[LevelSystem]
+    Facts --> Loot[LootSystem 与 Bag]
+    Loot --> Equipment[装备栏]
+    Equipment --> Attributes[EquipmentSystem 与属性]
+    Attributes --> Settlement
 ```
 
-## 已实现的核心
+图中跨域箭头是待明确验收的组合契约，不表示这些系统已经自动连通。
 
-### 角色、属性、效果与技能
+## 经典设计的取舍
 
-`RPGActor` 是 ECS 实体，组件包括 Attributes、Statuses、Skills、Progression。属性修改器支持加法、
-百分比、独立乘区、覆盖和钳制；Effect/Skill/Quest/Loot/AI 定义均可从 JSON 注册。
+以“战斗—奖励—装备—更强挑战”为产品循环，定义与实例分离，动作时序与数值结算分离。沿用仓库的能力、标签、效果和动作时间线设计；背景与细节见 [战斗系统与动作编辑器](战斗系统与动作编辑器.md)。不以另一套 ARPG 总管替代已有领域。
 
-### 标准战斗
+随机数由宿主拥有并按用途分流；可设种子不等于跨平台确定性回放。任务观察提交后的事实，不负责推断命中；AI 输出意图，不直接扣血。游戏内容可以选择不同伤害公式，框架不在通用入口硬编码某款游戏的数值。
 
-`CombatSystem::dealDamage` 提供可直接使用的标准公式：
+## 宿主集成契约（待实现与验证）
 
-```text
-raw       = power + attack
-armored   = raw * armorConstant / (armorConstant + max(0, armor))
-resisted  = armored * (1 - clamp(resist.<type>, -1, maxResistance))
-critical  = resisted * max(1, critMultiplier)  // 命中 critChance 时
-```
+1. 为场景实体、战斗主体和 RPGActor 建立可校验的身份映射；销毁或读档后旧 generation 不可继续生效。
+2. 每个模拟步收集玩家/AI 意图，推进能力、动作时间线与命中窗口。由宿主定义明确时序，不重复推进同一 runtime。
+3. 命中携带 execution、来源、目标、伤害描述进入结算；命中去重范围应区分单次挥击、多段技和持续区域。
+4. 结算成功后提交当前资源。生命上限来自属性，当前生命属于 Vitals 或明确选定的战斗状态；禁止两份状态各自修改后互相覆盖。
+5. 死亡转换只发一次奖励事实。经验、任务进度、掉落入包分别消费，并记录可重试边界。满包、来源销毁和重复事件必须有明确结果。
+6. 换装成功后同步属性；处理生命上限下降、效果到期与死亡状态之间的规则。
+7. 表现消费提交后的结果。受击停顿、伤害数字、音效失败不回滚已完成的游戏结算。
+8. 在安全点保存；先校验并准备所有参与者，再统一提交。静态内容版本、随机流、奖励去重记录与对象绑定均需明确覆盖范围。
 
-默认属性键为 `health/attack/armor/critChance/critMultiplier/resist.<type>`，可通过
-`CombatSystem::rules()` 更换。伤害、治疗、暴击和击杀均形成 `CombatEvent`，`RPG::update` 后由脚本轮询。
-随机种子可显式设置，便于回放与测试。
+禁止用第二次 `rpg.update(0)` 作为通用事件刷新方式：事件消费和模拟推进应有明确所有者，避免重复处理或清空其他系统的事件。
 
-### 成长
+## 后续交付顺序与验收
 
-每个 Actor 独立保存等级、当前经验、最大等级和未分配点数。升级需求为
-`ceil(baseXp * growth^(level-1))`，一次经验可连续升级，并产生 LevelUpEvent。
+| 阶段 | 工作 | 完成条件 |
+| --- | --- | --- |
+| 1：状态与结算桥接 | 确认 combat 与 RPG 资源权威、身份映射、结算适配 | 一次攻击只扣一次血；旧身份、失败提交不改变目标 |
+| 2：奖励闭环 | 死亡→经验/任务/掉落→装备属性 | 重复死亡不重复发奖；满包行为明确；穿脱不残留 modifier |
+| 3：可玩切片 | 移动、普攻、技能、闪避、敌人预警/恢复、拾取、UI | 可实际操作完成一次战斗与成长循环，打断后窗口和表现资源清理 |
+| 4：保存恢复 | 复用 SaveSession 参与者、版本与迁移策略 | 错误存档无半恢复；恢复后属性、装备、任务、资源一致 |
+| 5：扩展 | 随机词缀、复杂 AI、Boss、多段技 | 在前四阶段测试基础上增加，不引入第二套领域状态 |
 
-### 任务
+通用 Utility AI、权重/唯一掉落、点数分配、完整网络预测和跨平台回放均为可选扩展，当前不承诺已实现。
 
-任务状态机为：
+## 验证与阅读入口
 
-```text
-locked → inactive → active → ready → completed
-                   └───────────────→ failed
-```
+源代码检查使用根 Makefile：`make check/test-manifest check/module-layers check/examples`；完整源检查为 `make check`。构建使用 `make debug JOBS=4`。按宿主与配置选择领域测试，遵循根 AGENTS.md，避免启动本地全量图形测试。
 
-支持前置链、自动/手动开始、自动完成/领奖完成、多个计数目标、失败/放弃/重置、奖励描述和事件快照。
-前置环会在注册时拒绝。`notify("kill", "wolf", 1)` 这类通知可同时推进任意数量的活跃任务。
+现有测试入口：`test/unit/rpg/rpg_tests.cpp`、`test/unit/combat/combat_tests.cpp`、`test/unit/action/action_tests.cpp` 与 `test/integration/combat-presentation/`。它们覆盖各自领域，ARPG 奖励与恢复的跨域验收仍需补充。
 
-### 战利品与装备
+本次合并验证：测试清单、模块分层、示例布局检查通过；`git diff --check` 通过。`make debug JOBS=4` 在配置阶段被本地 third-party 版本不匹配阻断（现有 `54725d0a`，要求 `e7e0a476`），未执行编译与运行测试。后续需同步固定依赖并重建；不能据此宣称运行验收通过。
 
-LootTable 支持权重、独立掉率、数量范围、多 roll、同表唯一结果和 luck 修正。结果对象仅包含物品 id 与
-数量，因此 RPG 模块不反向依赖 Inventory；脚本可决定放入背包、落到世界或邮寄。
-
-物品定义 `extra` 中的 `attr.<属性名>` 会由 `EquipmentSet::synchronizeAttributes(actor)` 转换为
-可精确移除的属性修改器。例如 `{"attr.attack":"12","attr.critChance":"0.05"}`。
-
-### Utility AI
-
-决策集由动作和 considerations 组成。每项把黑板输入归一化后经过 `linear/inverse/quadratic/sqrt/threshold`
-曲线，再乘入动作效用。这个边界有意不负责目标搜索、碰撞和移动：这些属于 scene/map/physics。
-
-### 存档
-
-`StateCodec` 输出版本化 JSON。角色快照包含基础属性、成长、已学技能/冷却和持续状态；任务快照包含状态和
-目标进度。静态定义由内容包先注册，再恢复运行时快照。目标指针和正在读条的临时对象不会跨存档保存。
-
-## Squirrel 入口
-
-所有能力均挂在 `eve.RPG()`：
-
-- 内容：`registerEffectsFromJson`、`registerSkillsFromJson`、`registerQuestsFromJson`、
-  `registerLootTablesFromJson`、`registerAIDecisionSetsFromJson`
-- 工厂：`newActor`、`newTracker`、`newUtilityBrain`
-- 战斗：`dealDamage`、`heal`、combat/level 事件查询
-- 掉落：`rollLoot`
-- 存档：`serializeActor/deserializeActor`、`serializeTracker/deserializeTracker`
-
-原有 Attribute/Status/Skill/Settlement API 保持兼容。
-
-## 游戏帧编排建议
-
-1. 更新感知数据并让 UtilityBrain 选择动作。
-2. 玩家或 AI 调用 `beginCastSkill`。
-3. 调用 `rpg.update(dt)`。
-4. 将 cast/tick 事件转成 `dealDamage/heal`。
-5. 再次 `rpg.update(0)` 拉取 combat/level 事件（或下一帧统一处理）。
-6. 击杀时发任务通知、获得经验并 roll 掉落。
-7. 装备变化后调用 `synchronizeAttributes`。
-8. 在安全点序列化 Actor 与 Tracker。
-
-## 扩展边界
-
-- 更复杂的伤害乘区、格挡、穿透：注册 SettlementPipeline 阶段，或替换 CombatSystem 调用。
-- 行为树/GOAP：可以与 UtilityBrain 并存，最终仍输出技能或移动意图。
-- 随机词缀与锻造：在 ItemStack.props 中保存实例词缀，再以 modifier source 同步。
-- 联机权威：服务器设置随机种子并发送 CombatEvent/LootRoll 结果，客户端只表现。
+- [RPG 系统设计](RPG系统设计.md)：RPG 数值与兼容门面；其中早期组件示意需结合当前头文件阅读。
+- [任务系统设计](RPG任务系统设计.md)：Tracker 与任务事件。
+- [战斗系统与动作编辑器](战斗系统与动作编辑器.md)：能力、动作与表现生命周期。
+- [战斗载体与投射物行为组合框架](战斗载体与投射物行为组合框架.md)：投射物组合边界。
+- [结算与伤害数字](combat-settlement-damage-numbers.md)：战斗提交与表现连接。

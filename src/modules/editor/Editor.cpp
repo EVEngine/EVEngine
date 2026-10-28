@@ -1,21 +1,35 @@
 #include "editor/Editor.h"
 
-#include "editor/Brush.h"
+#include "common/Capability.h"
+#include "common/EditorAutomation.h"
+#include "common/EditorMcpAttach.h"
+#include "common/SquirrelBinding.h"
+#include "editing/PropertySchemaJson.h"
+#include "editor/EditorAutomationProvider.h"
 #include "editor/EditorDock.h"
-#include "editor/EditorHistory.h"
+#include "editor/EditorHost.h"
 #include "editor/EditorInspector.h"
+#include "editor/EditorMcpProjector.h"
+#include "editor/EditorSession.h"
+#include "editor/EditorTargetCoordinator.h"
 #include "editor/EditorToolbar.h"
+#include "editor/EditorWorkspace.h"
+#include "editor/FieldBrushTool.h"
 #include "editor/GizmoManager.h"
-#include "editor/TileBuffer.h"
+#include "editor/ScriptEditorTool.h"
 #include "editor/TransformGizmo.h"
+#include "editor/VolumeBrushTool.h"
 
-#include "graphics/Graphics.h"
-#include "graphics/Mesh.h"
-#include "procgen/heightmap/Heightmap.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
+#include <algorithm>
+#include <cmath>
 #include <cstdint>
+#include <memory>
+#include <stdexcept>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace eve::editor {
@@ -24,110 +38,380 @@ Module_IMPL(Editor, new Editor());
 
 namespace {
 
-struct HeightmapArrays {
-    std::vector<float> pos;
-    std::vector<float> nrm;
-    std::vector<float> uv;
-    std::vector<uint32_t> idx;
-};
-
-/** Flat-shaded terrain mesh: two triangles per cell, 6 vertices per quad. */
-void buildHeightmapArrays(const eve::procgen::Heightmap &hm, float cell, float hScale,
-                          HeightmapArrays &out) {
-    out.pos.clear();
-    out.nrm.clear();
-    out.uv.clear();
-    out.idx.clear();
-    const int w = hm.getWidth();
-    const int h = hm.getHeight();
-    if (w < 2 || h < 2) return;
-    const float uw = float(w - 1);
-    const float uh = float(h - 1);
-
-    auto addTri = [&](float ax, float az, float ay, float bx, float bz, float by, float cx,
-                      float cz, float cy) {
-        const float p0x = ax * cell, p0y = ay * hScale, p0z = az * cell;
-        const float p1x = bx * cell, p1y = by * hScale, p1z = bz * cell;
-        const float p2x = cx * cell, p2y = cy * hScale, p2z = cz * cell;
-        const float e1x = p1x - p0x, e1y = p1y - p0y, e1z = p1z - p0z;
-        const float e2x = p2x - p0x, e2y = p2y - p0y, e2z = p2z - p0z;
-        float nx = e1y * e2z - e1z * e2y;
-        float ny = e1z * e2x - e1x * e2z;
-        float nz = e1x * e2y - e1y * e2x;
-        const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
-        if (len > 1e-8f) {
-            nx /= len;
-            ny /= len;
-            nz /= len;
-        }
-        const uint32_t base = uint32_t(out.pos.size() / 3);
-        out.pos.insert(out.pos.end(), {p0x, p0y, p0z, p1x, p1y, p1z, p2x, p2y, p2z});
-        out.nrm.insert(out.nrm.end(), {nx, ny, nz, nx, ny, nz, nx, ny, nz});
-        out.uv.insert(out.uv.end(),
-                      {ax / uw, az / uh, bx / uw, bz / uh, cx / uw, cz / uh});
-        out.idx.insert(out.idx.end(), {base, base + 1, base + 2});
-    };
-
-    for (int y = 0; y < h - 1; ++y) {
-        for (int x = 0; x < w - 1; ++x) {
-            const float h00 = hm.height(x, y);
-            const float h10 = hm.height(x + 1, y);
-            const float h01 = hm.height(x, y + 1);
-            const float h11 = hm.height(x + 1, y + 1);
-            // Grid is XZ; y in the function is the XZ "row" axis.
-            addTri(float(x), float(y), h00, float(x + 1), float(y), h10, float(x), float(y + 1), h01);
-            addTri(float(x + 1), float(y), h10, float(x + 1), float(y + 1), h11, float(x),
-                   float(y + 1), h01);
-        }
+const char* statusName(EditorStatus status) {
+    switch (status) {
+        case EditorStatus::Ok: return "ok";
+        case EditorStatus::Applied: return "applied";
+        case EditorStatus::Pending: return "pending";
+        case EditorStatus::NoOp: return "no-op";
+        case EditorStatus::Rejected: return "rejected";
+        case EditorStatus::Conflict: return "conflict";
+        case EditorStatus::NotFound: return "not-found";
+        case EditorStatus::Unsupported: return "unsupported";
+        case EditorStatus::Cancelled: return "cancelled";
+        case EditorStatus::Failed: return "failed";
     }
+    return "failed";
+}
+
+const char* transactionStateName(TransactionState state) {
+    switch (state) {
+        case TransactionState::Planning: return "planning";
+        case TransactionState::Previewing: return "previewing";
+        case TransactionState::PendingAuthority: return "pending-authority";
+        case TransactionState::Committed: return "committed";
+        case TransactionState::RolledBack: return "rolled-back";
+        case TransactionState::Rejected: return "rejected";
+        case TransactionState::Conflicted: return "conflicted";
+        case TransactionState::Failed: return "failed";
+    }
+    return "failed";
+}
+
+bool squirrelToEditorValue(HSQUIRRELVM vm, SQInteger index, EditorValue& out, size_t depth = 0) {
+    if (!vm || depth > 32) return false;
+    const SQInteger absolute = index > 0 ? index : sq_gettop(vm) + index + 1;
+    switch (sq_gettype(vm, absolute)) {
+        case OT_NULL: out = EditorValue{}; return true;
+        case OT_BOOL: {
+            SQBool value = SQFalse;
+            if (SQ_FAILED(sq_getbool(vm, absolute, &value))) return false;
+            out = EditorValue(value != SQFalse);
+            return true;
+        }
+        case OT_INTEGER: {
+            SQInteger value = 0;
+            if (SQ_FAILED(sq_getinteger(vm, absolute, &value))) return false;
+            out = EditorValue(static_cast<int64_t>(value));
+            return true;
+        }
+        case OT_FLOAT: {
+            SQFloat value = 0;
+            if (SQ_FAILED(sq_getfloat(vm, absolute, &value))) return false;
+            out = EditorValue(static_cast<double>(value));
+            return true;
+        }
+        case OT_STRING: {
+            const SQChar* value = nullptr;
+            if (SQ_FAILED(sq_getstring(vm, absolute, &value))) return false;
+            out = EditorValue(value ? value : "");
+            return true;
+        }
+        case OT_ARRAY: {
+            EditorValue::Array values;
+            const SQInteger    count = sq_getsize(vm, absolute);
+            values.reserve(static_cast<size_t>(count));
+            for (SQInteger i = 0; i < count; ++i) {
+                sq_pushinteger(vm, i);
+                if (SQ_FAILED(sq_get(vm, absolute))) return false;
+                EditorValue value;
+                const bool  ok = squirrelToEditorValue(vm, -1, value, depth + 1);
+                sq_pop(vm, 1);
+                if (!ok) return false;
+                values.push_back(std::move(value));
+            }
+            out = EditorValue(std::move(values));
+            return true;
+        }
+        case OT_TABLE: {
+            EditorValue::Object values;
+            sq_pushnull(vm);
+            while (SQ_SUCCEEDED(sq_next(vm, absolute))) {
+                const SQChar* key = nullptr;
+                const bool keyOk  = sq_gettype(vm, -2) == OT_STRING && SQ_SUCCEEDED(sq_getstring(vm, -2, &key)) && key;
+                const std::string stableKey = keyOk ? key : "";
+                EditorValue       value;
+                const bool        valueOk = keyOk && squirrelToEditorValue(vm, -1, value, depth + 1);
+                sq_pop(vm, 2);
+                if (!valueOk) {
+                    sq_pop(vm, 1);
+                    return false;
+                }
+                values[stableKey] = std::move(value);
+            }
+            sq_pop(vm, 1);
+            out = EditorValue(std::move(values));
+            return true;
+        }
+        default: return false;
+    }
+}
+
+bool objectToEditorValue(const ssq::Object& object, EditorValue& out) {
+    HSQUIRRELVM vm = object.getHandle();
+    if (!vm) return false;
+    const SQInteger top = sq_gettop(vm);
+    sq_pushobject(vm, object.getRaw());
+    const bool ok = squirrelToEditorValue(vm, -1, out);
+    sq_settop(vm, top);
+    return ok;
+}
+
+void pushEditorValue(HSQUIRRELVM vm, const EditorValue& value) {
+    std::visit(
+        [&](const auto& current) {
+            using T = std::decay_t<decltype(current)>;
+            if constexpr (std::is_same_v<T, std::monostate>) {
+                sq_pushnull(vm);
+            } else if constexpr (std::is_same_v<T, bool>) {
+                sq_pushbool(vm, current ? SQTrue : SQFalse);
+            } else if constexpr (std::is_same_v<T, int64_t>) {
+                sq_pushinteger(vm, static_cast<SQInteger>(current));
+            } else if constexpr (std::is_same_v<T, double>) {
+                sq_pushfloat(vm, static_cast<SQFloat>(current));
+            } else if constexpr (std::is_same_v<T, std::string>) {
+                sq_pushstring(vm, current.c_str(), static_cast<SQInteger>(current.size()));
+            } else if constexpr (std::is_same_v<T, EditorValue::Array>) {
+                sq_newarray(vm, 0);
+                for (const EditorValue& entry : current) {
+                    pushEditorValue(vm, entry);
+                    sq_arrayappend(vm, -2);
+                }
+            } else if constexpr (std::is_same_v<T, EditorValue::Object>) {
+                sq_newtable(vm);
+                for (const auto& [key, entry] : current) {
+                    sq_pushstring(vm, key.c_str(), static_cast<SQInteger>(key.size()));
+                    pushEditorValue(vm, entry);
+                    sq_newslot(vm, -3, SQFalse);
+                }
+            }
+        },
+        value.storage());
+}
+
+void setValue(ssq::Table& table, const char* name, const EditorValue& value) {
+    HSQUIRRELVM vm = table.getHandle();
+    sq_pushobject(vm, table.getRaw());
+    sq_pushstring(vm, name, -1);
+    pushEditorValue(vm, value);
+    sq_newslot(vm, -3, SQFalse);
+    sq_pop(vm, 1);
+}
+
+ssq::Array diagnosticArray(HSQUIRRELVM vm, const std::vector<EditorDiagnostic>& diagnostics) {
+    ssq::Array out(vm);
+    for (const EditorDiagnostic& diagnostic : diagnostics) {
+        ssq::Table item(vm);
+        item.set("rule", editing::diagnosticRule(diagnostic).value());
+        item.set("message", diagnostic.message());
+        item.set("severity", static_cast<int>(diagnostic.severity()));
+        out.push(item);
+    }
+    return out;
+}
+
+template <class T>
+ssq::Table resultTable(HSQUIRRELVM vm, const Result<T>& result) {
+    ssq::Table out(vm);
+    out.set("status", std::string(statusName(result.code())));
+    out.set("accepted", result.ok());
+    out.set("diagnostics", diagnosticArray(vm, result.diagnostics()));
+    return out;
+}
+
+Result<EditorValue> invalidScriptPayload() {
+    return eve::editing::failed<EditorValue>(
+        EditorStatus::Rejected, RuleId("editor.script.invalid-payload"),
+        "Script payload must contain only null, bool, number, string, array, or table values");
+}
+
+bool invokeScriptCommand(const ssq::Object& callback, const EditorValue& payload) {
+    const SQObjectType type = callback.getRaw()._type;
+    if (type != OT_CLOSURE && type != OT_NATIVECLOSURE) return false;
+    HSQUIRRELVM vm  = callback.getHandle();
+    SQInteger   top = sq_gettop(vm);
+    sq_pushobject(vm, callback.getRaw());
+    sq_pushroottable(vm);
+    pushEditorValue(vm, payload);
+    // `pushEditorValue` pushes an EditorValue, which is not one of the types the shared
+    // helper's typed-argument form accepts, so the parameter count is derived from the
+    // pushes instead -- the same rule (R-FACE-7). A script command that threw used to be
+    // reported to the author as "callback rejected the planned payload", which reads as a
+    // deliberate `return false`.
+    const SQInteger params   = sq_gettop(vm) - top - 1;  // receiver + arguments
+    bool accepted = false;
+    if (SQ_SUCCEEDED(sq_call(vm, params, SQTrue, SQTrue))) {
+        SQBool result = SQFalse;
+        accepted      = SQ_SUCCEEDED(sq_getbool(vm, -1, &result)) && result != SQFalse;
+    } else {
+        script::reportScriptCallFailure(vm, "editor.script-command");
+    }
+    sq_settop(vm, top);
+    return accepted;
+}
+
+bool registerScriptCommandImpl(Editor* editor, const std::string& id, const std::string& displayName,
+                               const std::string& category, ssq::Object callback, bool automationAllowed,
+                               const std::string& panelCapability, const std::string& panelContext) {
+    if (!editor || id.empty()) return false;
+    const SQObjectType callbackType = callback.getRaw()._type;
+    if (callbackType != OT_CLOSURE && callbackType != OT_NATIVECLOSURE) return false;
+    if (automationAllowed && (panelCapability.empty() || panelContext.empty())) return false;
+
+    CommandDescriptor descriptor;
+    descriptor.id                = CommandId(id);
+    descriptor.ownerModule       = "script:" + id;
+    descriptor.displayName       = displayName;
+    descriptor.category          = category;
+    descriptor.automationAllowed = automationAllowed;
+    descriptor.payloadSchema     = editing::emptyObjectPropertySchema("script." + id);
+    descriptor.panelCapability   = panelCapability;
+    descriptor.panelContext      = panelContext;
+    return editor->commandService()
+        .registerPlannedCommand(
+            descriptor,
+            [id](const CommandRequest& request) {
+                CommandPlan plan;
+                plan.summary = EditorValue::Object{{"command", EditorValue(id)}, {"payload", request.payload}};
+                DomainOperation operation;
+                operation.type    = id;
+                operation.payload = request.payload;
+                plan.operations.push_back(std::move(operation));
+                return eve::editing::applied<CommandPlan>(std::move(plan));
+            },
+            [callback = std::move(callback)](const CommandRequest& request, const CommandPlan& plan) {
+                if (!invokeScriptCommand(callback, request.payload))
+                    return eve::editing::failed<TransactionReceipt>(
+                        EditorStatus::Rejected, RuleId("editor.script.command-rejected"),
+                        "Script command callback rejected the planned payload");
+                TransactionReceipt receipt;
+                receipt.id               = TransactionId(plan.id.value());
+                receipt.state            = TransactionState::Committed;
+                receipt.beforeRevision   = plan.baseRevision;
+                receipt.afterRevision    = plan.baseRevision + 1;
+                receipt.authorityReceipt = "script:local";
+                return eve::editing::applied<TransactionReceipt>(std::move(receipt));
+            },
+            true)
+        .ok();
+}
+
+bool registerScriptCommand(Editor* editor, const std::string& id, const std::string& displayName,
+                           const std::string& category, ssq::Object callback) {
+    return registerScriptCommandImpl(editor, id, displayName, category, std::move(callback), false, {}, {});
+}
+
+bool registerAutomatedScriptCommand(Editor* editor, const std::string& id, const std::string& displayName,
+                                    const std::string& category, const std::string& panelCapability,
+                                    const std::string& panelContext, ssq::Object callback) {
+    return registerScriptCommandImpl(editor, id, displayName, category, std::move(callback), true, panelCapability,
+                                     panelContext);
 }
 
 }  // namespace
 
-TransformGizmo *Editor::newGizmo() { return new TransformGizmo(); }
+namespace {
 
-GizmoManager *Editor::newGizmoManager() { return new GizmoManager(); }
-
-TileBuffer *Editor::newTileBuffer(int width, int height) { return new TileBuffer(width, height); }
-
-Brush *Editor::newBrush() { return new Brush(); }
-
-EditorToolbar *Editor::newToolbar() { return new EditorToolbar(); }
-
-EditorInspector *Editor::newInspector() { return new EditorInspector(); }
-
-EditorDock *Editor::newDock() { return new EditorDock(); }
-
-EditorHistory *Editor::newHistory() { return new EditorHistory(); }
-
-graphics::Mesh *Editor::newHeightmapMesh(procgen::Heightmap *hm, float cellSize,
-                                         float heightScale) {
-    auto *gfx = eve::ModuleManager::getInstance<graphics::Graphics>("Graphics");
-    if (!gfx || !hm) return nullptr;
-    HeightmapArrays a;
-    buildHeightmapArrays(*hm, cellSize, heightScale, a);
-    if (a.idx.empty()) return nullptr;
-    return gfx->newMeshFromArrays(a.pos.data(), a.nrm.data(), a.uv.data(),
-                                  int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
+bool attachEditorHostOpaque(void* host) {
+    auto* editorHost = static_cast<EditorHost*>(host);
+    if (!editorHost) return false;
+    return editorHost->exportMcp(EditorMcpExportMode::Commands).ok();
 }
 
-bool Editor::updateHeightmapMesh(graphics::Mesh *mesh, graphics::Graphics *gfx,
-                                 procgen::Heightmap *hm, float cellSize, float heightScale) {
-    if (!mesh || !gfx || !hm) return false;
-    HeightmapArrays a;
-    buildHeightmapArrays(*hm, cellSize, heightScale, a);
-    if (a.idx.empty()) return false;
-    return gfx->updateMeshVertices(mesh, a.pos.data(), a.nrm.data(), a.uv.data(),
-                                   int(a.pos.size() / 3), a.idx.data(), int(a.idx.size()));
+void detachEditorHostOpaque() { editorMcpProjector().detach(); }
+
+}  // namespace
+
+Editor::Editor()
+    : targets_(std::make_unique<EditorTargetCoordinator>(commandService_)),
+      automation_(std::make_unique<EditorAutomationProvider>(commandService_, *targets_)) {
+    eve::cap::provide<eve::editing::IEditingCommandRegistry>(targets_.get());
+    eve::cap::provide<eve::IEditorAutomation>(automation_.get());
+    eve::setEditorMcpAttachHooks(&attachEditorHostOpaque, &detachEditorHostOpaque);
 }
 
-void Editor::expose(ssq::Table &table) {
+Editor::~Editor() {
+    eve::setEditorMcpAttachHooks(nullptr, nullptr);
+    eve::cap::revoke<eve::IEditorAutomation>(automation_.get());
+    eve::cap::revoke<eve::editing::IEditingCommandRegistry>(targets_.get());
+}
+
+Result<void> Editor::registerEditingTarget(IEditableTarget& target) { return targets_->registerTarget(target); }
+
+Result<void> Editor::unregisterEditingTarget(const TargetId& target) {
+    auto result = targets_->unregisterTarget(target);
+    if (result.code() == EditorStatus::Applied) automation_->targetUnregistered(target);
+    return result;
+}
+
+Result<void> Editor::bindEditingTarget(EditorSession& session, const TargetId& target) {
+    return targets_->bind(session, target);
+}
+
+std::unique_ptr<TransformGizmo> Editor::newGizmo() { return std::make_unique<TransformGizmo>(); }
+
+std::unique_ptr<GizmoManager> Editor::newGizmoManager() { return std::make_unique<GizmoManager>(); }
+
+std::unique_ptr<EditorToolbar> Editor::newToolbar() { return std::make_unique<EditorToolbar>(); }
+
+std::unique_ptr<EditorInspector> Editor::newInspector() { return std::make_unique<EditorInspector>(); }
+
+std::unique_ptr<EditorDock> Editor::newDock() { return std::make_unique<EditorDock>(); }
+
+std::unique_ptr<EditorSession> Editor::newSession() {
+    auto session = std::make_unique<EditorSession>();
+    session->setCommandService(&commandService_);
+    return session;
+}
+
+Result<std::unique_ptr<EditorWorkspace>> Editor::newWorkspace(const std::string& id, const std::string& title) {
+    if (id.empty())
+        return eve::editing::failed<std::unique_ptr<EditorWorkspace>>(
+            EditorStatus::Rejected, RuleId("editor.workspace.empty-id"), "Workspace id must be non-empty");
+    return eve::editing::applied<std::unique_ptr<EditorWorkspace>>(
+        std::make_unique<EditorWorkspace>(id, title.empty() ? id : title));
+}
+
+Result<std::unique_ptr<EditorHost>> Editor::newHost(const std::string& id, const std::string& title) {
+    if (id.empty())
+        return eve::editing::failed<std::unique_ptr<EditorHost>>(EditorStatus::Rejected, RuleId("editor.host.empty-id"),
+                                                                 "EditorHost id must be non-empty");
+    EditorHost::Options options;
+    options.id    = id;
+    options.title = title.empty() ? id : title;
+    return eve::editing::applied<std::unique_ptr<EditorHost>>(std::make_unique<EditorHost>(*this, std::move(options)));
+}
+
+std::unique_ptr<ScriptEditorTool> Editor::newScriptTool(const std::string& id, const std::string& label) {
+    return std::make_unique<ScriptEditorTool>(id, label);
+}
+
+std::unique_ptr<ConstantBrushFalloff> Editor::newConstantBrushFalloff() {
+    return std::make_unique<ConstantBrushFalloff>();
+}
+std::unique_ptr<LinearBrushFalloff> Editor::newLinearBrushFalloff() { return std::make_unique<LinearBrushFalloff>(); }
+std::unique_ptr<SmoothBrushFalloff> Editor::newSmoothBrushFalloff() { return std::make_unique<SmoothBrushFalloff>(); }
+std::unique_ptr<CircleBrushKernel> Editor::newCircleBrushKernel() { return std::make_unique<CircleBrushKernel>(); }
+std::unique_ptr<BoxBrushKernel> Editor::newBoxBrushKernel() { return std::make_unique<BoxBrushKernel>(); }
+std::unique_ptr<PaintIntFieldOperation> Editor::newPaintIntFieldOperation(int value) {
+    return std::make_unique<PaintIntFieldOperation>(value);
+}
+std::unique_ptr<AddScalarFieldOperation> Editor::newAddScalarFieldOperation() {
+    return std::make_unique<AddScalarFieldOperation>();
+}
+std::unique_ptr<FieldBrushTool> Editor::newFieldBrushTool(const std::string& id, const std::string& label) {
+    return std::make_unique<FieldBrushTool>(id, label, nullptr, nullptr);
+}
+
+std::unique_ptr<SphereVolumeBrushKernel> Editor::newSphereVolumeBrushKernel() {
+    return std::make_unique<SphereVolumeBrushKernel>();
+}
+std::unique_ptr<BoxVolumeBrushKernel> Editor::newBoxVolumeBrushKernel() {
+    return std::make_unique<BoxVolumeBrushKernel>();
+}
+std::unique_ptr<PaintIntVolumeOperation> Editor::newPaintIntVolumeOperation(int value) {
+    return std::make_unique<PaintIntVolumeOperation>(value);
+}
+std::unique_ptr<VolumeBrushTool> Editor::newVolumeBrushTool(const std::string& id, const std::string& label) {
+    return std::make_unique<VolumeBrushTool>(id, label);
+}
+
+void Editor::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Editor::create, false);
     expose(cls);
 
     auto gizmo = table.addClass<TransformGizmo>(
-        "TransformGizmo",
-        std::function<TransformGizmo *()>([]() -> TransformGizmo * { return nullptr; }), true);
+        "TransformGizmo", std::function<TransformGizmo*()>([]() -> TransformGizmo* { return nullptr; }), true);
     gizmo.addFunc("setMode", &TransformGizmo::setMode);
     gizmo.addFunc("getMode", &TransformGizmo::getMode);
     gizmo.addFunc("setSpace", &TransformGizmo::setSpace);
@@ -188,8 +472,7 @@ void Editor::expose(ssq::Table &table) {
     gizmo.addFunc("getPartRadius", &TransformGizmo::getPartRadius);
 
     auto mgr = table.addClass<GizmoManager>(
-        "GizmoManager",
-        std::function<GizmoManager *()>([]() -> GizmoManager * { return nullptr; }), true);
+        "GizmoManager", std::function<GizmoManager*()>([]() -> GizmoManager* { return nullptr; }), true);
     mgr.addFunc("getGizmo", &GizmoManager::getGizmo);
     mgr.addFunc("setPositionEnabled", &GizmoManager::setPositionEnabled);
     mgr.addFunc("setRotationEnabled", &GizmoManager::setRotationEnabled);
@@ -209,59 +492,11 @@ void Editor::expose(ssq::Table &table) {
     mgr.addFunc("isDragging", &GizmoManager::isDragging);
     mgr.addFunc("isHovered", &GizmoManager::isHovered);
 
-    auto buf = table.addClass<TileBuffer>(
-        "TileBuffer", std::function<TileBuffer *()>([]() -> TileBuffer * { return nullptr; }),
-        true);
-    buf.addFunc("getWidth", &TileBuffer::getWidth);
-    buf.addFunc("getHeight", &TileBuffer::getHeight);
-    buf.addFunc("resize", &TileBuffer::resize);
-    buf.addFunc("clear", &TileBuffer::clear);
-    buf.addFunc("fill", &TileBuffer::fill);
-    buf.addFunc("setGid", &TileBuffer::setGid);
-    buf.addFunc("getGid", &TileBuffer::getGid);
-    buf.addFunc("inBounds", &TileBuffer::inBounds);
-
-    auto brush = table.addClass<Brush>(
-        "Brush", std::function<Brush *()>([]() -> Brush * { return nullptr; }), true);
-    brush.addFunc("setTool", &Brush::setTool);
-    brush.addFunc("getTool", &Brush::getTool);
-    brush.addFunc("setSize", &Brush::setSize);
-    brush.addFunc("getSize", &Brush::getSize);
-    brush.addFunc("setShape", &Brush::setShape);
-    brush.addFunc("getShape", &Brush::getShape);
-    brush.addFunc("setTile", &Brush::setTile);
-    brush.addFunc("getTile", &Brush::getTile);
-    brush.addFunc("setEraseTile", &Brush::setEraseTile);
-    brush.addFunc("getEraseTile", &Brush::getEraseTile);
-    brush.addFunc("setStampSize", &Brush::setStampSize);
-    brush.addFunc("getStampWidth", &Brush::getStampWidth);
-    brush.addFunc("getStampHeight", &Brush::getStampHeight);
-    brush.addFunc("setStampTile", &Brush::setStampTile);
-    brush.addFunc("getStampTile", &Brush::getStampTile);
-    brush.addFunc("clearStamp", &Brush::clearStamp);
-    brush.addFunc("paintAt", &Brush::paintAt);
-    brush.addFunc("eraseAt", &Brush::eraseAt);
-    brush.addFunc("floodFill", &Brush::floodFill);
-    brush.addFunc("paintLine", &Brush::paintLine);
-    brush.addFunc("paintRect", &Brush::paintRect);
-    brush.addFunc("previewAt", &Brush::previewAt);
-    brush.addFunc("previewLine", &Brush::previewLine);
-    brush.addFunc("previewRect", &Brush::previewRect);
-    brush.addFunc("getPreviewCount", &Brush::getPreviewCount);
-    brush.addFunc("getPreviewX", &Brush::getPreviewX);
-    brush.addFunc("getPreviewY", &Brush::getPreviewY);
-    brush.addFunc("getPreviewGid", &Brush::getPreviewGid);
-    brush.addFunc("getChangeCount", &Brush::getChangeCount);
-    brush.addFunc("getChangeX", &Brush::getChangeX);
-    brush.addFunc("getChangeY", &Brush::getChangeY);
-    brush.addFunc("getChangeOldGid", &Brush::getChangeOldGid);
-    brush.addFunc("getChangeNewGid", &Brush::getChangeNewGid);
-
     auto tb = table.addClass<EditorToolbar>(
-        "EditorToolbar",
-        std::function<EditorToolbar *()>([]() -> EditorToolbar * { return nullptr; }), true);
+        "EditorToolbar", std::function<EditorToolbar*()>([]() -> EditorToolbar* { return nullptr; }), true);
     tb.addFunc("clear", &EditorToolbar::clear);
     tb.addFunc("addTool", &EditorToolbar::addTool);
+    tb.addFunc("setIcon", &EditorToolbar::setIcon);
     tb.addFunc("setShortcut", &EditorToolbar::setShortcut);
     tb.addFunc("setActive", &EditorToolbar::setActive);
     tb.addFunc("getActive", &EditorToolbar::getActive);
@@ -269,11 +504,11 @@ void Editor::expose(ssq::Table &table) {
     tb.addFunc("getToolCount", &EditorToolbar::getToolCount);
     tb.addFunc("getToolId", &EditorToolbar::getToolId);
     tb.addFunc("getToolLabel", &EditorToolbar::getToolLabel);
+    tb.addFunc("getToolIcon", &EditorToolbar::getToolIcon);
     tb.addFunc("getToolShortcut", &EditorToolbar::getToolShortcut);
 
     auto insp = table.addClass<EditorInspector>(
-        "EditorInspector",
-        std::function<EditorInspector *()>([]() -> EditorInspector * { return nullptr; }), true);
+        "EditorInspector", std::function<EditorInspector*()>([]() -> EditorInspector* { return nullptr; }), true);
     insp.addFunc("clear", &EditorInspector::clear);
     insp.addFunc("addFloat", &EditorInspector::addFloat);
     insp.addFunc("addFloat3", &EditorInspector::addFloat3);
@@ -305,9 +540,8 @@ void Editor::expose(ssq::Table &table) {
     insp.addFunc("clearAllDirty", &EditorInspector::clearAllDirty);
     insp.addFunc("pollChangedId", &EditorInspector::pollChangedId);
 
-    auto dock = table.addClass<EditorDock>(
-        "EditorDock", std::function<EditorDock *()>([]() -> EditorDock * { return nullptr; }),
-        true);
+    auto dock = table.addClass<EditorDock>("EditorDock",
+                                           std::function<EditorDock*()>([]() -> EditorDock* { return nullptr; }), true);
     dock.addFunc("setRegionSize", &EditorDock::setRegionSize);
     dock.addFunc("getRegionSize", &EditorDock::getRegionSize);
     dock.addFunc("layout", &EditorDock::layout);
@@ -316,44 +550,372 @@ void Editor::expose(ssq::Table &table) {
     dock.addFunc("getRegionW", &EditorDock::getRegionW);
     dock.addFunc("getRegionH", &EditorDock::getRegionH);
 
-    auto hist = table.addClass<EditorHistory>(
-        "EditorHistory",
-        std::function<EditorHistory *()>([]() -> EditorHistory * { return nullptr; }), true);
-    hist.addFunc("clear", &EditorHistory::clear);
-    hist.addFunc("push", &EditorHistory::push);
-    hist.addFunc("beginGroup", &EditorHistory::beginGroup);
-    hist.addFunc("recordTile", &EditorHistory::recordTile);
-    hist.addFunc("endGroup", &EditorHistory::endGroup);
-    hist.addFunc("isGrouping", &EditorHistory::isGrouping);
-    hist.addFunc("canUndo", &EditorHistory::canUndo);
-    hist.addFunc("canRedo", &EditorHistory::canRedo);
-    hist.addFunc("getUndoCount", &EditorHistory::getUndoCount);
-    hist.addFunc("getRedoCount", &EditorHistory::getRedoCount);
-    hist.addFunc("undo", &EditorHistory::undo);
-    hist.addFunc("redo", &EditorHistory::redo);
-    hist.addFunc("applyLastToBuffer", &EditorHistory::applyLastToBuffer);
-    hist.addFunc("getLastActionName", &EditorHistory::getLastActionName);
-    hist.addFunc("getLastActionKind", &EditorHistory::getLastActionKind);
-    hist.addFunc("getLastPayload", &EditorHistory::getLastPayload);
-    hist.addFunc("getLastTileCount", &EditorHistory::getLastTileCount);
-    hist.addFunc("getLastTileX", &EditorHistory::getLastTileX);
-    hist.addFunc("getLastTileY", &EditorHistory::getLastTileY);
-    hist.addFunc("getLastTileOldGid", &EditorHistory::getLastTileOldGid);
-    hist.addFunc("getLastTileNewGid", &EditorHistory::getLastTileNewGid);
+    auto constantFalloff = table.addClass<ConstantBrushFalloff>(
+        "ConstantBrushFalloff",
+        std::function<ConstantBrushFalloff*()>([]() -> ConstantBrushFalloff* { return nullptr; }), true);
+    auto linearFalloff = table.addClass<LinearBrushFalloff>(
+        "LinearBrushFalloff", std::function<LinearBrushFalloff*()>([]() -> LinearBrushFalloff* { return nullptr; }),
+        true);
+    auto smoothFalloff = table.addClass<SmoothBrushFalloff>(
+        "SmoothBrushFalloff", std::function<SmoothBrushFalloff*()>([]() -> SmoothBrushFalloff* { return nullptr; }),
+        true);
+    (void)constantFalloff;
+    (void)linearFalloff;
+    (void)smoothFalloff;
+
+    auto circleKernel = table.addClass<CircleBrushKernel>(
+        "CircleBrushKernel", std::function<CircleBrushKernel*()>([]() -> CircleBrushKernel* { return nullptr; }), true);
+    circleKernel.addFunc("setConstantFalloff", [](CircleBrushKernel* self, ConstantBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    circleKernel.addFunc("setLinearFalloff", [](CircleBrushKernel* self, LinearBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    circleKernel.addFunc("setSmoothFalloff", [](CircleBrushKernel* self, SmoothBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+
+    auto boxKernel = table.addClass<BoxBrushKernel>(
+        "BoxBrushKernel", std::function<BoxBrushKernel*()>([]() -> BoxBrushKernel* { return nullptr; }), true);
+    boxKernel.addFunc("setConstantFalloff", [](BoxBrushKernel* self, ConstantBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    boxKernel.addFunc("setLinearFalloff", [](BoxBrushKernel* self, LinearBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    boxKernel.addFunc("setSmoothFalloff", [](BoxBrushKernel* self, SmoothBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+
+    auto paintOperation = table.addClass<PaintIntFieldOperation>(
+        "PaintIntFieldOperation",
+        std::function<PaintIntFieldOperation*()>([]() -> PaintIntFieldOperation* { return nullptr; }), true);
+    paintOperation.addFunc("setValue", &PaintIntFieldOperation::setValue);
+    paintOperation.addFunc("getValue", &PaintIntFieldOperation::value);
+    auto addScalarOperation = table.addClass<AddScalarFieldOperation>(
+        "AddScalarFieldOperation",
+        std::function<AddScalarFieldOperation*()>([]() -> AddScalarFieldOperation* { return nullptr; }), true);
+    (void)addScalarOperation;
+
+    auto fieldTool = table.addClass<FieldBrushTool>(
+        "FieldBrushTool", std::function<FieldBrushTool*()>([]() -> FieldBrushTool* { return nullptr; }), true);
+    fieldTool.addFunc("setRadius", &FieldBrushTool::setRadius);
+    fieldTool.addFunc("setStrength", &FieldBrushTool::setStrength);
+    fieldTool.addFunc("getRadius", &FieldBrushTool::radius);
+    fieldTool.addFunc("getStrength", &FieldBrushTool::strength);
+    fieldTool.addFunc("setCircleKernel", [](FieldBrushTool* self, CircleBrushKernel* kernel) {
+        if (self) self->setKernel(kernel);
+    });
+    fieldTool.addFunc("setBoxKernel", [](FieldBrushTool* self, BoxBrushKernel* kernel) {
+        if (self) self->setKernel(kernel);
+    });
+    fieldTool.addFunc("setPaintIntOperation", [](FieldBrushTool* self, PaintIntFieldOperation* operation) {
+        if (self) self->setOperation(operation);
+    });
+    fieldTool.addFunc("setAddScalarOperation", [](FieldBrushTool* self, AddScalarFieldOperation* operation) {
+        if (self) self->setOperation(operation);
+    });
+
+    auto sphereVolumeKernel = table.addClass<SphereVolumeBrushKernel>(
+        "SphereVolumeBrushKernel",
+        std::function<SphereVolumeBrushKernel*()>([]() -> SphereVolumeBrushKernel* { return nullptr; }), true);
+    sphereVolumeKernel.addFunc("setConstantFalloff", [](SphereVolumeBrushKernel* self, ConstantBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    sphereVolumeKernel.addFunc("setLinearFalloff", [](SphereVolumeBrushKernel* self, LinearBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    sphereVolumeKernel.addFunc("setSmoothFalloff", [](SphereVolumeBrushKernel* self, SmoothBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+
+    auto boxVolumeKernel = table.addClass<BoxVolumeBrushKernel>(
+        "BoxVolumeBrushKernel",
+        std::function<BoxVolumeBrushKernel*()>([]() -> BoxVolumeBrushKernel* { return nullptr; }), true);
+    boxVolumeKernel.addFunc("setConstantFalloff", [](BoxVolumeBrushKernel* self, ConstantBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    boxVolumeKernel.addFunc("setLinearFalloff", [](BoxVolumeBrushKernel* self, LinearBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+    boxVolumeKernel.addFunc("setSmoothFalloff", [](BoxVolumeBrushKernel* self, SmoothBrushFalloff* falloff) {
+        if (self) self->setFalloff(falloff);
+    });
+
+    auto paintVolumeOperation = table.addClass<PaintIntVolumeOperation>(
+        "PaintIntVolumeOperation",
+        std::function<PaintIntVolumeOperation*()>([]() -> PaintIntVolumeOperation* { return nullptr; }), true);
+    paintVolumeOperation.addFunc("setValue", &PaintIntVolumeOperation::setValue);
+    paintVolumeOperation.addFunc("getValue", &PaintIntVolumeOperation::value);
+
+    auto volumeTool = table.addClass<VolumeBrushTool>(
+        "VolumeBrushTool", std::function<VolumeBrushTool*()>([]() -> VolumeBrushTool* { return nullptr; }), true);
+    volumeTool.addFunc("setRadius", &VolumeBrushTool::setRadius);
+    volumeTool.addFunc("getRadius", &VolumeBrushTool::radius);
+    volumeTool.addFunc("setSphereKernel", [](VolumeBrushTool* self, SphereVolumeBrushKernel* kernel) {
+        if (self) self->setKernel(kernel);
+    });
+    volumeTool.addFunc("setBoxKernel", [](VolumeBrushTool* self, BoxVolumeBrushKernel* kernel) {
+        if (self) self->setKernel(kernel);
+    });
+    volumeTool.addFunc("setPaintIntOperation", [](VolumeBrushTool* self, PaintIntVolumeOperation* operation) {
+        if (self) self->setOperation(operation);
+    });
+
+    auto session = table.addClass<EditorSession>(
+        "EditorSession", std::function<EditorSession*()>([]() -> EditorSession* { return nullptr; }), true);
+    session.addFunc("addTool", std::function<bool(EditorSession*, ScriptEditorTool*)>(
+                                   [](EditorSession* self, ScriptEditorTool* tool) { return self->addTool(tool); }));
+    session.addFunc("addFieldTool",
+                    [](EditorSession* self, FieldBrushTool* tool) { return self && self->addTool(tool); });
+    session.addFunc("addVolumeTool",
+                    [](EditorSession* self, VolumeBrushTool* tool) { return self && self->addTool(tool); });
+    session.addFunc("clearTarget", [](EditorSession* self) {
+        if (self) self->bindTarget(nullptr);
+    });
+    session.addFunc("removeTool", &EditorSession::removeTool);
+    session.addFunc("clearTools", &EditorSession::clearTools);
+    session.addFunc("activateTool", &EditorSession::activateTool);
+    session.addFunc("getToolCount", &EditorSession::getToolCount);
+    session.addFunc("getActiveToolId", &EditorSession::activeToolId);
+    session.addFunc("hasPointerCapture", &EditorSession::hasPointerCapture);
+    session.addFunc("update", &EditorSession::update);
+    session.addFunc("cancelActiveTool", &EditorSession::cancelActiveTool);
+    session.addFunc(
+        "undo", std::function<bool(EditorSession*)>([](EditorSession* self) { return self->transactions().undo(); }));
+    session.addFunc(
+        "redo", std::function<bool(EditorSession*)>([](EditorSession* self) { return self->transactions().redo(); }));
+    session.addFunc("canUndo", [](EditorSession* self) { return self && self->transactions().canUndo(); });
+    session.addFunc("canRedo", [](EditorSession* self) { return self && self->transactions().canRedo(); });
+    session.addFunc("clearHistory", [](EditorSession* self) {
+        if (self) self->transactions().clear();
+    });
+    session.addFunc("getCommandCount",
+                    [](EditorSession* self) { return self ? static_cast<int>(self->availableCommands().size()) : 0; });
+    session.addFunc("getCommandId", [](EditorSession* self, int index) {
+        if (!self) return std::string{};
+        const auto commands = self->availableCommands();
+        return index >= 0 && index < static_cast<int>(commands.size()) ? commands[static_cast<size_t>(index)].id.value()
+                                                                       : std::string{};
+    });
+    session.addFunc("getCommandName", [](EditorSession* self, int index) {
+        if (!self) return std::string{};
+        const auto commands = self->availableCommands();
+        return index >= 0 && index < static_cast<int>(commands.size())
+                   ? commands[static_cast<size_t>(index)].displayName
+                   : std::string{};
+    });
+    session.addFunc("getCommandCategory", [](EditorSession* self, int index) {
+        if (!self) return std::string{};
+        const auto commands = self->availableCommands();
+        return index >= 0 && index < static_cast<int>(commands.size()) ? commands[static_cast<size_t>(index)].category
+                                                                       : std::string{};
+    });
+    session.addFunc("planCommand", [](EditorSession* self, const std::string& id, ssq::Object payload) -> ssq::Object {
+        HSQUIRRELVM vm = payload.getHandle();
+        EditorValue value;
+        if (!self || !objectToEditorValue(payload, value)) return resultTable(vm, invalidScriptPayload());
+        const Result<PlanId> planned = self->retainPlan(CommandId(id), value, CommandSource::Script);
+        ssq::Table                 out     = resultTable(vm, planned);
+        if (planned.ok()) out.set("planId", planned.value().value());
+        return out;
+    });
+    session.addFunc(
+        "executePlan", [](EditorSession* self, const std::string& planId, ssq::Object scriptContext) -> ssq::Object {
+            HSQUIRRELVM vm = scriptContext.getHandle();
+            if (!self)
+                return resultTable(vm, eve::editing::failed<TransactionReceipt>(EditorStatus::Failed,
+                                                                               RuleId("editor.script.missing-session"),
+                                                                               "Editor session is not available"));
+            const Result<TransactionReceipt> executed =
+                self->executeRetainedPlan(PlanId(planId), CommandSource::Script);
+            ssq::Table out = resultTable(vm, executed);
+            if (executed.ok()) {
+                out.set("transactionId", executed.value().id.value());
+                out.set("transactionState", std::string(transactionStateName(executed.value().state)));
+                out.set("beforeRevision", static_cast<int64_t>(executed.value().beforeRevision));
+                out.set("afterRevision", static_cast<int64_t>(executed.value().afterRevision));
+                out.set("authorityReceipt", executed.value().authorityReceipt);
+            }
+            return out;
+        });
+    session.addFunc("executeCommand",
+                    [](EditorSession* self, const std::string& id, ssq::Object payload) -> ssq::Object {
+                        HSQUIRRELVM vm = payload.getHandle();
+                        EditorValue value;
+                        if (!self || !objectToEditorValue(payload, value))
+                            return resultTable(vm, invalidScriptPayload());
+                        const Result<EditorValue> executed =
+                            self->executeCommand(CommandId(id), value, CommandSource::Script);
+                        ssq::Table out = resultTable(vm, executed);
+                        if (executed.ok()) setValue(out, "value", executed.value());
+                        return out;
+                    });
+    session.addFunc("dispatchPointer",
+                    std::function<int(EditorSession*, int, int, int, float, float, float, float, float)>(
+                        [](EditorSession* self, int phase, int pointerId, int button, float x, float y, float dx,
+                           float dy, float pressure) {
+                            EditorPointerEvent event;
+                            event.phase                 = static_cast<EditorPointerEvent::Phase>(phase);
+                            event.pointerId             = pointerId;
+                            event.button                = button;
+                            event.x                     = x;
+                            event.y                     = y;
+                            event.deltaX                = dx;
+                            event.deltaY                = dy;
+                            event.pressure              = pressure;
+                            const ToolResponse response = self->dispatchPointer(event);
+                            return (response.handled ? 1 : 0) | (response.capturePointer ? 2 : 0) |
+                                   (response.releasePointer ? 4 : 0);
+                        }));
+    session.addFunc("dispatchPointer3D",
+                    std::function<int(EditorSession*, int, int, int, float, float, float, float, float, float, float)>(
+                        [](EditorSession* self, int phase, int pointerId, int button, float x, float y, float z,
+                           float dx, float dy, float dz, float pressure) {
+                            EditorPointerEvent event;
+                            event.phase                 = static_cast<EditorPointerEvent::Phase>(phase);
+                            event.pointerId             = pointerId;
+                            event.button                = button;
+                            event.x                     = x;
+                            event.y                     = y;
+                            event.z                     = z;
+                            event.deltaX                = dx;
+                            event.deltaY                = dy;
+                            event.deltaZ                = dz;
+                            event.pressure              = pressure;
+                            const ToolResponse response = self->dispatchPointer(event);
+                            return (response.handled ? 1 : 0) | (response.capturePointer ? 2 : 0) |
+                                   (response.releasePointer ? 4 : 0);
+                        }));
+
+    auto host = table.addClass<EditorHost>("EditorHost",
+                                           std::function<EditorHost*()>([]() -> EditorHost* { return nullptr; }), true);
+    host.addFunc("autoMount", [](EditorHost* self) {
+        if (!self) return 0;
+        auto report = self->autoMount();
+        return report.ok() ? static_cast<int>(report.value().mountedPackages) : -1;
+    });
+    host.addFunc("mount", [](EditorHost* self, const std::string& owner) {
+        if (!self) return 0;
+        auto report = self->mount(std::vector<std::string>{owner});
+        return report.ok() ? static_cast<int>(report.value().mountedPackages) : -1;
+    });
+    host.addFunc("unmount",
+                 [](EditorHost* self, const std::string& owner) { return self && self->unmount(owner).ok(); });
+    host.addFunc("isMounted",
+                 [](EditorHost* self, const std::string& owner) { return self && self->isMounted(owner); });
+    host.addFunc("getPanelCount",
+                 [](EditorHost* self) { return self ? static_cast<int>(self->workspace().getPanelCount()) : 0; });
+    host.addFunc("exportMcp", [](EditorHost* self) { return self && self->exportMcp().ok(); });
+    host.addFunc("focusUndoOwner", [](EditorHost* self, const std::string& owner) {
+        return self && self->undo().focusOwner(owner).ok();
+    });
+
+    auto workspace = table.addClass<EditorWorkspace>(
+        "EditorWorkspace", std::function<EditorWorkspace*()>([]() -> EditorWorkspace* { return nullptr; }), true);
+    workspace.addFunc("getId", &EditorWorkspace::getId);
+    workspace.addFunc("getTitle", &EditorWorkspace::getTitle);
+    workspace.addFunc("setTitle", &EditorWorkspace::setTitle);
+    workspace.addFunc("registerPanel",
+                      static_cast<bool (EditorWorkspace::*)(const std::string&, const std::string&,
+                                                            const std::string&, int)>(&EditorWorkspace::registerPanel));
+    workspace.addFunc("removePanel",
+                      static_cast<bool (EditorWorkspace::*)(const std::string&)>(&EditorWorkspace::removePanel));
+    workspace.addFunc("clearPanels", &EditorWorkspace::clearPanels);
+    workspace.addFunc("movePanel", static_cast<bool (EditorWorkspace::*)(const std::string&, const std::string&, int)>(
+                                       &EditorWorkspace::movePanel));
+    workspace.addFunc("setPanelCapability", &EditorWorkspace::setPanelCapability);
+    workspace.addFunc("setPanelContext", &EditorWorkspace::setPanelContext);
+    workspace.addFunc("setPanelVisible", &EditorWorkspace::setPanelVisible);
+    workspace.addFunc("setPanelSingleton", &EditorWorkspace::setPanelSingleton);
+    workspace.addFunc("activatePanel",
+                      static_cast<bool (EditorWorkspace::*)(const std::string&)>(&EditorWorkspace::activatePanel));
+    workspace.addFunc("getActivePanel", &EditorWorkspace::getActivePanel);
+    workspace.addFunc("getPanelCount", &EditorWorkspace::getPanelCount);
+    workspace.addFunc("getPanelId", &EditorWorkspace::getPanelId);
+    workspace.addFunc("getPanelTitle", &EditorWorkspace::getPanelTitle);
+    workspace.addFunc("getPanelRegion", &EditorWorkspace::getPanelRegion);
+    workspace.addFunc("getPanelCapability", &EditorWorkspace::getPanelCapability);
+    workspace.addFunc("getPanelContext", &EditorWorkspace::getPanelContext);
+    workspace.addFunc("getPanelOrder", &EditorWorkspace::getPanelOrder);
+    workspace.addFunc("getPanelVisible", &EditorWorkspace::getPanelVisible);
+    workspace.addFunc("getPanelSingleton", &EditorWorkspace::getPanelSingleton);
+    workspace.addFunc("setRegionSize", &EditorWorkspace::setRegionSize);
+    workspace.addFunc("layout", &EditorWorkspace::layout);
+    workspace.addFunc("getRegionX", &EditorWorkspace::getRegionX);
+    workspace.addFunc("getRegionY", &EditorWorkspace::getRegionY);
+    workspace.addFunc("getRegionW", &EditorWorkspace::getRegionW);
+    workspace.addFunc("getRegionH", &EditorWorkspace::getRegionH);
+    workspace.addFunc("setMode", &EditorWorkspace::setMode);
+    workspace.addFunc("getMode", &EditorWorkspace::getMode);
+    workspace.addFunc("select", &EditorWorkspace::select);
+    workspace.addFunc("clearSelection", &EditorWorkspace::clearSelection);
+    workspace.addFunc("getSelectionCount", &EditorWorkspace::getSelectionCount);
+    workspace.addFunc("getSelectionItem", &EditorWorkspace::getSelectionItem);
+    workspace.addFunc("getSelectionType", &EditorWorkspace::getSelectionType);
+    workspace.addFunc("getPrimarySelection", &EditorWorkspace::getPrimarySelection);
+    workspace.addFunc("getSelectionSequence", &EditorWorkspace::getSelectionSequence);
+    workspace.addFunc("focus", &EditorWorkspace::focus);
+    workspace.addFunc("getFocusedSurface", &EditorWorkspace::getFocusedSurface);
+    workspace.addFunc("getRevision", &EditorWorkspace::getRevision);
+
+    auto scriptTool = table.addClass<ScriptEditorTool>(
+        "ScriptEditorTool", std::function<ScriptEditorTool*()>([]() -> ScriptEditorTool* { return nullptr; }), true);
+    scriptTool.addFunc("setShortcut", &ScriptEditorTool::setShortcut);
+    scriptTool.addFunc("setActivateCallback", &ScriptEditorTool::setActivateCallback);
+    scriptTool.addFunc("setDeactivateCallback", &ScriptEditorTool::setDeactivateCallback);
+    scriptTool.addFunc("setPointerCallback", &ScriptEditorTool::setPointerCallback);
+    scriptTool.addFunc("setKeyCallback", &ScriptEditorTool::setKeyCallback);
+    scriptTool.addFunc("setUpdateCallback", &ScriptEditorTool::setUpdateCallback);
+    scriptTool.addFunc("setCancelCallback", &ScriptEditorTool::setCancelCallback);
 }
 
-void Editor::expose(ssq::Class &cls) {
+void Editor::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Editor::getName);
-    cls.addFunc("newGizmo", &Editor::newGizmo);
-    cls.addFunc("newGizmoManager", &Editor::newGizmoManager);
-    cls.addFunc("newTileBuffer", &Editor::newTileBuffer);
-    cls.addFunc("newBrush", &Editor::newBrush);
-    cls.addFunc("newToolbar", &Editor::newToolbar);
-    cls.addFunc("newInspector", &Editor::newInspector);
-    cls.addFunc("newDock", &Editor::newDock);
-    cls.addFunc("newHistory", &Editor::newHistory);
-    cls.addFunc("newHeightmapMesh", &Editor::newHeightmapMesh);
-    cls.addFunc("updateHeightmapMesh", &Editor::updateHeightmapMesh);
+    cls.addFunc("newGizmo", [](Editor* self) { return self->newGizmo().release(); });
+    cls.addFunc("newGizmoManager", [](Editor* self) { return self->newGizmoManager().release(); });
+    cls.addFunc("newToolbar", [](Editor* self) { return self->newToolbar().release(); });
+    cls.addFunc("newInspector", [](Editor* self) { return self->newInspector().release(); });
+    cls.addFunc("newDock", [](Editor* self) { return self->newDock().release(); });
+    cls.addFunc("newSession", [](Editor* self) { return self->newSession().release(); });
+    cls.addFunc("newWorkspace", [](Editor* self, const std::string& id, const std::string& title) {
+        auto created = self->newWorkspace(id, title);
+        return created.ok() ? std::move(created).takeValue().release() : nullptr;
+    });
+    cls.addFunc("newHost", [](Editor* self, const std::string& id, const std::string& title) {
+        auto created = self->newHost(id, title);
+        return created.ok() ? std::move(created).takeValue().release() : nullptr;
+    });
+    cls.addFunc("newScriptTool", [](Editor* self, const std::string& id, const std::string& label) {
+        return self->newScriptTool(id, label).release();
+    });
+    cls.addFunc("newConstantBrushFalloff", [](Editor* self) { return self->newConstantBrushFalloff().release(); });
+    cls.addFunc("newLinearBrushFalloff", [](Editor* self) { return self->newLinearBrushFalloff().release(); });
+    cls.addFunc("newSmoothBrushFalloff", [](Editor* self) { return self->newSmoothBrushFalloff().release(); });
+    cls.addFunc("newCircleBrushKernel", [](Editor* self) { return self->newCircleBrushKernel().release(); });
+    cls.addFunc("newBoxBrushKernel", [](Editor* self) { return self->newBoxBrushKernel().release(); });
+    cls.addFunc("newPaintIntFieldOperation", [](Editor* self, int value) {
+        return self->newPaintIntFieldOperation(value).release();
+    });
+    cls.addFunc("newAddScalarFieldOperation",
+                [](Editor* self) { return self->newAddScalarFieldOperation().release(); });
+    cls.addFunc("newFieldBrushTool", [](Editor* self, const std::string& id, const std::string& label) {
+        return self->newFieldBrushTool(id, label).release();
+    });
+    cls.addFunc("newSphereVolumeBrushKernel",
+                [](Editor* self) { return self->newSphereVolumeBrushKernel().release(); });
+    cls.addFunc("newBoxVolumeBrushKernel", [](Editor* self) { return self->newBoxVolumeBrushKernel().release(); });
+    cls.addFunc("newPaintIntVolumeOperation", [](Editor* self, int value) {
+        return self->newPaintIntVolumeOperation(value).release();
+    });
+    cls.addFunc("newVolumeBrushTool", [](Editor* self, const std::string& id, const std::string& label) {
+        return self->newVolumeBrushTool(id, label).release();
+    });
+    cls.addFunc("registerScriptCommand", registerScriptCommand);
+    cls.addFunc("registerAutomatedScriptCommand", registerAutomatedScriptCommand);
+    cls.addFunc("unregisterScriptCommand", [](Editor* self, const std::string& id) {
+        return self && self->commandService().unregisterCommand(CommandId(id), "script:" + id);
+    });
 }
 
 }  // namespace eve::editor

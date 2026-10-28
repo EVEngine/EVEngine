@@ -1,7 +1,11 @@
 #include "procgen/texture/TextureRecipe.h"
 
+#include "image/ImageData.h"
+
 #include <algorithm>
+#include <cctype>
 #include <cmath>
+#include <utility>
 
 namespace eve::procgen {
 
@@ -11,21 +15,41 @@ TextureRecipeRegistry &TextureRecipeRegistry::instance() {
 }
 
 void TextureRecipeRegistry::registerRecipe(const std::string &id, TextureRecipeFn fn) {
-    recipes_[id] = std::move(fn);
+    RecipeDescriptor descriptor;
+    descriptor.id = id;
+    descriptor.displayName = id;
+    registerRecipe(std::move(descriptor), std::move(fn));
+}
+
+void TextureRecipeRegistry::registerRecipe(RecipeDescriptor descriptor, TextureRecipeFn fn) {
+    const std::string id = descriptor.id;
+    recipes_[id] = Entry{std::move(fn), std::move(descriptor)};
 }
 
 bool TextureRecipeRegistry::has(const std::string &id) const {
     return recipes_.find(id) != recipes_.end();
 }
 
-image::ImageData *TextureRecipeRegistry::generate(const std::string &id, const Params &params,
-                                                  std::string &error) const {
+std::unique_ptr<image::ImageData> TextureRecipeRegistry::generate(const std::string &id, const Params &params,
+                                                                  std::string &error) const {
     auto it = recipes_.find(id);
     if (it == recipes_.end()) {
         error = "unknown texture recipe: " + id;
-        return nullptr;
+        return {};
     }
-    return it->second(params, error);
+    return it->second.fn(params, error);
+}
+
+const RecipeDescriptor *TextureRecipeRegistry::descriptor(const std::string &id) const {
+    const auto it = recipes_.find(id);
+    return it == recipes_.end() ? nullptr : &it->second.descriptor;
+}
+
+bool TextureRecipeRegistry::applyDefaults(const std::string &id, Params &params) const {
+    const RecipeDescriptor *schema = descriptor(id);
+    if (!schema) return false;
+    schema->applyDefaults(params);
+    return true;
 }
 
 std::vector<std::string> TextureRecipeRegistry::list() const {
@@ -59,6 +83,26 @@ PbrParams PbrParams::fromParams(const Params &params) {
     p.aoStrength     = std::clamp(params.getFloat("aoStrength", p.aoStrength), 0.f, 5.f);
     p.heightStrength = std::max(0.f, params.getFloat("heightStrength", p.heightStrength));
     return p;
+}
+
+RecipeDescriptor makeTextureRecipeDescriptor(const TextureRecipeDef &definition) {
+    std::string displayName = definition.id;
+    const size_t dot = displayName.find('.');
+    if (dot != std::string::npos) displayName.erase(0, dot + 1);
+    for (char &ch : displayName) {
+        if (ch == '_') ch = ' ';
+    }
+    if (!displayName.empty())
+        displayName[0] = char(std::toupper(static_cast<unsigned char>(displayName[0])));
+
+    RecipeDescriptor descriptor = RecipeDescriptor::grid(definition.id, displayName, "Texture", 1, 1);
+    descriptor.params.push_back(ParamDescriptor::floating("scale", "Scale", 4.f, 0.05f, 256.f, 0.05f));
+    descriptor.params.push_back(ParamDescriptor::integer("octaves", "Octaves", 4, 1, 16));
+    descriptor.params.push_back(ParamDescriptor::integer("colors", "Color Bands", 6, 2, 64));
+    descriptor.params.push_back(ParamDescriptor::integer("pixelSize", "Pixel Size", 1, 1, 64));
+    descriptor.params.push_back(ParamDescriptor::boolean("seamless", "Seamless", true));
+    descriptor.params.push_back(ParamDescriptor::floating("warp", "Warp", 1.f, 0.f, 32.f, 0.05f));
+    return descriptor;
 }
 
 void fillHeightField(const TextureGenContext &ctx,
@@ -101,9 +145,9 @@ void paintHeightToImage(image::ImageData &img, const std::vector<float> &height,
     }
 }
 
-image::ImageData *heightToNormalImage(const std::vector<float> &height, int w, int h,
-                                      float strength, bool seamless) {
-    auto *img    = new image::ImageData(w, h, "RGBA8");
+std::unique_ptr<image::ImageData> heightToNormalImage(const std::vector<float> &height, int w, int h, float strength,
+                                                      bool seamless) {
+    auto  img    = std::make_unique<image::ImageData>(w, h, "RGBA8");
     auto *pixels = static_cast<uint8_t *>(img->getData());
     auto  sample = [&](int x, int y) -> float {
         if (seamless) {

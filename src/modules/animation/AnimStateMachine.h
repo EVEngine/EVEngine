@@ -1,6 +1,11 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "animation/AnimPose.h"
+#include "animation/AnimPoseSource.h"
+#include "common/StateValue.h"
+#include "common/Time.h"
 
 #include <string>
 #include <unordered_map>
@@ -15,20 +20,31 @@ class AnimSkeleton;
  * @brief Clip-driven animation state machine with float/bool/trigger parameters
  * and cross-fade transitions. Script type: `AnimStateMachine`.
  */
-class AnimStateMachine {
+class EVENGINE_API_WORLD AnimStateMachine : public IAnimPoseSource {
 public:
+    /** @brief Anim state machine. */
     explicit AnimStateMachine(AnimSkeleton *skeleton);
-    ~AnimStateMachine() = default;
+    /** @brief Anim state machine. */
+    ~AnimStateMachine() override;
 
     AnimStateMachine(const AnimStateMachine &)            = delete;
     AnimStateMachine &operator=(const AnimStateMachine &) = delete;
 
-    AnimSkeleton *getSkeleton() const { return skeleton_; }
+    /** @brief Borrowed pointer accessor.
+     * @ownership Borrowed
+     * @lifetime Valid while the owning animation object remains alive; do not retain across destruction.
+     */
+    AnimSkeleton *getSkeleton() const override { return skeleton_; }
 
+    /** @brief Adds state. */
     void addState(const std::string &name, AnimClip *clip);
+    /** @brief Sets the entry. */
     void setEntry(const std::string &name);
+    /** @brief True when state. */
     bool hasState(const std::string &name) const;
+    /** @brief Returns the current state. */
     std::string getCurrentState() const { return currentState_; }
+    /** @brief Returns the state count. */
     int getStateCount() const { return static_cast<int>(states_.size()); }
 
     /**
@@ -40,24 +56,66 @@ public:
     /** @brief Comparison op: ">", ">=", "<", "<=", "==", "!=". */
     void addFloatCondition(int transitionId, const std::string &param, const std::string &op,
                            float threshold);
+    /** @brief Adds bool condition. */
     void addBoolCondition(int transitionId, const std::string &param, bool value);
+    /** @brief Adds trigger condition. */
     void addTriggerCondition(int transitionId, const std::string &param);
     /** @brief Optional: require normalized local time in [0,1] >= exitTime before transition. */
     void setExitTime(int transitionId, float normalizedTime);
+    /** @brief Sets the has exit time. */
     void setHasExitTime(int transitionId, bool enabled);
 
+    /** @brief Sets the float. */
     void setFloat(const std::string &name, float value);
+    /** @brief Returns the float. */
     float getFloat(const std::string &name) const;
+    /** @brief Sets the bool. */
     void setBool(const std::string &name, bool value);
+    /** @brief Returns the bool. */
     bool getBool(const std::string &name) const;
+    /** @brief Sets the trigger. */
     void setTrigger(const std::string &name);
+    /** @brief Resets trigger. */
     void resetTrigger(const std::string &name);
+    /** @brief Query a trigger's current state. */
+    bool getTrigger(const std::string& name) const {
+        auto it = triggers_.find(name);
+        return it != triggers_.end() && it->second;
+    }
 
-    AnimPose *getPose();
+    /** @brief Borrowed pointer accessor.
+     * @ownership Borrowed
+     * @lifetime Valid while the owning animation object remains alive; do not retain across destruction.
+     */
+    AnimPose *getPose() override;
+    /** @brief Returns the state time. */
     float getStateTime() const { return stateTime_; }
+    /** @brief True when blending. */
     bool isBlending() const { return blending_; }
 
+    /** @brief Advance state and pose using one scheduler-owned deterministic step. */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step) override;
+
+    /** @brief Last scheduler tick consumed by the checked state-machine API. */
+    [[nodiscard]] eve::SimulationTick currentTick() const noexcept override { return lastTick_; }
+    /** @brief Whether advance has consumed at least one checked step. */
+    [[nodiscard]] bool hasCurrentTick() const noexcept override { return hasLastTick_; }
+
+    /** @brief Legacy seconds facade retained for scripts and old callers. */
     void update(float dt);
+
+    /** @brief Serialize runtime state (params, current/next state, blend). */
+    bool captureState(StateValue& out) const;
+
+    /**
+     * @brief Restore runtime state captured by captureState().
+     * @return false when the captured current state is not defined here; the
+     *         reload session then falls back to resetToDefaults().
+     */
+    bool restoreState(const StateValue& in, std::string* err = nullptr);
+
+    /** @brief Clear params and re-seat the entry state (restore fallback). */
+    bool resetToDefaults();
 
 private:
     enum class CondKind { Float, Bool, Trigger };
@@ -90,6 +148,7 @@ private:
     static FloatOp parseFloatOp(const std::string &op);
     bool           conditionsMet(const Transition &tr) const;
     bool           tryTransition();
+    void           updateUnchecked(float dt);
 
     AnimSkeleton *skeleton_ = nullptr;
     AnimPose      pose_;
@@ -111,6 +170,8 @@ private:
     float       blendElapsed_  = 0.f;
     bool        blending_      = false;
     bool        started_       = false;
+    eve::SimulationTick lastTick_      = eve::SimulationTick::zero();
+    bool                hasLastTick_   = false;
 };
 
 }  // namespace eve::animation

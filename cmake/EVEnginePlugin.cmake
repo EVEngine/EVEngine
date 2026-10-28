@@ -29,6 +29,10 @@ function(add_eve_plugin _eve_plugin_name)
             message(WARNING "add_eve_plugin: eve import library not found under ${EVENGINE_LIB_DIR}")
         endif()
     elseif(APPLE)
+        if(EVENGINE_TARGET_PLATFORM STREQUAL "macosx")
+            set_target_properties(${_eve_plugin_name} PROPERTIES
+                OSX_ARCHITECTURES "${EVENGINE_TARGET_ARCHITECTURE}")
+        endif()
         # Resolve ModuleManager etc. from the host at load time.
         target_link_options(${_eve_plugin_name} PRIVATE
             "LINKER:-undefined,dynamic_lookup"
@@ -43,5 +47,9 @@ function(add_eve_plugin _eve_plugin_name)
     set_target_properties(${_eve_plugin_name} PROPERTIES
         PREFIX ""
         OUTPUT_NAME "${_eve_plugin_name}"
+        # Only eve_plugin_init is public. Isolate C++ symbols and template statics
+        # between resident generations; host API declarations keep their exports.
+        CXX_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN YES
     )
 endfunction()

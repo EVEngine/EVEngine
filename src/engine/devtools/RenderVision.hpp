@@ -6,8 +6,8 @@
 #include <mutex>
 #include <string>
 
-namespace eve::graphics {
-class Graphics;
+namespace eve {
+class IRenderCapture;
 }
 
 namespace eve::dev {
@@ -33,7 +33,7 @@ namespace eve::dev {
  * touches the Graphics readback. Breakpoint / error sites only record a pending
  * flag here; the actual dump happens later from McpServer::poll.
  */
-class EVENGINE_API RenderVision {
+class EVENGINE_API_FOUNDATION RenderVision {
 public:
     static RenderVision& instance();
 
@@ -65,18 +65,19 @@ public:
      * a string starting with "error: " on failure. When `fresh` is false and a
      * cached description exists, returns the cache.
      */
-    std::string describe(graphics::Graphics* gfx, const std::string& renderDataJson,
-                         bool fresh, const std::string& reason = {});
+    std::string describe(eve::IRenderCapture* cap, const std::string& renderDataJson, bool fresh,
+                         const std::string& reason = {});
 
     /** @brief McpServer::poll hook: performs one pending dump when safe, clears flag. */
-    void pollPending(graphics::Graphics* gfx, const std::string& renderDataJson);
+    void pollPending(eve::IRenderCapture* cap, const std::string& renderDataJson);
 
 private:
+    // Immortal<RenderVision> constructs the singleton (devtools/Immortal.hpp).
+    template <typename> friend struct Immortal;
     RenderVision() = default;
 
     void ensureEnvLocked();
-    std::string doDescribe(graphics::Graphics* gfx, const std::string& renderDataJson,
-                           const std::string& reason);
+    std::string doDescribe(eve::IRenderCapture* cap, const std::string& renderDataJson, const std::string& reason);
 
     mutable std::mutex mu_;
     std::string baseUrl_ = "http://127.0.0.1:11434/v1";

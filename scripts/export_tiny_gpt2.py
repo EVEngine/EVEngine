@@ -31,6 +31,7 @@ import zipfile
 import collections
 
 import numpy as np
+import utf8_stdio
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(os.path.dirname(ROOT), "test", "assets", "mini_llm")
@@ -294,7 +295,7 @@ def main():
         sys.exit(f"missing {torch_bin} (or model.safetensors): download a tiny GPT-2 first")
     vocab, ranks = load_bpe(os.path.join(SRC, f"{MODEL_PREFIX}_vocab.json"),
                             os.path.join(SRC, f"{MODEL_PREFIX}_merges.txt"))
-    with open(os.path.join(SRC, f"{MODEL_PREFIX}_config.json")) as f:
+    with open(os.path.join(SRC, f"{MODEL_PREFIX}_config.json"), encoding="utf-8") as f:
         cfg = json.load(f)
     if cfg.get("n_inner") is None:
         cfg["n_inner"] = 4 * cfg["n_embd"]
@@ -324,4 +325,5 @@ def main():
 
 
 if __name__ == "__main__":
+    utf8_stdio.enable_utf8_stdio()
     main()

@@ -1,27 +1,9 @@
-# Continuous integration: daily Debug on the development branch (push/PR), plus a weekly run.
-# Reusable via workflow_call (build_type: debug | release | both) for releases.
-# Each platform runs as its own parallel job:
-#   windows → win32 debug (+ unit tests); windows-release when asked
-#   android → android debug; android-release when asked
-#   macos   → macosx debug (+ unit tests); macos-release when asked
-#   ios     → ios debug; ios-release when asked
-#   linux   → linux debug (+ unit tests); linux-release when asked
-#   webgpu  → webgpu (Emscripten/WASM) release
-#
-# iOS signing (optional repo secrets):
-#   IOS_CERTIFICATE_P12_BASE64, IOS_CERTIFICATE_PASSWORD, IOS_DEVELOPMENT_TEAM
-#   IOS_PROVISIONING_PROFILE_BASE64 (optional)
-# Without them, iOS builds unsigned (compile-only; cannot install to a device).
-
+# Daily debug checks. Release-only validation lives in release-ci.yml.
 name: CI
 
 on:
   workflow_call:
     inputs:
-      build_type:
-        description: debug | release | both
-        type: string
-        default: debug
       ref:
         description: git ref to check out (release branch or moved tag)
         type: string
@@ -34,12 +16,6 @@ on:
     # Weekly: Monday 00:00 CST ≈ Sunday 16:00 UTC
     - cron: "0 16 * * 0"
   workflow_dispatch:
-    inputs:
-      build_type:
-        description: debug | release | both
-        type: choice
-        default: debug
-        options: [debug, release, both]
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -49,60 +25,217 @@ permissions:
   contents: read
 
 env:
-  VULKAN_VERSION: "1.4.304.1"
-  ANDROID_NDK_VERSION: "26.1.10909125"
-  ANDROID_API: "34"
-  BUILD_TYPE: ${{ inputs.build_type || 'debug' }}
-  CHECKOUT_REF: ${{ inputs.ref }}
+  # Single source of truth: repository variables (Settings -> Secrets and
+  # variables -> Actions -> Variables), falling back to these defaults.
+  VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
+  # Aligned to the NDK preinstalled on the windows-latest / macos-latest runner
+  # images (27.3.13750724), so setup-android downloads nothing extra.
+  ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '27.3.13750724' }}
+  ANDROID_API: ${{ vars.ANDROID_API || '34' }}
 
 jobs:
-  # Fast structural check: no build, no toolchain. Fails when a module gains an
-  # #include that points up the dependency layering (see
-  # docs/dev/模块编排与裁剪架构.md). The known back-edges are whitelisted in the
-  # script and shrink as the capability registry lands.
-  layering:
-    name: Module layering
-    runs-on: ubuntu-latest
+  change-scope:
+    name: Classify CI change scope
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
+    outputs:
+      windows: ${{ steps.scope.outputs.windows }}
+      android: ${{ steps.scope.outputs.android }}
+      macos: ${{ steps.scope.outputs.macos }}
+      ios: ${{ steps.scope.outputs.ios }}
+      linux: ${{ steps.scope.outputs.linux }}
+      asan: ${{ steps.scope.outputs.asan }}
+      fuzz: ${{ steps.scope.outputs.fuzz }}
+      webgpu: ${{ steps.scope.outputs.webgpu }}
+      dawn: ${{ steps.scope.outputs.dawn }}
+      tools: ${{ steps.scope.outputs.tools }}
+      test_mode: ${{ steps.scope.outputs.test_mode }}
+      test_label_regex: ${{ steps.scope.outputs.test_label_regex }}
+      source_mode: ${{ steps.scope.outputs.source_mode }}
+      script_tests: ${{ steps.scope.outputs.script_tests }}
+      examples: ${{ steps.scope.outputs.examples }}
+      changed_examples: ${{ steps.scope.outputs.changed_examples }}
+      native_paths: ${{ steps.scope.outputs.native_paths }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
+
+      - name: Classify changed paths
+        id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            python3 scripts/ci_change_scope.py \
+              --base "$BASE_SHA" --head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT"
+          elif [ "$EVENT_NAME" = "push" ] && [ -n "$BEFORE_SHA" ] && \
+               [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            python3 scripts/ci_change_scope.py \
+              --base "$BEFORE_SHA" --head "$HEAD_SHA" --diff-mode direct \
+              --github-output "$GITHUB_OUTPUT"
+          else
+            python3 scripts/ci_change_scope.py --all --github-output "$GITHUB_OUTPUT"
+          fi
+
+  # Fast source-only gate. Local equivalent: `make check` (scripts/check_source_quality.sh).
+  source-quality:
+    needs: [change-scope]
+    env:
+      SOURCE_QUALITY_MODE: ${{ needs.change-scope.outputs.source_mode }}
+      SOURCE_QUALITY_SCRIPT_TESTS: ${{ needs.change-scope.outputs.script_tests }}
+    name: Source quality
+    runs-on: ubuntu-24.04
+    # The gate step below is the long pole (~15 min measured); the job budget has to stay
+    # above the sum of the steps (checkout + tool install + gate + graph report).
+    timeout-minutes: 35
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
+
+      - name: Install source-quality tools
+        if: needs.change-scope.outputs.source_mode == 'full'
+        run: |
+          # This job needs Ubuntu packages only. Leave the runner's Chrome
+          # installation and repository configuration intact for browser jobs.
+          apt_empty_parts="$(mktemp -d)"
+          chmod 755 "$apt_empty_parts"
+          trap 'rmdir "$apt_empty_parts"' EXIT
+          apt_sources=(
+            -o "Dir::Etc::sourcelist=$GITHUB_WORKSPACE/.github/apt/ubuntu-noble.sources"
+            -o "Dir::Etc::sourceparts=$apt_empty_parts"
+          )
+          sudo apt-get "${apt_sources[@]}" update
+          sudo apt-get "${apt_sources[@]}" install -y clang-format-18
+          sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
+
+      - name: Install Python check dependencies
+        if: needs.change-scope.outputs.source_mode == 'full' || needs.change-scope.outputs.source_mode == 'scripts'
+        run: python3 -m pip install --user --quiet numpy pillow ruff
+
+      - name: Run source-quality gate
+        # Same entry point as local `make check`. Groups inside
+        # scripts/check_source_quality.sh show up in the job log.
+        # Measured ~15 min on ubuntu-24.04: the repository script-test suite alone is
+        # ~8-9 min and runs last, so the old 15-minute budget cut the step off mid-suite
+        # (the job then fails with a timeout rather than a finding). Keep headroom.
+        timeout-minutes: 25
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          CHECK_REF: ${{ inputs.ref || github.ref }}
+        run: |
+          base="${PR_BASE:-origin/dev}"
+          # An isolated release must check its own complete changes, not
+          # reversals of interface migrations that landed on dev afterwards.
+          if [ -z "$PR_BASE" ] && [[ "$CHECK_REF" =~ ^(refs/(heads|tags)/)?v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            base="$(git merge-base HEAD origin/dev)"
+          fi
+          echo "Source-quality comparison base: $base"
+          make check CI_BASE="$base"
+
+  tool-tests:
+    name: Standalone Python tools
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.tools == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || github.ref }}
 
-      - name: Check module dependency layering
-        run: python3 scripts/module_depgraph.py --check
+      - name: Install Python test dependencies
+        timeout-minutes: 10
+        run: |
+          python3 -m pip install --user --quiet \
+            pytest pydantic requests numpy opencv-python-headless pillow ffmpy ruff
 
-      - name: Report dependency graph
-        if: always()
-        run: python3 scripts/module_depgraph.py
+      - name: Ruff lint standalone tools
+        timeout-minutes: 5
+        run: python3 -m ruff check tools
 
-      - name: Test release.py
-        run: python3 -m unittest discover -s scripts/tests -p "test_*.py" -v
+      - name: Test asset-pipeline-agent
+        timeout-minutes: 5
+        run: cd tools/asset-pipeline-agent && python3 -m unittest discover -s tests -v
 
+      - name: Test scene-qc-agent
+        timeout-minutes: 5
+        run: cd tools/scene-qc-agent && python3 -m unittest discover -s tests -v
+
+      - name: Test creative-brain
+        timeout-minutes: 5
+        run: cd tools/creative-brain && python3 -m pytest -q
+
+      - name: Test normal-crafter (client)
+        timeout-minutes: 5
+        run: cd tools/normal-crafter && python3 -m pytest -q test
+
+      - name: Test story-scene-agent
+        timeout-minutes: 5
+        run: PYTHONPATH=tools/creative-brain python3 -m pytest -q tools/story-scene-agent/tests
+
+      - name: Test vision-prefilter
+        timeout-minutes: 5
+        run: cd tools/vision-prefilter && python3 -m pytest -q test
+
+  # Native architecture lanes compile and link the engine and test binaries.
+  # Runtime GPU/ICD coverage remains in the existing host lanes.
   windows:
     name: Windows
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' }}
     runs-on: windows-latest
-    timeout-minutes: 60
+    # Vulkan build and unit tests; Dawn has its own independent job.
+    timeout-minutes: 240
+    env:
+      CI_TEST_MODE: ${{ needs.change-scope.outputs.test_mode }}
+      CI_NATIVE_PATHS: ${{ needs.change-scope.outputs.native_paths }}
+      SCCACHE_GHA_ENABLED: "true"
+      # Debug .o blobs use -g0/-O2 (no /Zi); keep key stable to avoid a second
+      # namespace while the account cache quota is tight across the build matrix.
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
+      # Pull-request cache entries are scoped to refs/pull/*/merge and cannot
+      # warm other PRs. Let PRs consume the dev cache without duplicating it.
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     defaults:
       run:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || github.ref }}
           submodules: recursive
 
       - name: Install build tools
+        timeout-minutes: 15
         shell: pwsh
         run: |
           choco install make ninja -y --no-progress
           echo "VS_GENERATOR=Visual Studio 17 2022" >> $env:GITHUB_ENV
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Install Vulkan SDK
-        uses: jakoch/install-vulkan-sdk-action@v1
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -110,92 +243,152 @@ jobs:
           # VK_KHR_surface so SDL_WINDOW_VULKAN / unit tests can run.
           install_swiftshader: true
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (SwiftShader)
+        timeout-minutes: 5
         run: bash .github/scripts/setup-software-vulkan.sh
 
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsRoot = & $vswhere -latest -products * `
+            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+            -property installationPath
+          $toolsetFile = Join-Path $vsRoot "VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt"
+          $toolset = (Get-Content $toolsetFile -Raw).Trim()
+          $sdkVersion = (& cmd.exe /d /s /c `
+            'cmake\with-msvc.cmd cmd.exe /d /c echo %WindowsSDKVersion%').Trim().TrimEnd('\')
+          $cmakeVersion = ((cmake --version | Select-Object -First 1) -split '\s+')[-1]
+          "id=msvc-$toolset-winsdk-$sdkVersion-cmake-$cmakeVersion" >> $env:GITHUB_OUTPUT
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: win32
+          configuration: Debug
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
+
       - name: Build win32 debug
+        # Dependencies come from the pinned independent release; this job
+        # compiles the engine/tests and caches verified downloaded packages.
+        # 120m: cold sccache + MSVC normal (/Od, no /Zi) still has headroom;
+        # /O2 previously exhausted the old 100m budget at ~88% of the build.
+        timeout-minutes: 120
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}"
+        run: |
+          make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}" \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
+              -DEVENGINE_COMPILER_CACHE=SCCACHE ${{ steps.third-party-cache.outputs.cmake-args }}"
+
+      - name: Verify Windows compiler cache reuse
+        timeout-minutes: 5
+        shell: pwsh
+        run: cmake\with-msvc.cmd pwsh -NoProfile -File .github/scripts/verify-windows-compiler-cache.ps1 -BuildDir build/win32-debug
+
+      - name: Verify built third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh "${{ steps.third-party-cache.outputs.prefix }}" win32 Debug build/win32-debug/CMakeCache.txt
+
+      - name: Save third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' ||
+           startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v'))
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.third-party-cache.outputs.path }}
+          key: ${{ steps.third-party-cache.outputs.key }}
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
 
       - name: Run win32 unit tests
+        # Run 39399072292 reached only 5042/7039 cases before the 50-minute
+        # guard fired. The expanded full suite needs room for the remaining
+        # cases; individual CTest timeouts still bound hung tests.
+        timeout-minutes: 90
         # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/win32-debug
+        run: >-
+          make test/ci-win32-debug
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
-  windows-release:
-    name: Windows (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
-    runs-on: windows-latest
-    timeout-minutes: 60
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Upload Windows test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
         with:
-          ref: ${{ inputs.ref || github.ref }}
-          submodules: recursive
-
-      - name: Install build tools
-        shell: pwsh
-        run: |
-          choco install make ninja -y --no-progress
-          echo "VS_GENERATOR=Visual Studio 17 2022" >> $env:GITHUB_ENV
-
-      - name: Install Vulkan SDK
-        uses: jakoch/install-vulkan-sdk-action@v1
-        with:
-          vulkan_version: ${{ env.VULKAN_VERSION }}
-          install_runtime: true
-          install_swiftshader: true
-          cache: true
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup software Vulkan ICD (SwiftShader)
-        run: bash .github/scripts/setup-software-vulkan.sh
-
-      - name: Build win32 release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/win32 JOBS="${NUMBER_OF_PROCESSORS:-8}"
-
-      - name: Run win32 release unit tests
-        env:
-          ALSOFT_DRIVERS: "null"
-        run: make test/win32
+          name: windows-test-failure-logs
+          path: |
+            build/win32-debug/Testing/Temporary/LastTestsFailed.log
+            build/win32-debug/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7
 
   android:
     name: Android
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.android == 'true' }}
     runs-on: windows-latest
-    timeout-minutes: 60
+    # Cold NDK rebuilds (PR sccache is READ_ONLY; graphics header churn →
+    # ~55-60 min of C++) leave little room for Gradle packaging of the ~2GB
+    # debug libmain.so. Keep the build-step timeout as the hang guard while
+    # leaving job budget for setup/cleanup beyond that step.
+    timeout-minutes: 120
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-android-arm64-debug
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     defaults:
       run:
         shell: bash
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || github.ref }}
           submodules: recursive
 
       - name: Install build tools
+        timeout-minutes: 15
         shell: pwsh
         run: choco install make ninja -y --no-progress
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
+      # Explicit start catches GHA/ghac egress flakes before the NDK build.
+      # Retries, then switches to a local disk cache (see start-sccache.sh).
+      - name: Start C/C++ compilation cache
+        timeout-minutes: 5
+        run: bash .github/scripts/start-sccache.sh
+
       - name: Setup Java 17
-        uses: actions/setup-java@v4
+        timeout-minutes: 10
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        timeout-minutes: 20
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           packages: >-
             platform-tools
@@ -204,182 +397,246 @@ jobs:
             ndk;${{ env.ANDROID_NDK_VERSION }}
 
       - name: Resolve Android SDK / NDK paths
+        timeout-minutes: 5
         run: bash .github/scripts/setup-android-sdk.sh
 
       - name: Write Gradle local.properties
+        timeout-minutes: 5
         run: |
           printf 'sdk.dir=%s\n' "$ANDROID_HOME" > platform/android/apk/local.properties
           echo "ANDROID_HOME=$ANDROID_HOME"
           echo "ANDROID_NDK=$ANDROID_NDK"
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
 
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: bash .github/scripts/identify-third-party-toolchain.sh android >> "$GITHUB_OUTPUT"
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: android
+          configuration: Debug
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
+
       - name: Build android debug
+        timeout-minutes: 90
         run: |
           test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
           make build/android-debug \
             ANDROID_SDK="$ANDROID_SDK" \
             ANDROID_NDK="$ANDROID_NDK" \
             JAVA_HOME="$JAVA_HOME" \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE ${{ steps.third-party-cache.outputs.cmake-args }}" \
             ANDROID_JOBS="${NUMBER_OF_PROCESSORS:-8}"
 
-  android-release:
-    name: Android (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
-    runs-on: windows-latest
-    timeout-minutes: 60
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Verify built third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh "${{ steps.third-party-cache.outputs.prefix }}" android Release build/android-debug/CMakeCache.txt
+
+      - name: Save third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' ||
+           startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v'))
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          ref: ${{ inputs.ref || github.ref }}
-          submodules: recursive
+          path: ${{ steps.third-party-cache.outputs.path }}
+          key: ${{ steps.third-party-cache.outputs.key }}
 
-      - name: Install build tools
-        shell: pwsh
-        run: choco install make ninja -y --no-progress
-
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: >-
-            platform-tools
-            platforms;android-${{ env.ANDROID_API }}
-            build-tools;${{ env.ANDROID_API }}.0.0
-            ndk;${{ env.ANDROID_NDK_VERSION }}
-
-      - name: Resolve Android SDK / NDK paths
-        run: bash .github/scripts/setup-android-sdk.sh
-
-      - name: Write Gradle local.properties
-        run: |
-          printf 'sdk.dir=%s\n' "$ANDROID_HOME" > platform/android/apk/local.properties
-          test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
-
-      - name: Build android release
-        run: |
-          test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
-          make build/android \
-            ANDROID_SDK="$ANDROID_SDK" \
-            ANDROID_NDK="$ANDROID_NDK" \
-            JAVA_HOME="$JAVA_HOME" \
-            ANDROID_JOBS="${NUMBER_OF_PROCESSORS:-8}"
+      - name: Report C/C++ compilation cache
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 5
+        run: sccache --show-stats
 
   macos:
     name: macOS
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' }}
     runs-on: macos-latest
-    timeout-minutes: 60
+    # The debug unit suite exceeded its former 30-minute step guard in release
+    # run 35566503055. Budget the debug build and unit suite together.
+    timeout-minutes: 240
+    env:
+      CI_TEST_MODE: ${{ needs.change-scope.outputs.test_mode }}
+      CI_NATIVE_PATHS: ${{ needs.change-scope.outputs.native_paths }}
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || github.ref }}
           submodules: recursive
 
       - name: Install tools
+        timeout-minutes: 10
         run: brew install ninja || true
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Install Vulkan SDK (MoltenVK + iOS)
-        uses: jakoch/install-vulkan-sdk-action@v1
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Resolve VULKAN_SDK
+        timeout-minutes: 5
         run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: bash .github/scripts/identify-third-party-toolchain.sh macosx >> "$GITHUB_OUTPUT"
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: macosx
+          configuration: Debug
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
 
       - name: Build macosx debug
+        # Same reasoning as the win32 guard above: a cache-cold pull-request ref
+        # compiles the whole engine. Run 37331690856 was killed at exactly 60m
+        # standing at ~90% with 421 sccache hits / 3549 misses / 3549 write
+        # errors and no compiler error, while the warm sibling run 37316201997
+        # finished the whole macOS job. Keep a bounded hang guard with room for
+        # the cold/write-fail case (match Windows debug's 90m budget).
+        timeout-minutes: 90
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
+        run: >-
+          make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE ${{ steps.third-party-cache.outputs.cmake-args }}"
+
+      - name: Verify built third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh "${{ steps.third-party-cache.outputs.prefix }}" macosx Release build/macosx-debug/CMakeCache.txt
+
+      - name: Save third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' ||
+           startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v'))
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.third-party-cache.outputs.path }}
+          key: ${{ steps.third-party-cache.outputs.key }}
 
       - name: Run macosx unit tests
+        # Run 39701509245 completed 6597/7063 cases at the 60m guard
+        # while tests were still progressing. Keep room for the full suite.
+        timeout-minutes: 90
         env:
           ALSOFT_DRIVERS: "null"
-        run: make test/macosx-debug
+        run: >-
+          make test/ci-macosx-debug
+          LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
-  macos-release:
-    name: macOS (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
-    runs-on: macos-latest
-    timeout-minutes: 60
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Report network phase timings
+        if: always()
+        run: |
+          log=build/macosx-debug/Testing/Temporary/LastTest.log
+          if test -f "$log"; then
+            sed -n '/NetHostPeers .*: .* ms/p' "$log"
+          fi
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
+
+      - name: Upload macOS test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
         with:
-          ref: ${{ inputs.ref || github.ref }}
-          submodules: recursive
-
-      - name: Install tools
-        run: brew install ninja || true
-
-      - name: Install Vulkan SDK (MoltenVK + iOS)
-        uses: jakoch/install-vulkan-sdk-action@v1
-        with:
-          vulkan_version: ${{ env.VULKAN_VERSION }}
-          cache: true
-          destination: ${{ runner.temp }}/VulkanSDK
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Resolve VULKAN_SDK
-        run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
-
-      - name: Build macosx release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/macosx JOBS="$(sysctl -n hw.ncpu)"
-
-      - name: Run macosx release unit tests
-        env:
-          ALSOFT_DRIVERS: "null"
-        run: make test/macosx
+          name: macos-test-failure-logs
+          path: |
+            build/macosx-debug/Testing/Temporary/LastTestsFailed.log
+            build/macosx-debug/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7
 
   ios:
     name: iOS
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.ios == 'true' }}
     runs-on: macos-latest
     timeout-minutes: 60
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || github.ref }}
           submodules: recursive
 
       - name: Install tools
+        timeout-minutes: 10
         run: brew install ninja || true
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
-        uses: jakoch/install-vulkan-sdk-action@v1
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Resolve VULKAN_SDK
+        timeout-minutes: 5
         run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
 
       - name: Setup iOS signing (optional)
+        timeout-minutes: 5
         env:
           IOS_CERTIFICATE_P12_BASE64: ${{ secrets.IOS_CERTIFICATE_P12_BASE64 }}
           IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
           IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
           IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
         run: bash .github/scripts/setup-ios-signing.sh
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: bash .github/scripts/identify-third-party-toolchain.sh ios >> "$GITHUB_OUTPUT"
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: ios
+          configuration: Debug
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
 
       - name: Build ios debug
+        # Healthy iOS debug builds finish in ~32-35 min; macOS arm64 capacity
+        # jitter can push xcodebuild past 40 without a compile error.
+        timeout-minutes: 50
         run: |
           set -euo pipefail
           JOBS="$(sysctl -n hw.ncpu)"
@@ -387,79 +644,88 @@ jobs:
             echo "Building signed iOS (team=$IOS_DEVELOPMENT_TEAM)"
             make build/ios-debug \
               IOS_DEVELOPMENT_TEAM="$IOS_DEVELOPMENT_TEAM" \
+              CMAKE_EXTRA_ARGS="${{ steps.third-party-cache.outputs.cmake-args }}" \
               ANDROID_JOBS="$JOBS"
           else
             echo "Building unsigned iOS"
             make build/ios-debug \
               IOS_DEVELOPMENT_TEAM= \
+              CMAKE_EXTRA_ARGS="${{ steps.third-party-cache.outputs.cmake-args }}" \
               ANDROID_JOBS="$JOBS"
           fi
 
-  ios-release:
-    name: iOS (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
-    runs-on: macos-latest
-    timeout-minutes: 60
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Verify built third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh "${{ steps.third-party-cache.outputs.prefix }}" ios Release build/ios-debug/CMakeCache.txt
+
+      - name: Save third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' ||
+           startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v'))
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          ref: ${{ inputs.ref || github.ref }}
-          submodules: recursive
-
-      - name: Install tools
-        run: brew install ninja || true
-
-      - name: Install Vulkan SDK (MoltenVK + iOS)
-        uses: jakoch/install-vulkan-sdk-action@v1
-        with:
-          vulkan_version: ${{ env.VULKAN_VERSION }}
-          cache: true
-          destination: ${{ runner.temp }}/VulkanSDK
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Resolve VULKAN_SDK
-        run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
-
-      - name: Setup iOS signing (optional)
-        env:
-          IOS_CERTIFICATE_P12_BASE64: ${{ secrets.IOS_CERTIFICATE_P12_BASE64 }}
-          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
-          IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
-          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
-        run: bash .github/scripts/setup-ios-signing.sh
-
-      - name: Build ios release
-        run: |
-          set -euo pipefail
-          JOBS="$(sysctl -n hw.ncpu)"
-          if [ "${IOS_SIGNING:-0}" = "1" ] && [ -n "${IOS_DEVELOPMENT_TEAM:-}" ]; then
-            echo "Building signed iOS (team=$IOS_DEVELOPMENT_TEAM)"
-            make build/ios \
-              IOS_DEVELOPMENT_TEAM="$IOS_DEVELOPMENT_TEAM" \
-              ANDROID_JOBS="$JOBS"
-          else
-            echo "Building unsigned iOS"
-            make build/ios \
-              IOS_DEVELOPMENT_TEAM= \
-              ANDROID_JOBS="$JOBS"
-          fi
+          path: ${{ steps.third-party-cache.outputs.path }}
+          key: ${{ steps.third-party-cache.outputs.key }}
 
   linux:
     name: Linux
-    if: ${{ github.event_name != 'workflow_call' || inputs.build_type == 'debug' || inputs.build_type == 'both' }}
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # Full debug build + per-case unit tests exceeded the
+    # previous 60-minute job cap even though each step stayed within its guard.
+    # Cold third-party restore + read-only sccache (PR) can push the build step
+    # past 40 minutes, so keep headroom for tests afterward.
+    timeout-minutes: 120
+    env:
+      CI_TEST_MODE: ${{ needs.change-scope.outputs.test_mode }}
+      CI_NATIVE_PATHS: ${{ needs.change-scope.outputs.native_paths }}
+      SCCACHE_GHA_ENABLED: "true"
+      # Shared across the Linux Debug job; object hash includes -g0 so new
+      # entries are smaller without opening a parallel GHA cache namespace.
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
+      # Populate shared caches only from long-lived branches; PR-scoped writes
+      # are dead stores after that PR closes and quickly evict reusable entries.
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || github.ref }}
           submodules: recursive
 
       - name: Install system packages
+        # apt update may consume most of ten minutes while retrying a slow
+        # mirror, and Mesa can download at well below 100 KiB/s. Keep enough
+        # time for an active transfer to finish.
+        timeout-minutes: 25
         run: |
-          sudo apt-get update
+          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
+          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
+          # Normalize to the canonical mirror so apt has a reachable source.
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
+            sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
+          sudo pkill -f "unattended-upgrade" || true
+          sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
+          apt_ok=0
+          for i in 1 2 3; do
+            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
+              -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
+            [ "$i" -lt 3 ] && sleep 20
+          done
+          [ "$apt_ok" -eq 1 ] || exit 1
+          # Package downloads can exceed the old ten-minute step budget.
+          # Keep bounded transport retries and signature/hash verification.
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build \
             libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
@@ -468,44 +734,199 @@ jobs:
             libbz2-dev libpng-dev \
             libwayland-dev libxkbcommon-dev libasound2-dev \
             mesa-vulkan-drivers vulkan-tools \
-            xvfb
+            xvfb ffmpeg python3-pil
+
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
 
       - name: Install Vulkan SDK
-        uses: jakoch/install-vulkan-sdk-action@v1
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (Lavapipe)
+        timeout-minutes: 5
         run: bash .github/scripts/setup-software-vulkan.sh
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: bash .github/scripts/identify-third-party-toolchain.sh linux >> "$GITHUB_OUTPUT"
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: linux
+          configuration: Debug
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
 
       - name: Build linux debug
+        # PR compilation caches are read-only. Keep the budget for a full engine
+        # rebuild; dependency libraries are downloaded from their own release.
+        timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/linux-debug JOBS="$(nproc)"
+        run: |
+          make build/linux-debug JOBS="$(nproc)" \
+            CMAKE_EXTRA_ARGS="-DBUILD_TESTING=${{ needs.change-scope.outputs.test_mode == 'none' && 'OFF' || 'ON' }} \
+              -DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
+              -DEVENGINE_COMPILER_CACHE=SCCACHE ${{ steps.third-party-cache.outputs.cmake-args }}"
+
+      - name: Verify built third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh "${{ steps.third-party-cache.outputs.prefix }}" linux Release build/linux-debug/CMakeCache.txt
+
+      - name: Save third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' ||
+           startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v'))
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.third-party-cache.outputs.path }}
+          key: ${{ steps.third-party-cache.outputs.key }}
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
+
+      - name: Verify resource format fixture integrity
+        if: needs.change-scope.outputs.test_mode != 'none'
+        timeout-minutes: 5
+        run: make check/resource-fixtures
 
       - name: Run linux unit tests
+        if: needs.change-scope.outputs.test_mode != 'none'
+        # Run 39399072292 passed 6628/7045 cases before the 30-minute
+        # guard fired. Keep headroom for the expanded suite and runner variance.
+        timeout-minutes: 45
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_FORMAT_EXPORT_DIR: "${{ github.workspace }}/build/resource-format-exports"
+        run: |
+          # Match ASan: use all CPUs on the runner instead of hard-coding
+          # CTEST_JOBS=2 from an older Lavapipe race workaround.
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/ci-linux-debug CTEST_JOBS="$(nproc)" \
+            LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Upload Linux test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: linux-test-failure-logs
+          path: |
+            build/linux-debug/Testing/Temporary/LastTestsFailed.log
+            build/linux-debug/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Verify resource test results without skipped or warning-only cases
+        if: needs.change-scope.outputs.test_mode != 'none'
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_FORMAT_EXPORT_DIR: "${{ github.workspace }}/build/resource-format-exports"
+        run: |
+          xvfb-run -a -s "-screen 0 1280x800x24" make check/resource-results RUNTIME_BUILD_DIR=build/linux-debug
+
+      - name: Independently decode resource image exports
+        if: needs.change-scope.outputs.test_mode != 'none'
+        timeout-minutes: 5
+        run: |
+          make check/resource-exports RESOURCE_PYTHON=/usr/bin/python3
+
+      - name: Run headless GPU tests without Xvfb
+        if: needs.change-scope.outputs.test_mode != 'none'
+        timeout-minutes: 15
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_VIEW_SECONDS: "0.3"
+          EVENGINE_PERF_FRAMES: "30"
+        run: |
+          # The headless GPU suites must run without any display server,
+          # proving the headless-vs-window policy in docs/dev/测试覆盖.md §0.
+          # (These files never create an SDL window: canvas/device readback only.)
+          make test/headless-gpu RUNTIME_BUILD_DIR=build/linux-debug
+
+      - name: DevLab developer-experience test (hot reload + DevTools)
+        if: needs.change-scope.outputs.test_mode != 'none'
+        timeout-minutes: 5
         env:
           ALSOFT_DRIVERS: "null"
         run: |
-          xvfb-run -a make test/linux-debug
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/devlab RUNTIME_BUILD_DIR=build/linux-debug
 
-  linux-release:
-    name: Linux (Release)
-    if: ${{ inputs.build_type == 'release' || inputs.build_type == 'both' }}
+      - name: Smoke changed examples
+        if: needs.change-scope.outputs.examples == 'true'
+        timeout-minutes: 30
+        env:
+          ALSOFT_DRIVERS: "null"
+          MIN_RUN_SECONDS: "2"
+          SMOKE_EXAMPLES: ${{ needs.change-scope.outputs.changed_examples }}
+        run: xvfb-run -a -s "-screen 0 1280x800x24" make check/examples smoke/examples
+
+  linux-asan:
+    name: Linux (ASan+UBSan)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.asan == 'true' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # Allow a cold optimized sanitizer build (PRs are sccache READ_ONLY) and
+    # the 90-minute test guard, plus dependency/toolchain setup and reporting.
+    timeout-minutes: 330
+    env:
+      CI_TEST_MODE: ${{ needs.change-scope.outputs.test_mode }}
+      CI_NATIVE_PATHS: ${{ needs.change-scope.outputs.native_paths }}
+      # Leak detection off: the zeroerr discovery run during the build (and a
+      # few tests) allocates process-lifetime state that LeakSanitizer flags;
+      # the sanitizer job's value is UAF/OOB/UB, not leaks.
+      ASAN_OPTIONS: "detect_leaks=0:halt_on_error=1"
+      UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-asan
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || github.ref }}
           submodules: recursive
 
       - name: Install system packages
+        # Sanitizer jobs use the same full dependency set as the debug lane.
+        timeout-minutes: 20
         run: |
-          sudo apt-get update
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
+            sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
+          sudo pkill -f "unattended-upgrade" || true
+          sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
+          apt_ok=0
+          for i in 1 2 3; do
+            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
+              -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
+            [ "$i" -lt 3 ] && sleep 20
+          done
+          [ "$apt_ok" -eq 1 ] || exit 1
+          # Package downloads can exceed the old ten-minute step budget.
+          # Keep bounded transport retries and signature/hash verification.
           sudo apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build \
             libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
@@ -516,68 +937,316 @@ jobs:
             mesa-vulkan-drivers vulkan-tools \
             xvfb
 
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
       - name: Install Vulkan SDK
-        uses: jakoch/install-vulkan-sdk-action@v1
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup software Vulkan ICD (Lavapipe)
+        timeout-minutes: 5
         run: bash .github/scripts/setup-software-vulkan.sh
 
-      - name: Build linux release
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: bash .github/scripts/identify-third-party-toolchain.sh linux >> "$GITHUB_OUTPUT"
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: linux
+          configuration: RelWithDebInfo
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
+
+      - name: Build linux RelWithDebInfo (ASan+UBSan)
+        # Release run 38235152198 reached 92% after 140m with 1.21% cache hits.
+        # Allow cold optimized sanitizer compilation and final test links;
+        # the separate 90-minute test guard remains intact.
+        timeout-minutes: 180
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: make build/linux JOBS="$(nproc)"
+        run: >-
+          make build/linux-asan JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE ${{ steps.third-party-cache.outputs.cmake-args }}"
 
-      - name: Run linux release unit tests
+      - name: Verify built third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh "${{ steps.third-party-cache.outputs.prefix }}" linux Release build/linux-asan/CMakeCache.txt
+
+      - name: Save third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' ||
+           startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v'))
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.third-party-cache.outputs.path }}
+          key: ${{ steps.third-party-cache.outputs.key }}
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
+
+      - name: Run linux unit tests (ASan+UBSan)
+        # Keep every case process-isolated, but use all CPUs exposed by the
+        # GitHub runner instead of hard-coding a runner-size assumption.
+        timeout-minutes: 90
         env:
           ALSOFT_DRIVERS: "null"
-        run: xvfb-run -a make test/linux
+        run: |
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/ci-linux-asan CTEST_JOBS="$(nproc)"
+
+  linux-fuzz:
+    name: Linux (zeroerr fuzz)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.fuzz == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      # zeroerr's structured custom mutator retains IRObject allocations for
+      # the process lifetime. Keep ASan's UAF/OOB checks without treating that
+      # upstream runner behavior as an engine leak.
+      ASAN_OPTIONS: "detect_leaks=0:halt_on_error=1"
+      UBSAN_OPTIONS: "halt_on_error=1:print_stacktrace=1"
+      EVENGINE_FUZZ_RUNS: ${{ github.event_name == 'schedule' && '50000' || '2000' }}
+      EVENGINE_FUZZ_SEED: "1"
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-fuzz
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install fuzz toolchain
+        timeout-minutes: 5
+        run: |
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
+          sudo apt-get update \
+            -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+            -o Dir::Etc::sourceparts=- -o Acquire::Retries=2
+          sudo apt-get install -y --no-install-recommends clang ninja-build
+
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
+      - name: Start C/C++ compilation cache
+        timeout-minutes: 5
+        run: bash .github/scripts/start-sccache.sh
+
+      - name: Build zeroerr JSON fuzz harness
+        timeout-minutes: 5
+        run: >-
+          make build/linux-fuzz JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache"
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
+
+      - name: Fuzz shared JSON parser
+        timeout-minutes: 5
+        run: make fuzz/linux JOBS="$(nproc)"
+
+      - name: Upload reproducer
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: json-fuzz-reproducer
+          path: |
+            build/linux-fuzz/crash-*
+            build/linux-fuzz/leak-*
+            build/linux-fuzz/oom-*
+            build/linux-fuzz/timeout-*
+          if-no-files-found: ignore
 
   webgpu:
     name: WebGPU (WASM)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.webgpu == 'true' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 90
+    env:
+      EMSCRIPTEN_VERSION: "6.0.9"
+      EMDAWNWEBGPU_RELEASE: "v20260423.175430"
+    # Do not add sccache via EM_COMPILER_WRAPPER here: emsdk's Clang commands
+    # carry -Xclang flags that sccache v0.16 treats as non-cacheable, adding
+    # wrapper overhead without storing any of the engine's object files.
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ inputs.ref || github.ref }}
           submodules: recursive
 
       - name: Install system packages
+        timeout-minutes: 10
         run: |
-          sudo apt-get update
+          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
+          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
+          # Normalize to the canonical mirror so apt has a reachable source.
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
+            sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
+          sudo pkill -f "unattended-upgrade" || true
+          sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
+          apt_ok=0
+          for i in 1 2 3; do
+            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
+              -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
+            [ "$i" -lt 3 ] && sleep 20
+          done
+          [ "$apt_ok" -eq 1 ] || exit 1
           sudo apt-get install -y --no-install-recommends \
             git ninja-build python3 python3-pip
 
       - name: Install CMake 3.29 (Emscripten is incompatible with CMake 4.x)
+        timeout-minutes: 10
         run: |
           python3 -m pip install --user cmake==3.29.6
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
+      - name: Restore Emscripten SDK cache
+        id: emsdk-cache
+        timeout-minutes: 5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: $HOME/emsdk
+          key: emsdk-${{ runner.os }}-${{ runner.arch }}-${{ env.EMSCRIPTEN_VERSION }}-${{ env.EMDAWNWEBGPU_RELEASE }}-v1
+
       - name: Install Emscripten SDK
+        timeout-minutes: 30
         run: |
-          git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$HOME/emsdk"
-          "$HOME/emsdk/emsdk" install latest
-          "$HOME/emsdk/emsdk" activate latest
+          if [ "${{ steps.emsdk-cache.outputs.cache-hit }}" = "true" ]; then
+            echo "Using cached Emscripten SDK"
+          else
+            git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$HOME/emsdk"
+          fi
+          "$HOME/emsdk/emsdk" install "$EMSCRIPTEN_VERSION"
+          "$HOME/emsdk/emsdk" activate "$EMSCRIPTEN_VERSION"
+
+      - name: Acquire and verify immutable WebGPU port
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/webgpu-dependencies
+          archive="artifacts/webgpu-dependencies/emdawnwebgpu.zip"
+          url="https://github.com/google/dawn/releases/download/${EMDAWNWEBGPU_RELEASE}/emdawnwebgpu_pkg-${EMDAWNWEBGPU_RELEASE}.zip"
+          if ! curl --fail --location --retry 4 --retry-all-errors --retry-delay 5 \
+            --output "$archive" "$url"; then
+            python3 -c 'from pathlib import Path; from scripts.ci_result import CIResult, FailureKind; CIResult.failure(FailureKind.INFRASTRUCTURE, "WEBGPU_DEPENDENCY_DOWNLOAD_FAILED", "webgpu-dependencies", "failed to download the locked emdawnwebgpu archive after retries").write(Path("artifacts/webgpu-dependencies/ci-result.json"))'
+            exit 1
+          fi
+          python3 scripts/verify_webgpu_dependencies.py \
+            --lock cmake/webgpu_dependencies.json \
+            --archive "$archive" \
+            --emscripten-version "$EMSCRIPTEN_VERSION" \
+            --result-json artifacts/webgpu-dependencies/ci-result.json
+
+      - name: Prewarm Emscripten WebGPU port
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          source "$HOME/emsdk/emsdk_env.sh"
+          for attempt in 1 2 3; do
+            em++ --use-port=emdawnwebgpu -x c++ -c /dev/null \
+              -o artifacts/webgpu-dependencies/port-probe.o && exit 0
+            [ "$attempt" -lt 3 ] && sleep $((attempt * 10))
+          done
+          exit 1
+
+      - name: Upload WebGPU dependency result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: webgpu-dependency-result
+          path: artifacts/webgpu-dependencies/ci-result.json
+          if-no-files-found: warn
 
       - name: Configure webgpu (Emscripten/WASM)
+        timeout-minutes: 15
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           source "$HOME/emsdk/emsdk_env.sh"
-          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release
+          # Keep Release object compilation; avoid expensive -O3 Binaryen
+          # optimization in this browser smoke lane. Asyncify still runs.
+          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_EXE_LINKER_FLAGS_RELEASE=-O1
 
       - name: Build webgpu (Emscripten/WASM)
+        timeout-minutes: 60
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           source "$HOME/emsdk/emsdk_env.sh"
           cmake --build build/webgpu-web --parallel "$(nproc)"
 
       - name: Verify webgpu artifacts
+        timeout-minutes: 5
         run: |
           test -f build/webgpu-web/src/engine/eve.html
           test -f build/webgpu-web/src/engine/eve.wasm
           ls -lh build/webgpu-web/src/engine/eve.*
+
+      - name: Capture browser WebGPU frame
+        timeout-minutes: 10
+        run: |
+          python3 -m pip install --quiet pillow
+          cd build/webgpu-web/src/engine
+          python3 -m http.server 8090 >webgpu-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          google-chrome --headless=new --no-sandbox --disable-gpu-sandbox \
+            --enable-unsafe-webgpu --enable-features=Vulkan \
+            --use-vulkan=swiftshader --window-size=800,600 \
+            --timeout=20000 --screenshot=webgpu-browser.png \
+            http://127.0.0.1:8090/eve.html
+          python3 "$GITHUB_WORKSPACE/scripts/validate_render_frame.py" webgpu-browser.png
+
+      - name: Upload browser WebGPU frame
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: webgpu-browser-frame
+          path: |
+            build/webgpu-web/src/engine/webgpu-browser.png
+            build/webgpu-web/src/engine/webgpu-http.log
+          if-no-files-found: warn
+
+      - name: Save Emscripten SDK cache
+        # Only refresh on the default branch so per-PR runs restore (free) but
+        # never rewrite the cache, keeping churn/eviction of hot caches low.
+        if: ${{ steps.emsdk-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/dev' }}
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: $HOME/emsdk
+          key: ${{ steps.emsdk-cache.outputs.cache-primary-key }}

@@ -1,15 +1,30 @@
 #include "devtools/DevTool.hpp"
+#include "common/StringMapInstances.h"
 
 #include "devtools/AiPanel.hpp"
 #include "devtools/ConsolePanel.hpp"
+#include "devtools/FrameStatsPanel.hpp"
+#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpDevBridge.hpp"
+#include "devtools/McpScriptTools.hpp"
 #include "devtools/McpServer.hpp"
+#include "devtools/ReloadSession.h"
 #include "devtools/RenderVision.hpp"
+#include "devtools/ScenarioRecorder.h"
+#include "devtools/SoftRestart.hpp"
 
+#include "common/Diagnostic.h"
 #include "common/Module.h"
+#include "common/GameplayControlJson.h"
 #include "common/RenderTrace.h"
-#include "event/Event.h"
+#include "common/Runtime.h"
+#include "common/ScriptError.h"
+#include "common/Status.h"
+#include "common/SquirrelBinding.h"
+#include "common/Value.h"
+#include "platform_event/PlatformEvent.h"
 
+#include <Poco/JSON/Parser.h>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
@@ -83,34 +98,27 @@ void nativeDebugHook(HSQUIRRELVM v, SQInteger type, const SQChar* sourcename, SQ
                                static_cast<int>(line), funcname ? funcname : "");
 }
 
-/** Runtime error handler: uncaught script errors are routed to DevTool. */
+/** Runtime error handler: captures the live stack; notifies DevTool when needed. */
 SQInteger runtimeErrorHook(HSQUIRRELVM v) {
     if (!g_active) return 0;
-    std::string msg = "script error";
-    if (sq_gettop(v) >= 2) {
-        switch (sq_gettype(v, 2)) {
-            case OT_STRING: {
-                const SQChar* s = nullptr;
-                if (SQ_SUCCEEDED(sq_getstring(v, 2, &s)) && s) msg = s;
-                break;
-            }
-            case OT_INTEGER: {
-                SQInteger i = 0;
-                if (SQ_SUCCEEDED(sq_getinteger(v, 2, &i)))
-                    msg = "script error " + std::to_string(static_cast<long long>(i));
-                break;
-            }
-            case OT_BOOL: {
-                SQBool b = SQFalse;
-                if (SQ_SUCCEEDED(sq_getbool(v, 2, &b)))
-                    msg = b ? "script error: true" : "script error: false";
-                break;
-            }
-            default:
-                break;
-        }
+    // Capture while the throw-site stack is still intact (including caught
+    // throws when sq_notifyallexceptions is on).
+    eve::script::ScriptErrorContext ctx = eve::script::captureScriptError(v);
+    // When attached through Runtime, uncaught errors are reported by the
+    // Runtime error sink after unwind. Notifying here as well would treat
+    // expected catches (file_exists, migrate_instance) as debugger errors.
+    if (g_active->isRuntimeBound()) {
+        eve::script::setLastScriptError(v, std::move(ctx));
+        return 0;
     }
-    g_active->notifyError(msg);
+    const std::string msg = ctx.empty() ? std::string("script error")
+                                        : eve::script::formatScriptError(ctx);
+    try {
+        g_active->notifyError(msg);
+    } catch (...) {
+    }
+    ctx.reported = true;
+    eve::script::setLastScriptError(v, std::move(ctx));
     return 0;
 }
 
@@ -134,6 +142,26 @@ DevTool& DevTool::instance() {
 
 void DevTool::attach(ssq::VM& vm, bool sampleLocals) { attach(vm.getHandle(), sampleLocals); }
 
+void DevTool::attach(eve::Runtime& runtime, bool sampleLocals) {
+    attach(runtime.vm(), sampleLocals);
+    runtime_ = &runtime;
+    // Capture throw-site stacks for try/catch so reportError / lastScriptError
+    // can surface the original site (load.nut pattern). Safe here because the
+    // Runtime-bound error hook only stashes context and does not notify/pause.
+    sq_notifyallexceptions(runtime.handle(), SQTrue);
+    // Route Runtime-boundary errors into the slicer/report. The VM error hook
+    // only captures the stack when this Runtime sink is bound; this handler
+    // reports compile / reflect / unload failures and uncaught execute errors
+    // exactly once.
+    runtime.setErrorHandler([this](const eve::ScriptException& error) {
+        if (error.reported()) return;
+        try {
+            notifyError(error.what());
+        } catch (...) {
+        }
+    });
+}
+
 void DevTool::installRenderTracer() {
     renderFlow_.clear();
     eve::debug::setRenderTracer(&renderFlow_);
@@ -154,17 +182,30 @@ void DevTool::enableRenderTrace(bool on) {
 
 void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
     if (!vm) return;
+    // Drop script tools registered against another VM *before* touching it: if
+    // that VM went away without detach(), its memory is freed and sq_release
+    // into it would corrupt the heap. Passing the incoming VM as the owner means
+    // nothing is released here, only discarded.
+    clearScriptTools(vm);
     detach();
     vm_           = vm;
     sampleLocals_ = sampleLocals;
     graph_.clear();
     localSnap_.clear();
     lastReport_.clear();
+    lastError_.clear();
+    lastSlice_ = {};
 
     Debugger::instance().attach(vm);
+    Debugger::instance().setCallGraph(&graph_);
     Debugger::instance().setPump([this]() { pumpWhilePaused(); });
 
     sq_enabledebuginfo(vm_, SQTrue);
+    // Do not enable sq_notifyallexceptions here. With notify-all + break-on-error,
+    // this hook would pause on every caught throw before script catch/reportError
+    // runs (double pause → hung script thread → flaky teardown SEGFAULT in
+    // devtools.dap.caughtErrorPausesAtReportSite). Runtime::installErrorHandler
+    // already turns notify-all on for production VMs; attach(Runtime&) keeps it.
     sq_setnativedebughook(vm_, nativeDebugHook);
     // Route uncaught script errors into the debugger (break-on-error aware).
     sq_newclosure(vm_, runtimeErrorHook, 0);
@@ -177,8 +218,17 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
 }
 
 void DevTool::detach() {
+    ScenarioRecorder::instance().cancel();
+    // Handlers registered by project scripts live in this VM; drop them while it
+    // is still valid so the references are released, not leaked.
+    clearScriptTools(vm_);
+    if (runtime_) {
+        runtime_->setErrorHandler({});
+        runtime_ = nullptr;
+    }
     stopDap();
     stopMcp();
+    Debugger::instance().setCallGraph(nullptr);
     Debugger::instance().detach();
     if (vm_) {
         sq_setnativedebughook(vm_, nullptr);
@@ -188,6 +238,9 @@ void DevTool::detach() {
     ConsolePanel::instance().detach();
     vm_ = nullptr;
     localSnap_.clear();
+    lastReport_.clear();
+    lastError_.clear();
+    lastSlice_ = {};
     uninstallRenderTracer();
 }
 
@@ -205,6 +258,8 @@ AiPanel& DevTool::ai() { return AiPanel::instance(); }
 
 ConsolePanel& DevTool::console() { return ConsolePanel::instance(); }
 
+FrameStatsPanel& DevTool::frameStats() { return FrameStatsPanel::instance(); }
+
 void DevTool::poll() {
     DebugAdapter::instance().poll();
     McpServer::instance().poll();
@@ -214,10 +269,14 @@ void DevTool::drawAiPanel() { AiPanel::instance().drawImGui(); }
 
 void DevTool::drawConsolePanel() { ConsolePanel::instance().drawImGui(); }
 
+void DevTool::drawFrameStatsPanel() { FrameStatsPanel::instance().drawImGui(); }
+
 void DevTool::exposeScriptApi(ssq::VM& vm) {
     try {
         ssq::Table eveTbl = vm.find("eve").toTable();
         ssq::Table dev    = eveTbl.addTable("dev");
+        // Project-script MCP export surface (eve.mcp.tool/remove/tools/clear).
+        exposeMcpScriptApi(vm);
 
         dev.addFunc("pause", [this]() {
             debugger().pause(PauseReason::PauseKey);
@@ -275,8 +334,8 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         });
         dev.addFunc("poll", [this]() { poll(); });
 
-        dev.addFunc("setBreakpoint", [this](std::string source, int line) {
-            return debugger().setBreakpoint(std::move(source), line, true);
+        dev.addFunc("setBreakpoint", [this](std::string source, int line, std::string condition) {
+            return debugger().setBreakpoint(std::move(source), line, true, std::move(condition));
         });
         dev.addFunc("clearBreakpoint", [this](std::string source, int line) {
             return debugger().clearBreakpoint(std::move(source), line);
@@ -310,27 +369,150 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
                     [](std::string name) { Snapshot::instance().markRoot(std::move(name)); });
         dev.addFunc("unmarkStateRoot",
                     [](std::string name) { Snapshot::instance().unmarkRoot(name); });
+        dev.addFunc("markTransientStateRoot",
+                    [](std::string name) { Snapshot::instance().markTransientRoot(std::move(name)); });
+        dev.addFunc("unmarkTransientStateRoot",
+                    [](std::string name) { Snapshot::instance().unmarkTransientRoot(name); });
+        dev.addFunc("clearStateRoots", []() { Snapshot::instance().clearRoots(); });
+        dev.addFunc("stateRoots", [this]() { return snapshot().rootsFor(vm_); });
+        dev.addFunc("transientStateRoots", []() { return Snapshot::instance().transientRoots(); });
+        // After scripts initialize configured game systems, publish a runtime
+        // world brief so MCP Discover can report what is live (not on-disk prose).
+        const HSQUIRRELVM handle = vm.getHandle();
+        dev.addFunc("publishWorldContext", [handle](ssq::Object world) {
+            auto value = script::valueFromSquirrel(world);
+            if (!value) return script::projectStatusResult(handle, value.status());
+            return script::projectResult(handle, publishWorldContext(std::move(value).takeValue()));
+        });
+        dev.addFunc("clearWorldContext", []() { clearWorldContext(); });
+        dev.addFunc("hasWorldContext", []() { return hasWorldContext(); });
+        dev.addFunc("worldContext", [handle]() {
+            const Value* world = runtimeWorldContext();
+            if (!world)
+                return script::projectStatusResult(
+                    handle, Status::failure(Diagnostic::error(DiagnosticCode::NotFound, "no runtime world context",
+                                                              "worldContext")));
+            return script::projectStatusResult(handle, Status::success(), *world);
+        });
+        dev.addFunc("gameWorldSnapshot", [handle]() {
+            return script::projectResult(handle, liveGameWorldSnapshot(), [](Value value) { return value; });
+        });
+        auto markSnapshotPause = [this]() {
+            if (!debugger().isPaused()) return;
+            debugger().pauseAt(PauseReason::Snapshot, debugger().pauseLocation());
+            debugger().refreshWatches();
+            dap().notifyStopped(PauseReason::Snapshot, debugger().pauseLocation(),
+                                "snapshot restored");
+        };
         dev.addFunc("saveSnapshot", [this](std::string path) {
             std::string err;
             const bool  ok = snapshot().saveFile(vm_, path, &err);
             if (!ok) return std::string("error:") + err;
             return std::string("ok");
         });
-        dev.addFunc("loadSnapshot", [this](std::string path) {
+        dev.addFunc("loadSnapshot", [this, markSnapshotPause](std::string path) {
             std::string err;
             const bool  ok = snapshot().loadFile(vm_, path, &err);
             if (!ok) return std::string("error:") + err;
+            markSnapshotPause();
             return std::string("ok");
         });
         dev.addFunc("captureSnapshot", [this]() {
             std::string err;
             return snapshot().capture(vm_, &err);
         });
-        dev.addFunc("restoreSnapshot", [this](std::string json) {
+        dev.addFunc("restoreSnapshot", [this, markSnapshotPause](std::string json) {
             std::string err;
             const bool  ok = snapshot().restore(vm_, json, &err);
             if (!ok) return std::string("error:") + err;
+            markSnapshotPause();
             return std::string("ok");
+        });
+        dev.addFunc("beginStateReload", [this]() {
+            std::string err;
+            if (!ReloadSession::instance().begin(vm_, &err)) return std::string("error:") + err;
+            return std::string("");
+        });
+        dev.addFunc("commitStateReload", [this]() {
+            std::string err;
+            if (!ReloadSession::instance().commit(vm_, &err)) return std::string("error:") + err;
+            return std::string("");
+        });
+        dev.addFunc("abortStateReload", [this]() {
+            std::string err;
+            if (!ReloadSession::instance().abort(vm_, &err)) return std::string("error:") + err;
+            return std::string("");
+        });
+        // Soft restart: reset native providers / re-run init without dropping
+        // ResourceManager. MCP eve_restart is the agent-facing entry; scripts
+        // can also call these helpers from eve_before_restart hooks.
+        dev.addFunc("resetNativeState", []() {
+            return static_cast<int>(resetNativeStateProviders());
+        });
+        dev.addFunc("resourceCacheCount", []() {
+            return static_cast<int>(resourceCacheCount());
+        });
+        // Parameter must not be named args*/argN — binding-contract codegen
+        // treats those as unresolved placeholders and fails the build.
+        dev.addFunc("softRestart", [this](std::string requestJson, bool reloadScripts) {
+            SoftRestartRequest request;
+            request.reloadScripts = reloadScripts;
+            if (!requestJson.empty()) {
+                try {
+                    Poco::JSON::Parser parser;
+                    auto               parsed = parser.parse(requestJson);
+                    request.args              = parsed.extract<Poco::JSON::Object::Ptr>();
+                } catch (const std::exception& e) {
+                    return std::string("error: invalid request JSON: ") + e.what();
+                } catch (...) {
+                    return std::string("error: invalid request JSON");
+                }
+            }
+            auto result = executeSoftRestart(vm_, std::move(request));
+            if (!result) {
+                const auto& status = result.status();
+                const auto* diag   = status.primaryDiagnostic();
+                return std::string("error:") +
+                       (diag && !diag->message().empty() ? diag->message()
+                                                         : std::string(statusCodeName(status.code())));
+            }
+            const SoftRestartReport& report = result.value();
+            return std::string("ok:resources=") + std::to_string(report.resourceCountAfter) +
+                   ":scripts=" + (report.scriptsReloaded ? "1" : "0");
+        });
+
+        // ---- state-driven bug reproduction (baseline snapshot + step replay) ----
+        dev.addFunc("beginScenario", [this]() {
+            std::string err;
+            if (!ScenarioRecorder::instance().begin(vm_, &err))
+                return std::string("error:") + err;
+            return std::string("ok");
+        });
+        dev.addFunc("scenarioFrame", []() { ScenarioRecorder::instance().markFrame(); });
+        dev.addFunc("scenarioRecording",
+                    []() { return ScenarioRecorder::instance().recording(); });
+        dev.addFunc("endScenario", [](std::string path) {
+            std::string err;
+            if (!ScenarioRecorder::instance().end(path, &err))
+                return std::string("error:") + err;
+            return std::string("ok");
+        });
+        dev.addFunc("cancelScenario", []() { ScenarioRecorder::instance().cancel(); });
+        dev.addFunc("beginReplay", [this](std::string path) {
+            std::string err;
+            if (!ScenarioRecorder::instance().beginReplay(vm_, path, &err))
+                return std::string("error:") + err;
+            return std::string("ok");
+        });
+        dev.addFunc("replayFrame", []() { return ScenarioRecorder::instance().stageFrame(); });
+        dev.addFunc("replayRemaining",
+                    []() { return ScenarioRecorder::instance().framesRemaining(); });
+        dev.addFunc("replayErrorReport",
+                    []() { return ScenarioRecorder::instance().errorReport(); });
+        dev.addFunc("gameplay", [](const std::string& requestJson) {
+            auto result = eve::executeGameplayControlJson(requestJson);
+            return result ? std::move(result).takeValue()
+                          : std::string("error:") + result.status().describe();
         });
 
         // AI / MCP surface (DevTools panel + agent session log).
@@ -391,6 +573,38 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         consoleTbl.addFunc("setVisible", [](bool on) { ConsolePanel::instance().setVisible(on); });
         consoleTbl.addFunc("toggleVisible", []() { ConsolePanel::instance().toggleVisible(); });
         consoleTbl.addFunc("draw", [this]() { drawConsolePanel(); });
+
+        // FPS / frame-time overlay (sampled from load.nut each frame).
+        ssq::Table statsTbl = dev.addTable("stats");
+        statsTbl.addFunc("sample", [](float dt) {
+            FrameStatsPanel::instance().sample(dt);
+            return std::string("ok");
+        });
+        statsTbl.addFunc("setEntityCount", [](int n) {
+            FrameStatsPanel::instance().setEntityCount(n);
+            return std::string("ok");
+        });
+        statsTbl.addFunc("clearEntityCount", []() {
+            FrameStatsPanel::instance().clearEntityCount();
+            return std::string("ok");
+        });
+        statsTbl.addFunc("fps", []() { return FrameStatsPanel::instance().fps(); });
+        statsTbl.addFunc("frameMs", []() { return FrameStatsPanel::instance().frameMs(); });
+        statsTbl.addFunc("entityCount", []() { return FrameStatsPanel::instance().entityCount(); });
+        statsTbl.addFunc("hasEntityCount", []() { return FrameStatsPanel::instance().hasEntityCount(); });
+        statsTbl.addFunc("format", []() { return FrameStatsPanel::instance().format(); });
+        statsTbl.addFunc("isVisible", []() { return FrameStatsPanel::instance().isVisible(); });
+        statsTbl.addFunc("setVisible", [](bool on) { FrameStatsPanel::instance().setVisible(on); });
+        statsTbl.addFunc("toggleVisible", []() { FrameStatsPanel::instance().toggleVisible(); });
+        statsTbl.addFunc("draw", [this]() { drawFrameStatsPanel(); });
+
+        // Native binding is arity-3; keep `setBreakpoint(file, line)` working.
+        ssq::Script bpWrap = vm.compileSource(
+            "local _setBreakpoint = eve.dev.setBreakpoint\n"
+            "eve.dev.setBreakpoint = function(source, line, condition = \"\") {\n"
+            "    return _setBreakpoint(source, line, condition)\n"
+            "}\n");
+        vm.run(bpWrap);
     } catch (...) {
         // If eve table missing, skip — attach still useful for C++/DAP/MCP.
     }
@@ -406,12 +620,12 @@ void DevTool::handleDebugEvent(HSQUIRRELVM vm, int type, const char* source, int
     // Squirrel passes 'l' / 'c' / 'r' as event type characters.
     switch (type) {
         case 'c':
-            graph_.onCall(loc, loc.function);
+            loc.function = Debugger::instance().onCall(loc);
             localSnap_.erase(static_cast<int>(graph_.currentStack().size()));
             profileCall(loc.function);
             break;
         case 'r':
-            graph_.onReturn(loc, loc.function);
+            Debugger::instance().onReturn(loc);
             // Drop snapshot for the frame that just returned.
             localSnap_.erase(static_cast<int>(graph_.currentStack().size()) + 1);
             profileReturn();
@@ -469,29 +683,26 @@ void DevTool::handleDebugHotkey(const std::string& key) {
 void DevTool::pumpWhilePaused() {
     poll();  // DAP continue / next / pause
 
-    auto* ev = eve::ModuleManager::getInstance<eve::event::Event>("Event");
+    auto* ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return;
     ev->pump();
 
     // Consume debug hotkeys so F5/F8/F10/F11 work while blocked in the line hook;
     // re-queue everything else for the main loop after resume.
-    std::vector<eve::event::Message*> keep;
-    while (eve::event::Message* msg = ev->poll()) {
+    std::vector<std::unique_ptr<eve::platform_event::Message>> keep;
+    while (auto msg = ev->pollOwned()) {
         bool handled = false;
         if (msg->name == "keypressed" && !msg->args.empty() &&
-            msg->args[0].type == eve::event::Variant::Type::String) {
+            msg->args[0].type == eve::platform_event::Variant::Type::String) {
             const std::string& key = msg->args[0].s;
             if (key == "F5" || key == "F8" || key == "F10" || key == "F11" || key == "Pause") {
                 handleDebugHotkey(key);
                 handled = true;
             }
         }
-        if (handled)
-            delete msg;
-        else
-            keep.push_back(msg);
+        if (!handled) keep.push_back(std::move(msg));
     }
-    for (eve::event::Message* msg : keep) ev->push(msg);
+    for (auto& msg : keep) ev->push(std::move(msg));
 }
 
 void DevTool::sampleFrameLocals(HSQUIRRELVM vm, const SourceLoc& loc) {
@@ -624,17 +835,25 @@ std::string DevTool::notifyError(const std::string& errorMessage,
                                  const std::vector<std::string>& hintVars) {
     SourceLoc site;
     if (vm_) {
-        // When called from the uncaught-error hook, level 0 is the native hook
-        // itself and level 1 is the throwing script frame, so this already
-        // lands on the exact throw site (before the stack unwinds). When called
-        // from a script catch (eve.dev.reportError), level 1 is the catch
-        // statement that reported the error (the game script when load.nut
-        // calls the native reporter directly).
-        SQStackInfos si;
-        if (SQ_SUCCEEDED(sq_stackinfos(vm_, 1, &si))) {
-            if (si.source) site.source = si.source;
-            site.line = static_cast<int>(si.line);
-            if (si.funcname) site.function = si.funcname;
+        // Prefer the stack captured at throw time. reportError runs from a
+        // script catch, so sq_stackinfos(level 1) is the catch site (load.nut)
+        // rather than the original throw in main.nut.
+        if (const auto* ctx = eve::script::peekLastScriptError(vm_)) {
+            if (!ctx->stack.empty() &&
+                (errorMessage.find(ctx->message) != std::string::npos ||
+                 ctx->message.find(errorMessage) != std::string::npos)) {
+                site.source = ctx->source;
+                site.line = ctx->line;
+                site.function = ctx->function;
+            }
+        }
+        if (site.empty()) {
+            SQStackInfos si;
+            if (SQ_SUCCEEDED(sq_stackinfos(vm_, 1, &si))) {
+                if (si.source) site.source = si.source;
+                site.line = static_cast<int>(si.line);
+                if (si.funcname) site.function = si.funcname;
+            }
         }
     }
     markErrorUses(site, hintVars);
@@ -651,12 +870,17 @@ std::string DevTool::notifyError(const std::string& errorMessage,
     if (report.empty()) report = std::string("Error: ") + errorMessage + "\n";
     lastReport_ = report;
     lastError_  = errorMessage;
+    lastSlice_  = analyzeError(errorMessage, hintVars);
+
+    // If a scenario is being recorded, pair the failure report + site with it so
+    // the dumped scenario becomes a reproducible baseline + input sequence.
+    ScenarioRecorder::instance().setErrorInfo(report, site.source + ":" + std::to_string(site.line));
 
     RenderVision::instance().notifyPending("error", site.source, site.line);
     if (debugger().breakOnError()) {
         // Godot "Break on Error": stop at the reported site. Block inside the
         // hook so the IDE sees a stable frame instead of the next executed line.
-        debugger().pause(PauseReason::Exception);
+        debugger().pauseAt(PauseReason::Exception, site);
         dap().notifyStopped(PauseReason::Exception, site, errorMessage);
         debugger().waitWhilePaused([this]() { pumpWhilePaused(); });
     }
@@ -671,6 +895,14 @@ std::size_t mcpCallgraphEvents() { return DevTool::instance().graph().events().s
 std::size_t mcpCallgraphStackDepth() {
     return DevTool::instance().graph().currentStack().size();
 }
+
+void DevTool::recordMcpSnippetError(std::string report) {
+    lastError_  = report;
+    lastReport_ = std::move(report);
+    lastSlice_  = {};
+}
+
+void mcpRecordSnippetError(std::string report) { DevTool::instance().recordMcpSnippetError(std::move(report)); }
 
 const std::string& mcpLastReport() { return DevTool::instance().lastReport(); }
 

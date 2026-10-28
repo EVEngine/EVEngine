@@ -1,0 +1,230 @@
+#include "graphics/material/editing/MaterialEditingCommands.h"
+#include <algorithm>
+#include "editing/EditingProperty.h"
+#include "graphics/material/editing/MaterialGraph.h"
+
+// MaterialEditingCommands.cpp
+namespace eve::material_editing {
+namespace {
+
+const editing::Value* field(const editing::Value& value, const char* key) {
+    const auto* object = value.getIf<editing::Value::Object>();
+    if (!object) return nullptr;
+    const auto found = object->find(key);
+    return found == object->end() ? nullptr : &found->second;
+}
+
+editing::SelectionSnapshot selectionFor(editing::IEditableTarget& target) {
+    editing::SelectionSnapshot selection;
+    selection.channel = "asset";
+    editing::SelectionItem item;
+    item.domain = editing::SelectionDomain::Asset;
+    item.target = editing::TargetId(target.targetId());
+    item.item   = editing::StableId(target.targetId().value());
+    item.type   = "graphics.material";
+    selection.items.push_back(item);
+    selection.primary = item;
+    return selection;
+}
+
+}  // namespace
+
+editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& registry) {
+    editing::EditingCommandDescriptor descriptor;
+    descriptor.id                = editing::CommandId("material.property.set.v1");
+    descriptor.ownerModule       = "material_editing";
+    descriptor.displayName       = "Set material property";
+    descriptor.category          = "Material";
+    descriptor.automationAllowed = true;
+    return registry.registerPlannedCommand(
+        std::move(descriptor), [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
+            auto* properties = static_cast<editing::IPropertyProvider*>(
+                target.queryCapability(editing::IPropertyProvider::editingCapabilityId()));
+            const editing::Value* pathValue = field(request.payload, "path");
+            const auto*           path      = pathValue ? pathValue->getIf<std::string>() : nullptr;
+            const editing::Value* value     = field(request.payload, "value");
+            if (!properties || !path || !value)
+                return eve::editing::failed<editing::CommandPlan>(
+                    editing::Status::Rejected, editing::RuleId("material.editing.property-payload"),
+                    "Material property requires a property target, path and value");
+            auto operation = properties->makeSet(selectionFor(target), editing::PropertyPath(*path), *value,
+                                                 editing::PropertySetMode::Absolute);
+            if (!operation.ok())
+                return eve::editing::failed<editing::CommandPlan>(
+                    operation.code(), editing::RuleId("material.editing.property-operation"),
+                    "Material target rejected the property value");
+            editing::CommandPlan plan;
+            plan.operations.push_back(std::move(operation.value()));
+            plan.summary = editing::Value::Object{{"path", *path}};
+            return eve::editing::applied<editing::CommandPlan>(std::move(plan));
+        });
+}
+
+}  // namespace eve::material_editing
+
+// MaterialGraph.cpp
+namespace eve::material_editing {
+namespace {}  // namespace
+
+GraphConnectionDecision MaterialGraphDomain::canConnect(const GraphPinRecord& from, const GraphPinRecord& to) const {
+    GraphConnectionDecision decision;
+    decision.allowed = from.direction == GraphPinDirection::Output && to.direction == GraphPinDirection::Input &&
+                       from.type == to.type && from.node != to.node;
+    if (!decision.allowed)
+        decision.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::InvalidArgument, RuleId("editor.material.pin-type-mismatch"),
+            DiagnosticSeverity::Error, "Material pins require matching types, output-to-input and distinct nodes"));
+    return decision;
+}
+
+MaterialCompileResult MaterialGraphDomain::compile(const GraphDocumentData& graph) const {
+    MaterialCompileResult result;
+    result.documentRevision = graph.revision;
+    if (graph.domain != domain()) {
+        result.status = EditorStatus::Rejected;
+        result.diagnostics.push_back(
+            eve::editing::ruleDiagnostic(eve::DiagnosticCode::InvalidArgument, RuleId("editor.material.wrong-domain"),
+                                         DiagnosticSeverity::Error, "Graph is not a material domain document"));
+        return result;
+    }
+    const std::size_t outputs =
+        static_cast<std::size_t>(std::count_if(graph.nodes.begin(), graph.nodes.end(), [](const GraphNodeRecord& node) {
+            return node.type == "material.output";
+        }));
+    const bool errorNode = std::any_of(graph.nodes.begin(), graph.nodes.end(),
+                                       [](const GraphNodeRecord& node) { return node.type == "material.error"; });
+    if (outputs != 1 || errorNode) {
+        result.status = EditorStatus::Failed;
+        result.diagnostics.push_back(eve::editing::ruleDiagnostic(
+            eve::DiagnosticCode::Failed, RuleId("editor.material.compile-failed"), DiagnosticSeverity::Error,
+            outputs != 1 ? "Material graph requires exactly one output node"
+                         : "Material graph contains an invalid node"));
+        return result;
+    }
+    result.status         = EditorStatus::Applied;
+    result.shaderArtifact = "material-shader:r" + std::to_string(graph.revision) + ":n" +
+                            std::to_string(graph.nodes.size()) + ":e" + std::to_string(graph.edges.size());
+    return result;
+}
+
+Result<TaskId> MaterialEditorService::compile(const DocumentId& document, const GraphDocumentData& graph,
+                                              const MaterialGraphDomain& domain) {
+    if (document.empty())
+        return eve::editing::failed<TaskId>(EditorStatus::Rejected, RuleId("editor.material.missing-document"),
+                                            "Material document id is required");
+    TaskId task(document.value() + ".compile." + std::to_string(++taskSequence_));
+    tasks_.emplace(task, Task{document, domain.compile(graph), nullptr});
+    return eve::editing::applied<TaskId>(std::move(task));
+}
+
+Result<TaskId> MaterialEditorService::compileAsync(const DocumentId& document, GraphDocumentData graph,
+                                                   const MaterialGraphDomain& domain, TaskService& tasks) {
+    if (document.empty())
+        return eve::editing::failed<TaskId>(EditorStatus::Rejected, RuleId("editor.material.missing-document"),
+                                            "Material document id is required");
+    const MaterialGraphDomain domainCopy = domain;
+    auto                      queued     = tasks.submit(
+        "Compile material " + document.value(), [graph = std::move(graph), domainCopy](const TaskContext& context) {
+            TaskOutcome outcome;
+            if (context.isCancellationRequested()) {
+                outcome.status = EditorStatus::Cancelled;
+                return outcome;
+            }
+            context.reportProgress(0.25F);
+            const MaterialCompileResult compiled = domainCopy.compile(graph);
+            EditorValue::Object         value;
+            value["status"]   = EditorValue(static_cast<std::int64_t>(compiled.status));
+            value["revision"] = EditorValue(static_cast<std::int64_t>(compiled.documentRevision));
+            value["artifact"] = EditorValue(compiled.shaderArtifact);
+            outcome.status    = compiled.status;
+            outcome.output    = EditorValue(std::move(value));
+            outcome.diagnostics = compiled.diagnostics;
+            context.reportProgress(1.0F);
+            return outcome;
+        });
+    if (!queued.ok()) return queued;
+    tasks_.emplace(queued.value(), Task{document, {}, &tasks});
+    return queued;
+}
+
+Result<void> MaterialEditorService::cancel(const TaskId& task) {
+    auto found = tasks_.find(task);
+    if (found == tasks_.end() || !found->second.service)
+        return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.material.async-task-not-found"),
+                                          "Asynchronous material task does not exist");
+    return found->second.service->cancel(task);
+}
+
+Result<MaterialCompileResult> MaterialEditorService::result(const TaskId& task) const {
+    auto found = tasks_.find(task);
+    if (found == tasks_.end())
+        return eve::editing::failed<MaterialCompileResult>(
+            EditorStatus::NotFound, RuleId("editor.material.task-not-found"), "Material compile task does not exist");
+    if (found->second.service) {
+        const auto snapshot = found->second.service->snapshot(task);
+        if (!snapshot.ok())
+            return eve::editing::failed<MaterialCompileResult>(EditorStatus::NotFound,
+                                                               RuleId("editor.material.task-not-found"),
+                                                               "Material compile task does not exist");
+        if (snapshot.value().state == TaskState::Queued || snapshot.value().state == TaskState::Running)
+            return Result<MaterialCompileResult>::success(MaterialCompileResult{},
+                                                          eve::Status::success(EditorStatus::Pending));
+        MaterialCompileResult compiled;
+        compiled.diagnostics = snapshot.value().diagnostics;
+        if (snapshot.value().state == TaskState::Cancelled) {
+            compiled.status = EditorStatus::Cancelled;
+            return eve::editing::applied<MaterialCompileResult>(std::move(compiled));
+        }
+        const auto* object = snapshot.value().output.getIf<EditorValue::Object>();
+        if (!object)
+            return eve::editing::failed<MaterialCompileResult>(EditorStatus::Failed,
+                                                               RuleId("editor.material.invalid-task-output"),
+                                                               "Material worker returned an invalid result");
+        const auto  status        = object->find("status");
+        const auto  revision      = object->find("revision");
+        const auto  artifact      = object->find("artifact");
+        const auto* statusValue   = status == object->end() ? nullptr : status->second.getIf<std::int64_t>();
+        const auto* revisionValue = revision == object->end() ? nullptr : revision->second.getIf<std::int64_t>();
+        const auto* artifactValue = artifact == object->end() ? nullptr : artifact->second.getIf<std::string>();
+        if (!statusValue || !revisionValue || !artifactValue)
+            return eve::editing::failed<MaterialCompileResult>(EditorStatus::Failed,
+                                                               RuleId("editor.material.invalid-task-output"),
+                                                               "Material worker result fields are invalid");
+        compiled.status           = static_cast<EditorStatus>(*statusValue);
+        compiled.documentRevision = static_cast<Revision>(*revisionValue);
+        compiled.shaderArtifact   = *artifactValue;
+        return eve::editing::applied<MaterialCompileResult>(std::move(compiled));
+    }
+    return eve::editing::applied<MaterialCompileResult>(found->second.result);
+}
+
+Result<void> MaterialEditorService::publishPreview(const DocumentId& document, Revision currentRevision,
+                                                   const TaskId& task) {
+    auto found = tasks_.find(task);
+    if (found == tasks_.end() || found->second.document != document)
+        return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.material.task-not-found"),
+                                          "Material compile task does not belong to this document");
+    const auto compileResult = result(task);
+    if (compileResult.code() == EditorStatus::Pending)
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.material.compile-pending"),
+                                          "Material compile task has not completed");
+    if (!compileResult.ok())
+        return eve::editing::failed<void>(EditorStatus::Failed, RuleId("editor.material.compile-result-unavailable"),
+                                          "Material compile result is unavailable");
+    const MaterialCompileResult& compiled = compileResult.value();
+    if (compiled.status != EditorStatus::Applied)
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.compile-not-successful"),
+                                          "Failed material output cannot replace the current preview");
+    if (compiled.documentRevision != currentRevision)
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.material.stale-compile"),
+                                          "Material changed after this compile task started");
+    previews_.insert_or_assign(document, compiled.shaderArtifact);
+    return eve::editing::applied<void>();
+}
+
+std::string MaterialEditorService::previewArtifact(const DocumentId& document) const {
+    auto found = previews_.find(document);
+    return found == previews_.end() ? std::string{} : found->second;
+}
+
+}  // namespace eve::material_editing

@@ -1,10 +1,8 @@
 #pragma once
+#include "common/Export.h"
 
 #include "graphics/Drawable.h"
-#include "graphics/Quad.h"
 #include "graphics/TextureSampler.h"
-#include <cstdint>
-#include <vector>
 
 namespace eve::graphics {
 
@@ -14,33 +12,70 @@ class Graphics;
  * @brief GPU texture created via Graphics::newTexture.
  * Owns GPU resources through an opaque backend handle.
  */
-class Texture : public Drawable {
+class EVENGINE_API_BACKENDS Texture : public Drawable {
 public:
+    /** @brief Texture. */
     Texture();
+    /** @brief Texture. */
     ~Texture() override;
 
-    void draw(Graphics *gfx, const glm::mat4 &matrix) const override;
+    /** @brief Draws . */
+    void draw(Graphics* gfx, const glm::mat4& matrix) const override;
     /** @brief Black silhouette using texture alpha (volumetric occlusion map). */
-    void drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const override;
+    void drawOcclusion(Graphics* gfx, const glm::mat4& matrix) const override;
 
-    int getWidth() const { return width; }
-    int getHeight() const { return height; }
-    int getPixelWidth() const { return pixelWidth; }
-    int getPixelHeight() const { return pixelHeight; }
-    int getMipmapCount() const { return mipmapCount; }
-    const TextureSampler &getSampler() const { return sampler; }
+    /** @brief Returns the width. */
+    int getWidth() const;
+    /** @brief Returns the height. */
+    int getHeight() const;
+    /** @brief Returns the pixel width. */
+    int getPixelWidth() const;
+    /** @brief Returns the pixel height. */
+    int getPixelHeight() const;
+    /** @brief Returns the mipmap count. */
+    int getMipmapCount() const;
+    /** @brief Returns the sampler. */
+    const TextureSampler& getSampler() const { return sampler; }
+    /**
+     * @brief Declare whether RGB is straight or already multiplied by alpha.
+     * @param value Borrowed NUL-terminated spelling (`"premultiplied"` or other); not retained.
+     * @lifetime Valid only for this call.
+     */
+    void setAlphaConvention(const char* value);
+    /**
+     * @brief Returns the alpha convention spelling.
+     * @return Static non-owning `"premultiplied"` or `"straight"`; never null.
+     * @ownership Borrowed static storage; valid for the process lifetime.
+     * @lifetime Stable indefinitely; not invalidated by texture mutation.
+     */
+    const char* getAlphaConvention() const;
+    /** @brief True when premultiplied alpha. */
+    bool hasPremultipliedAlpha() const { return premultipliedAlpha_; }
 
     /** Backend-private GPU object (vulkan::GpuTexture*). */
-    void *gpuHandle = nullptr;
+    void* gpuHandle = nullptr;
 
-    int width = 0;
-    int height = 0;
-    int depth = 1;
-    int layers = 1;
-    int mipmapCount = 1;
-    int pixelWidth = 0;
-    int pixelHeight = 0;
+    int            width       = 0;
+    int            height      = 0;
+    int            depth       = 1;
+    int            layers      = 1;
+    int            mipmapCount = 1;
+    int            pixelWidth  = 0;
+    int            pixelHeight = 0;
     TextureSampler sampler{};
+
+    /** @brief Mark deferred file pixels. */
+    void markDeferredFilePixels(Graphics* graphics);
+    /** @brief Clears deferred file pixels. */
+    void clearDeferredFilePixels();
+    /** @brief True when deferred file pixels. */
+    bool hasDeferredFilePixels() const { return filePixelsPending_; }
+
+private:
+    void      realizeFilePixelsIfNeeded() const;
+    Graphics* graphics_           = nullptr;
+    bool      filePixelsPending_  = false;
+    bool      premultipliedAlpha_ = false;
 };
 
 }  // namespace eve::graphics

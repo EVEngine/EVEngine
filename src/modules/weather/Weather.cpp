@@ -1,4 +1,10 @@
 #include "weather/Weather.h"
+#include "weather/Lightning.h"
+#include "weather/ThunderStrike.h"
+#include "weather/shaders/WeatherWgsl.h"
+
+#include "common/SquirrelBinding.h"
+#include "common/Capability.h"
 
 #include "graphics/Graphics.h"
 #include "graphics/Material.h"
@@ -9,6 +15,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -34,8 +41,8 @@ struct Lcg {
     float range(float a, float b) { return a + (b - a) * unit(); }
 };
 
-constexpr int kRainCount = 320;
-constexpr int kSnowCount = 260;
+constexpr int kRainCount = 1600;
+constexpr int kSnowCount = 1400;
 constexpr int kBoltCount = 4;
 
 constexpr float kBoxXZ = 26.f;  // half extent on X/Z
@@ -122,7 +129,15 @@ graphics::Mesh *buildFieldMesh(graphics::Graphics *gfx, Lcg &rng, int count, flo
         pos[b + 6] = ax; pos[b + 7] = ay; pos[b + 8] = az;
         pos[b + 9] = ax; pos[b + 10] = ay; pos[b + 11] = az;
 
-        nrm[b + 1] = nrm[b + 4] = nrm[b + 7] = nrm[b + 10] = 1.f;
+        // Pack per-particle variation in the otherwise unused normal.
+        const float lengthScale = rng.range(0.55f, 1.45f);
+        const float widthScale = rng.range(0.65f, 1.25f);
+        const float speedScale = rng.range(0.82f, 1.18f);
+        for (int j = 0; j < 4; ++j) {
+            nrm[b + j * 3 + 0] = lengthScale;
+            nrm[b + j * 3 + 1] = widthScale;
+            nrm[b + j * 3 + 2] = speedScale;
+        }
 
         // uv.x = horizontal offset, uv.y = vertical offset (in [0,1]).
         uv[t + 0] = -0.5f; uv[t + 1] = 0.f;
@@ -143,95 +158,6 @@ graphics::Mesh *buildFieldMesh(graphics::Graphics *gfx, Lcg &rng, int count, flo
                                   idxCount);
 }
 
-struct Pt {
-    float x = 0, y = 0, z = 0;
-};
-
-// Build a jagged lightning bolt as a tapered quad strip plus short branches.
-graphics::Mesh *buildBoltMesh(graphics::Graphics *gfx, Lcg &rng, Pt top, Pt ground) {
-    std::vector<Pt> pts;
-    // Main trunk with recursive midpoint displacement.
-    const int segs = 24;
-    pts.push_back(top);
-    float y = top.y;
-    float stepY = (top.y - ground.y) / float(segs);
-    for (int i = 1; i < segs; ++i) {
-        y -= stepY;
-        float f = float(i) / float(segs);
-        float jitter = (1.f - f) * 0.9f;  // more violent near the top
-        Pt p;
-        p.x = ground.x + (top.x - ground.x) * (1.f - f) + rng.range(-jitter, jitter) * 1.2f;
-        p.y = y;
-        p.z = ground.z + (top.z - ground.z) * (1.f - f) + rng.range(-jitter, jitter) * 1.2f;
-        pts.push_back(p);
-    }
-    pts.push_back(ground);
-
-    // One branch from the upper third.
-    std::vector<Pt> branch;
-    int bStart = int(float(segs) * 0.35f);
-    branch.push_back(pts[bStart]);
-    Pt bp = pts[bStart];
-    for (int i = 1; i <= 8; ++i) {
-        float f = float(i) / 8.f;
-        bp.x += rng.range(-0.5f, 0.5f);
-        bp.y -= (pts[bStart].y - ground.y) * 0.12f;
-        bp.z += rng.range(-0.5f, 0.5f);
-        branch.push_back(bp);
-    }
-
-    std::vector<Pt> all;
-    auto emitStrip = [&](const std::vector<Pt> &path, float wTop, float wBottom) {
-        const int n = int(path.size()) - 1;
-        for (int i = 0; i < n; ++i) {
-            Pt a = path[i], b = path[i + 1];
-            // Side vector (perpendicular to the segment in the XZ plane).
-            float dx = b.x - a.x, dz = b.z - a.z;
-            float len = std::sqrt(dx * dx + dz * dz) + 1e-4f;
-            float sx = -dz / len, sz = dx / len;
-            float w = wBottom + (wTop - wBottom) * (float(i) / float(n));
-            Pt p0 = {a.x + sx * w, a.y, a.z + sz * w};
-            Pt p1 = {a.x - sx * w, a.y, a.z - sz * w};
-            Pt p2 = {b.x - sx * w, b.y, b.z - sz * w};
-            Pt p3 = {b.x + sx * w, b.y, b.z + sz * w};
-            all.push_back(p0);
-            all.push_back(p1);
-            all.push_back(p2);
-            all.push_back(p3);
-        }
-    };
-
-    const float wMain = 0.07f;
-    emitStrip(pts, wMain, wMain * 0.15f);
-    emitStrip(branch, wMain * 0.8f, wMain * 0.15f);
-
-    const int vertCount = int(all.size());
-    const int idxCount = vertCount / 4 * 6;
-    std::vector<float> pos(vertCount * 3);
-    std::vector<float> nrm(vertCount * 3, 0.f);
-    std::vector<float> uv(vertCount * 2, 0.f);
-    std::vector<uint32_t> idx(idxCount);
-
-    for (int i = 0; i < vertCount; ++i) {
-        pos[i * 3 + 0] = all[i].x;
-        pos[i * 3 + 1] = all[i].y;
-        pos[i * 3 + 2] = all[i].z;
-        nrm[i * 3 + 1] = 1.f;
-        uv[i * 2 + 1] = float(i / 4) * 0.25f;
-    }
-    for (int q = 0; q < vertCount / 4; ++q) {
-        const uint32_t base = uint32_t(q * 4);
-        idx[q * 6 + 0] = base + 0;
-        idx[q * 6 + 1] = base + 1;
-        idx[q * 6 + 2] = base + 2;
-        idx[q * 6 + 3] = base + 0;
-        idx[q * 6 + 4] = base + 2;
-        idx[q * 6 + 5] = base + 3;
-    }
-
-    return gfx->newMeshFromArrays(pos.data(), nrm.data(), uv.data(), vertCount, idx.data(),
-                                  idxCount);
-}
 
 }  // namespace
 
@@ -241,6 +167,8 @@ struct Weather::Impl {
     graphics::Graphics *gfx = nullptr;
     bool built = false;
     float time = 0.f;
+    float               windOffsetX = 0.f;
+    float               windOffsetZ = 0.f;
 
     // state
     int preset = 0;              // index into kPresetNames
@@ -248,10 +176,19 @@ struct Weather::Impl {
     float intensityCur = 0.f;
     float windSpeed = 0.f;
     float windDirDeg = 0.f;
+    bool snowWindOverride = false;
+    float snowWindX = 0.f, snowWindY = -1.15f, snowWindZ = 0.f;
     bool lightningEnabled = true;
     float flash = 0.f;
     float flashTimer = 0.f;
     float nextStrike = 4.f;
+    bool environmentEnabled = true;
+    bool pcgMode = false, pcgWeatherEnabled = false, pcgRain = false, pcgSnow = false, pcgWindOverride = false;
+    bool interiorWeather = false;
+    PcgInteriorWeatherMode interiorMode = PcgInteriorWeatherMode::Collision;
+    int interiorReverbPreset = 0;
+    int exteriorReverbPreset = 0;
+    int currentReverbPreset = 0;
 
     // mood
     float skyR = 0.45f, skyG = 0.53f, skyB = 0.62f;
@@ -273,13 +210,12 @@ struct Weather::Impl {
     Lcg rng;
 };
 
-const char *const Weather::kPresetNames[] = {"clear", "drizzle", "rain",
-                                             "storm", "snow",    "fog"};
-const int Weather::kPresetCount = 6;
+const char *const Weather::kPresetNames[] = {"clear", "drizzle", "rain", "storm", "snow", "fog", "wind", "blizzard"};
+const int         Weather::kPresetCount   = 8;
 
-Weather::Weather() : impl_(new Impl()) {}
+Weather::Weather() : impl_(new Impl()) { cap::addListener<IPhotoModeFieldSink>(this); }
 
-Weather::~Weather() { delete impl_; }
+Weather::~Weather() { cap::removeListener<IPhotoModeFieldSink>(this); delete impl_; }
 
 // ---------------------------------------------------------------------------
 // Private setup
@@ -317,6 +253,9 @@ void declareWeatherParams(graphics::Shader *shader) {
     shader->declareFloat("uFogB");
     shader->declareFloat("uFogDensity");
     shader->declareFloat("uFlash");
+    shader->declareFloat("uKind");
+    shader->declareFloat("uWindOffsetX");
+    shader->declareFloat("uWindOffsetZ");
 }
 }  // namespace
 
@@ -338,22 +277,32 @@ void Weather::init(graphics::Graphics *gfx) {
     std::vector<uint32_t> wf(weather_frag_spv, weather_frag_spv + weather_frag_spv_count);
     std::vector<uint32_t> bv(bolt_vert_spv, bolt_vert_spv + bolt_vert_spv_count);
     std::vector<uint32_t> bf(bolt_frag_spv, bolt_frag_spv + bolt_frag_spv_count);
-    graphics::Shader *weatherVert = gfx->newMeshShaderFromSpv(wv, wf);
-    graphics::Shader *boltShader = gfx->newMeshShaderFromSpv(bv, bf);
+    graphics::Shader *weatherVert = nullptr;
+    graphics::Shader *boltShader = nullptr;
+    if (gfx->getBackendName() == "webgpu") {
+        weatherVert = gfx->newMeshShaderFromWgsl(shaders::kWeatherVertWgsl,
+                                                shaders::kWeatherFragWgsl);
+        boltShader = gfx->newMeshShaderFromWgsl(shaders::kBoltVertWgsl,
+                                               shaders::kBoltFragWgsl);
+    } else {
+        weatherVert = gfx->newMeshShaderFromSpv(wv, wf);
+        boltShader = gfx->newMeshShaderFromSpv(bv, bf);
+    }
     declareWeatherParams(weatherVert);
     declareWeatherParams(boltShader);
 
     // ---- rain ----
-    graphics::Mesh *rainMesh = buildFieldMesh(gfx, impl_->rng, kRainCount, 1.4f, 0.07f);
+    graphics::Mesh *rainMesh = buildFieldMesh(gfx, impl_->rng, kRainCount, 0.82f, 0.024f);
     impl_->rain = graphics::Renderable3D::create();
     impl_->rain->setMesh(rainMesh);
-    impl_->rain->setTexture(rainTex);
     impl_->rainMat = gfx->newMaterial();
+    impl_->rainMat->setAlbedoTexture(rainTex);
     impl_->rainMat->setShadingModel("unlit");
     impl_->rainMat->setReceiveLight(false);
     impl_->rainMat->setReceiveShadow(false);
     impl_->rainMat->setCastShadow(false);
-    impl_->rainMat->setTint(0.8f, 0.9f, 1.0f, 1.0f);
+    impl_->rainMat->setCastOcclusion(false);
+    impl_->rainMat->setTint(0.72f, 0.80f, 0.88f, 1.0f);
     impl_->rainMat->setShader(weatherVert);
     impl_->rain->setMaterial(impl_->rainMat);
     impl_->rain->setVisible(false);
@@ -362,12 +311,13 @@ void Weather::init(graphics::Graphics *gfx) {
     graphics::Mesh *snowMesh = buildFieldMesh(gfx, impl_->rng, kSnowCount, 0.22f, 0.10f);
     impl_->snow = graphics::Renderable3D::create();
     impl_->snow->setMesh(snowMesh);
-    impl_->snow->setTexture(snowTex);
     impl_->snowMat = gfx->newMaterial();
+    impl_->snowMat->setAlbedoTexture(snowTex);
     impl_->snowMat->setShadingModel("unlit");
     impl_->snowMat->setReceiveLight(false);
     impl_->snowMat->setReceiveShadow(false);
     impl_->snowMat->setCastShadow(false);
+    impl_->snowMat->setCastOcclusion(false);
     impl_->snowMat->setTint(1.0f, 1.0f, 1.0f, 1.0f);
     impl_->snowMat->setShader(weatherVert);
     impl_->snow->setMaterial(impl_->snowMat);
@@ -375,11 +325,21 @@ void Weather::init(graphics::Graphics *gfx) {
 
     // ---- lightning bolts ----
     for (int i = 0; i < kBoltCount; ++i) {
-        Pt top{impl_->rng.range(-4.f, 4.f), kBoxY, impl_->rng.range(-4.f, 4.f)};
-        Pt ground{impl_->rng.range(-3.f, 3.f), 0.f, impl_->rng.range(-3.f, 3.f)};
-        graphics::Mesh *m = buildBoltMesh(gfx, impl_->rng, top, ground);
+        LightningSettings settings;
+        settings.width        = 0.20f;
+        settings.displacement = 3.2f;
+        settings.seed         = static_cast<int>(impl_->rng.next() & 0x7fffffffu);
+        auto geometry         = buildLightningGeometry(settings, 0);
+        if (!geometry) throw std::runtime_error("Invalid weather lightning geometry");
+        auto                   &g = geometry.value();
+        graphics::Mesh         *m = gfx->newMeshFromArrays(g.positions.data(), g.normals.data(), g.uv.data(),
+                                                           static_cast<int>(g.positions.size() / 3), g.indices.data(),
+                                                           static_cast<int>(g.indices.size()));
         graphics::Renderable3D *b = graphics::Renderable3D::create();
         b->setMesh(m);
+        b->setPosition(impl_->rng.range(-4.f, 4.f), kBoxY, impl_->rng.range(-4.f, 4.f));
+        b->setRotation(0.f, 3.14159265f, 0.f);
+        b->setScale(1.f, kBoxY, 1.f);
         graphics::Material *mm = gfx->newMaterial();
         mm->setShadingModel("unlit");
         mm->setReceiveLight(false);
@@ -401,10 +361,31 @@ void Weather::init(graphics::Graphics *gfx) {
 // Public API
 // ---------------------------------------------------------------------------
 
+PhotoModeFieldAcceptance Weather::acceptsPhotoModeField(const PhotoModeAssignment& a)const noexcept{
+ return a.domain==PhotoModeDomain::Weather?PhotoModeFieldAcceptance::Accepted:PhotoModeFieldAcceptance::Rejected;
+}
+Result<void> Weather::applyPhotoModeField(const PhotoModeAssignment& a){
+ auto bad=[&](){return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+  "invalid Pcg weather photo-mode assignment",a.field,{},"weather.photoMode"));};
+ if(a.domain!=PhotoModeDomain::Weather)return bad();
+ if(a.field=="m_pcgWeatherEnabled"){auto*v=std::get_if<bool>(&a.value);if(!v)return bad();impl_->pcgWeatherEnabled=*v;}
+ else if(a.field=="m_pcgWeatherRain"){auto*v=std::get_if<bool>(&a.value);if(!v)return bad();impl_->pcgRain=*v;}
+ else if(a.field=="m_pcgWeatherSnow"){auto*v=std::get_if<bool>(&a.value);if(!v)return bad();impl_->pcgSnow=*v;}
+ else if(a.field=="m_pcgWindSettingsOverride"){auto*v=std::get_if<bool>(&a.value);if(!v)return bad();impl_->pcgWindOverride=*v;}
+ else if(a.field=="m_pcgWindDirection"){auto*v=std::get_if<float>(&a.value);if(!v||!std::isfinite(*v))return bad();impl_->windDirDeg=*v;}
+ else if(a.field=="m_pcgWindSpeed"){auto*v=std::get_if<float>(&a.value);if(!v||!std::isfinite(*v)||*v<0)return bad();impl_->windSpeed=*v;}
+ else return bad();
+ impl_->pcgMode=true;return Result<void>::success();
+}
+bool Weather::getPcgWeatherEnabled()const{return impl_->pcgWeatherEnabled;}
+bool Weather::getPcgRainEnabled()const{return impl_->pcgRain;}
+bool Weather::getPcgSnowEnabled()const{return impl_->pcgSnow;}
+bool Weather::getPcgWindOverride()const{return impl_->pcgWindOverride;}
 void Weather::setPreset(const std::string &name) {
     for (int i = 0; i < kPresetCount; ++i) {
         if (name == kPresetNames[i]) {
             impl_->preset = i;
+            impl_->pcgMode = false;
             return;
         }
     }
@@ -422,6 +403,49 @@ float Weather::getWindSpeed() const { return impl_->windSpeed; }
 
 void Weather::setWindDirection(float deg) { impl_->windDirDeg = deg; }
 float Weather::getWindDirection() const { return impl_->windDirDeg; }
+Result<void> Weather::setSnowWind(float x,float y,float z) {
+    if(!std::isfinite(x)||!std::isfinite(y)||!std::isfinite(z))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+            "Snow wind must be finite","weather.snowWind"));
+    impl_->snowWindOverride=true; impl_->snowWindX=x; impl_->snowWindY=y; impl_->snowWindZ=z;
+    return Result<void>::success();
+}
+void Weather::clearSnowWind(){impl_->snowWindOverride=false;}
+bool Weather::hasSnowWind()const{return impl_->snowWindOverride;}
+float Weather::getSnowWindX()const{return impl_->snowWindX;}
+float Weather::getSnowWindY()const{return impl_->snowWindY;}
+float Weather::getSnowWindZ()const{return impl_->snowWindZ;}
+
+Result<PcgInteriorWeatherTransition> Weather::setInteriorVolumeState(
+    const PcgInteriorWeatherVolume& volume, bool inside) {
+    impl_->interiorMode = volume.mode();
+    impl_->interiorReverbPreset = volume.interiorReverbPreset();
+    impl_->exteriorReverbPreset = volume.exteriorReverbPreset();
+    impl_->currentReverbPreset = inside ? impl_->interiorReverbPreset : impl_->exteriorReverbPreset;
+    if (inside == impl_->interiorWeather)
+        return Result<PcgInteriorWeatherTransition>::success(PcgInteriorWeatherTransition::Unchanged);
+    impl_->interiorWeather = inside;
+    return Result<PcgInteriorWeatherTransition>::success(
+        inside ? PcgInteriorWeatherTransition::Entered : PcgInteriorWeatherTransition::Exited);
+}
+
+Result<PcgInteriorWeatherTransition> Weather::applyInteriorVolume(
+    const PcgInteriorWeatherVolume& volume, float x, float y, float z) {
+    if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
+        return Result<PcgInteriorWeatherTransition>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "sample position must be finite", "weather.interiorVolume"));
+    return setInteriorVolumeState(volume, volume.contains(x, y, z));
+}
+
+void Weather::clearInteriorWeather() {
+    impl_->interiorWeather = false;
+    impl_->currentReverbPreset = impl_->exteriorReverbPreset;
+}
+bool Weather::isInsideInteriorWeather() const { return impl_->interiorWeather; }
+bool Weather::isInteriorWeatherCollisionRequested() const {
+    return impl_->interiorWeather && impl_->interiorMode == PcgInteriorWeatherMode::Collision;
+}
+int Weather::getCurrentWeatherReverbPreset() const { return impl_->currentReverbPreset; }
 
 void Weather::setLightningEnabled(bool on) { impl_->lightningEnabled = on; }
 bool Weather::isLightningEnabled() const { return impl_->lightningEnabled; }
@@ -445,7 +469,7 @@ float Weather::getSkyColorR() const { return impl_->skyR; }
 float Weather::getSkyColorG() const { return impl_->skyG; }
 float Weather::getSkyColorB() const { return impl_->skyB; }
 
-void Weather::setSunIntensity(float v) { impl_->sunIntensity = v < 0.f ? 0.f : v; }
+void  Weather::setSunIntensity(float v) { impl_->sunIntensity = std::clamp(v, 0.f, 1.f); }
 float Weather::getSunIntensity() const { return impl_->sunIntensity; }
 
 void Weather::setFogColor(float r, float g, float b) {
@@ -458,8 +482,12 @@ float Weather::getFogColorB() const { return impl_->fogB; }
 void Weather::setFogDensity(float v) { impl_->fogDensity = v < 0.f ? 0.f : v; }
 float Weather::getFogDensity() const { return impl_->fogDensity; }
 
+void Weather::setEnvironmentEnabled(bool enabled) { impl_->environmentEnabled = enabled; }
+bool Weather::isEnvironmentEnabled() const { return impl_->environmentEnabled; }
+
 float Weather::getAmbientBrightness() const {
-    return 0.35f + (1.f - impl_->intensityCur) * 0.55f;
+    const float cloudiness = (impl_->preset >= 1 && impl_->preset <= 3) ? impl_->intensityCur : 0.f;
+    return 0.35f + (1.f - cloudiness) * 0.55f;
 }
 
 // ---------------------------------------------------------------------------
@@ -472,7 +500,8 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
     impl_->time += dt;
 
     // Smooth intensity toward target.
-    const float target = impl_->intensity;
+    const bool pcgPrecipitation=impl_->pcgMode&&impl_->pcgWeatherEnabled&&(impl_->pcgRain||impl_->pcgSnow);
+    const float target = pcgPrecipitation?1.f:impl_->intensity;
     impl_->intensityCur += (target - impl_->intensityCur) * std::min(1.f, dt * 3.f);
     if (std::fabs(target - impl_->intensityCur) < 0.002f) impl_->intensityCur = target;
 
@@ -481,30 +510,49 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
     const float windX = -std::sin(rad) * impl_->windSpeed;
     const float windZ = std::cos(rad) * impl_->windSpeed;
 
+    // Integrate drift rather than multiplying the current wind by elapsed
+    // time: changing a slider must not teleport the whole particle field.
+    impl_->windOffsetX = std::fmod(impl_->windOffsetX + windX * dt, 52.f);
+    impl_->windOffsetZ = std::fmod(impl_->windOffsetZ + windZ * dt, 52.f);
+    for (auto *mat : {impl_->rainMat, impl_->snowMat}) {
+        mat->setFloat("uWindOffsetX", impl_->windOffsetX);
+        mat->setFloat("uWindOffsetZ", impl_->windOffsetZ);
+    }
     const float time = impl_->time;
     const float fogR = impl_->fogR, fogG = impl_->fogG, fogB = impl_->fogB;
     const float fogD = impl_->fogDensity;
     const float intensity = impl_->intensityCur;
 
     // Rain visible for drizzle/rain/storm.
-    const bool rainOn = impl_->preset >= 1 && impl_->preset <= 3;
-    impl_->rain->setVisible(rainOn && intensity > 0.01f);
+    const bool windOn = impl_->preset == 6;
+    const bool rainOn = impl_->pcgMode ? (impl_->pcgWeatherEnabled && impl_->pcgRain) :
+                                      ((impl_->preset >= 1 && impl_->preset <= 3) || windOn);
+    const bool suppressRain = impl_->interiorWeather;
+    impl_->rain->setVisible(rainOn && intensity > 0.01f && !suppressRain);
     if (rainOn) {
-        const float speed = 26.f;
-        pushWeatherParams(impl_->rainMat, time, windX, windZ, speed, 1.4f, 0.07f, intensity,
-                          fogR, fogG, fogB, fogD, 0.f);
+        const float speed = windOn ? 0.15f : 18.f;
+        impl_->rainMat->setFloat("uKind", windOn ? 2.f : 0.f);
+        pushWeatherParams(impl_->rainMat, time, windX, windZ, speed, windOn ? 9.0f : 0.65f, windOn ? 1.1f : 0.045f,
+                          windOn ? intensity * std::min(1.f, impl_->windSpeed / 8.f) * 0.22f : intensity, fogR, fogG,
+                          fogB, fogD, 0.f);
     }
 
     // Snow.
-    const bool snowOn = impl_->preset == 4;
-    impl_->snow->setVisible(snowOn && intensity > 0.01f);
+    const bool snowOn = impl_->pcgMode ? (impl_->pcgWeatherEnabled && impl_->pcgSnow) :
+                                      (impl_->preset == 4 || impl_->preset == 7);
+    const bool suppressSnow = impl_->interiorWeather &&
+                              impl_->interiorMode == PcgInteriorWeatherMode::DisableVfx;
+    impl_->snow->setVisible(snowOn && intensity > 0.01f && !suppressSnow);
     if (snowOn) {
-        pushWeatherParams(impl_->snowMat, time, windX, windZ, 2.2f, 0.22f, 0.10f, intensity,
-                          fogR, fogG, fogB, fogD, 0.f);
+        impl_->snowMat->setFloat("uKind", 1.f);
+        pushWeatherParams(impl_->snowMat, time, impl_->snowWindOverride?impl_->snowWindX:windX,
+                          impl_->snowWindOverride?impl_->snowWindZ:windZ,
+                          impl_->snowWindOverride?-impl_->snowWindY:1.15f, 0.22f, 0.22f, intensity, fogR, fogG, fogB, fogD,
+                          0.f);
     }
 
     // Lightning during storm.
-    const bool storm = impl_->preset == 3;
+    const bool storm = !impl_->pcgMode && impl_->preset == 3;
     if (storm && impl_->lightningEnabled) {
         impl_->nextStrike -= dt;
         if (impl_->nextStrike <= 0.f && impl_->activeBolt < 0) strike();
@@ -514,24 +562,14 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
     if (impl_->activeBolt >= 0) {
         impl_->boltLife += dt;
         impl_->flashTimer -= dt;
-        // Flicker: rapid on/off at the start, then decay.
-        float f;
-        if (impl_->boltLife < 0.05f) {
-            f = 1.f;
-        } else if (impl_->boltLife < 0.20f) {
-            // Fast flicker.
-            f = 0.25f + 0.75f * std::fabs(std::sin(impl_->boltLife * 120.f));
-        } else {
-            f = std::max(0.f, 1.f - (impl_->boltLife - 0.20f) / 0.15f);
-        }
-        impl_->flash = std::clamp(f, 0.f, 1.f);
+        impl_->flash = lightningEnvelope(impl_->boltLife / 0.5f);
 
         const int bi = impl_->activeBolt;
         impl_->bolts[bi]->setVisible(impl_->flash > 0.02f);
         pushWeatherParams(impl_->boltMats[bi], time, windX, windZ, 0.f, 0.f, 0.f, 1.f, fogR, fogG,
                           fogB, fogD, impl_->flash);
 
-        if (impl_->boltLife > 0.35f) {
+        if (impl_->boltLife > 0.50f) {
             impl_->bolts[bi]->setVisible(false);
             impl_->activeBolt = -1;
             impl_->flash = 0.f;
@@ -541,14 +579,19 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
     }
 
     // Push ambient/sky mood onto the graphics state each frame.
-    if (gfx) {
-        const float dark = 1.f - 0.65f * impl_->intensityCur;
-        gfx->setBackgroundColorRGBA(impl_->skyR * dark, impl_->skyG * dark,
-                                    impl_->skyB * dark, 1.f);
+    if (gfx && impl_->environmentEnabled) {
+        const float cloudiness = (impl_->preset >= 1 && impl_->preset <= 3) ? impl_->intensityCur : 0.f;
+        const float dark       = 1.f - 0.35f * cloudiness;
+        const float skyFlash = impl_->flash * 0.55f;
+        gfx->setBackgroundColorRGBA(
+            std::min(1.f, impl_->skyR * dark + skyFlash * 0.68f),
+            std::min(1.f, impl_->skyG * dark + skyFlash * 0.78f),
+            std::min(1.f, impl_->skyB * dark + skyFlash), 1.f);
+        const float flashLight = impl_->flash * 1.35f;
         gfx->setDirectionalLight(-0.4f, 0.75f, 0.5f,
-                                 impl_->sunIntensity * (1.f - 0.6f * impl_->intensityCur) * 1.0f,
-                                 impl_->sunIntensity * (1.f - 0.6f * impl_->intensityCur) * 0.95f,
-                                 impl_->sunIntensity * (1.f - 0.6f * impl_->intensityCur) * 0.88f);
+                                 impl_->sunIntensity * (1.f - 0.35f * cloudiness) + flashLight * 0.72f,
+                                 impl_->sunIntensity * (1.f - 0.35f * cloudiness) * 0.95f + flashLight * 0.84f,
+                                 impl_->sunIntensity * (1.f - 0.35f * cloudiness) * 0.88f + flashLight);
     }
 }
 
@@ -559,6 +602,46 @@ void Weather::update(float dt, graphics::Graphics *gfx) {
 void Weather::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Weather::create, false);
     expose(cls);
+    exposeLightning(table, cls);
+    auto interior = table.addClass("PcgInteriorWeatherVolume", ssq::Class::Ctor<PcgInteriorWeatherVolume()>());
+    interior.addFunc("configureBox", [vm=table.getHandle()](PcgInteriorWeatherVolume* self,
+        float x,float y,float z,float sx,float sy,float sz,int mode,int insideReverb,int outsideReverb) {
+        return eve::script::projectResult(vm,self->configureBox(x,y,z,sx,sy,sz,mode,insideReverb,outsideReverb));
+    });
+    interior.addFunc("configureSphere", [vm=table.getHandle()](PcgInteriorWeatherVolume* self,
+        float x,float y,float z,float radius,int mode,int insideReverb,int outsideReverb) {
+        return eve::script::projectResult(vm,self->configureSphere(x,y,z,radius,mode,insideReverb,outsideReverb));
+    });
+    interior.addFunc("contains", [](PcgInteriorWeatherVolume* self,float x,float y,float z) {
+        return self && self->contains(x,y,z);
+    });
+    auto settings = table.addClass("ThunderStrikeSettings", ssq::Class::Ctor<ThunderStrikeSettings()>());
+    settings.addVar("intensity", &ThunderStrikeSettings::intensity);
+    settings.addVar("radius", &ThunderStrikeSettings::radius);
+    settings.addVar("volume", &ThunderStrikeSettings::volume);
+    settings.addVar("audioClipCount", &ThunderStrikeSettings::audioClipCount);
+    auto state = table.addClass("ThunderStrikeState", ssq::Class::Ctor<ThunderStrikeState()>());
+    state.addVar("playing", &ThunderStrikeState::playing);
+    state.addVar("intensity", &ThunderStrikeState::intensity);
+    table.addFunc("triggerThunderStrike", [vm=table.getHandle()](ThunderStrikeState* state,
+        const ThunderStrikeSettings* settings, float x, float y, float z, std::uint32_t seed) {
+        auto result=state&&settings?triggerThunderStrike(*state,*settings,x,y,z,seed)
+            :Result<ThunderStrikeReceipt>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"state and settings required"));
+        return eve::script::projectResult(vm, std::move(result), [](const ThunderStrikeReceipt &value) {
+            return Value::object({{"x", value.x},
+                                  {"y", value.y},
+                                  {"z", value.z},
+                                  {"intensity", value.intensity},
+                                  {"radius", value.radius},
+                                  {"volume", value.volume},
+                                  {"audioClipIndex", value.audioClipIndex}});
+        });
+    });
+    table.addFunc("advanceThunderStrike", [vm=table.getHandle()](ThunderStrikeState* state,float dt) {
+        auto result=state?advanceThunderStrike(*state,dt)
+            :Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"state required"));
+        return eve::script::projectResult(vm,std::move(result));
+    });
 }
 
 void Weather::expose(ssq::Class &cls) {
@@ -573,6 +656,36 @@ void Weather::expose(ssq::Class &cls) {
     cls.addFunc("getWindSpeed", &Weather::getWindSpeed);
     cls.addFunc("setWindDirection", &Weather::setWindDirection);
     cls.addFunc("getWindDirection", &Weather::getWindDirection);
+    cls.addFunc("setSnowWind",[vm=cls.getHandle()](Weather* self,float x,float y,float z){
+        return eve::script::projectResult(vm,self->setSnowWind(x,y,z));
+    });
+    cls.addFunc("clearSnowWind",&Weather::clearSnowWind);
+    cls.addFunc("hasSnowWind",&Weather::hasSnowWind);
+    cls.addFunc("getSnowWindX",&Weather::getSnowWindX);
+    cls.addFunc("getSnowWindY",&Weather::getSnowWindY);
+    cls.addFunc("getSnowWindZ",&Weather::getSnowWindZ);
+    cls.addFunc("applyInteriorVolume", [vm=cls.getHandle()](Weather* self,
+        const PcgInteriorWeatherVolume* volume,float x,float y,float z) {
+        auto result = volume ? self->applyInteriorVolume(*volume,x,y,z) :
+            Result<PcgInteriorWeatherTransition>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument,"interior volume required","weather.interiorVolume"));
+        return eve::script::projectResult(vm,std::move(result),[](PcgInteriorWeatherTransition value) {
+            return static_cast<int>(value);
+        });
+    });
+    cls.addFunc("setInteriorVolumeState", [vm=cls.getHandle()](Weather* self,
+        const PcgInteriorWeatherVolume* volume,bool inside) {
+        auto result = volume ? self->setInteriorVolumeState(*volume,inside) :
+            Result<PcgInteriorWeatherTransition>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument,"interior volume required","weather.interiorVolume"));
+        return eve::script::projectResult(vm,std::move(result),[](PcgInteriorWeatherTransition value) {
+            return static_cast<int>(value);
+        });
+    });
+    cls.addFunc("clearInteriorWeather",&Weather::clearInteriorWeather);
+    cls.addFunc("isInsideInteriorWeather",&Weather::isInsideInteriorWeather);
+    cls.addFunc("isInteriorWeatherCollisionRequested",&Weather::isInteriorWeatherCollisionRequested);
+    cls.addFunc("getCurrentWeatherReverbPreset",&Weather::getCurrentWeatherReverbPreset);
     cls.addFunc("setLightningEnabled", &Weather::setLightningEnabled);
     cls.addFunc("isLightningEnabled", &Weather::isLightningEnabled);
     cls.addFunc("strike", &Weather::strike);
@@ -589,6 +702,8 @@ void Weather::expose(ssq::Class &cls) {
     cls.addFunc("getFogColorB", &Weather::getFogColorB);
     cls.addFunc("setFogDensity", &Weather::setFogDensity);
     cls.addFunc("getFogDensity", &Weather::getFogDensity);
+    cls.addFunc("setEnvironmentEnabled", &Weather::setEnvironmentEnabled);
+    cls.addFunc("isEnvironmentEnabled", &Weather::isEnvironmentEnabled);
     cls.addFunc("getAmbientBrightness", &Weather::getAmbientBrightness);
 }
 

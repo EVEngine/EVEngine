@@ -203,6 +203,7 @@ eve_init = function() {
         planet = eve.Renderable3D();
         planet.setMesh(gfx.newMeshSphere(64, 32));
         planet.setTexture(demoAssets.newPlanetTexture(gfx));
+        planet.setCamera(planetCam);
         planet.setPosition(0.55, 0.1, 0.0);
         planet.setScale(1.15, 1.15, 1.15);
         planet.setTint(0.85, 0.88, 1.0, 1.0);

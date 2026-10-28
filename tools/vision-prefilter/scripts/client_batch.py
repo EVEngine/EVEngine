@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import argparse
 import base64
-import io
 import json
 import sys
 from pathlib import Path

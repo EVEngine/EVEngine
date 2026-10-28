@@ -4,6 +4,7 @@
 #include "gpgpu/vulkan/VulkanUtil.h"
 
 #include "common/Exception.h"
+#include "graphics/vulkan/Graphics.h"
 
 namespace eve::gpgpu {
 
@@ -13,7 +14,7 @@ ComputeShader *vulkanNewShaderFromSpirv(const std::vector<uint32_t> &spv) {
     auto *vkg = requireVulkanGraphics();
     auto &device = vkg->getDevice();
 
-    auto *shader = new VulkanComputeShader();
+    auto shader     = std::make_unique<VulkanComputeShader>();
     shader->device_ = &device;
     shader->module_ = vkb::PipelineBuilder::createShaderModule(device.instance, spv);
 
@@ -55,11 +56,10 @@ ComputeShader *vulkanNewShaderFromSpirv(const std::vector<uint32_t> &spv) {
     cpInfo.layout = shader->pipelineLayout_;
     auto result = device->createComputePipeline(vk::PipelineCache{}, cpInfo, device.allocation_callbacks);
     if (result.result != vk::Result::eSuccess) {
-        delete shader;
         throw Exception("Gpgpu.newShader: createComputePipeline failed");
     }
     shader->pipeline_ = result.value;
-    return shader;
+    return shader.release();
 }
 
 GpuBuffer *vulkanNewBuffer(int byteSize, const std::string &usage) {
@@ -68,30 +68,57 @@ GpuBuffer *vulkanNewBuffer(int byteSize, const std::string &usage) {
     auto &device = vkg->getDevice();
 
     const bool staging = (usage == "staging");
-    const bool storage = (usage == "storage" || usage.empty());
+    const bool storage = (usage == "storage" || usage == "storage_vertex" || usage.empty());
     if (!staging && !storage)
-        throw Exception("Gpgpu.newBuffer: usage must be \"storage\" or \"staging\"");
+        throw Exception("Gpgpu.newBuffer: usage must be \"storage\", \"storage_vertex\" or \"staging\"");
 
     using buf = vk::BufferUsageFlagBits;
     using pfb = vk::MemoryPropertyFlagBits;
 
     vk::BufferUsageFlags flags = buf::eTransferSrc | buf::eTransferDst;
     if (storage || staging) flags |= buf::eStorageBuffer;
+    if (usage == "storage_vertex") flags |= buf::eVertexBuffer;
 
     vk::MemoryPropertyFlags mem =
         staging ? (pfb::eHostVisible | pfb::eHostCoherent) : pfb::eDeviceLocal;
 
-    auto *b = new VulkanGpuBuffer();
+    auto b          = std::make_unique<VulkanGpuBuffer>();
     b->device_ = &device;
     b->size_ = vk::DeviceSize(byteSize);
-    b->usage_ = staging ? "staging" : "storage";
+    b->usage_       = staging ? "staging" : (usage == "storage_vertex" ? "storage_vertex" : "storage");
     b->hostVisible_ = staging;
+
+#if defined(VKB_ENABLE_VMA)
+    if (staging && device.hasVmaAllocator()) {
+        // Readback must prefer CPU-cached memory. Host coherence alone can select
+        // uncached memory, making the CPU memcpy much slower than the GPU copy.
+        // Coherence remains required; cached memory is only a performance preference.
+        VkBufferCreateInfo info{VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
+        info.size        = b->size_;
+        info.usage       = static_cast<VkBufferUsageFlags>(flags);
+        info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        VmaAllocationCreateInfo allocation{};
+        allocation.requiredFlags    = static_cast<VkMemoryPropertyFlags>(mem);
+        allocation.preferredFlags   = VK_MEMORY_PROPERTY_HOST_CACHED_BIT;
+        VkBuffer          rawBuffer = VK_NULL_HANDLE;
+        VmaAllocationInfo allocated{};
+        const VkResult    result =
+            vmaCreateBuffer(device.vma_allocator, &info, &allocation, &rawBuffer, &b->vmaAllocation_, &allocated);
+        if (result != VK_SUCCESS) throw Exception("Gpgpu.newBuffer: staging allocation failed: %d", int(result));
+        b->buffer_ = rawBuffer;
+        b->memory_ = allocated.deviceMemory;
+        return b.release();
+    }
+#endif
 
     vkb::GenericBuffer tmp(device, flags, b->size_, mem);
     b->buffer_ = tmp.buffer;
     b->memory_ = tmp.memory;
+#if defined(VKB_ENABLE_VMA)
+    b->vmaAllocation_ = tmp.vma_allocation;
+#endif
     tmp.detach();
-    return b;
+    return b.release();
 }
 
 void vulkanDispatch(ComputeShader *shader, int groupsX, int groupsY, int groupsZ) {

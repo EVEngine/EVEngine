@@ -1,0 +1,153 @@
+#pragma once
+#include "common/Export.h"
+
+
+#include "archspace/ArchSpaceDocument.h"
+#include "editing/EditableTarget.h"
+#include "editing/EditingAuthority.h"
+#include "editing/EditingGizmo.h"
+#include "editing/EditingProperty.h"
+
+#include <memory>
+#include <string>
+#include <vector>
+
+namespace eve::archspace_editing {
+
+using CapabilityId       = editing::CapabilityId;
+using DiagnosticSeverity = editing::DiagnosticSeverity;
+using DomainOperation    = editing::DomainOperation;
+using EditRegion         = editing::EditRegion;
+using EditorDiagnostic   = editing::Diagnostic;
+using editing::Result;
+using EditorStatus                  = editing::Status;
+using EditorValue                   = editing::Value;
+using IDomainOperationTarget        = editing::IDomainOperationTarget;
+using IDomainOperationTargetStaging = editing::IDomainOperationTargetStaging;
+using IEditableTarget               = editing::IEditableTarget;
+using IEditingSnapshotProvider      = editing::IEditingSnapshotProvider;
+using IPropertyProvider             = editing::IPropertyProvider;
+using ObjectId                      = editing::ObjectId;
+using PropertyDescriptor            = editing::PropertyDescriptor;
+using PropertyFlag                  = editing::PropertyFlag;
+using PropertyPath                  = editing::PropertyPath;
+using PropertyReadResult            = editing::PropertyReadResult;
+using PropertyReadState             = editing::PropertyReadState;
+using PropertySchema                = editing::PropertySchema;
+using PropertySetMode               = editing::PropertySetMode;
+using PropertyType                  = editing::PropertyType;
+using Revision                      = editing::Revision;
+using RuleId                        = editing::RuleId;
+using SelectionSnapshot             = editing::SelectionSnapshot;
+using TargetDescriptor              = editing::TargetDescriptor;
+using TargetId                      = editing::TargetId;
+using EditorGizmoSnapshot           = editing::GizmoSnapshot;
+using EditorGizmoPrimitive          = editing::GizmoPrimitive;
+using editing::validatePropertyValue;
+
+/**
+ * @brief Revisioned ArchSpace document target for Inspector, tools and automation.
+ *
+ * Mutations are expressed as reversible `archspace.document.replace.v1` domain
+ * operations. High-level helpers (bootstrap/room/opening/item) plan those
+ * replacements without bypassing validation.
+ */
+class EVENGINE_API_DOMAINS ArchSpaceDocumentTarget final : public ::eve::editing::EditableTargetState,
+                                                           public virtual IEditableTarget,
+                                                           public IDomainOperationTarget,
+                                                           public IDomainOperationTargetStaging,
+                                                           public IPropertyProvider,
+                                                           public IEditingSnapshotProvider {
+public:
+    /** @brief Arch space document target. */
+    explicit ArchSpaceDocumentTarget(std::string id);
+
+    /** @brief Capability identity published by describe() for Inspector property editing. */
+    static CapabilityId propertyCapabilityId() { return CapabilityId("eve.editor.target.archspace-properties"); }
+
+    /** @brief Target id. */
+    TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
+    TargetDescriptor describe() const override;
+    /**
+     * @brief Query Inspector property capability.
+     * @ownership Borrowed from this target; callers must not delete it.
+     * @lifetime Valid until this target is destroyed.
+     */
+    void*                                   queryCapability(const CapabilityId& capability) override;
+    /** @brief Applies domain operation. */
+    Result<void>                      applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Clones domain state. */
+    std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
+    /** @brief Commits domain state. */
+    Result<void>            commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override;
+    /** @brief Current revision. */
+    eve::Result<eve::Revision>    currentRevision(const SelectionSnapshot& selection) const override;
+    /** @brief Schema. */
+    PropertySchema                schema(const SelectionSnapshot& selection) const override;
+    /** @brief Reads . */
+    PropertyReadResult            read(const SelectionSnapshot& selection, const PropertyPath& path) const override;
+    /** @brief Make set. */
+    Result<DomainOperation> makeSet(const SelectionSnapshot& selection, const PropertyPath& path,
+                                          const EditorValue& value, PropertySetMode mode) const override;
+    /** @brief Make reset. */
+    Result<DomainOperation> makeReset(const SelectionSnapshot& selection,
+                                            const PropertyPath&      path) const override;
+
+    /** @brief Plan site→building→level creation on an empty document. */
+    Result<DomainOperation> makeBootstrap(const std::string& siteId, const std::string& buildingId,
+                                                const std::string& levelId, double levelHeight = 3.0) const;
+    /** @brief Plan a rectangular room (four walls + slab + zone) under a level. */
+    Result<DomainOperation> makeCreateRectRoom(const std::string& levelId, const std::string& roomId,
+                                                     std::string roomName, double originX, double originZ, double sizeX,
+                                                     double sizeZ, double wallHeight = 3.0, double wallThickness = 0.2,
+                                                     double slabThickness = 0.2) const;
+    /** @brief Plan a single wall under a level. */
+    Result<DomainOperation> makeCreateWall(const std::string& levelId, const std::string& wallId,
+                                                 std::string wallName, archspace::Vec2 start, archspace::Vec2 end,
+                                                 double height = 3.0, double thickness = 0.2) const;
+    /** @brief Plan a door/window opening on an existing wall. */
+    Result<DomainOperation> makeCreateOpening(const std::string& wallId, const std::string& openingId,
+                                                    archspace::OpeningKind kind, double t, double width, double height,
+                                                    double sill = 0.0) const;
+    /** @brief Plan a catalog item placement on a level. */
+    Result<DomainOperation> makePlaceItem(const std::string& levelId, const std::string& itemId,
+                                                std::string catalogId, archspace::Vec3 position,
+                                                double yawDegrees = 0.0) const;
+    /** @brief Plan cascading deletion of one node. */
+    Result<DomainOperation> makeDeleteNode(const ObjectId& id) const;
+
+    /** @brief Document. */
+    [[nodiscard]] const archspace::Document&    document() const { return document_; }
+    /** @brief Validate. */
+    [[nodiscard]] std::vector<EditorDiagnostic> validate() const;
+    /** @brief Snapshot value. */
+    [[nodiscard]] EditorValue                   snapshotValue() const override;
+    /** @brief Loads snapshot. */
+    Result<void>                          loadSnapshot(const EditorValue& snapshot);
+    /** @brief Build a revision-bound overlay for walls, zones, items and openings. */
+    [[nodiscard]] Result<EditorGizmoSnapshot> gizmo() const;
+    /** @brief Bake renderer-neutral triangle mesh for the current revision. */
+    [[nodiscard]] archspace::MeshBake bakeMesh() const { return document_.bakeMesh(); }
+
+private:
+    /** @brief Matches. */
+    bool                          matches(const SelectionSnapshot& selection) const;
+    /** @brief Content value. */
+    EditorValue                   contentValue() const;
+    /** @brief Replacement. */
+    Result<DomainOperation> replacement(EditorValue content, std::string property = {}) const;
+    /** @brief Install content. */
+    Result<void>            installContent(const EditorValue& content);
+    /**
+     * @brief Resolve the single selected ArchSpace node for property edits.
+     * @ownership Non-owning pointer into document_; do not free.
+     * @lifetime Until the next mutating call on this target.
+     */
+    const archspace::Node* selectedNode(const SelectionSnapshot& selection) const;
+
+    std::string         id_;
+    archspace::Document document_;
+};
+
+}  // namespace eve::archspace_editing

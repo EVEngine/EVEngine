@@ -1,0 +1,1377 @@
+#include "tactics/TacticsPersistence.h"
+
+#include <algorithm>
+#include <charconv>
+#include <map>
+#include <limits>
+#include <set>
+#include <utility>
+
+namespace eve::tactics {
+namespace {
+
+constexpr std::string_view kType = "tactics.battle";
+
+LogicalId schema() {
+    const auto value = LogicalId::parse("tactics:battle");
+    if (!value) std::terminate();
+    return *value;
+}
+
+/**
+ * @brief Map a version-1/2 numeric turn policy to its stable id.
+ *
+ * Versions 1 and 2 stored the turn policy as an integer; version 3 stores the id
+ * string. The numeric mapping is therefore frozen migration data: it must keep
+ * meaning what it meant when those versions were written, and must not follow any
+ * later change to the built-in set.
+ */
+Result<std::string> migrateLegacyPolicyId(int value) {
+    if (value == 0) return Result<std::string>::success(std::string(kSideAlternatingPolicyId));
+    if (value == 1) return Result<std::string>::success(std::string(kInitiativePolicyId));
+    return Result<std::string>::failure(Diagnostic::error(
+        DiagnosticCode::UnknownVersion, "snapshot contains an unknown battle enum", "payload.policy"));
+}
+
+Value cellValue(Cell cell) {
+    return Value(Value::Object{{"layer", Value(cell.layer)}, {"x", Value(cell.x)}, {"y", Value(cell.y)}});
+}
+
+Value subjectValue(SubjectRef subject) { return Value(subject.isValid() ? subject.format() : std::string{}); }
+
+Result<const Value::Object*> object(const Value& value, std::string path) {
+    const auto* result = value.getIf<Value::Object>();
+    if (!result)
+        return Result<const Value::Object*>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "expected object", path));
+    return Result<const Value::Object*>::success(result);
+}
+
+Result<const Value*> field(const Value::Object& value, std::string_view name, std::string path) {
+    const auto found = value.find(std::string(name));
+    if (found == value.end())
+        return Result<const Value*>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "missing required field", path + "." + std::string(name)));
+    return Result<const Value*>::success(&found->second);
+}
+
+Result<std::int64_t> integer(const Value& value, std::string path) {
+    const auto* result = value.getIf<std::int64_t>();
+    if (!result)
+        return Result<std::int64_t>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "expected integer", path));
+    return Result<std::int64_t>::success(*result);
+}
+
+Result<std::uint64_t> decimal(const Value& value, std::string path) {
+    const auto* text = value.getIf<std::string>();
+    if (!text)
+        return Result<std::uint64_t>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "expected decimal string", path));
+    std::uint64_t result = 0;
+    const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), result);
+    if (error != std::errc{} || end != text->data() + text->size())
+        return Result<std::uint64_t>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid decimal string", path));
+    return Result<std::uint64_t>::success(result);
+}
+
+Result<std::int64_t> signedDecimal(const Value& value, std::string path) {
+    const auto* text = value.getIf<std::string>();
+    if (!text)
+        return Result<std::int64_t>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "expected signed decimal string", path));
+    std::int64_t result = 0;
+    const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), result);
+    if (error != std::errc{} || end != text->data() + text->size())
+        return Result<std::int64_t>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid signed decimal string", path));
+    return Result<std::int64_t>::success(result);
+}
+
+Result<SubjectRef> subject(const Value& value, std::string path, bool allowNil = false) {
+    const auto* text = value.getIf<std::string>();
+    if (!text)
+        return Result<SubjectRef>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "expected subject UUID", path));
+    if (allowNil && text->empty()) return Result<SubjectRef>::success(SubjectRef::nil());
+    const auto id = PersistentId::parse(*text);
+    if (!id || id->isNil())
+        return Result<SubjectRef>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid subject UUID", path));
+    return Result<SubjectRef>::success(SubjectRef::fromPersistentId(*id));
+}
+
+Result<LogicalId> logicalId(const Value& value, std::string path) {
+    const auto* text = value.getIf<std::string>();
+    if (!text)
+        return Result<LogicalId>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "expected logical ID", path));
+    const auto result = LogicalId::parse(*text);
+    if (!result)
+        return Result<LogicalId>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid logical ID", path));
+    return Result<LogicalId>::success(*result);
+}
+
+Result<Cell> parseCell(const Value& value, std::string path) {
+    auto candidate = object(value, path);
+    if (!candidate) return Result<Cell>::failure(candidate.status());
+    if (candidate.value()->size() != 3)
+        return Result<Cell>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "cell has unknown or missing fields", path));
+    Cell result;
+    for (const auto& [name, target] : {std::pair{"x", &result.x}, {"y", &result.y}, {"layer", &result.layer}}) {
+        auto member = field(*candidate.value(), name, path);
+        if (!member) return Result<Cell>::failure(member.status());
+        auto parsed = integer(*member.value(), path + "." + name);
+        if (!parsed) return Result<Cell>::failure(parsed.status());
+        *target = static_cast<int>(parsed.value());
+        if (static_cast<std::int64_t>(*target) != parsed.value())
+            return Result<Cell>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "cell coordinate is out of range", path + "." + name));
+    }
+    return Result<Cell>::success(result);
+}
+
+template <class T>
+T* resolve(const ecs::EntityHandle& handle) noexcept {
+    return dynamic_cast<T*>(ecs::try_get(handle));
+}
+
+struct UnitCandidate {
+    TacticalUnit* unit = nullptr;
+    ecs::EntityHandle side{};
+    LogicalId     definition;
+    Cell          cell;
+    int           facing = 0;
+    bool          placed = false;
+    TacticalUnit::TurnResources turn;
+};
+
+struct Candidate {
+    BoardState                        board;
+    std::uint64_t                    seed = 0;
+    BattleStatus                     status = BattleStatus::Setup;
+    BattlePhase                      phase = BattlePhase::Setup;
+    std::string                      policyId{kSideAlternatingPolicyId};
+    SimulationTick                   tick;
+    std::uint64_t                    round = 0;
+    std::size_t                      cursor = 0;
+    std::optional<ecs::EntityHandle> activeUnit;
+    std::optional<ecs::EntityHandle> activeSide;
+    std::vector<UnitCandidate>       units;
+    /**
+     * @brief The round's activation queue, resolved against the target battle.
+     *
+     * Empty for a payload whose phase needs no queue. Its order is the scheduling
+     * decision, so a restore must not re-derive it.
+     */
+    std::vector<ecs::EntityHandle>   schedule;
+    std::vector<ecs::EntityHandle>   sides;
+    Battle::Events                   events;
+    Battle::Reactions                reactions;
+    Battle::Commands                 commands;
+    Battle::Objectives               objectives;
+    Battle::Random                   random;
+};
+
+Value eventValue(const BattleEvent& event) {
+    return Value(Value::Object{{"causationCommand", Value(std::to_string(event.causationCommand))},
+                               {"correlationCommand", Value(std::to_string(event.correlationCommand))},
+                               {"from", Value(static_cast<int>(event.from))},
+                               {"sequence", Value(std::to_string(event.sequence))},
+                               {"subject", subjectValue(event.subject)},
+                               {"tick", Value(std::to_string(event.tick.value()))},
+                               {"to", Value(static_cast<int>(event.to))},
+                               {"type", Value(event.type)}});
+}
+
+Value candidateValue(const ReactionCandidate& candidate) {
+    return Value(Value::Object{{"action", Value(candidate.action.format())},
+                               {"initiative", Value(candidate.initiative)},
+                               {"priority", Value(candidate.priority)},
+                               {"reactor", subjectValue(candidate.reactor)}});
+}
+
+Value windowValue(const ReactionWindow& window) {
+    Value::Array candidates;
+    for (const auto& candidate : window.candidates) candidates.push_back(candidateValue(candidate));
+    return Value(Value::Object{{"candidates", Value(std::move(candidates))},
+                               {"depth", Value(std::to_string(window.depth))},
+                               {"triggerSequence", Value(std::to_string(window.triggerSequence))}});
+}
+
+Value commandValue(const BattleCommand& command) {
+    Value::Array candidates;
+    for (const auto& candidate : command.candidates) candidates.push_back(candidateValue(candidate));
+    return Value(Value::Object{
+        {"action", Value(command.action.isValid() ? command.action.format() : std::string{})},
+        {"actor", subjectValue(command.actor)},
+        {"candidates", Value(std::move(candidates))},
+        {"cell", cellValue(command.cell)},
+        {"deltaNanoseconds", Value(std::to_string(command.step.delta.nanoseconds()))},
+        {"expectedRevision", Value(std::to_string(command.expectedRevision.value()))},
+        {"facing", Value(command.facing)},
+        {"kind", Value(static_cast<int>(command.kind))},
+        {"payload", Value(command.payload)},
+        {"policy", Value(command.policyId)},
+        {"resultingRevision", Value(std::to_string(command.resultingRevision.value()))},
+        {"sequence", Value(std::to_string(command.sequence))},
+        {"targetUnit", subjectValue(command.targetUnit)},
+        {"tick", Value(std::to_string(command.step.tick.value()))},
+        {"triggerSequence", Value(std::to_string(command.triggerSequence))},
+    });
+}
+
+Value objectiveValue(const ObjectiveState& objective) {
+    Value::Array cells;
+    for (const Cell cell : objective.spec.requiredCells) cells.push_back(cellValue(cell));
+    return Value(Value::Object{
+        {"beneficiarySide", subjectValue(objective.spec.beneficiarySide)},
+        {"completedRevision", Value(std::to_string(objective.completedRevision.value()))},
+        {"endsBattle", Value(objective.spec.endsBattle)},
+        {"id", Value(objective.spec.id.format())},
+        {"kind", Value(static_cast<int>(objective.spec.kind))},
+        {"requiredCells", Value(std::move(cells))},
+        {"requiredRound", Value(std::to_string(objective.spec.requiredRound))},
+        {"status", Value(static_cast<int>(objective.status))},
+        {"targetSide", subjectValue(objective.spec.targetSide)},
+    });
+}
+
+Value randomValue(const Battle::Random& random) {
+    Value::Object streams;
+    for (const auto& [name, state] : random.streams)
+        streams.emplace(name, Value(Value::Object{{"rollIndex", Value(std::to_string(state.rollIndex))},
+                                                   {"state", Value(std::to_string(state.state))}}));
+    return Value(std::move(streams));
+}
+
+Result<Value> unitValue(TacticalUnit& unit) {
+    const auto turn = unit.turn();
+    auto* side = resolve<TacticalSide>(unit.membership()->side);
+    if (!side)
+        return Result<Value>::failure(
+            Diagnostic::error(DiagnosticCode::StaleHandle, "unit belongs to a stale tactical side", {}));
+    return Result<Value>::success(Value(Value::Object{
+        {"acted", Value(turn->acted)},
+        {"actionPoints", Value(turn->actionPoints)},
+        {"alive", Value(turn->alive)},
+        {"cell", cellValue(unit.position()->cell)},
+        {"charge", Value(turn->charge)},
+        {"definition", Value(unit.identity()->definition.isValid() ? unit.identity()->definition.format()
+                                                                      : std::string{})},
+        {"facing", Value(unit.position()->facing)},
+        {"initiative", Value(turn->initiative)},
+        {"movePoints", Value(turn->movePoints)},
+        {"placed", Value(unit.position()->placed)},
+        {"reactionPoints", Value(turn->reactionPoints)},
+        {"roundActionPoints", Value(turn->roundActionPoints)},
+        {"roundMovePoints", Value(turn->roundMovePoints)},
+        {"roundReactionPoints", Value(turn->roundReactionPoints)},
+        {"side", subjectValue(side->identity()->subject)},
+        {"subject", subjectValue(unit.identity()->subject)},
+    }));
+}
+
+Result<int> intField(const Value::Object& value, std::string_view name, const std::string& path) {
+    auto member = field(value, name, path);
+    if (!member) return Result<int>::failure(member.status());
+    auto parsed = integer(*member.value(), path + "." + std::string(name));
+    if (!parsed) return Result<int>::failure(parsed.status());
+    const int result = static_cast<int>(parsed.value());
+    if (static_cast<std::int64_t>(result) != parsed.value())
+        return Result<int>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "integer is out of range", path + "." + std::string(name)));
+    return Result<int>::success(result);
+}
+
+Result<Battle::Events> parseEvents(const Value& value) {
+    auto root = object(value, "payload.events");
+    if (!root || root.value()->size() != 2)
+        return Result<Battle::Events>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid events object", "payload.events"));
+    auto nextMember = field(*root.value(), "nextSequence", "payload.events");
+    auto valuesMember = field(*root.value(), "values", "payload.events");
+    if (!everyResultValid(nextMember, valuesMember))
+        return Result<Battle::Events>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "incomplete events object", "payload.events"));
+    auto next = decimal(*nextMember.value(), "payload.events.nextSequence");
+    const auto* values = valuesMember.value()->getIf<Value::Array>();
+    if (!next || !values || next.value() == 0)
+        return Result<Battle::Events>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid event sequence", "payload.events"));
+
+    Battle::Events result;
+    result.nextSequence = next.value();
+    std::uint64_t previous = 0;
+    for (std::size_t i = 0; i < values->size(); ++i) {
+        const std::string path = "payload.events.values[" + std::to_string(i) + "]";
+        auto record = object((*values)[i], path);
+        if (!record || record.value()->size() != 8)
+            return Result<Battle::Events>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid event record", path));
+        auto sequenceMember = field(*record.value(), "sequence", path);
+        auto tickMember = field(*record.value(), "tick", path);
+        auto subjectMember = field(*record.value(), "subject", path);
+        auto typeMember = field(*record.value(), "type", path);
+        auto causationMember = field(*record.value(), "causationCommand", path);
+        auto correlationMember = field(*record.value(), "correlationCommand", path);
+        auto from = intField(*record.value(), "from", path);
+        auto to = intField(*record.value(), "to", path);
+        if (!everyResultValid(sequenceMember, tickMember, subjectMember, typeMember, causationMember,
+                              correlationMember, from, to) ||
+            from.value() < 0 || from.value() > static_cast<int>(BattlePhase::BattleEnd) || to.value() < 0 ||
+            to.value() > static_cast<int>(BattlePhase::BattleEnd))
+            return Result<Battle::Events>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid event fields", path));
+        auto sequence = decimal(*sequenceMember.value(), path + ".sequence");
+        auto tick = decimal(*tickMember.value(), path + ".tick");
+        auto subjectRef = subject(*subjectMember.value(), path + ".subject", true);
+        auto causation = decimal(*causationMember.value(), path + ".causationCommand");
+        auto correlation = decimal(*correlationMember.value(), path + ".correlationCommand");
+        const auto* type = typeMember.value()->getIf<std::string>();
+        if (!everyResultValid(sequence, tick, subjectRef, causation, correlation) || !type || type->empty() ||
+            causation.value() == 0 || correlation.value() == 0 || sequence.value() <= previous ||
+            sequence.value() >= result.nextSequence)
+            return Result<Battle::Events>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "invalid event ordering", path));
+        previous = sequence.value();
+        result.values.push_back({sequence.value(), causation.value(), correlation.value(),
+                                 static_cast<BattlePhase>(from.value()), static_cast<BattlePhase>(to.value()),
+                                 SimulationTick(tick.value()), *type, subjectRef.value()});
+    }
+    return Result<Battle::Events>::success(std::move(result));
+}
+
+Result<Battle::Reactions> parseReactions(const Value& value, BattlePhase phase) {
+    auto root = object(value, "payload.reactions");
+    if (!root || root.value()->size() != 3)
+        return Result<Battle::Reactions>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid reactions object", "payload.reactions"));
+    auto maxDepthMember = field(*root.value(), "maxDepth", "payload.reactions");
+    auto seenMember = field(*root.value(), "seen", "payload.reactions");
+    auto stackMember = field(*root.value(), "stack", "payload.reactions");
+    if (!everyResultValid(maxDepthMember, seenMember, stackMember))
+        return Result<Battle::Reactions>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "incomplete reactions object", "payload.reactions"));
+    auto maxDepth = decimal(*maxDepthMember.value(), "payload.reactions.maxDepth");
+    const auto* seen = seenMember.value()->getIf<Value::Array>();
+    const auto* stack = stackMember.value()->getIf<Value::Array>();
+    if (!maxDepth || maxDepth.value() == 0 || maxDepth.value() > static_cast<std::uint64_t>(SIZE_MAX) || !seen ||
+        !stack || stack->size() > maxDepth.value())
+        return Result<Battle::Reactions>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid reaction limits", "payload.reactions"));
+
+    Battle::Reactions result;
+    result.maxDepth = static_cast<std::size_t>(maxDepth.value());
+    std::set<std::string> uniqueSeen;
+    for (std::size_t i = 0; i < seen->size(); ++i) {
+        const auto* key = (*seen)[i].getIf<std::string>();
+        if (!key || key->empty() || !uniqueSeen.insert(*key).second)
+            return Result<Battle::Reactions>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "invalid reaction cycle guard",
+                                  "payload.reactions.seen[" + std::to_string(i) + "]"));
+        result.seen.push_back(*key);
+    }
+    for (std::size_t i = 0; i < stack->size(); ++i) {
+        const std::string path = "payload.reactions.stack[" + std::to_string(i) + "]";
+        auto window = object((*stack)[i], path);
+        if (!window || window.value()->size() != 3)
+            return Result<Battle::Reactions>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid reaction window", path));
+        auto triggerMember = field(*window.value(), "triggerSequence", path);
+        auto depthMember = field(*window.value(), "depth", path);
+        auto candidatesMember = field(*window.value(), "candidates", path);
+        if (!everyResultValid(triggerMember, depthMember, candidatesMember))
+            return Result<Battle::Reactions>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "incomplete reaction window", path));
+        auto trigger = decimal(*triggerMember.value(), path + ".triggerSequence");
+        auto depth = decimal(*depthMember.value(), path + ".depth");
+        const auto* candidates = candidatesMember.value()->getIf<Value::Array>();
+        if (!everyResultValid(trigger, depth) || trigger.value() == 0 || depth.value() != i + 1 || !candidates ||
+            candidates->empty())
+            return Result<Battle::Reactions>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "invalid reaction window state", path));
+        ReactionWindow restored{trigger.value(), static_cast<std::size_t>(depth.value()), {}};
+        std::set<std::string> uniqueCandidates;
+        for (std::size_t j = 0; j < candidates->size(); ++j) {
+            const std::string candidatePath = path + ".candidates[" + std::to_string(j) + "]";
+            auto candidate = object((*candidates)[j], candidatePath);
+            if (!candidate || candidate.value()->size() != 4)
+                return Result<Battle::Reactions>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "invalid reaction candidate", candidatePath));
+            auto reactorMember = field(*candidate.value(), "reactor", candidatePath);
+            auto actionMember = field(*candidate.value(), "action", candidatePath);
+            auto priority = intField(*candidate.value(), "priority", candidatePath);
+            auto initiative = intField(*candidate.value(), "initiative", candidatePath);
+            if (!everyResultValid(reactorMember, actionMember, priority, initiative))
+                return Result<Battle::Reactions>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "incomplete reaction candidate", candidatePath));
+            auto reactor = subject(*reactorMember.value(), candidatePath + ".reactor");
+            auto action = logicalId(*actionMember.value(), candidatePath + ".action");
+            if (!everyResultValid(reactor, action))
+                return Result<Battle::Reactions>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "invalid reaction identity", candidatePath));
+            const std::string key = reactor.value().format() + ":" + action.value().format();
+            if (!uniqueCandidates.insert(key).second)
+                return Result<Battle::Reactions>::failure(
+                    Diagnostic::error(DiagnosticCode::Conflict, "duplicate reaction candidate", candidatePath));
+            restored.candidates.push_back(
+                {reactor.value(), action.value(), priority.value(), initiative.value()});
+        }
+        result.stack.push_back(std::move(restored));
+    }
+    if ((phase == BattlePhase::Reaction) != !result.stack.empty())
+        return Result<Battle::Reactions>::failure(Diagnostic::error(
+            DiagnosticCode::InvariantViolation, "reaction phase and stack disagree", "payload.reactions.stack"));
+    return Result<Battle::Reactions>::success(std::move(result));
+}
+
+/**
+ * @brief Which end of a command log has to agree with the revision the log is used against.
+ *
+ * A log appears in two roles, and they anchor at opposite ends:
+ *  - inside a snapshot payload the log is the battle's history **up to** that snapshot, so it
+ *    must end at the snapshot's revision;
+ *  - as a replay log handed back to `TacticsPersistence::parseCommandLog`, it is applied
+ *    **onto** an earlier state, so it must start at the revision it will be replayed against.
+ * Both rules are checked by one parser; only the anchor differs.
+ */
+enum class CommandLogBoundary {
+    EndsAtRevision,
+    StartsAtRevision,
+};
+
+/**
+ * @brief Version-gated interpretation of the command-record shape.
+ * @remarks Each flag is frozen to the version range that introduced the field, and is
+ *          written as "this version or later" so a future version never regresses to the
+ *          legacy reading. A payload can therefore only ever be read as the shape its own
+ *          version declared.
+ */
+struct CommandFieldPolicy {
+    bool policyIdStrings = false;  ///< v3+: stable policy id string instead of the legacy numeric enum.
+    bool allowUseAbility = false;  ///< v4+: the `UseAbility` command kind exists.
+    bool abilityTargetFields = false;  ///< v6+: commands carry `targetUnit` and `payload`.
+    CommandLogBoundary boundary = CommandLogBoundary::EndsAtRevision;  ///< Anchor rule, see above.
+};
+
+Result<Battle::Commands> parseCommands(const Value& value, Revision snapshotRevision, CommandFieldPolicy policy) {
+    auto root = object(value, "payload.commands");
+    if (!root || root.value()->size() != 2)
+        return Result<Battle::Commands>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid commands object", "payload.commands"));
+    auto nextMember = field(*root.value(), "nextSequence", "payload.commands");
+    auto valuesMember = field(*root.value(), "values", "payload.commands");
+    if (!everyResultValid(nextMember, valuesMember))
+        return Result<Battle::Commands>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "incomplete commands object", "payload.commands"));
+    auto next = decimal(*nextMember.value(), "payload.commands.nextSequence");
+    const auto* values = valuesMember.value()->getIf<Value::Array>();
+    if (!next || next.value() == 0 || !values)
+        return Result<Battle::Commands>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid command sequence", "payload.commands"));
+
+    Battle::Commands result;
+    result.nextSequence = next.value();
+    std::uint64_t previousSequence = 0;
+    Revision previousRevision;
+    for (std::size_t i = 0; i < values->size(); ++i) {
+        const std::string path = "payload.commands.values[" + std::to_string(i) + "]";
+        auto record = object((*values)[i], path);
+        // Version 6 added the targeted unit and the opaque effect payload.
+        const std::size_t expectedCommandFields = policy.abilityTargetFields ? 15u : 13u;
+        if (!record || record.value()->size() != expectedCommandFields)
+            return Result<Battle::Commands>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid command record", path));
+        auto sequenceMember = field(*record.value(), "sequence", path);
+        auto expectedMember = field(*record.value(), "expectedRevision", path);
+        auto resultingMember = field(*record.value(), "resultingRevision", path);
+        auto tickMember = field(*record.value(), "tick", path);
+        auto deltaMember = field(*record.value(), "deltaNanoseconds", path);
+        auto triggerMember = field(*record.value(), "triggerSequence", path);
+        auto actorMember = field(*record.value(), "actor", path);
+        auto actionMember = field(*record.value(), "action", path);
+        auto cellMember = field(*record.value(), "cell", path);
+        auto candidatesMember = field(*record.value(), "candidates", path);
+        auto kind = intField(*record.value(), "kind", path);
+        auto facing = intField(*record.value(), "facing", path);
+        auto policyMember = field(*record.value(), "policy", path);
+        auto targetMember = policy.abilityTargetFields ? field(*record.value(), "targetUnit", path)
+                                                       : Result<const Value*>::success(nullptr);
+        auto payloadMember = policy.abilityTargetFields ? field(*record.value(), "payload", path)
+                                                        : Result<const Value*>::success(nullptr);
+        const int highestKnownKind = policy.allowUseAbility ? static_cast<int>(BattleCommandKind::UseAbility)
+                                                            : static_cast<int>(BattleCommandKind::RollRandom);
+        // Every Result is observed before the decision, so a record with several
+        // missing fields reports one structured failure instead of destroying
+        // unobserved Results.
+        if (!everyResultValid(sequenceMember, expectedMember, resultingMember, tickMember, deltaMember,
+                              triggerMember, actorMember, actionMember, cellMember, candidatesMember, kind,
+                              facing, policyMember, targetMember, payloadMember) ||
+            kind.value() < 0 || kind.value() > highestKnownKind)
+            return Result<Battle::Commands>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid command fields", path));
+        // Version 3 stores the stable id string; versions 1-2 stored a numeric enum.
+        std::string policyId;
+        if (policy.policyIdStrings) {
+            if (!policyMember.value()->isString() || policyMember.value()->asString().empty())
+                return Result<Battle::Commands>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "invalid command policy", path + ".policy"));
+            policyId = policyMember.value()->asString();
+        } else {
+            auto legacy = intField(*record.value(), "policy", path);
+            if (!legacy)
+                return Result<Battle::Commands>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "invalid command policy", path));
+            auto migrated = migrateLegacyPolicyId(legacy.value());
+            if (!migrated) return Result<Battle::Commands>::failure(migrated.status());
+            policyId = std::move(migrated).takeValue();
+        }
+        auto sequence = decimal(*sequenceMember.value(), path + ".sequence");
+        auto expected = decimal(*expectedMember.value(), path + ".expectedRevision");
+        auto resulting = decimal(*resultingMember.value(), path + ".resultingRevision");
+        auto tick = decimal(*tickMember.value(), path + ".tick");
+        auto delta = signedDecimal(*deltaMember.value(), path + ".deltaNanoseconds");
+        auto trigger = decimal(*triggerMember.value(), path + ".triggerSequence");
+        auto actor = subject(*actorMember.value(), path + ".actor", true);
+        auto cell = parseCell(*cellMember.value(), path + ".cell");
+        const auto* actionText = actionMember.value()->getIf<std::string>();
+        const auto* candidates = candidatesMember.value()->getIf<Value::Array>();
+        if (!everyResultValid(sequence, expected, resulting, tick, delta, trigger, actor, cell) || !actionText ||
+            !candidates || sequence.value() <= previousSequence ||
+            sequence.value() >= result.nextSequence || expected.value() == std::numeric_limits<std::uint64_t>::max() ||
+            resulting.value() != expected.value() + 1 ||
+            (i > 0 && expected.value() != previousRevision.value()))
+            return Result<Battle::Commands>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "invalid command ordering", path));
+        BattleCommand command;
+        command.sequence = sequence.value();
+        command.kind = static_cast<BattleCommandKind>(kind.value());
+        command.expectedRevision = Revision(expected.value());
+        command.resultingRevision = Revision(resulting.value());
+        command.step = {SimulationTick(tick.value()), Duration::fromNanoseconds(delta.value())};
+        command.actor = actor.value();
+        command.cell = cell.value();
+        command.facing = facing.value();
+        command.policyId = policyId;
+        command.triggerSequence = trigger.value();
+        if (policy.abilityTargetFields) {
+            auto targetUnit = subject(*targetMember.value(), path + ".targetUnit", true);
+            if (!targetUnit) return Result<Battle::Commands>::failure(targetUnit.status());
+            command.targetUnit = targetUnit.value();
+            const auto* payload = payloadMember.value()->getIf<std::string>();
+            if (payload == nullptr)
+                return Result<Battle::Commands>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "invalid command payload", path + ".payload"));
+            // The bound is re-checked on restore: a payload written by a buggy or foreign
+            // writer must not become unbounded persisted state.
+            if (payload->size() > kMaxAbilityPayloadBytes)
+                return Result<Battle::Commands>::failure(Diagnostic::error(
+                    DiagnosticCode::ParseError, "command payload exceeds the persisted size bound", path + ".payload"));
+            command.payload = *payload;
+        }
+        if (!actionText->empty()) {
+            const auto parsedAction = LogicalId::parse(*actionText);
+            if (!parsedAction)
+                return Result<Battle::Commands>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "invalid command action", path + ".action"));
+            command.action = *parsedAction;
+        }
+        for (std::size_t j = 0; j < candidates->size(); ++j) {
+            const std::string candidatePath = path + ".candidates[" + std::to_string(j) + "]";
+            auto candidate = object((*candidates)[j], candidatePath);
+            if (!candidate || candidate.value()->size() != 4)
+                return Result<Battle::Commands>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "invalid command candidate", candidatePath));
+            auto reactorMember = field(*candidate.value(), "reactor", candidatePath);
+            auto candidateActionMember = field(*candidate.value(), "action", candidatePath);
+            auto priority = intField(*candidate.value(), "priority", candidatePath);
+            auto initiative = intField(*candidate.value(), "initiative", candidatePath);
+            if (!everyResultValid(reactorMember, candidateActionMember, priority, initiative))
+                return Result<Battle::Commands>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "incomplete command candidate", candidatePath));
+            auto reactor = subject(*reactorMember.value(), candidatePath + ".reactor");
+            auto candidateAction = logicalId(*candidateActionMember.value(), candidatePath + ".action");
+            if (!everyResultValid(reactor, candidateAction))
+                return Result<Battle::Commands>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "invalid command candidate identity", candidatePath));
+            command.candidates.push_back(
+                {reactor.value(), candidateAction.value(), priority.value(), initiative.value()});
+        }
+        const auto invalidCommand = [&]() {
+            switch (command.kind) {
+                case BattleCommandKind::Start: return false;
+                case BattleCommandKind::Advance: return command.step.tick.isZero() || command.step.delta.nanoseconds() < 0;
+                case BattleCommandKind::Move:
+                case BattleCommandKind::Face:
+                case BattleCommandKind::Wait:
+                case BattleCommandKind::EndTurn:
+                case BattleCommandKind::DefeatUnit: return !command.actor.isValid();
+                case BattleCommandKind::Finish: return false;
+                case BattleCommandKind::OpenReaction:
+                    return command.triggerSequence == 0 || command.candidates.empty();
+                case BattleCommandKind::AcceptReaction:
+                    return command.triggerSequence == 0 || !command.actor.isValid() || !command.action.isValid();
+                case BattleCommandKind::DeclineReaction: return command.triggerSequence == 0;
+                case BattleCommandKind::RollRandom: return !command.action.isValid();
+                case BattleCommandKind::UseAbility:
+                    return command.triggerSequence != 0 || !command.actor.isValid() || !command.action.isValid();
+            }
+            return true;
+        };
+        if (invalidCommand())
+            return Result<Battle::Commands>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "command fields disagree with command kind", path));
+        previousSequence = sequence.value();
+        previousRevision = command.resultingRevision;
+        result.values.push_back(std::move(command));
+    }
+    if (policy.boundary == CommandLogBoundary::EndsAtRevision && !result.values.empty() &&
+        result.values.back().resultingRevision != snapshotRevision)
+        return Result<Battle::Commands>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "command log revision differs from snapshot revision", "payload.commands"));
+    // A replay log is applied onto the state it starts from, so it is anchored at its first
+    // command instead: re-applying a log captured elsewhere would run commands against state
+    // they were never accepted against.
+    if (policy.boundary == CommandLogBoundary::StartsAtRevision && !result.values.empty() &&
+        result.values.front().expectedRevision != snapshotRevision)
+        return Result<Battle::Commands>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "replay log does not start at the target revision", "payload.commands"));
+    return Result<Battle::Commands>::success(std::move(result));
+}
+
+Result<Battle::Objectives> parseObjectives(Battle& battle, const BoardState& board, const Value& value,
+                                            Revision snapshotRevision) {
+    const auto* values = value.getIf<Value::Array>();
+    if (!values)
+        return Result<Battle::Objectives>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "objectives must be an array", "payload.objectives"));
+    std::set<std::string> sideSubjects;
+    for (const auto& handle : battle.turn()->sides) {
+        auto* side = resolve<TacticalSide>(handle);
+        if (!side)
+            return Result<Battle::Objectives>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "target battle contains a stale side", {}));
+        sideSubjects.insert(side->identity()->subject.format());
+    }
+    Battle::Objectives result;
+    std::set<std::string> ids;
+    for (std::size_t i = 0; i < values->size(); ++i) {
+        const std::string path = "payload.objectives[" + std::to_string(i) + "]";
+        auto record = object((*values)[i], path);
+        if (!record || record.value()->size() != 9)
+            return Result<Battle::Objectives>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid objective record", path));
+        auto idMember = field(*record.value(), "id", path);
+        auto beneficiaryMember = field(*record.value(), "beneficiarySide", path);
+        auto targetMember = field(*record.value(), "targetSide", path);
+        auto roundMember = field(*record.value(), "requiredRound", path);
+        auto cellsMember = field(*record.value(), "requiredCells", path);
+        auto endsMember = field(*record.value(), "endsBattle", path);
+        auto completedMember = field(*record.value(), "completedRevision", path);
+        auto kind = intField(*record.value(), "kind", path);
+        auto status = intField(*record.value(), "status", path);
+        if (!everyResultValid(idMember, beneficiaryMember, targetMember, roundMember, cellsMember, endsMember,
+                              completedMember, kind, status) ||
+            kind.value() < 0 || kind.value() > static_cast<int>(ObjectiveKind::OccupyCells) ||
+            status.value() < 0 || status.value() > static_cast<int>(ObjectiveStatus::Completed))
+            return Result<Battle::Objectives>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid objective fields", path));
+        auto id = logicalId(*idMember.value(), path + ".id");
+        auto beneficiary = subject(*beneficiaryMember.value(), path + ".beneficiarySide");
+        auto target = subject(*targetMember.value(), path + ".targetSide", true);
+        auto round = decimal(*roundMember.value(), path + ".requiredRound");
+        auto completed = decimal(*completedMember.value(), path + ".completedRevision");
+        const auto* cells = cellsMember.value()->getIf<Value::Array>();
+        const auto* endsBattle = endsMember.value()->getIf<bool>();
+        if (!everyResultValid(id, beneficiary, target, round, completed) || !cells || !endsBattle ||
+            !ids.insert(id.value().format()).second || !sideSubjects.contains(beneficiary.value().format()) ||
+            (target.value().isValid() && !sideSubjects.contains(target.value().format())) ||
+            completed.value() > snapshotRevision.value())
+            return Result<Battle::Objectives>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "invalid objective state", path));
+        ObjectiveState objective;
+        objective.spec.id = id.value();
+        objective.spec.kind = static_cast<ObjectiveKind>(kind.value());
+        objective.spec.beneficiarySide = beneficiary.value();
+        objective.spec.targetSide = target.value();
+        objective.spec.requiredRound = round.value();
+        objective.spec.endsBattle = *endsBattle;
+        objective.status = static_cast<ObjectiveStatus>(status.value());
+        objective.completedRevision = Revision(completed.value());
+        for (std::size_t j = 0; j < cells->size(); ++j) {
+            auto cell = parseCell((*cells)[j], path + ".requiredCells[" + std::to_string(j) + "]");
+            if (!cell || !board.contains(cell.value()))
+                return Result<Battle::Objectives>::failure(
+                    Diagnostic::error(DiagnosticCode::InvariantViolation, "invalid objective cell", path));
+            objective.spec.requiredCells.push_back(cell.value());
+        }
+        if ((objective.status == ObjectiveStatus::Pending && !objective.completedRevision.isZero()) ||
+            (objective.status == ObjectiveStatus::Completed && objective.completedRevision.isZero()) ||
+            (objective.spec.kind == ObjectiveKind::EliminateSide && !objective.spec.targetSide.isValid()) ||
+            (objective.spec.kind == ObjectiveKind::SurviveRounds && objective.spec.requiredRound == 0) ||
+            (objective.spec.kind == ObjectiveKind::OccupyCells && objective.spec.requiredCells.empty()))
+            return Result<Battle::Objectives>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "inconsistent objective state", path));
+        std::sort(objective.spec.requiredCells.begin(), objective.spec.requiredCells.end());
+        if (std::adjacent_find(objective.spec.requiredCells.begin(), objective.spec.requiredCells.end()) !=
+            objective.spec.requiredCells.end())
+            return Result<Battle::Objectives>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "duplicate objective cell", path));
+        result.values.push_back(std::move(objective));
+    }
+    return Result<Battle::Objectives>::success(std::move(result));
+}
+
+Result<Battle::Random> parseRandom(const Value& value) {
+    const auto* streams = value.getIf<Value::Object>();
+    if (!streams)
+        return Result<Battle::Random>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "random streams must be an object", "payload.random"));
+    Battle::Random result;
+    for (const auto& [name, stateValue] : *streams) {
+        if (!LogicalId::parse(name))
+            return Result<Battle::Random>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "invalid random stream logical ID", "payload.random." + name));
+        auto state = object(stateValue, "payload.random." + name);
+        if (!state || state.value()->size() != 2)
+            return Result<Battle::Random>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid random stream state", "payload.random." + name));
+        auto stateMember = field(*state.value(), "state", "payload.random." + name);
+        auto indexMember = field(*state.value(), "rollIndex", "payload.random." + name);
+        if (!everyResultValid(stateMember, indexMember))
+            return Result<Battle::Random>::failure(Diagnostic::error(
+                DiagnosticCode::ParseError, "incomplete random stream state", "payload.random." + name));
+        auto parsedState = decimal(*stateMember.value(), "payload.random." + name + ".state");
+        auto parsedIndex = decimal(*indexMember.value(), "payload.random." + name + ".rollIndex");
+        if (!everyResultValid(parsedState, parsedIndex) || parsedIndex.value() == 0)
+            return Result<Battle::Random>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "invalid random stream state", "payload.random." + name));
+        result.streams.emplace(name, Battle::RandomStreamState{parsedState.value(), parsedIndex.value()});
+    }
+    return Result<Battle::Random>::success(std::move(result));
+}
+
+Result<Candidate> parseCandidate(Battle& battle, const Value& payload, Revision snapshotRevision,
+                                 SchemaVersion sourceVersion) {
+    auto root = object(payload, "payload");
+    if (!root) return Result<Candidate>::failure(root.status());
+    static const std::set<std::string> fields = {"activeUnit", "board", "commands", "cursor", "events",
+                                                  "objectives", "phase", "policy", "random", "reactions", "round",
+                                                  "seed", "sides", "status", "units"};
+    // Version 5 added the round's activation queue, because charge-time scheduling
+    // makes it shorter than the roster and impossible to recompute after a restore.
+    const bool hasSchedule = sourceVersion >= SchemaVersion(5);
+    std::set<std::string> expectedFields = fields;
+    if (hasSchedule) expectedFields.insert("schedule");
+    for (const auto& [name, unused] : *root.value())
+        if (!expectedFields.contains(name))
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "unknown payload field", name));
+    if (root.value()->size() != expectedFields.size())
+        return Result<Candidate>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "snapshot payload is incomplete", "payload"));
+
+    Candidate result;
+    auto status = intField(*root.value(), "status", "payload");
+    auto phase = intField(*root.value(), "phase", "payload");
+    if (!everyResultValid(status, phase))
+        return Result<Candidate>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid battle enum", {}));
+    if (status.value() < 0 || status.value() > static_cast<int>(BattleStatus::Ended) || phase.value() < 0 ||
+        phase.value() > static_cast<int>(BattlePhase::BattleEnd))
+        return Result<Candidate>::failure(
+            Diagnostic::error(DiagnosticCode::UnknownVersion, "snapshot contains an unknown battle enum", {}));
+    result.status = static_cast<BattleStatus>(status.value());
+    result.phase = static_cast<BattlePhase>(phase.value());
+    // Version 3 carries the stable policy id; versions 1-2 carried a numeric enum.
+    auto policyMember = field(*root.value(), "policy", "payload");
+    if (!policyMember)
+        return Result<Candidate>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid battle enum", {}));
+    if (sourceVersion >= SchemaVersion(3)) {
+        if (!policyMember.value()->isString() || policyMember.value()->asString().empty())
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid battle policy", "payload.policy"));
+        result.policyId = policyMember.value()->asString();
+    } else {
+        auto legacy = intField(*root.value(), "policy", "payload");
+        if (!legacy)
+            return Result<Candidate>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid battle enum", {}));
+        auto migrated = migrateLegacyPolicyId(legacy.value());
+        if (!migrated) return Result<Candidate>::failure(migrated.status());
+        result.policyId = std::move(migrated).takeValue();
+    }
+    auto roundValue = field(*root.value(), "round", "payload");
+    auto cursorValue = field(*root.value(), "cursor", "payload");
+    if (!everyResultValid(roundValue, cursorValue))
+        return Result<Candidate>::failure(Diagnostic::error(DiagnosticCode::ParseError, "missing turn state", {}));
+    auto round = decimal(*roundValue.value(), "payload.round");
+    auto cursor = decimal(*cursorValue.value(), "payload.cursor");
+    if (!everyResultValid(round, cursor) || cursor.value() > static_cast<std::uint64_t>(SIZE_MAX))
+        return Result<Candidate>::failure(Diagnostic::error(DiagnosticCode::ParseError, "invalid turn counters", {}));
+    result.round = round.value();
+    result.cursor = static_cast<std::size_t>(cursor.value());
+    auto seedMember = field(*root.value(), "seed", "payload");
+    if (!seedMember) return Result<Candidate>::failure(seedMember.status());
+    auto seed = decimal(*seedMember.value(), "payload.seed");
+    if (!seed) return Result<Candidate>::failure(seed.status());
+    result.seed = seed.value();
+
+    auto boardMember = field(*root.value(), "board", "payload");
+    if (!boardMember) return Result<Candidate>::failure(boardMember.status());
+    auto boardObject = object(*boardMember.value(), "payload.board");
+    // Version 1 boards carry topology + cells only; every later version also
+    // carries the directed edge set.
+    const bool        hasEdges            = sourceVersion != SchemaVersion(1);
+    const std::size_t expectedBoardFields = hasEdges ? 3u : 2u;
+    if (!boardObject || boardObject.value()->size() != expectedBoardFields)
+        return Result<Candidate>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid board object", "payload.board"));
+    auto topology = intField(*boardObject.value(), "topology", "payload.board");
+    auto cellsMember = field(*boardObject.value(), "cells", "payload.board");
+    if (!everyResultValid(topology, cellsMember) || topology.value() < 0 ||
+        topology.value() > (sourceVersion >= SchemaVersion(7) ? 3 : 2))
+        return Result<Candidate>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "invalid board topology", "payload.board.topology"));
+    const auto* cells = cellsMember.value()->getIf<Value::Array>();
+    if (!cells)
+        return Result<Candidate>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "board cells must be an array", "payload.board.cells"));
+    result.board.setTopology(static_cast<BoardTopology>(topology.value()));
+    for (std::size_t i = 0; i < cells->size(); ++i) {
+        const std::string path = "payload.board.cells[" + std::to_string(i) + "]";
+        auto record = object((*cells)[i], path);
+        if (!record || record.value()->size() != 5)
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid board cell record", path));
+        auto cellMember = field(*record.value(), "cell", path);
+        auto moveCost = intField(*record.value(), "moveCost", path);
+        auto height = intField(*record.value(), "height", path);
+        auto passableMember = field(*record.value(), "passable", path);
+        auto tagsMember = field(*record.value(), "tags", path);
+        if (!everyResultValid(cellMember, moveCost, height, passableMember, tagsMember))
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "incomplete board cell record", path));
+        auto cell = parseCell(*cellMember.value(), path + ".cell");
+        const auto* passable = passableMember.value()->getIf<bool>();
+        const auto* tags = tagsMember.value()->getIf<Value::Array>();
+        if (!cell || !passable || !tags)
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid board cell", path));
+        CellState state{moveCost.value(), height.value(), *passable, {}};
+        for (const auto& tag : *tags) {
+            const auto* text = tag.getIf<std::string>();
+            if (!text)
+                return Result<Candidate>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "cell tag must be a string", path + ".tags"));
+            state.tags.push_back(*text);
+        }
+        auto added = result.board.addCell(cell.value(), std::move(state));
+        if (!added) return Result<Candidate>::failure(added.status());
+    }
+
+    // Edges are parsed after every cell so the board can validate adjacency itself
+    // instead of the parser re-deriving the topology rules.
+    if (hasEdges) {
+        auto        edgesMember = field(*boardObject.value(), "edges", "payload.board");
+        const auto* edges = edgesMember ? edgesMember.value()->getIf<Value::Array>() : nullptr;
+        if (edges == nullptr)
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "board edges must be an array", "payload.board.edges"));
+        for (std::size_t i = 0; i < edges->size(); ++i) {
+            const std::string path = "payload.board.edges[" + std::to_string(i) + "]";
+            auto              record = object((*edges)[i], path);
+            if (!record || record.value()->size() != 5)
+                return Result<Candidate>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "invalid board edge record", path));
+            auto fromMember = field(*record.value(), "from", path);
+            auto toMember = field(*record.value(), "to", path);
+            auto passableMember = field(*record.value(), "passable", path);
+            auto extraCost = intField(*record.value(), "extraCost", path);
+            auto tagsMember = field(*record.value(), "tags", path);
+            if (!everyResultValid(fromMember, toMember, passableMember, extraCost, tagsMember))
+                return Result<Candidate>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "incomplete board edge record", path));
+            auto from = parseCell(*fromMember.value(), path + ".from");
+            auto to = parseCell(*toMember.value(), path + ".to");
+            const auto* passable = passableMember.value()->getIf<bool>();
+            const auto* tags = tagsMember.value()->getIf<Value::Array>();
+            if (!everyResultValid(from, to) || !passable || !tags)
+                return Result<Candidate>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "invalid board edge", path));
+            EdgeState state;
+            state.passable  = *passable;
+            state.extraCost = extraCost.value();
+            for (const auto& tag : *tags) {
+                const auto* text = tag.getIf<std::string>();
+                if (!text)
+                    return Result<Candidate>::failure(
+                        Diagnostic::error(DiagnosticCode::ParseError, "edge tag must be a string", path + ".tags"));
+                state.tags.push_back(*text);
+            }
+            auto added = result.board.addEdge(from.value(), to.value(), std::move(state));
+            if (!added) return Result<Candidate>::failure(added.status());
+        }
+    }
+
+    std::map<std::string, TacticalSide*> currentSides;
+    for (const auto& handle : battle.turn()->sides) {
+        auto* side = resolve<TacticalSide>(handle);
+        if (!side)
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "target battle contains a stale side", {}));
+        currentSides.emplace(side->identity()->subject.format(), side);
+    }
+    auto sidesMember = field(*root.value(), "sides", "payload");
+    if (!sidesMember) return Result<Candidate>::failure(sidesMember.status());
+    const auto* sides = sidesMember.value()->getIf<Value::Array>();
+    if (!sides || sides->size() != currentSides.size())
+        return Result<Candidate>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "snapshot side set differs from target battle", "payload.sides"));
+    std::set<std::string> restoredSides;
+    for (std::size_t i = 0; i < sides->size(); ++i) {
+        auto side = subject((*sides)[i], "payload.sides[" + std::to_string(i) + "]");
+        if (!side) return Result<Candidate>::failure(side.status());
+        const auto found = currentSides.find(side.value().format());
+        if (found == currentSides.end() || !restoredSides.insert(found->first).second)
+            return Result<Candidate>::failure(Diagnostic::error(DiagnosticCode::Conflict,
+                                                                "snapshot side cannot resolve uniquely",
+                                                                "payload.sides[" + std::to_string(i) + "]"));
+        result.sides.push_back(found->second->identity()->self);
+    }
+
+    std::map<std::string, TacticalUnit*> currentUnits;
+    for (const auto& handle : battle.turn()->units) {
+        auto* unit = resolve<TacticalUnit>(handle);
+        if (!unit)
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "target battle contains a stale unit", {}));
+        currentUnits.emplace(unit->identity()->subject.format(), unit);
+    }
+    auto unitsMember = field(*root.value(), "units", "payload");
+    if (!unitsMember) return Result<Candidate>::failure(unitsMember.status());
+    const auto* units = unitsMember.value()->getIf<Value::Array>();
+    if (!units || units->size() != currentUnits.size())
+        return Result<Candidate>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "snapshot unit set differs from target battle", "payload.units"));
+    std::set<std::string> restoredSubjects;
+    for (std::size_t i = 0; i < units->size(); ++i) {
+        const std::string path = "payload.units[" + std::to_string(i) + "]";
+        auto unitObject = object((*units)[i], path);
+        // Version 5 added the persisted scheduling charge.
+        const std::size_t expectedUnitFields = hasSchedule ? 16u : 15u;
+        if (!unitObject || unitObject.value()->size() != expectedUnitFields)
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid unit record", path));
+        auto subjectMember = field(*unitObject.value(), "subject", path);
+        auto cellMember = field(*unitObject.value(), "cell", path);
+        auto definitionMember = field(*unitObject.value(), "definition", path);
+        auto sideMember = field(*unitObject.value(), "side", path);
+        if (!everyResultValid(subjectMember, cellMember, definitionMember, sideMember))
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "incomplete unit record", path));
+        auto subjectRef = subject(*subjectMember.value(), path + ".subject");
+        auto cell = parseCell(*cellMember.value(), path + ".cell");
+        auto facing = intField(*unitObject.value(), "facing", path);
+        const auto* definitionText = definitionMember.value()->getIf<std::string>();
+        auto sideRef = subject(*sideMember.value(), path + ".side");
+        if (!everyResultValid(subjectRef, cell, facing, sideRef) || !definitionText)
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid unit identity or cell", path));
+        const auto found = currentUnits.find(subjectRef.value().format());
+        if (found == currentUnits.end() || !restoredSubjects.insert(found->first).second)
+            return Result<Candidate>::failure(Diagnostic::error(
+                DiagnosticCode::Conflict, "snapshot unit cannot resolve uniquely", path + ".subject"));
+        const auto restoredSide = currentSides.find(sideRef.value().format());
+        if (restoredSide == currentSides.end())
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "snapshot unit side is absent", path + ".side"));
+        LogicalId definition;
+        if (!definitionText->empty()) {
+            const auto parsedDefinition = LogicalId::parse(*definitionText);
+            if (!parsedDefinition)
+                return Result<Candidate>::failure(
+                    Diagnostic::error(DiagnosticCode::ParseError, "invalid unit definition", path + ".definition"));
+            definition = *parsedDefinition;
+        }
+        TacticalUnit::TurnResources turn;
+        for (const auto& [name, target] :
+             {std::pair{"actionPoints", &turn.actionPoints}, {"movePoints", &turn.movePoints},
+              {"reactionPoints", &turn.reactionPoints}, {"roundActionPoints", &turn.roundActionPoints},
+              {"roundMovePoints", &turn.roundMovePoints},
+              {"roundReactionPoints", &turn.roundReactionPoints}, {"initiative", &turn.initiative}}) {
+            auto parsed = intField(*unitObject.value(), name, path);
+            if (!parsed) return Result<Candidate>::failure(parsed.status());
+            *target = parsed.value();
+        }
+        if (hasSchedule) {
+            auto charge = intField(*unitObject.value(), "charge", path);
+            if (!charge) return Result<Candidate>::failure(charge.status());
+            // Charge is a non-negative accumulator: a negative value could never have
+            // been produced by the round machine, so it is a corrupted payload.
+            if (charge.value() < 0)
+                return Result<Candidate>::failure(
+                    Diagnostic::error(DiagnosticCode::InvariantViolation, "unit charge is negative", path + ".charge"));
+            turn.charge = charge.value();
+        }
+        auto aliveMember = field(*unitObject.value(), "alive", path);
+        auto actedMember = field(*unitObject.value(), "acted", path);
+        auto placedMember = field(*unitObject.value(), "placed", path);
+        const bool* alive = aliveMember ? aliveMember.value()->getIf<bool>() : nullptr;
+        const bool* acted = actedMember ? actedMember.value()->getIf<bool>() : nullptr;
+        const bool* placed = placedMember ? placedMember.value()->getIf<bool>() : nullptr;
+        if (!alive || !acted || !placed)
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "invalid unit flags", path));
+        turn.alive = *alive;
+        turn.acted = *acted;
+        if (*alive != *placed)
+            return Result<Candidate>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "v1 tactics units must be placed exactly while alive", path));
+        if (*placed) {
+            auto placement = result.board.place(subjectRef.value(), cell.value());
+            if (!placement) return Result<Candidate>::failure(placement.status());
+        }
+        const int facingCount = result.board.topology() == BoardTopology::Square4   ? 4
+                                : result.board.topology() == BoardTopology::Square8 ? 8
+                                                                                    : 6;
+        if (facing.value() < 0 || facing.value() >= facingCount ||
+            (result.board.topology() == BoardTopology::ExplicitGraph && facing.value() != 0))
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation, "unit facing is invalid", path + ".facing"));
+        result.units.push_back(
+            {found->second, restoredSide->second->identity()->self, definition, cell.value(), facing.value(),
+             *placed, turn});
+    }
+    auto activeMember = field(*root.value(), "activeUnit", "payload");
+    if (!activeMember) return Result<Candidate>::failure(activeMember.status());
+    auto active = subject(*activeMember.value(), "payload.activeUnit", true);
+    if (!active) return Result<Candidate>::failure(active.status());
+    if (active.value().isValid()) {
+        const auto found = currentUnits.find(active.value().format());
+        if (found == currentUnits.end())
+            return Result<Candidate>::failure(Diagnostic::error(DiagnosticCode::Conflict, "active unit is absent", {}));
+        result.activeUnit = found->second->identity()->self;
+        result.activeSide = found->second->membership()->side;
+    }
+    if (result.cursor >= result.units.size() && !result.units.empty())
+        return Result<Candidate>::failure(
+            Diagnostic::error(DiagnosticCode::InvariantViolation, "turn cursor is outside unit schedule", {}));
+    // The activation queue. Version 5 stores it explicitly; versions 1-4 used the
+    // unit roster itself as the queue, so the migration keeps that roster order and
+    // the persisted cursor keeps indexing exactly what it used to.
+    if (hasSchedule) {
+        auto scheduleMember = field(*root.value(), "schedule", "payload");
+        if (!scheduleMember) return Result<Candidate>::failure(scheduleMember.status());
+        const auto* values = scheduleMember.value()->getIf<Value::Array>();
+        if (values == nullptr)
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::ParseError, "round schedule must be an array", "payload.schedule"));
+        std::set<std::string> scheduled;
+        for (std::size_t i = 0; i < values->size(); ++i) {
+            const std::string path = "payload.schedule[" + std::to_string(i) + "]";
+            auto entry = subject((*values)[i], path);
+            if (!entry) return Result<Candidate>::failure(entry.status());
+            const auto found = currentUnits.find(entry.value().format());
+            if (found == currentUnits.end())
+                return Result<Candidate>::failure(Diagnostic::error(
+                    DiagnosticCode::Conflict, "scheduled unit is absent from the target battle", path));
+            if (!scheduled.insert(found->first).second)
+                return Result<Candidate>::failure(
+                    Diagnostic::error(DiagnosticCode::Conflict, "round schedule repeats a unit", path));
+            result.schedule.push_back(found->second->identity()->self);
+        }
+        const bool activationPhase = result.phase == BattlePhase::TurnStart || result.phase == BattlePhase::Acting ||
+                                     result.phase == BattlePhase::TurnEnd;
+        if (activationPhase && result.cursor >= result.schedule.size())
+            return Result<Candidate>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "turn cursor is outside the round schedule", "payload.cursor"));
+    } else {
+        for (const auto& unit : result.units) result.schedule.push_back(unit.unit->identity()->self);
+    }
+    auto eventsMember = field(*root.value(), "events", "payload");
+    auto reactionsMember = field(*root.value(), "reactions", "payload");
+    auto commandsMember = field(*root.value(), "commands", "payload");
+    auto objectivesMember = field(*root.value(), "objectives", "payload");
+    auto randomMember = field(*root.value(), "random", "payload");
+    if (!everyResultValid(eventsMember, reactionsMember, commandsMember, objectivesMember, randomMember))
+        return Result<Candidate>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "snapshot is missing deterministic streams", {}));
+    auto events = parseEvents(*eventsMember.value());
+    auto reactions = parseReactions(*reactionsMember.value(), result.phase);
+    CommandFieldPolicy commandFields;
+    commandFields.policyIdStrings = sourceVersion >= SchemaVersion(3);
+    commandFields.allowUseAbility = sourceVersion >= SchemaVersion(4);
+    commandFields.abilityTargetFields = sourceVersion >= SchemaVersion(6);
+    auto commands = parseCommands(*commandsMember.value(), snapshotRevision, commandFields);
+    auto objectives = parseObjectives(battle, result.board, *objectivesMember.value(), snapshotRevision);
+    auto random = parseRandom(*randomMember.value());
+    // Observe every parsed stream *before* returning the first failure. A
+    // short-circuiting guard chain would leave the later Results unobserved, and an
+    // unobserved Result asserts when destroyed; two such destructors running during
+    // the same unwinding would terminate the process instead of reporting failure.
+    const bool eventsOk     = events.ok();
+    const bool reactionsOk  = reactions.ok();
+    const bool commandsOk   = commands.ok();
+    const bool objectivesOk = objectives.ok();
+    const bool randomOk     = random.ok();
+    if (!eventsOk) return Result<Candidate>::failure(events.status());
+    if (!reactionsOk) return Result<Candidate>::failure(reactions.status());
+    if (!commandsOk) return Result<Candidate>::failure(commands.status());
+    if (!objectivesOk) return Result<Candidate>::failure(objectives.status());
+    if (!randomOk) return Result<Candidate>::failure(random.status());
+    result.events = std::move(events).takeValue();
+    result.reactions = std::move(reactions).takeValue();
+    result.commands = std::move(commands).takeValue();
+    result.objectives = std::move(objectives).takeValue();
+    result.random = std::move(random).takeValue();
+    std::set<std::uint64_t> commandSequences;
+    std::map<std::string, std::uint64_t> randomCommandCounts;
+    for (const auto& command : result.commands.values) {
+        commandSequences.insert(command.sequence);
+        if (command.kind == BattleCommandKind::RollRandom) ++randomCommandCounts[command.action.format()];
+    }
+    for (const auto& [stream, state] : result.random.streams)
+        if (randomCommandCounts[stream] != state.rollIndex)
+            return Result<Candidate>::failure(Diagnostic::error(
+                DiagnosticCode::InvariantViolation, "random stream roll index differs from accepted command log",
+                "payload.random." + stream));
+    for (const auto& event : result.events.values) {
+        if (!commandSequences.contains(event.causationCommand) ||
+            !commandSequences.contains(event.correlationCommand))
+            return Result<Candidate>::failure(
+                Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                  "event causation/correlation references an absent command", "payload.events"));
+    }
+    std::set<std::uint64_t> eventSequences;
+    for (const auto& event : result.events.values) eventSequences.insert(event.sequence);
+    for (const auto& window : result.reactions.stack) {
+        if (!eventSequences.contains(window.triggerSequence))
+            return Result<Candidate>::failure(Diagnostic::error(DiagnosticCode::InvariantViolation,
+                                                                "reaction window references an absent trigger event",
+                                                                "payload.reactions.stack"));
+        for (const auto& reactionCandidate : window.candidates)
+            if (!currentUnits.contains(reactionCandidate.reactor.format()))
+                return Result<Candidate>::failure(
+                    Diagnostic::error(DiagnosticCode::Conflict, "reaction candidate is absent from the target battle",
+                                      "payload.reactions.stack"));
+    }
+    auto valid = result.board.validateInvariants();
+    if (!valid) return Result<Candidate>::failure(valid.status());
+    return Result<Candidate>::success(std::move(result));
+}
+
+}  // namespace
+
+struct TacticsPersistence::PreparedRestore::Impl {
+    Battle*        battle = nullptr;
+    Candidate      candidate;
+    Revision       revision;
+    SimulationTick tick;
+
+    Impl(Battle& target, Candidate&& state, Revision savedRevision, SimulationTick savedTick)
+        : battle(&target), candidate(std::move(state)), revision(savedRevision), tick(savedTick) {}
+};
+
+TacticsPersistence::PreparedRestore::PreparedRestore(std::unique_ptr<Impl> state) : state_(std::move(state)) {}
+TacticsPersistence::PreparedRestore::~PreparedRestore()                          = default;
+TacticsPersistence::PreparedRestore::PreparedRestore(PreparedRestore&&) noexcept = default;
+TacticsPersistence::PreparedRestore& TacticsPersistence::PreparedRestore::operator=(PreparedRestore&&) noexcept =
+    default;
+
+Result<SnapshotEnvelope> TacticsPersistence::snapshot(Battle& battle, const SnapshotHashProvider& hashProvider) {
+    Value::Array cells;
+    for (const auto& record : battle.board()->value.records()) {
+        Value::Array tags;
+        for (const auto& tag : record.state.tags) tags.emplace_back(tag);
+        cells.emplace_back(Value::Object{{"cell", cellValue(record.cell)},
+                                         {"height", Value(record.state.height)},
+                                         {"moveCost", Value(record.state.moveCost)},
+                                         {"passable", Value(record.state.passable)},
+                                         {"tags", Value(std::move(tags))}});
+    }
+    Value::Array edges;
+    for (const auto& record : battle.board()->value.edgeRecords()) {
+        Value::Array tags;
+        for (const auto& tag : record.state.tags) tags.emplace_back(tag);
+        edges.emplace_back(Value::Object{{"extraCost", Value(record.state.extraCost)},
+                                         {"from", cellValue(record.from)},
+                                         {"passable", Value(record.state.passable)},
+                                         {"tags", Value(std::move(tags))},
+                                         {"to", cellValue(record.to)}});
+    }
+    Value::Array units;
+    for (const auto& handle : battle.turn()->units) {
+        auto* unit = resolve<TacticalUnit>(handle);
+        if (!unit)
+            return Result<SnapshotEnvelope>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "battle contains a stale unit", {}));
+        auto encoded = unitValue(*unit);
+        if (!encoded) return Result<SnapshotEnvelope>::failure(encoded.status());
+        units.push_back(std::move(encoded).takeValue());
+    }
+    Value::Array sides;
+    for (const auto& handle : battle.turn()->sides) {
+        auto* side = resolve<TacticalSide>(handle);
+        if (!side)
+            return Result<SnapshotEnvelope>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "battle contains a stale side", {}));
+        sides.push_back(subjectValue(side->identity()->subject));
+    }
+    SubjectRef active;
+    if (battle.turn()->activeUnit) {
+        auto* unit = resolve<TacticalUnit>(*battle.turn()->activeUnit);
+        if (!unit)
+            return Result<SnapshotEnvelope>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "battle active unit is stale", {}));
+        active = unit->identity()->subject;
+    }
+    Value::Array events;
+    for (const auto& event : battle.events()->values) events.push_back(eventValue(event));
+    Value::Array reactionStack;
+    for (const auto& window : battle.reactions()->stack) reactionStack.push_back(windowValue(window));
+    Value::Array reactionSeen;
+    for (const auto& key : battle.reactions()->seen) reactionSeen.emplace_back(key);
+    Value::Array commands;
+    for (const auto& command : battle.commands()->values) commands.push_back(commandValue(command));
+    Value::Array objectives;
+    for (const auto& objective : battle.objectives()->values) objectives.push_back(objectiveValue(objective));
+    // The round's activation queue cannot be recomputed after a restore: the charge
+    // that produced it has already been spent, so a suspended round has to carry it.
+    Value::Array schedule;
+    for (const auto& handle : battle.turn()->schedule) {
+        auto* unit = resolve<TacticalUnit>(handle);
+        if (!unit)
+            return Result<SnapshotEnvelope>::failure(
+                Diagnostic::error(DiagnosticCode::StaleHandle, "battle schedule is stale", {}));
+        schedule.push_back(subjectValue(unit->identity()->subject));
+    }
+    Value payload(Value::Object{
+        {"activeUnit", subjectValue(active)},
+        {"board", Value(Value::Object{{"cells", Value(std::move(cells))},
+                                       {"edges", Value(std::move(edges))},
+                                       {"topology", Value(static_cast<int>(battle.board()->value.topology()))}})},
+        {"cursor", Value(std::to_string(battle.turn()->cursor))},
+        {"commands", Value(Value::Object{{"nextSequence", Value(std::to_string(battle.commands()->nextSequence))},
+                                          {"values", Value(std::move(commands))}})},
+        {"events", Value(Value::Object{{"nextSequence", Value(std::to_string(battle.events()->nextSequence))},
+                                        {"values", Value(std::move(events))}})},
+        {"objectives", Value(std::move(objectives))},
+        {"phase", Value(static_cast<int>(battle.turn()->phase))},
+        {"policy", Value(battle.turn()->policyId)},
+        {"random", randomValue(*battle.random())},
+        {"reactions", Value(Value::Object{
+                          {"maxDepth", Value(std::to_string(battle.reactions()->maxDepth))},
+                          {"seen", Value(std::move(reactionSeen))},
+                          {"stack", Value(std::move(reactionStack))}})},
+        {"round", Value(std::to_string(battle.turn()->round))},
+        {"schedule", Value(std::move(schedule))},
+        {"seed", Value(std::to_string(battle.identity()->seed))},
+        {"sides", Value(std::move(sides))},
+        {"status", Value(static_cast<int>(battle.turn()->status))},
+        {"units", Value(std::move(units))},
+    });
+    const auto version = battle.board()->value.topology() == BoardTopology::ExplicitGraph ? 7u : 6u;
+    return makeSnapshotEnvelope(std::string(kType), schema(), SchemaVersion(version),
+                                battle.identity()->subject.persistentId(), battle.turn()->revision, battle.turn()->tick,
+                                std::move(payload), hashProvider);
+}
+
+Result<Value> TacticsPersistence::commandLogValue(Battle& battle, Revision fromRevision) {
+    Value::Array values;
+    for (const BattleCommand& command : battle.commands()->values) {
+        if (command.resultingRevision > fromRevision) values.push_back(commandValue(command));
+    }
+    // The sequence counter is part of the value: replay refuses a log whose next sequence does
+    // not match the target battle, and that check is only meaningful if the counter travels
+    // with the commands.
+    return Result<Value>::success(Value(Value::Object{
+        {"nextSequence", Value(std::to_string(battle.commands()->nextSequence))},
+        {"values", Value(std::move(values))},
+    }));
+}
+
+Result<Battle::Commands> TacticsPersistence::parseCommandLog(const Value& value, Revision snapshotRevision) {
+    CommandFieldPolicy policy;
+    policy.policyIdStrings     = true;
+    policy.allowUseAbility     = true;
+    policy.abilityTargetFields = true;
+    // A replay log is anchored at the revision it will be replayed onto, not at its own end.
+    policy.boundary = CommandLogBoundary::StartsAtRevision;
+    return parseCommands(value, snapshotRevision, policy);
+}
+
+Result<void> TacticsPersistence::restore(Battle& battle, const SnapshotEnvelope& source,
+                                          const SnapshotHashProvider& hashProvider) {
+    auto prepared = prepareRestore(battle, source, hashProvider);
+    if (!prepared.ok()) return Result<void>::failure(prepared.status());
+    commitPrepared(std::move(prepared).takeValue());
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<TacticsPersistence::PreparedRestore> TacticsPersistence::prepareRestore(
+    Battle& battle, const SnapshotEnvelope& source, const SnapshotHashProvider& hashProvider) {
+    if (source.type != kType || source.schema != schema())
+        return Result<PreparedRestore>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "snapshot does not belong to tactics battle", {}));
+    if (source.instanceId != battle.identity()->subject.persistentId())
+        return Result<PreparedRestore>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "snapshot battle identity differs from target", {}));
+    auto verified = verifySnapshotEnvelope(source, hashProvider);
+    if (!verified) return Result<PreparedRestore>::failure(verified.status());
+    // V1 predates board edges; V2 predates stable policy ids; V3 predates the
+    // UseAbility command kind; V4 predates persisted scheduling charge and the
+    // explicit round schedule; V5 predates the ability target unit and payload. Each is
+    // migrated by the documented default for the field that did not exist yet, so this
+    // list only ever grows.
+    if (source.schemaVersion != SchemaVersion(1) && source.schemaVersion != SchemaVersion(2) &&
+        source.schemaVersion != SchemaVersion(3) && source.schemaVersion != SchemaVersion(4) &&
+        source.schemaVersion != SchemaVersion(5) && source.schemaVersion != SchemaVersion(6) &&
+        source.schemaVersion != SchemaVersion(7))
+        return Result<PreparedRestore>::failure(
+            Diagnostic::error(DiagnosticCode::UnknownVersion, "unsupported tactics battle snapshot version", {}));
+    auto metadata = validateSnapshotPayloadMetadata(source.payload, source.revision, source.tick);
+    if (!metadata) return Result<PreparedRestore>::failure(metadata.status());
+    auto candidate = parseCandidate(battle, source.payload, source.revision, source.schemaVersion);
+    if (!candidate) return Result<PreparedRestore>::failure(candidate.status());
+
+    auto state =
+        std::make_unique<PreparedRestore::Impl>(battle, std::move(candidate).takeValue(), source.revision, source.tick);
+    return Result<PreparedRestore>::success(PreparedRestore(std::move(state)));
+}
+
+void TacticsPersistence::commitPrepared(PreparedRestore prepared) noexcept {
+    auto&      battle       = *prepared.state_->battle;
+    Candidate& restored     = prepared.state_->candidate;
+    battle.board()->value = std::move(restored.board);
+    battle.identity()->seed = restored.seed;
+    for (auto& unit : restored.units) {
+        unit.unit->identity()->definition = unit.definition;
+        unit.unit->membership()->side = unit.side;
+        *unit.unit->turn() = unit.turn;
+        unit.unit->position()->cell = unit.cell;
+        unit.unit->position()->facing = unit.facing;
+        unit.unit->position()->placed = unit.placed;
+    }
+    auto turn = battle.turn();
+    turn->status = restored.status;
+    turn->phase = restored.phase;
+    turn->policyId = std::move(restored.policyId);
+    turn->tick           = prepared.state_->tick;
+    turn->revision       = prepared.state_->revision;
+    turn->round = restored.round;
+    turn->cursor = restored.cursor;
+    turn->activeUnit = restored.activeUnit;
+    turn->activeSide = restored.activeSide;
+    turn->sides = std::move(restored.sides);
+    turn->schedule = std::move(restored.schedule);
+    *battle.events() = std::move(restored.events);
+    *battle.reactions() = std::move(restored.reactions);
+    *battle.commands() = std::move(restored.commands);
+    *battle.objectives() = std::move(restored.objectives);
+    *battle.random()     = std::move(restored.random);
+}
+
+}  // namespace eve::tactics

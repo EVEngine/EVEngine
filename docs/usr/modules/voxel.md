@@ -45,17 +45,60 @@ function eve_render() {
 // 一次性配置地形生成器（seed + 草/土/石纹理 id + 基准高度 + 幅度 + 缩放）
 world.setTerrain(20260819, 1, 2, 3, 8.0, 14.0, 1.0 / 32.0);
 
+// 或使用细粒度参数：完整 procgen TerrainSampler（岛屿衰减、大陆形状、
+// 山脊/扭曲、八度）都能从脚本配置，低海拔柱子可选沙滩带。
+world.setTerrainParam("seed", 20260819);
+world.setTerrainParam("top", 1);        // 草
+world.setTerrainParam("sub", 2);        // 土
+world.setTerrainParam("stone", 3);      // 石
+world.setTerrainParam("sand", 5);       // 沙（沙滩带纹理）
+world.setTerrainParam("sandLevel", 0.30);  // 采样高度 ≤0.30 的柱子顶层用沙
+world.setTerrainParam("base", 8.0);
+world.setTerrainParam("amplitude", 18.0);
+world.setTerrainParam("scale", 1.0 / 64.0);  // 频率别名
+world.setTerrainParam("island", 0.45);       // 岛屿衰减强度（配 worldSize）
+world.setTerrainParam("worldWidth", 512);    // 岛屿衰减世界框
+world.setTerrainParam("worldHeight", 512);
+world.setTerrainParam("ridge", 0.35);        // 山脊混合
+world.setTerrainParam("enable", 1);          // 打开地形（默认关闭）
+
 // 每帧（或玩家跨 chunk 边界时）调用：自动补建/卸载并重建网格
 local playerChunkX = floor(player.x / 32.0);
 local playerChunkY = floor(player.y / 32.0);
 local playerChunkZ = floor(player.z / 32.0);
 world.streamAround(playerChunkX, playerChunkY, playerChunkZ, 4);  // 半径 4 chunk
+// 每帧限额（可选第 5 参）：只补最近的 N 个缺失 chunk，其余留到后续帧，避免一次填满半径卡顿。
+// world.streamAround(playerChunkX, playerChunkY, playerChunkZ, 4, 2);
 world.selectVisible(viewProj, player.x, player.y, player.z, 160.0, true);
 world.drawVisible(gfx, atlasTex, 16);
 ```
 
-`streamAround` 返回本次新建 chunk 数（卸载数可用 `getChunkCount` 差值计算）。
-地形是确定性的：同一世界坐标 + 同一 seed 永远得到相同高度，跨 chunk 无缝衔接。
+`streamAround` 返回本次**插入世界、可立即绘制**的 chunk 数（卸载数可用 `getChunkCount` 差值计算）。
+第 5 个参数 `maxCreates` 为 0（默认）时在调用线程一次补齐半径内全部缺失 chunk。大于 0 且使用内置噪声地形（无脚本 generator、未加载 EVTR）时，主线程只入队最近 N 个任务：工作线程填充体素并网格化，后续某帧 `streamAround` 再把已完成的 chunk 插入世界并绘制。脚本 generator 与 EVTR 资产路径仍在调用线程执行。
+`getInflightStreamCount()` 是尚未插入世界的后台任务数。`setStreamCacheChunks(extra)` 在加载球外再留一圈：离开时不立刻卸载，飞回来可直接绘制；超出 `radius + extra` 才回收。默认 extra=0（与旧行为一致）。地形是确定性的：同一世界坐标 + 同一 seed 永远得到相同高度，跨 chunk 无缝衔接。
+
+### 使用烘焙 EVTR 地形
+
+需要侵蚀、河网和生态群落时，先由 Procgen 烘焙 `EVTR`，再交给体素世界。
+`streamAround` 会自动预取覆盖体素半径的地形资产块，资产高度优先于噪声回退：
+
+```squirrel
+local p = procgen.newParams();
+p.setSeed(42); p.setSize(512, 512);
+local hm = procgen.generateHeightmap(p);
+procgen.erodeTerrainHydraulic(hm, 60, 0.012, 0.08, 2.0, 0.18, 0.12);
+local layers = procgen.analyzeTerrain(hm, 0.025, 0.25, 0.65);
+local evtr = procgen.bakeTerrainAsset(hm, layers, 64);
+
+// storedHeight * 24 + 6 映射到体素世界 Y。
+world.loadTerrainAsset(evtr, 6.0, 24.0);
+// vegetation, sand, snow, alpine rock, river bed 的 atlas/type id。
+world.setTerrainAssetMaterials(1, 4, 5, 3, 6);
+world.streamAround(playerChunkX, playerChunkY, playerChunkZ, 4);
+```
+
+也可用 `streamTerrainAssetAround(worldX, worldZ, radius, maxLoads)` 手动设置每帧解码
+预算；返回本帧加载的资产块数。`getTerrainAssetResidentCount()` 返回当前解码缓存数。
 
 ## 射线拾取（放置/破坏/瞄准）
 
@@ -73,7 +116,7 @@ if (world.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, 8.0)) {
 }
 ```
 
-## API 快查
+## 绑定与行为说明
 
 ### `Voxel`（模块）
 
@@ -89,14 +132,16 @@ if (world.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, 8.0)) {
 ### `VoxelWorld`（世界）
 
 - 编辑：`getVoxel(x,y,z)`、`setVoxel(x,y,z,texId)`（0=空气，不创建空 chunk）、
-  `setVoxelByName(x,y,z,name,orientation)`、`getCubeTypeName` / `getCubeTypeTex`。
+  `getRevision()`（内容真实变化时单调增长，供编辑器、存档和预览失效检测）。
 - 网格：`remeshDirty()`（自动并行）、`getChunkCount()`、`hasChunk`、`removeChunk`、`clear`。
 - 存档/流式：`saveWorld()`（返回 `data.newByteData` 可直接落盘）、`loadWorld(byteData)`、
   `unloadChunksOutside(cx,cy,cz,radiusChunks)`（卸载半径外的 chunk，返回卸载数）、
-  `streamAround(cx,cy,cz,radiusChunks)`（自动补建+生成+卸载+重建，返回新建数）、
-  `setTerrain(seed, top, sub, stone, base, amp, scale)` / `disableTerrain()`。
+  `setStreamCacheChunks(extra)` / `getStreamCacheChunks()`（`streamAround` 卸载半径 = 加载半径 + extra）、
+  `streamAround(cx,cy,cz,radiusChunks [,maxCreates])`（自动补建+生成+卸载+重建，返回本帧插入世界的数量；内置噪声 + maxCreates>0 时后台填充，就绪帧插入）、
+  `setTerrain(seed, top, sub, stone, base, amp, scale)`（快速配置）、
+  `setTerrainParam(key, value)`（细粒度配置，见下方参数表）、
+  `setTerrainAssetMaterials(vegetation,sand,snow,alpine,riverbed)` / `disableTerrain()`。
 - 渲染：`selectVisible(viewProj16, eyeX,eyeY,eyeZ, viewRange, faceCull)`、
-  `drawVisible(gfx, atlasTex, tilesPerRow)`、`getVisibleBatchCount` / `getVisibleChunkCount` /
   `getVisibleRectCount`。
 - 拾取：`raycast(ox,oy,oz,dx,dy,dz,maxDist)` + `lastRaycastHit()`、
   `getRaycastHitX/Y/Z`、`getRaycastPrevX/Y/Z`（命中前一个空气方块）、
@@ -104,10 +149,25 @@ if (world.raycast(eye.x, eye.y, eye.z, dir.x, dir.y, dir.z, 8.0)) {
 
 ## 生命周期
 
+- Vulkan 与原生 WebGPU（Dawn）均有实例化面绘制路径。浏览器
+  `EVENGINE_PROFILE=web` 仍不编本模块：`VoxelWorld` 公共头嵌入
+  `procgen::TerrainStreamingCache`，且 `procgen` 会拖 `map`→Poco。要进 `web`
+  需先把地形流式 API 拆成可选卫星，不是 WebGPU 画不出体素。
 - 世界与注册表由脚本 VM 持有，不要直接构造 `VoxelWorld` / `VoxelCubeTypes`。
 - 边界编辑会同时把相邻 chunk 标记 dirty；`remeshDirty()` 后接缝两侧一起重建，
   不会残留被遮挡的旧面。
 - 视距外的脏 chunk 不会在 `selectVisible` 时重建，进入视距后自动补网格。
 - 顶点 AO 在 remesh 时自动烘焙到矩形四角（0..3），无需额外配置；平坦表面全亮，
   台阶/凹角自然变暗。
+- `setTerrainParam` 参数表：`seed`/`top`/`sub`/`stone`/`sand`（纹理 id）、
+  `base`/`amplitude`（世界高度映射）、`scale` 或 `frequency`（噪声频率，
+  默认 1/32）、`octaves`/`lacunarity`/`gain`（fBm）、`ridge`/`warp`/`exponent`
+  （山脊/域扭曲/指数）、`continent`/`island`/`coast`（大陆-海岸形状）、
+  `worldWidth`/`worldHeight`（岛屿衰减框，>0 才生效）、`sandLevel`
+  （归一化采样高度阈值，>0 且 `sand` 非 0 时启用沙滩带）、`enable`（1 打开地形）。
+  `setTerrainParam` 只覆盖传入的键，其余参数保持默认；地形默认关闭，需 `enable=1`。
 - 存档格式为可移植小端二进制（`EVVX` + 版本 + chunk 坐标与体素），加载后网格按需重建。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](voxel/api-reference.md)，使用前先确认本章的前置条件与生命周期。

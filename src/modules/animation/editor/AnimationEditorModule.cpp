@@ -1,0 +1,71 @@
+#include "animation/editor/AnimationEditorModule.h"
+
+#include "animation/editing/AnimationClip.h"
+#include "animation/editing/AnimationEditingCommands.h"
+#include "animation/editor/AnimationClipEditorScriptBindings.h"
+#include "animation/editor/ControlRigAutomation.h"
+#include "animation/editor/ControlRigBindings.h"
+#include "common/Capability.h"
+#include "editing/EditingCommandRegistry.h"
+#include "editor/EditorAutomationTargetFactory.h"
+
+#include <simplesquirrel/simplesquirrel.hpp>
+
+#include <stdexcept>
+#include <string_view>
+#include <utility>
+#include <vector>
+
+namespace eve::animation_editor {
+namespace {
+
+const editor::EditorValue* field(const editor::EditorValue::Object& request, const char* key) {
+    const auto found = request.find(key);
+    return found == request.end() ? nullptr : &found->second;
+}
+
+}  // namespace
+
+class AnimationEditorModule::TargetFactory final : public editor::IEditorAutomationTargetFactory {
+public:
+    std::vector<std::string_view> types() const override { return {"animation-clip", "animation-clip-document"}; }
+
+    editor::Result<editor::AutomationOwnedTarget> create(
+        const editor::TargetId& target, std::string_view, const editor::EditorValue::Object& request) override {
+        auto clip = std::make_unique<animation_editing::AnimationClipDocumentTarget>(target.value());
+        if (const editor::EditorValue* snapshot = field(request, "snapshot")) {
+            auto loaded = clip->loadSnapshot(*snapshot);
+            if (!loaded.ok())
+                return editor::Result<editor::AutomationOwnedTarget>::failure(loaded.status());
+        }
+        editor::AutomationOwnedTarget owned;
+        owned.target = std::move(clip);
+        return eve::editing::applied<editor::AutomationOwnedTarget>(std::move(owned));
+    }
+};
+
+Module_IMPL(AnimationEditorModule, new AnimationEditorModule());
+
+AnimationEditorModule::AnimationEditorModule() : factory_(std::make_unique<TargetFactory>()) {
+    auto* registry = eve::cap::query<editing::IEditingCommandRegistry>();
+    if (!registry || !animation_editing::registerEditingCommands(*registry).ok())
+        throw std::runtime_error("Failed to register animation editing commands");
+    auto rigCommands = registerControlRigAutomation(*registry);
+    if (!rigCommands.ok()) throw std::runtime_error("Failed to register control rig editing commands");
+    eve::cap::addListener<editor::IEditorAutomationTargetFactory>(factory_.get());
+}
+
+AnimationEditorModule::~AnimationEditorModule() {
+    eve::cap::removeListener<editor::IEditorAutomationTargetFactory>(factory_.get());
+    if (auto* registry = eve::cap::query<editing::IEditingCommandRegistry>())
+        registry->unregisterOwner("animation_editing").ignore("animation editor adapter shutdown");
+}
+
+void AnimationEditorModule::expose(ssq::Table& table) {
+    auto module = table.addClass(name, AnimationEditorModule::create, false);
+    exposeAnimationClipEditorScriptBindings(table, module);
+    exposeControlRigBindings(table, module);
+}
+void AnimationEditorModule::expose(ssq::Class&) {}
+
+}  // namespace eve::animation_editor

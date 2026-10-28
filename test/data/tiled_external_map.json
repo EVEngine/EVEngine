@@ -1,0 +1,14 @@
+{
+  "type": "map",
+  "version": "1.10",
+  "orientation": "orthogonal",
+  "width": 2,
+  "height": 1,
+  "tilewidth": 16,
+  "tileheight": 16,
+  "tilesets": [
+    {"firstgid": 20, "source": "shore.tsj"},
+    {"firstgid": 30, "source": "walls.tsj"}
+  ],
+  "layers": [{"id": 1, "type": "tilelayer", "width": 2, "height": 1, "data": [20, 30]}]
+}

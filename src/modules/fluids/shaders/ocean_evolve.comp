@@ -1,0 +1,49 @@
+#version 450
+layout(local_size_x=64) in;
+layout(set=0,binding=0,std430) readonly buffer Coefficients { vec4 value[]; } coefficients;
+layout(set=0,binding=1,std430) writeonly buffer Output { vec2 value[]; } outputField;
+layout(push_constant) uniform Params { float data[32]; } p;
+vec2 multiply(vec2 a,vec2 b) { return vec2(a.x*b.x-a.y*b.y,a.x*b.y+a.y*b.x); }
+// Keep FFT parity independent of a Vulkan implementation's native sin/cos approximation.
+vec2 phase(float a) {
+    const float pi=3.141592653589793,halfPi=1.5707963267948966,tau=6.283185307179586;
+    float x=a-tau*floor(a/tau+0.5);
+    float cosineSign=1.0;
+    if(x>halfPi) { x=pi-x;cosineSign=-1.0; }
+    else if(x < -halfPi) { x=-pi-x;cosineSign=-1.0; }
+    float x2=x*x;
+    float s=x*(1.0+x2*(-1.0/6.0+x2*(1.0/120.0+x2*(-1.0/5040.0+x2*(1.0/362880.0-x2/39916800.0)))));
+    float c=1.0+x2*(-1.0/2.0+x2*(1.0/24.0+x2*(-1.0/720.0+x2*(1.0/40320.0+x2*(-1.0/3628800.0+x2/479001600.0)))));
+    return vec2(c*cosineSign,s);
+}
+uint reverseIndex(uint value,uint n) {
+    uint result=0;
+    for(uint bit=1;bit<n;bit<<=1) { result=(result<<1)|(value&1);value>>=1; }
+    return result;
+}
+void main() {
+    uint n=uint(p.data[0]),count=n*n,i=gl_GlobalInvocationID.x;
+    if(i>=6*count) return;
+    uint field=i/count,index=i%count;
+    vec4 c=coefficients.value[2*index],k=coefficients.value[2*index+1];
+    vec2 forward=multiply(c.xy,phase(-(k.z+k.w)*p.data[1]));
+    vec2 backward=multiply(c.zw,phase((k.z-k.w)*p.data[1]));
+    vec2 height=forward+backward;
+    vec2 velocity=multiply(vec2(0,k.z),backward-forward);
+    float magnitude=length(k.xy);
+    vec2 factor=field%3==1 ? vec2(1,0) : (magnitude>0 ? vec2(0,(field%3==0?k.x:k.y)/magnitude) : vec2(0));
+    vec2 firstD=multiply(factor,height)*(field%3==1?1:p.data[2]);
+    vec2 firstV=multiply(factor,velocity)*(field%3==1?1:p.data[2]);
+    vec2 value=field<3 ? firstD : firstV;
+    if(p.data[3]>0.5) {
+        vec4 next=coefficients.value[2*(index+count)];
+        vec2 f=multiply(next.xy,phase(-(k.z+k.w)*p.data[1]));
+        vec2 b=multiply(next.zw,phase((k.z-k.w)*p.data[1]));
+        vec2 nextD=multiply(factor,f+b)*(field%3==1?1:p.data[6]);
+        vec2 nextV=multiply(factor,multiply(vec2(0,k.z),b-f))*(field%3==1?1:p.data[6]);
+        value=field<3 ? mix(firstD,nextD,p.data[4]) : mix(firstV,nextV,p.data[4])+p.data[5]*(nextD-firstD);
+        if(field==4 && index==0) value.x+=p.data[7];
+    }
+    uint destination=reverseIndex(index%n,n)+n*reverseIndex(index/n,n)+field*count;
+    outputField.value[destination]=value;
+}

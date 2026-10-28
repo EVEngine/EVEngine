@@ -1,8 +1,10 @@
 # 鼠标模块
 
+[English](../../en/usr/modules/mouse.md)
+
 **脚本入口：** `eve.Mouse()`
 
-查询鼠标位置、按键和相对移动模式。
+查询鼠标位置、按键、相对模式与可见性。
 
 ## 基本用法
 
@@ -14,7 +16,7 @@ if (mouse.isDown(1)) fireAt(mx, my);
 
 ## 对象关系与调用时机
 
-`Mouse` 当前脚本绑定只提供坐标、按键和可见状态查询。坐标位于窗口空间；世界命中测试需要用当前相机反变换。
+`Mouse` 脚本绑定提供坐标、按键、可见性、抓取与相对模式。坐标位于窗口空间；世界命中测试需要用当前相机反变换。
 
 ## 目标导向指南
 
@@ -24,25 +26,33 @@ if (mouse.isDown(1)) fireAt(mx, my);
 
 ### 显示或隐藏游戏光标
 
-用 `isVisible()` 查询当前状态。当前脚本绑定未提供相对模式或设定可见性的接口；第一人称相机应通过原生输入扩展实现，不能假设 Mouse 的 C++ 后端能力已绑定。
+用 `setVisible(bool)` / `isVisible()` 控制并查询光标可见性。
+
+### 第一人称视角（相对模式）
+
+```squirrel
+mouse.setRelativeMode(true);   // 光标锁定并隐藏，只报告相对移动
+mouse.setRelativeMode(false);  // 恢复绝对坐标
+```
+
+相对模式下不要用 `setPosition` 回中再对 `getX()` 求差：Windows 上 warp 会注入反向位移，视角会先转再弹回。
+每帧在 `eve_update` 里先调 `getMovementX()` 再调 `getMovementY()`（前者从 SDL 取相对位移并锁存 Y）。
+`setGrabbed(bool)` / `isGrabbed()` 控制窗口鼠标抓取（平台行为差异见 `mouse/sdl/Mouse.cpp`）。
 
 ## 常见问题
 
 - 把按钮编号与键盘名混用：鼠标按钮使用整数编号。
 - UI 已捕获鼠标仍触发游戏点击：先检查 `ui.wantCaptureMouse()`。
-- 假设存在相对模式 setter：当前脚本绑定没有该接口。
-
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `getName()`、`getX()`、`getY()`、`isDown()`、`isVisible()`
+- 相对模式请求失败：SDL 在无聚焦窗口等情况下可能拒绝，`setRelativeMode()` 返回 `false`，调用方应检查返回值。
 
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/mouse/`](../../../src/modules/mouse/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `mouse`。
+
+### 滚轮快照
+
+`getWheelX()` / `getWheelY()` 返回最近一次完成的事件泵累计滚轮增量（浮点返回值，已统一 flipped 方向；SDL 2.0.18 及以上保留精细滚动，旧版只有整数滚轮事件）。同帧多次读取不消费输入；下一次无滚轮事件的泵完成后归零。仅在事件线程的更新阶段读取，UI 捕获的事件不进入游戏输入快照。

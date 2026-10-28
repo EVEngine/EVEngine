@@ -21,7 +21,7 @@ if "%SRV%"=="200" (
     echo Server already running on 8090.
 ) else (
     echo Starting COOP/COEP server on 8090...
-    start "EVEngine WebGPU server" python "%ROOT%\build\serve_webgpu.py"
+    start "EVEngine WebGPU server" python "%ROOT%\scripts\serve_webgpu.py"
     timeout /t 2 /nobreak >nul
 )
 

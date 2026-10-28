@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <functional>
@@ -15,10 +17,11 @@ namespace CLI
 namespace eve::cmd {
 
 class Cmdline;
-class Register;
+struct Register;
 
 /** @brief One `eve <subcommand>` handler: CLI setup + argument parsing. */
 struct Handler {
+    /** @brief Releases Handler resources. */
     virtual ~Handler() {}
     /** @brief Registers options on the CLI11 sub-app. */
     virtual void setup(CLI::App&, std::shared_ptr<CLI::Formatter>) = 0;
@@ -27,8 +30,7 @@ struct Handler {
 };
 
 /** @brief 命令行模块（eve.cmd）：run / build / package / test / zip / dev-server 等子命令入口。 */
-class Cmdline : public Module {
-
+class EVENGINE_API_FOUNDATION Cmdline : public Module {
 public:
     Module_REG(Cmdline);
 
@@ -36,8 +38,9 @@ public:
     int Run(std::string path, std::string root, bool debug = false, int dapPort = 0,
             int mcpPort = 0, std::string devServer = "");
 
-    /** @brief 构建项目（需要下载工具与源码）。 */
-    int Build(std::string path, std::string output, std::string platform);
+    /** @brief 构建项目：委托仓库 Makefile 的 build/<platform>[-debug] 目标。 */
+    int Build(std::string path, std::string output, std::string platform,
+              std::string sdkRoot = "", bool debug = false);
 
     /** @brief 把游戏打包为单个可执行文件 / APK。 */
     int Package(std::string path, std::string output, std::string sdk);
@@ -47,6 +50,9 @@ public:
 
     /** @brief 无头 MCP 宿主：stdio（默认）或 TCP，供 AI 代理驱动。 */
     int McpHost(std::string path, int port);
+
+    /** @brief EveScript Language Server Protocol stdio host (devtools LanguageServer). */
+    int LanguageServer(std::string path);
 
     /** @brief 把当前目录打成 .eve 压缩包。 */
     int Zip(std::string path);
@@ -61,18 +67,19 @@ public:
     int Clean(std::string path);
 
     /** @brief 显示模块/函数/类型的文档。 */
-    int Doc(std::string name);
+    int Doc(std::string name, bool noOpen = false);
 
     /** @brief 创建新项目。 */
     int Create(std::string path, std::string name);
 
     /** @brief 解析并执行传入的 argv。 */
-    int runArgs(unsigned argc, char** argv);
+    int runArgs(unsigned argcIn, char** argvIn);
 
     /** @brief 第 i 个原始 argv（physfs 文件系统用）。 */
     std::string getArgv(unsigned i) {
         return (argv && i < argc && argv[i]) ? argv[i] : std::string{};
     }
+    /** @brief Returns the argc. */
     unsigned getArgc() { return argc; }
 
     /** @brief 子命令剩余位置参数。 */
@@ -80,12 +87,14 @@ public:
 
     friend Register;
 protected:
+    /** @brief Cmdline. */
     Cmdline();
 
     unsigned argc;
     char** argv;
 
     static std::vector<std::function<Handler*()>>& handers();
+    /** @brief Registers cmd. */
     static void registerCmd(std::function<Handler*()> handler);
 };
 
@@ -95,7 +104,9 @@ protected:
 
 /** @brief 子命令静态注册器（CMD_REG 宏使用）。 */
 struct Register {
+    /** @brief Constructs a Register. */
     Register(std::function<Handler*()> handler) {
+        /** @brief Registers cmd. */
         Cmdline::registerCmd(handler);
     }
 };

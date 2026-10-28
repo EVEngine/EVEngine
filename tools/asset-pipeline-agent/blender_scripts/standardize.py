@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import json
 import os
-import shutil
 import sys
 import time
 import zipfile
@@ -176,7 +175,7 @@ def standardize_materials(bpy, obj, max_size: int) -> int:
 
     seen = set()
     for img in bpy.data.images:
-        if img.name in seen or not getattr(img, "source", None) in ("FILE",):
+        if img.name in seen or getattr(img, "source", None) not in ("FILE",):
             continue
         seen.add(img.name)
         if max_size and (img.size[0] > max_size or img.size[1] > max_size):

@@ -1,15 +1,39 @@
 #include "animation/AnimPlayer.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimSkeleton.h"
+#include "animation/RootMotionPolicy.h"
 
 #include "common/Exception.h"
 
-namespace eve::animation {
+#include <algorithm>
+#include <cmath>
 
-AnimPlayer::AnimPlayer(AnimSkeleton *skeleton) : skeleton_(skeleton) {
+namespace eve::animation {
+namespace {
+
+TransformTRS rootMotionDelta(const TransformTRS& from, const TransformTRS& to) {
+    TransformTRS delta = TransformTRS::identity();
+    delta.px           = to.px - from.px;
+    delta.py           = to.py - from.py;
+    delta.pz           = to.pz - from.pz;
+    delta.qx           = from.qw * to.qx - from.qx * to.qw - from.qy * to.qz + from.qz * to.qy;
+    delta.qy           = from.qw * to.qy + from.qx * to.qz - from.qy * to.qw - from.qz * to.qx;
+    delta.qz           = from.qw * to.qz - from.qx * to.qy + from.qy * to.qx - from.qz * to.qw;
+    delta.qw           = from.qw * to.qw + from.qx * to.qx + from.qy * to.qy + from.qz * to.qz;
+    delta.normalizeRotation();
+    return delta;
+}
+
+}  // namespace
+
+AnimPlayer::AnimPlayer(AnimSkeleton* skeleton) : skeleton_(skeleton) {
     if (!skeleton_) throw Exception("AnimPlayer: skeleton is null");
     pose_.resize(skeleton_->getBoneCount());
     prevPose_.resize(skeleton_->getBoneCount());
+    sampledPose_.resize(skeleton_->getBoneCount());
+    rootPreviousPose_.resize(skeleton_->getBoneCount());
+    rootStartPose_.resize(skeleton_->getBoneCount());
+    rootEndPose_.resize(skeleton_->getBoneCount());
     skeleton_->applyBindPose(&pose_);
 }
 
@@ -33,26 +57,31 @@ void AnimPlayer::setTime(float seconds) {
     }
 }
 
-void AnimPlayer::play(AnimClip *clip) {
+void AnimPlayer::play(AnimClip* clip) {
     if (!clip) throw Exception("AnimPlayer.play: clip is null");
-    clip_         = clip;
-    prevClip_     = nullptr;
-    blending_     = false;
-    time_         = 0.f;
-    playing_      = true;
-    paused_       = false;
+    clip_     = clip;
+    prevClip_ = nullptr;
+    blending_ = false;
+    time_     = 0.f;
+    playing_  = true;
+    paused_   = false;
     clip_->sample(0.f, &pose_, skeleton_);
+    events_.clear();
+    for (int i = 0; i < clip_->getEventCount(); ++i) {
+        if (std::fabs(clip_->getEventTime(i)) <= 1e-7f)
+            events_.push_back({clip_->getEventName(i), clip_->getEventPayload(i)});
+    }
 }
 
-void AnimPlayer::crossFade(AnimClip *clip, float blendSeconds) {
+void AnimPlayer::crossFade(AnimClip* clip, float blendSeconds) {
     if (!clip) throw Exception("AnimPlayer.crossFade: clip is null");
     if (blendSeconds < 0.f) throw Exception("AnimPlayer.crossFade: blendSeconds must be >= 0");
     if (!clip_ || blendSeconds <= 1e-6f) {
         play(clip);
         return;
     }
-    prevClip_      = clip_;
-    prevTime_      = time_;
+    prevClip_ = clip_;
+    prevTime_ = time_;
     prevPose_.copyFrom(&pose_);
     clip_          = clip;
     time_          = 0.f;
@@ -71,6 +100,7 @@ void AnimPlayer::stop() {
     prevClip_ = nullptr;
     time_     = 0.f;
     if (skeleton_) skeleton_->applyBindPose(&pose_);
+    events_.clear();
 }
 
 void AnimPlayer::pause() {
@@ -81,20 +111,118 @@ void AnimPlayer::resume() {
     if (playing_) paused_ = false;
 }
 
-AnimPose *AnimPlayer::getPose() { return &pose_; }
+AnimPose* AnimPlayer::getPose() { return &pose_; }
 
-void AnimPlayer::update(float dt) {
+void AnimPlayer::setRootMotionBone(int boneIndex) {
+    if (boneIndex < 0 || boneIndex >= skeleton_->getBoneCount())
+        throw Exception("AnimPlayer.setRootMotionBone: invalid bone %d", boneIndex);
+    rootMotionBone_ = boneIndex;
+}
+
+eve::Result<void> AnimPlayer::setRootMotionPolicy(const RootMotionPolicy& policy) {
+    auto validated = validateRootMotionPolicy(policy);
+    if (!validated) return validated;
+    rootMotionPolicy_ = policy;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> AnimPlayer::setRootMotionCharacterYaw(float yawRadians) {
+    if (!std::isfinite(yawRadians))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "root motion characterYaw must be finite"));
+    rootMotionPolicy_.characterYaw = yawRadians;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+std::string AnimPlayer::consumeEvent() {
+    if (pendingEvents_.empty()) return {};
+    std::string event = std::move(pendingEvents_.front());
+    pendingEvents_.erase(pendingEvents_.begin());
+    return event;
+}
+
+void AnimPlayer::setUpdateRate(float hz) {
+    if (hz < 0.f) throw Exception("AnimPlayer.setUpdateRate: hz must be >= 0");
+    updateRate_        = hz;
+    updateAccumulator_ = 0.f;
+}
+
+std::string AnimPlayer::getEventName(int index) const {
+    if (index < 0 || index >= getEventCount()) return {};
+    return events_[static_cast<size_t>(index)].name;
+}
+
+std::string AnimPlayer::getEventPayload(int index) const {
+    if (index < 0 || index >= getEventCount()) return {};
+    return events_[static_cast<size_t>(index)].payload;
+}
+
+void AnimPlayer::dispatchEvents(float oldTime, float newTime) {
+    if (!clip_ || clip_->getEventCount() == 0 || newTime <= oldTime) return;
+    const float duration = clip_->getDuration();
+    if (effectiveLoop() && duration > 1e-8f) {
+        const int firstCycle = static_cast<int>(std::floor(oldTime / duration));
+        const int lastCycle  = static_cast<int>(std::floor(newTime / duration));
+        for (int cycle = firstCycle; cycle <= lastCycle; ++cycle) {
+            for (int i = 0; i < clip_->getEventCount(); ++i) {
+                const float absoluteTime = static_cast<float>(cycle) * duration + clip_->getEventTime(i);
+                if (absoluteTime > oldTime && absoluteTime <= newTime)
+                    events_.push_back({clip_->getEventName(i), clip_->getEventPayload(i)});
+            }
+        }
+        return;
+    }
+    const float endTime = duration > 0.f ? std::min(newTime, duration) : newTime;
+    for (int i = 0; i < clip_->getEventCount(); ++i) {
+        const float eventTime = clip_->getEventTime(i);
+        if (eventTime > oldTime && eventTime <= endTime)
+            events_.push_back({clip_->getEventName(i), clip_->getEventPayload(i)});
+    }
+}
+
+void AnimPlayer::updateUnchecked(float dt) {
     if (dt < 0.f) throw Exception("AnimPlayer.update: dt must be >= 0");
+    events_.clear();
     if (!playing_ || paused_ || !clip_) return;
+    if (updateRate_ > 0.f) {
+        updateAccumulator_ += dt;
+        const float interval = 1.f / updateRate_;
+        if (updateAccumulator_ + 1e-8f < interval) {
+            rootMotion_ = TransformTRS::identity();
+            return;
+        }
+        dt                 = updateAccumulator_;
+        updateAccumulator_ = 0.f;
+    }
 
+    rootMotion_              = TransformTRS::identity();
+    const float previousTime = time_;
+    clip_->sample(previousTime, &rootPreviousPose_, skeleton_);
     time_ += dt * speed_;
+    clip_->collectEvents(previousTime, time_, effectiveLoop(), pendingEvents_);
+    dispatchEvents(previousTime, time_);
     if (!effectiveLoop() && clip_->getDuration() > 0.f && time_ >= clip_->getDuration()) {
         time_    = clip_->getDuration();
         playing_ = false;
     }
 
-    AnimPose sampled;
-    clip_->sample(time_, &sampled, skeleton_);
+    clip_->sample(time_, &sampledPose_, skeleton_);
+    const TransformTRS& fromRoot  = rootPreviousPose_.local(rootMotionBone_);
+    const TransformTRS& toRoot    = sampledPose_.local(rootMotionBone_);
+    TransformTRS        rawMotion = rootMotionDelta(fromRoot, toRoot);
+    if (effectiveLoop() && clip_->getDuration() > 1e-8f) {
+        const float duration = clip_->getDuration();
+        const int   cycles   = static_cast<int>(std::floor(time_ / duration) - std::floor(previousTime / duration));
+        if (cycles != 0) {
+            clip_->sample(0.f, &rootStartPose_, skeleton_);
+            clip_->sampleClamped(duration, &rootEndPose_, skeleton_);
+            const TransformTRS& startRoot = rootStartPose_.local(rootMotionBone_);
+            const TransformTRS& endRoot   = rootEndPose_.local(rootMotionBone_);
+            rawMotion.px += static_cast<float>(cycles) * (endRoot.px - startRoot.px);
+            rawMotion.py += static_cast<float>(cycles) * (endRoot.py - startRoot.py);
+            rawMotion.pz += static_cast<float>(cycles) * (endRoot.pz - startRoot.pz);
+        }
+    }
 
     if (blending_ && prevClip_) {
         blendElapsed_ += dt;
@@ -102,16 +230,80 @@ void AnimPlayer::update(float dt) {
         if (t >= 1.f) {
             blending_ = false;
             prevClip_ = nullptr;
-            pose_.copyFrom(&sampled);
+            pose_.copyFrom(&sampledPose_);
         } else {
-            // Advance previous clip time during fade for continuity.
+            // The displayed pose may already have root translation baked out.
+            // Measure outgoing motion between two samples of the source clip.
+            prevClip_->sample(prevTime_, &rootPreviousPose_, skeleton_);
+            const TransformTRS outgoingFrom = rootPreviousPose_.local(rootMotionBone_);
+            const float        outgoingTime = prevTime_;
             prevTime_ += dt * speed_;
             prevClip_->sample(prevTime_, &prevPose_, skeleton_);
-            pose_.blendFrom(&prevPose_, &sampled, t);
+            switch (blendCurve_) {
+                case AnimBlendCurve::Linear: break;
+                case AnimBlendCurve::EaseIn: t *= t; break;
+                case AnimBlendCurve::EaseOut: t = 1.0f - (1.0f - t) * (1.0f - t); break;
+                case AnimBlendCurve::EaseInOut: t = t * t * (3.0f - 2.0f * t); break;
+                case AnimBlendCurve::SmoothStep: t = t * t * (3.0f - 2.0f * t); break;
+            }
+            TransformTRS outgoingDelta = rootMotionDelta(outgoingFrom, prevPose_.local(rootMotionBone_));
+            if (prevClip_->getLoop() && prevClip_->getDuration() > 1e-8f) {
+                const float duration = prevClip_->getDuration();
+                const int   cycles =
+                    static_cast<int>(std::floor(prevTime_ / duration) - std::floor(outgoingTime / duration));
+                if (cycles != 0) {
+                    prevClip_->sample(0.f, &rootStartPose_, skeleton_);
+                    prevClip_->sampleClamped(duration, &rootEndPose_, skeleton_);
+                    const auto& start = rootStartPose_.local(rootMotionBone_);
+                    const auto& end   = rootEndPose_.local(rootMotionBone_);
+                    outgoingDelta.px += static_cast<float>(cycles) * (end.px - start.px);
+                    outgoingDelta.py += static_cast<float>(cycles) * (end.py - start.py);
+                    outgoingDelta.pz += static_cast<float>(cycles) * (end.pz - start.pz);
+                }
+            }
+            pose_.blendFrom(&prevPose_, &sampledPose_, t);
+            rawMotion = blendTRS(outgoingDelta, rawMotion, t);
         }
     } else {
-        pose_.copyFrom(&sampled);
+        pose_.copyFrom(&sampledPose_);
     }
+    rootMotion_ = applyRootMotionPolicy(rawMotion, rootMotionPolicy_);
+    bakeRootMotionIntoPose(pose_, rootMotionBone_, skeleton_->bindLocal(rootMotionBone_), rootMotionPolicy_)
+        .ignore("root motion bake skipped when bone/policy leaves pose unchanged");
+}
+
+eve::Result<void> AnimPlayer::advance(const eve::SimulationStep& step) {
+    if (step.delta.nanoseconds() < 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "animation player delta must be non-negative"));
+    if (hasLastTick_ && step.tick <= lastTick_)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "animation player tick must advance monotonically"));
+
+    const float dt = static_cast<float>(step.delta.seconds());
+    if (!std::isfinite(dt))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "animation player delta is outside float range"));
+    updateUnchecked(dt);
+    lastTick_    = step.tick;
+    hasLastTick_ = true;
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+void AnimPlayer::update(float dt) {
+    auto duration = eve::Duration::fromSeconds(dt);
+    if (!duration) {
+        duration.ignore("legacy animation player update received an invalid duration");
+        return;
+    }
+    auto nextTick = hasLastTick_ ? lastTick_.incremented() : std::optional<eve::SimulationTick>(eve::SimulationTick(1));
+    if (!nextTick) {
+        eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
+                                                          "animation player simulation tick overflow"))
+            .ignore("legacy animation player update tick overflow");
+        return;
+    }
+    advance({*nextTick, std::move(duration).takeValue()}).ignore("legacy animation player update facade");
 }
 
 }  // namespace eve::animation

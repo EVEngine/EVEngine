@@ -4,15 +4,18 @@
 // Textures are CC0 images bundled under assets/ (see ATTRIBUTION.md).
 // Run: make run/win32-debug GAME=examples/linear-structures
 
-if (!("structures" in getroottable())) structures <- [];
-if (!("active" in getroottable())) active <- 0;
-if (!("segments" in getroottable())) segments <- 6;
-if (!("segLength" in getroottable())) segLength <- 2.0;
-if (!("autoSpin" in getroottable())) autoSpin <- false;
-if (!("yaw" in getroottable())) yaw <- 0.0;
-if (!("camYaw" in getroottable())) camYaw <- 0.0;
-if (!("uiReady" in getroottable())) uiReady <- false;
-if (!("rWasDown" in getroottable())) rWasDown <- false;
+persist structures = []
+persist active = 0
+persist segments = 6
+persist segLength = 2.0
+persist autoSpin = true
+persist yaw = 0.0
+persist camYaw = 0.0
+persist uiReady = false
+persist rWasDown = false
+persist tabWas = false
+persist plusWas = false
+persist minusWas = false
 
 local STRUCT_RECIPES = [
     { id = "mesh.fence",       file = "assets/wood.jpg",  tex = "tex.soil",  tint = { r=1.0, g=0.92, b=0.78 } },
@@ -32,7 +35,9 @@ function loadStructureTexture(spec, p) {
             // Fall back to a procedural texture if the CC0 file is missing.
         }
     }
-    local tp = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) return null;
+    local tp = paramsResult.value;
     tp.setSeed(7);
     tp.setSize(128, 128);
     tp.setFloat("scale", 4.0);
@@ -40,21 +45,30 @@ function loadStructureTexture(spec, p) {
     tp.setInt("colors", 6);
     tp.setInt("pixelSize", 2);
     tp.setInt("seamless", 1);
-    return procgen.generateTexture(spec.tex, tp, gfx);
+    local textureResult = procgen.generateTexture(spec.tex, tp, gfx);
+    if (!textureResult.ok) return null;
+    return textureResult.value;
 }
 
 function buildOne(spec, x, y, z) {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        ui.select("lab");
+        ui.setText("status", "Parameter creation failed: " + paramsResult.status.summary);
+        return null;
+    }
+    local p = paramsResult.value;
     p.setInt("segments", segments);
     p.setFloat("segLength", segLength);
     p.setFloat("uvRepeat", 2.0);
 
-    local mesh = procgen.generateMesh(spec.id, p, gfx);
-    if (mesh == null) {
+    local meshResult = procgen.generateMesh(spec.id, p, gfx);
+    if (!meshResult.ok) {
         ui.select("lab");
-        ui.setText("status", "FAIL " + spec.id + ": " + procgen.lastError());
+        ui.setText("status", "FAIL " + spec.id + ": " + meshResult.status.summary);
         return null;
     }
+    local mesh = meshResult.value;
     local tex = loadStructureTexture(spec, p);
 
     local ent = eve.Renderable3D();
@@ -116,7 +130,7 @@ function buildPanel() {
     ui.beginWindow("LINEAR STRUCTURES", "root");
     ui.text("TILEABLE PROCEDURAL PROPS", "eyebrow");
     ui.text(STRUCT_RECIPES[active].id, "sample");
-    ui.slider("Segments", segments, 1.0, 24.0, "segments");
+    ui.slider("Segments", segments.tofloat(), 1.0, 24.0, "segments");
     ui.slider("Unit length", segLength, 0.5, 6.0, "segLength");
     ui.button("Next structure", "next");
     ui.button("Rebuild", "rebuild");
@@ -141,7 +155,7 @@ eve_init = function() {
 
 eve_update = function(dt) {
     if (autoSpin) {
-        camYaw += dt * 6.0;
+        camYaw += dt * 0.5;
         local ex = math.polarX(16.0, camYaw);
         local ez = math.polarY(16.0, camYaw);
         camera.setEye(ex, 6.5, ez);
@@ -164,18 +178,18 @@ eve_update = function(dt) {
     }
 
     local tabDown = keyboard.isDown("tab");
-    local tabPressed = tabDown && !("tabWas" in getroottable() ? tabWas : false);
-    tabWas <- tabDown;
+    local tabPressed = tabDown && !tabWas;
+    tabWas = tabDown;
     if (tabPressed) { active = (active + 1) % STRUCT_RECIPES.len(); rebuild(); }
 
     local plus = keyboard.isDown("plus") || keyboard.isDown("equals");
-    local wasPlus = ("plusWas" in getroottable() ? plusWas : false);
-    plusWas <- plus;
+    local wasPlus = plusWas;
+    plusWas = plus;
     if (plus && !wasPlus) { segments = segments + 1; rebuild(); }
 
     local minus = keyboard.isDown("minus");
-    local wasMinus = ("minusWas" in getroottable() ? minusWas : false);
-    minusWas <- minus;
+    local wasMinus = minusWas;
+    minusWas = minus;
     if (minus && !wasMinus) { if (segments > 1) { segments = segments - 1; rebuild(); } }
 };
 

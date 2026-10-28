@@ -12,7 +12,7 @@ const std::unordered_map<std::string, uint32_t> &nameToId() {
         {"water", Semantic::Water},       {"sand", Semantic::Sand},
         {"grass", Semantic::Grass},       {"dirt", Semantic::Dirt},
         {"stone", Semantic::Stone},       {"snow", Semantic::Snow},
-        {"door", Semantic::Door},
+        {"door", Semantic::Door},         {"road", Semantic::Road},
     };
     return m;
 }
@@ -32,6 +32,7 @@ const char *semanticName(uint32_t id) {
     case Semantic::Stone: return "stone";
     case Semantic::Snow: return "snow";
     case Semantic::Door: return "door";
+    case Semantic::Road: return "road";
     default: return "unknown";
     }
 }

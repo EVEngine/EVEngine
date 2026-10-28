@@ -1,0 +1,67 @@
+#version 450
+
+#extension GL_GOOGLE_include_directive : enable
+#include "gpudriven_tables.glsl"
+#include "gpu_driven_cull_common.glsl"
+
+layout(local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
+
+// Mirrors VkDrawIndexedIndirectCommand / GpuIndirectCommand (20 bytes).
+struct GpuIndirectCommand {
+    uint indexCount;
+    uint instanceCount;
+    uint firstIndex;
+    uint vertexOffset;
+    uint firstInstance;
+};
+
+layout(set = 1, binding = 2, std430) readonly buffer Meshes {
+    GpuMeshRecord meshes[];
+};
+layout(set = 1, binding = 17, std430) readonly buffer SourceInstances {
+    GpuInstance instances[];
+};
+layout(set = 1, binding = 7, std430) readonly buffer VisibleFlags {
+    uint flags[];
+};
+layout(set = 1, binding = 12, std430) readonly buffer BucketIds {
+    uint bucketIds[];
+};
+layout(set = 1, binding = 13, std430) readonly buffer BucketOffsets {
+    uint bucketOffsets[];
+};
+layout(set = 1, binding = 14, std430) coherent buffer BucketCounters {
+    uint counters[];
+};
+layout(set = 1, binding = 8, std430) coherent buffer Compacted {
+    GpuInstance compacted[];
+};
+layout(set = 1, binding = 9, std430) coherent buffer IndirectCmds {
+    GpuIndirectCommand commands[];
+};
+layout(set = 1, binding = 30, std430) coherent buffer IndirectCmdsNI {
+    uvec4 commandsNI[];  // VkDrawIndirectCommand: {vertexCount, instanceCount, firstVertex, firstInstance}
+};
+
+void main() {
+    uint i = gl_GlobalInvocationID.x;
+    if (i >= params.counts.x) return;
+    if (flags[i] == 0u) return;
+
+    uint bucket = bucketIds[i];
+    if (bucket >= params.counts.y) return;
+    uint pos = atomicAdd(counters[bucket], 1u);
+    uint firstInstance = bucketOffsets[bucket];
+    if (pos == 0u) {
+        GpuMeshRecord mesh = meshes[instances[i].meshId];
+        commands[bucket].indexCount = mesh.indexCount;
+        commands[bucket].instanceCount = 0u;
+        commands[bucket].firstIndex = mesh.firstIndex;
+        commands[bucket].vertexOffset = mesh.vertexBase;
+        commands[bucket].firstInstance = firstInstance;
+        commandsNI[bucket] = uvec4(mesh.indexCount, 0u, 0u, firstInstance);
+    }
+    atomicAdd(commands[bucket].instanceCount, 1u);
+    atomicAdd(commandsNI[bucket].y, 1u);
+    compacted[firstInstance + pos] = instances[i];
+}

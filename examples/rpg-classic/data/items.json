@@ -1,0 +1,5 @@
+[
+  {"id": "potion", "displayName": "治疗药水", "maxStack": 20, "category": "consumable", "tags": ["potion"]},
+  {"id": "iron_sword", "displayName": "铁剑", "maxStack": 1, "category": "weapon", "tags": ["weapon"], "equipSlot": "weapon"},
+  {"id": "leather_armor", "displayName": "皮甲", "maxStack": 1, "category": "armor", "tags": ["armor"], "equipSlot": "armor"}
+]

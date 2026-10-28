@@ -1,25 +1,15 @@
 #include "rpg/RPGActor.h"
 #include "rpg/AttributeSystem.h"
+#include "rpg/ClassSystem.h"
+#include "rpg/LevelSystem.h"
 #include "rpg/StatusSystem.h"
 #include "rpg/SkillSystem.h"
-#include "rpg/Progression.h"
+#include "rpg/TraitSystem.h"
+#include "rpg/VitalsSystem.h"
 
-#include <algorithm>
+#include <utility>
 
 namespace eve::rpg {
-
-namespace {
-
-// 按 handle（id + generation）而非裸指针跟踪存活 actor：
-// ECS 的 entity 槽位在销毁后会被复用，复用后地址相同但其实是另一个实体，
-// 裸指针 + is_entity_visible 无法区分这种复用（复用后 flags 会被重置，
-// 旧的裸指针看起来又"活"了），必须连同 generation 一起校验才安全。
-std::vector<ecs::EntityHandle> &registryStorage() {
-    static std::vector<ecs::EntityHandle> v;
-    return v;
-}
-
-}  // namespace
 
 RPGActor *RPGActor::createActor() {
     RPGActor *actor = RPGActor::create();
@@ -28,22 +18,21 @@ RPGActor *RPGActor::createActor() {
     actor->statuses();
     actor->skills();
     actor->progression();
-    registryStorage().push_back(ecs::handle_of(actor));
+    actor->vitals();
+    actor->traits();
+    actor->classInfo();
     return actor;
 }
 
 const std::vector<RPGActor *> &RPGActor::liveActors() {
+    // Prefer ViewIterator::entity() over a parallel handle registry: the ECS
+    // View already skips dead/staging slots, and freelist reuse cannot resurrect
+    // a previous incarnation inside the same live View.
     static std::vector<RPGActor *> resolved;
-    auto &handles = registryStorage();
-
-    handles.erase(std::remove_if(handles.begin(), handles.end(),
-                                  [](const ecs::EntityHandle &h) { return ecs::try_get(h) == nullptr; }),
-                  handles.end());
-
     resolved.clear();
-    resolved.reserve(handles.size());
-    for (const ecs::EntityHandle &h : handles)
-        resolved.push_back(static_cast<RPGActor *>(ecs::try_get(h)));
+    auto view = ecs::View<RPGActor, RPGActor::Attributes>();
+    for (auto it = view.begin(); it != view.end(); ++it)
+        resolved.push_back(it.entity());
     return resolved;
 }
 
@@ -65,9 +54,17 @@ bool RPGActor::hasAttribute(const std::string &attribute) {
     return AttributeSystem::hasAttribute(this, attribute);
 }
 
+eve::Result<ModifierId> RPGActor::addAttributeModifier(AttributeModifier modifier) {
+    return AttributeSystem::addModifier(this, std::move(modifier));
+}
+
 std::string RPGActor::addAttributeModifier(const std::string &attribute, const std::string &source,
                                             const std::string &op, double value, int priority) {
     return AttributeSystem::addModifier(this, attribute, source, op, value, priority);
+}
+
+eve::Result<void> RPGActor::removeAttributeModifier(const ModifierId &modifierId) {
+    return AttributeSystem::removeModifier(this, modifierId);
 }
 
 bool RPGActor::removeAttributeModifier(const std::string &attribute, const std::string &modifierId) {
@@ -76,7 +73,8 @@ bool RPGActor::removeAttributeModifier(const std::string &attribute, const std::
 
 int RPGActor::removeAttributeModifiersBySource(const std::string &attribute,
                                                 const std::string &source) {
-    return AttributeSystem::removeModifiersBySource(this, attribute, source);
+    auto result = AttributeSystem::removeModifiersBySource(this, attribute, source);
+    return result.ok() ? result.value() : 0;
 }
 
 int RPGActor::removeAllAttributeModifiersBySource(const std::string &source) {
@@ -90,10 +88,11 @@ double RPGActor::getFinalAttribute(const std::string &attribute) {
 // ---- Status ----
 
 int RPGActor::applyEffect(const std::string &effectId, const std::string &source) {
-    return StatusSystem::apply(this, effectId, source);
+    auto result = StatusSystem::apply(this, effectId, source);
+    return result.ok() ? std::move(result).takeValue() : -1;
 }
 
-bool RPGActor::removeStatus(int instanceId) { return StatusSystem::remove(this, instanceId); }
+bool RPGActor::removeStatus(int instanceId) { return StatusSystem::remove(this, instanceId).ok(); }
 
 int RPGActor::removeStatusByEffect(const std::string &effectId) {
     return StatusSystem::removeByEffect(this, effectId);
@@ -213,25 +212,127 @@ std::string RPGActor::getCastingSkillId() { return SkillSystem::getCastingSkillI
 
 float RPGActor::getCastProgress() { return SkillSystem::getCastProgress(this); }
 
-void RPGActor::configureProgression(int level, int maxLevel, float baseXp, float growth,
-                                    int pointsPerLevel) {
-    ProgressionSystem::configure(this, level, maxLevel, baseXp, growth, pointsPerLevel);
+int RPGActor::getLevel() { return LevelSystem::getLevel(this); }
+
+double RPGActor::getXp() { return LevelSystem::getXp(this); }
+
+double RPGActor::getXpToNext() { return LevelSystem::getXpToNext(this); }
+
+void RPGActor::setXpToNext(double value) { LevelSystem::setXpToNext(this, value); }
+
+eve::Result<void> RPGActor::restoreProgression(int level, double xp, double xpToNext) {
+    return LevelSystem::restoreProgression(this, level, xp, xpToNext);
 }
 
-int RPGActor::gainExperience(float amount) {
-    return ProgressionSystem::gainExperience(this, amount);
+bool RPGActor::gainXp(double amount) { return LevelSystem::gainXp(this, amount); }
+
+double RPGActor::getCurrent(const std::string &resource) {
+    return VitalsSystem::getCurrent(this, resource);
 }
 
-int RPGActor::getLevel() { return progression()->level; }
-
-float RPGActor::getExperience() { return float(progression()->experience); }
-
-float RPGActor::getExperienceForNextLevel() {
-    return float(ProgressionSystem::experienceForNextLevel(this));
+double RPGActor::getMax(const std::string &resource) {
+    return VitalsSystem::getMax(this, resource);
 }
 
-int RPGActor::getUnspentPoints() { return progression()->unspentPoints; }
+void RPGActor::setCurrent(const std::string &resource, double value) {
+    VitalsSystem::setCurrent(this, resource, value);
+}
 
-bool RPGActor::spendPoints(int amount) { return ProgressionSystem::spendPoints(this, amount); }
+double RPGActor::takeDamage(const std::string &resource, double amount,
+                            const std::string &source) {
+    return VitalsSystem::takeDamage(this, resource, amount, source);
+}
+
+double RPGActor::heal(const std::string &resource, double amount) {
+    return VitalsSystem::heal(this, resource, amount);
+}
+
+void RPGActor::revive(const std::string &resource, double amount) {
+    VitalsSystem::revive(this, resource, amount);
+}
+
+bool RPGActor::isDead(const std::string &resource) {
+    return VitalsSystem::isDead(this, resource);
+}
+
+int RPGActor::applyTrait(const std::string &traitId, const std::string &source) {
+    return TraitSystem::apply(this, traitId, source);
+}
+
+bool RPGActor::removeTrait(int instanceId) { return TraitSystem::remove(this, instanceId); }
+
+int RPGActor::removeTraitsBySource(const std::string &source) {
+    return TraitSystem::removeBySource(this, source);
+}
+
+int RPGActor::removeTraitsByTrait(const std::string &traitId) {
+    return TraitSystem::removeByTrait(this, traitId);
+}
+
+bool RPGActor::hasTrait(const std::string &traitId) { return TraitSystem::hasTrait(this, traitId); }
+
+int RPGActor::getTraitCount() { return TraitSystem::getCount(this); }
+
+int RPGActor::getTraitInstanceIdAt(int index) {
+    return TraitSystem::getInstanceIdAt(this, index);
+}
+
+std::string RPGActor::getTraitIdAt(int index) { return TraitSystem::getTraitIdAt(this, index); }
+
+std::string RPGActor::getTraitSourceAt(int index) {
+    return TraitSystem::getSourceAt(this, index);
+}
+
+double RPGActor::getParamRate(const std::string &param) {
+    return TraitSystem::getParamRate(this, param);
+}
+
+double RPGActor::getElementRate(const std::string &element) {
+    return TraitSystem::getElementRate(this, element);
+}
+
+double RPGActor::getStateRate(const std::string &stateId) {
+    return TraitSystem::getStateRate(this, stateId);
+}
+
+bool RPGActor::isStateResist(const std::string &stateId) {
+    return TraitSystem::isStateResist(this, stateId);
+}
+
+double RPGActor::getExParam(const std::string &exParam) {
+    return TraitSystem::getExParam(this, exParam);
+}
+
+double RPGActor::getAttackSpeed() { return TraitSystem::getAttackSpeed(this); }
+
+int RPGActor::getAttackTimesAdd() { return TraitSystem::getAttackTimesAdd(this); }
+
+std::vector<std::string> RPGActor::getAttackElements() {
+    return TraitSystem::getAttackElements(this);
+}
+
+std::vector<std::string> RPGActor::getAttackStates() {
+    return TraitSystem::getAttackStates(this);
+}
+
+bool RPGActor::setClass(const std::string &classId) { return ClassSystem::setClass(this, classId); }
+
+std::string RPGActor::getClassId() { return ClassSystem::getClassId(this); }
+
+bool RPGActor::hasClass(const std::string &classId) {
+    return ClassSystem::hasClass(this, classId);
+}
+
+int RPGActor::checkLevelSkills() { return ClassSystem::checkLevelSkills(this); }
+
+int RPGActor::getClassLearnCount() { return ClassSystem::getLearnCount(this); }
+
+std::string RPGActor::getClassLearnSkillIdAt(int index) {
+    return ClassSystem::getLearnSkillIdAt(this, index);
+}
+
+int RPGActor::getClassLearnLevelAt(int index) {
+    return ClassSystem::getLearnLevelAt(this, index);
+}
 
 }  // namespace eve::rpg

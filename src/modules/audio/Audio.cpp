@@ -1,9 +1,18 @@
 #include "Audio.h"
+#include "PcmStream.h"
 #include "Source.h"
 
+#include "AudioCapabilities.h"
+#include "AudioZone.h"
+#include "EventSinkOwner.h"
+#include "UnderwaterAudio.h"
 #include "common/Exception.h"
+#include "common/Profile.h"
+#include "common/SquirrelBinding.h"
 #include "common/StartupTiming.h"
+#include "sound/Decoder.h"
 #include "sound/Sound.h"
+#include "sound/SoundData.h"
 
 #include <AL/al.h>
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -17,6 +26,7 @@ namespace audio {
 Module_IMPL(Audio, new Audio());
 
 Audio::Audio() {
+    registerAudioCapabilities();
     StartupStage stage("audio: OpenAL device/context + worker thread");
     device = alcOpenDevice(nullptr);
     if (!device)
@@ -26,13 +36,19 @@ Audio::Audio() {
         throw eve::Exception("Could not create OpenAL context");
     alListenerf(AL_GAIN, masterVolume);
     worker = std::thread([this] { workerMain(); });
+    bindAudioEventSinkOwner(this);
 }
 
 Audio::~Audio() {
+    bindAudioEventSinkOwner(nullptr);
     running = false;
     cv.notify_all();
     if (worker.joinable())
         worker.join();
+
+    for (auto &weak : pcmStreams)
+        if (auto state = weak.lock()) PcmStream::closeState(state);
+    pcmStreams.clear();
 
     {
         std::lock_guard<std::mutex> lock(mutex);
@@ -96,6 +112,13 @@ Source *Audio::newSource(sound::SoundData *data) {
     return s;
 }
 
+Result<std::unique_ptr<PcmStream>> Audio::newPcmStream(int sampleRate, int channels) {
+    auto result = PcmStream::create(sampleRate, channels);
+    if (!result.ok()) return Result<std::unique_ptr<PcmStream>>::failure(result.status());
+    pcmStreams.push_back(result.value()->state_);
+    return result;
+}
+
 Source *Audio::newSourceFromDecoder(sound::Decoder *decoder, std::string type) {
     if (type != "static" && type != "stream")
         throw eve::Exception("Invalid source type '%s'", type.c_str());
@@ -146,6 +169,9 @@ void Audio::pause(Source *s) {
         s->pause();
 }
 void Audio::stopAll() {
+    for (auto &weak : pcmStreams) {
+        if (auto state = weak.lock()) PcmStream::closeState(state);
+    }
     // Hold the mutex while stopping: Source::~Source() → unregisterSource()
     // blocks on the same mutex, so a concurrently destroyed source cannot be
     // touched here after it has been removed from allSources.
@@ -154,6 +180,11 @@ void Audio::stopAll() {
         if (s)
             s->stop();
     }
+}
+
+int Audio::getSourceCount() {
+    std::lock_guard<std::mutex> lock(mutex);
+    return static_cast<int>(allSources.size());
 }
 
 void Audio::setVolume(float v) {
@@ -170,6 +201,13 @@ void Audio::setOrientation(float fx, float fy, float fz, float ux, float uy, flo
 }
 
 void Audio::pump() {
+    EV_PROFILE_MODULE("audio", "Audio::pump");
+    std::erase_if(pcmStreams, [](auto &weak) {
+        auto state = weak.lock();
+        if (!state) return true;
+        PcmStream::pumpState(state);
+        return false;
+    });
     // Same guarantee as workerMain: destruction removes the source under this
     // mutex, so the pointer stays valid for the whole iteration.
     std::lock_guard<std::mutex> lock(mutex);
@@ -182,6 +220,7 @@ void Audio::pump() {
 void Audio::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Audio::create, false);
     expose(cls);
+    exposePcmStream(table, cls);
 
     auto src = table.addClass<Source>(
         "Source", std::function<Source *()>([]() -> Source * { return nullptr; }), true);
@@ -203,6 +242,41 @@ void Audio::expose(ssq::Table &table) {
     src.addFunc("setDirection", &Source::setDirection);
     src.addFunc("setRelative", &Source::setRelative);
     src.addFunc("setAttenuationDistances", &Source::setAttenuationDistances);
+    table.addFunc("applyUnderwaterAudio",
+                  [vm = table.getHandle()](Source* down, Source* up, Source* ambience,
+                                           bool playDown, bool playUp, bool loopAmbience,
+                                           float volume) {
+        return eve::script::projectResult(
+            vm, applyUnderwaterAudio(down, up, ambience, playDown, playUp, loopAmbience, volume));
+    });
+    auto zoneItem=table.addClass("AudioZoneItem",ssq::Class::Ctor<AudioZoneItem()>());
+    zoneItem.addVar("volume",&AudioZoneItem::volume); zoneItem.addVar("fadeInTime",&AudioZoneItem::fadeInTime);
+    zoneItem.addVar("fadeOutTime",&AudioZoneItem::fadeOutTime); zoneItem.addVar("duration",&AudioZoneItem::duration);
+    auto zoneProfile=table.addClass("AudioZoneProfile",ssq::Class::Ctor<AudioZoneProfile()>());
+    zoneProfile.addVar("x",&AudioZoneProfile::x); zoneProfile.addVar("y",&AudioZoneProfile::y);
+    zoneProfile.addVar("z",&AudioZoneProfile::z); zoneProfile.addVar("radius",&AudioZoneProfile::radius);
+    zoneProfile.addVar("minimumBreakTime",&AudioZoneProfile::minimumBreakTime);
+    zoneProfile.addVar("maximumBreakTime",&AudioZoneProfile::maximumBreakTime);
+    zoneProfile.addVar("deactivationTime",&AudioZoneProfile::deactivationTime);
+    zoneProfile.addVar("global",&AudioZoneProfile::global);
+    zoneProfile.addFunc("addItem",[vm=table.getHandle()](AudioZoneProfile* p,const AudioZoneItem* item){
+        auto r=p&&item?p->addItem(*item):Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"profile and item required"));
+        return eve::script::projectResult(vm,std::move(r),[](int v){return Value(v);});
+    });
+    zoneProfile.addFunc("getItemCount",[](const AudioZoneProfile* p){return p?p->itemCount():0;});
+    auto zoneState=table.addClass("AudioZoneState",ssq::Class::Ctor<AudioZoneState()>());
+    zoneState.addVar("selectedTrack",&AudioZoneState::selectedTrack); zoneState.addVar("playing",&AudioZoneState::playing);
+    table.addFunc("evaluateAudioZone",[vm=table.getHandle()](const AudioZoneProfile* p,AudioZoneState* state,
+        float now,float x,float y,float z,float master,std::uint32_t seed){
+        auto r=p&&state?evaluateAudioZone(*p,*state,now,x,y,z,master,seed)
+            :Result<AudioZoneOutput>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"profile and state required"));
+        return eve::script::projectResult(vm,std::move(r),[](const AudioZoneOutput& v){return Value::Object{
+            {"play",v.play},{"stop",v.stop},{"trackIndex",v.trackIndex},{"volume",v.volume}};});
+    });
+    table.addFunc("applyAudioZoneOutput",[vm=table.getHandle()](Source* source,bool play,bool stop,float volume){
+        AudioZoneOutput output; output.play=play; output.stop=stop; output.volume=volume;
+        return eve::script::projectResult(vm,applyAudioZoneOutput(source,output));
+    });
 }
 
 void Audio::expose(ssq::Class &cls) {

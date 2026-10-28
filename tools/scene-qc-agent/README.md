@@ -119,7 +119,12 @@ python -m unittest discover -s tests -p "test_*.py"
 5. 判定 FAIL → 修复规划模型生成修改计划 → `scene_modify`/`run_script` 应用 → 重检，
    至多 `max_rounds` 轮。
 
-## 与 openCode 集成
+## 固定参考图反馈
 
-仓库提供 `.opencode/agent/scene-qc-brain.md`，把该工具封装为 openCode 子代理；也可直接用
-命令行调用。修改 openCode 配置后需**退出并重启 openCode** 生效。
+`PYTHONPATH=tools/scene-qc-agent python -m scene_qc_agent.reference task.json --port 7529 --output build/reference-proof`
+使用正式场景命令和引擎原生截图；候选轮廓 IoU 改善才保留，否则恢复 native document。
+任务字段为 schemaId=`eve.scene.reference-task`、schemaVersion=1、reference、mask、candidates。
+mask 为 `{ "rgb": [232,0,0], "tolerance": 30 }`；candidates 为 MCP action 的批次数组。
+参考与渲染须共享机位、曝光和尺寸。工具核对 revision/已渲染帧，处理首次开启读回的重试，
+拒绝空前景和并发写入。它使用明确颜色前景，不自动推断任意图片的物体语义。
+完整原生链路复现见 `scripts/scene_authoring_smoke.py` 和 `docs/dev/2026-10-11-ai-scene-authoring.md`。

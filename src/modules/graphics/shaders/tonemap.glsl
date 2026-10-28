@@ -9,9 +9,14 @@
 // Compress only the HDR remainder into (white, 1].
 vec3 tonemapPeak(vec3 color) {
     const float white = 0.85;
-    vec3 over = max(color - vec3(white), vec3(0.0));
+    color = max(color, vec3(0.0));
+    float peak = max(color.r, max(color.g, color.b));
+    if (peak <= white)
+        return color;
+    float over = peak - white;
     float range = 1.0 - white;
-    return min(color, vec3(white)) + vec3(range) * (over / (over + vec3(1.0)));
+    float mappedPeak = white + range * (over / (over + 1.0));
+    return color * (mappedPeak / max(peak, 1e-6));
 }
 
 #endif

@@ -1,6 +1,9 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
+#include "common/Result.h"
 
 #include <string>
 #include <vector>
@@ -8,9 +11,61 @@
 namespace eve::graphics {
 class Graphics;
 class Light3D;
+class ReflectionProbeCapture;
+class Volumetric;
 }  // namespace eve::graphics
 
 namespace eve::daynight {
+
+/** @brief Persistent manual sun settings projected from Pcg Photo Mode. */
+struct PcgManualSunState {
+    bool enabled = false;
+    float pitchDegrees = 75.f;
+    float rotationDegrees = 0.f;
+    float intensity = 1.f;
+    float red = 1.f;
+    float green = 1.f;
+    float blue = 1.f;
+    float kelvin = 6500.f;
+};
+
+/** @brief Persistent Pcg skybox override settings. */
+struct PcgSkyboxState {
+    bool enabled = false;
+    float rotationDegrees = 0.f;
+    float exposure = 1.f;
+    float tintRed = 0.f;
+    float tintGreen = 0.f;
+    float tintBlue = 0.f;
+};
+
+/** @brief Joint Pcg Photo Mode fog and density-volume state. */
+struct PcgFogState {
+    float additionalLinearDistance = 0.f;
+    float additionalExponentialDensity = 0.f;
+    bool overrideFog = false;
+    int mode = 1;
+    float red = 0.f, green = 0.f, blue = 0.f;
+    float density = 0.01f;
+    float startDistance = 100.f;
+    float endDistance = 1000.f;
+    float globalDensityMultiplier = 1.f;
+    bool overrideDensityVolume = false;
+    float densityAlbedoRed = 1.f, densityAlbedoGreen = 1.f, densityAlbedoBlue = 1.f;
+    float densityVolumeDistance = 250.f;
+    int densityVolumeEffect = 1;
+    int densityVolumeTiling = 3;
+};
+
+/** @brief Pcg ambient-gradient colors and global direct-light multiplier. */
+struct PcgAmbientLightState {
+    bool active = false;
+    float intensity = 1.f;
+    float skyRed = 0.7027151f, skyGreen = 0.881016f, skyBlue = 1.001631f;
+    float equatorRed = 0.6302439f, equatorGreen = 0.7919513f, equatorBlue = 0.85f;
+    float groundRed = 0.5f, groundGreen = 0.4142857f, groundBlue = 0.3321428f;
+    float globalLightMultiplier = 1.f;
+};
 
 /**
  * @brief DayNight module — a time-of-day cycle that drives the sun, sky and light.
@@ -36,11 +91,13 @@ namespace eve::daynight {
  *   daynight.update(dt, gfx);
  *   camera.setAmbient(daynight.getAmbientR(), ...);
  */
-class DayNight : public Module {
+class EVENGINE_API_WORLD DayNight : public Module {
 public:
     Module_REG(DayNight);
 
+    /** @brief Day night. */
     DayNight();
+    /** @brief Day night. */
     ~DayNight() override;
 
     /** @brief Idempotent; builds lights / sky cubemap on first call. */
@@ -49,11 +106,17 @@ public:
     void update(float dt, graphics::Graphics *gfx);
 
     // ---- clock ----
+    /** @brief Sets the time of day. */
     void setTimeOfDay(float hours);   // 0..24
+    /** @brief Returns the time of day. */
     float getTimeOfDay() const;
+    /** @brief Sets the speed. */
     void setSpeed(float hoursPerRealHour);   // default 1.0
+    /** @brief Returns the speed. */
     float getSpeed() const;
+    /** @brief Sets the paused. */
     void setPaused(bool paused);
+    /** @brief True when paused. */
     bool isPaused() const;
     /** @brief True when the sun is below the horizon (night). */
     bool isNight() const;
@@ -65,27 +128,124 @@ public:
     float getSunAzimuth() const;
     /** @brief World-space direction pointing AT the sun (normalized). */
     float getSunDirX() const;
+    /** @brief Returns the sun dir y. */
     float getSunDirY() const;
+    /** @brief Returns the sun dir z. */
     float getSunDirZ() const;
     /** @brief 0..1 sun energy; ramps to 0 below the horizon. */
     float getSunIntensity() const;
+    /** @brief Atmosphere-attenuated direct sunlight red channel, including intensity. */
+    float getSunR() const;
+    /** @brief Atmosphere-attenuated direct sunlight green channel, including intensity. */
+    float getSunG() const;
+    /** @brief Atmosphere-attenuated direct sunlight blue channel, including intensity. */
+    float getSunB() const;
+    /**
+     * @brief Atomically replace the persistent Pcg manual-sun state.
+     * @param state Candidate settings; angles must be in [0,360], intensity in [0,8],
+     * color channels finite and non-negative, and kelvin in [1500,20000].
+     * @return Success after the authoritative state changes, or InvalidArgument with no mutation.
+     * @thread Game thread only. The value is copied and no callback is invoked.
+     */
+    [[nodiscard]] Result<void> setPcgManualSun(const PcgManualSunState &state);
+    /** @brief Return the authoritative manual-sun settings by value. */
+    PcgManualSunState getPcgManualSun() const noexcept;
+    /**
+     * @brief Atomically replace Pcg's persistent skybox override.
+     * @param state Rotation in [0,360], exposure in [0,30], and finite non-negative tint.
+     * @return Success, or InvalidArgument without changing the previous state.
+     * @thread Game thread only; the value is copied and no callback is invoked.
+     */
+    [[nodiscard]] Result<void> setPcgSkybox(const PcgSkyboxState &state);
+    /** @brief Return the authoritative Pcg skybox override by value. */
+    PcgSkyboxState getPcgSkybox() const noexcept;
+    /**
+     * @brief Atomically replace all Pcg fog and density-volume controls.
+     * @param state Candidate joint state using Pcg Photo Mode ranges and enum indices.
+     * @return Success, or InvalidArgument without mutating the previous state.
+     * @thread Game thread only; the value is copied and no callback is invoked.
+     */
+    [[nodiscard]] Result<void> setPcgFog(const PcgFogState &state);
+    /** @brief Return the authoritative Pcg fog state by value. */
+    PcgFogState getPcgFog() const noexcept;
+    /**
+     * @brief Atomically replace Pcg ambient colors, intensity and direct-light multiplier.
+     * @param state Finite non-negative colors, intensity in [0,10], multiplier in [0,5].
+     * @return Success, or InvalidArgument without changing the previous state.
+     * @thread Game thread only; the value is copied and no callback is invoked.
+     */
+    [[nodiscard]] Result<void> setPcgAmbientLight(const PcgAmbientLightState &state);
+    /** @brief Return the authoritative Pcg ambient-light state by value. */
+    PcgAmbientLightState getPcgAmbientLight() const noexcept;
+
+    // ---- atmosphere ----
+    /** @brief Set aerosol turbidity. 1.5 is very clear; 10 is hazy. */
+    void setTurbidity(float turbidity);
+    /** @brief Returns the turbidity. */
+    float getTurbidity() const;
+    /** @brief Exposure used when mapping physical sky radiance to the RGBA8 sky cubemap. */
+    void setSkyExposure(float exposure);
+    /** @brief Returns the sky exposure. */
+    float getSkyExposure() const;
+    /** @brief Relative Mie aerosol density; controls horizon haze and solar halo. */
+    void setMieStrength(float strength);
+    /** @brief Returns the mie strength. */
+    float getMieStrength() const;
 
     // ---- sky / ambient (sampled by the scene) ----
+    /** @brief Returns the sky r. */
     float getSkyR() const;
+    /** @brief Returns the sky g. */
     float getSkyG() const;
+    /** @brief Returns the sky b. */
     float getSkyB() const;
+    /** @brief Returns the ambient r. */
     float getAmbientR() const;
+    /** @brief Returns the ambient g. */
     float getAmbientG() const;
+    /** @brief Returns the ambient b. */
     float getAmbientB() const;
+    /** @brief Returns the ambient brightness. */
     float getAmbientBrightness() const;
 
+    /**
+     * @brief Synchronize sun direction and atmosphere-derived fog lighting.
+     *
+     * This is the supported bridge between the day/night atmosphere and a
+     * graphics Volumetric instance. Density and height remain scene/weather
+     * controls; sky color, sun direction, exposure and animation time are
+     * supplied by this module.
+     * @param fog Target volumetric fog or cloud renderer; null is ignored.
+     */
+    void applyAtmosphere(graphics::Volumetric *fog) const;
+    /**
+     * @brief Synchronize linear directional sky radiance and sky IBL to a reflection probe.
+     * @param probe Target runtime probe; null is ignored.
+     */
+    void applyReflectionProbeSky(graphics::ReflectionProbeCapture *probe) const;
+
+    // ---- weather coupling ----
+    /**
+     * @brief Apply cloud cover and lightning exposure to the unified sky/lighting model.
+     * @param cloudiness Cloud attenuation in [0,1].
+     * @param lightningFlash Transient lightning energy in [0,1].
+     */
+    void setWeatherInfluence(float cloudiness, float lightningFlash);
+    /** @brief Returns the weather cloudiness. */
+    float getWeatherCloudiness() const;
+    /** @brief Returns the weather flash. */
+    float getWeatherFlash() const;
+
     // ---- skybox ----
+    /** @brief Sets the skybox enabled. */
     void setSkyboxEnabled(bool enabled);
+    /** @brief True when skybox enabled. */
     bool isSkyboxEnabled() const;
 
     // ---- night lighting ----
     /** @brief Enable a named light system: "moonlight"|"starlight"|"fire"|"fireflies". */
     void setNightLight(const std::string &name, bool enabled);
+    /** @brief True when night light. */
     bool isNightLight(const std::string &name) const;
     static const char *const kNamedLights[];
     static const int kNamedLightCount;
@@ -94,7 +254,9 @@ public:
     void setFirePosition(float x, float y, float z);
     /** @brief Add one firefly anchor (world space); up to kMaxFireflies. */
     void addFirefly(float x, float y, float z);
+    /** @brief Clears fireflies. */
     void clearFireflies();
+    /** @brief Returns the firefly count. */
     int getFireflyCount() const;
 
 private:

@@ -1,0 +1,398 @@
+{
+  "ok": true,
+  "file": "assets/guard/64/final/walk-sheet-clean.png",
+  "width": 384,
+  "height": 256,
+  "errors": [],
+  "warnings": [],
+  "rows": [
+    {
+      "row": 0,
+      "row_name": "south",
+      "cells": [
+        {
+          "row": 0,
+          "row_name": "south",
+          "column": 0,
+          "nontransparent_pixels": 914,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            19,
+            2,
+            45,
+            62
+          ]
+        },
+        {
+          "row": 0,
+          "row_name": "south",
+          "column": 1,
+          "nontransparent_pixels": 951,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            18,
+            2,
+            45,
+            62
+          ]
+        },
+        {
+          "row": 0,
+          "row_name": "south",
+          "column": 2,
+          "nontransparent_pixels": 927,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            18,
+            2,
+            45,
+            62
+          ]
+        },
+        {
+          "row": 0,
+          "row_name": "south",
+          "column": 3,
+          "nontransparent_pixels": 922,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            19,
+            2,
+            45,
+            62
+          ]
+        },
+        {
+          "row": 0,
+          "row_name": "south",
+          "column": 4,
+          "nontransparent_pixels": 938,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            19,
+            2,
+            45,
+            62
+          ]
+        },
+        {
+          "row": 0,
+          "row_name": "south",
+          "column": 5,
+          "nontransparent_pixels": 931,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            18,
+            2,
+            45,
+            62
+          ]
+        }
+      ],
+      "frame_diffs": [
+        0.05006,
+        0.03639,
+        0.04095,
+        0.02669,
+        0.04038
+      ]
+    },
+    {
+      "row": 1,
+      "row_name": "east",
+      "cells": [
+        {
+          "row": 1,
+          "row_name": "east",
+          "column": 0,
+          "nontransparent_pixels": 1014,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            16,
+            2,
+            48,
+            62
+          ]
+        },
+        {
+          "row": 1,
+          "row_name": "east",
+          "column": 1,
+          "nontransparent_pixels": 974,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            17,
+            2,
+            46,
+            62
+          ]
+        },
+        {
+          "row": 1,
+          "row_name": "east",
+          "column": 2,
+          "nontransparent_pixels": 956,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            17,
+            2,
+            47,
+            62
+          ]
+        },
+        {
+          "row": 1,
+          "row_name": "east",
+          "column": 3,
+          "nontransparent_pixels": 1048,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            17,
+            2,
+            47,
+            62
+          ]
+        },
+        {
+          "row": 1,
+          "row_name": "east",
+          "column": 4,
+          "nontransparent_pixels": 966,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            17,
+            2,
+            46,
+            62
+          ]
+        },
+        {
+          "row": 1,
+          "row_name": "east",
+          "column": 5,
+          "nontransparent_pixels": 990,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            17,
+            2,
+            47,
+            62
+          ]
+        }
+      ],
+      "frame_diffs": [
+        0.06775,
+        0.05606,
+        0.03588,
+        0.04675,
+        0.06744
+      ]
+    },
+    {
+      "row": 2,
+      "row_name": "north",
+      "cells": [
+        {
+          "row": 2,
+          "row_name": "north",
+          "column": 0,
+          "nontransparent_pixels": 951,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            18,
+            2,
+            46,
+            62
+          ]
+        },
+        {
+          "row": 2,
+          "row_name": "north",
+          "column": 1,
+          "nontransparent_pixels": 959,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            18,
+            2,
+            46,
+            62
+          ]
+        },
+        {
+          "row": 2,
+          "row_name": "north",
+          "column": 2,
+          "nontransparent_pixels": 958,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            18,
+            2,
+            46,
+            62
+          ]
+        },
+        {
+          "row": 2,
+          "row_name": "north",
+          "column": 3,
+          "nontransparent_pixels": 961,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            18,
+            2,
+            46,
+            62
+          ]
+        },
+        {
+          "row": 2,
+          "row_name": "north",
+          "column": 4,
+          "nontransparent_pixels": 919,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            18,
+            2,
+            45,
+            62
+          ]
+        },
+        {
+          "row": 2,
+          "row_name": "north",
+          "column": 5,
+          "nontransparent_pixels": 959,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            18,
+            2,
+            46,
+            62
+          ]
+        }
+      ],
+      "frame_diffs": [
+        0.02682,
+        0.04919,
+        0.05233,
+        0.04685,
+        0.04759
+      ]
+    },
+    {
+      "row": 3,
+      "row_name": "west",
+      "cells": [
+        {
+          "row": 3,
+          "row_name": "west",
+          "column": 0,
+          "nontransparent_pixels": 972,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            17,
+            2,
+            46,
+            62
+          ]
+        },
+        {
+          "row": 3,
+          "row_name": "west",
+          "column": 1,
+          "nontransparent_pixels": 934,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            18,
+            2,
+            46,
+            62
+          ]
+        },
+        {
+          "row": 3,
+          "row_name": "west",
+          "column": 2,
+          "nontransparent_pixels": 821,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            20,
+            2,
+            44,
+            62
+          ]
+        },
+        {
+          "row": 3,
+          "row_name": "west",
+          "column": 3,
+          "nontransparent_pixels": 939,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            17,
+            2,
+            46,
+            62
+          ]
+        },
+        {
+          "row": 3,
+          "row_name": "west",
+          "column": 4,
+          "nontransparent_pixels": 949,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            18,
+            2,
+            46,
+            62
+          ]
+        },
+        {
+          "row": 3,
+          "row_name": "west",
+          "column": 5,
+          "nontransparent_pixels": 919,
+          "edge_pixels": 0,
+          "chroma_residue_pixels": 0,
+          "bbox": [
+            18,
+            2,
+            45,
+            62
+          ]
+        }
+      ],
+      "frame_diffs": [
+        0.03599,
+        0.06628,
+        0.0684,
+        0.02506,
+        0.0274
+      ]
+    }
+  ]
+}

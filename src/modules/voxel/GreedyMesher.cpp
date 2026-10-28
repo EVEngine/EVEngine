@@ -89,25 +89,34 @@ uint32_t GreedyMesher::rectAOWord(const uint8_t *voxels, ChunkSampler sampler, v
 }
 
 void GreedyMesher::greedy2D(int mask[kChunkSize][kChunkSize], FaceDir dir, int slice,
-                            std::vector<PackedRect> &out, std::vector<uint32_t> *aoOut,
-                            const uint8_t *voxels, ChunkSampler sampler, void *userData,
-                            int chunkX, int chunkY, int chunkZ) {
+                            std::vector<PackedRect> &out, std::vector<uint32_t> *aoOut) {
     for (int v = 0; v < kChunkSize; ++v) {
         for (int u = 0; u < kChunkSize;) {
-            const int tex = mask[v][u];
-            if (tex < 0) {  // 空
+            const int key = mask[v][u];
+            if (key < 0) {  // 空
                 ++u;
                 continue;
             }
 
+            const int tex = key & 0xFF;
+            const uint32_t cellAO = uint32_t(key >> 8) & 0xFFu;
+            const uint32_t ao0 = cellAO & 3u;
+            const bool uniformAO = ((cellAO >> 2) & 3u) == ao0 &&
+                                   ((cellAO >> 4) & 3u) == ao0 &&
+                                   ((cellAO >> 6) & 3u) == ao0;
+
             int w = 1;
-            while (u + w < kChunkSize && mask[v][u + w] == tex) ++w;
+            // One quad can reproduce per-voxel AO exactly only when AO is uniform
+            // across the merged region. Non-uniform cells stay as individual quads;
+            // otherwise their four corner values would be interpolated over an
+            // arbitrarily large greedy rectangle and create visible light/dark blocks.
+            while (uniformAO && u + w < kChunkSize && mask[v][u + w] == key) ++w;
 
             int h = 1;
             bool grow = true;
             while (v + h < kChunkSize && grow) {
                 for (int k = 0; k < w; ++k) {
-                    if (mask[v + h][u + k] != tex) {
+                    if (!uniformAO || mask[v + h][u + k] != key) {
                         grow = false;
                         break;
                     }
@@ -148,10 +157,7 @@ void GreedyMesher::greedy2D(int mask[kChunkSize][kChunkSize], FaceDir dir, int s
                     break;
             }
             out.push_back(PackedRect::pack(x, y, z, rw, rh, tex));
-            if (aoOut) {
-                aoOut->push_back(rectAOWord(voxels, sampler, userData, chunkX, chunkY, chunkZ,
-                                            dir, slice, x, y, z, rw, rh));
-            }
+            if (aoOut) aoOut->push_back(cellAO);
             u += w;
         }
     }
@@ -242,12 +248,14 @@ void GreedyMesher::meshFace(const uint8_t *voxels, FaceDir dir, std::vector<Pack
                 if (isSolid(neighborAt(voxels, sampler, samplerUserData, chunkX, chunkY, chunkZ,
                                        nx, ny, nz)))
                     continue;
-                mask[v][u] = int(resolveFaceTex(types, id, dir));
+                const int tex = int(resolveFaceTex(types, id, dir));
+                const uint32_t ao = rectAOWord(voxels, sampler, samplerUserData, chunkX, chunkY,
+                                               chunkZ, dir, s, x, y, z, 1, 1);
+                mask[v][u] = tex | int(ao << 8);
             }
         }
 
-        greedy2D(mask, dir, s, out, aoOut, voxels, sampler, samplerUserData, chunkX, chunkY,
-                 chunkZ);
+        greedy2D(mask, dir, s, out, aoOut);
     }
 }
 

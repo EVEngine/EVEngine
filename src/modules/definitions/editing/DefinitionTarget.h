@@ -1,0 +1,98 @@
+#pragma once
+#include "common/Export.h"
+
+
+#include "editing/EditingAuthority.h"
+#include "editing/EditableTarget.h"
+
+#include <functional>
+#include <string>
+#include <vector>
+
+namespace eve::definitions {
+class DefinitionRegistry;
+}
+
+namespace eve::definitions_editing {
+
+using namespace eve::editing;
+using EditorValue = eve::editing::Value;
+using EditorStatus = eve::editing::Status;
+using EditorDiagnostic = eve::editing::Diagnostic;
+using editing::Result;
+
+/** @brief Stable cross-definition reference exposed to picker and validation hosts. */
+struct DefinitionReferenceField {
+    std::string path;
+    std::string type;
+    std::string id;
+    bool required = true;
+};
+
+/** @brief UI-neutral versioned definition asset and cross-reference model. */
+class EVENGINE_API_BACKENDS DefinitionDocument : public ::eve::editing::EditableTargetState,
+                                                 public virtual IEditableTarget,
+                                                 public IDomainOperationTarget {
+public:
+    using ReferenceResolver = std::function<bool(const std::string& type, const std::string& id)>;
+    using SchemaValidator = std::function<std::vector<EditorDiagnostic>(const std::string& type,
+                                                                        int version,
+                                                                        const std::string& json)>;
+
+    /** @brief Construct an empty JSON-object definition with stable identity. */
+    DefinitionDocument(std::string type, std::string id, int version = 1);
+    /** @brief Target id. */
+    TargetId         targetId() const override { return TargetId(targetId_); }
+    /** @brief Describe. */
+    TargetDescriptor describe() const override;
+    /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
+    void* queryCapability(const CapabilityId&) override { return nullptr; }
+    /** @brief Applies domain operation. */
+    Result<void> applyDomainOperation(const DomainOperation& operation) override;
+    /** @brief Atomically replace canonical payload text after basic JSON-shape validation. */
+    Result<void> setJson(std::string json);
+    /** @brief Replace the schema version with a positive value. */
+    Result<void> setVersion(int version);
+    /** @brief Replace editor-extracted cross-reference fields. */
+    Result<void> setReferences(std::vector<DefinitionReferenceField> references);
+    /** @brief Plan a reversible top-level field assignment from a schema form. */
+    Result<DomainOperation> makeSetField(const std::string& field,
+                                               const EditorValue& value) const;
+    /** @brief Run schema and cross-reference diagnostics without mutating content. */
+    std::vector<EditorDiagnostic> validate(const SchemaValidator& schema,
+                                           const ReferenceResolver& references) const;
+    /** @brief Capture deterministic content for DocumentService persistence. */
+    EditorValue snapshotValue() const;
+    /** @brief Atomically load a version-one editor snapshot. */
+    Result<void> loadSnapshot(const EditorValue& snapshot);
+
+    /** @brief Return definition type/schema id. */
+    const std::string& type() const { return type_; }
+    /** @brief Return stable definition id. */
+    const std::string& id() const { return id_; }
+    /** @brief Return schema version. */
+    int version() const { return version_; }
+    /** @brief Return JSON payload text. */
+    const std::string& json() const { return json_; }
+    /** @brief Return current editor revision. */
+    editing::Revision documentRevision() const { return revisionValue(); }
+
+private:
+    std::string type_;
+    std::string id_;
+    std::string targetId_;
+    int version_ = 1;
+    std::string json_ = "{}";
+    std::vector<DefinitionReferenceField> references_;
+};
+
+/** @brief Optional bridge publishing a validated definition to DefinitionRegistry. */
+class EVENGINE_API_BACKENDS DefinitionRuntimePublisher {
+public:
+    /** @brief Insert or replace one definition after editor-side validation. */
+    Result<void> publish(const DefinitionDocument& document,
+                               definitions::DefinitionRegistry* registry,
+                               bool replaceExisting = false) const;
+};
+
+}  // namespace eve::definitions_editing

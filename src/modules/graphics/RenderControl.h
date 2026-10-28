@@ -1,6 +1,10 @@
 #pragma once
+#include "common/Export.h"
 
+
+#include "common/Result.h"
 #include "graphics/GBuffer.h"
+#include "graphics/LightingMode.h"
 
 #include <string>
 #include <unordered_map>
@@ -25,12 +29,35 @@ class Graphics;
  *   "forward"       — lit forward / clustered mesh draws (default on)
  *   "hair"          — transparent hair pass after opaque (default on)
  *   "clustered"     — prefer clustered forward when light count > 8 (default on)
+ *   "clusteredDeferred" — projection of LightingMode::Hybrid (enum is the source of truth)
  *   "ao"            — screen-space AO overlay after FXAA resolve (implies gbuffer; default on)
  *   "outline"       — screen-space model outline from depth+normal (implies gbuffer; default off)
+ *   "frustumCull"   — conservative bounding-sphere frustum culling during the job-ified
+ *                     frame data prep (default off; meshes without bounds are never culled)
  *   "gi"            — enables gbufferAlbedo; mesh hemispheric GI (fullscreen SSGI is not auto-applied)
+ *   "rtgi"          — fullscreen real-time GI post pass (SSGI) overlay
  *   "aa"            — FXAA resolve of the 3D scene color into the swapchain (default on)
+ *   "taa"           — full temporal AA with projection jitter, motion/depth reprojection,
+ *                     Catmull-Rom history, YCoCg variance clipping and adaptive sharpening;
+ *                     enabling it disables MSAA by default
  *   "msaa"          — hardware MSAA on the 3D scene color pass (default on; sample count via
  *                     Graphics.setMsaaSamples, default 4, clamped to device support)
+ *   "ssr"           — PBR-aware screen-space reflections with coarse/fine tracing and temporal denoise
+ *   "rtx"           — hardware Vulkan KHR ray-traced reflections when IRayTracing is available;
+ *                     otherwise a no-op (SSR remains the portable path)
+ *   "reflectionChain"— enables TAA plus the complete RTGI then SSR lighting chain (default off)
+ *   "decal"         — screen-space decal layer pass between gbuffer and forward
+ *                     (implies gbuffer; default off)
+ *   "atmosphere"    — analytic sky/aerial-perspective pass (default on)
+ *   "volumetricFog" — froxel media, lighting, integration and composite passes
+ *   "fogLocalVolumes" — local volume injection (implies volumetricFog)
+ *   "fogTemporal"   — history filtering (implies volumetricFog)
+ *
+ * Lighting mode (enum is authoritative; "clusteredDeferred" is a projection):
+ *   LightingMode::ForwardPlus — today's clustered-forward opaque path (default)
+ *   LightingMode::Hybrid — opaque clustered deferred + transparent Forward+ when the
+ *     deferredLighting pass is available; otherwise compile() falls back observably
+ *     to ForwardPlus (getEffectiveLightingMode() / hasHybridLightingFallback())
  *
  * 3D draws into a sampleable scene color target (not the swapchain). Present
  * resolves that target (FXAA when "aa" is on), then composites AO/HUD.
@@ -38,33 +65,113 @@ class Graphics;
  * compile() is idempotent; enable/disable mark the control dirty until the
  * next compile(). RenderSystem3D auto-compiles when dirty.
  */
-class RenderControl {
+class EVENGINE_API_BACKENDS RenderControl {
 public:
+    /** @brief Renders control. */
     RenderControl();
+    /** @brief Renders control. */
     ~RenderControl() = default;
 
     RenderControl(const RenderControl &) = delete;
     RenderControl &operator=(const RenderControl &) = delete;
 
+    /** @brief Attaches . */
     void attach(Graphics *gfx);
+    /** @brief Returns the graphics. */
     Graphics *getGraphics() const { return gfx_; }
 
+    /** @brief Supports. */
     bool supports(const std::string &feature) const;
+    /** @brief Enables . */
     void enable(const std::string &feature);
+    /** @brief Disables . */
     void disable(const std::string &feature);
+    /** @brief True when enabled. */
     bool isEnabled(const std::string &feature) const;
+
+    /**
+     * @brief Request the opaque lighting strategy (transparent stays Forward+).
+     * @param mode ForwardPlus or Hybrid.
+     * @return Success. compile() may use ForwardPlus when deferred lighting is unavailable
+     * or GPU-driven opaque rendering was explicitly enabled; the requested mode is retained.
+     * @thread Render-thread affine; no callbacks.
+     */
+    [[nodiscard]] Result<void> setLightingMode(LightingMode mode);
+    /**
+     * @brief Request lighting mode by name: "forwardPlus" / "forward+" / "hybrid".
+     * @return Success, or Unsupported for unknown names (previous mode unchanged).
+     */
+    [[nodiscard]] Result<void> setLightingMode(const std::string& name);
+    /** @brief Return the caller-requested lighting mode (may differ from effective). */
+    LightingMode getLightingMode() const { return lightingMode_; }
+    /**
+     * @brief Return the mode actually compiled into the pass list.
+     * @lifetime Valid after a successful compile(); equals ForwardPlus while dirty.
+     */
+    LightingMode getEffectiveLightingMode() const { return effectiveLightingMode_; }
+    /**
+     * @brief True when deferredLighting can be inserted for Hybrid.
+     * Requires an attached Graphics backend that implements supportsDeferredLighting().
+     */
+    bool isDeferredLightingAvailable() const;
+    /**
+     * @brief True after compile() when Hybrid was requested but could not run
+     * (deferred lighting unavailable, GBuffer off, or GPU-driven opaque explicitly
+     * enabled) and ForwardPlus was used instead. GPU-driven opaque/visibility
+     * resolve takes priority over Hybrid's deferred opaque pass.
+     * Cleared on the next compile that keeps the requested Hybrid mode.
+     */
+    bool hasHybridLightingFallback() const { return hybridLightingFallback_; }
+
+    /**
+     * @brief Apply a platform lighting preset (sets LightingMode; does not lock against later setLightingMode).
+     * @param preset Desktop → Hybrid when deferred available, else ForwardPlus; Mobile/Ci → ForwardPlus.
+     * @return Success.
+     * @thread Render-thread affine.
+     */
+    [[nodiscard]] Result<void> applyLightingPreset(LightingPreset preset);
+    /**
+     * @brief Apply preset by name: "desktop" / "mobile" / "ci".
+     * @return Success, or Unsupported for unknown names.
+     */
+    [[nodiscard]] Result<void> applyLightingPreset(const std::string& name);
+    /**
+     * @brief Apply suggestedLightingPreset(), then optional EVENGINE_LIGHTING_MODE override.
+     * @return Success from the last mode set (preset or env override).
+     */
+    [[nodiscard]] Result<void> applySuggestedLightingPreset();
+    /** @brief Last applied lighting preset (defaults to Desktop before any apply). */
+    LightingPreset getLightingPreset() const { return lightingPreset_; }
+
+    /**
+     * @brief Set the shared TAA/RTGI/SSR quality preset used by the automatic reflection chain.
+     * @param quality One of "low", "medium", "high" or "ultra"; unknown values use "high".
+     */
+    void setReflectionQuality(const std::string &quality);
+    /** @brief Return the shared TAA/RTGI/SSR quality preset. */
+    std::string getReflectionQuality() const { return reflectionQuality_; }
+    /** @brief Set the unified post-process quality for TAA, RTGI and SSR. */
+    void setPostProcessQuality(const std::string &quality) { setReflectionQuality(quality); }
+    /** @brief Return the unified post-process quality for TAA, RTGI and SSR. */
+    std::string getPostProcessQuality() const { return reflectionQuality_; }
 
     /** @brief Rebuild the executable pass list from current feature flags. */
     void compile();
+    /** @brief True when compiled. */
     bool isCompiled() const { return compiled_ && !dirty_; }
+    /** @brief True when dirty. */
     bool isDirty() const { return dirty_; }
 
+    /** @brief Returns the pass count. */
     int getPassCount() const { return int(passes_.size()); }
-    /** @brief Pass names: "shadow" | "gbuffer" | "forward" | "hair" */
+    /** @brief Return the compiled pass name at index, or an empty string. */
     std::string getPassName(int index) const;
+    /** @brief True when pass. */
     bool hasPass(const std::string &name) const;
 
+    /** @brief Returns the g buffer. */
     GBuffer *getGBuffer() { return &gbuffer_; }
+    /** @brief Returns the g buffer. */
     const GBuffer *getGBuffer() const { return &gbuffer_; }
 
     /** @brief Ensure compiled; no-op when already clean. */
@@ -72,13 +179,19 @@ public:
 
 private:
     void setFeature(const std::string &feature, bool enabled);
+    void syncClusteredDeferredFeature();
 
     Graphics *gfx_ = nullptr;
     std::unordered_map<std::string, bool> features_;
     std::vector<std::string> passes_;
+    std::string reflectionQuality_ = "high";
     GBuffer gbuffer_;
-    bool dirty_ = true;
-    bool compiled_ = false;
+    LightingMode                          lightingMode_           = LightingMode::ForwardPlus;
+    LightingMode                          effectiveLightingMode_  = LightingMode::ForwardPlus;
+    LightingPreset                        lightingPreset_         = LightingPreset::Desktop;
+    bool                                  hybridLightingFallback_ = false;
+    bool                                  dirty_                  = true;
+    bool                                  compiled_               = false;
 };
 
 }  // namespace eve::graphics

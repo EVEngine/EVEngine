@@ -11,19 +11,19 @@
 // 运行： make run/<platform>-debug GAME=examples/inventory
 // ============================================================================
 
-if (!("inv" in getroottable())) inv <- null;
-if (!("bag" in getroottable())) bag <- null;
-if (!("questBag" in getroottable())) questBag <- null;
-if (!("stash" in getroottable())) stash <- null;
-if (!("eq" in getroottable())) eq <- null;
-if (!("logLines" in getroottable())) logLines <- [];
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("lootLeft" in getroottable())) lootLeft <- 0;
-if (!("uiBuilt" in getroottable())) uiBuilt <- false;
+persist inv = null
+persist bag = null
+persist questBag = null
+persist stash = null
+persist eq = null
+persist logLines = []
+persist prevKeys = {}
+persist lootLeft = 0
+persist uiBuilt = false
 
 function pushLog(text) {
     logLines.push(text);
-    while (logLines.len() > 8)
+    while (logLines.len() > 2)
         logLines.remove(0);
 }
 
@@ -70,14 +70,27 @@ function resetRun() {
     lootLeft = 5;
     logLines = [];
     pushLog("冒险开始：背包里有 3 瓶药水。");
+    publishInventory();
 }
 
 function keyPressed(name) {
-    local down = keyboard.isDown(name);
-    local key = "k_" + name;
-    local was = (key in prevKeys) ? prevKeys[key] : false;
-    prevKeys[key] <- down;
-    return down && !was;
+    return key_just_pressed(name);
+}
+
+// ---------------------------------------------------------------------------
+// 把玩家背包发布给共享玩法协议：`eve_gameplay`（MCP `eve_gameplay` 工具）即可
+// observe / submit 同一套动作词表（add/remove/move/equip/unequip）。
+// instance / owner 是规范持久 id；真实项目应从存档或实体身份派生，这里为了示例
+// 与无人值守调试固定下来。每次重建背包都要重新发布，否则适配器仍指向旧容器。
+// ---------------------------------------------------------------------------
+function publishInventory() {
+    inv.clearGameplayControls();
+    local published = inv.publishGameplay(
+        "00000000-0000-7000-8000-0000000a0001",
+        "00000000-0000-7000-8000-0000000a0002",
+        bag, eq);
+    if (!published.ok)
+        print("背包发布失败: " + published.message);
 }
 
 function refreshHud() {
@@ -189,7 +202,7 @@ eve_render = function() {
     local cols = 4;
     local cell = 48.0;
     local ox = 40.0;
-    local oy = 120.0;
+    local oy = 220.0;
     for (local i = 0; i < bag.getSlotCount(); i += 1) {
         local x = ox + (i % cols) * (cell + 8.0);
         local y = oy + (i / cols).tointeger() * (cell + 8.0);
@@ -200,15 +213,16 @@ eve_render = function() {
     }
 
     if (eq.isSlotEmpty("weapon"))
-        gfx.drawSolidRect(320.0, 120.0, 64.0, 64.0, 0.25, 0.22, 0.22, 1.0);
+        gfx.drawSolidRect(320.0, 220.0, 64.0, 64.0, 0.25, 0.22, 0.22, 1.0);
     else
-        gfx.drawSolidRect(320.0, 120.0, 64.0, 64.0, 0.70, 0.30, 0.28, 1.0);
+        gfx.drawSolidRect(320.0, 220.0, 64.0, 64.0, 0.70, 0.30, 0.28, 1.0);
 
     local used = stash.getUsedSlotCount().tofloat();
     local maxs = stash.getSlotCount().tofloat();
-    gfx.drawSolidRect(420.0, 120.0, 200.0, 24.0, 0.18, 0.20, 0.26, 1.0);
+
+    gfx.drawSolidRect(420.0, 220.0, 200.0, 24.0, 0.18, 0.20, 0.26, 1.0);
     if (maxs > 0.0)
-        gfx.drawSolidRect(420.0, 120.0, 200.0 * used / maxs, 24.0, 0.30, 0.45, 0.70, 1.0);
+        gfx.drawSolidRect(420.0, 220.0, 200.0 * used / maxs, 24.0, 0.30, 0.45, 0.70, 1.0);
 
     ui.beginFrameAndRender();
 };

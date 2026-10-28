@@ -1,13 +1,157 @@
 #include "graphics/Mesh.h"
 
+#include <assimp/mesh.h>
+
 #include "graphics/Graphics.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
+#include <limits>
+
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 
 namespace eve::graphics {
+Result<void> Mesh::setTexcoordSet(uint32_t set, std::span<const float> values) {
+    if (gpuVertexCount <= 0 || values.size() != size_t(gpuVertexCount) * 2 ||
+        std::any_of(values.begin(), values.end(), [](float x) { return !std::isfinite(x); }))
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "UV channel must match mesh vertices"));
+    std::vector<float> owned(values.begin(), values.end());
+    texcoords_.insert_or_assign(set, std::move(owned));
+    ++texcoordRevision_;
+    return Result<void>::success();
+}
+std::span<const float> Mesh::texcoordSet(uint32_t set) const {
+    auto found = texcoords_.find(set);
+    return found == texcoords_.end() ? std::span<const float>{} : std::span<const float>(found->second);
+}
 
-void Mesh::drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const {
+
+namespace {
+const std::vector<float> kEmptyAttribute;
+}
+
+void Mesh::captureImportedAttributes(const ::aiMesh &mesh) {
+    importedUvs_.clear();
+    for (unsigned channel = 0; channel < mesh.GetNumUVChannels(); ++channel) {
+        if (!mesh.HasTextureCoords(channel)) continue;
+        std::vector<float> values;
+        values.reserve(size_t(mesh.mNumVertices) * 2u);
+        for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
+            values.push_back(mesh.mTextureCoords[channel][i].x);
+            values.push_back(mesh.mTextureCoords[channel][i].y);
+        }
+        importedUvs_.push_back(std::move(values));
+    }
+    importedColors_.clear();
+    for (unsigned channel = 0; channel < mesh.GetNumColorChannels(); ++channel) {
+        if (!mesh.HasVertexColors(channel)) continue;
+        std::vector<float> values;
+        values.reserve(size_t(mesh.mNumVertices) * 4u);
+        for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
+            const aiColor4D &c = mesh.mColors[channel][i];
+            values.insert(values.end(), {c.r, c.g, c.b, c.a});
+        }
+        importedColors_.push_back(std::move(values));
+    }
+    importedTangents_.clear();
+    importedBitangents_.clear();
+    if (mesh.HasTangentsAndBitangents()) {
+        importedTangents_.reserve(size_t(mesh.mNumVertices) * 3u);
+        importedBitangents_.reserve(size_t(mesh.mNumVertices) * 3u);
+        for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
+            const aiVector3D &t = mesh.mTangents[i];
+            const aiVector3D &b = mesh.mBitangents[i];
+            importedTangents_.insert(importedTangents_.end(), {t.x, t.y, t.z});
+            importedBitangents_.insert(importedBitangents_.end(), {b.x, b.y, b.z});
+        }
+    }
+}
+
+const std::vector<float> &Mesh::importedUv(int channel) const {
+    return channel >= 0 && static_cast<size_t>(channel) < importedUvs_.size()
+               ? importedUvs_[static_cast<size_t>(channel)]
+               : kEmptyAttribute;
+}
+
+const std::vector<float> &Mesh::importedColor(int channel) const {
+    return channel >= 0 && static_cast<size_t>(channel) < importedColors_.size()
+               ? importedColors_[static_cast<size_t>(channel)]
+               : kEmptyAttribute;
+}
+
+Result<void> Mesh::setSkinPalette(const float* matrices, int matrixCount) {
+    if (!matrices || matrixCount <= 0 || static_cast<size_t>(matrixCount) > skinPalette_.max_size() / 16u)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Invalid skin palette size"));
+    const size_t count = static_cast<size_t>(matrixCount) * 16u;
+    for (size_t i = 0; i < count; ++i)
+        if (!std::isfinite(matrices[i]))
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Non-finite skin palette matrix"));
+    std::vector<float> replacement(matrices, matrices + count);
+    skinPalette_.swap(replacement);
+    return Result<void>::success();
+}
+
+void Mesh::computeBounds(const float *posXYZ, int vertexCount) {
+    static std::atomic<uint64_t> generation{0};
+    geometryGeneration_ = ++generation;
+    hasLocalBounds_     = false;
+    boundsCx     = 0.f;
+    boundsCy     = 0.f;
+    boundsCz     = 0.f;
+    boundsRadius = 0.f;
+    if (!posXYZ || vertexCount <= 0) return;
+
+    const size_t n = size_t(vertexCount);
+    for (int axis = 0; axis < 3; ++axis) {
+        localBounds_[axis]     = std::numeric_limits<float>::max();
+        localBounds_[axis + 3] = std::numeric_limits<float>::lowest();
+    }
+    glm::vec3    c(0.f);
+    for (size_t i = 0; i < n; ++i) {
+        for (int axis = 0; axis < 3; ++axis) {
+            const float value = posXYZ[i * 3u + static_cast<std::size_t>(axis)];
+            if (!std::isfinite(value)) return;
+            localBounds_[axis]     = std::min(localBounds_[axis], value);
+            localBounds_[axis + 3] = std::max(localBounds_[axis + 3], value);
+        }
+        c.x += posXYZ[i * 3u + 0u];
+        c.y += posXYZ[i * 3u + 1u];
+        c.z += posXYZ[i * 3u + 2u];
+    }
+    c /= float(n);
+    if (!std::isfinite(c.x) || !std::isfinite(c.y) || !std::isfinite(c.z)) return;
+    boundsCx = c.x;
+    boundsCy = c.y;
+    boundsCz = c.z;
+
+    float r = 0.f;
+    for (size_t i = 0; i < n; ++i) {
+        const float dx = posXYZ[i * 3u + 0u] - c.x;
+        const float dy = posXYZ[i * 3u + 1u] - c.y;
+        const float dz = posXYZ[i * 3u + 2u] - c.z;
+        const float d  = std::sqrt(dx * dx + dy * dy + dz * dz);
+        if (d > r) r = d;
+    }
+    // Degenerate (single-point) meshes still get a tiny non-zero sphere so
+    // hasBounds() stays meaningful and the culler never drops point geometry.
+    if (std::isfinite(r)) {
+        boundsRadius    = r > 0.f ? r : 1e-4f;
+        hasLocalBounds_ = true;
+    }
+}
+
+Result<std::array<float, 6>> Mesh::localBounds() const {
+    if (!hasLocalBounds_)
+        return Result<std::array<float, 6>>::failure(Diagnostic::error(
+            DiagnosticCode::NotFound, "Mesh has no finite vertex bounds", "graphics.mesh.localBounds"));
+    return Result<std::array<float, 6>>::success(localBounds_);
+}
+
+void Mesh::drawOcclusion(Graphics* gfx, const glm::mat4& matrix) const {
     if (!gfx || !getCastOcclusion()) return;
     const float x = matrix[3][0];
     const float y = matrix[3][1];
@@ -68,7 +212,26 @@ bool Mesh::addMorphTargetAbsolute(const std::string &name, const float *absPosXY
     return true;
 }
 
-int Mesh::getVertexCount() const { return int(basePos_.size() / 3); }
+int Mesh::getVertexCount() const {
+    if (!basePos_.empty()) return int(basePos_.size() / 3);
+    return gpuVertexCount;
+}
+
+Result<void> Mesh::setMorphNormalDeltas(std::string_view name, std::span<const float> deltas) {
+    const auto target =
+        std::find_if(morphs_.begin(), morphs_.end(), [&](const auto &morph) { return morph.name == name; });
+    if (target == morphs_.end())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Morph target was not found", std::string(name)));
+    if ((!deltas.empty() && deltas.size() != baseNrm_.size()) ||
+        std::any_of(deltas.begin(), deltas.end(), [](float x) { return !std::isfinite(x); }))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Expected finite normal deltas matching the morph base"));
+    std::vector<float> owned(deltas.begin(), deltas.end());
+    target->deltaNrm.swap(owned);
+    morphDirty_ = true;
+    return Result<void>::success();
+}
 
 int Mesh::getMorphCount() const { return int(morphs_.size()); }
 
@@ -111,13 +274,31 @@ void Mesh::computeMorphedPositions(std::vector<float> &outPos, std::vector<float
     outPos = basePos_;
     outNrm = baseNrm_;
     if (outPos.empty()) return;
+    bool normalsChanged = false;
     for (const MorphTarget &t : morphs_) {
         auto it = morphWeights_.find(t.name);
         const float w = (it == morphWeights_.end()) ? 0.f : it->second;
         if (std::fabs(w) < 1e-8f) continue;
         for (size_t i = 0; i < outPos.size() && i < t.deltaPos.size(); ++i)
             outPos[i] += t.deltaPos[i] * w;
+        if (!t.deltaNrm.empty()) {
+            normalsChanged = true;
+            for (size_t i = 0; i < outNrm.size(); ++i) outNrm[i] += t.deltaNrm[i] * w;
+        }
     }
+    if (normalsChanged)
+        for (size_t i = 0; i + 2 < outNrm.size(); i += 3) {
+            const float length = std::hypot(outNrm[i], outNrm[i + 1], outNrm[i + 2]);
+            if (length > 1e-8f) {
+                outNrm[i] /= length;
+                outNrm[i + 1] /= length;
+                outNrm[i + 2] /= length;
+            } else {
+                outNrm[i]     = baseNrm_[i];
+                outNrm[i + 1] = baseNrm_[i + 1];
+                outNrm[i + 2] = baseNrm_[i + 2];
+            }
+        }
 }
 
 }  // namespace eve::graphics

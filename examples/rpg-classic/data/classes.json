@@ -1,0 +1,10 @@
+[
+  {"id": "class.warrior", "displayName": "战士",
+   "traits": ["trait.mighty"],
+   "learnSkills": [
+     {"skillId": "skill.strike", "level": 1},
+     {"skillId": "skill.fireball", "level": 2},
+     {"skillId": "skill.cleave", "level": 4}
+   ],
+   "tags": ["physical"]}
+]

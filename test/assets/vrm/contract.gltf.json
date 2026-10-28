@@ -1,0 +1,350 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "EVEngine synthetic VRM contract fixture"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "root",
+      "children": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "face",
+      "mesh": 0,
+      "skin": 0
+    },
+    {
+      "name": "head",
+      "children": [
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "leftEye",
+      "translation": [
+        0.1,
+        0.4,
+        0
+      ]
+    },
+    {
+      "name": "rightEye",
+      "translation": [
+        -0.1,
+        0.4,
+        0
+      ]
+    },
+    {
+      "name": "hair",
+      "translation": [
+        0,
+        0.6,
+        0
+      ],
+      "children": [
+        6
+      ]
+    },
+    {
+      "name": "hairTip",
+      "translation": [
+        0,
+        0.2,
+        0
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2,
+            "JOINTS_0": 4,
+            "WEIGHTS_0": 5
+          },
+          "indices": 3,
+          "material": 0,
+          "targets": [
+            {
+              "POSITION": 6
+            }
+          ]
+        },
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2,
+            "JOINTS_0": 4,
+            "WEIGHTS_0": 5
+          },
+          "indices": 3,
+          "material": 0,
+          "targets": [
+            {
+              "POSITION": 6
+            }
+          ]
+        }
+      ],
+      "extras": {
+        "targetNames": [
+          "smile"
+        ]
+      }
+    }
+  ],
+  "skins": [
+    {
+      "joints": [
+        2
+      ],
+      "inverseBindMatrices": 7
+    }
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.8,
+          0.5,
+          0.4,
+          1
+        ]
+      },
+      "extensions": {
+        "VRMC_materials_mtoon": {
+          "specVersion": "1.0",
+          "shadeColorFactor": [
+            0.1,
+            0.2,
+            0.3
+          ],
+          "outlineWidthMode": "worldCoordinates",
+          "outlineWidthFactor": 0.002
+        }
+      }
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 276
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 36
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 36,
+      "byteLength": 36
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 72,
+      "byteLength": 24
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 96,
+      "byteLength": 6
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 104,
+      "byteLength": 24
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 128,
+      "byteLength": 48
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 176,
+      "byteLength": 36
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 212,
+      "byteLength": 64
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "type": "VEC3",
+      "count": 3,
+      "min": [
+        -0.3,
+        0,
+        0
+      ],
+      "max": [
+        0.3,
+        0.6,
+        0
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "type": "VEC3",
+      "count": 3
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "type": "VEC2",
+      "count": 3
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5123,
+      "type": "SCALAR",
+      "count": 3
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5123,
+      "type": "VEC4",
+      "count": 3
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5126,
+      "type": "VEC4",
+      "count": 3
+    },
+    {
+      "bufferView": 6,
+      "componentType": 5126,
+      "type": "VEC3",
+      "count": 3
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5126,
+      "type": "MAT4",
+      "count": 1
+    }
+  ],
+  "extensionsUsed": [
+    "VRMC_vrm",
+    "VRMC_springBone",
+    "VRMC_materials_mtoon"
+  ],
+  "extensions": {
+    "VRMC_vrm": {
+      "specVersion": "1.0",
+      "humanoid": {
+        "humanBones": {
+          "head": {
+            "node": 2
+          },
+          "leftEye": {
+            "node": 3
+          },
+          "rightEye": {
+            "node": 4
+          }
+        }
+      },
+      "lookAt": {
+        "type": "bone"
+      },
+      "expressions": {
+        "preset": {
+          "happy": {
+            "morphTargetBinds": [
+              {
+                "node": 1,
+                "index": 0,
+                "weight": 1
+              }
+            ]
+          },
+          "aa": {
+            "morphTargetBinds": [
+              {
+                "node": 1,
+                "index": 0,
+                "weight": 0.5
+              }
+            ]
+          }
+        }
+      }
+    },
+    "VRMC_springBone": {
+      "specVersion": "1.0",
+      "colliders": [
+        {
+          "node": 2,
+          "shape": {
+            "sphere": {
+              "offset": [
+                0.4,
+                0.5,
+                0
+              ],
+              "radius": 0.05
+            }
+          }
+        }
+      ],
+      "colliderGroups": [
+        {
+          "colliders": [
+            0
+          ]
+        }
+      ],
+      "springs": [
+        {
+          "name": "hair",
+          "joints": [
+            {
+              "node": 5,
+              "gravityPower": 0.1,
+              "gravityDir": [
+                1,
+                0,
+                0
+              ],
+              "dragForce": 0.3
+            },
+            {
+              "node": 6
+            }
+          ],
+          "colliderGroups": [
+            0
+          ],
+          "center": 2
+        }
+      ]
+    }
+  }
+}

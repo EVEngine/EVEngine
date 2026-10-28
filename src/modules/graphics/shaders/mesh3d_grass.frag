@@ -16,10 +16,12 @@ layout(location = 3) in vec3 vRootPos;
 layout(location = 4) in float vInstanceId;
 layout(location = 5) in vec4 vTint;
 layout(location = 6) in float vAlwaysDark;
+layout(location = 7) in vec3 vInstanceTint;
 
 struct Light3D {
     vec4 posRadius;
     vec4 color;
+    vec4 spot;
 };
 
 layout(set = 0, binding = 0, std140) uniform Frame {
@@ -38,6 +40,8 @@ layout(set = 0, binding = 0, std140) uniform Frame {
 } ubo;
 
 layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
+layout(set = 0, binding = 2) uniform sampler2D normalSampler;
+layout(set = 0, binding = 3) uniform sampler2D maskSampler;
 
 layout(set = 0, binding = 4, std140) uniform ShadowFrame {
     mat4 lightVP[3];
@@ -45,6 +49,7 @@ layout(set = 0, binding = 4, std140) uniform ShadowFrame {
     vec4 bias;
     vec4 cascadeBias;
     vec4 cascadeTexel;
+    vec4 cascadeUvScale;
 } shadow;
 
 layout(set = 0, binding = 5) uniform sampler2DArrayShadow shadowMap;
@@ -55,6 +60,8 @@ layout(push_constant) uniform Externals {
 
 layout(location = 0) out vec4 outColor;
 
+#include "shadow_cascade_uv.glsl"
+
 float sampleShadowCascade(vec3 worldPos, int cascade, float ndcBias) {
     vec4 lightClip = shadow.lightVP[cascade] * vec4(worldPos, 1.0);
     vec3 ndc = lightClip.xyz / max(lightClip.w, 1e-6);
@@ -63,7 +70,8 @@ float sampleShadowCascade(vec3 worldPos, int cascade, float ndcBias) {
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0)
         return 1.0;
 
-    vec2 texel = 1.0 / vec2(textureSize(shadowMap, 0).xy);
+    float uvScale = eveCascadeUvScale(cascade);
+    vec2 texel = vec2(1.0 / eveCascadeMapSize(cascade));
     const vec2 kRotOffsets[9] = vec2[9](
         vec2(-0.5, -0.5), vec2(0.0, -0.6), vec2(0.5, -0.5),
         vec2(-0.6, 0.0), vec2(0.0, 0.0),  vec2(0.6, 0.0),
@@ -72,10 +80,10 @@ float sampleShadowCascade(vec3 worldPos, int cascade, float ndcBias) {
     float sum = 0.0;
     float zref = depth - ndcBias;
     for (int i = 0; i < 9; ++i) {
-        vec2 s = uv + kRotOffsets[i] * texel;
-        if (s.x < 0.0 || s.x > 1.0 || s.y < 0.0 || s.y > 1.0)
+        vec2 sCascade = uv + kRotOffsets[i] * texel;
+        if (sCascade.x < 0.0 || sCascade.x > 1.0 || sCascade.y < 0.0 || sCascade.y > 1.0)
             continue;
-        sum += texture(shadowMap, vec4(s, float(cascade), zref));
+        sum += texture(shadowMap, vec4(sCascade * uvScale, float(cascade), zref));
     }
     return sum / 9.0;
 }
@@ -86,6 +94,10 @@ float cascadeNdcBias(int cascade) {
     return b > 1e-8 ? b : shadow.bias.x;
 }
 
+float slopeScaledBias(int cascade, float nDotL) {
+    return cascadeNdcBias(cascade) * mix(0.75, 1.0, clamp(nDotL, 0.0, 1.0));
+}
+
 float sampleGrassShadow(vec3 worldPos, float viewDepth) {
     if (shadow.bias.y < 0.5 || shadow.bias.z < 0.5 || shadow.splits.w < 1e-4)
         return 1.0;
@@ -94,20 +106,38 @@ float sampleGrassShadow(vec3 worldPos, float viewDepth) {
     if (viewDepth < shadow.splits.x) cascade = 0;
     else if (viewDepth < shadow.splits.y) cascade = 1;
 
-    float vis = sampleShadowCascade(worldPos, cascade, cascadeNdcBias(cascade));
+    float texel = cascade == 0 ? shadow.cascadeTexel.x
+                               : (cascade == 1 ? shadow.cascadeTexel.y : shadow.cascadeTexel.z);
+    vec3 normal = vec3(0.0, 1.0, 0.0);
+    float nDotL = max(dot(normal, normalize(ubo.lightDirIntensity.xyz)), 0.0);
+    vec3 samplePos = worldPos + normal * ((2.0 * max(texel, 1e-6)) / max(nDotL, 0.2));
+    float vis = sampleShadowCascade(samplePos, cascade, slopeScaledBias(cascade, nDotL));
+
+    float hi = cascade == 0 ? shadow.splits.x : (cascade == 1 ? shadow.splits.y : shadow.splits.z);
+    float lo = cascade == 0 ? 0.0 : (cascade == 1 ? shadow.splits.x : shadow.splits.y);
+    float band = max(0.5, (hi - lo) * 0.1);
+    float toPrev = 1.0 - clamp((viewDepth - lo) / band, 0.0, 1.0);
+    float toNext = 1.0 - clamp((hi - viewDepth) / band, 0.0, 1.0);
+    if (toPrev > 0.0 && cascade > 0)
+        vis = mix(vis, sampleShadowCascade(samplePos, cascade - 1,
+                                           slopeScaledBias(cascade - 1, nDotL)), toPrev);
+    if (toNext > 0.0 && cascade < 2)
+        vis = mix(vis, sampleShadowCascade(samplePos, cascade + 1,
+                                           slopeScaledBias(cascade + 1, nDotL)), toNext);
     vis = mix(1.0, vis, clamp(shadow.splits.w, 0.0, 1.0));
-    return vis;
+    return mix(0.04, 1.0, vis);
 }
 
 void main() {
+    bool foliage = u.data[12] < 0.0;
     float frames = max(u.data[12], 1.0);
     float duration = max(u.data[1], 1e-4);
     float hash = fract(sin(vInstanceId * 12.9898) * 43758.5453);
     float t = u.data[0] / duration + hash * frames;
     int frame = int(mod(floor(t), frames));
 
-    int cols = int(max(u.data[13], 1.0));
-    int rows = int(max(u.data[14], 1.0));
+    int cols = foliage ? 1 : int(max(u.data[13], 1.0));
+    int rows = foliage ? 1 : int(max(u.data[14], 1.0));
     int grassVars = int(max(u.data[15], 1.0));
     int leafVars = int(max(u.data[16], 1.0));
     int leafRowOffset = int(u.data[17] + 0.5);
@@ -127,12 +157,47 @@ void main() {
         atlasUV = vec2((float(col) + vUV.x) / float(cols),
                        (float(row) + (1.0 - vUV.y)) / float(rows));
     }
-    vec4 mask = texture(albedoSampler, atlasUV) * vTint;
+    vec4 mask = texture(albedoSampler, atlasUV) * vTint * vec4(vInstanceTint, 1.0);
+    if (foliage) {
+        float detailDistance = distance(vRootPos, ubo.cameraPos.xyz);
+        float packedDetail = max(u.data[17], 0.0);
+        float hardDistance = floor(packedDetail);
+        float density = clamp(fract(packedDetail) * 2.0, 0.0, 1.0);
+        if (detailDistance > hardDistance || hash > density)
+            discard;
+        float fade = (1.0 - clamp((detailDistance - u.data[13]) /
+                                  max(u.data[14], 0.0001), 0.0, 1.0)) * 2.0;
+        mask.a *= fade;
+    }
     if (mask.a < max(u.data[4], 0.01))
         discard;
 
     float viewDepth = max(-vViewPos.z, 0.0);
-    float vis = sampleGrassShadow(vRootPos, viewDepth);
+    // Use the visible blade position plus the same two-texel receiver offset on
+    // both backends. Sampling the exact root/ground plane amplifies backend
+    // depth precision differences into blanket self-shadowing.
+    float vis = sampleGrassShadow(vWorldPos, viewDepth);
+    if (foliage) {
+        vec3 base = mask.rgb * vec3(u.data[6], u.data[7], u.data[8]) * 0.5;
+        float snowFade = clamp((vWorldPos.y - u.data[0]) / max(u.data[15], 0.0001), 0.0, 1.0);
+        float snowMask = mix(0.0, 0.1, snowFade) * clamp(u.data[16], 0.0, 1.0);
+        base = mix(base, clamp(base + vec3(u.data[9], u.data[10], u.data[11]), 0.0, 1.0), snowMask);
+        vec4 surface = clamp(texture(maskSampler, atlasUV), 0.0, 1.0);
+        vec3 tangentNormal = texture(normalSampler, atlasUV).xyz * 2.0 - 1.0;
+        tangentNormal.xy *= max(u.data[1], 0.01);
+        tangentNormal = abs(normalize(tangentNormal));
+        vec3 lightDir = normalize(ubo.lightDirIntensity.xyz);
+        vec3 viewDir = normalize(ubo.cameraPos.xyz - vWorldPos);
+        float diffuse = max(dot(tangentNormal, lightDir), 0.0);
+        float backlight = max(dot(-lightDir, viewDir), 0.0) * (1.0 - surface.b);
+        float smoothness = surface.a * 0.25;
+        vec3 halfDir = normalize(lightDir + viewDir);
+        float specular = pow(max(dot(tangentNormal, halfDir), 0.0), mix(4.0, 64.0, smoothness)) * surface.r;
+        vec3 lighting = ubo.ambient.rgb * surface.g + ubo.lightColor.rgb * ubo.lightDirIntensity.w *
+                        (diffuse * vis + backlight * 0.35 + specular * vis);
+        outColor = vec4(base * lighting, mask.a);
+        return;
+    }
     if (u.data[5] > 0.5 || vAlwaysDark > 0.5)
         vis = 0.0;
 

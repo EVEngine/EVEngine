@@ -1,4 +1,5 @@
 #include "devtools/AiPanel.hpp"
+#include "devtools/Immortal.hpp"
 
 #include <chrono>
 #include <ctime>
@@ -12,10 +13,11 @@ AiPanel::ImGuiDrawer g_imguiDrawer = nullptr;
 }  // namespace
 
 AiPanel& AiPanel::instance() {
-    // Intentionally leaked: McpServer/tests touch AiPanel during process teardown;
-    // destroying a mutex singleton then re-locking it aborts on libc++.
-    static AiPanel* inst = new AiPanel();
-    return *inst;
+    // Process-immortal singleton: McpServer's detached stdio reader and the
+    // other DevTools singletons may still touch AiPanel during teardown, so
+    // destroying it would let them lock a destroyed mutex (libc++ aborts).
+    // See devtools/Immortal.hpp for the shared contract.
+    return Immortal<AiPanel>::get();
 }
 
 std::string AiPanel::nowStamp() {

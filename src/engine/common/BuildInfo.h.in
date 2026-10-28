@@ -1,0 +1,9 @@
+#pragma once
+
+// Generated at configure time from the current git state; do not edit.
+
+#define EVENGINE_GIT_COMMIT "@EVENGINE_GIT_COMMIT@"
+#define EVENGINE_GIT_DIRTY @EVENGINE_GIT_DIRTY@
+#define EVENGINE_BUILD_TIME "@EVENGINE_BUILD_TIME@"
+#define EVENGINE_BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+#define EVENGINE_TP_DESC "@EVENGINE_TP_DESC@"

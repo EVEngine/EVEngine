@@ -1,0 +1,595 @@
+{
+  "schema": "azure.runtime-layers",
+  "version": 1,
+  "unknownFields": "reject",
+  "revision": "32b2cee0f58d185b",
+  "canvas": [
+    768,
+    1536
+  ],
+  "layers": {
+    "front": [
+      {
+        "name": "hair-back.halfup.lengths",
+        "slot": "hair-back",
+        "variant": "halfup",
+        "z": 0,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/hair-back.halfup.lengths.png"
+      },
+      {
+        "name": "hair-back.straight.lengths",
+        "slot": "hair-back",
+        "variant": "straight",
+        "z": 1,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/hair-back.straight.lengths.png"
+      },
+      {
+        "name": "hair-back.waves.lengths",
+        "slot": "hair-back",
+        "variant": "waves",
+        "z": 2,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/hair-back.waves.lengths.png"
+      },
+      {
+        "name": "jacket-back.ivory.rear-collar",
+        "slot": "jacket-back",
+        "variant": "ivory",
+        "z": 3,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/jacket-back.ivory.rear-collar.png"
+      },
+      {
+        "name": "jacket-back.navy.rear-collar",
+        "slot": "jacket-back",
+        "variant": "navy",
+        "z": 4,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/jacket-back.navy.rear-collar.png"
+      },
+      {
+        "name": "shirt-back.blue.rear-collar",
+        "slot": "shirt-back",
+        "variant": "blue",
+        "z": 5,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/shirt-back.blue.rear-collar.png"
+      },
+      {
+        "name": "shirt-back.ivory.rear-collar",
+        "slot": "shirt-back",
+        "variant": "ivory",
+        "z": 6,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/shirt-back.ivory.rear-collar.png"
+      },
+      {
+        "name": "body.base.head-neck",
+        "slot": "body",
+        "variant": "base",
+        "z": 7,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/body.base.head-neck.png"
+      },
+      {
+        "name": "body.base.legs-shoes",
+        "slot": "body",
+        "variant": "base",
+        "z": 7,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/body.base.legs-shoes.png"
+      },
+      {
+        "name": "body.base.arm-left",
+        "slot": "body",
+        "variant": "base",
+        "z": 7,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/body.base.arm-left.png"
+      },
+      {
+        "name": "body.base.arm-right",
+        "slot": "body",
+        "variant": "base",
+        "z": 7,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/body.base.arm-right.png"
+      },
+      {
+        "name": "body.base.torso",
+        "slot": "body",
+        "variant": "base",
+        "z": 7,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/body.base.torso.png"
+      },
+      {
+        "name": "shirt.blue.torso",
+        "slot": "shirt",
+        "variant": "blue",
+        "z": 8,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/shirt.blue.torso.png"
+      },
+      {
+        "name": "shirt.ivory.torso",
+        "slot": "shirt",
+        "variant": "ivory",
+        "z": 9,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/shirt.ivory.torso.png"
+      },
+      {
+        "name": "skirt.blue.waistband",
+        "slot": "skirt",
+        "variant": "blue",
+        "z": 10,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/skirt.blue.waistband.png"
+      },
+      {
+        "name": "skirt.blue.torso",
+        "slot": "skirt",
+        "variant": "blue",
+        "z": 10,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/skirt.blue.torso.png"
+      },
+      {
+        "name": "skirt.navy.waistband",
+        "slot": "skirt",
+        "variant": "navy",
+        "z": 11,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/skirt.navy.waistband.png"
+      },
+      {
+        "name": "skirt.navy.torso",
+        "slot": "skirt",
+        "variant": "navy",
+        "z": 11,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/skirt.navy.torso.png"
+      },
+      {
+        "name": "hands.base.left",
+        "slot": "hands",
+        "variant": "base",
+        "z": 12,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/hands.base.left.png"
+      },
+      {
+        "name": "hands.base.right",
+        "slot": "hands",
+        "variant": "base",
+        "z": 12,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/hands.base.right.png"
+      },
+      {
+        "name": "shirt-sleeves.blue.sleeve-left",
+        "slot": "shirt-sleeves",
+        "variant": "blue",
+        "z": 13,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/shirt-sleeves.blue.sleeve-left.png"
+      },
+      {
+        "name": "shirt-sleeves.blue.sleeve-right",
+        "slot": "shirt-sleeves",
+        "variant": "blue",
+        "z": 13,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/shirt-sleeves.blue.sleeve-right.png"
+      },
+      {
+        "name": "shirt-sleeves.ivory.sleeve-left",
+        "slot": "shirt-sleeves",
+        "variant": "ivory",
+        "z": 14,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/shirt-sleeves.ivory.sleeve-left.png"
+      },
+      {
+        "name": "shirt-sleeves.ivory.sleeve-right",
+        "slot": "shirt-sleeves",
+        "variant": "ivory",
+        "z": 14,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/shirt-sleeves.ivory.sleeve-right.png"
+      },
+      {
+        "name": "jacket.ivory.sleeve-left",
+        "slot": "jacket",
+        "variant": "ivory",
+        "z": 15,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/jacket.ivory.sleeve-left.png"
+      },
+      {
+        "name": "jacket.ivory.sleeve-right",
+        "slot": "jacket",
+        "variant": "ivory",
+        "z": 15,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/jacket.ivory.sleeve-right.png"
+      },
+      {
+        "name": "jacket.ivory.torso",
+        "slot": "jacket",
+        "variant": "ivory",
+        "z": 15,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/jacket.ivory.torso.png"
+      },
+      {
+        "name": "jacket.navy.sleeve-left",
+        "slot": "jacket",
+        "variant": "navy",
+        "z": 16,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/jacket.navy.sleeve-left.png"
+      },
+      {
+        "name": "jacket.navy.sleeve-right",
+        "slot": "jacket",
+        "variant": "navy",
+        "z": 16,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/jacket.navy.sleeve-right.png"
+      },
+      {
+        "name": "jacket.navy.torso",
+        "slot": "jacket",
+        "variant": "navy",
+        "z": 16,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/jacket.navy.torso.png"
+      },
+      {
+        "name": "face-base.base.contour",
+        "slot": "face-base",
+        "variant": "base",
+        "z": 17,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/face-base.base.contour.png"
+      },
+      {
+        "name": "expression.angry.features",
+        "slot": "expression",
+        "variant": "angry",
+        "z": 18,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/expression.angry.features.png"
+      },
+      {
+        "name": "expression.happy.features",
+        "slot": "expression",
+        "variant": "happy",
+        "z": 19,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/expression.happy.features.png"
+      },
+      {
+        "name": "expression.neutral.features",
+        "slot": "expression",
+        "variant": "neutral",
+        "z": 20,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/expression.neutral.features.png"
+      },
+      {
+        "name": "expression.sad.features",
+        "slot": "expression",
+        "variant": "sad",
+        "z": 21,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/expression.sad.features.png"
+      },
+      {
+        "name": "expression.shy.features",
+        "slot": "expression",
+        "variant": "shy",
+        "z": 22,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/expression.shy.features.png"
+      },
+      {
+        "name": "expression.surprised.features",
+        "slot": "expression",
+        "variant": "surprised",
+        "z": 23,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/expression.surprised.features.png"
+      },
+      {
+        "name": "hair-front.halfup.bangs-locks",
+        "slot": "hair-front",
+        "variant": "halfup",
+        "z": 24,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/hair-front.halfup.bangs-locks.png"
+      },
+      {
+        "name": "hair-front.straight.bangs-locks",
+        "slot": "hair-front",
+        "variant": "straight",
+        "z": 25,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/hair-front.straight.bangs-locks.png"
+      },
+      {
+        "name": "hair-front.waves.bangs-locks",
+        "slot": "hair-front",
+        "variant": "waves",
+        "z": 26,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/hair-front.waves.bangs-locks.png"
+      },
+      {
+        "name": "accessory.star.clip",
+        "slot": "accessory",
+        "variant": "star",
+        "z": 27,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/front/accessory.star.clip.png"
+      }
+    ],
+    "greeting": [
+      {
+        "name": "hair-back.halfup.lengths",
+        "slot": "hair-back",
+        "variant": "halfup",
+        "z": 0,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/hair-back.halfup.lengths.png"
+      },
+      {
+        "name": "hair-back.straight.lengths",
+        "slot": "hair-back",
+        "variant": "straight",
+        "z": 1,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/hair-back.straight.lengths.png"
+      },
+      {
+        "name": "hair-back.waves.lengths",
+        "slot": "hair-back",
+        "variant": "waves",
+        "z": 2,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/hair-back.waves.lengths.png"
+      },
+      {
+        "name": "jacket-back.ivory.rear-collar",
+        "slot": "jacket-back",
+        "variant": "ivory",
+        "z": 3,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/jacket-back.ivory.rear-collar.png"
+      },
+      {
+        "name": "jacket-back.navy.rear-collar",
+        "slot": "jacket-back",
+        "variant": "navy",
+        "z": 4,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/jacket-back.navy.rear-collar.png"
+      },
+      {
+        "name": "shirt-back.blue.rear-collar",
+        "slot": "shirt-back",
+        "variant": "blue",
+        "z": 5,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/shirt-back.blue.rear-collar.png"
+      },
+      {
+        "name": "shirt-back.ivory.rear-collar",
+        "slot": "shirt-back",
+        "variant": "ivory",
+        "z": 6,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/shirt-back.ivory.rear-collar.png"
+      },
+      {
+        "name": "body.base.head-neck",
+        "slot": "body",
+        "variant": "base",
+        "z": 7,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/body.base.head-neck.png"
+      },
+      {
+        "name": "body.base.legs-shoes",
+        "slot": "body",
+        "variant": "base",
+        "z": 7,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/body.base.legs-shoes.png"
+      },
+      {
+        "name": "body.base.arm-left",
+        "slot": "body",
+        "variant": "base",
+        "z": 7,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/body.base.arm-left.png"
+      },
+      {
+        "name": "body.base.arm-right",
+        "slot": "body",
+        "variant": "base",
+        "z": 7,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/body.base.arm-right.png"
+      },
+      {
+        "name": "body.base.torso",
+        "slot": "body",
+        "variant": "base",
+        "z": 7,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/body.base.torso.png"
+      },
+      {
+        "name": "shirt.blue.torso",
+        "slot": "shirt",
+        "variant": "blue",
+        "z": 8,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/shirt.blue.torso.png"
+      },
+      {
+        "name": "shirt.ivory.torso",
+        "slot": "shirt",
+        "variant": "ivory",
+        "z": 9,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/shirt.ivory.torso.png"
+      },
+      {
+        "name": "skirt.blue.waistband",
+        "slot": "skirt",
+        "variant": "blue",
+        "z": 10,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/skirt.blue.waistband.png"
+      },
+      {
+        "name": "skirt.blue.torso",
+        "slot": "skirt",
+        "variant": "blue",
+        "z": 10,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/skirt.blue.torso.png"
+      },
+      {
+        "name": "skirt.navy.waistband",
+        "slot": "skirt",
+        "variant": "navy",
+        "z": 11,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/skirt.navy.waistband.png"
+      },
+      {
+        "name": "skirt.navy.torso",
+        "slot": "skirt",
+        "variant": "navy",
+        "z": 11,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/skirt.navy.torso.png"
+      },
+      {
+        "name": "hands.base.left",
+        "slot": "hands",
+        "variant": "base",
+        "z": 12,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/hands.base.left.png"
+      },
+      {
+        "name": "hands.base.right",
+        "slot": "hands",
+        "variant": "base",
+        "z": 12,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/hands.base.right.png"
+      },
+      {
+        "name": "shirt-sleeves.blue.sleeve-left",
+        "slot": "shirt-sleeves",
+        "variant": "blue",
+        "z": 13,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/shirt-sleeves.blue.sleeve-left.png"
+      },
+      {
+        "name": "shirt-sleeves.blue.sleeve-right",
+        "slot": "shirt-sleeves",
+        "variant": "blue",
+        "z": 13,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/shirt-sleeves.blue.sleeve-right.png"
+      },
+      {
+        "name": "shirt-sleeves.ivory.sleeve-left",
+        "slot": "shirt-sleeves",
+        "variant": "ivory",
+        "z": 14,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/shirt-sleeves.ivory.sleeve-left.png"
+      },
+      {
+        "name": "shirt-sleeves.ivory.sleeve-right",
+        "slot": "shirt-sleeves",
+        "variant": "ivory",
+        "z": 14,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/shirt-sleeves.ivory.sleeve-right.png"
+      },
+      {
+        "name": "jacket.ivory.sleeve-left",
+        "slot": "jacket",
+        "variant": "ivory",
+        "z": 15,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/jacket.ivory.sleeve-left.png"
+      },
+      {
+        "name": "jacket.ivory.sleeve-right",
+        "slot": "jacket",
+        "variant": "ivory",
+        "z": 15,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/jacket.ivory.sleeve-right.png"
+      },
+      {
+        "name": "jacket.ivory.torso",
+        "slot": "jacket",
+        "variant": "ivory",
+        "z": 15,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/jacket.ivory.torso.png"
+      },
+      {
+        "name": "jacket.navy.sleeve-left",
+        "slot": "jacket",
+        "variant": "navy",
+        "z": 16,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/jacket.navy.sleeve-left.png"
+      },
+      {
+        "name": "jacket.navy.sleeve-right",
+        "slot": "jacket",
+        "variant": "navy",
+        "z": 16,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/jacket.navy.sleeve-right.png"
+      },
+      {
+        "name": "jacket.navy.torso",
+        "slot": "jacket",
+        "variant": "navy",
+        "z": 16,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/jacket.navy.torso.png"
+      },
+      {
+        "name": "face-base.base.contour",
+        "slot": "face-base",
+        "variant": "base",
+        "z": 17,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/face-base.base.contour.png"
+      },
+      {
+        "name": "expression.angry.features",
+        "slot": "expression",
+        "variant": "angry",
+        "z": 18,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/expression.angry.features.png"
+      },
+      {
+        "name": "expression.happy.features",
+        "slot": "expression",
+        "variant": "happy",
+        "z": 19,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/expression.happy.features.png"
+      },
+      {
+        "name": "expression.neutral.features",
+        "slot": "expression",
+        "variant": "neutral",
+        "z": 20,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/expression.neutral.features.png"
+      },
+      {
+        "name": "expression.sad.features",
+        "slot": "expression",
+        "variant": "sad",
+        "z": 21,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/expression.sad.features.png"
+      },
+      {
+        "name": "expression.shy.features",
+        "slot": "expression",
+        "variant": "shy",
+        "z": 22,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/expression.shy.features.png"
+      },
+      {
+        "name": "expression.surprised.features",
+        "slot": "expression",
+        "variant": "surprised",
+        "z": 23,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/expression.surprised.features.png"
+      },
+      {
+        "name": "hair-front.halfup.bangs-locks",
+        "slot": "hair-front",
+        "variant": "halfup",
+        "z": 24,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/hair-front.halfup.bangs-locks.png"
+      },
+      {
+        "name": "hair-front.straight.bangs-locks",
+        "slot": "hair-front",
+        "variant": "straight",
+        "z": 25,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/hair-front.straight.bangs-locks.png"
+      },
+      {
+        "name": "hair-front.waves.bangs-locks",
+        "slot": "hair-front",
+        "variant": "waves",
+        "z": 26,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/hair-front.waves.bangs-locks.png"
+      },
+      {
+        "name": "accessory.star.clip",
+        "slot": "accessory",
+        "variant": "star",
+        "z": 27,
+        "file": "assets/azure-master/exports/32b2cee0f58d185b/greeting/accessory.star.clip.png"
+      }
+    ]
+  },
+  "occlusion": {
+    "navy": [
+      "shirt-sleeves"
+    ]
+  }
+}

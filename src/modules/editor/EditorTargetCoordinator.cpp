@@ -1,0 +1,280 @@
+#include "editor/EditorTargetCoordinator.h"
+
+#include "editor/EditorAuthority.h"
+#include "editor/EditorSession.h"
+#include "editor/EditorTransactionService.h"
+
+#include <map>
+#include <set>
+#include <utility>
+#include <vector>
+
+namespace eve::editor {
+namespace {
+
+EditorValue descriptorValue(const eve::editing::TargetDescriptor& descriptor) {
+    EditorValue::Array capabilities;
+    for (const CapabilityId& capability : descriptor.capabilities)
+        capabilities.emplace_back(capability.value());
+    return EditorValue::Object{{"id", descriptor.id.value()},
+                               {"type", descriptor.type},
+                               {"revision", static_cast<std::int64_t>(descriptor.revision)},
+                               {"readOnly", descriptor.readOnly},
+                               {"capabilities", std::move(capabilities)}};
+}
+
+}  // namespace
+
+struct EditorTargetCoordinator::Impl {
+    struct TargetEntry {
+        explicit TargetEntry(IEditableTarget& value, IDomainOperationTarget& operations, std::uint64_t valueGeneration)
+            : target(&value), generation(valueGeneration), authority(&operations), transactions(&authority) {}
+
+        IEditableTarget*        target = nullptr;
+        std::shared_ptr<void>    lifetime = std::make_shared<int>(0);
+        std::uint64_t            generation = 0;
+        LocalWorldAuthority     authority;
+        LocalTransactionBackend transactions;
+        IEditorTransactionBackend* backend = &transactions;
+    };
+
+    explicit Impl(EditorCommandService& value) : commands(&value) {}
+
+    TargetEntry* entry(const TargetId& id) {
+        const auto found = targets.find(id);
+        return found == targets.end() ? nullptr : found->second.get();
+    }
+    const TargetEntry* entry(const TargetId& id) const {
+        const auto found = targets.find(id);
+        return found == targets.end() ? nullptr : found->second.get();
+    }
+
+    Result<TransactionReceipt> execute(const CommandPlan& plan) {
+        TargetEntry* selected = entry(plan.target);
+        if (!selected || !selected->target)
+            return eve::editing::failed<TransactionReceipt>(EditorStatus::NotFound, RuleId("editor.target.not-found"),
+                                                            "Editing target is not registered: " + plan.target.value());
+        if (selected->target->revision() != plan.baseRevision)
+            return eve::editing::failed<TransactionReceipt>(EditorStatus::Conflict,
+                                                            RuleId("editor.target.revision-conflict"),
+                                                            "Editing target changed after planning");
+        if (selected->generation != plan.targetGeneration)
+            return eve::editing::failed<TransactionReceipt>(EditorStatus::Conflict,
+                                                            RuleId("editor.target.generation-conflict"),
+                                                            "Editing target lifetime changed after planning");
+        TransactionSpec specification;
+        specification.id           = TransactionId(plan.id.value() + ".transaction");
+        specification.label        = plan.command.value();
+        specification.origin       = ActionOrigin::Automation;
+        specification.target       = plan.target;
+        specification.baseRevision = plan.baseRevision;
+        auto begun                 = selected->backend->begin(std::move(specification));
+        if (!begun.ok())
+            return eve::editing::failed<TransactionReceipt>(begun.code(), RuleId("editor.target.begin-failed"),
+                                                            "Could not begin the editing transaction");
+        for (const DomainOperation& operation : plan.operations) {
+            auto appended = selected->backend->append(operation);
+            if (appended.ok()) continue;
+            auto discarded = selected->backend->discard();
+            if (!discarded.ok())
+                return eve::editing::failed<TransactionReceipt>(EditorStatus::Failed,
+                                                                RuleId("editor.target.discard-failed"),
+                                                                "Could not discard a rejected transaction");
+            return eve::editing::failed<TransactionReceipt>(appended.code(), RuleId("editor.target.append-failed"),
+                                                            "Could not stage the editing operation");
+        }
+        auto committed = selected->backend->commit();
+        if (!committed.ok()) {
+            // This coordinator owns the one-shot batch; callers cannot retry or
+            // discard it themselves. Leave the existing undo history usable.
+            auto discarded = selected->backend->discard();
+            if (!discarded.ok())
+                return eve::editing::failed<TransactionReceipt>(EditorStatus::Failed,
+                                                                RuleId("editor.target.discard-failed"),
+                                                                "Could not discard a rejected commit");
+        }
+        return committed;
+    }
+
+    EditorCommandService* commands = nullptr;
+    std::map<TargetId, std::unique_ptr<TargetEntry>> targets;
+    struct SessionBinding {
+        TargetId       target;
+        std::uint64_t generation = 0;
+    };
+    std::map<EditorSession*, SessionBinding> sessions;
+    std::vector<std::pair<CommandId, std::string>> registeredCommands;
+    std::uint64_t nextTargetGeneration = 1;
+    std::shared_ptr<void>                          lifetime             = std::make_shared<int>(0);
+};
+
+EditorTargetCoordinator::EditorTargetCoordinator(EditorCommandService& commands)
+    : impl_(std::make_unique<Impl>(commands)) {}
+EditorTargetCoordinator::~EditorTargetCoordinator() {
+    impl_->lifetime.reset();
+    while (!impl_->sessions.empty()) {
+        EditorSession* session = impl_->sessions.begin()->first;
+        if (session) session->coordinatorDestroyed(*this);
+        impl_->sessions.erase(impl_->sessions.begin());
+    }
+    for (const auto& [id, owner] : impl_->registeredCommands)
+        (void)impl_->commands->unregisterCommand(id, owner);
+}
+
+eve::editing::Result<void> EditorTargetCoordinator::registerPlannedCommand(
+    eve::editing::EditingCommandDescriptor descriptor, eve::editing::EditingCommandPlanner planner) {
+    const CommandId commandId = descriptor.id;
+    const std::string ownerModule = descriptor.ownerModule;
+    CommandDescriptor hostDescriptor;
+    hostDescriptor.id                = descriptor.id;
+    hostDescriptor.ownerModule       = std::move(descriptor.ownerModule);
+    hostDescriptor.displayName       = std::move(descriptor.displayName);
+    hostDescriptor.category          = std::move(descriptor.category);
+    hostDescriptor.automationAllowed = descriptor.automationAllowed;
+    hostDescriptor.targetKinds       = std::move(descriptor.targetKinds);
+    hostDescriptor.payloadSchema     = std::move(descriptor.payloadSchema);
+    hostDescriptor.panelCapability   = std::move(descriptor.panelCapability);
+    hostDescriptor.panelContext      = std::move(descriptor.panelContext);
+    auto registered = impl_->commands->registerPlannedCommand(
+        std::move(hostDescriptor),
+        [state = impl_.get(), planner = std::move(planner)](const CommandRequest& request) {
+            Impl::TargetEntry* selected = state->entry(request.context.target);
+            if (!selected || !selected->target)
+                return eve::editing::failed<CommandPlan>(EditorStatus::NotFound, RuleId("editor.target.not-found"),
+                                                                          "Editing target is not registered");
+            Result<CommandPlan> result = planner(*selected->target, request);
+            if (result.ok()) result.value().targetGeneration = selected->generation;
+            return result;
+        },
+        [state = impl_.get()](const CommandRequest&, const CommandPlan& plan) { return state->execute(plan); });
+    if (!registered.ok()) return Result<void>::failure(registered.status());
+    impl_->registeredCommands.emplace_back(commandId, ownerModule);
+    return eve::editing::applied<void>(registered.diagnostics());
+}
+
+eve::editing::Result<std::size_t> EditorTargetCoordinator::unregisterOwner(
+    const std::string& ownerModule) {
+    const std::size_t removed = impl_->commands->unregisterOwner(ownerModule);
+    std::erase_if(impl_->registeredCommands,
+                  [&](const auto& registration) { return registration.second == ownerModule; });
+    return eve::editing::applied<std::size_t>(removed);
+}
+
+Result<void> EditorTargetCoordinator::registerTarget(IEditableTarget& target) {
+    auto* operations = dynamic_cast<IDomainOperationTarget*>(&target);
+    if (!operations)
+        return eve::editing::failed<void>(EditorStatus::Unsupported, RuleId("editor.target.operations-unsupported"),
+                                          "Editing target does not support domain operations");
+    const TargetId id(target.targetId());
+    if (id.empty())
+        return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.target.empty-id"),
+                                          "Editing target id must not be empty");
+    if (const auto found = impl_->targets.find(id); found != impl_->targets.end()) {
+        if (found->second->target == &target) {
+            return eve::editing::noOp();
+        }
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.target.duplicate-id"),
+                                          "Another editing target already uses id: " + id.value());
+    }
+    impl_->targets.emplace(id,
+                           std::make_unique<Impl::TargetEntry>(target, *operations, impl_->nextTargetGeneration++));
+    return eve::editing::applied<void>();
+}
+
+std::weak_ptr<void> EditorTargetCoordinator::lifetime() const { return impl_->lifetime; }
+
+Result<void> EditorTargetCoordinator::registerSharedHistoryTarget(IEditableTarget&           target,
+                                                                  IEditorTransactionBackend& backend) {
+    auto* existing = impl_->entry(target.targetId());
+    if (existing && (existing->target != &target || existing->backend != &backend))
+        return eve::editing::failed<void>(EditorStatus::Conflict, RuleId("editor.target.history-conflict"),
+                                          "Target already has another history");
+    auto registered = registerTarget(target);
+    if (!registered.ok()) return registered;
+    impl_->entry(target.targetId())->backend = &backend;
+    return eve::editing::applied<void>();
+}
+
+Result<void> EditorTargetCoordinator::unregisterSharedHistoryTarget(IEditableTarget&           target,
+                                                                    IEditorTransactionBackend& backend) {
+    auto* existing = impl_->entry(target.targetId());
+    if (!existing || existing->target != &target || existing->backend != &backend) return eve::editing::noOp();
+    return unregisterTarget(target.targetId());
+}
+
+Result<void> EditorTargetCoordinator::unregisterTarget(const TargetId& target) {
+    Impl::TargetEntry* selected = impl_->entry(target);
+    if (selected) {
+        std::vector<EditorSession*> sessions;
+        for (const auto& [session, binding] : impl_->sessions)
+            if (binding.target == target && binding.generation == selected->generation) sessions.push_back(session);
+        for (EditorSession* session : sessions)
+            if (session) session->invalidateTrackedTarget(*this, target, selected->generation);
+        impl_->targets.erase(target);
+        return eve::editing::applied<void>();
+    }
+    return eve::editing::noOp();
+}
+
+Result<void> EditorTargetCoordinator::bind(EditorSession& session, const TargetId& target) {
+    Impl::TargetEntry* selected = impl_->entry(target);
+    if (!selected || !selected->target)
+        return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.target.not-found"),
+                                          "Editing target is not registered: " + target.value());
+    session.bindTrackedTarget(*selected->target, selected->lifetime, *this, selected->generation);
+    impl_->sessions[&session] = {target, selected->generation};
+    return eve::editing::applied<void>();
+}
+
+void EditorTargetCoordinator::detach(EditorSession& session) noexcept { impl_->sessions.erase(&session); }
+
+Result<EditorValue> EditorTargetCoordinator::inspect(const TargetId& target) const {
+    const Impl::TargetEntry* selected = impl_->entry(target);
+    if (!selected || !selected->target)
+        return eve::editing::failed<EditorValue>(EditorStatus::NotFound, RuleId("editor.target.not-found"),
+                                                 "Editing target is not registered: " + target.value());
+    EditorValue::Object result;
+    result["descriptor"] = descriptorValue(selected->target->describe());
+    auto snapshot = selected->target->capability<eve::editing::IEditingSnapshotProvider>();
+    result["snapshot"] = snapshot ? snapshot->get().snapshotValue() : EditorValue{};
+    return eve::editing::applied<EditorValue>(EditorValue(std::move(result)));
+}
+
+Result<TransactionReceipt> EditorTargetCoordinator::undo(const TargetId& target) {
+    Impl::TargetEntry* selected = impl_->entry(target);
+    if (!selected)
+        return eve::editing::failed<TransactionReceipt>(EditorStatus::NotFound, RuleId("editor.target.not-found"),
+                                                        "Editing target is not registered: " + target.value());
+    return selected->backend->undo();
+}
+
+Result<TransactionReceipt> EditorTargetCoordinator::redo(const TargetId& target) {
+    Impl::TargetEntry* selected = impl_->entry(target);
+    if (!selected)
+        return eve::editing::failed<TransactionReceipt>(EditorStatus::NotFound, RuleId("editor.target.not-found"),
+                                                        "Editing target is not registered: " + target.value());
+    return selected->backend->redo();
+}
+
+std::vector<EditorTargetCoordinator::TargetSummary> EditorTargetCoordinator::targets() const {
+    std::vector<TargetSummary> summaries;
+    summaries.reserve(impl_->targets.size());
+    // std::map keeps the ids ordered, so discovery is deterministic for a caller
+    // that diffs two lists.
+    for (const auto& [id, entry] : impl_->targets) {
+        TargetSummary summary;
+        summary.id = id.value();
+        if (entry) {
+            summary.generation = entry->generation;
+            if (entry->target) {
+                const TargetDescriptor descriptor = entry->target->describe();
+                summary.type                      = descriptor.type;
+                summary.revision                  = static_cast<std::uint64_t>(descriptor.revision);
+            }
+        }
+        summaries.push_back(std::move(summary));
+    }
+    return summaries;
+}
+
+}  // namespace eve::editor

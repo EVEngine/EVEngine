@@ -24,7 +24,6 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import Response
 
 from .engine import InferenceRequest, NormalCrafterEngine
-from .model import build_pipeline
 
 log = logging.getLogger("normalcrafter.server")
 

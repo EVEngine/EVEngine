@@ -17,7 +17,7 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name=".EVTestActivity"
+            android:name=".EVEngineActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:alwaysRetainTaskState="true"

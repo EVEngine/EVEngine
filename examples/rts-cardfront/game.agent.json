@@ -1,0 +1,100 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/rts-cardfront",
+  "entry": "main.nut",
+  "smoke": {
+    "scene": "default",
+    "seed": 42,
+    "maxHostFrames": 180,
+    "mustReach": [
+      "mission"
+    ]
+  },
+  "clock": {
+    "defaultStep": "frame"
+  },
+  "observations": [
+    {
+      "id": "mission",
+      "kind": "script-root",
+      "path": "mission",
+      "fields": [
+        "tick",
+        "minerals",
+        "mana",
+        "gathered",
+        "built",
+        "produced",
+        "skillPlays",
+        "enemyHealth",
+        "outcome"
+      ]
+    },
+    {
+      "id": "battlefield",
+      "kind": "script-root",
+      "path": "frame",
+      "fields": [
+        "units",
+        "buildings",
+        "resourceNodes"
+      ]
+    }
+  ],
+  "actions": {
+    "source": "script-map",
+    "map": [
+      {
+        "id": "build",
+        "script": "buildBarracks()"
+      },
+      {
+        "id": "produce",
+        "script": "produceMarine()"
+      },
+      {
+        "id": "select-army",
+        "script": "selectArmy()"
+      },
+      {
+        "id": "assault",
+        "script": "assault()"
+      },
+      {
+        "id": "move-front",
+        "script": "commandMove(20.5,8.0)"
+      },
+      {
+        "id": "breach",
+        "script": "playNamed(\"grenade\",23.5,8.0)"
+      },
+      {
+        "id": "reinforce",
+        "script": "playNamed(\"reinforcement\",0.0,0.0)"
+      },
+      {
+        "id": "repair",
+        "script": "playNamed(\"repair\",0.0,0.0)"
+      },
+      {
+        "id": "overdrive",
+        "script": "playNamed(\"stim\",0.0,0.0)"
+      },
+      {
+        "id": "restart",
+        "script": "resetGame()"
+      }
+    ]
+  },
+  "capture": {
+    "requiredFor": [
+      "visual"
+    ],
+    "backend": "engine-readback"
+  },
+  "tolerances": {
+    "screenshot": "human-or-vlm",
+    "numericAbs": 0.0001
+  }
+}

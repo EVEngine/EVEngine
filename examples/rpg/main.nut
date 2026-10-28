@@ -9,9 +9,12 @@
 //                        四种策略。
 //   状态 status      —— 运行时 buff/debuff 实例：剩余时间、叠加层数、周期 tick。
 //   技能 skills      —— 学习 / 冷却 / 消耗 / 读条时间 / 施放事件轮询。
-//   战斗 combat      —— 内建标准公式统一处理攻击、护甲、抗性、暴击与击杀事件。
-//   成长/任务/掉落   —— 击杀获得经验、推进任务并按数据表抽取战利品。
-//   AI               —— UtilityBrain 根据黑板输入为敌人动作评分。
+//   结算 settlement  —— 本例的伤害公式直接写在脚本里（见 computeDamage）：
+//                        RPG 模块的 SettlementPipeline::registerStage 是 C++
+//                        扩展点（未绑定到脚本），游戏项目通常会在原生插件里注册
+//                        自己的伤害/治疗阶段，脚本侧改用 eve.RPG().runSettlement()
+//                        触发；这里为了保持示例零原生依赖，改成纯脚本公式，
+//                        详见 docs/RPG系统设计.md。
 //
 // 玩法：键盘 1/2/3/4 释放技能，撑过一波波强度递增的怪物，R 重开。
 // 运行： make run/macosx-debug GAME=examples/rpg   （或对应平台的 run/<platform>-debug）
@@ -19,17 +22,14 @@
 
 // ---- 软热重载状态保护：脚本被 dofile 重跑时不清空已创建的实体/UI ----
 // （约定见 example/main.nut）
-if (!("rpg" in getroottable())) rpg <- null;
-if (!("player" in getroottable())) player <- null;
-if (!("enemy" in getroottable())) enemy <- null;
-if (!("wave" in getroottable())) wave <- 1;
-if (!("score" in getroottable())) score <- 0;
-if (!("gameOver" in getroottable())) gameOver <- false;
-if (!("battleLog" in getroottable())) battleLog <- [];
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("hitFlash" in getroottable())) hitFlash <- { player = 0.0, enemy = 0.0 };
-if (!("questTracker" in getroottable())) questTracker <- null;
-if (!("enemyBrain" in getroottable())) enemyBrain <- null;
+persist rpg = null
+persist player = null
+persist enemy = null
+persist wave = 1
+persist score = 0
+persist gameOver = false
+persist battleLog = []
+persist hitFlash = { player = 0.0, enemy = 0.0 }
 
 const PLAYER_MAX_HP = 100.0;
 const PLAYER_MAX_MP = 50.0;
@@ -60,86 +60,51 @@ function roundi(v) {
     return floor(v + 0.5).tointeger();
 }
 
-function clampf(v, lo, hi) {
-    if (v < lo) return lo;
-    if (v > hi) return hi;
-    return v;
-}
-
 function logLine(text) {
     battleLog.push(text);
     while (battleLog.len() > 6)
         battleLog.remove(0);
 }
 
+// 部分构建的脚本绑定不含 isCastingSkill / getCastProgress（ECS 实体反射差异），
+// 用 feature-detect 兜底，保证示例在任意构建下都能运行。
+function actorCasting(actor) {
+    return actor != null && ("isCastingSkill" in actor) && actor.isCastingSkill();
+}
+
+function actorCastProgress(actor) {
+    if (actor == null || !("getCastProgress" in actor)) return 0.0;
+    return actor.getCastProgress();
+}
+
 // ---------------------------------------------------------------------------
 // 数据驱动内容：效果 / 技能定义。注册接口是幂等的（按 id 覆盖），软重载时
 // 重复调用也没问题，方便边跑边改数值。
+// 内容从 data/*.json 读取——改数值不用碰脚本，保存即热重载。
 // ---------------------------------------------------------------------------
+function readTextFile(path) {
+    local handle = file(path, "r");
+    if (handle == null) return null;
+    local content = handle.read();
+    handle.close();
+    return content;
+}
+
 function registerContent() {
     rpg.clearEffectDefinitions();
-    local effectsLoaded = rpg.registerEffectsFromJson(@"[
-        {""id"":""buff.power_stance"",""durationPolicy"":""duration"",""duration"":6.0,
-         ""stackPolicy"":""refresh"",
-         ""modifiers"":[{""attribute"":""attack"",""op"":""add"",""value"":8.0}],
-         ""tags"":[""buff""],
-         ""extra"":{""icon"":""ui/power_stance.png""}},
-        {""id"":""debuff.weaken"",""durationPolicy"":""duration"",""duration"":4.0,
-         ""stackPolicy"":""refresh"",
-         ""modifiers"":[{""attribute"":""defense"",""op"":""add"",""value"":-4.0}],
-         ""tags"":[""debuff""],
-         ""extra"":{""icon"":""ui/weaken.png""}},
-        {""id"":""dot.burn"",""durationPolicy"":""duration"",""duration"":3.0,""period"":1.0,
-         ""stackPolicy"":""stack"",""maxStacks"":3,""tags"":[""dot"",""debuff""],
-         ""extra"":{""icon"":""ui/burn.png""}},
-        {""id"":""instant.heal_potion"",""durationPolicy"":""instant"",
-         ""modifiers"":[{""attribute"":""health"",""op"":""add"",""value"":25.0}]},
-        {""id"":""passive.regen"",""durationPolicy"":""duration"",""duration"":999999.0,
-         ""period"":2.0,""tags"":[""regen""]}
-    ]");
+    local effectsJson = readTextFile("data/effects.json");
+    local effectsLoaded = (effectsJson != null) ? rpg.registerEffectsFromJson(effectsJson) : 0;
+    if (effectsJson == null)
+        print("rpg: missing data/effects.json\n");
 
     rpg.clearSkillDefinitions();
-    local skillsLoaded = rpg.registerSkillsFromJson(@"[
-        {""id"":""player.strike"",""cooldown"":0.4,""castTime"":0.0,
-         ""costs"":[],""grantedEffects"":[],""tags"":[""attack""]},
-        {""id"":""player.fireball"",""cooldown"":3.0,""castTime"":0.6,
-         ""costs"":[{""attribute"":""mana"",""amount"":15.0}],
-         ""grantedEffects"":[""dot.burn""],""tags"":[""attack"",""magic""]},
-        {""id"":""player.power_stance"",""cooldown"":8.0,""castTime"":0.0,
-         ""costs"":[{""attribute"":""stamina"",""amount"":10.0}],
-         ""grantedEffects"":[""buff.power_stance""],""tags"":[""buff""]},
-        {""id"":""player.potion"",""cooldown"":6.0,""castTime"":0.0,
-         ""costs"":[],""grantedEffects"":[""instant.heal_potion""],""tags"":[""item""]},
-        {""id"":""enemy.claw"",""cooldown"":1.2,""castTime"":0.0,
-         ""costs"":[],""grantedEffects"":[],""tags"":[""attack""]},
-        {""id"":""enemy.roar"",""cooldown"":6.0,""castTime"":0.5,
-         ""costs"":[],""grantedEffects"":[""debuff.weaken""],""tags"":[""debuff""]}
-    ]");
-
-    rpg.clearQuestDefinitions();
-    rpg.registerQuestsFromJson(@"[
-        {""id"":""hunt.10"",""title"":""地牢清剿"",""startPolicy"":""auto"",
-         ""completePolicy"":""auto"",""objectives"":[
-           {""id"":""kills"",""topic"":""kill"",""target"":""dungeon.enemy"",""count"":10}],
-         ""rewards"":[{""type"":""item"",""id"":""relic.ember"",""amount"":1}]}
-    ]");
-    rpg.clearLootTableDefinitions();
-    rpg.registerLootTablesFromJson(@"{
-        ""id"":""dungeon.enemy"",""rolls"":2,""unique"":true,""entries"":[
-          {""itemId"":""gold"",""minQuantity"":2,""maxQuantity"":8,""weight"":8,""chance"":1},
-          {""itemId"":""potion.health"",""weight"":3,""chance"":0.55},
-          {""itemId"":""relic.ember"",""weight"":1,""chance"":0.2}]}");
-    rpg.clearAIDecisionSetDefinitions();
-    rpg.registerAIDecisionSetsFromJson(@"{
-      ""id"":""enemy.combat"",""actions"":[
-        {""id"":""roar"",""weight"":0.8,""considerations"":[
-          {""input"":""playerHealth"",""curve"":""linear"",""min"":0,""max"":1}]},
-        {""id"":""claw"",""weight"":1.0,""considerations"":[
-          {""input"":""playerHealth"",""curve"":""inverse"",""min"":0,""max"":1}]}]}");
+    local skillsJson = readTextFile("data/skills.json");
+    local skillsLoaded = (skillsJson != null) ? rpg.registerSkillsFromJson(skillsJson) : 0;
+    if (skillsJson == null)
+        print("rpg: missing data/skills.json\n");
 
     print(format("RPG content loaded: %d effects, %d skills\n", effectsLoaded, skillsLoaded));
 }
-
 // ---------------------------------------------------------------------------
 // Actor 构建：把 health/mana/stamina 的 base 值钳在 [0, max]。
 // clampMin/clampMax 是永久 modifier（source="system"，高优先级），装一次
@@ -163,10 +128,6 @@ function makePlayer() {
     setupVitals(p, PLAYER_MAX_HP, PLAYER_MAX_MP, PLAYER_MAX_STAMINA);
     p.setBaseAttribute("attack", 14.0);
     p.setBaseAttribute("defense", 4.0);
-    p.setBaseAttribute("armor", 8.0);
-    p.setBaseAttribute("critChance", 0.15);
-    p.setBaseAttribute("critMultiplier", 1.6);
-    p.configureProgression(1, 50, 60.0, 1.12, 1);
     p.learnSkill("player.strike");
     p.learnSkill("player.fireball");
     p.learnSkill("player.power_stance");
@@ -183,9 +144,6 @@ function makeEnemy(w) {
     setupVitals(e, maxHp, 0.0, 0.0);
     e.setBaseAttribute("attack", 7.0 + w * 1.6);
     e.setBaseAttribute("defense", 1.0 + w * 0.8);
-    e.setBaseAttribute("armor", 2.0 + w * 1.5);
-    e.setBaseAttribute("critChance", 0.05);
-    e.setBaseAttribute("critMultiplier", 1.5);
     e.learnSkill("enemy.claw");
     e.learnSkill("enemy.roar");
     return e;
@@ -194,13 +152,26 @@ function makeEnemy(w) {
 function enemyMaxHp(w) { return 40.0 + w * 14.0; }
 
 // ---------------------------------------------------------------------------
+// 伤害结算（脚本侧公式，见文件头注释）。
+// ---------------------------------------------------------------------------
+function computeDamage(atk, def, critChance, critMult) {
+    local raw = atk - def * 0.5;
+    if (raw < 1.0) raw = 1.0;
+    local crit = randf(0.0, 1.0) < critChance;
+    if (crit) raw *= critMult;
+    return { dmg = roundi(raw), crit = crit };
+}
+
+function applyDamage(target, isPlayerTarget, dmg) {
+    target.modifyBaseAttribute("health", -dmg * 1.0);
+    if (isPlayerTarget) hitFlash.player = 0.15; else hitFlash.enemy = 0.15;
+}
+
+// ---------------------------------------------------------------------------
 // 玩家输入：边沿检测（仅在“刚按下”那一帧触发），避免长按重复施法。
 // ---------------------------------------------------------------------------
 function keyPressed(key) {
-    local down = keyboard.isDown(key);
-    local was = (key in prevKeys) ? prevKeys[key] : false;
-    prevKeys[key] <- down;
-    return down && !was;
+    return key_just_pressed(key);
 }
 
 function tryPlayerSkill(skillId, target, label) {
@@ -217,10 +188,8 @@ function tryPlayerSkill(skillId, target, label) {
 // 敌人 AI：简单的冷却+概率决策，学到的两个技能都靠 SkillSystem 管理冷却/读条。
 // ---------------------------------------------------------------------------
 function updateEnemyAI() {
-    if (enemy.isCastingSkill()) return;
-    enemyBrain.setInput("playerHealth", player.getFinalAttribute("health") / PLAYER_MAX_HP);
-    local action = enemyBrain.chooseAction();
-    if (action == "roar" && enemy.canCastSkill("enemy.roar")) {
+    if (actorCasting(enemy)) return;
+    if (enemy.canCastSkill("enemy.roar") && randf(0.0, 1.0) < 0.35) {
         enemy.beginCastSkill("enemy.roar", player);
         return;
     }
@@ -241,8 +210,8 @@ function processEvents() {
         local isPlayer = (actor == player);
 
         if (effectId == "dot.burn") {
-            local dmg = roundi(rpg.dealDamage(null, actor, 4.0 * stacks, "fire"));
-            if (isPlayer) hitFlash.player = 0.15; else hitFlash.enemy = 0.15;
+            local dmg = 4 * stacks;
+            applyDamage(actor, isPlayer, dmg);
             logLine((isPlayer ? "玩家" : "敌人") + " 受到灼烧伤害 " + dmg + (stacks > 1 ? " (x" + stacks + ")" : ""));
         } else if (effectId == "passive.regen") {
             actor.modifyBaseAttribute("health", 3.0);
@@ -259,13 +228,13 @@ function processEvents() {
         local isPlayerCaster = (caster == player);
 
         if (skillId == "player.strike" || skillId == "enemy.claw") {
-            local dmg = roundi(rpg.dealDamage(caster, target, 0.0, "physical"));
-            if (isPlayerCaster) hitFlash.enemy = 0.15; else hitFlash.player = 0.15;
-            logLine((isPlayerCaster ? "玩家" : "敌人") + " 普通攻击造成 " + dmg + " 伤害");
+            local r = computeDamage(caster.getFinalAttribute("attack"), target.getFinalAttribute("defense"), 0.15, 1.6);
+            applyDamage(target, !isPlayerCaster, r.dmg);
+            logLine((isPlayerCaster ? "玩家" : "敌人") + " 普通攻击造成 " + r.dmg + " 伤害" + (r.crit ? "（暴击！）" : ""));
         } else if (skillId == "player.fireball") {
-            local dmg = roundi(rpg.dealDamage(caster, target, 10.0, "fire"));
-            hitFlash.enemy = 0.15;
-            logLine("玩家 火球术造成 " + dmg + " 伤害，并点燃目标");
+            local r = computeDamage(caster.getFinalAttribute("attack") + 10.0, target.getFinalAttribute("defense"), 0.2, 1.6);
+            applyDamage(target, !isPlayerCaster, r.dmg);
+            logLine("玩家 火球术造成 " + r.dmg + " 伤害" + (r.crit ? "（暴击！）" : "") + "，并点燃目标");
         } else if (skillId == "player.power_stance") {
             logLine("玩家 进入力量姿态，攻击力提升");
         } else if (skillId == "player.potion") {
@@ -282,14 +251,7 @@ function processEvents() {
 function checkOutcomes() {
     if (enemy != null && enemy.getFinalAttribute("health") <= 0.0) {
         score += 1;
-        player.gainExperience(15.0 + wave * 5.0);
-        questTracker.notify("kill", "dungeon.enemy", 1);
-        local loot = rpg.rollLoot("dungeon.enemy", player.getLevel() * 0.01);
-        local drops = "";
-        for (local i = 0; i < loot.getCount(); i += 1)
-            drops += (i > 0 ? "、" : "") + loot.getItemId(i) + " x" + loot.getQuantity(i);
-        loot.destroy();
-        logLine("敌人被击败！掉落：" + (drops == "" ? "无" : drops));
+        logLine("敌人被击败！进入第 " + (wave + 1) + " 波");
         enemy.release();
         wave += 1;
         enemy = makeEnemy(wave);
@@ -310,8 +272,6 @@ function buildUI() {
     ui.beginBuild();
     ui.beginWindow("Player", "root");
     ui.text("玩家", "title");
-    ui.text("等级 1", "level");
-    ui.text("任务：地牢清剿 0/10", "quest");
     ui.progress(1.0, "hpbar", "");
     ui.text("HP 0/0", "hptext");
     ui.progress(1.0, "mpbar", "");
@@ -383,9 +343,6 @@ function refreshHud() {
     local hp = player.getFinalAttribute("health");
     local mp = player.getFinalAttribute("mana");
     local st = player.getFinalAttribute("stamina");
-    ui.setText("level", "等级 " + player.getLevel() + "  XP " + roundi(player.getExperience()) + "/" + roundi(player.getExperienceForNextLevel()));
-    if (questTracker != null)
-        ui.setText("quest", "任务：地牢清剿 " + questTracker.getObjectiveCurrent("hunt.10", 0) + "/10 [" + questTracker.getState("hunt.10") + "]");
     ui.setValue("hpbar", (hp / PLAYER_MAX_HP).tofloat());
     ui.setText("hptext", "HP " + roundi(hp) + "/" + roundi(PLAYER_MAX_HP));
     ui.setValue("mpbar", (mp / PLAYER_MAX_MP).tofloat());
@@ -394,7 +351,7 @@ function refreshHud() {
     ui.setText("sttext", "耐力 " + roundi(st) + "/" + roundi(PLAYER_MAX_STAMINA));
     ui.setText("pstatus", statusLines(player));
 
-    local hint1 = player.isCastingSkill() ? format("读条中 %.0f%%", player.getCastProgress() * 100.0) : "";
+    local hint1 = actorCasting(player) ? format("读条中 %.0f%%", actorCastProgress(player) * 100.0) : "";
     ui.setText("s1", "[1] 普通攻击" + (player.getSkillCooldown("player.strike") > 0.0 ? format(" (CD %.1fs)", player.getSkillCooldown("player.strike")) : ""));
     ui.setText("s2", "[2] 火球术 (MP15)" + (player.getSkillCooldown("player.fireball") > 0.0 ? format(" (CD %.1fs)", player.getSkillCooldown("player.fireball")) : "") + (hint1 != "" ? "  " + hint1 : ""));
     ui.setText("s3", "[3] 力量姿态 (耐力10)" + (player.getSkillCooldown("player.power_stance") > 0.0 ? format(" (CD %.1fs)", player.getSkillCooldown("player.power_stance")) : ""));
@@ -444,11 +401,6 @@ function startNewGame() {
 
     player = makePlayer();
     enemy = makeEnemy(wave);
-    if (questTracker != null) questTracker.destroy();
-    if (enemyBrain != null) enemyBrain.destroy();
-    questTracker = rpg.newTracker();
-    enemyBrain = rpg.newUtilityBrain();
-    enemyBrain.setDecisionSet("enemy.combat");
     showGameOver(false);
     logLine("第 1 波开始，按 1/2/3/4 施放技能");
 }
@@ -467,11 +419,6 @@ eve_init = function() {
 // 软重载后调用（仅重跑脚本时触发，不重建实体/UI）。
 eve_reload <- function() {
     registerContent();
-    if (questTracker == null) questTracker = rpg.newTracker();
-    if (enemyBrain == null) {
-        enemyBrain = rpg.newUtilityBrain();
-        enemyBrain.setDecisionSet("enemy.combat");
-    }
 };
 
 eve_update = function(dt) {
@@ -514,8 +461,8 @@ eve_render = function() {
     local pf = hitFlash.player > 0.0 ? 0.6 : 0.0;
     gfx.drawSolidRect(px - 30.0, py, 60.0, 90.0, 0.25 + pf, 0.45 + pf, 0.8 + pf, 1.0);
     gfx.drawSolidRect(px - 16.0, py - 34.0, 32.0, 32.0, 0.35 + pf, 0.55 + pf, 0.85 + pf, 1.0);
-    if (player != null && player.isCastingSkill()) {
-        local prog = player.getCastProgress();
+    if (actorCasting(player)) {
+        local prog = actorCastProgress(player);
         gfx.drawSolidRect(px - 30.0, py - 46.0, 60.0, 6.0, 0.2, 0.2, 0.25, 1.0);
         gfx.drawSolidRect(px - 30.0, py - 46.0, 60.0 * prog, 6.0, 0.95, 0.75, 0.25, 1.0);
     }
@@ -529,9 +476,9 @@ eve_render = function() {
     gfx.drawSolidRect(ex - esize * 0.5, ey, esize, esize, 0.75 + ef, 0.25 + ef, 0.2 + ef, 1.0);
     gfx.drawSolidRect(ex - esize * 0.22, ey + esize * 0.25, esize * 0.14, esize * 0.14, 1.0, 1.0, 0.6, 1.0);
     gfx.drawSolidRect(ex + esize * 0.08, ey + esize * 0.25, esize * 0.14, esize * 0.14, 1.0, 1.0, 0.6, 1.0);
-    if (enemy != null && enemy.isCastingSkill()) {
+    if (actorCasting(enemy)) {
         gfx.drawSolidRect(ex - esize * 0.5, ey - 12.0, esize, 6.0, 0.2, 0.2, 0.25, 1.0);
-        gfx.drawSolidRect(ex - esize * 0.5, ey - 12.0, esize * enemy.getCastProgress(), 6.0, 0.9, 0.35, 0.35, 1.0);
+        gfx.drawSolidRect(ex - esize * 0.5, ey - 12.0, esize * actorCastProgress(enemy), 6.0, 0.9, 0.35, 0.35, 1.0);
     }
 
     ui.beginFrameAndRender();

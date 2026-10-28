@@ -15,7 +15,8 @@ namespace eve::ui {
  * @brief Headless MCP editor host (MVVM).
  *
  * The AI drives an EVEngine process through MCP: the View is a JSON widget
- * tree (applyEditor), the ViewModel is a Squirrel table (registerVM) that the
+ * tree assembled by applyEditor, and the ViewModel is a Squirrel table
+ * registered by registerVM that the
  * host binds to the View each frame (two-way `bind`, one-way commands /
  * `onChange` / `bind:options` / `bind:label` / `bind:visible` / `bind:enabled`).
  * Model data lives in the engine (Heightmap / Material / Scene) and is only
@@ -30,46 +31,67 @@ namespace eve::ui {
  * linkable without Poco / DevTools. The header deliberately contains no
  * imgui.h (engine TUs include this header).
  */
-class EVENGINE_API EditorHost {
+class EVENGINE_API_WORLD EditorHost {
 public:
+    /** @brief Instance. */
     static EditorHost& instance();
 
     EditorHost(const EditorHost&)            = delete;
     EditorHost& operator=(const EditorHost&) = delete;
+    /** @brief Editor host. */
     ~EditorHost();
 
     /** @brief Attach to the host VM. gameRoot is the project dir for editors/. */
     void start(ssq::VM& vm, const std::string& gameRoot = {}, bool allowWindow = true);
+    /** @brief Stops . */
     void stop();
+    /** @brief Running. */
     bool running() const { return running_; }
+    /** @brief Window allowed. */
     bool windowAllowed() const { return allowWindow_; }
+    /** @brief Game root. */
     const std::string& gameRoot() const { return gameRoot_; }
 
     // ---- OS window -------------------------------------------------------
+    /** @brief Opens window. */
     std::string openWindow(const std::string& title, int width, int height);
+    /** @brief Closes window. */
     std::string closeWindow();
-    bool        windowOpen() const;
+    /** @brief True when window open. */
+    bool        isWindowOpen() const;
+    /** @brief Window state. */
     std::string windowState() const;
 
     // ---- editors (View) --------------------------------------------------
     /** @brief JSON object/string: {id,title,vm,x,y,width,height,theme,children[]}. */
     std::string applyEditor(const std::string& json);
+    /** @brief Removes editor. */
     std::string removeEditor(const std::string& id);
+    /** @brief List editors. */
     std::string listEditors() const;
     /** @brief Full state JSON: editors + values + (non-destructive) events. */
     std::string editorState(const std::string& id) const;
     /** @brief Pull bound ViewModel values into widget state (per-frame + on read). */
     void syncBindings();
+    /** @brief Sets the editor value. */
     std::string setEditorValue(const std::string& editorId, const std::string& widgetId,
                                const std::string& jsonValue);
+    /** @brief Restore a widget and its binding without emitting events or onChange. */
+    std::string restoreEditorValue(const std::string& editorId, const std::string& widgetId,
+                                   const std::string& jsonValue);
     /** @brief Read and clear pending interaction events for one editor ("" = all). */
     std::string consumeEvents(const std::string& editorId);
     /** @brief Last-frame widget rect JSON (for script drawing inside viewports). */
     std::string widgetRect(const std::string& editorId, const std::string& widgetId) const;
 
     // ---- ViewModel (Squirrel tables) --------------------------------------
-    /** @brief Compile Squirrel source in the host VM, then register table `name`. */
-    std::string registerVM(const std::string& name, const std::string& source);
+    /**
+     * @brief Compile Squirrel source in the host VM, then register table `name`.
+     * @param sourceName Canonical script URI for `import` resolution. Empty uses `host_vm.nut`.
+     */
+    std::string registerVM(const std::string& name, const std::string& source,
+                           const std::string& sourceName = {});
+    /** @brief Unregisters vm. */
     std::string unregisterVM(const std::string& name);
 
     // ---- persistence -------------------------------------------------------
@@ -81,10 +103,24 @@ public:
     void loadEditorsFromDisk();
 
     // ---- misc --------------------------------------------------------------
-    std::string runScript(const std::string& source);
+    /**
+     * @brief Compile and run Squirrel source in the host VM.
+     * @param sourceName Canonical script URI for `import` resolution. Empty uses `host_snippet.nut`.
+     */
+    std::string runScript(const std::string& source, const std::string& sourceName = {});
+    /** @brief Capture. */
     std::string capture(const std::string& path);
+    /** @brief Reload mcp.nut, scripts under mcp, or editor VM and manifest files. */
+    std::string reloadResource(const std::string& path);
+    /** @brief Watch count, reload counters and latest diagnostic as compact JSON. */
+    std::string hotReloadStatus() const;
+    /** @brief Set active project watch count reported by hotReloadStatus(). */
+    void setHotReloadWatchCount(int count);
+    /** @brief Status. */
     std::string status() const;
+    /** @brief Request exit. */
     void        requestExit() { exitRequested_ = true; }
+    /** @brief Exit requested. */
     bool        exitRequested() const { return exitRequested_; }
 
     /** @brief Pump events + update/render hooks + present (no-op without window). */
@@ -98,6 +134,19 @@ public:
 
 private:
     EditorHost();
+    /**
+     * @brief Record one startup resource outcome so hotReloadStatus() can report it.
+     *
+     * `loadEditorsFromDisk()` used to discard the ViewModel's load result (and swallow the
+     * manifest parse exception), so a project whose editor script fails at startup looked
+     * healthy to an MCP client. Startup failures now go through the same bookkeeping as
+     * `reloadResource()`.
+     *
+     * @param path Project-relative resource path the outcome belongs to.
+     * @param result "ok", or an `"error: ..."` diagnostic.
+     * @note Thread affinity: any thread; the state is mutex-guarded.
+     */
+    void                  recordHostResourceOutcome(const std::string& path, const std::string& result);
     std::unique_ptr<Impl> impl_;
     bool                  running_       = false;
     bool                  allowWindow_   = true;

@@ -4,6 +4,8 @@
 
 #include <algorithm>
 #include <cctype>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace eve::ui {
 namespace {
@@ -12,6 +14,7 @@ Theme g_theme = Theme::dark();
 std::string g_themeName = "dark";
 float g_uiScale = 1.f;
 float g_dpiScale = 1.f;
+std::unordered_map<std::string, StyleClass> g_styleClasses;
 
 void copy4(float dst[4], const float src[4]) {
     dst[0] = src[0];
@@ -29,7 +32,144 @@ std::string toLower(std::string s) {
     return s;
 }
 
+void overlayStyle(StyleClass &dst, const StyleClass &src) {
+    if (src.hasTextColor) {
+        dst.hasTextColor = true;
+        copy4(dst.textColor, src.textColor);
+    }
+    if (src.hasBackgroundColor) {
+        dst.hasBackgroundColor = true;
+        copy4(dst.backgroundColor, src.backgroundColor);
+    }
+    if (src.hasBorderColor) {
+        dst.hasBorderColor = true;
+        copy4(dst.borderColor, src.borderColor);
+    }
+    if (src.hasAccentColor) {
+        dst.hasAccentColor = true;
+        copy4(dst.accentColor, src.accentColor);
+    }
+    if (src.hasPadding) {
+        dst.hasPadding = true;
+        dst.paddingX = src.paddingX;
+        dst.paddingY = src.paddingY;
+    }
+    if (src.hasRounding) {
+        dst.hasRounding = true;
+        dst.rounding = src.rounding;
+    }
+    if (src.hasAlpha) {
+        dst.hasAlpha = true;
+        dst.alpha = src.alpha;
+    }
+}
+
+bool resolveStyle(const std::string &name, StyleClass &out,
+                  std::unordered_set<std::string> &visiting) {
+    const auto it = g_styleClasses.find(name);
+    if (it == g_styleClasses.end() || !visiting.insert(name).second) return false;
+    const StyleClass &source = it->second;
+    if (!source.parent.empty() && !resolveStyle(source.parent, out, visiting)) return false;
+    overlayStyle(out, source);
+    out.name = source.name;
+    out.parent = source.parent;
+    visiting.erase(name);
+    return true;
+}
+
 }  // namespace
+
+StyleClassStatus defineStyleClass(const std::string &name, const std::string &parent) {
+    if (name.empty()) return StyleClassStatus::InvalidName;
+    if (!parent.empty() && g_styleClasses.find(parent) == g_styleClasses.end())
+        return StyleClassStatus::UnknownParent;
+    for (std::string current = parent; !current.empty();) {
+        if (current == name) return StyleClassStatus::InheritanceCycle;
+        const auto it = g_styleClasses.find(current);
+        if (it == g_styleClasses.end()) return StyleClassStatus::UnknownParent;
+        current = it->second.parent;
+    }
+    StyleClass replacement;
+    replacement.name = name;
+    replacement.parent = parent;
+    g_styleClasses[name] = std::move(replacement);
+    return StyleClassStatus::Applied;
+}
+
+StyleClassStatus setStyleClassColor(const std::string &name, const std::string &property, float r,
+                                   float g, float b, float a) {
+    const auto it = g_styleClasses.find(name);
+    if (it == g_styleClasses.end()) return StyleClassStatus::UnknownClass;
+    StyleClass &style = it->second;
+    float *color = nullptr;
+    const std::string key = toLower(property);
+    if (key == "text") {
+        style.hasTextColor = true;
+        color = style.textColor;
+    } else if (key == "background") {
+        style.hasBackgroundColor = true;
+        color = style.backgroundColor;
+    } else if (key == "border") {
+        style.hasBorderColor = true;
+        color = style.borderColor;
+    } else if (key == "accent") {
+        style.hasAccentColor = true;
+        color = style.accentColor;
+    } else {
+        return StyleClassStatus::UnknownProperty;
+    }
+    color[0] = std::clamp(r, 0.f, 1.f);
+    color[1] = std::clamp(g, 0.f, 1.f);
+    color[2] = std::clamp(b, 0.f, 1.f);
+    color[3] = std::clamp(a, 0.f, 1.f);
+    return StyleClassStatus::Applied;
+}
+
+StyleClassStatus setStyleClassMetric(const std::string &name, const std::string &property, float x,
+                                    float y) {
+    const auto it = g_styleClasses.find(name);
+    if (it == g_styleClasses.end()) return StyleClassStatus::UnknownClass;
+    StyleClass &style = it->second;
+    const std::string key = toLower(property);
+    if (key == "padding") {
+        style.hasPadding = true;
+        style.paddingX = std::max(0.f, x);
+        style.paddingY = std::max(0.f, y);
+    } else if (key == "rounding") {
+        style.hasRounding = true;
+        style.rounding = std::max(0.f, x);
+    } else if (key == "alpha") {
+        style.hasAlpha = true;
+        style.alpha = std::clamp(x, 0.f, 1.f);
+    } else {
+        return StyleClassStatus::UnknownProperty;
+    }
+    return StyleClassStatus::Applied;
+}
+
+StyleClassStatus resolveStyleClass(const std::string &name, StyleClass *out) {
+    if (!out || name.empty()) return StyleClassStatus::InvalidName;
+    if (g_styleClasses.find(name) == g_styleClasses.end()) return StyleClassStatus::UnknownClass;
+    StyleClass resolved;
+    std::unordered_set<std::string> visiting;
+    if (!resolveStyle(name, resolved, visiting)) return StyleClassStatus::InheritanceCycle;
+    *out = std::move(resolved);
+    return StyleClassStatus::Applied;
+}
+
+void clearStyleClasses() { g_styleClasses.clear(); }
+
+const char *styleClassStatusName(StyleClassStatus status) {
+    switch (status) {
+    case StyleClassStatus::Applied: return "applied";
+    case StyleClassStatus::InvalidName: return "invalid-name";
+    case StyleClassStatus::UnknownParent: return "unknown-parent";
+    case StyleClassStatus::UnknownClass: return "unknown-class";
+    case StyleClassStatus::UnknownProperty: return "unknown-property";
+    case StyleClassStatus::InheritanceCycle: return "inheritance-cycle";
+    }
+    return "unknown";
+}
 
 Theme Theme::dark() {
     Theme t;
@@ -46,12 +186,14 @@ Theme Theme::light() {
     const float childBg[4] = {0.90f, 0.92f, 0.95f, 1.f};
     const float popupBg[4] = {0.98f, 0.98f, 0.99f, 0.98f};
     const float border[4] = {0.55f, 0.58f, 0.62f, 0.55f};
+    const float borderShadow[4] = {0.f, 0.f, 0.f, 0.f};
     const float frameBg[4] = {0.86f, 0.88f, 0.92f, 1.f};
     const float frameBgHovered[4] = {0.80f, 0.84f, 0.90f, 1.f};
     const float frameBgActive[4] = {0.74f, 0.80f, 0.88f, 1.f};
     const float titleBg[4] = {0.88f, 0.90f, 0.94f, 1.f};
     const float titleBgActive[4] = {0.72f, 0.82f, 0.95f, 1.f};
     const float titleBgCollapsed[4] = {0.90f, 0.92f, 0.95f, 0.85f};
+    const float menuBarBg[4] = {0.90f, 0.92f, 0.95f, 1.f};
     const float button[4] = {0.26f, 0.52f, 0.90f, 0.65f};
     const float buttonHovered[4] = {0.28f, 0.55f, 0.95f, 1.f};
     const float buttonActive[4] = {0.18f, 0.42f, 0.82f, 1.f};
@@ -66,6 +208,23 @@ Theme Theme::light() {
     const float scrollbarGrab[4] = {0.55f, 0.58f, 0.62f, 0.80f};
     const float scrollbarGrabHovered[4] = {0.45f, 0.48f, 0.52f, 0.90f};
     const float scrollbarGrabActive[4] = {0.35f, 0.38f, 0.42f, 1.f};
+    const float tab[4] = {0.86f, 0.89f, 0.93f, 1.f};
+    const float tabHovered[4] = {0.68f, 0.84f, 0.91f, 1.f};
+    const float tabActive[4] = {0.76f, 0.87f, 0.92f, 1.f};
+    const float tabUnfocused[4] = {0.89f, 0.91f, 0.94f, 1.f};
+    const float tabUnfocusedActive[4] = {0.82f, 0.88f, 0.91f, 1.f};
+    const float tableHeaderBg[4] = {0.84f, 0.87f, 0.91f, 1.f};
+    const float tableBorderStrong[4] = {0.48f, 0.53f, 0.59f, 0.72f};
+    const float tableBorderLight[4] = {0.65f, 0.69f, 0.74f, 0.62f};
+    const float tableRowBg[4] = {0.f, 0.f, 0.f, 0.f};
+    const float tableRowBgAlt[4] = {0.52f, 0.62f, 0.72f, 0.10f};
+    const float plotLines[4] = {0.38f, 0.43f, 0.49f, 1.f};
+    const float plotLinesHovered[4] = {0.10f, 0.48f, 0.62f, 1.f};
+    const float plotHistogram[4] = {0.82f, 0.50f, 0.18f, 1.f};
+    const float plotHistogramHovered[4] = {0.92f, 0.61f, 0.22f, 1.f};
+    const float textSelectedBg[4] = {0.20f, 0.55f, 0.68f, 0.30f};
+    const float navHighlight[4] = {0.12f, 0.48f, 0.62f, 0.82f};
+    const float modalDimBg[4] = {0.10f, 0.13f, 0.17f, 0.38f};
 
     copy4(t.text, text);
     copy4(t.textDisabled, textDisabled);
@@ -73,12 +232,14 @@ Theme Theme::light() {
     copy4(t.childBg, childBg);
     copy4(t.popupBg, popupBg);
     copy4(t.border, border);
+    copy4(t.borderShadow, borderShadow);
     copy4(t.frameBg, frameBg);
     copy4(t.frameBgHovered, frameBgHovered);
     copy4(t.frameBgActive, frameBgActive);
     copy4(t.titleBg, titleBg);
     copy4(t.titleBgActive, titleBgActive);
     copy4(t.titleBgCollapsed, titleBgCollapsed);
+    copy4(t.menuBarBg, menuBarBg);
     copy4(t.button, button);
     copy4(t.buttonHovered, buttonHovered);
     copy4(t.buttonActive, buttonActive);
@@ -93,6 +254,23 @@ Theme Theme::light() {
     copy4(t.scrollbarGrab, scrollbarGrab);
     copy4(t.scrollbarGrabHovered, scrollbarGrabHovered);
     copy4(t.scrollbarGrabActive, scrollbarGrabActive);
+    copy4(t.tab, tab);
+    copy4(t.tabHovered, tabHovered);
+    copy4(t.tabActive, tabActive);
+    copy4(t.tabUnfocused, tabUnfocused);
+    copy4(t.tabUnfocusedActive, tabUnfocusedActive);
+    copy4(t.tableHeaderBg, tableHeaderBg);
+    copy4(t.tableBorderStrong, tableBorderStrong);
+    copy4(t.tableBorderLight, tableBorderLight);
+    copy4(t.tableRowBg, tableRowBg);
+    copy4(t.tableRowBgAlt, tableRowBgAlt);
+    copy4(t.plotLines, plotLines);
+    copy4(t.plotLinesHovered, plotLinesHovered);
+    copy4(t.plotHistogram, plotHistogram);
+    copy4(t.plotHistogramHovered, plotHistogramHovered);
+    copy4(t.textSelectedBg, textSelectedBg);
+    copy4(t.navHighlight, navHighlight);
+    copy4(t.modalDimBg, modalDimBg);
     return t;
 }
 
@@ -150,12 +328,14 @@ void applyThemeToImGui(const Theme &theme, float uiScale) {
     setCol(style, ImGuiCol_ChildBg, theme.childBg);
     setCol(style, ImGuiCol_PopupBg, theme.popupBg);
     setCol(style, ImGuiCol_Border, theme.border);
+    setCol(style, ImGuiCol_BorderShadow, theme.borderShadow);
     setCol(style, ImGuiCol_FrameBg, theme.frameBg);
     setCol(style, ImGuiCol_FrameBgHovered, theme.frameBgHovered);
     setCol(style, ImGuiCol_FrameBgActive, theme.frameBgActive);
     setCol(style, ImGuiCol_TitleBg, theme.titleBg);
     setCol(style, ImGuiCol_TitleBgActive, theme.titleBgActive);
     setCol(style, ImGuiCol_TitleBgCollapsed, theme.titleBgCollapsed);
+    setCol(style, ImGuiCol_MenuBarBg, theme.menuBarBg);
     setCol(style, ImGuiCol_Button, theme.button);
     setCol(style, ImGuiCol_ButtonHovered, theme.buttonHovered);
     setCol(style, ImGuiCol_ButtonActive, theme.buttonActive);
@@ -166,10 +346,35 @@ void applyThemeToImGui(const Theme &theme, float uiScale) {
     setCol(style, ImGuiCol_SliderGrab, theme.sliderGrab);
     setCol(style, ImGuiCol_SliderGrabActive, theme.sliderGrabActive);
     setCol(style, ImGuiCol_Separator, theme.separator);
+    setCol(style, ImGuiCol_SeparatorHovered, theme.headerHovered);
+    setCol(style, ImGuiCol_SeparatorActive, theme.headerActive);
     setCol(style, ImGuiCol_ScrollbarBg, theme.scrollbarBg);
     setCol(style, ImGuiCol_ScrollbarGrab, theme.scrollbarGrab);
     setCol(style, ImGuiCol_ScrollbarGrabHovered, theme.scrollbarGrabHovered);
     setCol(style, ImGuiCol_ScrollbarGrabActive, theme.scrollbarGrabActive);
+    setCol(style, ImGuiCol_ResizeGrip, theme.button);
+    setCol(style, ImGuiCol_ResizeGripHovered, theme.buttonHovered);
+    setCol(style, ImGuiCol_ResizeGripActive, theme.buttonActive);
+    setCol(style, ImGuiCol_Tab, theme.tab);
+    setCol(style, ImGuiCol_TabHovered, theme.tabHovered);
+    setCol(style, ImGuiCol_TabActive, theme.tabActive);
+    setCol(style, ImGuiCol_TabUnfocused, theme.tabUnfocused);
+    setCol(style, ImGuiCol_TabUnfocusedActive, theme.tabUnfocusedActive);
+    setCol(style, ImGuiCol_PlotLines, theme.plotLines);
+    setCol(style, ImGuiCol_PlotLinesHovered, theme.plotLinesHovered);
+    setCol(style, ImGuiCol_PlotHistogram, theme.plotHistogram);
+    setCol(style, ImGuiCol_PlotHistogramHovered, theme.plotHistogramHovered);
+    setCol(style, ImGuiCol_TableHeaderBg, theme.tableHeaderBg);
+    setCol(style, ImGuiCol_TableBorderStrong, theme.tableBorderStrong);
+    setCol(style, ImGuiCol_TableBorderLight, theme.tableBorderLight);
+    setCol(style, ImGuiCol_TableRowBg, theme.tableRowBg);
+    setCol(style, ImGuiCol_TableRowBgAlt, theme.tableRowBgAlt);
+    setCol(style, ImGuiCol_TextSelectedBg, theme.textSelectedBg);
+    setCol(style, ImGuiCol_DragDropTarget, theme.checkMark);
+    setCol(style, ImGuiCol_NavHighlight, theme.navHighlight);
+    setCol(style, ImGuiCol_NavWindowingHighlight, theme.text);
+    setCol(style, ImGuiCol_NavWindowingDimBg, theme.modalDimBg);
+    setCol(style, ImGuiCol_ModalWindowDimBg, theme.modalDimBg);
 
     // Geometry + typography (scaled)
     style.WindowRounding = theme.windowRounding * s;
@@ -189,6 +394,7 @@ void applyThemeToImGui(const Theme &theme, float uiScale) {
     style.FramePadding = ImVec2(theme.framePaddingX * s, theme.framePaddingY * s);
     style.ItemSpacing = ImVec2(theme.itemSpacingX * s, theme.itemSpacingY * s);
     style.ItemInnerSpacing = ImVec2(theme.itemInnerSpacingX * s, theme.itemInnerSpacingY * s);
+    style.CellPadding = ImVec2(theme.cellPaddingX * s, theme.cellPaddingY * s);
     style.IndentSpacing = theme.indentSpacing * s;
     style.ScrollbarSize = theme.scrollbarSize * s;
     style.GrabMinSize = theme.grabMinSize * s;

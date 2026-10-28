@@ -1,0 +1,4 @@
+[
+  {"id": "effect.heal", "durationPolicy": "instant",
+   "modifiers": [{"attribute": "hp", "op": "add", "value": 20.0}]}
+]

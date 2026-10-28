@@ -1,0 +1,18 @@
+{
+  "type": "tileset",
+  "version": "1.10",
+  "name": "walls",
+  "tilewidth": 16,
+  "tileheight": 16,
+  "tilecount": 1,
+  "columns": 1,
+  "image": "walls-missing.png",
+  "imagewidth": 16,
+  "imageheight": 16,
+  "tiles": [
+    {"id": 0, "properties": [
+      {"name": "walkable", "type": "bool", "value": false},
+      {"name": "cost", "type": "float", "value": 9.0}
+    ]}
+  ]
+}

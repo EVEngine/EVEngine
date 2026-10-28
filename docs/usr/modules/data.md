@@ -32,18 +32,10 @@ local json = data.newJsonDocument();
 - 信任网络 JSON 字段：解析成功后仍需做 schema/范围校验。
 - pretty JSON 用于网络包：会无谓增加体积。
 
-## API 快查
-
-下列方法名来自当前 Squirrel 绑定；同一模块创建的辅助对象（例如 `World`、`Body`、`Source`）的方法也列在这里。
-
-- `decodeJson()`、`decodeXml()`、`empty()`、`encodeJson()`、`encodeXml()`、`getName()`、`isArray()`、`isObject()`
-- `newByteData()`、`newDataView()`、`newJsonDocument()`、`newXmlDocument()`
-
 ## 使用要点
 
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
-- 参数约束、默认值和返回类型以对应模块头文件及 `addFunc` 绑定为准；本文 API 快查与当前源码同步生成。
 
 **源码：** [`src/modules/data/`](../../../src/modules/data/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `data`。

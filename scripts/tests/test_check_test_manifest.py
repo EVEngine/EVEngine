@@ -1,0 +1,245 @@
+import sys
+import unittest
+import tempfile
+from pathlib import Path
+
+# check_test_manifest imports its sibling utf8_stdio by flat name, so scripts/ has
+# to be importable. The CI discovery command (python -m unittest discover -s
+# scripts/tests) only guarantees that when another test module happens to insert
+# scripts/ into sys.path first, which makes this file fail when run alone.
+SCRIPTS_DIR = Path(__file__).resolve().parent.parent
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
+
+import test_levels  # noqa: E402
+
+from check_test_manifest import (  # noqa: E402
+    DOMAIN_TABLE,
+    SHARED_SOURCES,
+    TEST_DIR,
+    classify,
+    composed_makefile,
+    discovery_contract_errors,
+    domain_wiring_errors,
+    parse_domain_table,
+    partition,
+    shared_source_errors,
+    table_contract_errors,
+)
+
+
+VALID_CMAKE = """
+file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE organized_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/unit/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/integration/*.cpp")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/test_src.txt" "")
+list(REMOVE_ITEM all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/demo.cpp")
+if(EVENGINE_BUILD_DEMO)
+  list(APPEND all_test_cpp demo.cpp)
+endif()
+"""
+
+VALID_MAKEFILE = """
+	for cpp in test/*.cpp; do
+	  if [ "$$cpp" -nt build/win32-debug/test/test_src.txt ]; then stale=1; fi
+	done
+"""
+
+VALID_TABLE = """
+set(EVE_TEST_DOMAINS
+    core
+    graphics
+    ui
+    scripts
+    CACHE INTERNAL "domains")
+
+set(EVE_TEST_MODULE_DOMAIN
+    "math;core"
+    "graphics;graphics"
+    "ui;ui"
+    CACHE INTERNAL "roots")
+
+set(EVE_TEST_PACKAGE_OVERRIDE
+    "map/level;core"
+    CACHE INTERNAL "overrides")
+
+set(EVE_TEST_PREFIX_DOMAIN
+    "=runtime;scripts"
+    "runtime_handle;core"
+    "editor_;core"
+    CACHE INTERNAL "prefixes")
+"""
+
+
+class CheckTestManifestTest(unittest.TestCase):
+    def test_platform_recipe_composition_retains_discovery_audit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "cmake").mkdir()
+            (root / "Makefile").write_text("include cmake/windows.mk\n", encoding="utf-8")
+            (root / "cmake/windows.mk").write_text(VALID_MAKEFILE + "\ninclude cmake/windows.mk\n", encoding="utf-8")
+            self.assertEqual(discovery_contract_errors(VALID_CMAKE, composed_makefile(root / "Makefile")), [])
+            (root / "cmake/windows.mk").write_text("# accidentally removed ensure-built source discovery\n", encoding="utf-8")
+            self.assertTrue(discovery_contract_errors(VALID_CMAKE, composed_makefile(root / "Makefile")))
+
+    def test_accepts_src_list_discovery(self):
+        self.assertEqual(discovery_contract_errors(VALID_CMAKE, VALID_MAKEFILE), [])
+
+    def test_rejects_configure_depends_glob(self):
+        invalid = VALID_CMAKE.replace(
+            'file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")',
+            'file(GLOB all_test_cpp CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")',
+        )
+        errors = discovery_contract_errors(invalid, VALID_MAKEFILE)
+        self.assertTrue(any("CONFIGURE_DEPENDS" in error for error in errors))
+
+    def test_rejects_glob_without_stale_makefile_check(self):
+        errors = discovery_contract_errors(VALID_CMAKE, "")
+        self.assertTrue(any("test_src.txt" in error for error in errors))
+
+    def test_requires_demo_to_remain_conditional(self):
+        invalid = VALID_CMAKE.replace(
+            'list(REMOVE_ITEM all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/demo.cpp")',
+            "",
+        )
+        errors = discovery_contract_errors(invalid, VALID_MAKEFILE)
+        self.assertTrue(any("removed" in error for error in errors))
+
+    def test_parses_domain_table(self):
+        tables = parse_domain_table(VALID_TABLE)
+        self.assertEqual(
+            tables["domains"], ["core", "graphics", "ui", "scripts"]
+        )
+        self.assertEqual(tables["module_domain"]["graphics"], "graphics")
+        self.assertEqual(tables["package_override"]["map/level"], "core")
+        self.assertIn(("=runtime", "scripts"), tables["prefix_rules"])
+
+    def test_include_decides_domain_not_file_name(self):
+        tables = parse_domain_table(VALID_TABLE)
+        # A file named pcg_photo_mode_panels.cpp is an EVUI test: its include wins
+        # over the misleading basename.
+        domain, reason, error = classify(
+            "pcg_photo_mode_panels",
+            '#include "ui/PcgPhotoModePanels.h"\n',
+            tables,
+        )
+        self.assertIsNone(error)
+        self.assertEqual(domain, "ui")
+        self.assertEqual(reason, "include:ui")
+
+    def test_package_override_wins_over_root(self):
+        tables = parse_domain_table(VALID_TABLE)
+        domain, _reason, error = classify(
+            "editor_level", '#include "map/level/LevelDocument.h"\n', tables
+        )
+        self.assertIsNone(error)
+        self.assertEqual(domain, "core")
+
+    def test_exact_rule_is_not_shadowed_by_longer_name(self):
+        tables = parse_domain_table(VALID_TABLE)
+        runtime, _r, error = classify("runtime", "#include <string>\n", tables)
+        self.assertIsNone(error)
+        self.assertEqual(runtime, "scripts")
+        handle, _r2, error2 = classify("runtime_handle", "#include <string>\n", tables)
+        self.assertIsNone(error2)
+        self.assertEqual(handle, "core")
+
+    def test_shared_runner_is_not_a_domain_member(self):
+        tables = parse_domain_table(VALID_TABLE)
+        domain, reason, error = classify("main", "#include <string>\n", tables)
+        self.assertIsNone(domain)
+        self.assertIsNone(error)
+        self.assertEqual(reason, "shared runner")
+
+    def test_shared_helper_is_not_a_domain_member(self):
+        # Every domain that needs a cross-domain helper must compile the same
+        # translation unit, so it belongs to no single domain.
+        tables = parse_domain_table(VALID_TABLE)
+        for basename in SHARED_SOURCES:
+            domain, reason, error = classify(basename, "#include <string>\n", tables)
+            self.assertIsNone(domain, basename)
+            self.assertIsNone(error, basename)
+            self.assertEqual(reason, "shared helper", basename)
+
+    def test_shared_source_names_a_real_file_and_domain(self):
+        # The consumer domains come from the real table: a SHARED_SOURCES row has
+        # to name domains that actually exist in test/test_domains.cmake.
+        declared = set(
+            parse_domain_table(DOMAIN_TABLE.read_text(encoding="utf-8"))["domains"]
+        )
+        self.assertEqual(shared_source_errors(declared, TEST_DIR), [])
+        for basename, consumers in SHARED_SOURCES.items():
+            # An undeclared consumer domain would silently drop the helper.
+            self.assertTrue(
+                any(basename in error for error in shared_source_errors(set(), TEST_DIR)),
+                basename,
+            )
+            # A missing file would only surface as a link failure in the consumer.
+            self.assertTrue(
+                any(
+                    basename in error
+                    for error in shared_source_errors(declared, TEST_DIR / "no-such-dir")
+                ),
+                basename,
+            )
+            self.assertTrue(consumers, basename)
+
+    def test_requires_cmake_to_compile_shared_helpers(self):
+        errors = domain_wiring_errors(VALID_CMAKE)
+        self.assertTrue(
+            any("SHARED_SOURCES" in error for error in errors),
+            errors,
+        )
+        valid = VALID_CMAKE + "\n${EVE_TEST_DOMAIN_${_eve_domain}_SHARED_SOURCES}\n"
+        self.assertFalse(any("SHARED_SOURCES" in error for error in domain_wiring_errors(valid)))
+
+    def test_unclassified_source_is_an_error(self):
+        tables = parse_domain_table(VALID_TABLE)
+        domain, _reason, error = classify("mystery", "#include <string>\n", tables)
+        self.assertIsNone(domain)
+        self.assertIsNotNone(error)
+
+    def test_rejects_prefix_shadowing_across_domains(self):
+        invalid = VALID_TABLE.replace('"=runtime;scripts"', '"runtime;scripts"')
+        errors = table_contract_errors(parse_domain_table(invalid))
+        self.assertTrue(any("prefix of" in error for error in errors))
+
+    def test_rejects_undeclared_domain(self):
+        invalid = VALID_TABLE.replace('"math;core"', '"math;nosuchdomain"')
+        errors = table_contract_errors(parse_domain_table(invalid))
+        self.assertTrue(any("undeclared domain" in error for error in errors))
+
+    def test_real_asset_workflow_tasks_keep_original_graphics_link_domain(self):
+        # These real CPU/GPU tasks used to share the graphics executable. A
+        # semantic asset module label must not duplicate their importer/renderer
+        # closure in unit_test_asset after a physical source regrouping.
+        tables = parse_domain_table(DOMAIN_TABLE.read_text(encoding="utf-8"))
+        policies = test_levels.resolved_source_policies(
+            test_levels.source_catalogue(), test_levels.source_inventory(TEST_DIR)
+        )
+        for filename, semantic_module in (
+            ("asset_pipeline_graphics_file_admission_tests.cpp", "asset"),
+            ("asset_pipeline_graphics_import_workflows_tests.cpp", "asset_graphics"),
+        ):
+            with self.subTest(source=filename):
+                relative = "integration/asset-pipeline/" + filename
+                source = TEST_DIR / relative
+                self.assertEqual(policies[relative]["role"], "tests")
+                self.assertEqual(policies[relative]["module"], semantic_module)
+                domain, _reason, error = classify(source.stem, source.read_text(encoding="utf-8"), tables)
+                self.assertIsNone(error)
+                self.assertEqual(domain, "graphics")
+
+    def test_real_table_classifies_every_test_source(self):
+        tables = parse_domain_table(DOMAIN_TABLE.read_text(encoding="utf-8"))
+        self.assertEqual(table_contract_errors(tables), [])
+        buckets, errors = partition(tables, TEST_DIR)
+        self.assertEqual(errors, [])
+        # Every top-level test/*.cpp is a domain member, the shared runner, or a
+        # shared helper compiled into its consumer domains.
+        covered = sum(len(members) for members in buckets.values()) + 1 + len(SHARED_SOURCES)
+        organized = list((TEST_DIR / "unit").rglob("*.cpp")) + list((TEST_DIR / "integration").rglob("*.cpp"))
+        self.assertEqual(covered, len(list(TEST_DIR.glob("*.cpp"))) + len(organized))
+
+
+if __name__ == "__main__":
+    unittest.main()

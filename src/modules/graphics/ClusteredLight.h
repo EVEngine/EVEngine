@@ -20,6 +20,7 @@ struct ClusteredLightConfig {
 
 using ClusteredLightGpu = Light3DGpu;
 
+/** @brief ClusterTableEntry public API. */
 struct ClusterTableEntry {
     uint32_t offset = 0;
     uint32_t count = 0;
@@ -32,6 +33,7 @@ struct ClusterTableEntry {
 struct ClusteredLightingUpload {
     glm::vec4 ambient{0.12f, 0.12f, 0.14f, 0.f};
     glm::vec4 gridInfo{float(ClusteredLightConfig::kTilesX), float(ClusteredLightConfig::kTilesY),
+                       /** @brief Float. */
                        float(ClusteredLightConfig::kSlices), 0.f};  // w = point light count
     glm::vec4 clipInfo{0.1f, 100.f, 1.f, 1.f};  // near, far, screenW, screenH
     glm::mat4 view{1.f};
@@ -40,6 +42,12 @@ struct ClusteredLightingUpload {
     std::vector<ClusteredLightGpu> lights;           // point lights only (world space)
     std::vector<ClusterTableEntry> clusterTable;     // size = kClusterCount
     std::vector<uint32_t> lightIndices;
+    /** @brief Number of input local lights rejected by the frame-wide 256-light budget. */
+    uint32_t truncatedLightCount = 0;
+    /** @brief Number of clusters whose candidate list exceeded the per-cluster budget. */
+    uint32_t overflowClusterCount = 0;
+    /** @brief Total cluster-to-light references removed by per-cluster truncation. */
+    uint32_t droppedLightReferenceCount = 0;
     bool active = false;
 };
 
@@ -48,10 +56,10 @@ struct ClusteredLightingUpload {
  * @param points  world-space point lights (posRadius.w = radius > 0)
  * @param dirs    world-space directional lights (optional; first becomes primary)
  */
-ClusteredLightingUpload buildClusteredLighting(const std::vector<ClusteredLightGpu> &points,
-                                               const std::vector<ClusteredLightGpu> &dirs,
-                                               const glm::mat4 &view, float nearZ, float farZ,
-                                               int screenW, int screenH, float fovYRad,
-                                               const glm::vec4 &ambient);
+EVENGINE_API_BACKENDS ClusteredLightingUpload buildClusteredLighting(const std::vector<ClusteredLightGpu> &points,
+                                                                     const std::vector<ClusteredLightGpu> &dirs,
+                                                                     const glm::mat4 &view, float nearZ, float farZ,
+                                                                     int screenW, int screenH, float fovYRad,
+                                                                     const glm::vec4 &ambient);
 
 }  // namespace eve::graphics

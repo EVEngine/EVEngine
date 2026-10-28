@@ -3,28 +3,24 @@
 // Textures: T cycle recipe, N toggle normal preview, -/= change tex seed
 // Run: make run/linux-debug GAME=examples/procgen
 
-if (!("layer" in getroottable())) layer <- null;
-if (!("seed" in getroottable())) seed <- 42;
-if (!("algo" in getroottable())) algo <- "dungeon.bsp";
-if (!("status" in getroottable())) status <- "";
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("texRecipe" in getroottable())) texRecipe <- "tex.soil";
-if (!("texSeed" in getroottable())) texSeed <- 1;
-if (!("tex" in getroottable())) tex <- null;
-if (!("showNormal" in getroottable())) showNormal <- false;
-if (!("texRecipes" in getroottable())) texRecipes <- ["tex.soil", "tex.stone", "tex.marble", "tex.water", "tex.sky_cloud"];
-if (!("texIndex" in getroottable())) texIndex <- 0;
-if (!("wfcPreset" in getroottable())) wfcPreset <- "dungeon";
+persist layer = null
+persist seed = 42
+persist algo = "dungeon.bsp"
+persist status = ""
+persist texRecipe = "tex.soil"
+persist texSeed = 1
+persist tex = null
+persist showNormal = false
+persist texRecipes = ["tex.soil", "tex.stone", "tex.marble", "tex.water", "tex.sky_cloud"]
+persist texIndex = 0
+persist wfcPreset = "dungeon"
 
 TILE <- 12.0;
 
 gfx.setBackgroundColor(0.08, 0.09, 0.12, 1.0);
 
 function keyPressed(name) {
-    local down = keyboard.isDown(name);
-    local was = ("k_" + name) in prevKeys ? prevKeys["k_" + name] : false;
-    prevKeys["k_" + name] <- down;
-    return down && !was;
+    return key_just_pressed(name);
 }
 
 function ensureLayer(w, h) {
@@ -57,7 +53,12 @@ function regenerateMap() {
     local h = 40;
     ensureLayer(w, h);
 
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        status = "MAP PARAMS FAIL: " + paramsResult.status.summary;
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(seed);
     p.setSize(w, h);
     if (algo == "cave.cellular") {
@@ -73,17 +74,28 @@ function regenerateMap() {
         p.setInt("maxAttempts", 64);
     }
 
-    local out = procgen.newOutput();
+    local outputResult = procgen.newOutput();
+    if (!outputResult.ok) {
+        status = "OUTPUT FAIL: " + outputResult.status.summary;
+        return;
+    }
+    local out = outputResult.value;
     out.setTarget("tilelayer");
     out.setLayer(layer);
     out.setPalette("demo");
 
-    if (!procgen.generateTo(algo, p, out)) {
-        status = "MAP FAIL: " + procgen.lastError();
+    local outputWriteResult = procgen.generateTo(algo, p, out);
+    if (!outputWriteResult.ok) {
+        status = "MAP FAIL: " + outputWriteResult.status.summary;
         return;
     }
 
-    local grid = procgen.generate(algo, p);
+    local gridResult = procgen.generate(algo, p);
+    if (!gridResult.ok) {
+        status = "MAP GRID FAIL: " + gridResult.status.summary;
+        return;
+    }
+    local grid = gridResult.value;
     local objInfo = "";
     if (grid != null) {
         local n = grid.getObjectCount();
@@ -99,7 +111,12 @@ function regenerateMap() {
 }
 
 function regenerateTexture() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        status = "TEX PARAMS FAIL: " + paramsResult.status.summary;
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(texSeed);
     p.setSize(128, 128);
     p.setFloat("scale", 4.0);
@@ -108,18 +125,19 @@ function regenerateTexture() {
     p.setInt("pixelSize", 2);
     p.setInt("seamless", 1);
     if (showNormal) {
-        local img = procgen.generateNormalImage(texRecipe, p);
-        if (img == null) {
-            status = "TEX FAIL: " + procgen.lastError();
+        local imageResult = procgen.generateNormalImage(texRecipe, p);
+        if (!imageResult.ok) {
+            status = "TEX FAIL: " + imageResult.status.summary;
             return;
         }
-        tex = gfx.newTexture(img, true, true);
+        tex = gfx.newTexture(imageResult.value, true, true);
     } else {
-        tex = procgen.generateTexture(texRecipe, p, gfx);
-        if (tex == null) {
-            status = "TEX FAIL: " + procgen.lastError();
+        local textureResult = procgen.generateTexture(texRecipe, p, gfx);
+        if (!textureResult.ok) {
+            status = "TEX FAIL: " + textureResult.status.summary;
             return;
         }
+        tex = textureResult.value;
     }
     status = algo + " seed=" + seed + " | " + texRecipe + (showNormal ? " [normal]" : "") +
              " tseed=" + texSeed;

@@ -1,0 +1,336 @@
+#include "editing/EditingAuthority.h"
+
+#include <algorithm>
+#include <exception>
+
+namespace eve::editing {
+namespace {
+
+void appendAffected(TransactionReceipt& receipt, const DomainOperation& operation) {
+    for (const ObjectRefValue& object : operation.affectedObjects) {
+        if (std::find(receipt.affectedObjects.begin(), receipt.affectedObjects.end(), object) ==
+            receipt.affectedObjects.end())
+            receipt.affectedObjects.push_back(object);
+    }
+}
+
+}  // namespace
+
+Result<AuthorityPlan> LocalWorldAuthority::preflight(const TransactionSpec&           transaction,
+                                                           std::span<const DomainOperation> operations) {
+    if (!target_)
+        return eve::editing::failed<AuthorityPlan>(Status::Failed, RuleId("editor.authority.missing-target"),
+                                                   "Local authority has no target");
+    if (transaction.id.empty() || transaction.target.empty())
+        return eve::editing::failed<AuthorityPlan>(Status::Rejected, RuleId("editor.authority.invalid-transaction"),
+                                                   "Transaction id and target are required");
+    if (transaction.target != target_->targetId())
+        return eve::editing::failed<AuthorityPlan>(Status::Rejected, RuleId("editor.authority.target-mismatch"),
+                                                   "Transaction target does not match the authority target");
+    if (transaction.baseRevision != target_->revision())
+        return eve::editing::failed<AuthorityPlan>(Status::Conflict, RuleId("editor.authority.revision-conflict"),
+                                                   "Target changed since the transaction was planned");
+    if (committed_.contains(transaction.id))
+        return eve::editing::failed<AuthorityPlan>(Status::Conflict, RuleId("editor.authority.duplicate-transaction"),
+                                                   "Transaction id was already committed");
+    if (operations.empty())
+        return eve::editing::failed<AuthorityPlan>(Status::Rejected, RuleId("editor.authority.empty-transaction"),
+                                                   "Transaction must contain at least one operation");
+    for (const DomainOperation& operation : operations) {
+        if (operation.type.empty())
+            return eve::editing::failed<AuthorityPlan>(Status::Rejected, RuleId("editor.operation.missing-type"),
+                                                       "Domain operation type is required");
+        if (operation.target != transaction.target)
+            return eve::editing::failed<AuthorityPlan>(Status::Rejected, RuleId("editor.operation.target-mismatch"),
+                                                       "Domain operation target does not match the transaction");
+    }
+
+    AuthorityPlan plan;
+    plan.transaction       = transaction;
+    plan.validatedRevision = target_->revision();
+    plan.operations.assign(operations.begin(), operations.end());
+    return eve::editing::applied<AuthorityPlan>(std::move(plan));
+}
+
+Result<TransactionReceipt> LocalWorldAuthority::commit(const AuthorityPlan& plan) {
+    if (!target_)
+        return eve::editing::failed<TransactionReceipt>(Status::Failed, RuleId("editor.authority.missing-target"),
+                                                        "Local authority has no target");
+    if (plan.validatedRevision != target_->revision())
+        return eve::editing::failed<TransactionReceipt>(Status::Conflict, RuleId("editor.authority.revision-conflict"),
+                                                        "Target changed after authority preflight");
+    // AuthorityPlan is owning public data, not an unforgeable validation token.
+    auto checked = preflight(plan.transaction, plan.operations);
+    if (!checked.ok()) return Result<TransactionReceipt>::failure(checked.status());
+
+    if (auto* staging = dynamic_cast<IDomainOperationTargetStaging*>(target_)) {
+        try {
+            auto candidate = staging->cloneDomainState();
+            if (!candidate || candidate->targetId() != target_->targetId())
+                return eve::editing::failed<TransactionReceipt>(
+                    Status::Failed, RuleId("editor.authority.candidate-mismatch"), "Invalid detached candidate");
+            TransactionReceipt receipt;
+            receipt.id             = plan.transaction.id;
+            receipt.beforeRevision = target_->revision();
+            for (const auto& operation : plan.operations) {
+                auto applied = candidate->applyDomainOperation(operation);
+                if (!applied.ok()) return Result<TransactionReceipt>::failure(applied.status());
+                appendAffected(receipt, operation);
+            }
+            if (target_->revision() != plan.validatedRevision)
+                return eve::editing::failed<TransactionReceipt>(
+                    Status::Conflict, RuleId("editor.authority.revision-conflict"), "Target changed during staging");
+            receipt.state            = TransactionState::Committed;
+            receipt.afterRevision    = candidate->revision();
+            receipt.authorityReceipt = "local:" + std::to_string(receiptSequence_ + 1);
+            // Allocate history before publication; no allocation follows a successful publish.
+            committed_.emplace(receipt.id, CommittedEntry{receipt, plan.operations});
+            try {
+                commitOrder_.push_back(receipt.id);
+            } catch (...) {
+                committed_.erase(receipt.id);
+                throw;
+            }
+            try {
+                auto published = staging->commitDomainState(std::move(candidate));
+                if (!published.ok()) {
+                    committed_.erase(receipt.id);
+                    commitOrder_.pop_back();
+                    return Result<TransactionReceipt>::failure(published.status());
+                }
+            } catch (...) {
+                committed_.erase(receipt.id);
+                commitOrder_.pop_back();
+                throw;
+            }
+            // Publication may advance an external store revision independently
+            // of the detached candidate (for example script component storage).
+            receipt.afterRevision                           = target_->revision();
+            committed_.at(receipt.id).receipt.afterRevision = receipt.afterRevision;
+            ++receiptSequence_;
+            return eve::editing::applied<TransactionReceipt>(std::move(receipt));
+        } catch (const std::exception& exception) {
+            return eve::editing::failed<TransactionReceipt>(
+                Status::Failed, RuleId("editor.authority.candidate-exception"), exception.what());
+        } catch (...) {
+            return eve::editing::failed<TransactionReceipt>(
+                Status::Failed, RuleId("editor.authority.candidate-exception"), "Candidate operation threw");
+        }
+    }
+
+    TransactionReceipt receipt;
+    receipt.id             = plan.transaction.id;
+    receipt.state          = TransactionState::PendingAuthority;
+    receipt.beforeRevision = target_->revision();
+
+    std::size_t appliedCount = 0;
+    try {
+        for (const DomainOperation& operation : plan.operations) {
+            Result<void> result = target_->applyDomainOperation(operation);
+            if (!result.ok()) {
+                Result<void> rollback = rollbackApplied(plan.operations, appliedCount);
+                receipt.state         = rollback.ok() ? TransactionState::Rejected : TransactionState::Failed;
+                receipt.afterRevision = target_->revision();
+                receipt.diagnostics   = result.diagnostics();
+                const auto& rollbackDiagnostics = rollback.diagnostics();
+                receipt.diagnostics.insert(receipt.diagnostics.end(), rollbackDiagnostics.begin(),
+                                           rollbackDiagnostics.end());
+                const Status status = rollback.ok() ? result.code() : Status::Failed;
+                return Result<TransactionReceipt>::failure(eve::Status(status, std::move(receipt.diagnostics)));
+            }
+            ++appliedCount;
+            appendAffected(receipt, operation);
+        }
+    } catch (const std::exception& exception) {
+        Result<void> rollback = rollbackApplied(plan.operations, appliedCount);
+        if (!rollback.ok()) {
+            auto diagnostics = rollback.diagnostics();
+            diagnostics.push_back(ruleDiagnostic(eve::DiagnosticCode::Failed,
+                                                 RuleId("editor.authority.target-exception"), DiagnosticSeverity::Error,
+                                                 exception.what()));
+            return Result<TransactionReceipt>::failure(eve::Status(Status::Failed, std::move(diagnostics)));
+        }
+        return eve::editing::failed<TransactionReceipt>(Status::Failed, RuleId("editor.authority.target-exception"),
+                                                        exception.what());
+    } catch (...) {
+        Result<void> rollback = rollbackApplied(plan.operations, appliedCount);
+        if (!rollback.ok()) return Result<TransactionReceipt>::failure(rollback.status());
+        return eve::editing::failed<TransactionReceipt>(Status::Failed, RuleId("editor.authority.target-exception"),
+                                                        "Domain operation target threw an unknown exception");
+    }
+
+    receipt.state            = TransactionState::Committed;
+    receipt.afterRevision    = target_->revision();
+    receipt.authorityReceipt = "local:" + std::to_string(++receiptSequence_);
+    committed_.emplace(receipt.id, CommittedEntry{receipt, plan.operations});
+    commitOrder_.push_back(receipt.id);
+    return eve::editing::applied<TransactionReceipt>(std::move(receipt));
+}
+
+Result<TransactionReceipt> LocalWorldAuthority::compensate(const TransactionReceipt& receipt) {
+    if (!target_)
+        return eve::editing::failed<TransactionReceipt>(Status::Failed, RuleId("editor.authority.missing-target"),
+                                                        "Local authority has no target");
+    auto entry = committed_.find(receipt.id);
+    if (entry == committed_.end())
+        return eve::editing::failed<TransactionReceipt>(Status::NotFound, RuleId("editor.authority.receipt-not-found"),
+                                                        "Committed transaction is not available for compensation");
+    if (commitOrder_.empty() || commitOrder_.back() != receipt.id)
+        return eve::editing::failed<TransactionReceipt>(Status::Conflict, RuleId("editor.authority.compensation-order"),
+                                                        "Only the latest committed transaction can be compensated");
+    for (const DomainOperation& operation : entry->second.operations) {
+        if (!operation.hasInverse)
+            return eve::editing::failed<TransactionReceipt>(Status::Unsupported,
+                                                            RuleId("editor.authority.operation-not-reversible"),
+                                                            "Transaction contains an operation without an inverse");
+    }
+
+    if (entry->second.receipt.afterRevision != target_->revision())
+        return eve::editing::failed<TransactionReceipt>(Status::Conflict, RuleId("editor.authority.revision-conflict"),
+                                                        "Target changed after the committed transaction");
+
+    auto* staging = dynamic_cast<IDomainOperationTargetStaging*>(target_);
+    if (!staging)
+        return eve::editing::failed<TransactionReceipt>(Status::Unsupported,
+                                                        RuleId("editor.authority.staging-unavailable"),
+                                                        "Target cannot stage a complete compensation candidate");
+
+    TransactionReceipt compensation;
+    compensation.id             = TransactionId(receipt.id.value() + ".undo." + std::to_string(++receiptSequence_));
+    compensation.state          = TransactionState::PendingAuthority;
+    compensation.beforeRevision = target_->revision();
+
+    const auto makeFailure = [&](Status status, std::string rule, std::string message) {
+        compensation.state         = TransactionState::Failed;
+        compensation.afterRevision = target_->revision();
+        if (compensation.diagnostics.empty())
+            compensation.diagnostics.push_back(
+                ruleDiagnostic(diagnosticCodeForStatus(status), RuleId(std::move(rule)),
+                               DiagnosticSeverity::Error, std::move(message)));
+        return Result<TransactionReceipt>::failure(eve::Status(status, compensation.diagnostics));
+    };
+
+    std::unique_ptr<IDomainOperationTarget> candidate;
+    try {
+        candidate = staging->cloneDomainState();
+    } catch (const std::exception& exception) {
+        return makeFailure(Status::Failed, "editor.authority.candidate-exception",
+                      std::string("Could not clone compensation candidate: ") + exception.what());
+    } catch (...) {
+        return makeFailure(Status::Failed, "editor.authority.candidate-exception",
+                      "Could not clone compensation candidate");
+    }
+    if (!candidate)
+        return makeFailure(Status::Unsupported, "editor.authority.staging-unavailable",
+                      "Target did not provide a compensation candidate");
+    if (candidate->targetId() != target_->targetId())
+        return makeFailure(Status::Conflict, "editor.authority.candidate-mismatch",
+                      "Compensation candidate belongs to another target");
+
+    for (auto operation = entry->second.operations.rbegin(); operation != entry->second.operations.rend();
+         ++operation) {
+        try {
+            Result<void> result = candidate->applyDomainOperation(inverseOf(*operation));
+            if (!result.ok()) {
+                compensation.diagnostics = result.diagnostics();
+                return makeFailure(result.code(), "editor.authority.compensation-candidate-rejected",
+                              "Compensation candidate rejected an inverse operation");
+            }
+        } catch (const std::exception& exception) {
+            compensation.diagnostics.push_back(ruleDiagnostic(
+                eve::DiagnosticCode::Failed, RuleId("editor.authority.candidate-exception"),
+                DiagnosticSeverity::Error,
+                std::string("Compensation candidate threw: ") + exception.what()));
+            return makeFailure(Status::Failed, "editor.authority.candidate-exception", "Compensation candidate threw");
+        } catch (...) {
+            compensation.diagnostics.push_back(ruleDiagnostic(
+                eve::DiagnosticCode::Failed, RuleId("editor.authority.candidate-exception"),
+                DiagnosticSeverity::Error, "Compensation candidate threw an unknown exception"));
+            return makeFailure(Status::Failed, "editor.authority.candidate-exception",
+                          "Compensation candidate threw an unknown exception");
+        }
+        appendAffected(compensation, *operation);
+    }
+
+    try {
+        Result<void> published = staging->commitDomainState(std::move(candidate));
+        if (!published.ok()) {
+            compensation.diagnostics = published.diagnostics();
+            return makeFailure(published.code(), "editor.authority.candidate-publish-rejected",
+                          "Target rejected the compensation candidate");
+        }
+    } catch (const std::exception& exception) {
+        return makeFailure(Status::Failed, "editor.authority.candidate-publish-exception",
+                      std::string("Could not publish compensation candidate: ") + exception.what());
+    } catch (...) {
+        return makeFailure(Status::Failed, "editor.authority.candidate-publish-exception",
+                      "Could not publish compensation candidate");
+    }
+    compensation.state            = TransactionState::Committed;
+    compensation.afterRevision    = target_->revision();
+    compensation.authorityReceipt = "local:" + std::to_string(receiptSequence_);
+    committed_.erase(entry);
+    commitOrder_.pop_back();
+    if (!commitOrder_.empty()) committed_.at(commitOrder_.back()).receipt.afterRevision = compensation.afterRevision;
+    return eve::editing::applied<TransactionReceipt>(std::move(compensation));
+}
+
+DomainOperation LocalWorldAuthority::inverseOf(const DomainOperation& operation) {
+    DomainOperation inverse = operation;
+    if (!operation.inverseType.empty()) inverse.type = operation.inverseType;
+    inverse.inverseType = operation.type;
+    inverse.payload     = operation.inverse;
+    inverse.inverse     = operation.payload;
+    return inverse;
+}
+
+Result<void> LocalWorldAuthority::rollbackApplied(std::span<const DomainOperation> operations,
+                                                        std::size_t                      count) {
+    std::vector<Diagnostic> diagnostics;
+    while (count > 0) {
+        const DomainOperation& operation = operations[--count];
+        try {
+            if (!operation.hasInverse) {
+                diagnostics.push_back(ruleDiagnostic(eve::DiagnosticCode::Failed,
+                                                     RuleId("editor.authority.rollback-impossible"),
+                                                     DiagnosticSeverity::Error, "Applied operation has no inverse"));
+                continue;
+            }
+            auto result = target_->applyDomainOperation(inverseOf(operation));
+            if (!result.ok()) {
+                diagnostics.insert(diagnostics.end(), result.diagnostics().begin(), result.diagnostics().end());
+                diagnostics.push_back(ruleDiagnostic(eve::DiagnosticCode::Failed,
+                                                     RuleId("editor.authority.rollback-failed"),
+                                                     DiagnosticSeverity::Error, "Inverse operation failed"));
+            }
+        } catch (...) {
+            diagnostics.push_back(ruleDiagnostic(eve::DiagnosticCode::Failed,
+                                                 RuleId("editor.authority.rollback-exception"),
+                                                 DiagnosticSeverity::Error, "Inverse operation threw"));
+        }
+    }
+    if (!diagnostics.empty()) return Result<void>::failure(eve::Status(Status::Failed, std::move(diagnostics)));
+    return eve::editing::applied<void>();
+}
+
+Result<AuthorityPlan> ReadOnlyAuthority::preflight(const TransactionSpec&           transaction,
+                                                         std::span<const DomainOperation> operations) {
+    (void)transaction;
+    (void)operations;
+    return eve::editing::failed<AuthorityPlan>(Status::Rejected, RuleId("editor.authority.read-only"),
+                                               "The current editor authority is read-only");
+}
+
+Result<TransactionReceipt> ReadOnlyAuthority::commit(const AuthorityPlan& plan) {
+    (void)plan;
+    return eve::editing::failed<TransactionReceipt>(Status::Rejected, RuleId("editor.authority.read-only"),
+                                                    "The current editor authority is read-only");
+}
+
+Result<TransactionReceipt> ReadOnlyAuthority::compensate(const TransactionReceipt& receipt) {
+    (void)receipt;
+    return eve::editing::failed<TransactionReceipt>(Status::Rejected, RuleId("editor.authority.read-only"),
+                                                    "The current editor authority is read-only");
+}
+
+}  // namespace eve::editing

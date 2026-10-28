@@ -22,7 +22,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from brain import intent, layout  # noqa: E402
+from brain import intent  # noqa: E402
 from brain.assets import Catalog  # noqa: E402
 from brain.mcp import McpClient, run_batch  # noqa: E402
 from brain.plan import DEFAULT_CATALOG, build_plan, save_plan  # noqa: E402

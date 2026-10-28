@@ -1,5 +1,7 @@
 #include "procgen/OutputSpec.h"
 
+#include "map/TileLayer.h"
+
 namespace eve::procgen {
 
 void OutputSpec::setTarget(const std::string &target) { target_ = target; }

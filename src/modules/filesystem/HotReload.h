@@ -1,4 +1,7 @@
 #pragma once
+#include "common/Export.h"
+#include "common/StringMapInstances.h"
+
 
 #include "common/Module.h"
 
@@ -31,11 +34,13 @@ namespace eve::filesystem {
  * script layer to `dofile` / reload. This is what makes hot reload work on
  * read-only mobile bundles (iOS app bundle / Android APK).
  */
-class HotReload : public Module {
+class EVENGINE_API_FOUNDATION HotReload : public Module {
 public:
     Module_REG(HotReload);
 
+    /** @brief Hot reload. */
     HotReload() = default;
+    /** @brief Hot reload. */
     ~HotReload() override;
 
     /**
@@ -44,13 +49,29 @@ public:
      * "auto" (the default) lets every reloader claim the path itself.
      */
     void bind(std::string path, std::string kind = "auto");
+    /** @brief Unbinds unbind. */
     void unbind(std::string path);
 
     /** @brief Offer a (normalized) path to the registered reloaders; true if any reloaded. */
     bool tryReload(std::string path);
 
-    /** @brief Recursively watch root and all subdirectories. Returns number of watches added. */
+    /**
+     * @brief Recursively watch root and all subdirectories.
+     * Virtual paths walk the VFS. `..`, `../…`, and absolute OS directories walk the
+     * real filesystem so an app under `apps/<name>` can watch its parent workflow.
+     * Event paths are game/VFS relative: files under the working directory keep
+     * cwd-relative names (`main.nut`); siblings of the app report from the watch root
+     * (`editors/skill.vm.nut`).
+     * @return Number of directory watches added.
+     * @cost One OS watcher per directory in the tree; call at boot, not per frame.
+     */
     int watchTree(std::string root = ".");
+
+    /**
+     * @brief If path is a directory, recursively add watches for it and its current descendants.
+     * @return True when path names a directory, including one that was already watched.
+     */
+    bool watchNewDirectory(std::string path);
 
     /**
      * Start remote hot reload against a dev server. Background thread polls
@@ -60,9 +81,11 @@ public:
      * @param url Base URL, e.g. "http://192.168.1.5:8765".
      * @param pollMs Poll interval in milliseconds (default 1000).
      */
+    /** @brief Starts remote sync. */
     bool startRemoteSync(std::string url, int pollMs = 1000);
 
     /** Stop the remote sync thread (joining it). Safe to call twice. */
+    /** @brief Stops remote sync. */
     void stopRemoteSync();
 
     /**
@@ -70,20 +93,25 @@ public:
      * downloads (default: platform appdata/EVE/hotreload, or the internal
      * storage hotreload dir on Android). Must be called before startRemoteSync.
      */
+    /** @brief Sets the remote hot dir. */
     void setRemoteHotDir(std::string dir);
 
     /** Whether the remote sync thread is currently running. */
+    /** @brief True when remote syncing. */
     bool isRemoteSyncing() const;
 
     /** Last sync status: "idle" | "syncing" | "synced" | "error:<reason>". */
+    /** @brief Remote sync status. */
     std::string remoteSyncStatus() const;
 
     /**
      * Pop the next changed virtual path reported by remote sync.
      * Returns empty string when the queue is drained.
      */
+    /** @brief Polls remote change. */
     std::string pollRemoteChange();
 
+    /** @brief Normalize path. */
     static std::string normalizePath(std::string path);
 
 private:

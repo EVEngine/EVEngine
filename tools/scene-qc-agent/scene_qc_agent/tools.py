@@ -6,7 +6,7 @@ import json
 import os
 import struct
 import zlib
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from .models import parse_json_block
 from .report import GeometryInfo, Issue

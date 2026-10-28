@@ -1,17 +1,23 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
-#include "graphics/Canvas.h"
-#include "graphics/BlendMode.h"
-#include "graphics/Texture.h"
-#include "gpgpu/GpuBuffer.h"
+#include "common/RenderTypes.h"
+#include "common/Time.h"
 #include "particles/ParticleCurve.h"
+#include "particles/ParticleEventJournal.h"
 
+#include <algorithm>
 #include <cstdint>
-#include <memory>
 #include <random>
 #include <string>
+#include <unordered_map>
 #include <vector>
+
+namespace eve {
+class IParticleSdfField;
+}
 
 namespace eve::graphics {
 class Graphics;
@@ -19,6 +25,7 @@ class Camera2D;
 class Canvas;
 class Light2D;
 class Shader;
+class Texture;
 }
 
 namespace eve::animation {
@@ -35,8 +42,14 @@ class Skeleton3D;
 
 namespace eve::particles {
 
+using eve::Color;
+
 /** @brief Single live particle (CPU simulation). */
 struct Particle {
+    /** @brief Nonzero CPU birth identity within its owning Sim lifetime; moves with the particle during compaction.
+     * @remarks Zero means no recorded birth. Never use a container slot as persistent playback identity.
+     */
+    std::uint64_t birthSerial = 0;
     float x = 0.f;
     float y = 0.f;
     float vx = 0.f;
@@ -60,12 +73,15 @@ struct Particle {
  * @brief ECS emitter entity. Script configures components; ParticleSimSystem /
  * ParticleRenderSystem drive per-frame update & draw.
  */
-class ParticleEmitter : public ecs::Entity {
+class EVENGINE_API_DOMAINS ParticleEmitter : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(ParticleEmitter, ecs::Entity)
 
-    void release() override {}
+    /** @brief Release. */
+    void release() override;
 
+    /** @brief Config public API. */
     struct Config {
         /** @brief Timed burst emission (fired once while the emitter is active). */
         struct Burst {
@@ -77,9 +93,41 @@ public:
         float x = 0.f;
         float y = 0.f;
         float emissionRate = 0.f;
+        /** @brief Distance-based emission in particles per world unit (0 = disabled). */
+        float emissionRateOverDistance = 0.f;
         float lifeMin = 1.f;
         float lifeMax = 1.f;
         float emitterLife = -1.f;  // -1 = forever
+        /** @brief Restart the emitter timeline after emitterLife instead of stopping. */
+        bool looping = false;
+        /** @brief Simulation time multiplier. 0 freezes playback without changing pause state. */
+        float playbackSpeed = 1.f;
+        /** @brief Fixed simulation step in seconds (0 = variable step). */
+        float fixedTimeStep = 0.f;
+        /** @brief Spiral-of-death guard for fixed stepping. */
+        int maxSubSteps = 8;
+        /** @brief Stable seed used when autoRandomSeed is false. */
+        int randomSeed = 0;
+        /** @brief Generate a new seed on each start. */
+        bool autoRandomSeed = true;
+        /** @brief ParameterBinding public API. */
+        struct ParameterBinding {
+            std::string parameter;
+            float       scale  = 1.f;
+            float       offset = 0.f;
+        };
+        /** @brief Gameplay-owned exposed values and target bindings. */
+        std::unordered_map<std::string, float>            floatParameters;
+        std::unordered_map<std::string, ParameterBinding> parameterBindings;
+        /** @brief Resolved parameter scale. */
+        float                                             resolvedParameterScale(const std::string& target) const {
+            auto binding = parameterBindings.find(target);
+            if (binding == parameterBindings.end()) return 1.f;
+            auto value = floatParameters.find(binding->second.parameter);
+            if (value == floatParameters.end()) return 1.f;
+            /** @brief Max. */
+            return std::max(0.f, value->second * binding->second.scale + binding->second.offset);
+        }
         float direction = 0.f;
         float spread = 0.f;
         float speedMin = 0.f;
@@ -124,9 +172,35 @@ public:
         float boundsMaxY = 0.f;
         /** @brief Query the engine-level world collision resolver each step. */
         bool worldCollision = false;
-        /** @brief "billboard" (default) | "stretched" (elongate along velocity). */
+        /**
+         * @brief Borrowed 2D SDF used as an additional collision solid.
+         * @ownership Borrowed. Cleared by the caller before the field is destroyed.
+         */
+        eve::IParticleSdfField* sdfField = nullptr;
+        /**
+         * @brief Motion-vector policy for future velocity-buffer writes.
+         * Values: "none" | "velocity" | "spawn_delta". Recorded now; rendering
+         * activation is reported separately by isMotionVectorActive().
+         */
+        std::string motionVectorPolicy = "none";
+        /** @brief "billboard" | "axis" | "stretched" | "ribbon". */
         std::string renderMode = "billboard";
         float stretchFactor = 1.f;
+        /** @brief Fixed screen-space angle in degrees used by axis mode. */
+        float renderAxisDegrees = 0.f;
+        /** @brief "none" | "oldest" | "youngest" | "distance" transparent ordering. */
+        std::string sortMode = "none";
+        /** @brief Particle shading policy: "unlit", "lit", or "distortion". */
+        std::string materialMode = "unlit";
+        /** @brief Maximum scene-color refraction offset in screen pixels. */
+        float distortionStrength = 8.f;
+        /** @brief Ribbon width multiplier and minimum accepted segment length. */
+        float ribbonWidth            = 1.f;
+        float ribbonMinSegmentLength = 1.f;
+        /** @brief Soft-particle parameters in normalized linear scene depth. */
+        bool  softParticles     = false;
+        float softParticleDepth = 0.5f;
+        float softFadeDistance  = 0.05f;
         /** @brief Buffer-full strategy: "drop" (default) | "pause" | "warn". */
         std::string overflowMode = "drop";
         /** @brief Cap per-step delta time (0 = unlimited). */
@@ -135,6 +209,16 @@ public:
         float prewarmSeconds = 0.f;
         /** @brief Opt-in GPU-accelerated simulation (falls back to CPU when unavailable). */
         bool gpuSimulation = false;
+        /** @brief Higher-priority emitters receive simulation and spawn budget first. */
+        int priority = 0;
+        /** @brief Lowest global quality tier [0,3] on which this emitter runs. */
+        int minimumQuality = 0;
+        /** @brief "automatic" | "pause" | "always" offscreen simulation policy. */
+        std::string cullingMode = "automatic";
+        /** @brief Optional camera distance cutoff in world units; zero disables it. */
+        float cullDistance = 0.f;
+        /** @brief Per-frame automatic spawn cap; zero is unlimited. */
+        int maxSpawnPerFrame = 0;
         std::vector<Burst> bursts;
         /** @brief Radial attract/repel force fields (strength > 0 attract, < 0 repel). */
         struct ForceField {
@@ -187,9 +271,22 @@ public:
     };
 
     struct Sim {
+        /** @brief Optional bounded recording owner; disabled by default, independent of emitter looping/reset age. */
+        ParticleEventJournal recording;
+        /** @brief Explicit accumulated executed simulation dt since recording preparation. */
+        double recordingSeconds = 0;
+
+        /** @brief Sole CPU birth counter; reset/start/stop preserve it. Zero means exhausted, never wrap to a reused
+         * ID.
+         * @remarks New Sim ownership starts a new identity scope; recorders must use a separate emitter/session
+         * identity.
+         */
+        std::uint64_t         nextBirthSerial = 1;
         std::vector<Particle> particles;
         int alive = 0;
         float emitAccum = 0.f;
+        float distanceEmitAccum = 0.f;
+        float fixedTimeAccum = 0.f;
         float emitterAge = 0.f;
         bool active = false;
         bool paused = false;
@@ -197,14 +294,24 @@ public:
         float lastX = 0.f;
         float lastY = 0.f;
         bool overflowWarned = false;
+        int activeSeed = 0;
+        /** @brief Last scheduler tick observed by the checked simulation API. */
+        eve::SimulationTick simulationTick    = eve::SimulationTick::zero();
+        bool                hasSimulationTick = false;
+        /** @brief Temporary automatic-spawn quota set by ParticleSimSystem (-1 = unlimited). */
+        int spawnQuota = -1;
+        int spawnedThisFrame = 0;
+        int droppedSpawnsThisFrame = 0;
         std::mt19937 rng;
     };
 
     struct Draw {
         graphics::Texture *texture = nullptr;
+        /** @brief Optional tangent-space normal map used by the lit 2D particle path. */
+        graphics::Texture*  normalTexture = nullptr;
         graphics::Canvas *canvas = nullptr;     // nullptr → screen
         graphics::Camera2D *camera = nullptr;   // nullptr → screen space (no camera)
-        graphics::BlendMode blend = graphics::BlendMode::Alpha;
+        BlendMode blend = BlendMode::Alpha;
         graphics::Shader *shader = nullptr;     // custom fragment pipeline (textured quads only)
         int layer = 0;
         bool visible = true;
@@ -212,10 +319,22 @@ public:
 
     /** @brief Bound config file for hot reload (empty path = unbound). */
     struct Resource {
+        /** @brief ReloadObservation public API. */
+        enum class ReloadObservation {
+            Unbound,
+            AutoReloadDisabled,
+            MtimePollingUnchanged,
+            MtimePollingReloaded,
+            MtimeUnavailable,
+            MtimePollingReloadFailed,
+        };
         std::string path;
         std::string texturePath;
+        std::string normalTexturePath;
         int64_t modtime = -1;
         bool autoReload = true;
+        /** @brief Last explicit observation made by ParticleConfigSystem::poll. */
+        ReloadObservation lastReloadObservation = ReloadObservation::Unbound;
     };
 
     /**
@@ -229,6 +348,7 @@ public:
      * - IK Skeleton2D / Skeleton3D + bone id (FABRIK chains)
      */
     struct Attach {
+        /** @brief Kind public API. */
         enum class Kind { None, AnimPose, Spine, Ik2D, Ik3D };
 
         Kind kind = Kind::None;
@@ -273,13 +393,25 @@ public:
         std::vector<graphics::Light2D *> pool;
     };
 
-    /** @brief GPU-accelerated simulation state (see ParticleGpuKernel.h for layout). */
+    /** @brief Backend-owned GPU-resident simulation state and delayed CPU counters. */
     struct GpuSim {
         bool enabled = false;
-        bool initialized = false;
         bool failed = false;
-        std::shared_ptr<eve::gpgpu::GpuBuffer> buffer;
-        std::vector<float> mirror;  // CPU staging for pack/upload and readback
+        /** @brief Backend-owned resident emitter; zero until the Vulkan path activates. */
+        std::uint64_t residentHandle = 0;
+        /** @brief True after state has moved to the resident GPU backend. */
+        bool residentActive = false;
+        /** @brief CPU-side exact lifetime count used for budgets; positions remain GPU-only. */
+        int estimatedAlive = 0;
+        /** @brief Monotonic simulated time used by the lifetime min-heap. */
+        double timeline = 0.0;
+        /** @brief Absolute death times; min-heap with std::greater<float>. */
+        std::vector<float> deathTimes;
+        /** @brief World-origin translation queued for the next resident GPU update. */
+        float pendingWorldOffsetX = 0.f;
+        float pendingWorldOffsetY = 0.f;
+        /** @brief Monotonic birth counter stamped into GPU spawn birthSerial. */
+        std::uint32_t nextBirthSerial = 1;
     };
 
     COMPONENT(Config, config)
@@ -300,6 +432,10 @@ public:
 
     void setEmissionRate(float rate);
     float getEmissionRate();
+    /** @brief Set particles emitted per world unit travelled; zero disables it. */
+    void setEmissionRateOverDistance(float rate);
+    /** @brief Return particles emitted per world unit travelled. */
+    float getEmissionRateOverDistance();
 
     void setParticleLifetime(float minLife, float maxLife);
     float getParticleLifetimeMin();
@@ -307,6 +443,26 @@ public:
 
     void setEmitterLifetime(float seconds);
     float getEmitterLifetime();
+    /** @brief Enable or disable repeating a finite emitter timeline. */
+    void setLooping(bool looping);
+    /** @brief Return whether the finite emitter timeline repeats. */
+    bool getLooping();
+    /** @brief Scale simulation time; zero freezes playback. */
+    void setPlaybackSpeed(float speed);
+    /** @brief Return the simulation time multiplier. */
+    float getPlaybackSpeed();
+    /** @brief Configure fixed stepping and the per-frame catch-up limit; zero seconds disables it. */
+    void setFixedTimeStep(float seconds, int maxSubSteps = 8);
+    /** @brief Return the fixed step in seconds, or zero for variable stepping. */
+    float getFixedTimeStep();
+    /** @brief Select a deterministic seed and disable automatic seeding. */
+    void setRandomSeed(int seed);
+    /** @brief Return the configured deterministic seed. */
+    int getRandomSeed();
+    /** @brief Generate a new random seed whenever start() is called. */
+    void setAutoRandomSeed(bool enabled);
+    /** @brief Return whether start() generates a new random seed. */
+    bool getAutoRandomSeed();
 
     void setDirection(float radians);
     float getDirection();
@@ -350,13 +506,99 @@ public:
     void setNoise(float strength, float frequency = 1.f, float speed = 1.f);
     void setGpuSimulation(bool enable);
     bool getGpuSimulation();
+    /** @brief Return true after this emitter has migrated to a resident GPU backend. */
+    bool isGpuSimulationActive();
+    /** @brief Return whether the configured feature set can use resident GPU simulation. */
+    bool isGpuFeatureSetSupported();
+    /** @brief Return "gpu" for active resident simulation, otherwise "cpu". */
+    std::string getSimulationBackend();
+    /** @brief Explain CPU fallback; empty means GPU active, "pending_activation" means eligible. */
+    std::string getGpuFallbackReason();
+
+    /** @brief Set a named gameplay/VFX float parameter without rebuilding the emitter. */
+    void setFloatParameter(const std::string& name, float value);
+    /** @brief Return a named float parameter, or fallback when absent. */
+    float getFloatParameter(const std::string& name, float fallback = 0.f);
+    /** @brief Return whether a named float parameter exists. */
+    bool hasFloatParameter(const std::string& name);
+    /** @brief Remove all exposed float values. */
+    void clearFloatParameters();
+    /** @brief Bind a parameter to emission, speed, size, or playback scaling. */
+    void bindFloatParameter(const std::string& name, const std::string& target, float scale = 1.f, float offset = 0.f);
+    /** @brief Remove all parameter-to-runtime bindings. */
+    void clearFloatParameterBindings();
+    /** @brief Return the resolved non-negative multiplier for a supported target. */
+    float getResolvedParameterScale(const std::string& target);
+
+    /** @brief Set budget order; higher values are processed first. */
+    void setPriority(int priority);
+    /** @brief Return the emitter budget priority. */
+    int getPriority();
+    /** @brief Set the minimum runtime quality tier in [0,3]. */
+    void setMinimumQuality(int quality);
+    /** @brief Return the minimum runtime quality tier. */
+    int getMinimumQuality();
+    /** @brief Set offscreen simulation policy: automatic, pause, or always. */
+    void setCullingMode(const std::string &mode);
+    /** @brief Return the offscreen simulation policy. */
+    std::string getCullingMode();
+    /** @brief Set camera distance cutoff in world units; zero disables it. */
+    void setCullDistance(float distance);
+    /** @brief Return the camera distance cutoff. */
+    float getCullDistance();
+    /** @brief Cap automatic spawns per frame; zero is unlimited. */
+    void setMaxSpawnPerFrame(int count);
+    /** @brief Return the automatic per-frame spawn cap. */
+    int getMaxSpawnPerFrame();
 
     void setCollision(const std::string &mode, float radius = 0.f, float restitution = 0.6f,
                       float lifetimeLoss = 0.f);
     void setCollisionBounds(bool enabled, float minX, float minY, float maxX, float maxY);
     void setWorldCollision(bool enabled);
+    /**
+     * @brief Bind a borrowed SDF field for particle collision sampling.
+     * @param field Borrowed field, or null to clear. Does not take ownership.
+     */
+    void setSdfField(eve::IParticleSdfField* field);
+    /**
+     * @brief Return the borrowed SDF field, or null.
+     * @ownership Borrowed. The emitter does not own the field; do not delete it.
+     * @lifetime Valid until `setSdfField` replaces or clears it, or the emitter
+     *           is destroyed. Clear the binding before destroying the field.
+     */
+    eve::IParticleSdfField* getSdfField();
+    /**
+     * @brief Set motion-vector policy: none, velocity, or spawn_delta.
+     * @remarks Policy is stored for assets/tools; GPU velocity-buffer emission
+     *          is not active until isMotionVectorActive() reports true.
+     */
+    void setMotionVectorPolicy(const std::string& policy);
+    /** @brief Return the normalized motion-vector policy. */
+    std::string getMotionVectorPolicy();
+    /** @brief True when a graphics path is actually writing motion vectors. */
+    bool isMotionVectorActive();
 
     void setRenderMode(const std::string &mode, float stretchFactor = 1.f);
+    /** @brief Configure connected ribbon rendering and switch to ribbon mode. */
+    void setRibbon(float width = 1.f, float minSegmentLength = 1.f);
+    /** @brief Fade resident particles where they intersect sampled scene depth. */
+    void setSoftParticles(bool enabled, float particleDepth = 0.5f, float fadeDistance = 0.05f);
+    /** @brief True when soft particles have both a resident renderer and scene depth. */
+    bool isSoftParticlesActive();
+    /** @brief Set the fixed screen-space orientation used by render mode "axis". */
+    void setRenderAxis(float degrees);
+    /** @brief Select stable per-emitter transparent ordering. */
+    void setSortMode(const std::string& mode);
+    /** @brief Return the configured transparent ordering policy. */
+    std::string getSortMode();
+    /** @brief Select particle shading: "unlit", "lit", or scene-color "distortion". */
+    void setMaterialMode(const std::string& mode);
+    /** @brief Return the normalized particle shading mode. */
+    std::string getMaterialMode();
+    /** @brief Set the maximum scene-color refraction offset in screen pixels. */
+    void setDistortionStrength(float strengthPixels);
+    /** @brief Return the configured scene-color refraction offset in screen pixels. */
+    float getDistortionStrength();
     void setOverflowMode(const std::string &mode);
     void setMaxDeltaTime(float seconds);
 
@@ -392,6 +634,10 @@ public:
 
     void setTexture(graphics::Texture *texture);
     graphics::Texture *getTexture();
+    /** @brief Set an optional tangent-space normal map for lit particles. */
+    void setNormalTexture(graphics::Texture* texture);
+    /** @brief Return the configured particle normal map. */
+    graphics::Texture* getNormalTexture();
 
     void setCanvas(graphics::Canvas *canvas);
     void setCamera(graphics::Camera2D *camera);
@@ -407,6 +653,30 @@ public:
     void pause();
     void reset();
     void emit(int count);
+
+    /**
+     * @brief Advance this emitter by one scheduler-owned simulation step.
+     * @param step Injected tick and duration; no wall clock or private fixed-step
+     *          accumulator is consulted by this checked path.
+     * @return Checked status; repeated/rewound ticks and invalid durations are
+     *         rejected without changing simulation state.
+     * @remarks ParticleSimSystem::advance is the preferred path when GPU
+     *          residency and global budgets are enabled. This method is the
+     *          CPU emitter-domain adapter.
+     */
+    [[nodiscard]] eve::Result<void> advance(const eve::SimulationStep &step);
+
+    /** @brief Last scheduler tick consumed by the checked emitter API. */
+    [[nodiscard]] eve::SimulationTick currentSimulationTick() const noexcept {
+        // ECS.hpp's generated accessor has no const overload and would create
+        // a missing component. Query the existing table buffer directly so a
+        // read-only tick query neither casts away constness nor mutates ECS.
+        auto *const buffer = storage ? storage->getComponentBuffer<Sim>() : nullptr;
+        if (!buffer || id >= buffer->size()) return eve::SimulationTick::zero();
+        // The size guard makes this existing-slot read non-mutating; ECS.hpp's
+        // const overload currently attempts to resize its deque.
+        return buffer->get(id).simulationTick;
+    }
 
     bool isActive();
     bool isPaused();
@@ -424,6 +694,8 @@ public:
     void setAutoReload(bool enable);
     bool getAutoReload();
     std::string getConfigPath();
+    /** @brief Return the explicit config reload observation state. */
+    [[nodiscard]] std::string getConfigReloadObservation() const;
 
     // --- Bone attachment (3D AnimPose / 2D Spine / IK 2D·3D) ---
     void attachToBone(animation::AnimPose *pose, int boneIndex);
@@ -458,19 +730,28 @@ public:
     void emitFromSkin(int count);
 };
 
-void spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim);
-void spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y);
+/** @brief Spawn particle. */
+bool spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim);
+/** @brief Spawn particle at. */
+bool spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y);
+/** @brief Step emitter sim. */
 void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
-/** @brief GPU-accelerated integration step; false = unavailable, caller falls back to CPU. */
-bool stepEmitterSimGpu(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
-                       ParticleEmitter::GpuSim &gpu, float dt);
+/** @brief Apply playback speed and optional bounded fixed stepping before simulation. */
+EVENGINE_API_DOMAINS float advanceEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float dt);
+/** @brief Advance with scheduler-provided Duration/Tick; no local playback scaling. */
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<void> advanceEmitterSim(ParticleEmitter::Config   &cfg,
+                                                                       ParticleEmitter::Sim      &sim,
+                                                                       const eve::SimulationStep &step);
 /** @brief World collision query used by emitters with worldCollision enabled. */
 using WorldCollisionFn = bool (*)(float x, float y, float radius, float &nx, float &ny);
+/** @brief Sets the world collision resolver. */
 void setWorldCollisionResolver(WorldCollisionFn fn);
+/** @brief Returns the world collision resolver. */
 WorldCollisionFn getWorldCollisionResolver();
 /** @brief Sync bone attach + refresh skin cache; call before stepEmitterSim when using Attach/SkinSource. */
 void syncEmitterSources(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim,
                         ParticleEmitter::Attach &attach, ParticleEmitter::SkinSource &skinSrc);
+/** @brief Sample skin spawn. */
 bool sampleSkinSpawn(ParticleEmitter::SkinSource &skinSrc, ParticleEmitter::Sim &sim, float &outX,
                      float &outY);
 

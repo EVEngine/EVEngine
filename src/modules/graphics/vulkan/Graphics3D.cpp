@@ -1,0 +1,1269 @@
+// Vulkan backend implementation — 3D frame, shadow and G-buffer passes.
+//
+// Re-split from the merged dev single-TU Graphics.cpp (pure move;
+// dev changes preserved). Shared helpers live in GraphicsInternal.h.
+
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/GlobalIllumination.h"
+#include "graphics/Light.h"
+#include "graphics/Outline.h"
+#include "graphics/PrimitiveDrawList.h"
+#include "graphics/PrimitiveTessellator.h"
+#include "graphics/ReflectionProbeUpload.h"
+#include "graphics/RenderControl.h"
+#include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/Graphics.h"
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_vulkan.h>
+
+#include <algorithm>
+#include <array>
+#include <bit>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <functional>
+#include <stdexcept>
+#include <string>
+#include <vector>
+#if !defined(_WIN32)
+#include <unistd.h>
+#endif
+
+#include "common/Exception.h"
+#include "common/StartupTiming.h"
+#include "common/config.h"
+#include "filesystem/Filesystem.h"
+#include "image/Image.h"
+#include "image/ImageData.h"
+#include "zeroerr/assert.h"
+
+#include <memory>
+
+
+#include <assimp/mesh.h>
+#include <assimp/matrix3x3.h>
+#include <assimp/matrix4x4.h>
+#include <assimp/vector3.h>
+#include <glm/gtc/matrix_transform.hpp>
+
+#include "graphics/shaders/mesh3d_vert_spv.inc"
+#include "graphics/shaders/mesh3d_frag_spv.inc"
+#include "graphics/shaders/voxel_rect_vert_spv.inc"
+#include "graphics/shaders/voxel_rect_frag_spv.inc"
+#include "graphics/vulkan/FrameGraphJobs.h"
+#include "graphics/vulkan/GraphicsInternal.h"
+#include "thread/Thread.h"
+
+namespace eve::graphics::vulkan {
+
+void Graphics::begin3DFrame() {
+    ensureFileTexturesReady();
+    applyPendingResourceChanges();
+    ASSERT(initialized);
+    if (!initialized) throw Exception("begin3DFrame: graphics not initialized");
+    if (isCanvasActive()) throw Exception("begin3DFrame: cannot start 3D while a Canvas is active");
+    createMesh3DPipeline();
+    if (swapchainPassOpen) {
+        // Previous eve_render opened 3D then threw before present().
+        try {
+            flushToSwapchain();
+        } catch (...) {
+            abortOpen3DFrame();
+        }
+    }
+    // Soft-fail like flushToSwapchain: on Android/iOS the surface may still be
+    // settling after orientation change; throwing would abort the whole script.
+    if (!beginPresentCommandBuffer())
+        return;
+    currentFrame2DBuffers().primitive3DDrawIndex = 0;
+    decalLayerFresh = false;
+    recordDeferredFrameGraph();
+    recordDecalPass();
+    vgAnyThisFrame_ = false;
+    currentFrameArena().reset();
+    ensureGpuDrivenCullResources(gbufferWidth > 0 ? gbufferWidth : int(swapchain.extent.width),
+                                 gbufferHeight > 0 ? gbufferHeight : int(swapchain.extent.height));
+
+    // 3D pass clears with backgroundColor (setBackgroundColor), not a stale 2D clear.
+    clearColor = backgroundColor;
+    createSceneColorResources(int(swapchain.extent.width), int(swapchain.extent.height));
+    // GPU-driven cull defers the scene color pass so the compute section
+    // (HZB build + cull + emit + VG cull) can run before the opaque draws;
+    // gpuDrivenOpenScenePass() opens it when the renderer reaches the forward
+    // section.
+    gpuDrivenScenePassPending_ = gpuDrivenEnabled_ && gpuDrivenCullReady_;
+    if (!gpuDrivenScenePassPending_) {
+        if (beginSceneColorRenderPass()) {
+            // Rebuild scene-pass pipelines to match the active scene pass (MSAA).
+            // Must happen AFTER the pass opens: if the MSAA scene pass is unavailable
+            // we fall back to the swapchain (e1) render pass below, and rasterizing
+            // with an Nx pipeline into an e1 pass is UB that can hang the GPU (TDR).
+            ensureScenePassPipelines(activeScenePass(), activeSceneSamples());
+        } else {
+            // Scene pass unavailable — draw 3D straight into the swapchain.
+            ensureScenePassPipelines(renderpass, vk::SampleCountFlagBits::e1);
+            beginSwapchainColorPass();
+        }
+    }
+
+    auto &cb = currentPresentCb();
+    setViewportAndScissor(cb, swapchain.extent.width, swapchain.extent.height);
+
+    {
+        auto &fslots = currentMesh3dFrameSlots();
+        fslots.lastDrawCount = fslots.drawIndex;
+        fslots.drawIndex = 0;
+        fslots.activePalette = 0;
+        ensureMesh3dRing(fslots);
+        auto &cslots = currentMesh3dClusteredFrameSlots();
+        cslots.lastDrawCount = cslots.drawIndex;
+        cslots.drawIndex = 0;
+        ensureMesh3dClusteredRing(cslots);
+    }
+    lastMesh3dPipeline = nullptr;
+    lastMesh3dClusteredPipeline = nullptr;
+    currentVoxelInstanceFrame().drawIndex = 0;
+    swapchainPassOpen = !gpuDrivenScenePassPending_;
+    frameHad3D = true;
+    hasPendingClear = false;
+}
+
+
+void Graphics::ensureOffscreen3DResources() {
+    auto &dev = getDevice();
+    auto  createResources = [&](vk::Format colorFormat, vkb::BuiltRenderPass &renderPass, vk::Pipeline &meshPipeline,
+                               std::array<vk::Pipeline, kMesh3DPipelineVariants>      &surfacePipelines,
+                               std::array<vk::Pipeline, kPrimitive3DPipelineVariants> &primitivePipelines) {
+        if (renderPass) return;
+        renderPass =
+            dev.createRenderPass()
+                .addSampledColorAttachment(colorFormat)
+                .addDepthAttachment(depthFormat, vk::AttachmentLoadOp::eClear,
+                                    vk::AttachmentStoreOp::eDontCare)
+                .addSubpass(vkb::SubpassBuilder()
+                                .addAttachmentRef(0, vk::ImageLayout::eColorAttachmentOptimal)
+                                .setDepthStencilAttachment(
+                                    1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
+                .addExternalShaderReadDependencies()
+                .build();
+        meshPipeline = createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv),
+                                                 mesh3dPipelineLayout, renderPass, vk::SampleCountFlagBits::e1,
+                                                 BlendMode::Opaque, true, true, {MeshDepthCompare::LessEqual});
+        for (int blendValue = 0; blendValue < 5; ++blendValue) {
+            const auto blend = BlendMode(blendValue);
+            for (int depthValue = 0; depthValue < 2; ++depthValue) {
+                for (int doubleValue = 0; doubleValue < 2; ++doubleValue) {
+                    const size_t index =
+                        mesh3dPipelineIndex(blend, depthValue != 0, doubleValue != 0);
+                    surfacePipelines[index] = createMesh3DStylePipeline(
+                        embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout,
+                        renderPass, vk::SampleCountFlagBits::e1, blend, depthValue != 0, doubleValue != 0,
+                        {blend == BlendMode::Opaque && depthValue != 0 ? MeshDepthCompare::LessEqual
+                                                                       : MeshDepthCompare::Less});
+                }
+            }
+        }
+        buildPrimitive3DPipelines(renderPass, vk::SampleCountFlagBits::e1, primitivePipelines);
+    };
+    createResources(vk::Format::eR8G8B8A8Unorm, offscreen3DRenderPass, offscreen3DMeshPipeline,
+                    offscreen3DSurfacePipelines, offscreenPrimitive3DPipelines);
+    createResources(vk::Format::eR16G16B16A16Sfloat, hdrOffscreen3DRenderPass, hdrOffscreen3DMeshPipeline,
+                    hdrOffscreen3DSurfacePipelines, hdrOffscreenPrimitive3DPipelines);
+    if (!offscreen3DPool) {
+        vk::CommandPoolCreateInfo poolInfo{};
+        poolInfo.flags = vk::CommandPoolCreateFlagBits::eTransient | vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
+        offscreen3DPool = dev->createCommandPool(poolInfo);
+        vk::CommandBufferAllocateInfo allocInfo{};
+        allocInfo.commandPool = offscreen3DPool;
+        allocInfo.level = vk::CommandBufferLevel::ePrimary;
+        allocInfo.commandBufferCount = 1;
+        auto bufs = dev->allocateCommandBuffers(allocInfo);
+        offscreen3DCB = bufs[0];
+        vk::FenceCreateInfo fenceInfo{};
+        fenceInfo.flags = vk::FenceCreateFlagBits::eSignaled;  // first wait passes immediately
+        offscreen3DFence = dev->createFence(fenceInfo);
+        const auto &limits = dev.physical_device.properties.limits;
+        if (limits.timestampComputeAndGraphics && limits.timestampPeriod > 0.f) {
+            vk::QueryPoolCreateInfo queryInfo{};
+            queryInfo.queryType = vk::QueryType::eTimestamp;
+            queryInfo.queryCount = 2;
+            offscreen3DTimestampQueryPool = dev->createQueryPool(queryInfo);
+            offscreen3DTimestampPeriodNs = limits.timestampPeriod;
+        }
+    }
+}
+
+void Graphics::destroyOffscreen3DResources() {
+    auto &dev = getDevice();
+    if (offscreen3DFence) {
+        dev->destroyFence(offscreen3DFence);
+        offscreen3DFence = nullptr;
+    }
+    if (offscreen3DTimestampQueryPool) {
+        dev->destroyQueryPool(offscreen3DTimestampQueryPool);
+        offscreen3DTimestampQueryPool = nullptr;
+    }
+    offscreen3DTimestampPeriodNs = 0.f;
+    lastOffscreen3DGpuDurationMs = 0.f;
+    if (offscreen3DPool) {
+        dev->destroyCommandPool(offscreen3DPool);
+        offscreen3DPool = nullptr;
+    }
+    offscreen3DCB = nullptr;
+    if (offscreen3DMeshPipeline) {
+        device->destroyPipeline(offscreen3DMeshPipeline);
+        offscreen3DMeshPipeline = nullptr;
+    }
+    if (hdrOffscreen3DMeshPipeline) {
+        device->destroyPipeline(hdrOffscreen3DMeshPipeline);
+        hdrOffscreen3DMeshPipeline = nullptr;
+    }
+    for (auto &pipeline : offscreen3DSurfacePipelines) {
+        if (pipeline) device->destroyPipeline(pipeline);
+        pipeline = nullptr;
+    }
+    for (auto &pipeline : hdrOffscreen3DSurfacePipelines) {
+        if (pipeline) device->destroyPipeline(pipeline);
+        pipeline = nullptr;
+    }
+    for (auto &pipeline : offscreenPrimitive3DPipelines) {
+        if (pipeline) device->destroyPipeline(pipeline);
+        pipeline = nullptr;
+    }
+    for (auto &pipeline : hdrOffscreenPrimitive3DPipelines) {
+        if (pipeline) device->destroyPipeline(pipeline);
+        pipeline = nullptr;
+    }
+    offscreenPrimitive3DBufs.clear();
+    if (offscreen3DRenderPass) {
+        device->destroyRenderPass(offscreen3DRenderPass);
+        offscreen3DRenderPass = {};
+    }
+    if (hdrOffscreen3DRenderPass) {
+        device->destroyRenderPass(hdrOffscreen3DRenderPass);
+        hdrOffscreen3DRenderPass = {};
+    }
+}
+
+void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
+    ensureFileTexturesReady();
+    applyPendingResourceChanges();
+    ASSERT(initialized);
+    if (!initialized) throw Exception("begin3DFrameToCanvas: graphics not initialized");
+    if (!canvas) throw Exception("begin3DFrameToCanvas: null canvas");
+    createMesh3DPipeline();
+    auto *oc = dynamic_cast<OffscreenCanvas *>(canvas);
+    if (!oc) throw Exception("begin3DFrameToCanvas: not an offscreen canvas");
+    if (offscreen3DPassOpen) throw Exception("begin3DFrameToCanvas: already open");
+    if (swapchainPassOpen) {
+        try {
+            flushToSwapchain();
+        } catch (...) {
+            abortOpen3DFrame();
+        }
+    }
+    clearColor = backgroundColor;
+    ensureOffscreen3DResources();
+    oc->ensure3D();
+    offscreen3DCanvas = oc;
+    offscreen3DHDRActive = oc->isHDR();
+
+    if (offscreen3DFence) (void)device->waitForFences(1, &offscreen3DFence, VK_TRUE, UINT64_MAX);
+    offscreenPrimitive3DDrawIndex = 0;
+    vk::CommandBufferBeginInfo beginInfo{};
+    offscreen3DCB.begin(beginInfo);
+    if (mesh3dShadows.active && shadowPendingMask != 0) {
+        // Offscreen previews submit synchronously, before any swapchain pass.
+        // Replay pending shadows on this same command buffer so color samples
+        // this camera's maps, including headless and repeated previews per frame.
+        waitForSharedGpuResources();
+        auto &slot = currentShadowMap();
+        slot.image.beginDepthAttachment();
+        vk::ClearValue clear{};
+        clear.depthStencil = vk::ClearDepthStencilValue{1.f, 0};
+        for (int cascade = 0; cascade < ShadowConfig::kTotalLayers; ++cascade) {
+            if ((shadowPendingMask & (1u << cascade)) == 0) continue;
+            vk::RenderPassBeginInfo shadowBegin{};
+            shadowBegin.renderPass      = shadowRenderPass;
+            shadowBegin.framebuffer     = slot.framebuffers[cascade];
+            const uint32_t atlasSize =
+                uint32_t(allocatedShadowMapSize > 0 ? allocatedShadowMapSize : ShadowConfig::kMapSize);
+            uint32_t viewportSize = atlasSize;
+            if (cascade >= 0 && cascade < ShadowConfig::kCascades && mesh3dShadows.active) {
+                viewportSize = uint32_t(std::max(1, mesh3dShadows.cascadeMapSizes[cascade]));
+            }
+            shadowBegin.renderArea      = vk::Rect2D{{0, 0}, {atlasSize, atlasSize}};
+            shadowBegin.clearValueCount = 1;
+            shadowBegin.pClearValues    = &clear;
+            offscreen3DCB.beginRenderPass(shadowBegin, vk::SubpassContents::eInline);
+            recordShadowCascadeDraws(offscreen3DCB, cascade, viewportSize);
+            offscreen3DCB.endRenderPass();
+            shadowCascadeDraws[cascade].clear();
+        }
+        slot.image.endSampledLayout();
+        shadowPendingMask = 0;
+    }
+
+    lastOffscreen3DGpuDurationMs = 0.f;
+    if (offscreen3DTimestampQueryPool) {
+        offscreen3DCB.resetQueryPool(offscreen3DTimestampQueryPool, 0, 2);
+        offscreen3DCB.writeTimestamp(vk::PipelineStageFlagBits::eTopOfPipe,
+                                     offscreen3DTimestampQueryPool, 0);
+    }
+    std::array<vk::ClearValue, 2> clears{};
+    clears[0].color =
+        vk::ClearColorValue(std::array<float, 4>{clearColor.r, clearColor.g, clearColor.b, 1.f});
+    clears[1].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+    vk::RenderPassBeginInfo rpBegin{};
+    rpBegin.renderPass = getOffscreen3DRenderPass(offscreen3DHDRActive);
+    rpBegin.framebuffer = oc->framebuffer3D();
+    rpBegin.renderArea =
+        vk::Rect2D{{0, 0}, {uint32_t(oc->getWidth()), uint32_t(oc->getHeight())}};
+    rpBegin.clearValueCount = uint32_t(clears.size());
+    rpBegin.pClearValues = clears.data();
+    oc->colorImage().beginColorAttachment();
+    oc->depthImage().beginDepthAttachment();
+    offscreen3DCB.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+    setViewportAndScissor(offscreen3DCB, oc->getWidth(), oc->getHeight());
+
+    {
+        auto &fslots = currentMesh3dFrameSlots();
+        fslots.lastDrawCount = fslots.drawIndex;
+        fslots.drawIndex = 0;
+        fslots.activePalette = 0;
+        ensureMesh3dRing(fslots);
+        auto &cslots = currentMesh3dClusteredFrameSlots();
+        cslots.lastDrawCount = cslots.drawIndex;
+        cslots.drawIndex = 0;
+        ensureMesh3dClusteredRing(cslots);
+    }
+    lastMesh3dPipeline = nullptr;
+    lastMesh3dClusteredPipeline = nullptr;
+    offscreen3DPassOpen = true;
+    frameHad3D = true;
+    hasPendingClear = false;
+}
+
+void Graphics::end3DFrameToCanvas() {
+    if (!offscreen3DPassOpen || !offscreen3DCB) return;
+    offscreen3DCB.endRenderPass();
+    if (offscreen3DCanvas) {
+        // The sampled render pass already performed its final-layout transition.
+        offscreen3DCanvas->colorImage().endSampledLayout();
+    }
+    if (offscreen3DTimestampQueryPool) {
+        offscreen3DCB.writeTimestamp(vk::PipelineStageFlagBits::eBottomOfPipe,
+                                     offscreen3DTimestampQueryPool, 1);
+    }
+    offscreen3DCB.end();
+
+    // Submit the offscreen render directly to the graphics queue (no present),
+    // then wait for it so it is fully drained before any subsequent render or
+    // teardown.
+    vk::SubmitInfo submitInfo{};
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &offscreen3DCB;
+    if (offscreen3DFence) (void)device->resetFences(1, &offscreen3DFence);
+    (void)device.getQueue(vkb::QueueType::graphics).submit(1, &submitInfo, offscreen3DFence);
+    if (offscreen3DFence)
+        (void)device->waitForFences(1, &offscreen3DFence, VK_TRUE, UINT64_MAX);
+    if (offscreen3DTimestampQueryPool && offscreen3DTimestampPeriodNs > 0.f) {
+        std::array<uint64_t, 2> ticks{};
+        const vk::Result queryResult = device->getQueryPoolResults(
+            offscreen3DTimestampQueryPool, 0, uint32_t(ticks.size()), sizeof(ticks), ticks.data(),
+            sizeof(uint64_t), vk::QueryResultFlagBits::e64 | vk::QueryResultFlagBits::eWait);
+        if (queryResult == vk::Result::eSuccess && ticks[1] >= ticks[0]) {
+            const double nanoseconds =
+                double(ticks[1] - ticks[0]) * double(offscreen3DTimestampPeriodNs);
+            lastOffscreen3DGpuDurationMs = float(nanoseconds * 1.0e-6);
+        }
+    }
+
+    offscreen3DPassOpen = false;
+    offscreen3DHDRActive = false;
+    offscreen3DCanvas = nullptr;
+}
+
+void Graphics::setMesh3DLight(const glm::vec3 &dir, const glm::vec3 &color) {
+    glm::vec3 d = glm::normalize(dir);
+    if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
+    mesh3dFrameUbo.lightDir = glm::vec4(d, mesh3dFrameUbo.lightDir.w);
+    // Preserve .w (envIntensity) — filled per-draw in drawMeshShader.
+    mesh3dFrameUbo.lightColor = glm::vec4(color, mesh3dFrameUbo.lightColor.w);
+}
+
+void Graphics::setMesh3DCameraPos(const glm::vec3 &eye) {
+    mesh3dFrameUbo.cameraPos = glm::vec4(eye, mesh3dFrameUbo.cameraPos.w);
+}
+
+void Graphics::destroyVoxelRectResources() {
+    for (auto &frame : voxelInstanceFrames) {
+        for (auto &slot : frame.slots) {
+            slot.buffer.release();
+            slot.capacityBytes = 0;
+        }
+        frame.slots.clear();
+        frame.drawIndex = 0;
+    }
+    voxelInstanceFrames.clear();
+    voxelRectSets.clear();
+    auto destroyBuf = [&](vkb::GenericBuffer &b) { b.release(); };
+    if (voxelUnitQuadReady) {
+        destroyBuf(voxelUnitQuadVerts);
+        destroyBuf(voxelUnitQuadIndices);
+        voxelUnitQuadReady = false;
+    }
+    if (voxelRectPipeline) {
+        device->destroyPipeline(voxelRectPipeline);
+        voxelRectPipeline = vk::Pipeline{};
+    }
+    if (voxelRectPipelineLayout) {
+        device->destroyPipelineLayout(voxelRectPipelineLayout);
+        voxelRectPipelineLayout = vk::PipelineLayout{};
+    }
+    voxelRectSetLayoutUnique.reset();
+    voxelRectSetLayout = vk::DescriptorSetLayout{};
+}
+
+void Graphics::createVoxelRectPipeline() {
+    if (voxelRectPipeline) return;
+
+    if (!voxelRectPipelineLayout) {
+        vkb::DescriptorSetLayoutBuilder layoutBuilder;
+        voxelRectSetLayoutUnique =
+            layoutBuilder
+                .image(0, vk::DescriptorType::eCombinedImageSampler,
+                       vk::ShaderStageFlagBits::eFragment, 1)
+                .createUnique(device.instance);
+        voxelRectSetLayout = *voxelRectSetLayoutUnique;
+
+        const auto pcr = pushConstantRange(vk::ShaderStageFlagBits::eVertex, sizeof(VoxelRectPC));
+        voxelRectPipelineLayout = createPipelineLayout(device, voxelRectSetLayout, &pcr);
+    }
+
+    voxelRectPipeline = buildVoxelRectPipeline(renderpass, vk::SampleCountFlagBits::e1);
+    ensureVoxelUnitQuad();
+}
+
+vk::Pipeline Graphics::buildVoxelRectPipeline(const vkb::BuiltRenderPass &rp,
+                                              vk::SampleCountFlagBits samples) {
+    auto vert = embeddedSpirv(voxel_rect_vert_spv);
+    auto frag = embeddedSpirv(voxel_rect_frag_spv);
+    ShaderModulePair modules(device, vert, frag);
+
+    vk::VertexInputBindingDescription bindings[3]{};
+    bindings[0].binding = 0;
+    bindings[0].stride = sizeof(glm::vec2);
+    bindings[0].inputRate = vk::VertexInputRate::eVertex;
+    bindings[1].binding = 1;
+    bindings[1].stride = sizeof(uint32_t);
+    bindings[1].inputRate = vk::VertexInputRate::eInstance;
+    bindings[2].binding = 2;
+    bindings[2].stride = sizeof(uint32_t);
+    bindings[2].inputRate = vk::VertexInputRate::eInstance;
+
+    vk::VertexInputAttributeDescription attrs[3]{};
+    attrs[0].location = 0;
+    attrs[0].binding = 0;
+    attrs[0].format = vk::Format::eR32G32Sfloat;
+    attrs[0].offset = 0;
+    attrs[1].location = 1;
+    attrs[1].binding = 1;
+    attrs[1].format = vk::Format::eR32Uint;
+    attrs[1].offset = 0;
+    attrs[2].location = 2;
+    attrs[2].binding = 2;
+    attrs[2].format = vk::Format::eR32Uint;
+    attrs[2].offset = 0;
+
+    vk::PipelineVertexInputStateCreateInfo vi{};
+    vi.vertexBindingDescriptionCount = 3;
+    vi.pVertexBindingDescriptions = bindings;
+    vi.vertexAttributeDescriptionCount = 3;
+    vi.pVertexAttributeDescriptions = attrs;
+
+    // Unit-quad indices 0-2-1 / 0-3-2 are object-space CCW for outward faces.
+    // perspectiveVulkanRH_ZO flips clip Y, so those faces are CCW in the
+    // framebuffer — CounterClockwise frontFace keeps them. Clockwise + Back
+    // (the mesh-pipeline convention) culls every submitted face after the Y
+    // flip; CPU 6-dir cull already dropped the true back faces, so the frame
+    // collapses to a 1px silhouette.
+    return device.createPipeline()
+        .useClassicPipeline(modules.vert, modules.frag)
+        .setPipelineLayout(voxelRectPipelineLayout)
+        .setVertexInputState(vi)
+        .setDynamicStatesViewportScissor()
+        .setRasterizer(vk::PolygonMode::eFill, false, false, 1.0f, vk::CullModeFlagBits::eBack,
+                       vk::FrontFace::eCounterClockwise)
+        .setMultisampler(false, samples)
+        .setDepthStencil(true, true, vk::CompareOp::eLess)
+        .setColorAttachmentCount(1)
+        .build(rp);
+}
+
+void Graphics::ensureVoxelUnitQuad() {
+    if (voxelUnitQuadReady) return;
+    const float corners[8] = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    voxelUnitQuadVerts.allocate(frameToken(), device, vk::BufferUsageFlagBits::eVertexBuffer, sizeof(corners),
+                                vk::MemoryPropertyFlagBits::eHostVisible |
+                                    vk::MemoryPropertyFlagBits::eHostCoherent);
+    voxelUnitQuadVerts.updateLocal(frameToken(), corners, sizeof(corners));
+    const uint32_t indices[6] = {0, 2, 1, 0, 3, 2};
+    voxelUnitQuadIndices.allocate(frameToken(), device, vk::BufferUsageFlagBits::eIndexBuffer, sizeof(indices),
+                                  vk::MemoryPropertyFlagBits::eHostVisible |
+                                      vk::MemoryPropertyFlagBits::eHostCoherent);
+    voxelUnitQuadIndices.updateLocal(frameToken(), indices, sizeof(indices));
+    voxelUnitQuadReady = true;
+}
+
+vkb::BoundSet Graphics::voxelRectSetFor(GpuTexture *gpuTex) {
+    ASSERT(gpuTex != nullptr);
+    auto it = voxelRectSets.find(gpuTex);
+    if (it != voxelRectSets.end()) return it->second;
+
+    vk::DescriptorSetAllocateInfo alloc{};
+    alloc.descriptorPool = descriptorPool;
+    alloc.descriptorSetCount = 1;
+    alloc.pSetLayouts = &voxelRectSetLayout;
+    vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
+
+    vkb::DescriptorSetUpdater updater(4, 4, 0);
+    updater.beginDescriptorSet(unbound)
+        .beginImages(0, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(gpuTex->sampler, gpuTex->imageView()))
+        .update(device.instance);
+
+    vkb::BoundSet bound = std::move(unbound).publish();
+    voxelRectSets.emplace(gpuTex, bound);
+    return bound;
+}
+
+void Graphics::drawVoxelFaceInstances(const uint32_t *packed, int count, float originX,
+                                      float originY, float originZ, const std::string &faceDir,
+                                      Texture *atlas, int tilesPerRow, const uint32_t *ao) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("drawVoxelFaceInstances: graphics not initialized");
+    if (!swapchainPassOpen) throw Exception("drawVoxelFaceInstances: call begin3DFrame first");
+    if (!voxelRectPipeline) createVoxelRectPipeline();
+    if (!packed || count <= 0) return;
+
+    int face = -1;
+    if (faceDir == "posX" || faceDir == "+x")
+        face = 0;
+    else if (faceDir == "negX" || faceDir == "-x")
+        face = 1;
+    else if (faceDir == "posY" || faceDir == "+y")
+        face = 2;
+    else if (faceDir == "negY" || faceDir == "-y")
+        face = 3;
+    else if (faceDir == "posZ" || faceDir == "+z")
+        face = 4;
+    else if (faceDir == "negZ" || faceDir == "-z")
+        face = 5;
+    else
+        throw Exception("drawVoxelFaceInstances: unknown faceDir '%s'", faceDir.c_str());
+
+    Texture *tex = atlas ? atlas : whiteTexture;
+    if (!tex || !tex->gpuHandle) throw Exception("drawVoxelFaceInstances: missing texture");
+    auto *gpuTex = static_cast<GpuTexture *>(tex->gpuHandle);
+
+    ensureVoxelUnitQuad();
+
+    const vk::DeviceSize bytes = vk::DeviceSize(count) * sizeof(uint32_t);
+    auto &vframe = currentVoxelInstanceFrame();
+    const size_t slotIndex = vframe.drawIndex++;
+    while (vframe.slots.size() <= slotIndex) vframe.slots.emplace_back();
+    auto &slot = vframe.slots[slotIndex];
+    if (slot.capacityBytes < size_t(bytes) || !slot.buffer.buffer) {
+        const size_t alloc = std::max(size_t(bytes), slot.capacityBytes ? slot.capacityBytes * 2 : size_t(bytes));
+        slot.buffer.allocate(frameToken(), device, vk::BufferUsageFlagBits::eVertexBuffer, vk::DeviceSize(alloc),
+                             vk::MemoryPropertyFlagBits::eHostVisible |
+                                 vk::MemoryPropertyFlagBits::eHostCoherent);
+        slot.capacityBytes = alloc;
+    }
+    slot.buffer.updateLocal(frameToken(), packed, size_t(bytes));
+
+    // Ambient-occlusion words (null → full bright). Kept parallel to packed.
+    const uint32_t defaultAO = 0xFFu;  // all four corners AO=3
+    std::vector<uint32_t> aoDefaults;
+    if (!ao) {
+        aoDefaults.assign(size_t(count), defaultAO);
+        ao = aoDefaults.data();
+    }
+    const vk::DeviceSize aoBytes = vk::DeviceSize(count) * sizeof(uint32_t);
+    if (slot.aoCapacityBytes < size_t(aoBytes) || !slot.aoBuffer.buffer) {
+        const size_t alloc = std::max(size_t(aoBytes),
+                                      slot.aoCapacityBytes ? slot.aoCapacityBytes * 2
+                                                           : size_t(aoBytes));
+        slot.aoBuffer.allocate(frameToken(), device, vk::BufferUsageFlagBits::eVertexBuffer,
+                               vk::DeviceSize(alloc),
+                               vk::MemoryPropertyFlagBits::eHostVisible |
+                                   vk::MemoryPropertyFlagBits::eHostCoherent);
+        slot.aoCapacityBytes = alloc;
+    }
+    slot.aoBuffer.updateLocal(frameToken(), ao, size_t(aoBytes));
+
+    VoxelRectPC pc{};
+    pc.viewProj = mesh3dFrameUbo.mvp;
+    pc.chunkOrigin = glm::vec4(originX, originY, originZ, float(face));
+    pc.atlasInfo = glm::vec4(float(std::max(1, tilesPerRow)), 0.f, 0.f, 0.f);
+    pc.tint = mesh3dFrameUbo.tint;
+
+    auto &cb = currentPresentCb();
+    vk::DescriptorSet set = voxelRectSetFor(gpuTex);
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, voxelRectPipeline);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, voxelRectPipelineLayout, 0, 1, &set, 0,
+                          nullptr);
+    cb.pushConstants(voxelRectPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0, sizeof(VoxelRectPC),
+                     &pc);
+
+    vk::Buffer vbufs[3] = {voxelUnitQuadVerts.buffer, slot.buffer.buffer, slot.aoBuffer.buffer};
+    vk::DeviceSize offsets[3] = {0, 0, 0};
+    cb.bindVertexBuffers(0, 3, vbufs, offsets);
+    cb.bindIndexBuffer(voxelUnitQuadIndices.buffer, 0, vk::IndexType::eUint32);
+    cb.drawIndexed(6, uint32_t(count), 0, 0, 0);
+}
+
+void Graphics::setMesh3DNormalTexture(Texture *normal) { mesh3dNormalTexture = normal; }
+
+void Graphics::setMesh3DPackedNormalMask(bool enabled) {
+    mesh3dVirtualAtlas.z = enabled ? 1.f : 0.f;
+    mesh3dFrameUbo.virtualAtlas = mesh3dVirtualAtlas;
+}
+
+void Graphics::setMesh3DHeightTexture(Texture *heightTex) { mesh3dHeightTexture = heightTex; }
+
+void Graphics::setMesh3DVirtualTexture(bool enabled, int pageCountX, int pageCountY,
+                                       int atlasSlotsX, int atlasSlotsY,
+                                       float borderFraction) {
+    mesh3dVirtualTexture =
+        enabled ? glm::vec4(1.f, float(pageCountX), float(pageCountY), borderFraction)
+                : glm::vec4(0.f);
+    const float packedNormalMask = mesh3dVirtualAtlas.z;
+    mesh3dVirtualAtlas = enabled ? glm::vec4(float(atlasSlotsX), float(atlasSlotsY), packedNormalMask, 0.f)
+                                 : glm::vec4(0.f, 0.f, packedNormalMask, 0.f);
+    mesh3dFrameUbo.virtualTexture = mesh3dVirtualTexture;
+    mesh3dFrameUbo.virtualAtlas = mesh3dVirtualAtlas;
+}
+
+void Graphics::setMesh3DSceneDepth(Texture *depth) { mesh3dSceneDepthTexture = depth; }
+
+void Graphics::setMesh3DSceneColor(Texture *color) { mesh3dSceneColorTexture = color; }
+
+Graphics::Mesh3DSceneColorCaptureStatus Graphics::captureMesh3DSceneColor() {
+    if (mesh3dSceneColorTexture) return Mesh3DSceneColorCaptureStatus::ExplicitOverride;
+    if (!sceneColorPassOpen || sceneColorSlots.size() < 2 || !sceneColorResumeRenderPass ||
+        sceneColorSamples != vk::SampleCountFlagBits::e1)
+        return sceneColorHistoryValid ? Mesh3DSceneColorCaptureStatus::HistoryReuse
+                                      : Mesh3DSceneColorCaptureStatus::Unavailable;
+
+    const size_t sourceIndex = currentFrameSlot() % sceneColorSlots.size();
+    const size_t snapshotIndex = (sourceIndex + 1u) % sceneColorSlots.size();
+    SceneColorSlot &source = sceneColorSlots[sourceIndex];
+    SceneColorSlot &snapshot = sceneColorSlots[snapshotIndex];
+    auto &cb = currentPresentCb();
+
+    cb.endRenderPass();
+    sceneColorPassOpen = false;
+    source.color.endSampledLayout();
+    const vk::ImageSubresourceRange       range{vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+    std::array<vk::ImageMemoryBarrier, 2> before{};
+    before[0] = vk::ImageMemoryBarrier(vk::AccessFlagBits::eColorAttachmentWrite, vk::AccessFlagBits::eTransferRead,
+                                       vk::ImageLayout::eShaderReadOnlyOptimal, vk::ImageLayout::eTransferSrcOptimal,
+                                       VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, source.color.image(), range);
+    before[1] = vk::ImageMemoryBarrier(
+        snapshot.color.currentLayout() == vk::ImageLayout::eUndefined ? vk::AccessFlags{}
+                                                                      : vk::AccessFlagBits::eShaderRead,
+        vk::AccessFlagBits::eTransferWrite, snapshot.color.currentLayout(), vk::ImageLayout::eTransferDstOptimal,
+        VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, snapshot.color.image(), range);
+    cb.pipelineBarrier(vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eFragmentShader,
+                       vk::PipelineStageFlagBits::eTransfer, {}, {}, {}, before);
+    vk::ImageCopy copy{};
+    copy.srcSubresource =
+        vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+    copy.dstSubresource =
+        vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+    copy.extent = vk::Extent3D{static_cast<uint32_t>(sceneColorWidth),
+                              static_cast<uint32_t>(sceneColorHeight), 1};
+    cb.copyImage(source.color.image(), vk::ImageLayout::eTransferSrcOptimal,
+                 snapshot.color.image(), vk::ImageLayout::eTransferDstOptimal, 1, &copy);
+    std::array<vk::ImageMemoryBarrier, 2> after{};
+    after[0] =
+        vk::ImageMemoryBarrier(vk::AccessFlagBits::eTransferRead,
+                               vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
+                               vk::ImageLayout::eTransferSrcOptimal, vk::ImageLayout::eColorAttachmentOptimal,
+                               VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, source.color.image(), range);
+    after[1] = vk::ImageMemoryBarrier(vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead,
+                                      vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal,
+                                      VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, snapshot.color.image(), range);
+    cb.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                       vk::PipelineStageFlagBits::eFragmentShader | vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                       {}, {}, {}, after);
+    source.color.setCurrentLayout(vk::ImageLayout::eColorAttachmentOptimal);
+    snapshot.color.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+    source.depth.setLayout(cb, vk::ImageLayout::eDepthStencilAttachmentOptimal,
+                           vk::ImageAspectFlagBits::eDepth);
+    vk::RenderPassBeginInfo resume{};
+    resume.renderPass = sceneColorResumeRenderPass;
+    resume.framebuffer = source.framebuffer;
+    resume.renderArea =
+        vk::Rect2D{{0, 0}, {static_cast<uint32_t>(sceneColorWidth),
+                            static_cast<uint32_t>(sceneColorHeight)}};
+    cb.beginRenderPass(resume, vk::SubpassContents::eInline);
+    source.color.beginColorAttachment();
+    source.depth.beginDepthAttachment();
+    sceneColorPassOpen = true;
+    completedSceneColorSlot = snapshotIndex;
+    sceneColorHistoryValid = true;
+    return Mesh3DSceneColorCaptureStatus::Captured;
+}
+
+void Graphics::setMesh3DEnv(Texture *cube, float intensity) {
+    mesh3dEnvTexture = cube;
+    mesh3dEnvIntensity = intensity < 0.f ? 0.f : intensity;
+    if (!cube) mesh3dEnvIntensity = 0.f;
+}
+
+void Graphics::setMesh3DEnvProbe(const glm::vec3 &center, const glm::vec3 &extent) {
+    mesh3dEnvProbeCenter = center;
+    mesh3dEnvProbeExtent = glm::max(extent, glm::vec3(0.f));
+    mesh3dFrameUbo.envProbeCenter = glm::vec4(mesh3dEnvProbeCenter, 1.f);
+    mesh3dFrameUbo.envProbeExtent = glm::vec4(mesh3dEnvProbeExtent, 0.f);
+}
+
+void Graphics::setMesh3DReflectionProbes(const ReflectionProbeUpload &upload) {
+    mesh3dReflectionProbes = upload;
+}
+
+void Graphics::setMesh3DShadows(const ShadowUpload &upload) { mesh3dShadows = upload; }
+
+void Graphics::setMesh3DShadowReceive(bool receive) { mesh3dShadowReceive = receive; }
+
+void Graphics::setMesh3DSkinInfluenceLimit(SkinInfluenceLimit count) {
+    mesh3dSkinInfluenceLimit = static_cast<int>(count);
+}
+
+void Graphics::beginShadowPass(int cascadeIndex) {
+    ASSERT(initialized);
+    // Recreate when scheme map size changes (dynamic shadow resolution).
+    createShadowResources();
+    if (cascadeIndex < 0 || cascadeIndex >= ShadowConfig::kTotalLayers) {
+        throw Exception("beginShadowPass: cascadeIndex out of range");
+    }
+    shadowPassCascade = cascadeIndex;
+    shadowPassDraws.clear();
+}
+
+void Graphics::drawMeshShadow(Mesh *mesh, const glm::mat4 &lightMVP, bool doubleSided) {
+    if (shadowPassCascade < 0) throw Exception("drawMeshShadow: call beginShadowPass first");
+    if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshShadow: null mesh");
+    ShadowDraw d;
+    d.mesh = mesh;
+    d.mvp = lightMVP;
+    d.doubleSided = doubleSided;
+    prepareSkinPass(mesh, nullptr, lightMVP, glm::mat4(1.f), glm::vec4(0.f), d.skinSet,
+                    d.skinUboOffset);
+    shadowPassDraws.push_back(d);
+}
+
+void Graphics::drawMeshShadowAlpha(Mesh *mesh, const glm::mat4 &lightMVP, Texture *albedo,
+                                   bool doubleSided, float lodWeight, bool lodFadeReverse,
+                                   bool lodDither) {
+    if (shadowPassCascade < 0) throw Exception("drawMeshShadowAlpha: call beginShadowPass first");
+    if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshShadowAlpha: null mesh");
+    ShadowDraw d;
+    d.mesh = mesh;
+    d.mvp = lightMVP;
+    d.albedo = albedo;
+    d.alphaTest = true;
+    d.doubleSided = doubleSided;
+    d.lodFade = glm::vec4(std::clamp(lodWeight, 0.f, 1.f), lodFadeReverse ? 1.f : 0.f,
+                          lodDither ? 1.f : 0.f, 0.f);
+    prepareSkinPass(mesh, albedo, lightMVP, glm::mat4(1.f), d.lodFade, d.skinSet,
+                    d.skinUboOffset);
+    shadowPassDraws.push_back(d);
+}
+
+void Graphics::endShadowPass() {
+    if (shadowPassCascade < 0) throw Exception("endShadowPass: no active shadow pass");
+    if (!shadowPipeline || !shadowRenderPass) {
+        shadowPassCascade = -1;
+        shadowPassDraws.clear();
+        return;
+    }
+    const int cascade = shadowPassCascade;
+    shadowCascadeDraws[cascade] = std::move(shadowPassDraws);
+    shadowPassDraws.clear();
+    shadowPassCascade = -1;
+    shadowPendingMask |= (1u << cascade);
+    // GPU work is recorded into the swapchain command buffer in
+    // beginSwapchainRenderPass() so it shares the frame's submit and uses the
+    // ping-pong copy for this frame slot.
+}
+
+void Graphics::beginGBufferPass(int w, int h) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("beginGBufferPass: graphics not initialized");
+    if (w <= 0 || h <= 0) throw Exception("beginGBufferPass: invalid size");
+    if (!texSetLayout || !descriptorPool)
+        throw Exception("beginGBufferPass: textured descriptor layout not ready");
+    createGBufferResources(w, h);
+    gbufferPassActive = true;
+    gbufferPassDraws.clear();
+}
+
+void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model, float nearZ,
+                               float farZ, Texture *albedo, float tintR, float tintG, float tintB,
+                               float motionX, float motionY, float roughness, float metallic) {
+    if (!gbufferPassActive) throw Exception("drawMeshGBuffer: call beginGBufferPass first");
+    if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshGBuffer: null mesh");
+    GBufferDraw d{};
+    d.mesh = mesh;
+    d.albedo = albedo;
+    d.push.mvp = mvp;
+    d.push.modelR0 = glm::vec4(model[0][0], model[1][0], model[2][0], model[3][0]);
+    d.push.modelR1 = glm::vec4(model[0][1], model[1][1], model[2][1], model[3][1]);
+    d.push.modelR2 = glm::vec4(model[0][2], model[1][2], model[2][2], model[3][2]);
+    auto u6 = [](float x) -> uint32_t {
+        return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 63.f));
+    };
+    // Phase B: tint RGB6 | rough7 | metal7. Payload exceeds the 24-bit exact
+    // integer range of float, so bit-cast through the push constant (shader
+    // reads floatBitsToUint). Motion stays numeric (≤24 bits).
+    const uint32_t rough7     = uint32_t(std::lround(std::clamp(roughness, 0.f, 1.f) * 127.f));
+    const uint32_t metal7     = uint32_t(std::lround(std::clamp(metallic, 0.f, 1.f) * 127.f));
+    const uint32_t packedTint = u6(tintR) | (u6(tintG) << 6) | (u6(tintB) << 12) | (rough7 << 18) | (metal7 << 25);
+    auto motion12 = [](float value) {
+        return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
+    };
+    const uint32_t packedMotion = motion12(motionX) | (motion12(motionY) << 12);
+    d.push.clip                 = glm::vec4(nearZ, farZ, std::bit_cast<float>(packedTint), float(packedMotion));
+    prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
+    gbufferPassDraws.push_back(d);
+}
+
+void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4 &model,
+                                    float nearZ, float farZ, Texture *albedo, float tintR,
+                                    float tintG, float tintB, float motionX, float motionY,
+                                    float roughness, float metallic) {
+    if (!gbufferPassActive) throw Exception("drawMeshGBufferAlpha: call beginGBufferPass first");
+    if (!mesh || !mesh->gpuHandle) throw Exception("drawMeshGBufferAlpha: null mesh");
+    GBufferDraw d{};
+    d.mesh = mesh;
+    d.albedo = albedo;
+    d.alphaTest = true;
+    d.push.mvp = mvp;
+    d.push.modelR0 = glm::vec4(model[0][0], model[1][0], model[2][0], model[3][0]);
+    d.push.modelR1 = glm::vec4(model[0][1], model[1][1], model[2][1], model[3][1]);
+    d.push.modelR2 = glm::vec4(model[0][2], model[1][2], model[2][2], model[3][2]);
+    auto u6 = [](float x) -> uint32_t {
+        return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 63.f));
+    };
+    const uint32_t rough7     = uint32_t(std::lround(std::clamp(roughness, 0.f, 1.f) * 127.f));
+    const uint32_t metal7     = uint32_t(std::lround(std::clamp(metallic, 0.f, 1.f) * 127.f));
+    const uint32_t packedTint = u6(tintR) | (u6(tintG) << 6) | (u6(tintB) << 12) | (rough7 << 18) | (metal7 << 25);
+    auto motion12 = [](float value) {
+        return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
+    };
+    const uint32_t packedMotion = motion12(motionX) | (motion12(motionY) << 12);
+    d.push.clip                 = glm::vec4(nearZ, farZ, std::bit_cast<float>(packedTint), float(packedMotion));
+    prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
+    gbufferPassDraws.push_back(d);
+}
+
+void Graphics::endGBufferPass() {
+    if (!gbufferPassActive) throw Exception("endGBufferPass: no active gbuffer pass");
+    gbufferPassActive = false;
+
+    auto *slot = currentGBufferSlot();
+    if (!gbufferPipeline || !gbufferRenderPass || !slot || !slot->framebuffer) {
+        gbufferPassDraws.clear();
+        gbufferPending = false;
+        if (RenderControl* rc = getRenderControl()) rc->getGBuffer()->clear();
+        return;
+    }
+
+    gbufferPending = true;
+    if (RenderControl* rc = getRenderControl()) {
+        rc->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot->depthColorTex, &slot->normalTex,
+                                     &slot->albedoTex, &slot->depthTex, &slot->pbrParamsTex, &slot->emissiveTex);
+    }
+}
+
+void Graphics::ensureDecalPlaceholders() {
+    if (decalFlatAlbedo) return;
+    const uint8_t transparent[4] = {0, 0, 0, 0};
+    const uint8_t flatNormal[4] = {128, 128, 255, 255};
+    const uint8_t neutralParams[4] = {128, 128, 0, 255};
+    decalFlatAlbedo = newTexture(1, 1, transparent);
+    decalFlatNormal = newTexture(1, 1, flatNormal);
+    decalFlatParams = newTexture(1, 1, neutralParams);
+}
+
+void Graphics::beginDecalPass(int w, int h) {
+    ASSERT(initialized);
+    if (!initialized) throw Exception("beginDecalPass: graphics not initialized");
+    if (w <= 0 || h <= 0) throw Exception("beginDecalPass: invalid size");
+    if (!texSetLayout || !descriptorPool)
+        throw Exception("beginDecalPass: textured descriptor layout not ready");
+    createDecalResources(w, h);
+    ensureDecalPlaceholders();
+    decalPassActive = true;
+    decalPassDraws.clear();
+}
+
+void Graphics::setDecalCamera(const glm::mat4 &viewProj, float nearZ, float farZ) {
+    decalViewProj = viewProj;
+    decalNear = nearZ > 1e-4f ? nearZ : 0.1f;
+    decalFar = farZ > decalNear ? farZ : decalNear + 1.f;
+}
+
+void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *normal,
+                         Texture *params, const float uvRect[4], float fade,
+                         float normalStrength, float roughnessStrength, float metalStrength,
+                         float emissiveStrength, int blendMode, int projectionMode,
+                         float blendSharpness, float parallaxScale, float parallaxMinLayers,
+                         float parallaxMaxLayers, float edgeFadeWidth) {
+    if (!decalPassActive) throw Exception("drawDecal: call beginDecalPass first");
+    DecalDraw d{};
+    d.model = model;
+    d.albedo = albedo;
+    d.normal = normal;
+    d.params = params;
+    if (uvRect) {
+        for (int i = 0; i < 4; ++i) d.uvRect[i] = uvRect[i];
+    }
+    d.fade = fade;
+    d.normalStrength = normalStrength;
+    d.roughnessStrength = roughnessStrength;
+    d.metalStrength = metalStrength;
+    d.emissiveStrength = emissiveStrength;
+    d.blendMode = blendMode == 1 ? 1 : 0;
+    d.projectionMode = std::clamp(projectionMode, 0, 3);
+    d.blendSharpness = blendSharpness > 0.f ? blendSharpness : 4.f;
+    d.parallaxScale = std::clamp(parallaxScale, 0.f, 1.f);
+    d.parallaxMinLayers = std::clamp(parallaxMinLayers, 1.f, 64.f);
+    d.parallaxMaxLayers = std::clamp(parallaxMaxLayers, d.parallaxMinLayers, 64.f);
+    d.edgeFadeWidth = std::clamp(edgeFadeWidth, 0.f, 0.49f);
+    if (decalPassDraws.size() >= kMaxDecalInstances) return;  // SSBO capacity guard
+    decalPassDraws.push_back(d);
+}
+
+void Graphics::endDecalPass() {
+    if (!decalPassActive) throw Exception("endDecalPass: no active decal pass");
+    decalPassActive = false;
+    auto *slot = currentDecalSlot();
+    if (!decalPipeline || !decalRenderPass || !slot || !slot->framebuffer) {
+        decalPassDraws.clear();
+        decalPending = false;
+        return;
+    }
+    decalPending = true;
+}
+
+void Graphics::recordDecalPass() {
+    if (!decalPending) return;
+    decalPending = false;
+    auto *slot = currentDecalSlot();
+    if (!slot || !decalPipeline || !decalRenderPass || !slot->framebuffer) {
+        decalPassDraws.clear();
+        return;
+    }
+    auto *gslot = currentGBufferSlot();
+    if (!gslot) {
+        decalPassDraws.clear();
+        return;
+    }
+
+    auto &cb = currentPresentCb();
+    recordDecalPassInto(cb, *slot, *gslot);
+}
+
+void Graphics::recordDecalPassInto(vk::CommandBuffer cb, DecalSlot &slot, GBufferSlot &gslot) {
+    const uint32_t w = uint32_t(decalWidth);
+    const uint32_t h = uint32_t(decalHeight);
+    if (w == 0 || h == 0) {
+        decalPassDraws.clear();
+        return;
+    }
+
+    DecalCameraUBO cam{};
+    cam.viewProj = decalViewProj;
+    cam.invViewProj = glm::inverse(decalViewProj);
+    cam.nearFarTexel =
+        glm::vec4(decalNear, decalFar, 1.f / float(w), 1.f / float(h));
+    updateRingLocal(slot.cameraUbo, 0, &cam, sizeof(cam));
+
+    slot.albedo.beginColorAttachment();
+    slot.normal.beginColorAttachment();
+    slot.params.beginColorAttachment();
+    std::array<vk::ClearValue, 3> clears{};
+    clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+    clears[1].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+    clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+    vk::RenderPassBeginInfo rpBegin{};
+    rpBegin.renderPass = decalRenderPass;
+    rpBegin.framebuffer = slot.framebuffer;
+    rpBegin.renderArea = vk::Rect2D{{0, 0}, {w, h}};
+    rpBegin.clearValueCount = uint32_t(clears.size());
+    rpBegin.pClearValues = clears.data();
+    cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
+    setViewportAndScissor(cb, w, h);
+    cb.bindPipeline(vk::PipelineBindPoint::eGraphics, decalPipeline);
+    decalLayerFresh = true;
+
+    for (const auto &d : decalPassDraws) {
+        GpuTexture *gpuAlb = d.albedo && d.albedo->gpuHandle
+                                 ? static_cast<GpuTexture *>(d.albedo->gpuHandle)
+                                 : static_cast<GpuTexture *>(decalFlatAlbedo->gpuHandle);
+        GpuTexture *gpuNrm = d.normal && d.normal->gpuHandle
+                                 ? static_cast<GpuTexture *>(d.normal->gpuHandle)
+                                 : static_cast<GpuTexture *>(decalFlatNormal->gpuHandle);
+        GpuTexture *gpuPrm = d.params && d.params->gpuHandle
+                                 ? static_cast<GpuTexture *>(d.params->gpuHandle)
+                                 : static_cast<GpuTexture *>(decalFlatParams->gpuHandle);
+        DecalInstanceData inst{};
+        inst.model = d.model;
+        inst.uvRect = glm::vec4(d.uvRect[0], d.uvRect[1], d.uvRect[2], d.uvRect[3]);
+        inst.fadeParams =
+            glm::vec4(d.fade, d.normalStrength, d.roughnessStrength, d.metalStrength);
+        inst.extraParams = glm::vec4(d.emissiveStrength, float(d.blendMode),
+                                     float(d.projectionMode), d.blendSharpness);
+        inst.surfaceParams =
+            glm::vec4(d.parallaxScale, d.parallaxMinLayers, d.parallaxMaxLayers, d.edgeFadeWidth);
+        const vkb::BoundSet set = decalSetFor(slot, gpuAlb, gpuNrm, gpuPrm, &gslot.depthGpu,
+                                              &gslot.normalGpu);
+        cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, decalPipelineLayout, 0, 1,
+                              set.ptr(), 0, nullptr);
+        cb.pushConstants(decalPipelineLayout,
+                         vk::ShaderStageFlagBits::eVertex |
+                             vk::ShaderStageFlagBits::eFragment,
+                         0, sizeof(inst), &inst);
+        cb.draw(3, 1, 0, 0);
+    }
+    decalPassDraws.clear();
+    cb.endRenderPass();
+    slot.albedo.endSampledLayout();
+    slot.normal.endSampledLayout();
+    slot.params.endSampledLayout();
+}
+
+void Graphics::ensureDefaultEnvCubemap() {
+    if (defaultEnvCubemap) return;
+    const uint8_t black[4] = {0, 0, 0, 255};
+    std::vector<uint8_t> faces(6u * 4u);
+    for (int i = 0; i < 6; ++i) {
+        faces[size_t(i) * 4u + 0] = black[0];
+        faces[size_t(i) * 4u + 1] = black[1];
+        faces[size_t(i) * 4u + 2] = black[2];
+        faces[size_t(i) * 4u + 3] = black[3];
+    }
+    defaultEnvCubemap = newCubemap(1, faces.data());
+}
+
+void Graphics::setMesh3DMaterial(float metallic, float roughness) {
+    mesh3dMetallic = metallic;
+    mesh3dRoughness = roughness;
+    mesh3dFrameUbo.ambient.w = metallic;
+    mesh3dFrameUbo.cameraPos.w = roughness;
+}
+
+void Graphics::setMesh3DSurface(SurfaceMode mode, BlendMode blend, bool depthWrite,
+                                bool doubleSided, float alphaCutoff,
+                                const std::string &alphaTechnique) {
+    mesh3dSurfaceMode = mode;
+    mesh3dSurfaceBlend = blend;
+    mesh3dSurfaceDepthWrite = depthWrite;
+    mesh3dSurfaceDoubleSided = doubleSided;
+    mesh3dAlphaCutoff = std::clamp(alphaCutoff, 0.f, 1.f);
+    mesh3dAlphaTechnique = alphaTechnique;
+}
+
+void Graphics::setMesh3DTexCellBomb(float cellScale, float strength, float rotAmount) {
+    mesh3dTexBombScale = cellScale > 1e-3f ? cellScale : 1e-3f;
+    mesh3dTexBombStrength = strength < 0.f ? 0.f : (strength > 1.f ? 1.f : strength);
+    mesh3dTexBombRot = rotAmount < 0.f ? 0.f : (rotAmount > 1.f ? 1.f : rotAmount);
+    mesh3dFrameUbo.texBomb =
+        glm::vec4(mesh3dTexBombScale, mesh3dTexBombStrength, mesh3dTexBombRot, 0.f);
+}
+
+void Graphics::setMesh3DParallax(float scale, float minLayers, float maxLayers) {
+    mesh3dParallaxScale = scale < 0.f ? 0.f : (scale > 0.25f ? 0.25f : scale);
+    float minL = minLayers < 1.f ? 1.f : minLayers;
+    float maxL = maxLayers < minL ? minL : maxLayers;
+    if (maxL > 64.f) maxL = 64.f;
+    mesh3dParallaxMinLayers = minL;
+    mesh3dParallaxMaxLayers = maxL;
+    mesh3dFrameUbo.parallax =
+        glm::vec4(mesh3dParallaxScale, mesh3dParallaxMinLayers, mesh3dParallaxMaxLayers, 0.f);
+}
+
+void Graphics::setMesh3DLodDither(float weight, bool reverse, bool enabled) {
+    mesh3dLodFade = glm::vec4(std::clamp(weight, 0.f, 1.f), reverse ? 1.f : 0.f,
+                              enabled ? 1.f : 0.f, 0.f);
+    mesh3dFrameUbo.lodFade = mesh3dLodFade;
+}
+
+void Graphics::setMesh3DLighting(const Lighting3DPack &pack) {
+    mesh3dLighting = pack;
+    mesh3dFrameUbo.ambient = glm::vec4(glm::vec3(pack.ambient), mesh3dMetallic);    const int n = std::max(0, std::min(pack.count, Lighting3DPack::kMaxLights));
+    for (size_t i = 0; i < pack.diffuseProbeSh.size(); ++i)
+        mesh3dFrameUbo.diffuseProbeSh[i] = pack.diffuseProbeSh[i];
+    mesh3dFrameUbo.diffuseProbeInfo.x = pack.diffuseProbeShEnabled ? 1.f : 0.f;
+    for (size_t i = 0; i < pack.diffuseVolumePosition.size(); ++i) {
+        mesh3dFrameUbo.diffuseVolumePosition[i] = pack.diffuseVolumePosition[i];
+        mesh3dFrameUbo.diffuseVolumeExtent[i] = pack.diffuseVolumeExtent[i];
+    }
+    for (size_t i = 0; i < pack.diffuseVolumeSh.size(); ++i)
+        mesh3dFrameUbo.diffuseVolumeSh[i] = pack.diffuseVolumeSh[i];
+    mesh3dFrameUbo.diffuseVolumeInfo.x = static_cast<float>(pack.diffuseVolumeProbeCount);
+    mesh3dFrameUbo.diffuseVolumeInfo.y = pack.diffuseVolumeTrilinearCell ? 1.f : 0.f;
+    mesh3dFrameUbo.lightDir.w = float(n);
+    int dirI = -1;
+    for (int i = 0; i < n; ++i) {
+        if (pack.lights[i].posRadius.w <= 0.f) {
+            dirI = i;
+            break;
+        }
+    }
+    if (dirI >= 0) {
+        glm::vec3 d(pack.lights[dirI].posRadius);
+        if (glm::length(d) < 1e-6f) d = glm::vec3(0.f, 1.f, 0.f);
+        else d = glm::normalize(d);
+        mesh3dFrameUbo.lightDir = glm::vec4(d, float(n));
+        mesh3dFrameUbo.lightColor =
+            glm::vec4(glm::vec3(pack.lights[dirI].color), mesh3dFrameUbo.lightColor.w);
+    } else {
+        // No directional: zero the legacy primary slot. mesh3d.frag always shades it.
+        mesh3dFrameUbo.lightDir = glm::vec4(0.f, 1.f, 0.f, float(n));
+        mesh3dFrameUbo.lightColor =
+            glm::vec4(0.f, 0.f, 0.f, mesh3dFrameUbo.lightColor.w);
+    }
+}
+
+void Graphics::setCloudShadows(float strength, float worldCell, float time, float windSpeed,
+                               float windAngle, float coverage, float detail) {
+    mesh3dFrameUbo.cloud = glm::vec4(std::clamp(strength, 0.f, 1.f), std::max(worldCell, 1e-4f),
+                                     time, 0.f);
+    mesh3dFrameUbo.cloudWind = glm::vec4(std::cos(windAngle) * windSpeed,
+                                         std::sin(windAngle) * windSpeed,
+                                         std::clamp(coverage, 0.f, 1.f), std::clamp(detail, 0.f, 1.f));
+}
+
+void Graphics::ensureFlatNormalTexture3D() {
+    if (flatNormalTexture3D) return;
+    const uint8_t px[4] = {128, 128, 255, 255};
+    flatNormalTexture3D = newTexture(1, 1, px);
+}
+
+void Graphics::ensureFlatHeightTexture3D() {
+    if (flatHeightTexture3D) return;
+    // Mid-gray height: no relief when scale>0 without a real height map.
+    const uint8_t px[4] = {128, 128, 128, 255};
+    flatHeightTexture3D = newTexture(1, 1, px);
+}
+
+vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
+                                     GpuTexture *heightTex, GpuTexture *depthTex, GpuTexture *sceneColorTex,
+                                     GpuTexture *decalAlbedo, GpuTexture *decalNormal,
+                                     GpuTexture *decalParams,
+                                     Mesh3dFrameSlots &fslots) {
+    ASSERT(gpuTex != nullptr);
+    ASSERT(normalTex != nullptr);
+    ASSERT(envTex != nullptr);
+    ASSERT(heightTex != nullptr);
+    ASSERT(sceneColorTex != nullptr);
+    ASSERT(decalAlbedo != nullptr);
+    ASSERT(decalNormal != nullptr);
+    ASSERT(decalParams != nullptr);
+    ASSERT(currentShadowArrayView());
+    ASSERT(fslots.uboRing.buffer);
+    ASSERT(fslots.shadowRing.buffer);
+
+    auto probeTexture = [&](int index) -> GpuTexture * {
+        if (index < mesh3dReflectionProbes.count) {
+            Texture *texture = mesh3dReflectionProbes.probes[index].cubemap;
+            if (texture && texture->gpuHandle) {
+                auto *gpu = static_cast<GpuTexture *>(texture->gpuHandle);
+                if (gpu->isCube) return gpu;
+            }
+        }
+        return static_cast<GpuTexture *>(defaultEnvCubemap->gpuHandle);
+    };
+    GpuTexture *probe0 = probeTexture(0);
+    GpuTexture *probe1 = probeTexture(1);
+    Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, depthTex, sceneColorTex,
+                     decalAlbedo, decalNormal, decalParams};
+    key.paletteSlot = fslots.activePalette;
+    if (fslots.palettes.empty()) uploadSkinPalette(nullptr, fslots);
+    auto it = fslots.sets.find(key);
+    if (it != fslots.sets.end()) return it->second;
+
+    vk::DescriptorSetAllocateInfo alloc{};
+    alloc.descriptorPool = descriptorPool;
+    alloc.descriptorSetCount = 1;
+    alloc.pSetLayouts = &mesh3dSetLayout;
+    vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
+
+    vkb::DescriptorSetUpdater updater(16, 16, 0);
+    updater.beginDescriptorSet(unbound)
+        .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
+        .buffer(fslots.uboRing.buffer, 0, sizeof(Mesh3DUBO))
+        .beginBuffers(21, 0, vk::DescriptorType::eStorageBuffer)
+        .buffer(fslots.palettes[fslots.activePalette].buffer, 0, fslots.palettes[fslots.activePalette].capacity)
+        .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(gpuTex->sampler, gpuTex->imageView()))
+        .beginImages(2, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(normalTex->sampler, normalTex->imageView()))
+        .beginImages(3, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(envTex->sampler, envTex->imageView()))
+        .beginBuffers(4, 0, vk::DescriptorType::eUniformBufferDynamic)
+        .buffer(fslots.shadowRing.buffer, 0, sizeof(ShadowUBO))
+        .beginImages(5, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(shadowSampler, currentShadowArrayView()))
+        .beginImages(6, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(heightTex->sampler, heightTex->imageView()))
+        .beginImages(7, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(depthTex->sampler, depthTex->imageView()))
+        .beginImages(8, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(decalAlbedo->sampler, decalAlbedo->imageView()))
+        .beginImages(9, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(decalNormal->sampler, decalNormal->imageView()))
+        .beginImages(10, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(decalParams->sampler, decalParams->imageView()))
+        .beginImages(16, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(probe0->sampler, probe0->imageView()))
+        .beginImages(17, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(probe1->sampler, probe1->imageView()))
+        .beginImages(18, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(sceneColorTex->sampler, sceneColorTex->imageView()))
+        .beginImages(20, 0, vk::DescriptorType::eCombinedImageSampler)
+        .image(vkb::SampledImage::forLaterSample(shadowRawSampler, currentShadowArrayView()))
+        .update(device.instance);
+
+    vkb::BoundSet bound = std::move(unbound).publish();
+    fslots.sets.emplace(key, bound);
+    return bound;
+}
+
+void Graphics::setMesh3DViewProj(const glm::mat4 &viewProj) {
+    mesh3dFrameUbo.mvp = viewProj;
+}
+
+void Graphics::setMesh3DView(const glm::mat4 &view) {
+    mesh3dFrameUbo.view = view;
+}
+
+void Graphics::setMesh3DClip(float nearZ, float farZ) {
+    const float n = nearZ > 1e-4f ? nearZ : 0.1f;
+    const float f = farZ > n ? farZ : n + 1.f;
+    mesh3dFrameUbo.clipInfo = glm::vec4(n, f, mesh3dFrameUbo.clipInfo.z, mesh3dFrameUbo.clipInfo.w);
+    mesh3dClustered.clipInfo.x = n;
+    mesh3dClustered.clipInfo.y = f;
+}
+
+}  // namespace eve::graphics::vulkan

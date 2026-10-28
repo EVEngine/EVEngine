@@ -3,6 +3,7 @@
 layout(location = 0) in vec3 inPos;
 layout(location = 1) in vec3 inNormal;
 layout(location = 2) in vec2 inUV;
+layout(location = 5) in vec4 inColor;
 
 layout(set = 0, binding = 0, std140) uniform Frame {
     mat4 mvp;
@@ -32,6 +33,6 @@ void main() {
     mat3 normalMat = transpose(inverse(mat3(ubo.model)));
     vNormal = normalize(normalMat * inNormal);
     vUV = inUV;
-    vTint = ubo.tint;
+    vTint = ubo.tint * inColor;
     vCameraPos = ubo.cameraPos.xyz;
 }

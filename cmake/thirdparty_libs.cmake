@@ -2,7 +2,8 @@
 # actual link names for the current platform and build type.
 #
 # The link names differ per platform: MSVC gets the md / mdd postfixes the
-# third-party ExternalProject was told to use, Emscripten takes SDL2 and zlib
+# third-party ExternalProject was told to use, Emscripten takes SDL2, zlib and
+# FreeType
 # from ports instead of the vendored trees, and only Windows distinguishes
 # debug from release archives.
 #
@@ -26,8 +27,10 @@ function(eve_thirdparty_libs out_var)
     endif()
 
     # The Emscripten aggregate only builds the simple vendored libraries; the
-    # heavy ones are skipped and the module code that would need them is
+    # heavy ones are skipped and most module code that would need them is
     # compiled out (see EVENGINE_EXCLUDED_MODULE_FILES and the module guards).
+    # FreeType is an exception: the browser build enables Emscripten's port,
+    # which supplies its headers and archive without a conventional link name.
     # Asking for these groups on WASM must resolve to nothing, not to a missing
     # archive.
     set(_skip_on_emscripten
@@ -49,11 +52,43 @@ function(eve_thirdparty_libs out_var)
 
         elseif(g STREQUAL "sdl2")
             # Emscripten links SDL2 through -sUSE_SDL=2, set in the root CMakeLists.
+            # SDL is built shared as well as static (third_party_build.cmake): the
+            # dynamic route links the shared library so the whole process shares one
+            # SDL state, and the archive route must stay one self-contained
+            # artifact. On ELF/Mach-O the linker prefers libSDL2.so/.dylib by name
+            # (SDL gives its static target the same output name), so the desktop
+            # archive route selects the archive by path; Windows already gives the
+            # two forms distinct names.
+            #
+            # Mobile keeps the name-based lookup. Android's SDL build produces
+            # libSDL2.so whether or not SDL_SHARED is set, and that shared object
+            # carries its own GLES dependencies; forcing the archive there asked the
+            # engine link to resolve glClear/glBlendEquationOES/... itself and
+            # libmain.so failed with those undefined symbols.
             if(_emscripten)
-            elseif(_win_debug)
-                list(APPEND _libs SDL2d SDL2maind)
+            elseif(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+                if(_win_debug)
+                    list(APPEND _libs SDL2d SDL2maind)
+                elseif(WIN32)
+                    list(APPEND _libs SDL2md SDL2mainmd)
+                else()
+                    list(APPEND _libs SDL2 SDL2main)
+                endif()
             else()
-                list(APPEND _libs SDL2 SDL2main)
+                if(_win_debug)
+                    list(APPEND _libs SDL2-staticd SDL2maind)
+                elseif(WIN32)
+                    list(APPEND _libs SDL2-staticmd SDL2mainmd)
+                elseif(ANDROID OR IOS OR CMAKE_SYSTEM_NAME STREQUAL "iOS")
+                    list(APPEND _libs SDL2 SDL2main)
+                else()
+                    if(NOT DEFINED EVENGINE_TP_LIB_DIR)
+                        message(FATAL_ERROR
+                            "The archive route needs EVENGINE_TP_LIB_DIR to select "
+                            "libSDL2.a; it is set by load_third_party()")
+                    endif()
+                    list(APPEND _libs "${EVENGINE_TP_LIB_DIR}/libSDL2.a" SDL2main)
+                endif()
             endif()
 
         elseif(g STREQUAL "medialoader_image")
@@ -64,6 +99,9 @@ function(eve_thirdparty_libs out_var)
             else()
                 list(APPEND _libs medialoader_image)
             endif()
+
+        elseif(g STREQUAL "webp")
+            list(APPEND _libs webpdemux)
 
         elseif(g STREQUAL "medialoader_model")
             if(_win_debug)
@@ -98,7 +136,7 @@ function(eve_thirdparty_libs out_var)
             elseif(_win_debug)
                 list(APPEND _libs zlibstaticd)
             elseif(WIN32)
-                list(APPEND _libs zlibstatic)
+                list(APPEND _libs zlibstaticmd)
             else()
                 list(APPEND _libs z)
             endif()
@@ -122,7 +160,15 @@ function(eve_thirdparty_libs out_var)
             endif()
 
         elseif(g STREQUAL "box2d")
-            if(_win_debug)
+            # The dynamic route links the shared twin (one contact registry per
+            # process); the archive is the canonical target for the OBJECT /
+            # release SDK route, which must stay a single self-contained
+            # executable. Both exist in one install tree, so no build order can
+            # change which one the route gets. See
+            # third-party/Box2D/Common/b2Settings.h.
+            if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+                list(APPEND _libs Box2D-dynamic)
+            elseif(_win_debug)
                 list(APPEND _libs Box2Dmdd)
             elseif(WIN32)
                 list(APPEND _libs Box2Dmd)
@@ -130,8 +176,17 @@ function(eve_thirdparty_libs out_var)
                 list(APPEND _libs Box2D)
             endif()
 
+        elseif(g STREQUAL "jolt")
+            if(EVENGINE_BUILD_JOLT)
+                list(APPEND _libs Jolt::Jolt)
+            endif()
+
         elseif(g STREQUAL "box3d")
-            if(_win_debug)
+            # Same reasoning as box2d: box3d keeps its world registry in file
+            # scope, so the dynamic route needs the shared twin.
+            if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+                list(APPEND _libs box3d-dynamic)
+            elseif(_win_debug)
                 list(APPEND _libs box3dd)
             elseif(WIN32)
                 list(APPEND _libs box3dmd)
@@ -191,9 +246,11 @@ function(eve_thirdparty_libs out_var)
             endif()
 
         elseif(g STREQUAL "xxhash")
-            # Only the WASM aggregate installs xxHash as a separate archive;
-            # elsewhere it is folded into the libraries that use it.
-            if(_emscripten)
+            if(_win_debug)
+                list(APPEND _libs xxHashmdd)
+            elseif(WIN32)
+                list(APPEND _libs xxHashmd)
+            else()
                 list(APPEND _libs xxHash)
             endif()
 

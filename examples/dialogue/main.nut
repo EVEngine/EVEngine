@@ -5,24 +5,32 @@
 //   eve.Avatar    ——  Image 分层人物（Live2D / VRoid API 见设计文档）
 //   eve.I18n      ——  对话文案走翻译表（locales/en.json, locales/zh.json）
 //
-// 剧情用 Squirrel generator 编写（yield "wait" / yield "choice"），
-// 不引入第二套脚本 DSL。
+// 剧情与 pool 来自一个版本化块式 dnut；Squirrel 只负责 UI 投影和输入。
 //
 // 操作：空格 / 鼠标左键 / 触屏 推进；选项阶段按 1 / 2。
 // 运行：make run/linux-debug GAME=examples/dialogue
 // ============================================================================
 
-if (!("dlg" in getroottable())) dlg <- null;
-if (!("i18n" in getroottable())) i18n <- eve.I18n();
-if (!("aliceAv" in getroottable())) aliceAv <- null;
-if (!("bobAv" in getroottable())) bobAv <- null;
-if (!("vnGen" in getroottable())) vnGen <- null;
-if (!("vnDone" in getroottable())) vnDone <- false;
-if (!("waitingResume" in getroottable())) waitingResume <- false;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
-if (!("uiReady" in getroottable())) uiReady <- false;
-if (!("curSceneName" in getroottable())) curSceneName <- "town";
-if (!("sceneReady" in getroottable())) sceneReady <- false;
+persist dlg = null
+persist i18n = eve.I18n()
+persist aliceAv = null
+persist bobAv = null
+persist vnDone = false
+persist presentedFlowNode = ""
+persist pendingCommandTime = 0.0
+persist restoredCommandOnce = false
+// mouse / touch 边沿检测仍用 prevKeys（edgePressed）。
+persist prevKeys = {}
+persist uiReady = false
+persist dialogueView = null
+// Nine-patch loading borrows the Image provider; keep it alive with the view.
+persist dialogueImages = null
+// Textures outlive the Avatar layers that borrow them.
+persist portraitTextures = {}
+persist viewStyle = 0
+persist viewTime = 0.0
+persist curSceneName = "town"
+persist sceneReady = false
 
 function edgePressed(key, down) {
     local was = (key in prevKeys) ? prevKeys[key] : false;
@@ -35,89 +43,77 @@ function keyPressed(name) {
 }
 
 function mouseClicked() {
-    return edgePressed("m0", mouse.isDown(0));
+    // 1 = 左键（与 engine mouse::isDown 一致）。
+    return edgePressed("m0", mouse.isDown(1));
 }
 
 function touchTapped() {
     return edgePressed("t0", touch.getTouchCount() > 0);
 }
 
-function makePortrait(kind, bodyR, bodyG, bodyB) {
+function makePortrait(name) {
+    if (!(name in portraitTextures))
+        portraitTextures[name] <- gfx.newTextureFromFile("assets/" + name + ".png");
     local av = avatar.newImageAvatar();
-    av.addLayer("body", null, 0);
-    av.addLayer("face", null, 1);
-    av.addLayer("blush", null, 2);
-    av.addLayer("mouthOpen", null, 3);  // lip-sync alpha driven by dialogue
-    av.setLayerSize("body", 140.0, 280.0);
-    av.setLayerSize("face", 90.0, 90.0);
-    av.setLayerSize("blush", 70.0, 40.0);
-    av.setLayerSize("mouthOpen", 36.0, 16.0);
-    av.setLayerOffset("face", 25.0, 30.0);
-    av.setLayerOffset("blush", 35.0, 70.0);
-    av.setLayerOffset("mouthOpen", 52.0, 95.0);
-    av.setLayerColor("body", bodyR, bodyG, bodyB, 1.0);
-    av.setLayerColor("face", 0.96, 0.86, 0.78, 1.0);
-    av.setLayerColor("blush", 0.95, 0.45, 0.55, 0.75);
-    av.setLayerColor("mouthOpen", 0.45, 0.12, 0.15, 0.0);
-    av.setLayerVisible("blush", false);
-    av.setLayerVisible("mouthOpen", false);
-    av.defineExpression("neutral", "blush=0");
-    av.defineExpression("happy", "blush=0");
-    av.defineExpression("shy", "blush=1");
+    av.addLayer("portrait", portraitTextures[name], 0);
+    av.setLayerSize("portrait", 256.0, 384.0);
+    av.setLayerOffset("portrait", -128.0, 0.0);
+    // This demo has one still per actor; expression names retain the same image.
+    av.defineExpression("neutral", "portrait=1");
+    av.defineExpression("happy", "portrait=1");
+    av.defineExpression("shy", "portrait=1");
     av.applyExpression("neutral");
-    av.setPosition(0.0, config.height - 320.0);
+    av.setPosition(0.0, 20.0);
     av.setLayer(20);
-    if (kind == "happy") {
-        av.setLayerColor("face", 0.98, 0.90, 0.72, 1.0);
-    }
     return av;
 }
 
-// ---- VN script: still Squirrel (generator), not a new language ----
-// 文案全部来自 i18n 翻译表（默认中文，按 数字键 1 / 2 切换语言）。
+// ---- Canonical dnut flow; Squirrel only projects the current node into UI. ----
 function tr(key, params = null) {
     if (params == null) return i18n.get(key);
     return i18n.getWithParams(key, params);
 }
 
-function scene_intro() {
-    dlg.show("alice", "left");
-    if (!dlg.playPool("alice.greet", { name = tr("name.player") }))
-        dlg.say("alice", tr("line.hello", { name = tr("name.player") }));
-    yield "wait";
+function reportFlowFailure(result, operation) {
+    if (result.ok) return false;
+    print("dialogue " + operation + " failed: " + result.status.summary + "\n");
+    return true;
+}
 
-    dlg.show("bob", "right");
-    if (!dlg.playPool("bob.greet", { name = tr("name.player") }))
-        dlg.say("bob", tr("line.intro"));
-    yield "wait";
-
-    dlg.setExpression("alice", "shy");
-    dlg.say("alice", tr("line.avatar"));
-    yield "wait";
-
-    dlg.narrate(tr("line.continue_ask"));
-    yield "wait";
-
-    dlg.clearChoices();
-    dlg.addChoice("yes", tr("choice.yes"));
-    dlg.addChoice("no", tr("choice.no"));
-    dlg.presentChoices();
-    yield "choice";
-
-    if (dlg.getSelectedChoiceId() == "yes") {
-        dlg.setExpression("alice", "happy");
-        dlg.setMotion("alice", "wave");
-        dlg.say("alice", tr("line.backends"));
-        yield "wait";
-        dlg.say("bob", tr("line.image_layers"));
-        yield "wait";
-    } else {
-        dlg.say("bob", tr("line.bye"));
-        yield "wait";
+function presentFlowNode() {
+    while (dialogueFlow.isActive() &&
+           (dialogueFlow.getNodeKind() == "branch" || dialogueFlow.getNodeKind() == "call")) {
+        local automatic = dialogueFlow.advanceChecked();
+        if (reportFlowFailure(automatic, "automatic node")) { vnDone = true; return; }
     }
-
-    dlg.narrate(tr("line.end"));
-    yield "wait";
+    if (!dialogueFlow.isActive()) { vnDone = true; return; }
+    local nodeId = dialogueFlow.getActiveConversationId() + "/" + dialogueFlow.getNodeId();
+    if (nodeId == presentedFlowNode) return;
+    presentedFlowNode = nodeId;
+    local kind = dialogueFlow.getNodeKind();
+    if (kind == "line") {
+        local speaker = dialogueFlow.getSpeaker();
+        if (speaker == "alice") dlg.show("alice", "left");
+        if (speaker == "bob") dlg.show("bob", "right");
+        local pool = dialogueFlow.getPool();
+        if (pool == "" || !dlg.playPool(pool, { name = tr("name.player") }))
+            dlg.say(speaker, dialogueFlow.getText());
+    } else if (kind == "choice") {
+        dlg.clearChoices();
+        for (local i = 0; i < dialogueFlow.getRouteCount(); ++i)
+            dlg.addChoice(dialogueFlow.getRouteId(i), dialogueFlow.getRouteText(i));
+        dlg.presentChoices();
+    } else if (kind == "wait") {
+        dlg.narrate("[wait] 点击继续");
+    } else if (kind == "command") {
+        pendingCommandTime = 0.8;
+        dlg.narrate("[async command] 正在准备资源…");
+        if (!restoredCommandOnce) {
+            local saved = dialogueFlow.captureStateJsonChecked();
+            local restored = saved.ok ? dialogueFlow.restoreStateJsonChecked(saved.value) : null;
+            restoredCommandOnce = restored != null && restored.ok;
+        }
+    }
 }
 
 function buildScenes() {
@@ -135,27 +131,11 @@ function buildScenes() {
 }
 
 function eve_asset_reload(path) {
-    // .dnut 属于内容资产：热重载时重新编译并注册台词池。
+    // Pools and conversations reload as one transaction; failure keeps the live workspace.
     if (path == "pools.dnut") {
-        dlg.loadPoolsFromDnutFile("pools.dnut");
-        print("dialogue pools reloaded: " + path + "\n");
-    }
-}
-
-function resumeVn() {
-    if (vnDone || vnGen == null) return;
-    try {
-        local r = resume vnGen;
-        if (r == null) {
-            vnDone = true;
-            waitingResume = false;
-            return;
-        }
-        waitingResume = true;
-    } catch (e) {
-        // generator finished
-        vnDone = true;
-        waitingResume = false;
+        local loaded = dialogueFlow.reloadDnutFileChecked("pools.dnut");
+        if (!loaded.ok || loaded.value <= 0) print("dialogue dnut reload rolled back: " + path + "\n");
+        else print("dialogue dnut workspace reloaded: " + path + "\n");
     }
 }
 
@@ -166,61 +146,66 @@ function startScene() {
     dlg.bindAvatar("alice", aliceAv);
     dlg.bindAvatar("bob", bobAv);
     dlg.setTypeSpeed(48.0);
-    dlg.setLipSyncEnabled(true);
-    dlg.setLipSyncParameter("mouthOpen");
-    dlg.setLipSyncAmplitude(0.9);
-    dlg.setSlotX("left", 0.22);
-    dlg.setSlotX("right", 0.78);
-    bobAv.setPosition(0.0, config.height - 320.0);
-    aliceAv.setPosition(0.0, config.height - 320.0);
+    dlg.setLipSyncEnabled(false);
+    dlg.setSlotX("left", 0.25);
+    dlg.setSlotX("right", 0.75);
+    bobAv.setPosition(0.0, 20.0);
+    aliceAv.setPosition(0.0, 20.0);
     aliceAv.setVisible(false);
     bobAv.setVisible(false);
-    vnGen = scene_intro();
     vnDone = false;
-    waitingResume = false;
-    resumeVn();
+    presentedFlowNode = "";
+    pendingCommandTime = 0.0;
+    restoredCommandOnce = false;
+    local started = dialogueFlow.startChecked("demo.main", {
+        playerName = tr("name.player"), evening = true
+    });
+    if (reportFlowFailure(started, "start")) { vnDone = true; return; }
+    presentFlowNode();
 }
 
+// Presentation is disposable; switching skins keeps the current line and choices.
 function buildUI() {
-    ui.beginBuild();
-    ui.beginWindow("Dialogue", "root");
-    ui.text("", "speaker");
-    ui.text("", "line");
-    ui.separator("sep");
-    ui.text("", "hint");
-    ui.text("", "c1");
-    ui.text("", "c2");
-    ui.end();
-    ui.mountBuildAs("dlgbox");
-    ui.select("dlgbox");
-    ui.setHostOverlay(true);
-    ui.setHostPos(config.width * 0.5, config.height - 12.0, 0.5, 1.0);
+    if (dialogueView == null)
+        dialogueView = make_default_dialogue_ui(dlg, dialogueUX, ui, "dlgbox");
+    local options = {
+        x = 40.0, y = 224.0, width = 864.0, height = 296.0,
+        hint = tr("hint.styles")
+    };
+    if (viewStyle == 0) options.skin <- "skins/moonlight.9.png";
+    else if (viewStyle == 1) {
+        options.skin <- "skins/letter.9.png";
+        options.x = 180.0;
+        options.width = 600.0;
+    } else {
+        options.x = 64.0;
+        options.y = 300.0;
+        options.width = 820.0;
+        // Script painting can animate, follow speakers, or draw scene-space bubbles.
+        // Text and accessible choice buttons remain ordinary UI widgets here.
+        options.drawBackground <- function(frame) {
+            local blue = frame.speakerId == "bob";
+            gfx.drawSolidRect(40.0, 276.0, 880.0, 244.0, 0.025, 0.06, 0.09, 0.94);
+            gfx.drawSolidRect(40.0, 276.0, 4.0, 244.0,
+                              blue ? 0.48 : 0.23, 0.82, blue ? 1.0 : 0.65, 1.0);
+            for (local i = 0; i < 24; ++i) {
+                local h = frame.typing ? 3.0 + (sin(viewTime * 9.0 + i * 0.8) + 1.0) * 7.0 : 3.0;
+                gfx.drawSolidRect(740.0 + i * 6.0, 290.0 - h * 0.5, 2.0, h, 0.3, 0.85, 0.72, 0.8);
+            }
+        };
+    }
+    dialogueView.setPresentation(options);
+    dialogueView.mount();
     uiReady = true;
 }
 
-function refreshUI() {
+function refreshUI(dt) {
     if (!uiReady) return;
+    dialogueView.update(dt);
     ui.select("dlgbox");
-    local speaker = dlg.getSpeakerName();
-    if (speaker == null || speaker == "") speaker = " ";
-    ui.setText("speaker", speaker);
-    ui.setText("line", dlg.getVisibleText());
-
-    if (dlg.isWaitingChoice()) {
-        local n = dlg.getChoiceCount();
-        local a = n > 0 ? ("[1] " + dlg.getChoiceLabel(0)) : "";
-        local b = n > 1 ? ("[2] " + dlg.getChoiceLabel(1)) : "";
-        ui.setText("c1", a);
-        ui.setText("c2", b);
-        ui.setText("hint", tr("hint.choose"));
-    } else {
-        ui.setText("c1", "");
-        ui.setText("c2", "");
-        local sceneInfo = sceneReady
-            ? ("  场景:" + curSceneName + " met=" + dlg.getVarBool("met", false, "scene") + "  [3]切场景")
-            : "";
-        ui.setText("hint", (vnDone ? tr("hint.restart") : tr("hint.advance")) + sceneInfo);
-    }
+    local action = dlg.isWaitingChoice() ? tr("hint.choose")
+                  : (vnDone ? tr("hint.restart") : tr("hint.advance"));
+    ui.setText("hint", action + "\n" + tr("hint.styles"));
 }
 
 function tryAdvance() {
@@ -234,19 +219,28 @@ function tryAdvance() {
     }
     if (dlg.isWaitingAdvance()) {
         dlg.advance();
-        resumeVn();
+        local advanced = dialogueFlow.advanceChecked();
+        if (!reportFlowFailure(advanced, "advance")) presentFlowNode();
         return;
+    }
+    if (dialogueFlow.getNodeKind() == "wait") {
+        local advanced = dialogueFlow.advanceChecked();
+        if (!reportFlowFailure(advanced, "wait")) presentFlowNode();
     }
 }
 
 function tryChoice(index) {
-    if (!dlg.isWaitingChoice()) return;
-    if (dlg.selectChoice(index)) resumeVn();
+    if (dialogueFlow.getNodeKind() != "choice") return;
+    local routeId = dialogueFlow.getRouteId(index);
+    if (dlg.isWaitingChoice()) dlg.selectChoice(index);
+    local selected = dialogueFlow.select(routeId);
+    if (!reportFlowFailure(selected, "select")) presentFlowNode();
 }
 
 function eve_init() {
-    gfx.setBackgroundColor(0.12, 0.14, 0.18, 1.0);
+    gfx.setBackgroundColor(0.20, 0.18, 0.19, 1.0);
     if (dlg == null) dlg = dialogue;
+    if (dialogueImages == null) dialogueImages = eve.Image();
     // 载入翻译表：en / zh，默认中文；1 / 2 键可切换（热重载开）。
     if (!i18n.hasLanguage("en")) {
         i18n.loadFromFile("en", "locales/en.json");
@@ -255,8 +249,15 @@ function eve_init() {
         i18n.setLanguage("zh");
         i18n.setAutoReload(true);
     }
-    // 程序化对话：.dnut 台词池 + 故事变量 + 脚本谓词。
-    dlg.loadPoolsFromDnutFile("pools.dnut");
+    // One versioned dnut transaction installs pools and conversations.
+    local loaded = dialogueFlow.loadDnutFileChecked("pools.dnut");
+    if (!loaded.ok || loaded.value <= 0)
+        throw "dialogue: failed to load canonical dnut workspace";
+    dialogueFlow.setLocale(i18n.getLanguage());
+    dialogueFlow.setManualCommandMode(true);
+    local evaluatorResult = dialogueFlow.setExpressionEvaluatorChecked(function(ctx) { return true; });
+    if (reportFlowFailure(evaluatorResult, "set expression evaluator"))
+        throw "dialogue: failed to install expression evaluator";
     dlg.setVar("name", tr("name.player"), "global");
     dlg.setVar("mood", "happy", "global");
     dlg.setVar("hour", 20, "global");
@@ -264,8 +265,8 @@ function eve_init() {
         return ctx.vars.hour >= 18;
     });
     buildScenes();
-    if (aliceAv == null) aliceAv = makePortrait("happy", 0.35, 0.55, 0.85);
-    if (bobAv == null) bobAv = makePortrait("neutral", 0.55, 0.40, 0.65);
+    if (aliceAv == null) aliceAv = makePortrait("alice");
+    if (bobAv == null) bobAv = makePortrait("bob");
     buildUI();
     startScene();
 }
@@ -278,17 +279,43 @@ function eve_update(dt) {
     if ("anim" in getroottable())
         anim.update(dt);
     i18n.update(dt);
-    // 语言热切换：1 = 英文，2 = 中文（重跑当前场景刷新文案）。
-    if (keyPressed("1") && i18n.setLanguage("en")) {
-        dlg.reset();
-        startScene();
+    viewTime += dt;
+    if (pendingCommandTime > 0.0) {
+        pendingCommandTime -= dt;
+        if (pendingCommandTime <= 0.0) {
+            local requestId = dialogueFlow.getPendingCommandRequestId();
+            local resumed = dialogueFlow.resumeCommandChecked(requestId, { ready = true });
+            if (!reportFlowFailure(resumed, "resume command")) presentFlowNode();
+        }
     }
-    if (keyPressed("2") && i18n.setLanguage("zh")) {
-        dlg.reset();
-        startScene();
+    if (keyPressed("4")) { viewStyle = 0; buildUI(); }
+    if (keyPressed("5")) { viewStyle = 1; buildUI(); }
+    if (keyPressed("6")) { viewStyle = 2; buildUI(); }
+    local picked = dialogueView.consumeChoice();
+    if (picked >= 0) tryChoice(picked);
+    // Sample each edge once: keyPressed() updates its edge-detection state.
+    local key1 = keyPressed("1");
+    local key2 = keyPressed("2");
+    local key3 = keyPressed("3");
+
+    // 1 / 2 select choices while a choice is active; otherwise they switch language.
+    if (dlg.isWaitingChoice()) {
+        if (key1) tryChoice(0);
+        if (key2) tryChoice(1);
+    } else {
+        if (key1 && i18n.setLanguage("en")) {
+            dialogueFlow.setLocale("en");
+            dlg.reset();
+            startScene();
+        }
+        if (key2 && i18n.setLanguage("zh")) {
+            dialogueFlow.setLocale("zh");
+            dlg.reset();
+            startScene();
+        }
     }
     // 3 = 切换场景：Dialogue 感知 Scene host 变化并自动清空 scene 变量区。
-    if (keyPressed("3")) {
+    if (key3) {
         curSceneName = (curSceneName == "town") ? "tavern" : "town";
         scene.select(curSceneName);
         dlg.setVar("met", true, "scene");
@@ -299,21 +326,22 @@ function eve_update(dt) {
     avatar.update(dt);
     dlg.syncStage(config.width.tofloat(), config.height.tofloat());
 
-    local clicked = mouseClicked() || keyPressed("Space") || keyPressed("Return") || touchTapped();
+    local pointerClick = mouseClicked();
+    local space = keyPressed("Space");
+    local enter = keyPressed("Return");
+    local tapped = touchTapped();
+    local clicked = pointerClick || space || enter || tapped;
 
-    if (dlg.isWaitingChoice()) {
-        if (keyPressed("1")) tryChoice(0);
-        if (keyPressed("2")) tryChoice(1);
-    } else if (clicked) {
+    if (picked < 0 && !dlg.isWaitingChoice() && clicked) {
         tryAdvance();
     }
 
-    refreshUI();
+    refreshUI(dt);
 }
 
 function eve_render() {
     gfx.clear();
-    // soft stage floor
-    gfx.drawSolidRect(0.0, config.height - 80.0, config.width.tofloat(), 80.0, 0.16, 0.18, 0.22, 1.0);
+    // The warm neutral stage keeps the portrait silhouettes readable.
     avatar.render(gfx);
+    dialogueView.render();
 }

@@ -1,16 +1,27 @@
 #pragma once
+#include "common/Export.h"
+
+
+#include "common/BorrowedRef.h"
+#include "common/Result.h"
+#include "common/Snapshot.h"
+#include "physics/Joint2D.h"
+#include "physics/PhysicsHandles.h"
+#include "physics/backend/SimulationBackend.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
-#include <unordered_set>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 class b2World;
 class b2Body;
 class b2Fixture;
+class b2Joint;
 class b2Contact;
-class b2Manifold;
+struct b2Manifold;
 struct b2ContactImpulse;
 
 namespace eve::graphics {
@@ -18,18 +29,21 @@ class Graphics;
 }
 
 namespace eve::physics {
+struct ForceStepState;
 
 class Body;
+class Joint2D;
 class Fixture;
 class ContactRelay;
-class DebugDraw;
+class Mechanism2D;
 
 /**
  * @brief Box2D world wrapper (2D physics) with pixel-space coordinates.
  * Handles stepping, gravity, raycasts, AABB queries and contact/impact events.
  */
-class World {
+class EVENGINE_API_WORLD World {
 public:
+    /** @brief ContactEvent public API. */
     struct ContactEvent {
         int bodyAId = 0;
         int bodyBId = 0;
@@ -46,13 +60,28 @@ public:
         float normalImpulse = 0.f;
         float tangentImpulse = 0.f;
     };
+
+    /**
+     * @brief Result of a point probe: deepest non-sensor fixture within radius.
+     * Normal points from the shape toward the probed point (pixels).
+     */
+    struct ClothContact {
+        bool   hit = false;
+        float  nx = 0.f;
+        float  ny = 0.f;
+        float  depth = 0.f;  // radius - distance (pixels); > 0 when inside
+        Body  *body = nullptr;
+    };
+
     /**
      * @brief Creates a physics world.
      * @param gravityX/gravityY  Gravity vector in pixels/s^2.
      * @param sleep              Whether bodies may sleep when idle.
      * @param meter              Pixels per meter conversion factor.
+     * @param instanceId Stable save/network identity; nil creates a process-local generated identity.
      */
-    World(float gravityX, float gravityY, bool sleep, float meter);
+    World(float gravityX, float gravityY, bool sleep, float meter,
+          eve::PersistentId instanceId = eve::PersistentId::nil());
     ~World();
 
     World(const World &)            = delete;
@@ -63,6 +92,75 @@ public:
     /** @brief Steps with explicit iteration counts. */
     void updateFull(float dt, int velocityIterations, int positionIterations);
 
+    /**
+     * @brief Advances the domain with an injected deterministic simulation step.
+     * @param step Tick and fixed duration supplied by SimulationClock or replay.
+     * @param settings Solver policy; the backend consumes it without hidden clamping.
+     * @return Applied when the step completed, or a structured rejection/failure.
+     * @remarks A rejected step leaves solver state and the current tick unchanged. Pending ForceBatch submissions
+     * require this exact tick/duration; failure retains them for retry, success completes their receipts.
+     * @thread Simulation owner only; stepping is non-reentrant.
+     */
+    [[nodiscard("check the physics step outcome or explicitly ignore it")]]
+    eve::Result<void> step(const eve::SimulationStep &step, const SimulationSettings &settings = {});
+
+    /** @brief Snapshot of completed backend steps and logical simulation time. */
+    [[nodiscard]] SimulationObservation simulationObservation() const noexcept;
+    /** @brief Selected CPU/GPU/mock backend family. */
+    [[nodiscard]] SimulationBackendKind backendKind() const noexcept;
+    /** @brief Replay/numeric guarantee declared by the selected backend. */
+    [[nodiscard]] SimulationDeterminism backendDeterminism() const noexcept;
+    /** @brief Current deterministic tick; save data should persist this value. */
+    [[nodiscard]] eve::SimulationTick simulationTick() const noexcept { return simulationTick_; }
+    /** @brief Process-local identity used by PhysicsLink; invalid after destruction. */
+    [[nodiscard]] PhysicsWorldHandle runtimeHandle() const noexcept { return runtimeHandle_; }
+    /**
+     * @brief Weak lifetime token for guarded cross-domain world observers.
+     * @return A weak token that expires before world teardown invalidates borrowed objects.
+     * @ownership The world owns the token; callers may retain only the weak projection.
+     * @lifetime Locking succeeds only while this wrapper is alive and has not been destroyed.
+     * @thread Acquire and lock on the owning physics thread; it is a lifetime guard, not a synchronization primitive.
+     * @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] std::weak_ptr<const void> lifetimeToken() const noexcept { return lifetime_; }
+    /** @brief Stable non-nil identity written to snapshot envelopes. */
+    [[nodiscard]] eve::PersistentId persistentId() const noexcept { return instanceId_; }
+    /** @brief Whether optional accelerator selection fell back to CPU. */
+    [[nodiscard]] bool usedBackendFallback() const noexcept { return backendFallback_; }
+    /**
+     * @brief Returns the selection outcome, including an absent-capability warning.
+     * @return A copy safe for logging or policy inspection.
+     */
+    [[nodiscard("inspect backend selection diagnostics")]]
+    eve::Status backendSelectionStatus() const;
+
+    /**
+     * @brief Captures a versioned, integrity-checked world snapshot.
+     * @param hashProvider Injected digest provider used to seal the envelope.
+     * @return A snapshot containing the exact SimulationTick, body state, fixture geometry and planar joint
+     * definitions.
+     * @remarks Schema v3 rejects unknown fields; v2 migrates with no joints. The provider is not retained; this call is
+     * owner-thread-only.
+     */
+    [[nodiscard("check or persist the physics snapshot")]]
+    eve::Result<eve::SnapshotEnvelope> snapshot(const eve::SnapshotHashProvider &hashProvider) const;
+
+    /**
+     * @brief Restores a verified snapshot without exposing partial state.
+     * @param snapshot Versioned envelope produced for this world schema.
+     * @param hashProvider Provider used to verify its content hash.
+     * @return Applied after replacing the live bodies and supported fixture geometry with the prepared snapshot state.
+     * @remarks The snapshot is borrowed for this call and runtime handles are
+     *          never persisted or reused from its payload. Preparation is detached and failure leaves the live world
+     * unchanged. Schema v3 reconstructs planar joints, supported fixture geometry/material/filter/tag and body
+     * damping/gravity/sleep. Mass is recomputed from fixture density. Raw backend mass overrides and edge fixtures are
+     * not represented. Solver warm-start impulses are not persisted; replay is tolerance-based.
+     * @lifetime Successful restore invalidates previous body, shape/fixture and joint wrappers and runtime handles.
+     *           Resolve links against the rebuilt world; rejected restore leaves existing wrappers valid.
+     */
+    [[nodiscard("check the physics snapshot restore outcome")]]
+    eve::Result<void> restore(const eve::SnapshotEnvelope &snapshot, const eve::SnapshotHashProvider &hashProvider);
+
     /** @brief Sets the world gravity vector in pixels/s^2. */
     void  setGravity(float gx, float gy);
     float getGravityX() const;
@@ -72,13 +170,165 @@ public:
     void  setMeter(float pixelsPerMeter);
     float getMeter() const { return meter_; }
 
-    /** @brief bodyType: "static" | "kinematic" | "dynamic". x/y in pixels. */
+    /**
+     * @brief Creates a body in pixel-space units.
+     * @return Borrowed nullable body owned by this world; null means creation failed.
+     * @ownership World owns the body and its fixtures; callers must destroy it through this API.
+     * @lifetime Valid until Body::destroy(), World::destroy(), or world teardown; use PhysicsBodyHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not re-enter structural world mutation while using the result.
+     */
     Body *newBody(const std::string &bodyType, float x, float y);
+    /** @brief Resolves a live body handle; returns null for a stale or foreign handle. */
+    [[nodiscard]] Body *findBody(PhysicsBodyHandle handle) const;
+    /** @brief Resolves a live body by its world-local stable event/query id. */
+    [[nodiscard]] Body *findBodyById(int bodyId) const;
+    /** @brief Resolves a live joint handle; returns null when stale or foreign. */
+    [[nodiscard]] Joint2D *findJoint(PhysicsJointHandle handle) const;
 
+    /**
+     * @brief Connects two pixel-space anchors with a distance constraint.
+     * @return Borrowed nullable joint owned by this world; null means creation failed.
+     * @ownership World owns the joint; body pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid bodies, anchors, length, or cross-world bodies.
+     */
+    Joint2D *newDistanceJoint(Body *bodyA, Body *bodyB, float anchorAX, float anchorAY,
+                              float anchorBX, float anchorBY, float lengthPixels,
+                              bool collideConnected = false);
+    /**
+     * @brief Creates a revolute hinge at a shared pixel-space anchor.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World owns the joint; body pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid/cross-world bodies or non-finite anchors.
+     */
+    Joint2D *newRevoluteJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY,
+                              bool collideConnected = false);
+    /**
+     * @brief Creates a prismatic slider along a pixel-space axis.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World owns the joint; body pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid bodies or a zero/non-finite axis.
+     */
+    Joint2D *newPrismaticJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY, float axisX,
+                               float axisY, bool collideConnected = false);
+    /**
+     * @brief Welds two bodies at a shared pixel-space anchor.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World owns the joint; body pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid/cross-world bodies or non-finite anchors.
+     */
+    Joint2D *newWeldJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY,
+                          bool collideConnected = false);
+    /**
+     * @brief Creates a wheel joint with a pixel-space suspension axis.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World owns the joint; body pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid bodies or a zero/non-finite axis.
+     */
+    Joint2D *newWheelJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY, float axisX,
+                           float axisY, bool collideConnected = false);
+    /**
+     * @brief Creates a motor joint that drives relative pose between bodies.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World owns the joint; body pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     * @throws eve::Exception for invalid/cross-world bodies.
+     */
+    Joint2D *newMotorJoint(Body *bodyA, Body *bodyB, bool collideConnected = false);
+    /**
+     * @brief Creates a gear joint that couples two revolute or prismatic joints.
+     * @return Borrowed nullable joint owned by this world.
+     * @ownership World owns the gear; joint1/joint2 are borrowed and must outlive the gear or be
+     *            destroyed first via Joint2D::destroy() / body teardown.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent joint/body destruction;
+     *           use PhysicsJointHandle across frames.
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks.
+     * @throws eve::Exception for invalid/cross-world joints or a zero/non-finite ratio.
+     */
+    Joint2D *newGearJoint(Joint2D *joint1, Joint2D *joint2, float ratio);
+
+    /**
+     * @brief Builds a shaft (support↔rotor revolute) with optional drive motor helpers.
+     * @return Borrowed mechanism owned by this world.
+     * @ownership World owns the mechanism and its joints; body pointers are borrowed inputs.
+     * @lifetime Valid until Mechanism2D::destroy() or World::destroy().
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     */
+    Mechanism2D *newShaft(Body *support, Body *rotor, float anchorX, float anchorY,
+                          bool collideConnected = false);
+    /**
+     * @brief Builds a one-way ratchet around a revolute hinge.
+     * @param direction Freewheel direction: +1 or -1.
+     * @param engagementTorque Maximum reverse-lock torque in newton-metres.
+     * @return Borrowed mechanism owned by this world.
+     * @ownership World owns the mechanism and its joints; body pointers are borrowed inputs.
+     * @lifetime Valid until Mechanism2D::destroy() or World::destroy().
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
+     */
+    Mechanism2D *newRatchet(Body *frame, Body *wheel, float anchorX, float anchorY, int direction,
+                            float engagementTorque, bool collideConnected = false);
+    /**
+     * @brief Builds a planar crank-slider from frame, crank, connecting rod and slider bodies.
+     * @return Borrowed mechanism owned by this world.
+     * @ownership World owns the mechanism and its joints; body pointers are borrowed inputs.
+     * @lifetime Valid until Mechanism2D::destroy() or World::destroy().
+     * @thread Call on the owning physics thread.
+     * @reentrancy Creation does not invoke callbacks; do not mutate the input bodies re-entrantly.
+     * @throws eve::Exception for invalid body chains or a zero/non-finite slide axis.
+     */
+    Mechanism2D *newCrankSlider(Body *frame, Body *crank, Body *rod, Body *slider,
+                                float crankAnchorX, float crankAnchorY, float crankPinX,
+                                float crankPinY, float sliderPinX, float sliderPinY,
+                                float slideAxisX, float slideAxisY, bool collideConnected = false);
+
+    /** @brief Resolve a persistent joint id in this world, including snapshot-created joints.
+     * @return Borrowed reference or StaleHandle when absent.
+     * @ownership Caller/VM owns created wrappers; this world owns restored wrappers.
+     * @lifetime Borrow only until joint/body/world destruction or successful restore. Use PhysicsJointLink across
+     * steps.
+     * @thread Simulation owner thread; no callbacks or reentrant mutations.
+     * @cost Linear in live planar joint count; resolve during link rebuilding, retain the resulting handle.
+     */
+    [[nodiscard]] ResultRef<Joint2D> resolveJoint2D(int id) const;
     /** @brief Destroys a body (null is ignored). */
     void destroyBody(Body *body);
     /** @brief Destroys the underlying Box2D world and resets event buffers. */
     void destroy();
+
+    /** @brief True while the underlying Box2D world is alive. */
+    bool isValid() const { return !destroyed_ && world_ != nullptr; }
+
+    /**
+     * @brief Probe the deepest non-sensor fixture within `radius` of a pixel point.
+     * Returns false when nothing is hit. Used by Cloth for particle-vs-body collision.
+     */
+    bool pointProbe(float x, float y, float radius, ClothContact *out) const;
 
     /** @brief Optional: draw fixture AABBs via Graphics::drawSolidRect. */
     void drawDebug(graphics::Graphics *gfx);
@@ -136,8 +386,23 @@ public:
     /** @brief Converts a meter-space length to pixels. */
     float toPixels(float meters) const;
 
-    /** @brief The underlying Box2D world (advanced use). */
+    /**
+     * @brief Exposes the underlying Box2D world for tightly-scoped backend integration.
+     * @return Borrowed nullable backend pointer; never transfer or retain it across steps.
+     * @ownership World owns the Box2D world; callers must not delete the returned pointer.
+     * @lifetime Valid until World::destroy() or wrapper destruction.
+     * @thread Call only on the owning physics thread.
+     * @reentrancy Does not invoke callbacks; backend mutation must not re-enter world callbacks.
+     */
     b2World *raw() { return world_; }
+    /**
+     * @brief Exposes the underlying Box2D world for read-only backend integration.
+     * @return Borrowed nullable backend pointer.
+     * @ownership World owns the Box2D world; callers must not delete it.
+     * @lifetime Valid until World::destroy() or wrapper destruction.
+     * @thread Call only on the owning physics thread.
+     * @reentrancy Does not invoke callbacks and is invalid across world mutation.
+     */
     const b2World *raw() const { return world_; }
 
     void onBeginContact(b2Contact *contact);
@@ -147,22 +412,71 @@ public:
 
     void forgetBody(Body *body);
     void forgetFixture(Fixture *fixture);
+    /** @brief Internal: removes a joint wrapper from ownership bookkeeping. */
+    void forgetJoint(Joint2D *joint);
+    /** @brief Internal: removes a mechanism wrapper from ownership bookkeeping. */
+    void forgetMechanism(Mechanism2D *mechanism);
 
     int nextBodyId();
+    PhysicsBodyHandle nextBodyRuntimeHandle();
+    /** @brief Internal: next generation-qualified joint handle. */
+    PhysicsJointHandle nextJointRuntimeHandle();
+    /** @brief Internal: next stable joint id. */
+    int nextJointId();
+    /** @brief Internal: next stable mechanism id. */
+    int nextMechanismId();
 
 private:
+    std::shared_ptr<ForceStepState> pendingForceStep_;
+    bool                            simulationStepActive_ = false;
+    [[nodiscard]] Result<void>      validateForceStep(const SimulationStep &step) const;
+    void                            finishForceStep() noexcept;
+    void                            cancelForceStep() noexcept;
+    friend struct WorldSnapshotAccess;
+    friend struct PortableWorldSnapshotAccess;
     friend class Body;
+    friend class ForceBatch;
+    friend class Joint2D;
+    friend struct PhysicsJointLink;
     friend class Fixture;
+    friend class Joint2D;
+    friend class Mechanism2D;
+
+    /**
+     * @brief Internal: wrap a newly created Box2D joint and register ownership.
+     * @return Borrowed joint owned by this world.
+     * @ownership World owns the returned joint; body/raw pointers are borrowed inputs.
+     * @lifetime Valid until Joint2D::destroy(), World::destroy(), or dependent body destruction.
+     */
+
+    void                                  releaseBodyJoints2D(Body &body);
+    void                                  invalidateJoints2D() noexcept;
+    std::vector<std::unique_ptr<Joint2D>> restoredJoints2D_;
+    std::vector<std::unique_ptr<Body>>    restoredBodies_;
+    std::vector<std::unique_ptr<Fixture>> restoredFixtures_;
 
     b2World      *world_ = nullptr;
     ContactRelay *relay_ = nullptr;
-    DebugDraw    *draw_  = nullptr;
+    std::unique_ptr<ISimulationBackend> simulation_;
+    PhysicsWorldHandle                  runtimeHandle_          = PhysicsWorldHandle::invalid();
+    std::shared_ptr<const void>         lifetime_               = std::make_shared<int>(0);
+    eve::PersistentId                   instanceId_             = eve::PersistentId::nil();
     float         meter_ = 30.f;
     int           nextId_ = 1;
+    int           nextJointId_ = 1;
+    int           nextMechanismId_ = 1;
+    std::uint32_t                       nextBodyHandleIndex_    = 1u;
+    std::uint32_t                       nextJointHandleIndex_   = 1u;
     bool          destroyed_ = false;
+    eve::SimulationTick                 simulationTick_         = eve::SimulationTick::zero();
+    eve::Status                         backendSelectionStatus_ = eve::Status::success();
+    bool                                backendFallback_        = false;
 
     std::unordered_set<Body *>    bodies_;
     std::unordered_set<Fixture *> fixtures_;
+    std::unordered_set<Joint2D *> joints_;
+    std::unordered_set<Mechanism2D *> mechanisms_;
+    std::unordered_map<PhysicsJointHandle, Joint2D *> jointHandles_;
 
     int   rayHitBodyId_   = -1;
     float rayHitX_        = 0.f;
@@ -184,6 +498,10 @@ private:
     std::vector<ContactEvent> beginContacts_;
     std::vector<ContactEvent> endContacts_;
     std::vector<ImpactEvent> impacts_;
+
+    [[nodiscard]] eve::Result<void> prepareRuntimeHandleRefresh(std::size_t incomingBodyCount) const;
+    void refreshRuntimeHandlesAfterRestore();
+    void adoptPreparedTopology(World &prepared);
 };
 
 }  // namespace eve::physics

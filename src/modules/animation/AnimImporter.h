@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <vector>
@@ -18,39 +20,55 @@ class AnimSkeleton;
 class AnimClip;
 
 /**
- * @brief Import AnimSkeleton / AnimClip from an Assimp scene (FBX/glTF/etc),
- * or from compact `.eva` text fixtures derived from those assets.
+ * @brief Animation import helpers.
+ *
+ * Compact `*.anim.txt` fixtures (export/import*) always link with the animation
+ * module. Assimp `aiScene` / ModelData loaders live in optional bridge TUs
+ * (`AnimImporterAssimp.cpp`, `AnimImporterModel.cpp`) compiled only when
+ * `OPTIONAL_DEPS model3d` is present.
  */
-class AnimImporter {
+class EVENGINE_API_WORLD AnimImporter {
 public:
-    /** @brief Build skeleton from the scene node hierarchy (depth-first). */
+    /**
+     * @brief Build skeleton from the scene node hierarchy (depth-first).
+     * @remarks Requires the model3d/Assimp bridge TU.
+     */
     static AnimSkeleton *loadSkeleton(const aiScene *scene);
 
-    /** @brief Load clip by index; maps node-name channels onto skeleton bones. */
+    /**
+     * @brief Load clip by index; maps node-name channels onto skeleton bones.
+     * @remarks Requires the model3d/Assimp bridge TU.
+     */
     static AnimClip *loadClip(const aiScene *scene, const AnimSkeleton *skeleton, int animIndex = 0);
 
-    /** @brief Convenience: ModelData wrappers (implemented in AnimImporterModel.cpp). */
+    /** @brief ModelData wrappers (AnimImporterModel.cpp; requires model3d). */
     static AnimSkeleton *loadSkeletonFromModel(const model3d::ModelData *model);
+    /** @brief Loads clip from model. */
     static AnimClip *loadClipFromModel(const model3d::ModelData *model, const AnimSkeleton *skeleton,
                                        int animIndex = 0);
+    /** @brief Returns the animation count from model. */
     static int         getAnimationCountFromModel(const model3d::ModelData *model);
+    /** @brief Returns the animation name from model. */
     static std::string getAnimationNameFromModel(const model3d::ModelData *model, int animIndex);
 
+    /** @brief Assimp scene helpers (AnimImporterAssimp.cpp; requires model3d). */
     static int         getAnimationCount(const aiScene *scene);
+    /** @brief Returns the animation name. */
     static std::string getAnimationName(const aiScene *scene, int animIndex);
 
     /**
      * @brief Serialize skeleton + clip to a compact text format (no mesh).
      * Used to ship Mixamo-derived test fixtures without redistributing skins.
      */
-    static std::string exportEva(const AnimSkeleton *skeleton, const AnimClip *clip);
+    static std::string exportAnimationFixtureText(const AnimSkeleton *skeleton, const AnimClip *clip);
 
-    /** @brief Load skeleton+clip from exportEva text (new'd; caller owns). */
-    static void importEva(const std::string &text, AnimSkeleton **skeletonOut, AnimClip **clipOut);
+    /** @brief Load skeleton+clip from fixture text (new'd; caller owns). */
+    static void importAnimationFixtureText(const std::string &text, AnimSkeleton **skeletonOut,
+                                           AnimClip **clipOut);
 
-    /** @brief Load from `.eva` file path. */
-    static void importEvaFile(const std::string &path, AnimSkeleton **skeletonOut,
-                              AnimClip **clipOut);
+    /** @brief Load from an `*.anim.txt` fixture path. */
+    static void importAnimationFixtureTextFile(const std::string &path, AnimSkeleton **skeletonOut,
+                                               AnimClip **clipOut);
 
 private:
     static void collectBones(const aiNode *node, int parent, AnimSkeleton *skeleton,

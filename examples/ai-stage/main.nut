@@ -10,7 +10,9 @@
 // is baked into the engine from src/scripts/scene_director.nut.
 if ("sceneDirectorScript" in eve && eve.sceneDirectorScript != "") {
     try {
-        compilestring(eve.sceneDirectorScript)();
+        local fn = compilestring(eve.sceneDirectorScript);
+        if (fn != null) fn();
+        else print("scene_director install failed: compilestring returned null\n");
     } catch (e) {
         print("scene_director install failed: " + e + "\n");
     }
@@ -22,26 +24,28 @@ if ("sceneDirectorScript" in eve && eve.sceneDirectorScript != "") {
     }
 }
 
-if (!("sd" in getroottable())) sd <- null;
+persist scene_director = null
+persist sd = null
 if (scene_director != null) sd = scene_director;
 
 // Minimal default stage so the window is never empty before an agent builds.
 if (sd != null) {
-    sd.reset();
-    sd.spawn({
+    sd_require(sd.reset());
+    sd_require(sd.spawn({
         id = "terrain", kind = "ground",
         pos = [0.0, 0.0, 0.0],
         scale = [40.0, 1.0, 40.0],
         tint = [0.40, 0.45, 0.42],
         roughness = 0.95,
-    });
-    sd.set_lighting({ timeOfDay = "day", atmosphere = "clear", intensity = 1.0 });
-    sd.camera({ eye = [0.0, 10.0, 20.0], target = [0.0, 1.0, 0.0], fov = 55.0 });
+    }));
+    sd_require(sd.set_lighting({ timeOfDay = "day", atmosphere = "clear", intensity = 1.0 }));
+    sd_require(sd.camera({ eye = [0.0, 10.0, 20.0], target = [0.0, 1.0, 0.0], fov = 55.0 }));
 } else {
     gfx.setBackgroundColor(0.10, 0.13, 0.19, 1.0);
 }
 
 function eve_update(dt) {
+    if (sd != null) sd_require(sd.refresh());
     // Idle host: agents drive the scene over MCP (eve_scene_modify / camera /
     // screenshot). Nothing to tick here.
 }
@@ -49,4 +53,5 @@ function eve_update(dt) {
 function eve_render() {
     gfx.clear();
     gfx.render3D();
+    if (sd != null) sd.mark_rendered();
 }

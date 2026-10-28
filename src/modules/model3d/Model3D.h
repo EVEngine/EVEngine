@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "model3d/ModelData.h"
@@ -38,11 +40,13 @@ struct ModelLoadOptions {
  * @brief Resource module for decoding 3D models via medialoader (Assimp).
  * Produces ModelData; GPU upload is graphics' responsibility.
  */
-class Model3D : public Module {
+class EVENGINE_API_WORLD Model3D : public Module {
 public:
     Module_REG(Model3D);
 
+    /** @brief Model 3 d. */
     Model3D();
+    /** @brief Model 3 d. */
     ~Model3D() override;
 
     /**
@@ -65,14 +69,63 @@ public:
     /** @brief newModelDataFromFile with explicit decode options. */
     ModelData *newModelDataFromFile(std::string path, const ModelLoadOptions &options);
 
+    /** @brief Queue default-option model decoding on the engine resource worker pool.
+     * @param path VFS model
+     * path, copied into the cache request.
+     * @return Success means queued/already cached, not decoded;
+     * InvalidArgument for an empty path,
+     * Unsupported without a worker executor, or the resource request
+     * diagnostic.
+     * @ownership ResourceManager owns pending work and decoded data; no model pointer is returned.
+
+     * * @lifetime A later newModelDataFromFile joins the same cache entry and reports decode failure.
+     * Cache
+     * unload/clear follows ResourceManager's epoch and lifetime contract.
+     * @thread Call on the game thread.
+     * Workers perform CPU decode only; no script or GPU calls.
+     * @reentrancy Invokes no script callbacks; do not
+     * synchronously wait from the same worker pool.
+     */
+    [[nodiscard]] eve::Result<void> requestModelData(const std::string &path);
+
+    /** @brief Queue CPU decoding with explicit postprocess options, copied into the cache key.
+     * @param path VFS
+     * path copied before submission.
+     * @param options Decode settings; the later read must use identical settings
+     * to join this job.
+     * @return Submission result. Ownership, thread affinity and lifetime match
+     * requestModelData(path).
+     */
+    [[nodiscard]] eve::Result<void> requestModelData(const std::string &path, const ModelLoadOptions &options);
+
     /**
      * Assemble one Renderable3D for a mesh of a decoded model: node transform
      * baked into vertices, material base color / metallic / roughness applied,
      * and albedo / normal / height textures loaded (embedded or through the
      * VFS). Script-friendly counterpart of the C++ buildRenderable helpers.
      */
+    /** @brief Creates renderable. */
     graphics::Renderable3D *createRenderable(graphics::Graphics *gfx, ModelData *model,
                                              int meshIndex);
+
+    /**
+     * @brief Prepare one default-imported renderable for native PBR vegetation motion.
+     * @param model Borrowed decoded model.
+     * @param meshIndex Matching imported mesh index.
+     * @param renderable Borrowed renderable returned by createRenderable for that index.
+     * @return Success or InvalidArgument; failure preserves the mesh stream.
+     * @ownership Retains nothing; call on the render thread before submitting the prototype.
+     * @cost O(vertex count) and nine persistent floats per vertex; intended as a one-time prototype build step.
+     */
+    [[nodiscard]] eve::Result<void> prepareFoliageDeformation(ModelData *model, int meshIndex,
+                                                              graphics::Renderable3D *renderable);
+
+    /**
+     * @brief Pack a self-contained source model (normally GLB or embedded FBX) into
+     * EVEngine's deterministic .evmodel envelope for deployment.
+     * @return False when the source cannot be read or the destination cannot be written.
+     */
+    bool bakeModel(const std::string &sourcePath, const std::string &destinationPath);
 };
 
 }  // namespace model3d

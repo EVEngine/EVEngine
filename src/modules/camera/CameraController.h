@@ -1,17 +1,54 @@
 #pragma once
+#include "common/Export.h"
 
+
+#include "action/ActionCameraBlock.h"
 #include "common/Module.h"
+#include "common/Result.h"
+#include "common/PcgPhotoModeApply.h"
 
 #include <glm/glm.hpp>
 
 #include <string>
+#include <cstdint>
+#include <deque>
 #include <vector>
 
 namespace eve::graphics {
 class Camera3D;
 }
+namespace eve::platform_event {
+class PlatformEvent;
+}
+namespace eve::scene {
+class SceneNodeRef;
+}
 
 namespace eve::camera {
+
+/** @brief Complete Pcg photo-mode post-processing state retained across render-pipeline projections. */
+struct PcgPhotoModePostFxState {
+    float postFxExposure = 13.5f;
+    int64_t postFxExposureMode = 0;
+    bool depthOfFieldActive = true;
+    bool autoDepthOfFieldFocus = true;
+    float focusDistance = 100.f;
+    float aperture = 16.f;
+    float focalLength = 50.f;
+    int64_t kernelSize = 1;
+    int64_t savedFocusMode = 0;
+    int64_t focusModeHdrp = 0;
+    int64_t focusModeUrp = 0;
+    int64_t qualityHdrp = 1;
+    float nearBlurStart = 0.f;
+    float nearBlurEnd = 0.1f;
+    float farBlurStart = 200.f;
+    float farBlurEnd = 2000.f;
+    float blurStartUrp = 2.f;
+    float blurEndUrp = 1000.f;
+    float maximumBlurRadius = 1.f;
+    bool highQualityUrp = false;
+};
 
 /**
  * @brief 3D 摄像机控制器（eve.Camera / eve.CameraController）。
@@ -22,102 +59,375 @@ namespace eve::camera {
  *   - topdown     俯视（从 target 正上方往下拍）
  *   - firstperson 第一人称（eye 位于 target，用 yaw/pitch 控制朝向）
  *   - cinematic   过场/自动切换视角（在一组命名 View 之间平滑插值）
+ *   - lockon      锁定：看向 target 与 secondaryTarget 中点，站在玩家身后
  *
  * 所有行为都经过统一的指数阻尼平滑（setSmooth，对应"平滑移动"），
  * 也支持 maxSpeed 限速避免抖动，snap() 可立即到位不做平滑。
  */
-class CameraController {
+class EVENGINE_API_WORLD CameraController : public action::IActionCameraCueSink, public IPhotoModeFieldSink {
 public:
+    /** @brief Camera controller. */
     CameraController();
-    ~CameraController() = default;
+    /** @brief Camera controller. */
+    ~CameraController() override;
+
+    /** @brief Opt this controller into or out of action camera-cue dispatch. */
+    void setActionCuesEnabled(bool enabled);
+    /** @brief Return whether this controller is currently registered for action cues. */
+    [[nodiscard]] bool getActionCuesEnabled() const;
+    /** @brief Accept every project-defined camera cue while explicitly enabled. */
+    [[nodiscard]] bool supports(const LogicalId& cue) const noexcept override;
+    /** @brief Convert one action cue into deterministic positional, rotational and FOV impulses. */
+    [[nodiscard]] Result<void> trigger(const action::ActionCameraCueBinding& binding,
+                                       const action::ActionNotifyContext& context) override;
 
     // --- 绑定要驱动的摄像机 ---
-    void setCamera(graphics::Camera3D *cam);
-    graphics::Camera3D *getCamera() const;
+    /** @brief Sets the camera. */
+    void                setCamera(graphics::Camera3D* cam);
+    /** @brief Returns the camera. */
+    graphics::Camera3D* getCamera() const;
 
     // --- 目标 / 观察锚点 ---
+    /** @brief Sets the target. */
     void setTarget(float x, float y, float z);
+    /** @brief Follow a stable scene-node handle. nullptr restores explicit coordinates. */
+    void  setTargetNode(scene::SceneNodeRef* node);
+    /** @brief Returns the target x. */
     float getTargetX() const;
+    /** @brief Returns the target y. */
     float getTargetY() const;
+    /** @brief Returns the target z. */
     float getTargetZ() const;
     /** @brief follow：摄像机相对 target 的偏移（默认 (0, 2, 6)）。 */
     void setOffset(float x, float y, float z);
     /** @brief follow：额外的视线前移点（可让镜头看向玩家前方）。 */
     void setLookAhead(float x, float y, float z);
+    /**
+     * @brief Store a world-space lock-on look target for mode "lockon".
+     * @remarks Combat uniquely owns lock identity; this controller only retains coordinates for one apply.
+     */
+    void setSecondaryTarget(float x, float y, float z);
+    /** @brief Forget the lock-on look target; lockon then falls back to offset/yaw follow. */
+    void clearSecondaryTarget();
+    /** @brief Return whether a lock-on look target is currently stored. */
+    [[nodiscard]] bool hasSecondaryTarget() const noexcept { return hasSecondaryTarget_; }
+    float              getSecondaryTargetX() const;
+    /** @brief Returns the secondary target y. */
+    float              getSecondaryTargetY() const;
+    /** @brief Returns the secondary target z. */
+    float              getSecondaryTargetZ() const;
 
     // --- 视角模式 ---
-    void setMode(const std::string &mode);
+    /** @brief Sets the mode. */
+    void        setMode(const std::string& mode);
+    /** @brief Returns the mode. */
     std::string getMode() const;
 
     // --- orbit / topdown 参数 ---
-    void setRadius(float r);               // orbit 半径 / topdown 高度
-    void setAzimuth(float deg);            // orbit 方位角
-    void setElevation(float deg);          // orbit 仰角
-    void setOrbitSpeed(float degPerSec);   // 自动盘旋转速
+    /** @brief Sets the radius. */
+    void setRadius(float r);              // orbit 半径 / topdown 高度
+    /** @brief Return the current orbit radius. */ float getRadius() const { return radius_; }
+    /** @brief Set inclusive orbit zoom limits atomically. */
+    [[nodiscard]] Result<void> setRadiusLimits(float minimum, float maximum);
+    /** @brief Return the minimum orbit radius. */ float getMinimumRadius() const { return minimumRadius_; }
+    /** @brief Return the maximum orbit radius. */ float getMaximumRadius() const { return maximumRadius_; }
+    /** @brief Sets the azimuth. */
+    void setAzimuth(float deg);           // orbit 方位角
+    /** @brief Sets the elevation. */
+    void setElevation(float deg);         // orbit 仰角
+    /** @brief Sets the orbit speed. */
+    void setOrbitSpeed(float degPerSec);  // 自动盘旋转速
 
     // --- firstperson 参数 ---
+    /** @brief Sets the yaw. */
     void setYaw(float deg);
+    /** @brief Sets the pitch. */
     void setPitch(float deg);
+    /** @brief Applies device-independent yaw, pitch and zoom deltas. */
+    void addInput(float yawDeltaDeg, float pitchDeltaDeg, float zoomDelta);
+
+    /** @brief Register or revoke this controller as the sole photo-mode camera authority. */
+    void setPhotoModeAuthority(bool enabled);
+    /** @brief Return whether this controller currently publishes photo-mode camera fields. */
+    bool getPhotoModeAuthority() const noexcept{return photoModeAuthority_;}
+    /** @brief Return whether this controller owns a photo-mode camera assignment. */
+    PhotoModeFieldAcceptance acceptsPhotoModeField(const PhotoModeAssignment& assignment) const noexcept override;
+    /** @brief Apply one camera assignment atomically to this controller and its bound Camera3D. */
+    [[nodiscard]] Result<void> applyPhotoModeField(const PhotoModeAssignment& assignment) override;
+    /** @brief Set finite camera roll in degrees. */
+    [[nodiscard]] Result<void> setCameraRoll(float degrees);
+    /** @brief Return current camera roll in degrees. */
+    float getCameraRoll() const noexcept{return cameraRollDeg_;}
+    /** @brief Return Pcg's signed culling-distance adjustment. */
+    float getPcgCullingDistance() const noexcept{return pcgCullingDistance_;}
+    /** @brief Return the complete retained Pcg post-processing state. */
+    const PcgPhotoModePostFxState& getPcgPostFxState() const noexcept{return pcgPostFxState_;}
+    // --- framing / lens ---
+    /** @brief Screen-space composition offset, expressed as normalized view fractions. */
+    void setComposition(float screenX, float screenY);
+    /** @brief Dead-zone radius in world units around the tracked target. */
+    void  setDeadZone(float radius);
+    /** @brief Sets the fov. */
+    void  setFov(float degrees);
+    /** @brief Returns the fov. */
+    float getFov() const;
 
     // --- 平滑 ---
-    void setSmooth(float damping);         // 每秒指数阻尼，越大越跟手
-    void setMaxSpeed(float unitsPerSec);   // 0 = 不限速
-    void snap();                           // 立即应用当前目标视角
+    /** @brief Sets the smooth. */
+    void setSmooth(float damping);  // 每秒指数阻尼，越大越跟手
+    /** @brief Sets the position smooth. */
+    void setPositionSmooth(float damping);
+    /** @brief Sets the target smooth. */
+    void setTargetSmooth(float damping);
+    /** @brief Sets the max speed. */
+    void setMaxSpeed(float unitsPerSec);  // 0 = 不限速
+    /** @brief Snap. */
+    void snap();                          // 立即应用当前目标视角
+
+    // --- obstruction / collision ---
+    /** @brief Enables swept-sphere obstruction against boxes registered below. */
+    void setCollisionEnabled(bool enabled);
+    /** @brief Sets the collision radius. */
+    void setCollisionRadius(float radius);
+    /** @brief Sets the collision recovery. */
+    void setCollisionRecovery(float damping);
+    /** @brief Sets the Box3D category mask used by dynamic obstruction queries. */
+    void setCollisionMask(uint64_t maskBits);
+    /** @brief Excludes one Box3D body id, normally the followed player body. */
+    void setCollisionIgnoredBody(int bodyId);
+    /** @brief Clears collision boxes. */
+    void clearCollisionBoxes();
+    /** @brief Adds collision box. */
+    void addCollisionBox(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
+    /** @brief True when obstructed. */
+    bool isObstructed() const;
+    /** @brief Returns the collision body id. */
+    int  getCollisionBodyId() const;
+
+    // --- camera rigs / director ---
+    /** @brief Adds rig. */
+    bool addRig(const std::string& name, const std::string& mode, int priority);
+    /** @brief Removes rig. */
+    bool removeRig(const std::string& name);
+    /** @brief Sets the rig priority. */
+    bool setRigPriority(const std::string& name, int priority);
+    /** @brief Sets the rig enabled. */
+    bool setRigEnabled(const std::string& name, bool enabled);
+    /** @brief Stores the controller's current framing/lens parameters in a rig preset. */
+    bool        saveRigState(const std::string& name);
+    /** @brief Activate rig. */
+    bool        activateRig(const std::string& name, float blendTime);
+    /** @brief Returns the active rig. */
+    std::string getActiveRig() const;
+
+    // --- additive modifiers ---
+    /** @brief Adds a damped positional/rotational camera impulse. */
+    void addImpulse(float positionAmplitude, float rotationAmplitude, float duration, unsigned int seed = 0);
+    /** @brief Adds fov impulse. */
+    void addFovImpulse(float degrees, float duration);
+    /** @brief Clears impulses. */
+    void clearImpulses();
 
     // --- cinematic / 自动切换视角 ---
-    void addView(const std::string &name, float ex, float ey, float ez,
-                 float tx, float ty, float tz);
-    bool switchTo(const std::string &name, float blendTime);
-    void playSequence(float stepTime);     // 每隔 stepTime 秒切换到下一个 View
+    /** @brief Adds view. */
+    void addView(const std::string& name, float ex, float ey, float ez, float tx, float ty, float tz);
+    /** @brief Switch to. */
+    bool switchTo(const std::string& name, float blendTime);
+    /** @brief Play sequence. */
+    void playSequence(float stepTime);  // 每隔 stepTime 秒切换到下一个 View
+    /** @brief Stops sequence. */
     void stopSequence();
+    /** @brief True when playing. */
     bool isPlaying() const;
 
+    // --- timeline / events ---
+    /** @brief Clears timeline. */
+    void        clearTimeline();
+    /** @brief Adds timeline cut. */
+    bool        addTimelineCut(float time, const std::string& rigName, float blendTime);
+    /** @brief Adds timeline event. */
+    bool        addTimelineEvent(float time, const std::string& name, const std::string& data);
+    /** @brief Adds a linearly interpolated camera property key. */
+    bool        addTimelineFloat(float time, const std::string& property, float value);
+    /** @brief Sets the event sink. */
+    void        setEventSink(platform_event::PlatformEvent* sink);
+    /** @brief Play timeline. */
+    void        playTimeline(bool loop);
+    /** @brief Pause timeline. */
+    void        pauseTimeline();
+    /** @brief Stops timeline. */
+    void        stopTimeline();
+    /** @brief Seeks timeline. */
+    void        seekTimeline(float time, bool fireEvents = false);
+    /** @brief True when timeline playing. */
+    bool        isTimelinePlaying() const;
+    /** @brief Returns the timeline time. */
+    float       getTimelineTime() const;
+    /** @brief Consume timeline event. */
+    std::string consumeTimelineEvent();
+    /** @brief Returns the timeline event data. */
+    std::string getTimelineEventData() const;
+    /** @brief Returns the pending timeline event count. */
+    int         getPendingTimelineEventCount() const;
+    /** @brief Returns the timeline duration. */
+    float       getTimelineDuration() const;
+    /** @brief Returns the rig count. */
+    int         getRigCount() const;
+    /** @brief Serializes rigs and timeline data as a versioned JSON asset. */
+    std::string serializeAsset() const;
+    /** @brief Replaces rigs and timeline data from a versioned JSON asset. */
+    bool        deserializeAsset(const std::string& json);
+
     // --- 每帧驱动 ---
+    /** @brief Updates . */
     void update(float dt);
 
 private:
     struct View {
         std::string name;
-        glm::vec3 eye{0.f};
-        glm::vec3 target{0.f};
+        glm::vec3   eye{0.f};
+        glm::vec3   target{0.f};
+        float       fov = 60.f;
     };
 
-    View desired() const;
-    void applyView(const View &v);
-    void easeToward(const View &v, float dt);
+    struct Rig {
+        std::string name;
+        std::string mode;
+        int         priority = 0;
+        bool        enabled  = true;
+        glm::vec3   target{0.f};
+        glm::vec3   offset{0.f, 2.f, 6.f};
+        glm::vec3   lookAhead{0.f};
+        glm::vec2   composition{0.f};
+        float       radius    = 10.f;
+        float       azimuth   = 45.f;
+        float       elevation = 30.f;
+        float       yaw       = 0.f;
+        float       pitch     = 0.f;
+        float       fov       = 60.f;
+        float       smooth    = 6.f;
+        float       maxSpeed  = 0.f;
+    };
 
-    graphics::Camera3D *cam_ = nullptr;
+    struct CollisionBox {
+        glm::vec3 min{0.f};
+        glm::vec3 max{0.f};
+    };
+    struct Impulse {
+        float        positionAmplitude = 0.f;
+        float        rotationAmplitude = 0.f;
+        float        duration          = 0.f;
+        float        age               = 0.f;
+        unsigned int seed              = 0;
+        float        fovAmplitude      = 0.f;
+    };
+    struct TimelineCut {
+        float       time = 0.f;
+        std::string rig;
+        float       blend = 0.f;
+        bool        fired = false;
+    };
+    struct TimelineEvent {
+        float       time = 0.f;
+        std::string name;
+        std::string data;
+        bool        fired = false;
+    };
+    struct TimelineFloat {
+        float       time = 0.f;
+        std::string property;
+        float       value = 0.f;
+    };
+
+    View        desired() const;
+    void        applyView(const View& v);
+    void        easeToward(const View& v, float dt);
+    void        updateTrackedTarget();
+    void        updateDirector();
+    void        applyCollision(View& v, float dt);
+    void        applyModifiers(View& v, float dt);
+    void        updateTimeline(float dt);
+    void        evaluateTimelineFloats();
+    void        emitTimelineEvent(const TimelineEvent& marker);
+    static bool validMode(const std::string& mode);
+    [[nodiscard]] Result<void> applyPcgPostFx(const PhotoModeAssignment& assignment);
+    void projectPcgPostFx();
+
+    graphics::Camera3D* cam_ = nullptr;
+    bool photoModeAuthority_ = false;
+    float cameraRollDeg_ = 0.f;
+    float pcgCullingDistance_ = 0.f;
+    PcgPhotoModePostFxState pcgPostFxState_{};
 
     std::string mode_ = "follow";
 
-    glm::vec3 target_{0.f, 0.f, 0.f};
-    glm::vec3 offset_{0.f, 2.f, 6.f};
-    glm::vec3 lookAhead_{0.f, 0.f, 0.f};
+    glm::vec3   target_{0.f, 0.f, 0.f};
+    std::string targetNodeHost_;
+    std::string targetNodeId_;
+    glm::vec3   offset_{0.f, 2.f, 6.f};
+    glm::vec3   lookAhead_{0.f, 0.f, 0.f};
+    glm::vec3   secondaryTarget_{0.f};
+    bool        hasSecondaryTarget_ = false;
 
-    float radius_ = 10.f;
-    float azimuthDeg_ = 45.f;
-    float elevationDeg_ = 30.f;
+    float radius_        = 10.f;
+    float minimumRadius_ = 0.01f;
+    float maximumRadius_ = 100000.f;
+    float azimuthDeg_    = 45.f;
+    float elevationDeg_  = 30.f;
     float orbitSpeedDeg_ = 20.f;
 
-    float yawDeg_ = 0.f;
-    float pitchDeg_ = 0.f;
+    float     yawDeg_   = 0.f;
+    float     pitchDeg_ = 0.f;
+    glm::vec2 composition_{0.f};
+    float     deadZone_ = 0.f;
+    glm::vec3 deadZoneTarget_{0.f};
+    bool      deadZoneInitialized_ = false;
+    float     fovDeg_              = 60.f;
 
-    float smooth_ = 6.f;
-    float maxSpeed_ = 0.f;
-    bool  initialized_ = false;
+    float smooth_         = 6.f;
+    float positionSmooth_ = 6.f;
+    float targetSmooth_   = 6.f;
+    float maxSpeed_       = 0.f;
+    bool  initialized_    = false;
     View  cur_{};
+
+    bool                      collisionEnabled_  = false;
+    float                     collisionRadius_   = 0.25f;
+    float                     collisionRecovery_ = 4.f;
+    float                     collisionDistance_ = -1.f;
+    bool                      obstructed_        = false;
+    uint64_t                  collisionMask_     = UINT64_MAX;
+    int                       collisionIgnoredBody_ = -1;
+    int                       collisionBodyId_      = -1;
+    std::vector<CollisionBox> collisionBoxes_;
+
+    std::vector<Rig>     rigs_;
+    std::string          activeRig_;
+    bool                 directorEnabled_ = false;
+    std::vector<Impulse> impulses_;
 
     // cinematic
     std::vector<View> views_;
-    int   viewIndex_ = -1;
-    bool  playing_ = false;
-    float stepTime_ = 3.f;
-    float timer_ = 0.f;
-    bool  blending_ = false;
-    View  blendFrom_{};
-    View  blendTo_{};
-    float blendT_ = 0.f;
-    float blendDur_ = 1.f;
+    int               viewIndex_ = -1;
+    bool              playing_   = false;
+    float             stepTime_  = 3.f;
+    float             timer_     = 0.f;
+    bool              blending_  = false;
+    View              blendFrom_{};
+    View              blendTo_{};
+    float             blendT_   = 0.f;
+    float             blendDur_ = 1.f;
+
+    std::vector<TimelineCut>   timelineCuts_;
+    std::vector<TimelineEvent> timelineEvents_;
+    std::vector<TimelineFloat> timelineFloats_;
+    platform_event::PlatformEvent*                  eventSink_        = nullptr;
+    float                      timelineTime_     = 0.f;
+    float                      timelineDuration_ = 0.f;
+    bool                       timelinePlaying_  = false;
+    bool                       timelineLoop_     = false;
+    std::deque<std::pair<std::string, std::string>> pendingTimelineEvents_;
+    std::string                consumedTimelineEventData_;
 };
 
 /**
@@ -126,7 +436,9 @@ private:
 class Camera : public Module {
 public:
     Module_REG(Camera);
-    Camera() = default;
+    /** @brief Constructs a Camera. */
+    Camera()           = default;
+    /** @brief Releases Camera resources. */
     ~Camera() override = default;
 };
 

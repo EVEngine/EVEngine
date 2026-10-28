@@ -25,22 +25,23 @@ File::~File() {
     if (mode != "c") close();
 }
 
-bool File::open(std::string mode) {
-    if (mode == "c") return true;
+bool File::open(std::string requestedMode) {
+    if (requestedMode == "c") return true;
 
     // Love-style aliases → PhysFS binary modes.
-    if (mode == "r") mode = "rb";
-    else if (mode == "w") mode = "wb";
-    else if (mode == "a") mode = "ab";
+    if (requestedMode == "r") requestedMode = "rb";
+    else if (requestedMode == "w") requestedMode = "wb";
+    else if (requestedMode == "a") requestedMode = "ab";
 
     if (!PHYSFS_isInit()) throw Exception("PhysFS is not initialized.");
 
     // File must exist if read mode.
-    if ((mode == "rb") && !PHYSFS_exists(filename.c_str()))
+    if ((requestedMode == "rb") && !PHYSFS_exists(filename.c_str()))
         throw Exception("Could not open file %s. Does not exist.", filename.c_str());
 
     // Check whether the write directory is set.
-    if ((mode == "ab" || mode == "wb") && (PHYSFS_getWriteDir() == nullptr) && !hack_setupWriteDirectory())
+    if ((requestedMode == "ab" || requestedMode == "wb") &&
+        (PHYSFS_getWriteDir() == nullptr) && !hack_setupWriteDirectory())
         throw Exception("Could not set write directory.");
 
     // File already open?
@@ -49,11 +50,11 @@ bool File::open(std::string mode) {
     PHYSFS_getLastErrorCode();
     PHYSFS_File *handle = nullptr;
 
-    if (mode == "rb") handle = PHYSFS_openRead(filename.c_str());
-    else if (mode == "ab") handle = PHYSFS_openAppend(filename.c_str());
-    else if (mode == "wb") handle = PHYSFS_openWrite(filename.c_str());
+    if (requestedMode == "rb") handle = PHYSFS_openRead(filename.c_str());
+    else if (requestedMode == "ab") handle = PHYSFS_openAppend(filename.c_str());
+    else if (requestedMode == "wb") handle = PHYSFS_openWrite(filename.c_str());
     else
-        throw Exception("Invalid file mode %s.", mode.c_str());
+        throw Exception("Invalid file mode %s.", requestedMode.c_str());
 
     if (handle == nullptr) {
         const char *err = PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode());
@@ -63,7 +64,7 @@ bool File::open(std::string mode) {
 
     file = handle;
 
-    this->mode = mode;
+    this->mode = requestedMode;
 
     if (file != nullptr && !setBuffer(bufferMode, bufferSize)) {
         // Revert to buffer defaults if we don't successfully set the buffer.

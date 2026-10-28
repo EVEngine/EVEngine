@@ -1,0 +1,21 @@
+local definition = checked(fluids.volumeDefaults());
+definition.settings.gravity = [0.0, 0.0, 0.0];
+definition.settings.capacity = 1;
+local particle = clone checked(fluids.volumeEmissionDefaults()).description.prototype;
+particle.position = [0.0, 1.0, 0.0]; particle.material.density = 1000.0;
+definition.particles = [particle];
+local localSolver = checked(fluids.newVolumeSimulator(definition));
+local ambient = checked(fluids.volumeWindZoneDefaults());
+ambient.direction = [1.0, 0.0, 0.0]; ambient.intensity = 8.0;
+checked(localSolver.accumulateExternalForceZones([ambient], 0.0));
+checked(localSolver.step(1.0 / 120.0, 1));
+local first = checked(localSolver.snapshot()).particles[0].velocity[0];
+if (first <= 0.0) throw "External force zone did not accelerate particle";
+checked(localSolver.step(1.0 / 120.0, 1));
+local second = checked(localSolver.snapshot()).particles[0].velocity[0];
+if (fabs(second - first) > 0.00001) throw "One-step external force was retained";
+checked(localSolver.setParticleExternalForces([[0.0, 8.0, 0.0]]));
+checked(localSolver.step(1.0 / 120.0, 1));
+if (checked(localSolver.snapshot()).particles[0].velocity[1] <= 0.0)
+    throw "Per-particle external force was not applied";
+return "VOLUME_EXTERNAL_FORCE_PASS";

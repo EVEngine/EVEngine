@@ -1,0 +1,44 @@
+{
+  "schema": "eve.map.object-contract",
+  "version": 1,
+  "requireUniqueNames": true,
+  "allowUnknownTypes": false,
+  "types": [
+    { "type": "spawn", "properties": [] },
+    { "type": "merchant", "properties": [] },
+    { "type": "encounter", "properties": [
+      { "name": "encounterId", "kind": "string", "required": true }
+    ] },
+    {
+      "type": "quest_npc",
+      "properties": [
+        { "name": "questId", "kind": "string", "required": true },
+        { "name": "dialogueBase", "kind": "string", "required": true },
+        { "name": "speakerName", "kind": "string", "required": true }
+      ]
+    },
+    {
+      "type": "loot",
+      "properties": [
+        { "name": "displayName", "kind": "string", "required": true },
+        { "name": "requiredQuest", "kind": "string" },
+        { "name": "itemId", "kind": "string" },
+        { "name": "itemCount", "kind": "int", "min": 0 },
+        { "name": "gold", "kind": "int", "min": 0 },
+        { "name": "notifyTopic", "kind": "string" },
+        { "name": "notifyTarget", "kind": "string" },
+        { "name": "notifyAmount", "kind": "int", "min": 0 }
+      ]
+    },
+    {
+      "type": "portal",
+      "properties": [
+        { "name": "targetMap", "kind": "string", "required": true, "enum": ["village", "forest"] },
+        { "name": "targetX", "kind": "int", "required": true, "min": 0, "max": 19 },
+        { "name": "targetY", "kind": "int", "required": true, "min": 0, "max": 11 },
+        { "name": "facingX", "kind": "int", "required": true, "min": -1, "max": 1 },
+        { "name": "facingY", "kind": "int", "required": true, "min": -1, "max": 1 }
+      ]
+    }
+  ]
+}

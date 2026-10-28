@@ -1,30 +1,32 @@
 // Sky Lab — interactive procedural skyscraper recipe showcase.
 // R regenerate, 1-4 fewer/more tiers, W window density, S spire toggle, T facade texture.
 
-if (!("towerSeed" in getroottable())) towerSeed <- 2026;
-if (!("tower" in getroottable())) tower <- null;
-if (!("camera" in getroottable())) camera <- null;
-if (!("tiers" in getroottable())) tiers <- 6;
-if (!("windowCols" in getroottable())) windowCols <- 6;
-if (!("windowRows" in getroottable())) windowRows <- 5;
-if (!("spireHeight" in getroottable())) spireHeight <- 5.0;
-if (!("setback" in getroottable())) setback <- 0.08;
-if (!("facadeTex" in getroottable())) facadeTex <- null;
-if (!("texName" in getroottable())) texName <- "tex.stone";
-if (!("texRecipes" in getroottable())) texRecipes <- ["tex.stone", "tex.marble", "tex.soil", "tex.water", "tex.sky_cloud"];
-if (!("texIndex" in getroottable())) texIndex <- 0;
-if (!("yaw" in getroottable())) yaw <- 0.0;
-if (!("prevKeys" in getroottable())) prevKeys <- {};
+persist towerSeed = 2026
+persist tower = null
+persist camera = null
+persist tiers = 6
+persist windowCols = 6
+persist windowRows = 5
+persist spireHeight = 5.0
+persist setback = 0.08
+persist facadeTex = null
+persist texName = "tex.stone"
+persist texRecipes = ["tex.stone", "tex.marble", "tex.soil", "tex.water", "tex.sky_cloud"]
+persist texIndex = 0
+persist yaw = 0.0
+persist prevKeys = {}
 
 function pressed(k) {
-    local down = keyboard.isDown(k);
-    local old = k in prevKeys ? prevKeys[k] : false;
-    prevKeys[k] <- down;
-    return down && !old;
+    return key_just_pressed(k);
 }
 
 function rebuildTower() {
-    local p = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        print("tower parameter creation failed: " + paramsResult.status.summary);
+        return;
+    }
+    local p = paramsResult.value;
     p.setSeed(towerSeed);
     p.setFloat("baseWidth", 10.0);
     p.setFloat("baseDepth", 10.0);
@@ -36,11 +38,12 @@ function rebuildTower() {
     p.setFloat("windowDepth", 0.05);
     p.setFloat("spireHeight", spireHeight);
 
-    local mesh = procgen.generateMesh("mesh.skyscraper", p, gfx);
-    if (mesh == null) {
-        print("tower generation failed: " + procgen.lastError());
+    local meshResult = procgen.generateMesh("mesh.skyscraper", p, gfx);
+    if (!meshResult.ok) {
+        print("tower generation failed: " + meshResult.status.summary);
         return;
     }
+    local mesh = meshResult.value;
     if (tower == null) tower = eve.Renderable3D();
     tower.setMesh(mesh);
     tower.setTint(0.78, 0.80, 0.82, 1.0);
@@ -52,7 +55,12 @@ function rebuildTower() {
 }
 
 function rebuildTexture() {
-    local tp = procgen.newParams();
+    local paramsResult = procgen.newParams();
+    if (!paramsResult.ok) {
+        print("facade parameter creation failed: " + paramsResult.status.summary);
+        return;
+    }
+    local tp = paramsResult.value;
     tp.setSeed(towerSeed);
     tp.setSize(128, 256);
     tp.setFloat("scale", 3.0);
@@ -60,7 +68,12 @@ function rebuildTexture() {
     tp.setInt("colors", 5);
     tp.setInt("pixelSize", 2);
     tp.setInt("seamless", 1);
-    facadeTex = procgen.generateTexture(texName, tp, gfx);
+    local textureResult = procgen.generateTexture(texName, tp, gfx);
+    if (!textureResult.ok) {
+        print("facade texture generation failed: " + textureResult.status.summary);
+        return;
+    }
+    facadeTex = textureResult.value;
 }
 
 if (camera == null) {
