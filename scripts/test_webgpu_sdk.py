@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -56,7 +57,7 @@ def run(archive: Path, version: str, output: Path) -> None:
         thread.start()
         try:
             with sync_playwright() as playwright:
-                browser = playwright.chromium.launch(args=[
+                browser = playwright.chromium.launch(channel="chromium", args=[
                     "--no-sandbox", "--disable-gpu-sandbox", "--enable-unsafe-webgpu",
                     "--enable-features=Vulkan", "--use-vulkan=swiftshader",
                 ])
@@ -65,7 +66,21 @@ def run(archive: Path, version: str, output: Path) -> None:
                 page.on("pageerror", lambda error: messages.append(f"pageerror: {error}"))
                 page.on("requestfailed", lambda request: messages.append(f"requestfailed: {request.url}"))
                 try:
-                    page.goto(f"http://127.0.0.1:{server.server_port}/eve.html", wait_until="domcontentloaded")
+                    base = f"http://127.0.0.1:{server.server_port}"
+                    page.goto(base, wait_until="domcontentloaded")
+                    limits = page.evaluate("""async () => {
+                        const adapter = await navigator.gpu?.requestAdapter({powerPreference: 'high-performance'});
+                        if (!adapter) throw new Error('No WebGPU adapter');
+                        return {
+                            sampledTextures: adapter.limits.maxSampledTexturesPerShaderStage,
+                            colorAttachmentBytes: adapter.limits.maxColorAttachmentBytesPerSample
+                        };
+                    }""")
+                    (output / "adapter.json").write_text(
+                        json.dumps({"browser": browser.version, "limits": limits}, indent=2), encoding="utf-8")
+                    if limits["sampledTextures"] < 17 or limits["colorAttachmentBytes"] < 40:
+                        raise ValueError(f"Browser adapter cannot satisfy the engine device contract: {limits}")
+                    page.goto(f"{base}/eve.html", wait_until="domcontentloaded")
                     page.wait_for_function(
                         "document.querySelector('#log')?.textContent.includes('webgpu main.nut init ok')",
                         timeout=120_000,

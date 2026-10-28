@@ -8,6 +8,7 @@ on:
       - '.github/workflows/sdk-release.yml'
       - '.github/workflows/webgpu-sdk.yml'
       - '.github/workflows/arm64-sdk.yml'
+      - '.github/actions/setup-webgpu-browser/**'
       - '.github/scripts/*sdk*'
       - '.github/scripts/consumer-test.sh'
       - 'scripts/*sdk*'

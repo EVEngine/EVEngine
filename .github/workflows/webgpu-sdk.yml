@@ -170,13 +170,15 @@ jobs:
           python3 .github/scripts/zip-sdk.py webgpu "$tag"
           echo "WEBGPU_ARCHIVE=artifacts/eve-sdk-webgpu-$tag.zip" >> "$GITHUB_ENV"
 
+      - name: Setup pinned WebGPU browser
+        timeout-minutes: 10
+        uses: ./.github/actions/setup-webgpu-browser
+
       - name: Run extracted SDK in browser (startup and canvas)
         timeout-minutes: 10
         env:
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
-          python3 -m pip install --quiet pillow playwright==1.58.0
-          python3 -m playwright install --with-deps chromium
           python3 scripts/test_webgpu_sdk.py "$WEBGPU_ARCHIVE" \
             --version "${RELEASE_TAG#v}" --output artifacts/webgpu-browser
 

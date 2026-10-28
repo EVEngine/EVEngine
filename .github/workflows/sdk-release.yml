@@ -1178,13 +1178,15 @@ jobs:
           mkdir -p artifacts
           gh release download "$TAG" --repo "$REPO" --dir artifacts \
             --pattern "eve-sdk-webgpu-$TAG.zip" --pattern SHA256SUMS
+      - name: Setup pinned WebGPU browser
+        timeout-minutes: 10
+        uses: ./.github/actions/setup-webgpu-browser
+
       - name: Verify checksum and run extracted SDK
         env:
           TAG: ${{ inputs.tag }}
         run: |
           (cd artifacts && grep "eve-sdk-webgpu-$TAG.zip$" SHA256SUMS | sha256sum --check --strict)
-          python3 -m pip install --quiet pillow playwright==1.58.0
-          python3 -m playwright install --with-deps chromium
           python3 scripts/test_webgpu_sdk.py "artifacts/eve-sdk-webgpu-$TAG.zip" \
             --version "${TAG#v}" --output artifacts/webgpu-consumer
       - name: Upload WebGPU consumer evidence
