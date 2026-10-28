@@ -87,7 +87,7 @@ eve_declare_module(NAME plugins LAYER 0 SCRIPT Plugins
 eve_declare_module(NAME database LAYER 0 SCRIPT Database
                    THIRDPARTY poco_data poco)
 eve_declare_module(NAME rpg LIB EVRPG LAYER 0 SCRIPT RPG)
-eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory)
+eve_declare_module(NAME inventory LAYER 0 SCRIPT Inventory DEPS rpg)
 # PlacementWorld.cpp includes data/JsonDocument.h and Poco JSON (save/load).
 # THIRDPARTY poco is required so MSVC compiles those TUs with
 # POCO_NO_AUTOMATIC_LIBS; otherwise the obj records a link of

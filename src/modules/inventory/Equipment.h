@@ -12,6 +12,10 @@ namespace eve::inventory {
 
 class Bag;
 
+}  // namespace eve::inventory
+namespace eve::rpg { class RPGActor; }
+namespace eve::inventory {
+
 class EquipmentSet {
 public:
     EquipmentSet() = default;
@@ -44,6 +48,12 @@ public:
     bool unequipToBag(const std::string &equipSlot, Bag *bag);
     /** @brief 直接清空槽位（物品丢弃，不回背包）。 */
     bool clearSlot(const std::string &slotName);
+
+    /**
+     * @brief 将装备定义 extra 中的 `attr.<name>` 数值同步为角色属性加成。
+     * 每次调用先移除本装备集上次写入的修改器，因此可在穿脱后安全重复调用。
+     */
+    int synchronizeAttributes(eve::rpg::RPGActor *actor);
 
     const ItemStack *stackAt(const std::string &slotName) const;
     ItemStack *stackAt(const std::string &slotName);

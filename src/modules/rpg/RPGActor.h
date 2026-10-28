@@ -48,9 +48,21 @@ public:
         CastingState casting;
     };
 
+    /** @brief 每个角色独立的等级、经验与可分配点数。 */
+    struct Progression {
+        int level = 1;
+        int maxLevel = 100;
+        double experience = 0.0;
+        double baseXp = 100.0;
+        double growth = 1.15;
+        int pointsPerLevel = 1;
+        int unspentPoints = 0;
+    };
+
     COMPONENT(Attributes, attributes)
     COMPONENT(Statuses, statuses)
     COMPONENT(Skills, skills)
+    COMPONENT(Progression, progression)
 
     /** @brief 创建一个空白 actor（三张表均为空，按需惰性写入），并纳入 liveActors() 跟踪。 */
     static RPGActor *createActor();
@@ -127,6 +139,22 @@ public:
     bool isCastingSkill();
     std::string getCastingSkillId();
     float getCastProgress();
+
+    /** @brief 配置并重置角色成长曲线与运行时。 */
+    void configureProgression(int level, int maxLevel, float baseXp, float growth,
+                              int pointsPerLevel);
+    /** @brief 增加经验。 @return 本次提升的等级数。 */
+    int gainExperience(float amount);
+    /** @brief 返回当前等级。 */
+    int getLevel();
+    /** @brief 返回当前等级内累计经验。 */
+    float getExperience();
+    /** @brief 返回升到下一级所需经验。 */
+    float getExperienceForNextLevel();
+    /** @brief 返回尚未消费的成长点数。 */
+    int getUnspentPoints();
+    /** @brief 消费成长点数，余额不足时返回 false。 */
+    bool spendPoints(int amount);
 
     /**
      * @brief 返回所有通过 createActor() 创建、且当前仍存活的 actor。

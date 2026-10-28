@@ -223,6 +223,7 @@ void Inventory::expose(ssq::Table &table) {
     eq.addFunc("equipFromBag", &EquipmentSet::equipFromBag);
     eq.addFunc("unequipToBag", &EquipmentSet::unequipToBag);
     eq.addFunc("clearSlot", &EquipmentSet::clearSlot);
+    eq.addFunc("synchronizeAttributes", &EquipmentSet::synchronizeAttributes);
 }
 
 void Inventory::expose(ssq::Class &cls) {

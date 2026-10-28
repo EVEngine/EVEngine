@@ -2,6 +2,7 @@
 #include "rpg/AttributeSystem.h"
 #include "rpg/StatusSystem.h"
 #include "rpg/SkillSystem.h"
+#include "rpg/Progression.h"
 
 #include <algorithm>
 
@@ -26,6 +27,7 @@ RPGActor *RPGActor::createActor() {
     actor->attributes();
     actor->statuses();
     actor->skills();
+    actor->progression();
     registryStorage().push_back(ecs::handle_of(actor));
     return actor;
 }
@@ -210,5 +212,26 @@ bool RPGActor::isCastingSkill() { return SkillSystem::isCasting(this); }
 std::string RPGActor::getCastingSkillId() { return SkillSystem::getCastingSkillId(this); }
 
 float RPGActor::getCastProgress() { return SkillSystem::getCastProgress(this); }
+
+void RPGActor::configureProgression(int level, int maxLevel, float baseXp, float growth,
+                                    int pointsPerLevel) {
+    ProgressionSystem::configure(this, level, maxLevel, baseXp, growth, pointsPerLevel);
+}
+
+int RPGActor::gainExperience(float amount) {
+    return ProgressionSystem::gainExperience(this, amount);
+}
+
+int RPGActor::getLevel() { return progression()->level; }
+
+float RPGActor::getExperience() { return float(progression()->experience); }
+
+float RPGActor::getExperienceForNextLevel() {
+    return float(ProgressionSystem::experienceForNextLevel(this));
+}
+
+int RPGActor::getUnspentPoints() { return progression()->unspentPoints; }
+
+bool RPGActor::spendPoints(int amount) { return ProgressionSystem::spendPoints(this, amount); }
 
 }  // namespace eve::rpg

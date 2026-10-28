@@ -54,6 +54,7 @@ file(GLOB all_test_cpp
   map_path.cpp
   map_fov.cpp
   rpg.cpp
+  rpg_arpg.cpp
   rpg_simulation.cpp
   hex_level_simulation.cpp
   hex_level_data.cpp

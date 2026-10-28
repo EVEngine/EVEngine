@@ -9,12 +9,9 @@
 //                        四种策略。
 //   状态 status      —— 运行时 buff/debuff 实例：剩余时间、叠加层数、周期 tick。
 //   技能 skills      —— 学习 / 冷却 / 消耗 / 读条时间 / 施放事件轮询。
-//   结算 settlement  —— 本例的伤害公式直接写在脚本里（见 computeDamage）：
-//                        RPG 模块的 SettlementPipeline::registerStage 是 C++
-//                        扩展点（未绑定到脚本），游戏项目通常会在原生插件里注册
-//                        自己的伤害/治疗阶段，脚本侧改用 eve.RPG().runSettlement()
-//                        触发；这里为了保持示例零原生依赖，改成纯脚本公式，
-//                        详见 docs/RPG系统设计.md。
+//   战斗 combat      —— 内建标准公式统一处理攻击、护甲、抗性、暴击与击杀事件。
+//   成长/任务/掉落   —— 击杀获得经验、推进任务并按数据表抽取战利品。
+//   AI               —— UtilityBrain 根据黑板输入为敌人动作评分。
 //
 // 玩法：键盘 1/2/3/4 释放技能，撑过一波波强度递增的怪物，R 重开。
 // 运行： make run/macosx-debug GAME=examples/rpg   （或对应平台的 run/<platform>-debug）
@@ -31,6 +28,8 @@ if (!("gameOver" in getroottable())) gameOver <- false;
 if (!("battleLog" in getroottable())) battleLog <- [];
 if (!("prevKeys" in getroottable())) prevKeys <- {};
 if (!("hitFlash" in getroottable())) hitFlash <- { player = 0.0, enemy = 0.0 };
+if (!("questTracker" in getroottable())) questTracker <- null;
+if (!("enemyBrain" in getroottable())) enemyBrain <- null;
 
 const PLAYER_MAX_HP = 100.0;
 const PLAYER_MAX_MP = 50.0;
@@ -117,6 +116,27 @@ function registerContent() {
          ""costs"":[],""grantedEffects"":[""debuff.weaken""],""tags"":[""debuff""]}
     ]");
 
+    rpg.clearQuestDefinitions();
+    rpg.registerQuestsFromJson(@"[
+        {""id"":""hunt.10"",""title"":""地牢清剿"",""startPolicy"":""auto"",
+         ""completePolicy"":""auto"",""objectives"":[
+           {""id"":""kills"",""topic"":""kill"",""target"":""dungeon.enemy"",""count"":10}],
+         ""rewards"":[{""type"":""item"",""id"":""relic.ember"",""amount"":1}]}
+    ]");
+    rpg.clearLootTableDefinitions();
+    rpg.registerLootTablesFromJson(@"{
+        ""id"":""dungeon.enemy"",""rolls"":2,""unique"":true,""entries"":[
+          {""itemId"":""gold"",""minQuantity"":2,""maxQuantity"":8,""weight"":8,""chance"":1},
+          {""itemId"":""potion.health"",""weight"":3,""chance"":0.55},
+          {""itemId"":""relic.ember"",""weight"":1,""chance"":0.2}]}");
+    rpg.clearAIDecisionSetDefinitions();
+    rpg.registerAIDecisionSetsFromJson(@"{
+      ""id"":""enemy.combat"",""actions"":[
+        {""id"":""roar"",""weight"":0.8,""considerations"":[
+          {""input"":""playerHealth"",""curve"":""linear"",""min"":0,""max"":1}]},
+        {""id"":""claw"",""weight"":1.0,""considerations"":[
+          {""input"":""playerHealth"",""curve"":""inverse"",""min"":0,""max"":1}]}]}");
+
     print(format("RPG content loaded: %d effects, %d skills\n", effectsLoaded, skillsLoaded));
 }
 
@@ -143,6 +163,10 @@ function makePlayer() {
     setupVitals(p, PLAYER_MAX_HP, PLAYER_MAX_MP, PLAYER_MAX_STAMINA);
     p.setBaseAttribute("attack", 14.0);
     p.setBaseAttribute("defense", 4.0);
+    p.setBaseAttribute("armor", 8.0);
+    p.setBaseAttribute("critChance", 0.15);
+    p.setBaseAttribute("critMultiplier", 1.6);
+    p.configureProgression(1, 50, 60.0, 1.12, 1);
     p.learnSkill("player.strike");
     p.learnSkill("player.fireball");
     p.learnSkill("player.power_stance");
@@ -159,28 +183,15 @@ function makeEnemy(w) {
     setupVitals(e, maxHp, 0.0, 0.0);
     e.setBaseAttribute("attack", 7.0 + w * 1.6);
     e.setBaseAttribute("defense", 1.0 + w * 0.8);
+    e.setBaseAttribute("armor", 2.0 + w * 1.5);
+    e.setBaseAttribute("critChance", 0.05);
+    e.setBaseAttribute("critMultiplier", 1.5);
     e.learnSkill("enemy.claw");
     e.learnSkill("enemy.roar");
     return e;
 }
 
 function enemyMaxHp(w) { return 40.0 + w * 14.0; }
-
-// ---------------------------------------------------------------------------
-// 伤害结算（脚本侧公式，见文件头注释）。
-// ---------------------------------------------------------------------------
-function computeDamage(atk, def, critChance, critMult) {
-    local raw = atk - def * 0.5;
-    if (raw < 1.0) raw = 1.0;
-    local crit = randf(0.0, 1.0) < critChance;
-    if (crit) raw *= critMult;
-    return { dmg = roundi(raw), crit = crit };
-}
-
-function applyDamage(target, isPlayerTarget, dmg) {
-    target.modifyBaseAttribute("health", -dmg * 1.0);
-    if (isPlayerTarget) hitFlash.player = 0.15; else hitFlash.enemy = 0.15;
-}
 
 // ---------------------------------------------------------------------------
 // 玩家输入：边沿检测（仅在“刚按下”那一帧触发），避免长按重复施法。
@@ -207,7 +218,9 @@ function tryPlayerSkill(skillId, target, label) {
 // ---------------------------------------------------------------------------
 function updateEnemyAI() {
     if (enemy.isCastingSkill()) return;
-    if (enemy.canCastSkill("enemy.roar") && randf(0.0, 1.0) < 0.35) {
+    enemyBrain.setInput("playerHealth", player.getFinalAttribute("health") / PLAYER_MAX_HP);
+    local action = enemyBrain.chooseAction();
+    if (action == "roar" && enemy.canCastSkill("enemy.roar")) {
         enemy.beginCastSkill("enemy.roar", player);
         return;
     }
@@ -228,8 +241,8 @@ function processEvents() {
         local isPlayer = (actor == player);
 
         if (effectId == "dot.burn") {
-            local dmg = 4 * stacks;
-            applyDamage(actor, isPlayer, dmg);
+            local dmg = roundi(rpg.dealDamage(null, actor, 4.0 * stacks, "fire"));
+            if (isPlayer) hitFlash.player = 0.15; else hitFlash.enemy = 0.15;
             logLine((isPlayer ? "玩家" : "敌人") + " 受到灼烧伤害 " + dmg + (stacks > 1 ? " (x" + stacks + ")" : ""));
         } else if (effectId == "passive.regen") {
             actor.modifyBaseAttribute("health", 3.0);
@@ -246,13 +259,13 @@ function processEvents() {
         local isPlayerCaster = (caster == player);
 
         if (skillId == "player.strike" || skillId == "enemy.claw") {
-            local r = computeDamage(caster.getFinalAttribute("attack"), target.getFinalAttribute("defense"), 0.15, 1.6);
-            applyDamage(target, !isPlayerCaster, r.dmg);
-            logLine((isPlayerCaster ? "玩家" : "敌人") + " 普通攻击造成 " + r.dmg + " 伤害" + (r.crit ? "（暴击！）" : ""));
+            local dmg = roundi(rpg.dealDamage(caster, target, 0.0, "physical"));
+            if (isPlayerCaster) hitFlash.enemy = 0.15; else hitFlash.player = 0.15;
+            logLine((isPlayerCaster ? "玩家" : "敌人") + " 普通攻击造成 " + dmg + " 伤害");
         } else if (skillId == "player.fireball") {
-            local r = computeDamage(caster.getFinalAttribute("attack") + 10.0, target.getFinalAttribute("defense"), 0.2, 1.6);
-            applyDamage(target, !isPlayerCaster, r.dmg);
-            logLine("玩家 火球术造成 " + r.dmg + " 伤害" + (r.crit ? "（暴击！）" : "") + "，并点燃目标");
+            local dmg = roundi(rpg.dealDamage(caster, target, 10.0, "fire"));
+            hitFlash.enemy = 0.15;
+            logLine("玩家 火球术造成 " + dmg + " 伤害，并点燃目标");
         } else if (skillId == "player.power_stance") {
             logLine("玩家 进入力量姿态，攻击力提升");
         } else if (skillId == "player.potion") {
@@ -269,7 +282,14 @@ function processEvents() {
 function checkOutcomes() {
     if (enemy != null && enemy.getFinalAttribute("health") <= 0.0) {
         score += 1;
-        logLine("敌人被击败！进入第 " + (wave + 1) + " 波");
+        player.gainExperience(15.0 + wave * 5.0);
+        questTracker.notify("kill", "dungeon.enemy", 1);
+        local loot = rpg.rollLoot("dungeon.enemy", player.getLevel() * 0.01);
+        local drops = "";
+        for (local i = 0; i < loot.getCount(); i += 1)
+            drops += (i > 0 ? "、" : "") + loot.getItemId(i) + " x" + loot.getQuantity(i);
+        loot.destroy();
+        logLine("敌人被击败！掉落：" + (drops == "" ? "无" : drops));
         enemy.release();
         wave += 1;
         enemy = makeEnemy(wave);
@@ -290,6 +310,8 @@ function buildUI() {
     ui.beginBuild();
     ui.beginWindow("Player", "root");
     ui.text("玩家", "title");
+    ui.text("等级 1", "level");
+    ui.text("任务：地牢清剿 0/10", "quest");
     ui.progress(1.0, "hpbar", "");
     ui.text("HP 0/0", "hptext");
     ui.progress(1.0, "mpbar", "");
@@ -361,6 +383,9 @@ function refreshHud() {
     local hp = player.getFinalAttribute("health");
     local mp = player.getFinalAttribute("mana");
     local st = player.getFinalAttribute("stamina");
+    ui.setText("level", "等级 " + player.getLevel() + "  XP " + roundi(player.getExperience()) + "/" + roundi(player.getExperienceForNextLevel()));
+    if (questTracker != null)
+        ui.setText("quest", "任务：地牢清剿 " + questTracker.getObjectiveCurrent("hunt.10", 0) + "/10 [" + questTracker.getState("hunt.10") + "]");
     ui.setValue("hpbar", (hp / PLAYER_MAX_HP).tofloat());
     ui.setText("hptext", "HP " + roundi(hp) + "/" + roundi(PLAYER_MAX_HP));
     ui.setValue("mpbar", (mp / PLAYER_MAX_MP).tofloat());
@@ -419,6 +444,11 @@ function startNewGame() {
 
     player = makePlayer();
     enemy = makeEnemy(wave);
+    if (questTracker != null) questTracker.destroy();
+    if (enemyBrain != null) enemyBrain.destroy();
+    questTracker = rpg.newTracker();
+    enemyBrain = rpg.newUtilityBrain();
+    enemyBrain.setDecisionSet("enemy.combat");
     showGameOver(false);
     logLine("第 1 波开始，按 1/2/3/4 施放技能");
 }
@@ -437,6 +467,11 @@ eve_init = function() {
 // 软重载后调用（仅重跑脚本时触发，不重建实体/UI）。
 eve_reload <- function() {
     registerContent();
+    if (questTracker == null) questTracker = rpg.newTracker();
+    if (enemyBrain == null) {
+        enemyBrain = rpg.newUtilityBrain();
+        enemyBrain.setDecisionSet("enemy.combat");
+    }
 };
 
 eve_update = function(dt) {
