@@ -222,9 +222,21 @@ PKG="$WORK/sample-pkg"
 if ! "$SDK/bin/$RUNTIME" package "$GAME" -o "$PKG" --sdk "$SDK" >"$WORK/package.log" 2>&1; then
   cat "$WORK/package.log" >&2
   if [ "$PLAT" = macosx ] && command -v lldb >/dev/null 2>&1; then
+    # Diagnostic only: isolate the Metal encoder used in MoltenVK issue #2373.
+    # The original package failure remains fatal after these probes.
+    # Owner: graphics; remove when MoltenVK #2373 is fixed and Intel SDK tests pass.
+    if xcrun clang++ -std=c++17 -fobjc-arc "$SCRIPTS/probe-metal-argument-encoder.mm" \
+        -framework Foundation -framework Metal -o "$WORK/metal-argument-probe"; then
+      for count in 1 2 8192; do
+        "$WORK/metal-argument-probe" "$count" >&2 || true
+      done
+    fi
     # Reproduce the startup directly so a child-process abort has a native stack.
     # This is diagnostic only: the failed package gate remains failed below.
     EVE_PACKAGE_CHECK=1 EVENGINE_VULKAN_VALIDATION=1 \
+      lldb --batch -o run -k 'thread backtrace all' -- "$SDK/bin/$RUNTIME" run "$GAME" >&2 || true
+    # Compare the documented MoltenVK binding mode with the identical SDK/game.
+    MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS=0 EVE_PACKAGE_CHECK=1 EVENGINE_VULKAN_VALIDATION=1 \
       lldb --batch -o run -k 'thread backtrace all' -- "$SDK/bin/$RUNTIME" run "$GAME" >&2 || true
   fi
   fail "eve package failed"
