@@ -49,6 +49,7 @@ permissions:
 env:
   # Reuse the pinned dependency release; build source only if transfer is unavailable.
   CMAKE_EXTRA_ARGS: -DBUILD_TESTING=OFF -DEVENGINE_THIRD_PARTY_MODE=AUTO
+  ALSOFT_DRIVERS: "null"
   # Single source of truth: repository variables (Settings -> Secrets and
   # variables -> Actions -> Variables), falling back to these defaults.
   VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
@@ -444,7 +445,7 @@ jobs:
         timeout-minutes: 30
         env:
           TAG: ${{ inputs.tag }}
-        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/linux linux "${TAG#v}"
+        run: xvfb-run -a bash .github/scripts/test-sdk.sh dist/eve-sdk/linux linux "${TAG#v}"
 
       - name: Package SDK zip
         timeout-minutes: 10
@@ -895,7 +896,7 @@ jobs:
   # ---- Packaged-game run verification on the target platform ---------------
   # A package produced by a foreign host must actually run on its target.
   run-win32-cross:
-    name: Run win32 packages (built on linux/macosx)
+    name: Verify win32 packages from linux/macosx inputs
     needs: [consumer-linux, consumer-macosx]
     runs-on: windows-latest
     timeout-minutes: 30
@@ -948,8 +949,9 @@ jobs:
             dir="$RUNNER_TEMP/run-$name"
             mkdir -p "$dir"
             tar -xzf "$tgz" -C "$dir"
+            bash .github/scripts/prepare-cross-consumer.sh win32 "$dir"
             log="$RUNNER_TEMP/run-${name}.log"
-            ( cd "$dir" && exec ./eve.exe >"$log" 2>&1 ) &
+            ( cd "$dir/verified" && exec ./eve.exe >"$log" 2>&1 ) &
             pid=$!
             ok=0
             for i in $(seq 1 40); do
@@ -959,16 +961,17 @@ jobs:
             kill "$pid" 2>/dev/null || true
             if [ "$ok" -eq 1 ]; then
               echo "OK: $name printed EVE_CI_GAME_OK"
-              found=1
+              found=$((found + 1))
             else
               echo "FAIL: $name did not start (log tail):"
               tail -n 20 "$log" 2>/dev/null || true
+              exit 1
             fi
           done
-          [ "$found" -eq 1 ] || { echo "ERROR: no win32 package ran successfully" >&2; exit 1; }
+          [ "$found" -eq 2 ] || { echo "ERROR: both linux and macosx win32 transfers must pass" >&2; exit 1; }
 
   run-linux-cross:
-    name: Run linux package (built on macosx)
+    name: Verify linux package from macosx inputs
     needs: consumer-macosx
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -1003,11 +1006,11 @@ jobs:
         run: |
           set -euo pipefail
           tar -xzf packages/pkg-linux.tar.gz -C packages
-          chmod +x packages/eve
           # Ubuntu names the Lavapipe manifest lvp_icd.json (no suffix).
           export VK_ICD_FILENAMES="$(ls /usr/share/vulkan/icd.d/lvp_icd*.json 2>/dev/null | head -1)"
           export ALSOFT_DRIVERS=null
-          xvfb-run -a bash -c 'cd packages && exec ./eve > run.log 2>&1' &
+          xvfb-run -a bash .github/scripts/prepare-cross-consumer.sh linux packages
+          xvfb-run -a bash -c 'cd packages/verified && exec ./eve > ../run.log 2>&1' &
           pid=$!
           ok=0
           for i in $(seq 1 40); do

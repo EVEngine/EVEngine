@@ -27,6 +27,12 @@ endfunction()
 
 # This function will set the include directories for the project
 function(set_include)
+    if(EMSCRIPTEN)
+        # Link-only exception settings do not preserve catch handlers in engine objects.
+        # Script analysis intentionally throws/catches bounded-work diagnostics.
+        target_compile_options(eve_engine_includes INTERFACE -fexceptions)
+        target_link_options(eve_engine_includes INTERFACE -fexceptions)
+    endif()
     target_compile_definitions(eve_engine_includes INTERFACE EVE_ECS_EXTERN_CONTAINERS=1)
     target_include_directories(eve_engine_includes INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/src/engine

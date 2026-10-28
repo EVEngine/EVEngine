@@ -219,7 +219,10 @@ echo "asset-data" > "$GAME/assets/data.txt"
 echo "OK: eve zip -> $(basename "$GAME.eve")"
 
 PKG="$WORK/sample-pkg"
-"$SDK/bin/$RUNTIME" package "$GAME" -o "$PKG" --sdk "$SDK" >/dev/null 2>&1 || fail "eve package failed"
+if ! "$SDK/bin/$RUNTIME" package "$GAME" -o "$PKG" --sdk "$SDK" >"$WORK/package.log" 2>&1; then
+  cat "$WORK/package.log" >&2
+  fail "eve package failed"
+fi
 [ -f "$PKG/$RUNTIME" ] || fail "package missing runtime $RUNTIME"
 [ -f "$PKG/game.eve" ] || fail "package missing game.eve"
 if [ "$PLAT" = "win32" ]; then
