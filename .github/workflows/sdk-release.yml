@@ -96,16 +96,16 @@ jobs:
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
+          install_swiftshader: true
           cache: true
           # Release refs are one-shot cache scopes. Restore a long-lived cache
           # when available, but do not create a copy that no later run can use.
           cache_save_if: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup software Vulkan (SwiftShader, best-effort)
+      - name: Setup software Vulkan (SwiftShader)
         timeout-minutes: 5
-        run: |
-          bash .github/scripts/setup-software-vulkan.sh || echo "WARN: software Vulkan unavailable; in-memory run skipped"
+        run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 SDK
         # Release run 38296135959 reached 1784/1900 edges at 90 minutes.
