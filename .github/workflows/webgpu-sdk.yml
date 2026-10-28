@@ -19,7 +19,7 @@ jobs:
   webgpu:
     name: WebGPU (WASM)
     runs-on: ubuntu-24.04
-    timeout-minutes: 180
+    timeout-minutes: 240
     env:
       EMSCRIPTEN_VERSION: "6.0.9"
       EMDAWNWEBGPU_RELEASE: "v20260423.175430"
@@ -154,7 +154,8 @@ jobs:
           node build/script-structure-probe.js
 
       - name: Build webgpu (Emscripten/WASM)
-        timeout-minutes: 90
+        # Full Release wasm-opt exceeded the former 90-minute build budget.
+        timeout-minutes: ${{ inputs.tag != '' && 180 || 90 }}
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           source "$HOME/emsdk/emsdk_env.sh"
