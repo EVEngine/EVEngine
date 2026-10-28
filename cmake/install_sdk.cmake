@@ -49,8 +49,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.js"
         "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.wasm"
         "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.html"
+        "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.data"
         DESTINATION bin
-        OPTIONAL
     )
     install(DIRECTORY "${CMAKE_SOURCE_DIR}/platform/webgpu/game-shell"
         DESTINATION bin

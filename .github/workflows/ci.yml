@@ -8,6 +8,10 @@ on:
         description: git ref to check out (release branch or moved tag)
         type: string
         default: ""
+      full:
+        description: Run every platform and full source/test checks
+        type: boolean
+        default: false
   push:
     branches: [dev]
   pull_request:
@@ -66,12 +70,15 @@ jobs:
       - name: Classify changed paths
         id: scope
         env:
+          FULL_VALIDATION: ${{ inputs.full || false }}
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           BEFORE_SHA: ${{ github.event.before }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
-          if [ "$EVENT_NAME" = "pull_request" ]; then
+          if [ "$FULL_VALIDATION" = true ]; then
+            python3 scripts/ci_change_scope.py --all --github-output "$GITHUB_OUTPUT"
+          elif [ "$EVENT_NAME" = "pull_request" ]; then
             python3 scripts/ci_change_scope.py \
               --base "$BASE_SHA" --head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT"
           elif [ "$EVENT_NAME" = "push" ] && [ -n "$BEFORE_SHA" ] && \
@@ -1084,169 +1091,9 @@ jobs:
           if-no-files-found: ignore
 
   webgpu:
-    name: WebGPU (WASM)
     needs: [source-quality, change-scope]
     if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.webgpu == 'true' }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 90
-    env:
-      EMSCRIPTEN_VERSION: "6.0.9"
-      EMDAWNWEBGPU_RELEASE: "v20260423.175430"
-    # Do not add sccache via EM_COMPILER_WRAPPER here: emsdk's Clang commands
-    # carry -Xclang flags that sccache v0.16 treats as non-cacheable, adding
-    # wrapper overhead without storing any of the engine's object files.
-    steps:
-      - name: Checkout
-        timeout-minutes: 10
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ inputs.ref || github.ref }}
-          submodules: recursive
-
-      - name: Install system packages
-        timeout-minutes: 10
-        run: |
-          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
-          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
-          # Normalize to the canonical mirror so apt has a reachable source.
-          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
-            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
-          printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
-            sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
-          sudo pkill -f "unattended-upgrade" || true
-          sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
-          # Only Ubuntu indexes are needed for this toolchain.
-          test -s /etc/apt/sources.list.d/ubuntu.sources
-          apt_ok=0
-          for i in 1 2 3; do
-            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
-              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
-              -o Dir::Etc::sourceparts=- \
-              -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
-            [ "$i" -lt 3 ] && sleep 20
-          done
-          [ "$apt_ok" -eq 1 ] || exit 1
-          sudo apt-get install -y --no-install-recommends \
-            git ninja-build python3 python3-pip
-
-      - name: Install CMake 3.29 (Emscripten is incompatible with CMake 4.x)
-        timeout-minutes: 10
-        run: |
-          python3 -m pip install --user cmake==3.29.6
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-
-      - name: Restore Emscripten SDK cache
-        id: emsdk-cache
-        timeout-minutes: 5
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: $HOME/emsdk
-          key: emsdk-${{ runner.os }}-${{ runner.arch }}-${{ env.EMSCRIPTEN_VERSION }}-${{ env.EMDAWNWEBGPU_RELEASE }}-v1
-
-      - name: Install Emscripten SDK
-        timeout-minutes: 30
-        run: |
-          if [ "${{ steps.emsdk-cache.outputs.cache-hit }}" = "true" ]; then
-            echo "Using cached Emscripten SDK"
-          else
-            git clone --depth 1 https://github.com/emscripten-core/emsdk.git "$HOME/emsdk"
-          fi
-          "$HOME/emsdk/emsdk" install "$EMSCRIPTEN_VERSION"
-          "$HOME/emsdk/emsdk" activate "$EMSCRIPTEN_VERSION"
-
-      - name: Acquire and verify immutable WebGPU port
-        timeout-minutes: 10
-        run: |
-          set -euo pipefail
-          mkdir -p artifacts/webgpu-dependencies
-          archive="artifacts/webgpu-dependencies/emdawnwebgpu.zip"
-          url="https://github.com/google/dawn/releases/download/${EMDAWNWEBGPU_RELEASE}/emdawnwebgpu_pkg-${EMDAWNWEBGPU_RELEASE}.zip"
-          if ! curl --fail --location --retry 4 --retry-all-errors --retry-delay 5 \
-            --output "$archive" "$url"; then
-            python3 -c 'from pathlib import Path; from scripts.ci_result import CIResult, FailureKind; CIResult.failure(FailureKind.INFRASTRUCTURE, "WEBGPU_DEPENDENCY_DOWNLOAD_FAILED", "webgpu-dependencies", "failed to download the locked emdawnwebgpu archive after retries").write(Path("artifacts/webgpu-dependencies/ci-result.json"))'
-            exit 1
-          fi
-          python3 scripts/verify_webgpu_dependencies.py \
-            --lock cmake/webgpu_dependencies.json \
-            --archive "$archive" \
-            --emscripten-version "$EMSCRIPTEN_VERSION" \
-            --result-json artifacts/webgpu-dependencies/ci-result.json
-
-      - name: Prewarm Emscripten WebGPU port
-        timeout-minutes: 10
-        run: |
-          set -euo pipefail
-          source "$HOME/emsdk/emsdk_env.sh"
-          for attempt in 1 2 3; do
-            em++ --use-port=emdawnwebgpu -x c++ -c /dev/null \
-              -o artifacts/webgpu-dependencies/port-probe.o && exit 0
-            [ "$attempt" -lt 3 ] && sleep $((attempt * 10))
-          done
-          exit 1
-
-      - name: Upload WebGPU dependency result
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: webgpu-dependency-result
-          path: artifacts/webgpu-dependencies/ci-result.json
-          if-no-files-found: warn
-
-      - name: Configure webgpu (Emscripten/WASM)
-        timeout-minutes: 15
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          source "$HOME/emsdk/emsdk_env.sh"
-          # Keep Release object compilation; avoid expensive -O3 Binaryen
-          # optimization in this browser smoke lane. Asyncify still runs.
-          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_EXE_LINKER_FLAGS_RELEASE=-O1
-
-      - name: Build webgpu (Emscripten/WASM)
-        timeout-minutes: 60
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          source "$HOME/emsdk/emsdk_env.sh"
-          cmake --build build/webgpu-web --parallel "$(nproc)"
-
-      - name: Verify webgpu artifacts
-        timeout-minutes: 5
-        run: |
-          test -f build/webgpu-web/src/engine/eve.html
-          test -f build/webgpu-web/src/engine/eve.wasm
-          ls -lh build/webgpu-web/src/engine/eve.*
-
-      - name: Capture browser WebGPU frame
-        timeout-minutes: 10
-        run: |
-          python3 -m pip install --quiet pillow
-          cd build/webgpu-web/src/engine
-          python3 -m http.server 8090 >webgpu-http.log 2>&1 &
-          server_pid=$!
-          trap 'kill "$server_pid"' EXIT
-          google-chrome --headless=new --no-sandbox --disable-gpu-sandbox \
-            --enable-unsafe-webgpu --enable-features=Vulkan \
-            --use-vulkan=swiftshader --window-size=800,600 \
-            --timeout=20000 --screenshot=webgpu-browser.png \
-            http://127.0.0.1:8090/eve.html
-          python3 "$GITHUB_WORKSPACE/scripts/validate_render_frame.py" webgpu-browser.png
-
-      - name: Upload browser WebGPU frame
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: webgpu-browser-frame
-          path: |
-            build/webgpu-web/src/engine/webgpu-browser.png
-            build/webgpu-web/src/engine/webgpu-http.log
-          if-no-files-found: warn
-
-      - name: Save Emscripten SDK cache
-        # Only refresh on the default branch so per-PR runs restore (free) but
-        # never rewrite the cache, keeping churn/eviction of hot caches low.
-        if: ${{ steps.emsdk-cache.outputs.cache-hit != 'true' && github.ref == 'refs/heads/dev' }}
-        timeout-minutes: 15
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: $HOME/emsdk
-          key: ${{ steps.emsdk-cache.outputs.cache-primary-key }}
+    uses: ./.github/workflows/webgpu-sdk.yml
+    with:
+      ref: ${{ inputs.ref || github.ref }}
+    secrets: inherit

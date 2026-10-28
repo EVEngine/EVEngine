@@ -32,6 +32,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
     with:
       ref: ${{ inputs.ref || github.ref }}
+      full: true
     secrets: inherit
 
   profile-matrix:
@@ -84,10 +85,10 @@ jobs:
         run: make profile/smoke
 
   macos-x86_64:
-    name: macOS x86_64 (${{ matrix.configuration }}, build)
+    name: macOS x86_64 (${{ matrix.configuration }}, build + test)
     needs: [debug-checks]
     runs-on: macos-15-intel
-    timeout-minutes: 180
+    timeout-minutes: 240
     strategy:
       fail-fast: false
       matrix:
@@ -141,13 +142,26 @@ jobs:
             exit 1
           fi
 
+      - name: Run native Intel macOS unit tests
+        timeout-minutes: 60
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          ALSOFT_DRIVERS: "null"
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "test/macosx-x86_64${suffix}" JOBS=4 CTEST_JOBS=4 LABEL_FILTER='' \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
       - name: Upload Intel macOS build diagnostics
         if: failure()
         timeout-minutes: 10
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: macosx-x86_64-${{ matrix.configuration }}-build-logs
-          path: build/macosx-x86_64*.log
+          path: |
+            build/macosx-x86_64*.log
+            build/macosx-x86_64*/Testing/Temporary/
           if-no-files-found: ignore
 
   # Native ARM64 lanes also run the process-isolated tests and validate SDKs.

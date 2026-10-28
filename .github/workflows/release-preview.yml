@@ -1,0 +1,73 @@
+name: Release preview
+
+on:
+  pull_request:
+    branches: [dev]
+    paths:
+      - '.github/workflows/release*.yml'
+      - '.github/workflows/sdk-release.yml'
+      - '.github/workflows/webgpu-sdk.yml'
+      - '.github/workflows/arm64-sdk.yml'
+      - '.github/scripts/*sdk*'
+      - '.github/scripts/consumer-test.sh'
+      - 'scripts/*sdk*'
+      - 'scripts/tests/test_sdk*'
+      - 'scripts/tests/test_webgpu_sdk*'
+      - 'cmake/install_sdk.cmake'
+  workflow_dispatch:
+
+concurrency:
+  group: release-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Read candidate version without changing sources or tags
+        id: version
+        run: |
+          python3 - <<'PY'
+          import os, re
+          from pathlib import Path
+          source = Path("CMakeLists.txt").read_text(encoding="utf-8")
+          version = ".".join(re.search(r'set\(EVENGINE_' + part + r'_VERSION "(\d+)"\)', source).group(1) for part in ("MAJOR", "MINOR", "PATCH"))
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"tag=v{version}\n")
+          PY
+
+  validation:
+    uses: ./.github/workflows/release-ci.yml
+    with:
+      ref: ${{ github.sha }}
+    secrets: inherit
+
+  sdks:
+    needs: candidate
+    uses: ./.github/workflows/sdk-release.yml
+    permissions:
+      contents: write
+      id-token: write
+    with:
+      ref: ${{ github.sha }}
+      tag: ${{ needs.candidate.outputs.tag }}
+      publish: false
+    secrets: inherit
+
+  ready:
+    name: Release preview ready
+    if: always()
+    needs: [validation, sdks]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require full validation and nine SDK consumer gates
+        env:
+          VALIDATION: ${{ needs.validation.result }}
+          SDKS: ${{ needs.sdks.result }}
+        run: test "$VALIDATION" = success && test "$SDKS" = success
