@@ -1188,7 +1188,7 @@ jobs:
           TAG: ${{ inputs.tag }}
         run: |
           (cd artifacts && grep "eve-sdk-webgpu-$TAG.zip$" SHA256SUMS | sha256sum --check --strict)
-          python3 scripts/test_webgpu_sdk.py "artifacts/eve-sdk-webgpu-$TAG.zip" \
+          xvfb-run -a python3 scripts/test_webgpu_sdk.py "artifacts/eve-sdk-webgpu-$TAG.zip" --headed \
             --version "${TAG#v}" --output artifacts/webgpu-consumer
       - name: Upload WebGPU consumer evidence
         if: always()

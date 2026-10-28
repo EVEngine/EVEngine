@@ -44,7 +44,7 @@ def check_archive(archive: Path, destination: Path, version: str) -> Path:
     return sdk / "bin"
 
 
-def run(archive: Path, version: str, output: Path) -> None:
+def run(archive: Path, version: str, output: Path, *, headed: bool = False) -> None:
     """Require startup from the archive and inspect only the game canvas pixels."""
     from playwright.sync_api import sync_playwright
 
@@ -57,11 +57,24 @@ def run(archive: Path, version: str, output: Path) -> None:
         thread.start()
         try:
             with sync_playwright() as playwright:
-                browser = playwright.chromium.launch(channel="chromium", args=[
+                browser = playwright.chromium.launch(channel="chromium", headless=not headed, args=[
                     "--no-sandbox", "--disable-gpu-sandbox", "--enable-unsafe-webgpu",
                     "--enable-features=Vulkan", "--use-vulkan=swiftshader",
+                    "--enable-gpu", "--use-angle=vulkan", "--disable-vulkan-surface",
                 ])
                 page = browser.new_page(viewport={"width": 1280, "height": 800})
+                page.add_init_script("""(() => {
+                    if (typeof GPUAdapter === 'undefined') return;
+                    const requestDevice = GPUAdapter.prototype.requestDevice;
+                    GPUAdapter.prototype.requestDevice = async function(...args) {
+                        const device = await requestDevice.apply(this, args);
+                        device.lost.then(info => console.error(
+                            '[sdk-webgpu-error] device lost:', info.reason, info.message));
+                        device.addEventListener('uncapturederror', event => console.error(
+                            '[sdk-webgpu-error] validation:', event.error.message));
+                        return device;
+                    };
+                })();""")
                 page.on("console", lambda message: messages.append(f"console {message.type}: {message.text}"))
                 page.on("pageerror", lambda error: messages.append(f"pageerror: {error.stack or error}"))
                 page.on("requestfailed", lambda request: messages.append(f"requestfailed: {request.url}"))
@@ -97,7 +110,9 @@ def run(archive: Path, version: str, output: Path) -> None:
                             if attempt == 29:
                                 raise
                             page.wait_for_timeout(1000)
-                    if any(message.startswith(("pageerror:", "requestfailed:")) for message in messages):
+                    if any(message.startswith(("pageerror:", "requestfailed:",
+                                               "console error: [sdk-webgpu-error]",
+                                               "console log: [GPU_ERR]")) for message in messages):
                         raise ValueError("browser errors occurred; see browser.log")
                 finally:
                     (output / "page.html").write_text(page.content(), encoding="utf-8")
@@ -116,8 +131,9 @@ def main() -> None:
     parser.add_argument("archive", type=Path)
     parser.add_argument("--version", default="")
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--headed", action="store_true", help="Use a display for Chromium canvas compositing")
     args = parser.parse_args()
-    run(args.archive, args.version, args.output)
+    run(args.archive, args.version, args.output, headed=args.headed)
 
 
 if __name__ == "__main__":

@@ -180,7 +180,7 @@ jobs:
         env:
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
-          python3 scripts/test_webgpu_sdk.py "$WEBGPU_ARCHIVE" \
+          xvfb-run -a python3 scripts/test_webgpu_sdk.py "$WEBGPU_ARCHIVE" --headed \
             --version "${RELEASE_TAG#v}" --output artifacts/webgpu-browser
 
       - name: Upload browser evidence
