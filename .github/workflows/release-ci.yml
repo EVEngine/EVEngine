@@ -822,7 +822,8 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
-          make test/macosx
+          make test/macosx JOBS="$(sysctl -n hw.ncpu)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=OFF -DEVENGINE_ENABLE_ASSERTS=ON ${{ steps.third-party-cache.outputs.cmake-args }}"
           LABEL_FILTER=''
 
       - name: Sample settlement release benchmark
