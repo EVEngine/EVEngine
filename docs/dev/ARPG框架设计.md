@@ -57,6 +57,57 @@ flowchart TD
 
 ## 宿主集成契约（待实现与验证）
 
+### 已接入：动作伤害 → RPG Vitals
+
+`rpg::RPGActionDamageSink` 是原生宿主显式创建的作用域 provider：现有
+`ActionNotifyRegistry` 的 `combat:damage` producer 经 `IActionDamageSink` 调用它，
+再由 `RPGSettlementAdapter` 与统一 Settlement 提交 `hp`。无需创建或同步 CombatState。
+定义、能力、动作的执行仍属于 action；这里不创建第二套动作状态机。
+
+宿主传入 `RPGDamageResolver`，把 action 实体映射为 RPGActor 的 generation handle 与稳定
+SubjectRef。sink 每次调用重新检查两个领域的实体；映射 owner 必须活得比 sink 久，源或目标
+先销毁均返回失败，sink 先销毁则撤销 provider。读档后宿主重建映射和 sink，不保存运行时指针。
+
+```cpp
+// resolveActionEntity 由宿主拥有，返回 optional<RPGDamageTarget>。
+eve::rpg::RPGActionDamageSink damageSink(resolveActionEntity);
+// 正常推进现有 ActionNotifyPlayback/Registry；无需另调用一次扣血。
+for (const auto& receipt : damageSink.takeReceipts()) {
+    if (receipt.killed) {
+        // 将稳定 source/target 身份交给宿主的奖励事务；此处不重复扣血。
+    }
+}
+```
+
+receipt 保存来源、目标、execution、模拟 tick、实际伤害与死亡转换，按提交顺序一次取走。
+多次命中同一 execution 可以是合法多段技，因此不按 execution 去重；已死亡目标再次受击
+不会重复报告死亡。它不向旧的裸指针 Vitals 队列发布事件，宿主消费拥有身份的 receipts。
+receipt 是瞬时观察，不是持久发奖凭证：跨保存/重试的奖励去重仍待集成。
+
+当前支持固定 `hp` 的默认 RPG 伤害结算；poise 和击退显式返回 Unsupported，preview/scrubbing
+不改变状态。存在 source 时必须有有效 RPG 映射，不把失效施法者静默降为环境伤害。
+同一目标只能由宿主选定一个伤害 provider；不要同时向 CombatState 和 Vitals 提交。
+
+边界审查：R-BOUND-2 使用既有 action/settlement 依赖，未引用 combat 实现；对象文件未定义符号
+检查确认新 adapter 不依赖 `eve::combat`（仅该 TU 的 L2 证据，不等于整个 RPG 模块裁剪）。
+R-MECH-1：多目标、每次命中、provider 运行期可选、资源提交须原子，复用既有 capability 路由
+与 Settlement 事务。E1 提供既有 damage-sink，E3 仅同步解析宿主 Link，E4 输出拥有值的 receipt，
+E5/E6 本轮无新增脚本/MCP API。未新增 ECS System、持久格式、热循环查表或全局注册表。
+线程、重入、寿命及成本按头文件声明；没有架构豁免。
+
+`test/integration/rpg-action/action_damage.cpp` 覆盖实际 Registry 分发、provider 缺席/撤销、
+源/目标销毁与 slot 复用、预览、无效数值、未支持的运动字段及死亡转换。原生宿主可以使用，
+尚未接入可玩示例的输入与奖励控制器。
+
+验证结果：完整 `make check` 通过；重新配置发现新文件后，`eve` 与 `unit_test` 正式链接通过；
+`make test/macosx-debug JOBS=4 FILTER='RPG action damage'` 的 4 项 CTest 全部通过。
+同一路径的独立测试程序报告 31 条断言通过。`MIN_RUN_SECONDS=2 RUN_SECONDS=3 bash
+scripts/smoke_examples.sh rpg` 通过；该检查只证明旧 RPG 示例能启动，不是新增原生桥接的可玩闭环验收。
+之前缺失 `vkbuilder.hpp` 的原因是 `third-party/VKBuilder` 固定子模块未初始化，现已补齐；
+未修改依赖源码，之前的构建阻塞已解除。
+
+### 余下宿主工作
+
 1. 为场景实体、战斗主体和 RPGActor 建立可校验的身份映射；销毁或读档后旧 generation 不可继续生效。
 2. 每个模拟步收集玩家/AI 意图，推进能力、动作时间线与命中窗口。由宿主定义明确时序，不重复推进同一 runtime。
 3. 命中携带 execution、来源、目标、伤害描述进入结算；命中去重范围应区分单次挥击、多段技和持续区域。
