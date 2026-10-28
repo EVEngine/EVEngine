@@ -191,6 +191,7 @@ class Transaction:
         self.tx_id = f"tx-{next(_TX_SEQ)}"
         self.base_revision = world.revision if base_revision is None else base_revision
         self.read_set: Dict[Tuple[PersistentId, str], int] = {}
+        self.read_values: Dict[Tuple[PersistentId, str], Any] = {}
         self.write_set: Dict[Tuple[PersistentId, str], Tuple[int, Any]] = {}
         self.old_values: Dict[Tuple[PersistentId, str], Any] = {}
         self.pending_create: Dict[PersistentId, Tuple[str, Dict[str, Any]]] = {}
@@ -202,7 +203,7 @@ class Transaction:
 
     # -- 读 ----------------------------------------------------------------
     def read(self, pid: PersistentId, field: str) -> Tuple[int, Any]:
-        """读取字段并记录 read_set（CAS 依据：读到时的字段版本）。"""
+        """读取字段并记录 read_set（CAS 依据：读到时的字段版本）与读到的值。"""
         snap = self.world.snapshot()
         row = snap.get(pid)
         if row is None:
@@ -210,6 +211,7 @@ class Transaction:
         _type, data = row
         version = self.world.field_version(pid, field) or 0
         self.read_set[(pid, field)] = version
+        self.read_values[(pid, field)] = data.get(field)
         self.commands.append(f"read {pid}.{field} @v{version}")
         return version, data.get(field)
 
@@ -226,14 +228,35 @@ class Transaction:
               expected_version: Optional[int] = None) -> None:
         """写入（dry-run 不落盘）：自动记录读到时的字段版本与旧值。
 
-        expected_version：MCP 调用方声明的前置条件（文档 §6 FieldVersion）。
-        提供时跳过自动重读，用声明版本做 CAS。
+        - 先做 Schema 字段契约校验：字段必须存在、非 readonly、非 derived、
+          类型必须可 coerce（文档 §4；事务写入不得绕过字段权限）。
+        - 前置条件版本：优先用本事务**首次 read 该字段**时的版本（review：
+          write 必须基于第一次读到的版本做 CAS，而不是覆盖为新读的版本）；
+          其次用调用方声明的 expected_version（MCP readSet）；最后才自动 read。
         """
+        try:
+            type_id = self.world.type_of(pid)
+        except KeyError:
+            raise UnknownEntityError(f"{pid} 不存在（write {field}）")
+        comp = self.world.schema.get(type_id)
+        fd = comp.field(field)
+        if fd.readonly:
+            raise SchemaError(
+                f"字段 {field} 是只读（owner={fd.owner}），Agent 不可写")
+        if fd.derived:
+            raise SchemaError(f"字段 {field} 是派生字段，不可作为独立状态写入")
+        value = fd.coerce(value)  # 类型校验并规范化
+
         if expected_version is not None:
             row = self.world.snapshot().get(pid)
             old = row[1].get(field) if row is not None else None
             self.read_set[(pid, field)] = expected_version
+            self.read_values.setdefault((pid, field), old)
             version = expected_version
+        elif (pid, field) in self.read_set:
+            # 首次 read 的版本/值才是本事务的决策依据
+            version = self.read_set[(pid, field)]
+            old = self.read_values[(pid, field)]
         else:
             version, old = self.read(pid, field)
         self.write_set[(pid, field)] = (version, value)
@@ -260,8 +283,13 @@ class Transaction:
 
     # -- 验证与提交 --------------------------------------------------------
     def _check_versions(self) -> None:
-        """CAS：每个 write 目标的当前字段版本必须等于读取时的版本。"""
-        for (pid, field), (expect_v, _new) in self.write_set.items():
+        """CAS：read_set 中每个字段的当前版本必须等于事务读到时的版本。
+
+        覆盖 write_set（write 必先记入 read_set）与纯读依赖（MCP readSet 声明
+        但未写入的字段）：任何参与决策的字段过期即冲突（文档 §6/§13.8，
+        review: test_complete_read_set / test_mcp_read_only_dependency）。
+        """
+        for (pid, field), expect_v in self.read_set.items():
             current = self.world.field_version(pid, field) or 0
             if current != expect_v:
                 raise Conflict(
@@ -308,16 +336,100 @@ class Transaction:
                         actor=self.actor,
                     )
 
-    def _check_constraints(self) -> None:
-        """领域约束：唯一性 + 引用完整性 + owner 验证（dry-run 阶段全跑完）。"""
+    def _check_create_types(self) -> None:
+        """create 类型/字段在应用前全部校验：未知类型或非法字段 → SchemaError，
+        世界零变化（review: test_atomic_invalid_second_create 的无部分发布）。"""
         for pid, (type_id, fields) in self.pending_create.items():
-            for cfield, cvalue in fields.items():
-                self.constraints.check_unique(
-                    self.world, pid, type_id, cfield, cvalue)
+            comp = self.world.schema.get(type_id)  # 未知类型 → SchemaError
+            for k, v in fields.items():
+                fd = comp.field(k)
+                if fd.readonly or fd.derived:
+                    raise SchemaError(
+                        f"字段 {k} 是 {'只读' if fd.readonly else '派生'}，"
+                        f"不可由创建者直接设置")
+                fd.coerce(v)
+
+    def _check_unique_all(self) -> None:
+        """唯一性约束：世界已有 + 事务内 pending_create 之间 + write_set 更新。"""
+        for domain, ctype, ckey in self.constraints._uniques:
+            snap = self.world.snapshot()
+            occupied: Dict[Any, PersistentId] = {}
+            for pid, t, data in snap.iter_entities():
+                if t == ctype and ckey in data:
+                    occupied[_norm(data[ckey])] = pid
+            pending_vals: Dict[Any, PersistentId] = {}
+            for pid, (type_id, fields) in self.pending_create.items():
+                if type_id != ctype or ckey not in fields:
+                    continue
+                v = _norm(fields[ckey])
+                if v in occupied:
+                    raise Conflict(
+                        "unique-violation",
+                        {"domain": domain, "type": ctype, "field": ckey,
+                         "value": v, "existing": str(occupied[v])},
+                        retry_hint="修改 key 值或选择其它区域 / 槽位",
+                    )
+                if v in pending_vals and pending_vals[v] != pid:
+                    raise Conflict(
+                        "unique-violation",
+                        {"domain": domain, "type": ctype, "field": ckey,
+                         "value": v, "existing": str(pending_vals[v])},
+                        retry_hint="事务内已创建同 key 实体",
+                    )
+                pending_vals[v] = pid
+            for (pid, field), (_v, new_val) in self.write_set.items():
+                if field != ckey:
+                    continue
+                row = snap.get(pid)
+                if row is None or row[0] != ctype:
+                    continue
+                v = _norm(new_val)
+                if v in occupied and occupied[v] != pid:
+                    raise Conflict(
+                        "unique-violation",
+                        {"domain": domain, "type": ctype, "field": ckey,
+                         "value": v, "existing": str(occupied[v])},
+                        retry_hint="修改 key 值或选择其它区域 / 槽位",
+                    )
+                if v in pending_vals and pending_vals[v] != pid:
+                    raise Conflict(
+                        "unique-violation",
+                        {"domain": domain, "type": ctype, "field": ckey,
+                         "value": v, "existing": str(pending_vals[v])},
+                        retry_hint="事务内创建的实体已占用该 key",
+                    )
+
+    def _check_references_on_delete(self) -> None:
+        """delete 反向引用：被删实体仍被其他存活实体强引用 → dangling-reference。"""
+        if not self.pending_delete:
+            return
+        snap = self.world.snapshot()
+        for ref_field, target_domain in self.constraints._references:
+            for pid, _t, data in snap.iter_entities():
+                if ref_field not in data or not isinstance(data[ref_field], str):
+                    continue
+                ref = _parse_pid(data[ref_field])
+                if ref in self.pending_delete:
+                    raise Conflict(
+                        "dangling-reference",
+                        {"field": ref_field, "value": data[ref_field],
+                         "referrer": str(pid), "deleted": str(ref)},
+                        retry_hint="先更新引用方或改为软删除",
+                    )
+
+    def _check_constraints(self) -> None:
+        """领域约束（dry-run 阶段全跑完，任一失败即拒绝，无部分发布）：
+        - 唯一性：世界已有 + 事务内 pending_create 之间 + write_set 更新；
+        - 引用：create/write 的正向强引用 + delete 的反向引用；
+        - owner 验证（可注入失败）。
+        """
+        self._check_unique_all()
+        for pid, (type_id, fields) in self.pending_create.items():
             self.constraints.check_references(self.world, pid, fields)
             self.constraints.check_owner(self.world, pid, "__create__", type_id)
         for (pid, field), (_v, value) in self.write_set.items():
             self.constraints.check_owner(self.world, pid, field, value)
+        self._check_references_on_delete()
 
     def dry_run(self) -> Dict[str, Any]:
         """只验证不落盘：返回影响范围（diff / 命令数）。"""
@@ -325,6 +437,7 @@ class Transaction:
             raise RuntimeError(f"{self.tx_id} 已 abort")
         self._check_versions()
         self._check_phantom()
+        self._check_create_types()
         self._check_constraints()
         return {
             "commands": len(self.commands),
@@ -463,10 +576,14 @@ def mcp_eve_world_commit(manager: TransactionManager, params: Dict[str, Any]) ->
     """
     tx = manager.begin(params.get("actor", "mcp"))
     tx.base_revision = params.get("baseRevision", manager.world.revision)
-    read_versions = {
-        (_parse_pid(r["pid"]), r["field"]): r["version"]
-        for r in params.get("readSet", [])
-    }
+    read_versions: Dict[Tuple[PersistentId, str], int] = {}
+    for r in params.get("readSet", []):
+        pid = _parse_pid(r["pid"])
+        read_versions[(pid, r["field"])] = r["version"]
+        # readSet 声明的全部字段进入读集（即使 commands 未写入该字段），
+        # 提交时统一做字段版本 CAS（review: test_mcp_read_only_dependency）
+        tx.read_set[(pid, r["field"])] = r["version"]
+        tx.read_values.setdefault((pid, r["field"]), None)
     for cmd in params.get("commands", []):
         op = cmd["op"]
         if op == "set":
@@ -495,6 +612,12 @@ def mcp_eve_world_commit(manager: TransactionManager, params: Dict[str, Any]) ->
 # ---------------------------------------------------------------------------
 # 工具函数
 # ---------------------------------------------------------------------------
+
+def _norm(v: Any) -> Any:
+    if isinstance(v, (list, tuple)):
+        return tuple(v)
+    return v
+
 
 def _parse_pid(s: str) -> PersistentId:
     domain, _, seq = s.rpartition(":")

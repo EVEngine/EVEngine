@@ -15,6 +15,7 @@ P1 验收点（来自该文档 §11）：
 
 from __future__ import annotations
 
+import copy
 import json
 import math
 import threading
@@ -274,11 +275,17 @@ class World:
         return self._field_versions.get((pid, field_id))
 
     def snapshot(self) -> "WorldSnapshot":
-        """返回绑定当前 revision 的只读快照（浅拷贝视图）。"""
+        """返回绑定当前 revision 的只读快照（隔离拷贝视图）。
+
+        实体数据为深拷贝：快照持有的是独立副本，后续权威写入与快照互不可见；
+        对快照数据的任何修改也不影响世界（文档 §2 一致只读快照语义）。
+        """
         with self._lock:
             return WorldSnapshot(
                 world=self, revision=self.revision, tick=self.tick,
-                entities=dict(self._entities), types=dict(self._types),
+                entities={pid: copy.deepcopy(data)
+                          for pid, data in self._entities.items()},
+                types=dict(self._types),
             )
 
     def type_of(self, pid: PersistentId) -> str:
@@ -424,6 +431,17 @@ class IndexUnavailable(Exception):
     pass
 
 
+class QueryStaleTokenError(Exception):
+    """分页 token 绑定的快照 revision 已过期：查询必须基于一致快照。"""
+
+    def __init__(self, token_revision: int, current_revision: int) -> None:
+        super().__init__(
+            f"分页 token 绑定 r{token_revision}，当前世界 r{current_revision}："
+            f"token 已过期，需重新查询")
+        self.token_revision = token_revision
+        self.current_revision = current_revision
+
+
 class IndexSet:
     """世界查询用的投影集合：统一水位检查与重建入口。"""
 
@@ -520,6 +538,18 @@ class QueryPlanner:
     def execute(self, spec: QuerySpec) -> QueryResult:
         snap = self.world.snapshot()
 
+        # 分页 token 绑定快照 revision：陈旧 token 必须拒绝（不是静默翻新页）
+        cursor = 0
+        if spec.pageToken:
+            try:
+                tag, token_rev, token_cursor = spec.pageToken.split(":", 2)
+                if tag != "rev" or int(token_rev) != snap.revision:
+                    raise QueryStaleTokenError(
+                        int(token_rev), snap.revision)
+                cursor = int(token_cursor)
+            except ValueError:
+                raise QueryStaleTokenError(-1, snap.revision)
+
         # 强一致水位检查（仅检查本查询依赖的索引）
         required: set[str] = set()
         if spec.where:
@@ -577,6 +607,14 @@ class QueryPlanner:
             candidates = spatial
             reasons.append(f"起点：空间半径 {radius} ({len(spatial)} 候选)")
 
+        # 无任何谓词起点（如 type-only 查询）→ 全量权威扫描起点。
+        # 注意：带谓词但 0 命中的查询不回退全量（保持空集语义，不做无用扫描）。
+        if (not candidates and not spec.where and not spec.within
+                and not spec.similarTo):
+            candidates = [pid for pid, _t, _d in snap.iter_entities()]
+            budget -= len(candidates)
+            reasons.append(f"起点：全量权威扫描 ({len(candidates)})")
+
         # 类型过滤（在权威快照上做精确过滤）
         if spec.type:
             candidates = [
@@ -610,15 +648,11 @@ class QueryPlanner:
 
         truncated = budget <= 0
 
-        # 分页：基于快照（revision, tick）的游标 token
+        # 分页：token 编码快照 revision（rev:<rev>:<cursor>），陈旧 token 在入口拒绝
         page_token = None
-        if spec.pageToken:
-            cursor = int(spec.pageToken)
-        else:
-            cursor = 0
         page = out[cursor:cursor + spec.limit]
         if len(page) == spec.limit and cursor + spec.limit < len(out):
-            page_token = str(cursor + spec.limit)
+            page_token = f"rev:{snap.revision}:{cursor + spec.limit}"
 
         return QueryResult(
             ids=[str(pid) for pid in page],
