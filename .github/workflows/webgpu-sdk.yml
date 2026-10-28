@@ -199,6 +199,15 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: Preserve failing browser SDK for reproduction
+        if: failure() && env.WEBGPU_ARCHIVE != ''
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: webgpu-failed-sdk-${{ inputs.tag || 'ci' }}
+          path: ${{ env.WEBGPU_ARCHIVE }}
+          if-no-files-found: error
+          retention-days: 3
+
       - name: Save Emscripten SDK cache
         # Only refresh on the default branch so per-PR runs restore (free) but
         # never rewrite the cache, keeping churn/eviction of hot caches low.

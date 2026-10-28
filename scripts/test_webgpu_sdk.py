@@ -63,7 +63,7 @@ def run(archive: Path, version: str, output: Path) -> None:
                 ])
                 page = browser.new_page(viewport={"width": 1280, "height": 800})
                 page.on("console", lambda message: messages.append(f"console {message.type}: {message.text}"))
-                page.on("pageerror", lambda error: messages.append(f"pageerror: {error}"))
+                page.on("pageerror", lambda error: messages.append(f"pageerror: {error.stack or error}"))
                 page.on("requestfailed", lambda request: messages.append(f"requestfailed: {request.url}"))
                 try:
                     base = f"http://127.0.0.1:{server.server_port}"
