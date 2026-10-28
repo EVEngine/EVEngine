@@ -9,7 +9,9 @@ runs:
         # Use a fixed full browser; adapter limits are checked and recorded by the test.
         python3 -m pip install --quiet pillow playwright==1.64.1
         python3 -m playwright install --with-deps --no-shell chromium
-    - name: Install browser display dependencies
+    - name: Install browser display and software Vulkan dependencies
       if: runner.os == 'Linux'
       shell: bash
-      run: sudo apt-get install -y --no-install-recommends xvfb xauth
+      run: |
+        sudo apt-get install -y --no-install-recommends xvfb xauth mesa-vulkan-drivers vulkan-tools
+        bash .github/scripts/setup-software-vulkan.sh
