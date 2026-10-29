@@ -10,6 +10,7 @@
 #include "rpg/Class.h"
 #include "rpg/Effect.h"
 #include "rpg/EncounterCatalogue.h"
+#include "rpg/EncounterVictoryInternal.h"
 #include "rpg/EquipmentSystem.h"
 #include "rpg/GameState.h"
 #include "rpg/LevelSystem.h"
@@ -270,21 +271,7 @@ RPG::settleEncounterVictory(RPGActor *actor, Tracker *tracker, GameState *gameSt
     if (!definition)
         return eve::Result<BattleVictoryReceipt>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::NotFound, "unknown encounter definition", "encounterId"));
-    BattleVictoryRequest request;
-    request.mapId = mapId;
-    request.objectId = objectId;
-    request.requiredQuestId = definition->requiredQuestId;
-    request.xpAmount = definition->xpReward;
-    request.xpGrowth = definition->xpGrowth;
-    request.attributeId = "gold";
-    request.attributeAmount = definition->goldReward;
-    request.notifyTopic = definition->notifyTopic;
-    request.notifyTarget = definition->notifyTarget;
-    request.notifyAmount = definition->notifyAmount;
-    request.defeatCounterId = definition->defeatCounterId;
-    request.defeatCounterAmount = definition->defeatCounterAmount;
-    request.levelPointAttributeId = definition->levelPointAttributeId;
-    request.pointsPerLevel = definition->pointsPerLevel;
+    const auto request = detail::encounterVictoryRequest(*definition, mapId, objectId);
     return BattleVictory::settle(*actor, *gameState, *tracker, request);
 }
 

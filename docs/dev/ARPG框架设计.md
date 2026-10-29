@@ -74,7 +74,8 @@ eve::rpg::RPGActionDamageSink damageSink(resolveActionEntity);
 // 正常推进现有 ActionNotifyPlayback/Registry；无需另调用一次扣血。
 for (const auto& receipt : damageSink.takeReceipts()) {
     if (receipt.killed) {
-        // 将稳定 source/target 身份交给宿主的奖励事务；此处不重复扣血。
+        // 解析来源到有效 RPGDamageTarget 后调用 ActionKillReward::settle。
+        // 检查 Result；失败时保留 receipt 重试。此处不重复扣血。
     }
 }
 ```
@@ -82,7 +83,7 @@ for (const auto& receipt : damageSink.takeReceipts()) {
 receipt 保存来源、目标、execution、模拟 tick、实际伤害与死亡转换，按提交顺序一次取走。
 多次命中同一 execution 可以是合法多段技，因此不按 execution 去重；已死亡目标再次受击
 不会重复报告死亡。它不向旧的裸指针 Vitals 队列发布事件，宿主消费拥有身份的 receipts。
-receipt 是瞬时观察，不是持久发奖凭证：跨保存/重试的奖励去重仍待集成。
+receipt 是瞬时观察；下述 ActionKillReward 提供已提交奖励的持久去重，但不持久化待处理 receipt。
 
 当前支持固定 `hp` 的默认 RPG 伤害结算；poise 和击退显式返回 Unsupported，preview/scrubbing
 不改变状态。存在 source 时必须有有效 RPG 映射，不把失效施法者静默降为环境伤害。
@@ -105,6 +106,31 @@ E5/E6 本轮无新增脚本/MCP API。未新增 ECS System、持久格式、热�
 scripts/smoke_examples.sh rpg` 通过；该检查只证明旧 RPG 示例能启动，不是新增原生桥接的可玩闭环验收。
 之前缺失 `vkbuilder.hpp` 的原因是 `third-party/VKBuilder` 固定子模块未初始化，现已补齐；
 未修改依赖源码，之前的构建阻塞已解除。
+
+### 2026-10-29：死亡奖励与存档去重
+
+原生 `ActionKillReward::settle` 接收伤害 sink 的可信死亡 receipt，复用 `BattleVictory`
+提交经验、职业技能、金币、任务进度和计数。单成员 EncounterCatalogue 是奖励模板；
+多成员模板显式拒绝，避免每次击杀都领取整个遭遇奖励。模板沿用 BattleVictory 的
+有效活动任务等前置条件，尚不支持无任务奖励。既有遭遇入口与新入口共用字段投影。
+
+去重事实由 GameState 的 WorldState 消费标记唯一持有，保留作用域 `rpg.action-kill.v1`，
+以目标 SubjectRef 为键。宿主必须为每条生命分配不可复用的身份。尸体可以先销毁；收奖者
+必须仍是有效 ECS generation，且身份匹配死亡来源。重复消费先于模板与任务检查，成功
+发奖后即使任务完成或模板移除也返回 NoOp。失败不消耗死亡身份，调用者保留 receipt 重试。
+
+使用 RPGSaveSession 一起保存角色、任务和 GameState 后，恢复仍能拒绝重复发奖。
+这不是崩溃恢复的持久消息收件箱：未处理 receipt 仍是瞬时数据，宿主应在发奖完成后的安全点
+保存，或另行设计待处理记录。物品掉落、多人分配和多敌人遭遇的联合事务尚未接通。
+
+边界：E3 每次同步校验收奖者 Handle，E4 消费拥有身份值的 receipt；E1/E2/E5/E6 无新增接口。
+单收奖者、低频死亡事件、已知事务 owner、要求原子提交，因此直接复用 BattleVictory。
+未新增 ECS System、可选依赖、持久 schema 或第二份角色状态；沿用 SaveSession 版本与迁移。
+公开接口使用 nodiscard Result，声明寿命、线程、重入及成本；无架构规则豁免。
+
+验证：完整 `make check` 通过；正式 macOS Debug 构建与链接通过；
+`make test/macosx-debug JOBS=4 FILTER='Action kill reward'` 的 6 项集成测试全部通过，
+覆盖重复消费、尸体销毁、失败重试、失效收奖者、多敌人拒绝及 SaveSession 恢复去重。
 
 ### 余下宿主工作
 
