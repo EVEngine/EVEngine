@@ -355,7 +355,10 @@ function(main)
         # Emdawnwebgpu port: provides <webgpu/webgpu.h> + <webgpu/webgpu_cpp.h>
         # and the browser WebGPU JS glue. Directory-scope so every module target
         # (EVGraphics, EVUI, EVGpgpu, eve_imgui, ...) gets it at compile + link.
-        add_compile_options(--use-port=emdawnwebgpu)
+        # Link-time exception settings cannot recover catch blocks that em++
+        # removed while compiling. Runtime metadata analysis and script bindings
+        # rely on catching recoverable C++ failures before returning diagnostics.
+        add_compile_options(--use-port=emdawnwebgpu "$<$<COMPILE_LANGUAGE:CXX>:-fexceptions>")
         add_link_options(--use-port=emdawnwebgpu)
         # SDL2, zlib and FreeType come from Emscripten ports (vendored trees are
         # skipped

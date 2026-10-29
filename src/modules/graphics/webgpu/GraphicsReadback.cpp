@@ -54,6 +54,8 @@ Color Graphics::getPixel(int x, int y) {
 
 image::ImageData *Graphics::newImageData() {
     if (activeCanvas) return newImageDataImpl(static_cast<OffscreenCanvas *>(activeCanvas));
+    if (screenReadbackEnabled && (!surfaceCanCopySrc || !presentedReadback))
+        throw Exception("WebGPU: no presented frame is available for screen readback");
     if ((screenReadbackEnabled && presentedReadback) || !sceneColorSlots.empty()) return newImageDataImpl(nullptr);
     return new image::ImageData(1, 1, "RGBA8");
 }
@@ -215,7 +217,7 @@ image::ImageData *Graphics::newImageDataImpl(OffscreenCanvas *canvas) {
     int h = presented ? presentedReadbackH
             : canvas  ? canvas->getHeight()
                       : (sceneColorHeight > 0 ? sceneColorHeight : 1);
-    auto                *img = new image::ImageData(w, h, "RGBA8");
+    auto                 img = std::make_unique<image::ImageData>(w, h, "RGBA8");
     std::vector<uint8_t> rgba;
     wgpu::Texture        src = presented ? presentedReadback
                                : canvas  ? canvas->color
@@ -236,8 +238,10 @@ image::ImageData *Graphics::newImageDataImpl(OffscreenCanvas *canvas) {
                 dst[pixel * 4 + 3] = uint8_t(std::clamp(color.a * 255.f, 0.f, 255.f));
             }
         }
+    } else {
+        throw Exception("WebGPU: texture readback failed");
     }
-    return img;
+    return img.release();
 }
 
 image::ImageData *Graphics::newHDRImageDataImpl(OffscreenCanvas *canvas) {

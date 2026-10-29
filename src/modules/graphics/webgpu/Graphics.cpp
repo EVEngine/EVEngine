@@ -296,10 +296,17 @@ void Graphics::configureSurface(int width, int height) {
     cfg.width = static_cast<uint32_t>(width);
     cfg.height = static_cast<uint32_t>(height);
     cfg.format = surfaceFormat;
+#if defined(__EMSCRIPTEN__)
+    // GPUCanvasConfiguration accepts COPY_SRC for canvas textures. Unlike native
+    // surfaces, the browser API has no surface-usage capability query; the C API
+    // adapter's synthesized capabilities need not populate the usages member.
+    surfaceCanCopySrc = true;
+#else
     WGPUSurfaceCapabilities caps{};
     surfaceCanCopySrc = wgpuSurfaceGetCapabilities(surface.Get(), adapter.Get(), &caps) == WGPUStatus_Success &&
                         (caps.usages & WGPUTextureUsage_CopySrc) != 0;
     wgpuSurfaceCapabilitiesFreeMembers(caps);
+#endif
     cfg.usage           = WGPUTextureUsage_RenderAttachment | (surfaceCanCopySrc ? WGPUTextureUsage_CopySrc : 0);
     cfg.viewFormatCount = 0;
     cfg.viewFormats     = nullptr;
@@ -4947,7 +4954,7 @@ void Graphics::present() {
         pass.End();
     }
 
-    if (screenReadbackEnabled) recordPresentedReadback(encoder, surfaceTex);
+    if (screenReadbackEnabled && surfaceCanCopySrc) recordPresentedReadback(encoder, surfaceTex);
     wgpu::CommandBuffer cmd = encoder.Finish();
     queue.Submit(1, &cmd);
     // emdawnwebgpu implements the GPU on the JS main thread: queued commands
