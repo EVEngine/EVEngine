@@ -79,9 +79,9 @@ owner 失败无部分发布。
 | 能力 | 实现 | 文档对照 |
 | --- | --- | --- |
 | 事务工作单元 | `Transaction`：tx_id + actor + base_revision + read_set（读到时的字段版本）+ write_set（期望旧版本, 新值）+ 命令列表；`read/read_range/write/create/delete` | §6 / §13.8 |
-| MVCC / CAS | 提交时 dry-run：每个 write 目标的当前字段版本必须等于 read_set 版本，否则 `Conflict(version-mismatch)`（附 current/expected 与 retryHint） | §6：`commit(baseRevision, readSet, commands, preconditions=[FieldVersion(...)])` |
+| MVCC / CAS | 提交时 dry-run：**read_set 全部字段**（含纯读依赖与 MCP readSet 声明）的当前版本必须等于读到时的版本，否则 `Conflict(version-mismatch)`（附 current/expected 与 retryHint）；`write` 以本事务首次 read 的版本为前置条件 | §6：`commit(baseRevision, readSet, commands, preconditions=[FieldVersion(...)])` |
 | Phantom | 范围谓词记录 base_revision；base 之后落入范围内的新对象使旧事务 `Conflict(phantom)` | §6 |
-| 领域约束 | `ConstraintRegistry`：`register_unique`（区域内唯一，如唯一出生点）、`register_reference`（强引用存活检查）、`register_owner_validator`（可注入失败） | §7 |
+| 领域约束 | `ConstraintRegistry`：唯一性覆盖世界已有 + 事务内 pending create 之间 + write_set key 更新；引用覆盖 create/write 正向与 delete 反向；owner 验证可注入失败 | §7 |
 | 原子性 | `commit` = dry-run 全通过 → 原子应用（creates→writes→deletes）→ revision 一次性 +1 → 字段版本统一更新 → tombstone；owner 失败时**世界零变化**（无部分发布） | §6 / §7 |
 | 隐藏写者检测 | 运行时直写（`World.set_field`）同样递增字段版本 → 事务 CAS 自然失败，无法绕过冲突检测 | §6 |
 | 条件 undo | `undo()` 生成**带当前前置条件的新事务**：逆向 write 写回事务应用前的旧值；撤销 create（删除存活实体）；按删除前快照重建已删实体（restore）；undo 本身也可能冲突 | §6：undo 不是整世界回滚 |
@@ -167,6 +167,14 @@ owner-rejected | entity-missing`。
 ---
 
 ## 7. 诚实边界清单（上游合入前需补齐）
+
+> **Review 修复记录（repro_review.py，13 项 / 15 断言，均已修复并转正为
+> `tests/test_swdb_review.py` 回归测试）**：快照深拷贝隔离（双向不可见）、
+> 完整 read_set CAS（纯读依赖参与版本校验）、write 字段契约（readonly/derived/
+> 类型 coerce，事务不可绕过 Schema）、create 应用前校验（无效 create → SchemaError，
+> 世界与审计零变化）、唯一性约束覆盖事务内 create 之间与 write_set 更新、
+> 删除反向引用检查、type-only 查询回退全量权威扫描、分页 token 绑定快照
+> revision（陈旧 token 拒绝）。
 
 1. **并发模型**：原型是单线程模拟多 Agent 提交；真实并发（多线程 / 多进程 / 多进程内
    多线程）的锁与提交临界区未做压力验证。

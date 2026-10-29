@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import itertools
 import threading
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from swdb import (
@@ -200,18 +200,25 @@ class Transaction:
         self.range_predicates: List[Tuple[Tuple[int, int], Tuple[int, int], int]] = []
         self.commands: List[str] = []
         self._aborted = False
+        self._restore = False  # 受控恢复（undo）：恢复权威状态时跳过 create 权限检查
 
     # -- 读 ----------------------------------------------------------------
     def read(self, pid: PersistentId, field: str) -> Tuple[int, Any]:
-        """读取字段并记录 read_set（CAS 依据：读到时的字段版本）与读到的值。"""
+        """读取字段并记录 read_set（CAS 依据：**首次**读到时的版本与值）。
+
+        同事务重复读同一字段不覆盖首次决策依据（review R1：重复读取保持
+        首次版本——之后 write 仍以首次版本做 CAS，外部写入无法被二次读掩盖）。
+        第二次及后续读取返回最新值仅供调用方观察。
+        """
         snap = self.world.snapshot()
         row = snap.get(pid)
         if row is None:
             raise UnknownEntityError(f"{pid} 不存在（read {field}）")
         _type, data = row
         version = self.world.field_version(pid, field) or 0
-        self.read_set[(pid, field)] = version
-        self.read_values[(pid, field)] = data.get(field)
+        if (pid, field) not in self.read_set:
+            self.read_set[(pid, field)] = version
+            self.read_values[(pid, field)] = data.get(field)
         self.commands.append(f"read {pid}.{field} @v{version}")
         return version, data.get(field)
 
@@ -338,30 +345,43 @@ class Transaction:
 
     def _check_create_types(self) -> None:
         """create 类型/字段在应用前全部校验：未知类型或非法字段 → SchemaError，
-        世界零变化（review: test_atomic_invalid_second_create 的无部分发布）。"""
+        世界零变化（review: test_atomic_invalid_second_create 的无部分发布）。
+
+        `_restore`（undo 受控恢复）跳过 readonly/derived 权限检查：恢复的是
+        删除前的权威状态，不是普通 Agent 创建（review R4: test_delete_undo）。
+        """
         for pid, (type_id, fields) in self.pending_create.items():
             comp = self.world.schema.get(type_id)  # 未知类型 → SchemaError
             for k, v in fields.items():
                 fd = comp.field(k)
-                if fd.readonly or fd.derived:
+                if not self._restore and (fd.readonly or fd.derived):
                     raise SchemaError(
                         f"字段 {k} 是 {'只读' if fd.readonly else '派生'}，"
                         f"不可由创建者直接设置")
                 fd.coerce(v)
 
     def _check_unique_all(self) -> None:
-        """唯一性约束：世界已有 + 事务内 pending_create 之间 + write_set 更新。"""
+        """唯一性约束：在**最终候选状态**上验证（review R2）。
+
+        最终候选状态 = 世界已有（剔除本事务待删实体）+ 事务内 pending_create
+        （含字段默认值）+ write_set key 更新（新值动态加入占用集）：
+        - 两个实体更新到同一全新值 → 第二个冲突；
+        - 同事务两个 create 不传 key（默认值相同）→ 冲突；
+        - update 撞 pending_create 的最终值 → 冲突。
+        """
         for domain, ctype, ckey in self.constraints._uniques:
+            comp = self.world.schema.get(ctype)
+            fd = comp.field(ckey)
             snap = self.world.snapshot()
             occupied: Dict[Any, PersistentId] = {}
             for pid, t, data in snap.iter_entities():
-                if t == ctype and ckey in data:
+                if t == ctype and ckey in data and pid not in self.pending_delete:
                     occupied[_norm(data[ckey])] = pid
             pending_vals: Dict[Any, PersistentId] = {}
             for pid, (type_id, fields) in self.pending_create.items():
-                if type_id != ctype or ckey not in fields:
+                if type_id != ctype:
                     continue
-                v = _norm(fields[ckey])
+                v = _norm(fields.get(ckey, fd.default))
                 if v in occupied:
                     raise Conflict(
                         "unique-violation",
@@ -384,6 +404,10 @@ class Transaction:
                 if row is None or row[0] != ctype:
                     continue
                 v = _norm(new_val)
+                # 本实体的旧 key 先让出（它即将迁走）
+                old_key = row[1].get(ckey)
+                if old_key is not None and occupied.get(_norm(old_key)) == pid:
+                    del occupied[_norm(old_key)]
                 if v in occupied and occupied[v] != pid:
                     raise Conflict(
                         "unique-violation",
@@ -398,6 +422,7 @@ class Transaction:
                          "value": v, "existing": str(pending_vals[v])},
                         retry_hint="事务内创建的实体已占用该 key",
                     )
+                occupied[v] = pid
 
     def _check_references_on_delete(self) -> None:
         """delete 反向引用：被删实体仍被其他存活实体强引用 → dangling-reference。"""
@@ -420,15 +445,32 @@ class Transaction:
     def _check_constraints(self) -> None:
         """领域约束（dry-run 阶段全跑完，任一失败即拒绝，无部分发布）：
         - 唯一性：世界已有 + 事务内 pending_create 之间 + write_set 更新；
-        - 引用：create/write 的正向强引用 + delete 的反向引用；
+        - 引用：create 的正向强引用 + write 更新引用字段的目标存活 +
+          delete 的反向引用；
         - owner 验证（可注入失败）。
         """
         self._check_unique_all()
         for pid, (type_id, fields) in self.pending_create.items():
             self.constraints.check_references(self.world, pid, fields)
             self.constraints.check_owner(self.world, pid, "__create__", type_id)
+        ref_fields = {ref_field for ref_field, _dom in self.constraints._references}
         for (pid, field), (_v, value) in self.write_set.items():
             self.constraints.check_owner(self.world, pid, field, value)
+            if field in ref_fields:
+                # 引用字段更新必须指向存活实体，且目标不能被本事务删除（review R3）
+                if isinstance(value, str):
+                    try:
+                        ref = _parse_pid(value)
+                    except ValueError:
+                        ref = None
+                    if ref is not None and ref in self.pending_delete:
+                        raise Conflict(
+                            "dangling-reference",
+                            {"field": field, "value": value,
+                             "referrer": str(pid), "deleted": str(ref)},
+                            retry_hint="先更新引用方或改为软删除",
+                        )
+                self.constraints.check_references(self.world, pid, {field: value})
         self._check_references_on_delete()
 
     def dry_run(self) -> Dict[str, Any]:
@@ -516,6 +558,7 @@ class Transaction:
         因此 undo 本身也可能与其他并发写入冲突——这是文档要求的语义。
         """
         undo_tx = self.manager.begin(self.actor)
+        undo_tx._restore = True  # 受控恢复：允许重建包含只读/派生字段的权威状态
         for (pid, field), (_v, _new) in self.write_set.items():
             if self.world.snapshot().get(pid) is not None:
                 undo_tx.write(pid, field, self.old_values[(pid, field)])
@@ -584,6 +627,15 @@ def mcp_eve_world_commit(manager: TransactionManager, params: Dict[str, Any]) ->
         # 提交时统一做字段版本 CAS（review: test_mcp_read_only_dependency）
         tx.read_set[(pid, r["field"])] = r["version"]
         tx.read_values.setdefault((pid, r["field"]), None)
+    # 显式前置条件 preconditions（文档 §6 FieldVersion 列表）：与 readSet 同语义，
+    # 独立声明也参与 CAS；未知条件类型直接拒绝（review R5）
+    for pc in params.get("preconditions", []):
+        kind = pc.get("kind")
+        if kind != "field-version":
+            raise SchemaError(f"未知前置条件类型 {kind!r}")
+        pid = _parse_pid(pc["pid"])
+        tx.read_set[(pid, pc["field"])] = pc["version"]
+        tx.read_values.setdefault((pid, pc["field"]), None)
     for cmd in params.get("commands", []):
         op = cmd["op"]
         if op == "set":

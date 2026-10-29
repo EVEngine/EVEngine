@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from swdb import ComponentDef, FieldDef, FieldType, SchemaRegistry, World  # noqa: E402
 from swdb_tx import (  # noqa: E402
-    Conflict, ConstraintRegistry, TransactionManager, mcp_eve_world_commit,
+    Conflict, TransactionManager, mcp_eve_world_commit,
 )
 
 

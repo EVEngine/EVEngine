@@ -16,7 +16,7 @@ P1 验收点（来自该文档 §11）：
 from __future__ import annotations
 
 import copy
-import json
+import hashlib
 import math
 import threading
 from dataclasses import dataclass, field
@@ -538,12 +538,15 @@ class QueryPlanner:
     def execute(self, spec: QuerySpec) -> QueryResult:
         snap = self.world.snapshot()
 
-        # 分页 token 绑定快照 revision：陈旧 token 必须拒绝（不是静默翻新页）
+        # 分页 token 绑定快照 revision + 查询指纹：陈旧 token / 跨查询复用
+        # 必须拒绝（不是静默翻新页，review R6: test_cross_query_token）
         cursor = 0
         if spec.pageToken:
             try:
-                tag, token_rev, token_cursor = spec.pageToken.split(":", 2)
-                if tag != "rev" or int(token_rev) != snap.revision:
+                tag, token_rev, token_cursor, token_fp = \
+                    spec.pageToken.split(":", 3)
+                if (tag != "rev" or int(token_rev) != snap.revision
+                        or token_fp != _query_fingerprint(spec)):
                     raise QueryStaleTokenError(
                         int(token_rev), snap.revision)
                 cursor = int(token_cursor)
@@ -564,7 +567,6 @@ class QueryPlanner:
                 return self._stalled_result(snap, stale)
 
         budget = spec.budgetNodes
-        seen: set[PersistentId] = set()
         reasons: List[str] = []
 
         # 起点：属性索引优先（确定性筛选）
@@ -648,11 +650,13 @@ class QueryPlanner:
 
         truncated = budget <= 0
 
-        # 分页：token 编码快照 revision（rev:<rev>:<cursor>），陈旧 token 在入口拒绝
+        # 分页：token 编码快照 revision + 查询指纹（rev:<rev>:<cursor>:<fp>），
+        # 陈旧 token 与跨查询复用都在入口拒绝
         page_token = None
         page = out[cursor:cursor + spec.limit]
         if len(page) == spec.limit and cursor + spec.limit < len(out):
-            page_token = f"rev:{snap.revision}:{cursor + spec.limit}"
+            page_token = (f"rev:{snap.revision}:{cursor + spec.limit}:"
+                          f"{_query_fingerprint(spec)}")
 
         return QueryResult(
             ids=[str(pid) for pid in page],
@@ -686,6 +690,31 @@ class QueryPlanner:
 def _norm(v: Any) -> Any:
     if isinstance(v, (list, tuple)):
         return tuple(v)
+    return v
+
+
+def _query_fingerprint(spec: "QuerySpec") -> str:
+    """规范化查询指纹：pageToken 绑定查询本身（review R6）。
+
+    相同 type/where/within/similarTo/limit/consistency 的查询得到相同指纹；
+    跨查询复用 token（即使同 revision）会被入口拒绝。
+    """
+    norm = {
+        "type": spec.type,
+        "where": _freeze(spec.where),
+        "within": spec.within,
+        "similarTo": spec.similarTo,
+        "limit": spec.limit,
+        "consistency": spec.consistency,
+    }
+    return hashlib.sha1(repr(norm).encode("utf-8")).hexdigest()[:16]
+
+
+def _freeze(v: Any) -> Any:
+    if isinstance(v, dict):
+        return tuple((k, _freeze(v[k])) for k in sorted(v))
+    if isinstance(v, (list, tuple)):
+        return tuple(_freeze(x) for x in v)
     return v
 
 

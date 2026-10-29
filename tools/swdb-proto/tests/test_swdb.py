@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from swdb import (  # noqa: E402
     AttributeIndex, ComponentDef, FieldDef, FieldType, IndexSet,
-    PersistentId, QueryPlanner, QuerySpec, SchemaError, SchemaRegistry,
+    QueryPlanner, QuerySpec, SchemaError, SchemaRegistry,
     SpatialIndex, TombstoneError, VectorIndex, World, mcp_eve_world_query,
     mcp_eve_world_snapshot,
 )
