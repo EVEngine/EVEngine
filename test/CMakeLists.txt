@@ -455,7 +455,12 @@ else()
     target_compile_definitions(onnx_engine_probe PRIVATE EVE_ONNX_ENGINE_PROVIDER POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
     target_link_libraries(onnx_engine_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
     eve_add_test_executable(onnx_gpu_contracts EXCLUDE_FROM_ALL main.cpp tensor_onnx_gpu.cpp)
-    target_compile_definitions(onnx_gpu_contracts PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+    target_compile_definitions(onnx_gpu_contracts PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX
+      EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
+      EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    target_compile_options(onnx_gpu_contracts PRIVATE
+      $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
     target_link_libraries(onnx_gpu_contracts eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
 
 
