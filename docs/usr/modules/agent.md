@@ -4,6 +4,10 @@
 
 Agent 面向游戏自动操作、决策策略学习、仿真优化与自动测试。默认优化领域返回的累计奖励；覆盖率和失败奖励默认都是零，测试场景自行开启。
 
+技能、装备、职业等配置的自动调参使用原生 [`BalanceSearch`](agent-balance.md)：
+先配置参数范围和指标区间，再用游戏自己的评估器搜索，输出独立种子验证报告。
+完整演示见 [`examples/rpg-balance`](../../../examples/rpg-balance/README.md)。
+
 算法为进化 rollout 搜索加策略蒸馏：种群采样、精英选择、动作变异，以及两层 tanh MLP 的 masked-softmax 交叉熵训练。这不是严格的多温度 MCMC。保留均匀随机策略用于基线比较。
 
 ## 从脚本创建 agent
