@@ -285,7 +285,7 @@ TEST_CASE("math.convexHull3D.degenerateInputs") {
     CHECK_EQ(plane.value().vertices.size(), 4U);
     CHECK_EQ(plane.value().faces.size(), 2U);
     auto nearPlane =
-        convexHull3D(std::vector<HullPoint3>{{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {.5f, .5f, 1e - 8f}}, 1e - 6);
+        convexHull3D(std::vector<HullPoint3>{{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {.5f, .5f, 1e-8f}}, 1e-6);
     REQUIRE(nearPlane.ok());
     CHECK(nearPlane.value().dimension == HullDimension::Plane);
 }
@@ -312,7 +312,7 @@ double checkSolid(const std::vector<HullPoint3>& points) {
         const auto a = hull.vertices[f[0]], b = hull.vertices[f[1]], c = hull.vertices[f[2]];
         const auto n = cross(difference(b, a), difference(c, a));
         REQUIRE(dot(n, n) > 0);
-        for (const auto& p : points) CHECK(dot(n, difference(p, a)) <= 1e - 7);
+        for (const auto& p : points) CHECK(dot(n, difference(p, a)) <= 1e-7);
         volume += dot(difference(a, origin), cross(difference(b, origin), difference(c, origin))) / 6;
         for (std::size_t i = 0; i < 3; ++i) ++edges[{f[i], f[(i + 1) % 3]}];
     }
@@ -340,8 +340,8 @@ TEST_CASE("math.convexHull3D.closedOrientedCubeAndTetrahedron") {
             for (float z : {0.f, 1.f}) cube.push_back({x, y, z});
     cube.push_back({.5f, .5f, .5f});
     cube.push_back({0, 0, 0});
-    CHECK(std::abs(checkSolid(cube) - 1) < 1e - 10);
-    CHECK(std::abs(checkSolid({{0, 0, 0}, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}}) - 1.0 / 6) < 1e - 10);
+    CHECK(std::abs(checkSolid(cube) - 1) < 1e-10);
+    CHECK(std::abs(checkSolid({{0, 0, 0}, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}}) - 1.0 / 6) < 1e-10);
 }
 
 TEST_CASE("math.convexHull3D.randomCloudTopology") {
@@ -366,7 +366,7 @@ TEST_CASE("math.convexHull.invalidArgumentsAndScale") {
         REQUIRE(!bad.ok());
         CHECK(bad.error()->path() == "tolerance");
     }
-    for (float scale : {1e - 30f, 1e30f}) {
+    for (float scale : {1e-30f, 1e30f}) {
         auto hull = convexHull3D(std::vector<HullPoint3>{{0, 0, 0}, {scale, 0, 0}, {0, scale, 0}, {0, 0, scale}});
         REQUIRE(hull.ok());
         CHECK(hull.value().dimension == HullDimension::Volume);
