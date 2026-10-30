@@ -41,6 +41,7 @@
 #include <algorithm>
 #include <bit>
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 #include <fstream>
 #include <limits>
@@ -4761,6 +4762,14 @@ void Graphics::popValidationScope() {
 
 
 void Graphics::present() {
+#if defined(__EMSCRIPTEN__)
+    static bool firstPresent = true;
+    auto        trace        = [](const char* stage) {
+        if (firstPresent) std::fprintf(stderr, "[webgpu] first present: %s\n", stage);
+    };
+#else
+    auto trace = [](const char*) {};
+#endif
     ensureFileTexturesReady();
     applyPendingResourceChanges();
     if (headless_) return;
@@ -4795,15 +4804,18 @@ void Graphics::present() {
     hasPendingClear = false;
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    trace("gpu compute");
     // Compute compaction writes the visible-model table and indexed-indirect
     // commands consumed by the scene render pass below. Ending the compute
     // pass establishes the required WebGPU storage-to-indirect dependency.
     recordGpuDrivenCompute(encoder);
 
+    trace("shadow passes");
     recordDirectionalShadowPasses(encoder);
 
     // Stage-3 visibility pass consumes the compute-compacted instance table
     // before the scene pass resolves material shading.
+    trace("visibility passes");
     recordGpuDrivenVisibility(encoder);
 
     // Hybrid: GBuffer must be written before deferred lighting samples it into
@@ -4891,6 +4903,7 @@ void Graphics::present() {
             if (wantDeferredLighting) flushDeferredLighting(pass);
             flushVoxelDraws(pass, sceneColorFormat);
             flushGpuDrivenResolve(pass);
+            trace("scene mesh pass");
             flushMesh3D(pass, sceneColorFormat);
             flushGpuDrivenDraws(pass, /*canvasTarget*/ false);
             flushPrimitive3D(pass, sceneColorFormat, slot.sampleCount);
@@ -5013,6 +5026,7 @@ void Graphics::present() {
             sceneGpu.sampler           = createLinearSampler(device);
             wgpu::BindGroup bg         = makeTex2DBindGroup(&sceneGpu, nullptr);
             uint32_t        offsets[1] = {0};
+            trace("scene composite pipeline");
             pass.SetPipeline(get2DTexturedPipeline(BlendMode::Alpha, false));
             pass.SetBindGroup(0, bg, 1, offsets);
             pass.SetVertexBuffer(0, fullscreenQuadVb, 0, 4 * 32);
@@ -5051,6 +5065,9 @@ void Graphics::present() {
 #endif
 
     frameIndex++;
+#if defined(__EMSCRIPTEN__)
+    firstPresent = false;
+#endif
     frame3DStarted      = false;
     frameHad3DThisFrame = false;
     frameHad3D          = false;
@@ -5204,14 +5221,14 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device& dev, wgpu::PipelineLayo
         pd.vertex.entryPoint = sv("vs_main");
     }
 
+    WGPUFragmentState    fs{};
+    WGPUColorTargetState target{};
     if (!frag.empty()) {
-        WGPUFragmentState          fs{};
         WGPUShaderModuleDescriptor md = mdDesc(frag);
         fragmentModule = dev.CreateShaderModule(reinterpret_cast<const wgpu::ShaderModuleDescriptor*>(&md));
         fs.module      = fragmentModule.Get();
         fs.entryPoint  = sv("fs_main");
         fs.targetCount = 1;
-        WGPUColorTargetState target{};
         target.format    = format;
         target.writeMask = WGPUColorWriteMask_All;
         if (blend) {
