@@ -554,9 +554,17 @@ jobs:
           ALSOFT_DRIVERS: "null"
         run: |
           cmake --install build/macosx-debug --prefix "$RUNNER_TEMP/ssui-sdk"
+          # Use the host's resolved dependency tree (AUTO may select a release
+          # package). Relative prefixes otherwise resolve under the plugin source.
+          ssui_poco_prefix="$(sed -n 's/^EVENGINE_TP_INSTALL_PREFIX:INTERNAL=//p' build/macosx-debug/CMakeCache.txt)"
+          if [ -z "$ssui_poco_prefix" ]; then
+            ssui_poco_prefix="$(sed -n 's/^EVENGINE_THIRD_PARTY_BINARY_DIR:PATH=//p' build/macosx-debug/CMakeCache.txt)"
+          fi
+          test -n "$ssui_poco_prefix"
+          ssui_poco_prefix="$(cd "$ssui_poco_prefix" && pwd)"
           cmake -S plugins/ssui-generation -B build/ssui-generation -DCMAKE_BUILD_TYPE=Debug \
             -DEVEngine_DIR="$RUNNER_TEMP/ssui-sdk/cmake" \
-            -DCMAKE_PREFIX_PATH="${{ steps.third-party-cache.outputs.prefix }}"
+            -DCMAKE_PREFIX_PATH="$ssui_poco_prefix"
           cmake --build build/ssui-generation -j 4
           ctest --test-dir build/ssui-generation --output-on-failure
           cmake --install build/ssui-generation --prefix "$RUNNER_TEMP/ssui-project"
