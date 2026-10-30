@@ -1258,6 +1258,23 @@ jobs:
             http://127.0.0.1:8090/eve.html
           python3 "$GITHUB_WORKSPACE/scripts/validate_render_frame.py" webgpu-browser.png
 
+      - name: Verify browser audio playback
+        timeout-minutes: 5
+        run: |
+          python3 -m pip install --quiet websocket-client
+          python3 scripts/serve_webgpu.py build/webgpu-web/src/engine 8091 >webgpu-audio-http.log 2>&1 &
+          server_pid=$!
+          profile_dir="$(mktemp -d)"
+          google-chrome --headless=new --no-sandbox --disable-gpu-sandbox \
+            --enable-unsafe-webgpu --enable-features=Vulkan \
+            --use-vulkan=swiftshader --window-size=1400,900 \
+            --remote-debugging-port=9223 --remote-allow-origins='*' \
+            --user-data-dir="$profile_dir" \
+            http://127.0.0.1:8091/eve.html >webgpu-audio-browser.log 2>&1 &
+          browser_pid=$!
+          trap 'kill "$browser_pid" "$server_pid" 2>/dev/null || true' EXIT
+          python3 scripts/verify_webgpu_audio_browser.py --port 9223 --timeout 90
+
       - name: Upload browser WebGPU frame
         if: always()
         uses: actions/upload-artifact@v7
@@ -1266,6 +1283,8 @@ jobs:
           path: |
             build/webgpu-web/src/engine/webgpu-browser.png
             build/webgpu-web/src/engine/webgpu-http.log
+            webgpu-audio-http.log
+            webgpu-audio-browser.log
           if-no-files-found: warn
 
       - name: Save Emscripten SDK cache
