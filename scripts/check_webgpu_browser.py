@@ -12,7 +12,7 @@ from validate_render_frame import validate
 
 
 SCENES = (
-    ("3d_sphere", None, "3d sphere demo init ok"),
+    ("3d_sphere", None, "webgpu main.nut init ok"),
     ("2d_sprites", "playground/demos/2d_sprites.nut", "2d sprites demo init ok"),
     ("3d_textured", "playground/demos/3d_textured.nut", "3d textured demo init ok"),
 )
@@ -35,7 +35,7 @@ def main() -> int:
     if chrome is None:
         raise RuntimeError("Chrome, Chromium, or Edge is required for the browser smoke test")
 
-    from playwright.sync_api import sync_playwright
+    from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, sync_playwright
 
     args.output.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as playwright:
@@ -68,14 +68,20 @@ def main() -> int:
             print(f"browser ready: {adapter}")
 
             for name, demo, initialized in SCENES:
-                if demo is not None:
+                if demo is None:
+                    page.locator("#btnRestart").click()
+                else:
                     page.locator("#exampleSel").select_option(demo)
                     page.locator("#btnApply").click()
-                page.wait_for_function(
-                    "marker => document.getElementById('log').textContent.includes(marker)",
-                    arg=initialized,
-                    timeout=10000,
-                )
+                try:
+                    page.wait_for_function(
+                        "marker => document.getElementById('log').textContent.includes(marker)",
+                        arg=initialized,
+                        timeout=10000,
+                    )
+                except PlaywrightTimeoutError as error:
+                    recent_log = page.locator("#log").inner_text()[-4000:]
+                    raise RuntimeError(f"{name}: missing init marker {initialized!r}; page log:\n{recent_log}") from error
                 page.wait_for_timeout(1500)
                 capture = args.output / f"{name}.png"
                 page.locator("#canvas").screenshot(path=str(capture), timeout=15000)
