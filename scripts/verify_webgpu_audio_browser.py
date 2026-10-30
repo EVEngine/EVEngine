@@ -61,7 +61,14 @@ def wait_for(browser: Browser, expression: str, deadline: float):
         if browser.evaluate(expression):
             return
         time.sleep(0.5)
-    raise RuntimeError(f"Timed out waiting for browser condition: {expression}")
+    state = browser.evaluate("""(() => ({
+        ready: document.readyState,
+        engine: document.getElementById('stEngine')?.textContent,
+        status: document.getElementById('status')?.textContent,
+        log: document.getElementById('log')?.textContent.slice(-4000),
+        isolated: crossOriginIsolated
+    }))()""")
+    raise RuntimeError(f"Timed out waiting for browser condition: {expression}; page state: {state}")
 
 
 def script_result(browser: Browser, source: str) -> str:
