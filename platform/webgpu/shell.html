@@ -529,7 +529,11 @@
       canvas: document.getElementById('canvas'),
       locateFile: function (path) { return path; },
       print: function (text) { if (window.pgLog) window.pgLog('out', text); },
-      printErr: function (text) { if (window.pgLog) window.pgLog('err', text); },
+      printErr: function (text) {
+        if (window.pgLog) window.pgLog('err', text);
+        if (text.indexOf('Aborted(') !== -1 && window.pgLog)
+          window.pgLog('err', new Error('WASM abort stack').stack);
+      },
       onRuntimeInitialized: function () {
         var st = document.getElementById('status');
         if (st) st.textContent = '引擎核心已加载，正在启动…';

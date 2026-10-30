@@ -52,6 +52,9 @@ def main() -> int:
         )
         try:
             page = browser.new_page(viewport={"width": 1200, "height": 800})
+            browser_errors = []
+            page.on("pageerror", lambda error: browser_errors.append(str(error)))
+            page.on("console", lambda message: browser_errors.append(message.text) if message.type == "error" else None)
             page.goto(args.url, wait_until="domcontentloaded", timeout=30000)
             page.wait_for_function(
                 "document.getElementById('stEngine').textContent.includes('已就绪')",
@@ -90,7 +93,10 @@ def main() -> int:
                 except ValueError as error:
                     recent_log = page.locator("#log").inner_text()[-4000:]
                     status = page.locator("#status").inner_text()
-                    raise RuntimeError(f"{name}: {error}; status={status!r}; page log:\n{recent_log}") from error
+                    raise RuntimeError(
+                        f"{name}: {error}; status={status!r}; browser errors={browser_errors[-10:]!r}; "
+                        f"page log:\n{recent_log}"
+                    ) from error
                 print(f"{name}: canvas OK, mean={mean:.3f}, stddev={deviation:.3f}")
         finally:
             browser.close()
