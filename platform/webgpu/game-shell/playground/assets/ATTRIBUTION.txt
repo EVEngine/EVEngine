@@ -12,3 +12,4 @@ background_forest.png, crate.png, tiles.png
     "Platformer Pack Redux" by Kenney Vleugels (www.kenney.nl), CC0:
     http://creativecommons.org/publicdomain/zero/1.0/
     (same files as examples/metroidvania/assets/)
+effect.wav and music_loop.wav: generated sine-wave demonstration audio, created for EVEngine.
