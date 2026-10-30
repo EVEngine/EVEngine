@@ -53,8 +53,15 @@ def main() -> int:
         try:
             page = browser.new_page(viewport={"width": 1200, "height": 800})
             browser_errors = []
+            first_gpu_messages = []
             page.on("pageerror", lambda error: browser_errors.append(str(error)))
-            page.on("console", lambda message: browser_errors.append(message.text) if message.type == "error" else None)
+            def record_console(message):
+                if message.type == "error":
+                    browser_errors.append(message.text)
+                if message.text.startswith("[GPU_ERR]") and len(first_gpu_messages) < 30:
+                    first_gpu_messages.append(message.text)
+
+            page.on("console", record_console)
             page.goto(args.url, wait_until="domcontentloaded", timeout=30000)
             page.wait_for_function(
                 "document.getElementById('stEngine').textContent.includes('已就绪')",
@@ -95,6 +102,7 @@ def main() -> int:
                     status = page.locator("#status").inner_text()
                     raise RuntimeError(
                         f"{name}: {error}; status={status!r}; browser errors={browser_errors[-10:]!r}; "
+                        f"first GPU messages={first_gpu_messages!r}; "
                         f"page log:\n{recent_log}"
                     ) from error
                 print(f"{name}: canvas OK, mean={mean:.3f}, stddev={deviation:.3f}")
