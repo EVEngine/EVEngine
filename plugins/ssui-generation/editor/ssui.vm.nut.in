@@ -1,0 +1,71 @@
+// Native plugin + editor ViewModel. No Python process or LLM is required.
+function ssuiValue(result) {
+    if (!result.ok) throw result.status.summary;
+    return result.value;
+}
+::ssuiPlugins <- eve.Plugins();
+ssuiValue(ssuiPlugins.loadPlugin("./ssui_generation@CMAKE_SHARED_LIBRARY_SUFFIX@"));
+::ssui <- eve.SSUIGeneration();
+ssuiValue(ssui.configure("http://127.0.0.1:7423", "."));
+::ssuiGfx <- eve.Graphics();
+::ssuiTexture <- null;
+function ssuiShow(path) {
+    if (path == "") { ::ssuiTexture = null; return; }
+    local next = ::ssuiGfx.newTextureFromFile(path);
+    if (next == null) throw "Texture load failed";
+    ::ssuiTexture = next;
+}
+function ssuiQuote(text) {
+    local out = "\"";
+    for (local i=0; i<text.len(); i++) {
+        local c = text[i];
+        if (c == 34 || c == 92) out += "\\" + text.slice(i,i+1);
+        else if (c < 32) out += format("\\u%04x",c);
+        else out += text.slice(i,i+1);
+    }
+    return out + "\"";
+}
+::SSUIMaterialVM <- {
+    server = "http://127.0.0.1:7423", prompt = "weathered red brick", seed = 0,
+    status = "Ready", progress = 0.0, idle = true, hasCandidate = false, lastStatus = "",
+    connect = function(editor,widget) {
+        try { ssuiValue(ssui.configure(this.server,".")); ssuiShow(ssui.applied()); this.status="Configured"; }
+        catch(e) { this.status=e.tostring(); }
+    },
+    generate = function(editor,widget) {
+        try {
+            ssuiShow(ssui.applied());
+            ssuiValue(ssui.start("mock.checker@1", "{\"prompt\":"+ssuiQuote(this.prompt)+",\"size\":256,\"seed\":"+this.seed.tointeger()+"}", "{}"));
+        } catch(e) { this.status=e.tostring(); }
+    },
+    cancel = function(editor,widget) { ssui.requestCancel(); },
+    preview = function(editor,widget) {
+        try { if(ssui.candidate()=="") throw "Generate a candidate first"; ssuiShow(ssuiValue(ssui.completion())); this.status="Temporary preview"; }
+        catch(e) { this.status=e.tostring(); }
+    },
+    restore = function(editor,widget) { ssuiShow(ssui.applied()); this.status="Applied material"; },
+    apply = function(editor,widget) {
+        try { if(ssui.candidate()=="") throw "No candidate"; ssuiShow(ssui.candidate()); ssuiValue(ssui.apply()); this.status="Applied"; }
+        catch(e) { ssuiShow(ssui.applied()); this.status=e.tostring(); }
+    },
+    undo = function(editor,widget) {
+        try { ssuiShow(ssuiValue(ssui.undo())); this.status="Undone"; } catch(e) { this.status=e.tostring(); }
+    }
+};
+::ssuiInitFrames <- 0;
+::eve_host_update <- function(dt) {
+    if(ssuiInitFrames < 2) {
+        eve.UI().setScale(@SSUI_UI_SCALE@);
+        ssuiShow(ssui.applied());
+        ssuiInitFrames++;
+    }
+    SSUIMaterialVM.idle = !ssui.busy();
+    SSUIMaterialVM.hasCandidate = !ssui.busy() && ssui.candidate()!="";
+    SSUIMaterialVM.progress = ssui.progress()/100.0;
+    local state=ssui.status();
+    if(state!=SSUIMaterialVM.lastStatus) { SSUIMaterialVM.status=state; SSUIMaterialVM.lastStatus=state; }
+};
+::eve_host_render <- function() {
+    if(ssuiTexture!=null) ssuiGfx.drawTexturedRect(ssuiTexture,420.0,80.0,512.0,512.0,1.0,1.0,1.0,1.0);
+    else ssuiGfx.drawSolidRect(420.0,80.0,512.0,512.0,0.3,0.32,0.35,1.0);
+};
