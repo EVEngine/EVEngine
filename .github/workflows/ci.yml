@@ -1259,8 +1259,18 @@ jobs:
           python3 "$GITHUB_WORKSPACE/scripts/validate_render_frame.py" webgpu-browser.png
 
       - name: Verify browser audio playback
-        timeout-minutes: 5
+        timeout-minutes: 20
         run: |
+          # Boot the audio demo directly so the default 3D scene cannot fail
+          # before the audio probe reaches its own initialization path.
+          cp -a platform/webgpu/game-shell build/webgpu-audio-game-shell
+          cp platform/webgpu/game-shell/playground/demos/audio.nut build/webgpu-audio-game-shell/main.nut
+          export PATH="$HOME/.local/bin:$PATH"
+          source "$HOME/emsdk/emsdk_env.sh"
+          emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_EXE_LINKER_FLAGS_RELEASE=-O1 \
+            -DEVENGINE_WEBGPU_GAME_DIR="$GITHUB_WORKSPACE/build/webgpu-audio-game-shell"
+          cmake --build build/webgpu-web --parallel "$(nproc)"
           python3 -m pip install --quiet websocket-client
           python3 scripts/serve_webgpu.py build/webgpu-web/src/engine 8091 >webgpu-audio-http.log 2>&1 &
           server_pid=$!
