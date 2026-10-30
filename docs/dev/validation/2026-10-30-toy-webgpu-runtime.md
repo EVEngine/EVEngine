@@ -53,3 +53,22 @@ No public signature, ECS type, persistent game format, or engine module boundary
 changed. The fixes preserve owning image returns, exception-to-failure handling,
 and provider-dependent surface behavior. No dependency implementation or copied
 header override was added. No architecture-rule exception was taken.
+
+## Bilibili hosted verification (2026-10-30)
+
+The official Toy CLI v0.6.4 uploaded the actual 28,628,858-byte game ZIP
+(SHA256 5e866c0231c652f187f6e6d10a0af029301084280cc4c714b31dcc7aebcf9b24).
+The hosted preview at https://www.bilibili.com/toy/preview/author_dIA4iuaz/index.html
+rendered the blue player, red obstacle and ground line in the real engine canvas.
+The environment report confirmed a WebGPU device with no errors, without cross-origin
+isolation or SharedArrayBuffer. Engine logs confirmed game initialization, a successful
+Toy SDK request, first present, engine-owned PNG capture and collision processing.
+A viewport screenshot is retained locally at build/toy-bilibili-preview.jpg as hosting
+UI evidence; it does not replace the local engine-owned pixel assertions above.
+
+The same ZIP was submitted as Toy 49552392458240, title EVEngine WebGPU 躲避测试,
+visibility LINK_ONLY. The official mylist response confirmed status auditing.
+Submitted preview: https://www.bilibili.com/toy/preview/author_xA6tHr4P/index.html .
+Review approval, Bilibili App WebView, hosted keyboard movement and authenticated
+cloud storage/leaderboards remain unverified. The earlier local-only limitation is
+superseded only for hosted rendering, capability request and the observed upload quota.
