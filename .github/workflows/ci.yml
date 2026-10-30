@@ -1243,28 +1243,27 @@ jobs:
           test -f build/webgpu-web/src/engine/eve.wasm
           ls -lh build/webgpu-web/src/engine/eve.*
 
-      - name: Capture browser WebGPU frame
+      - name: Verify browser WebGPU scenes
         timeout-minutes: 10
         run: |
-          python3 -m pip install --quiet pillow
-          cd build/webgpu-web/src/engine
-          python3 -m http.server 8090 >webgpu-http.log 2>&1 &
+          python3 -m pip install --quiet pillow playwright
+          python3 scripts/serve_webgpu.py >build/webgpu-web/src/engine/webgpu-http.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid"' EXIT
-          google-chrome --headless=new --no-sandbox --disable-gpu-sandbox \
-            --enable-unsafe-webgpu --enable-features=Vulkan \
-            --use-vulkan=swiftshader --window-size=800,600 \
-            --timeout=20000 --screenshot=webgpu-browser.png \
-            http://127.0.0.1:8090/eve.html
-          python3 "$GITHUB_WORKSPACE/scripts/validate_render_frame.py" webgpu-browser.png
+          for attempt in $(seq 1 30); do
+            curl --fail --silent --output /dev/null http://127.0.0.1:8090/eve.html && break
+            sleep 1
+          done
+          python3 scripts/check_webgpu_browser.py \
+            --output build/webgpu-web/src/engine/browser-captures
 
-      - name: Upload browser WebGPU frame
+      - name: Upload browser WebGPU scenes
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: webgpu-browser-frame
+          name: webgpu-browser-scenes
           path: |
-            build/webgpu-web/src/engine/webgpu-browser.png
+            build/webgpu-web/src/engine/browser-captures/*.png
             build/webgpu-web/src/engine/webgpu-http.log
           if-no-files-found: warn
 

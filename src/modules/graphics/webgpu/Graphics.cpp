@@ -43,6 +43,7 @@
 #include <cmath>
 #include <cstring>
 #include <fstream>
+#include <limits>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -91,6 +92,43 @@ int nextPOT(int v) {
     return p;
 }
 
+template <class Build>
+std::string checkedShaderBuild(wgpu::Device& device, wgpu::Instance& instance, Build&& build) {
+    device.PushErrorScope(wgpu::ErrorFilter::Validation);
+    std::string preparationError;
+    try {
+        build();
+    } catch (const std::exception& error) {
+        preparationError = error.what();
+    } catch (...) {
+        preparationError = "unknown pipeline preparation error";
+    }
+    bool                      done   = false;
+    wgpu::ErrorType           type   = wgpu::ErrorType::Unknown;
+    wgpu::PopErrorScopeStatus status = wgpu::PopErrorScopeStatus::Error;
+    std::string               message;
+    device.PopErrorScope(wgpu::CallbackMode::AllowProcessEvents, [&](wgpu::PopErrorScopeStatus result,
+                                                                     wgpu::ErrorType error, wgpu::StringView detail) {
+        status = result;
+        type   = error;
+        if (detail.data) {
+            const auto length = detail.length == WGPU_STRLEN ? std::strlen(detail.data) : detail.length;
+            message.assign(detail.data, length);
+        }
+        done = true;
+    });
+    while (!done) {
+#if defined(__EMSCRIPTEN__)
+        emscripten_sleep(0);
+#endif
+        wgpuInstanceProcessEvents(instance.Get());
+    }
+    if (!preparationError.empty()) return preparationError;
+    if (status != wgpu::PopErrorScopeStatus::Success || type != wgpu::ErrorType::NoError)
+        return message.empty() ? "WebGPU rejected shader pipeline" : message;
+    return {};
+}
+
 }  // namespace
 
 void fillMeshAttributes(WGPUVertexAttribute (&attrs)[6]);
@@ -128,6 +166,13 @@ void Graphics::initHeadless(int width, int height) {
     auto inst = InitFlow::createInstance();
     auto adp  = InitFlow::requestAdapter(std::move(inst), surface);
     auto dev  = InitFlow::requestDevice(std::move(adp));
+    initHeadlessFromDevice(width, height, std::move(dev));
+}
+
+void Graphics::initHeadlessFromDevice(int width, int height, DeviceDone&& dev) {
+    if (deviceInitDone || width <= 0 || height <= 0 || !dev.instance || !dev.adapter || !dev.device || !dev.queue)
+        throw Exception("Graphics::initHeadlessFromDevice: invalid size, device stage, or initialization state");
+    dev.caps.capture(dev.adapter, dev.device);
 
     instance      = std::move(dev.instance);
     adapter       = std::move(dev.adapter);
@@ -151,14 +196,6 @@ void Graphics::initWithWindow(void* nativeWindow) {
     if (deviceInitDone) return;
 
     auto inst = InitFlow::createInstance();
-    auto adp  = InitFlow::requestAdapter(std::move(inst), surface);
-    auto dev  = InitFlow::requestDevice(std::move(adp));
-
-    instance = std::move(dev.instance);
-    adapter  = std::move(dev.adapter);
-    device   = std::move(dev.device);
-    queue    = std::move(dev.queue);
-    caps     = std::move(dev.caps);
 
     // ---- Surface ----
     WGPUSurfaceDescriptor surfDesc{};
@@ -168,7 +205,7 @@ void Graphics::initWithWindow(void* nativeWindow) {
     canvasSel.chain.sType = WGPUSType_EmscriptenSurfaceSourceCanvasHTMLSelector;
     canvasSel.selector    = sv("#canvas");
     surfDesc.nextInChain  = &canvasSel.chain;
-    surface               = instance.CreateSurface(reinterpret_cast<const wgpu::SurfaceDescriptor*>(&surfDesc));
+    surface               = inst.instance.CreateSurface(reinterpret_cast<const wgpu::SurfaceDescriptor*>(&surfDesc));
     surfaceFormat         = WGPUTextureFormat_BGRA8Unorm;
 #else
     wgpu::SurfaceDescriptor nativeSurfDesc{};
@@ -182,21 +219,21 @@ void Graphics::initWithWindow(void* nativeWindow) {
     winChain.hwnd              = wminfo.info.win.window;
     winChain.hinstance         = GetModuleHandle(nullptr);
     nativeSurfDesc.nextInChain = &winChain;
-    surface                    = instance.CreateSurface(&nativeSurfDesc);
+    surface                    = inst.instance.CreateSurface(&nativeSurfDesc);
 #elif defined(__linux__)
     if (wminfo.subsystem == SDL_SYSWM_X11) {
         wgpu::SurfaceSourceXlibWindow x11Chain{};
         x11Chain.display           = wminfo.info.x11.display;
         x11Chain.window            = wminfo.info.x11.window;
         nativeSurfDesc.nextInChain = &x11Chain;
-        surface                    = instance.CreateSurface(&nativeSurfDesc);
+        surface                    = inst.instance.CreateSurface(&nativeSurfDesc);
 #if defined(SDL_VIDEO_DRIVER_WAYLAND)
     } else if (wminfo.subsystem == SDL_SYSWM_WAYLAND) {
         wgpu::SurfaceSourceWaylandSurface wlChain{};
         wlChain.display            = wminfo.info.wl.display;
         wlChain.surface            = wminfo.info.wl.surface;
         nativeSurfDesc.nextInChain = &wlChain;
-        surface                    = instance.CreateSurface(&nativeSurfDesc);
+        surface                    = inst.instance.CreateSurface(&nativeSurfDesc);
 #endif
     } else {
         throw Exception("WebGPU: unsupported SDL window subsystem on Linux");
@@ -228,11 +265,21 @@ void Graphics::initWithWindow(void* nativeWindow) {
     metalChain.chain.sType = WGPUSType_SurfaceSourceMetalLayer;
     metalChain.layer       = layer;
     surfDesc.nextInChain   = &metalChain.chain;
-    surface                = instance.CreateSurface(reinterpret_cast<const wgpu::SurfaceDescriptor*>(&surfDesc));
+    surface                = inst.instance.CreateSurface(reinterpret_cast<const wgpu::SurfaceDescriptor*>(&surfDesc));
 #else
     throw Exception("WebGPU: unsupported native platform for surface creation");
 #endif
+#endif
     if (!surface) throw Exception("WebGPU: surface creation failed");
+    auto adp = InitFlow::requestAdapter(std::move(inst), surface);
+    auto dev = InitFlow::requestDevice(std::move(adp));
+
+    instance = std::move(dev.instance);
+    adapter  = std::move(dev.adapter);
+    device   = std::move(dev.device);
+    queue    = std::move(dev.queue);
+    caps     = std::move(dev.caps);
+#if !defined(__EMSCRIPTEN__)
     // Preferred surface format comes from wgpuSurfaceGetCapabilities in the
     // current ABI (Surface::GetPreferredFormat was removed).
     WGPUSurfaceCapabilities caps{};
@@ -1700,8 +1747,7 @@ void Graphics::uploadTexturePixelsMips(GpuTexture* gt, const uint8_t* rgba, int 
 }
 
 Texture* Graphics::newCubemap(int faceSize, const uint8_t* rgbaFaces) {
-    TextureCreateInfo info;
-    return newCubemap(faceSize, rgbaFaces, info);
+    return newCubemap(faceSize, rgbaFaces, TextureCreateInfo::withMipmaps(false));
 }
 
 Texture* Graphics::newCubemap(int faceSize, const uint8_t* rgbaFaces, const TextureCreateInfo& rawInfo) {
@@ -1771,6 +1817,9 @@ Texture* Graphics::newCubemap(int faceSize, const uint8_t* rgbaFaces, const Text
     auto* tex        = new Texture();
     tex->width       = faceSize;
     tex->height      = faceSize;
+    tex->pixelWidth  = faceSize;
+    tex->pixelHeight = faceSize;
+    tex->layers      = 6;
     tex->mipmapCount = int(gpu->mipLevels);
     tex->sampler     = info.sampler;
     tex->gpuHandle   = gpu.get();
@@ -2118,6 +2167,10 @@ bool Graphics::releaseTexture(Texture* texture) {
 
 bool Graphics::updateTexture(Texture* texture, int width, int height, const uint8_t* rgba) {
     if (!texture || !rgba || width <= 0 || height <= 0) return false;
+    const auto ownedTexture =
+        std::find_if(ownedTextures.begin(), ownedTextures.end(),
+                     [texture](const std::unique_ptr<Texture>& candidate) { return candidate.get() == texture; });
+    if (ownedTexture == ownedTextures.end()) return false;
     auto* gpu = gpuForTexture(texture);
     if (!gpu || width != texture->width || height != texture->height) return false;
     const auto owned =
@@ -2135,8 +2188,18 @@ eve::Result<void> Graphics::updateTextureRegion(Texture* texture, int x, int y, 
 }
 
 eve::Result<void> Graphics::updateTextureRegions(Texture* texture, std::span<const TextureRegionUpload> regions) {
+    const auto ownedTexture =
+        std::find_if(ownedTextures.begin(), ownedTextures.end(),
+                     [texture](const std::unique_ptr<Texture>& candidate) { return candidate.get() == texture; });
+    if (ownedTexture == ownedTextures.end())
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "texture is not an owned 2D texture",
+                                                                 "graphics.updateTextureRegions.texture"));
     auto* gpu = gpuForTexture(texture);
-    if (!texture || !gpu || gpu->isCube)
+    const auto owned =
+        std::find_if(ownedGpuTextures.begin(), ownedGpuTextures.end(),
+                     [gpu](const std::unique_ptr<GpuTexture>& candidate) { return candidate.get() == gpu; });
+    if (!gpu || owned == ownedGpuTextures.end() || gpu->isCube)
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                  "texture is not an owned 2D texture",
                                                                  "graphics.updateTextureRegions.texture"));
@@ -2153,8 +2216,16 @@ eve::Result<void> Graphics::updateTextureRegions(Texture* texture, std::span<con
                                                                      "graphics.updateTextureRegions.region"));
         const std::size_t packedRow     = std::size_t(region.width) * 4U;
         const std::size_t stride        = region.bytesPerRow == 0 ? packedRow : region.bytesPerRow;
+        if (stride < packedRow || stride > std::numeric_limits<std::uint32_t>::max())
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "texture row stride is out of range",
+                                                                     "graphics.updateTextureRegions.bytesPerRow"));
+        if (std::size_t(region.height - 1) > (std::numeric_limits<std::size_t>::max() - packedRow) / stride)
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                     "texture region byte count overflows",
+                                                                     "graphics.updateTextureRegions.bytesPerRow"));
         const std::size_t requiredBytes = stride * std::size_t(region.height - 1) + packedRow;
-        if (stride < packedRow || region.rgba.size() < requiredBytes)
+        if (region.rgba.size() < requiredBytes)
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                      "source bytes do not cover the texture region",
                                                                      "graphics.updateTextureRegions.bytes"));
@@ -3628,6 +3699,8 @@ void Graphics::endShadowPass() {
 
 void Graphics::beginGBufferPass(int width, int height) {
     if (!device) return;
+    if (!caps.supportsFiveTargetGBuffer())
+        throw Exception("WebGPU: five-target GBuffer requires 40 color attachment bytes per sample");
     createGbufferResources(width, height);
     gbufferPassActive  = true;
     gbufferPassPending = true;
@@ -3916,6 +3989,8 @@ void Graphics::destroyShadowResources() {
 
 void Graphics::createGbufferResources(int width, int height) {
     if (!device) return;
+    if (!caps.supportsFiveTargetGBuffer())
+        throw Exception("WebGPU: five-target GBuffer requires 40 color attachment bytes per sample");
     if (gbufferWidth == width && gbufferHeight == height && !gbufferSlots.empty()) return;
     destroyGbufferResources();
     gbufferWidth  = width;
@@ -4688,7 +4763,9 @@ void Graphics::popValidationScope() {
 void Graphics::present() {
     ensureFileTexturesReady();
     applyPendingResourceChanges();
+    if (headless_) return;
     if (!isActive()) return;
+    if (isCanvasActive()) throw Exception("present: cannot present while a Canvas is active");
     if (!device || !surface || !swapchainConfigured) return;
     pumpReadback();
     rebuildSwapchainIfNeeded();
@@ -5231,16 +5308,24 @@ Shader* Graphics::newMeshShaderFromWgsl(const std::string& vertWgsl, const std::
     gpu->isMesh3D       = true;
     gpu->wgslVert       = vert;
     gpu->wgslFrag       = frag;
-    gpu->mesh3dPipeline = buildPipelineFromWgsl(device, mesh3dPipelineLayout, sceneColorFormat, vert, frag,
-                                                /*depth*/ true, /*blend*/ false, /*mesh3d*/ true, /*hair*/ false,
-                                                /*shadow*/ false, /*gbuffer*/ false,
-                                                /*sampleCount*/ sceneColorSamples);
-    // X-ray variant: depth test/write off + alpha blend so occluded silhouettes
-    // paint over the building (the shader discards visible fragments itself).
-    gpu->mesh3dXrayPipeline = buildPipelineFromWgsl(device, mesh3dPipelineLayout, sceneColorFormat, vert, frag,
-                                                    /*depth*/ false, /*blend*/ true, /*mesh3d*/ true, /*hair*/ false,
+    auto error          = checkedShaderBuild(device, instance, [&] {
+        gpu->mesh3dPipeline = buildPipelineFromWgsl(device, mesh3dPipelineLayout, sceneColorFormat, vert, frag,
+                                                    /*depth*/ true, /*blend*/ false, /*mesh3d*/ true, /*hair*/ false,
                                                     /*shadow*/ false, /*gbuffer*/ false,
                                                     /*sampleCount*/ sceneColorSamples);
+    });
+    if (!error.empty() || !gpu->mesh3dPipeline)
+        throw Exception("newMeshShaderFromWgsl: %s", error.empty() ? "pipeline allocation failed" : error.c_str());
+    // X-ray variant: depth test/write off + alpha blend so occluded silhouettes
+    // paint over the building (the shader discards visible fragments itself).
+    error = checkedShaderBuild(device, instance, [&] {
+        gpu->mesh3dXrayPipeline = buildPipelineFromWgsl(device, mesh3dPipelineLayout, sceneColorFormat, vert, frag,
+                                                        /*depth*/ false, /*blend*/ true, /*mesh3d*/ true,
+                                                        /*hair*/ false, /*shadow*/ false, /*gbuffer*/ false,
+                                                        /*sampleCount*/ sceneColorSamples);
+    });
+    if (!error.empty() || !gpu->mesh3dXrayPipeline)
+        throw Exception("newMeshShaderFromWgsl: %s", error.empty() ? "xray pipeline allocation failed" : error.c_str());
 
     auto sh = std::make_unique<Shader>();
     sh->setKind(Shader::Kind::eMesh3D);
@@ -5261,9 +5346,16 @@ eve::Result<void> Graphics::configureMeshShaderSurface(Shader& shader, BlendMode
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Expected an owned WebGPU mesh shader"));
     auto&      gpu        = **found;
     const bool alphaBlend = blend == BlendMode::Alpha;
-    gpu.mesh3dPipeline =
-        buildPipelineFromWgsl(device, mesh3dPipelineLayout, sceneColorFormat, gpu.wgslVert, gpu.wgslFrag, true,
-                              alphaBlend, true, doubleSided, false, false, sceneColorSamples, depthWrite);
+    wgpu::RenderPipeline candidate;
+    auto                 error = checkedShaderBuild(device, instance, [&] {
+        candidate =
+            buildPipelineFromWgsl(device, mesh3dPipelineLayout, sceneColorFormat, gpu.wgslVert, gpu.wgslFrag, true,
+                                  alphaBlend, true, doubleSided, false, false, sceneColorSamples, depthWrite);
+    });
+    if (!error.empty() || !candidate)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed, error.empty() ? "WebGPU rejected mesh surface pipeline" : error));
+    gpu.mesh3dPipeline     = std::move(candidate);
     shader.meshBlend       = blend;
     shader.meshDepthWrite  = depthWrite;
     shader.meshDoubleSided = doubleSided;
@@ -5291,23 +5383,34 @@ Shader* Graphics::newShaderFromWgsl(const std::string& vertWgsl, const std::stri
     gpu->wgslFrag = fragWgsl;
     // 2D custom shader: alpha blend, no depth; one pipeline per target format
     // (swapchain surface vs RGBA8Unorm offscreen canvas).
-    gpu->swapchainPipeline       = createPipelineForShader(gpu.get(), wgpu::TextureFormat(surfaceFormat),
-                                                           /*depth*/ false, /*mesh3d*/ false,
-                                                           /*hair*/ false, /*shadow*/ false,
-                                                           /*gbuffer*/ false, tex2DPipelineLayout);
-    gpu->offscreenPipeline       = createPipelineForShader(gpu.get(), wgpu::TextureFormat::RGBA8Unorm,
-                                                           /*depth*/ false, /*mesh3d*/ false,
-                                                           /*hair*/ false, /*shadow*/ false,
-                                                           /*gbuffer*/ false, tex2DPipelineLayout);
-    gpu->swapchainOpaquePipeline = buildPipelineFromWgsl(device, tex2DPipelineLayout, WGPUTextureFormat(surfaceFormat),
-                                                         vert, fragWgsl, false, false, false, false, false, false, 1u);
-    gpu->offscreenOpaquePipeline = buildPipelineFromWgsl(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm,
-                                                         vert, fragWgsl, false, false, false, false, false, false, 1u);
-    gpu->hdrOffscreenPipeline    = createPipelineForShader(gpu.get(), wgpu::TextureFormat::RGBA16Float, false, false,
-                                                           false, false, false, tex2DPipelineLayout);
-    gpu->hdrOffscreenOpaquePipeline =
-        buildPipelineFromWgsl(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, vert, fragWgsl, false, false,
-                              false, false, false, false, 1u);
+    auto error = checkedShaderBuild(device, instance, [&] {
+        gpu->swapchainPipeline = createPipelineForShader(gpu.get(), wgpu::TextureFormat(surfaceFormat),
+                                                         /*depth*/ false, /*mesh3d*/ false,
+                                                         /*hair*/ false, /*shadow*/ false,
+                                                         /*gbuffer*/ false, tex2DPipelineLayout);
+    });
+    if (!error.empty() || !gpu->swapchainPipeline)
+        throw Exception("newShaderFromWgsl: %s", error.empty() ? "pipeline allocation failed" : error.c_str());
+    error = checkedShaderBuild(device, instance, [&] {
+        gpu->offscreenPipeline = createPipelineForShader(gpu.get(), wgpu::TextureFormat::RGBA8Unorm,
+                                                         /*depth*/ false, /*mesh3d*/ false,
+                                                         /*hair*/ false, /*shadow*/ false,
+                                                         /*gbuffer*/ false, tex2DPipelineLayout);
+        gpu->swapchainOpaquePipeline =
+            buildPipelineFromWgsl(device, tex2DPipelineLayout, WGPUTextureFormat(surfaceFormat), vert, fragWgsl, false,
+                                  false, false, false, false, false, 1u);
+        gpu->offscreenOpaquePipeline =
+            buildPipelineFromWgsl(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA8Unorm, vert, fragWgsl, false,
+                                  false, false, false, false, false, 1u);
+        gpu->hdrOffscreenPipeline = createPipelineForShader(gpu.get(), wgpu::TextureFormat::RGBA16Float, false, false,
+                                                            false, false, false, tex2DPipelineLayout);
+        gpu->hdrOffscreenOpaquePipeline =
+            buildPipelineFromWgsl(device, tex2DPipelineLayout, WGPUTextureFormat_RGBA16Float, vert, fragWgsl, false,
+                                  false, false, false, false, false, 1u);
+    });
+    if (!error.empty() || !gpu->offscreenPipeline || !gpu->swapchainOpaquePipeline || !gpu->offscreenOpaquePipeline ||
+        !gpu->hdrOffscreenPipeline || !gpu->hdrOffscreenOpaquePipeline)
+        throw Exception("newShaderFromWgsl: %s", error.empty() ? "pipeline allocation failed" : error.c_str());
 
     auto sh = std::make_unique<Shader>();
     sh->setKind(Shader::Kind::eSprite2D);
@@ -5347,8 +5450,13 @@ Shader* Graphics::newHairShaderFromWgsl(const std::string& vertWgsl, const std::
     gpu->isHair3D       = true;
     gpu->wgslVert       = vertWgsl.empty() ? kMesh3DVertWgsl : vertWgsl;
     gpu->wgslFrag       = fragWgsl;
-    gpu->mesh3dPipeline = buildPipelineFromWgsl(device, mesh3dPipelineLayout, sceneColorFormat, gpu->wgslVert,
-                                                gpu->wgslFrag, true, true, true, true, false, false, sceneColorSamples);
+    auto error          = checkedShaderBuild(device, instance, [&] {
+        gpu->mesh3dPipeline =
+            buildPipelineFromWgsl(device, mesh3dPipelineLayout, sceneColorFormat, gpu->wgslVert, gpu->wgslFrag, true,
+                                  true, true, true, false, false, sceneColorSamples);
+    });
+    if (!error.empty() || !gpu->mesh3dPipeline)
+        throw Exception("newHairShaderFromWgsl: %s", error.empty() ? "pipeline allocation failed" : error.c_str());
     auto shader         = std::make_unique<Shader>();
     shader->setKind(Shader::Kind::eMesh3D);
     shader->gpuHandle = gpu.get();

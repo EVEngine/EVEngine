@@ -698,6 +698,14 @@ void Graphics::expose(ssq::Table& table) {
     auto rctrl = table.addClass<RenderControl>(
         "RenderControl", std::function<RenderControl*()>([]() -> RenderControl* { return nullptr; }), true);
     rctrl.addFunc("supports", &RenderControl::supports);
+    rctrl.addFunc(
+        "requestFeature", [vm = table.getHandle()](RenderControl* rc, const std::string& feature, bool enabled) {
+            auto result =
+                rc ? rc->requestFeature(feature, enabled)
+                   : Result<void>::failure(Diagnostic::error(
+                         DiagnosticCode::InvalidArgument, "RenderControl.requestFeature: non-null control required"));
+            return eve::script::projectResult(vm, std::move(result));
+        });
     rctrl.addFunc("enable", &RenderControl::enable);
     rctrl.addFunc("disable", &RenderControl::disable);
     rctrl.addFunc("isEnabled", &RenderControl::isEnabled);

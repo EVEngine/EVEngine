@@ -43,6 +43,7 @@
 namespace eve::graphics::webgpu {
 
 class OffscreenCanvas;
+struct DeviceDone;
 struct PbrVariantSources;
 
 /**
@@ -209,13 +210,13 @@ public:
     /** @brief Returns the backend name. */
     std::string getBackendName() const override { return "webgpu"; }
     /** @brief Supports g buffer post. */
-    bool supportsGBufferPost() const override { return true; }
+    bool supportsGBufferPost() const override { return caps.supportsFiveTargetGBuffer(); }
     /** @brief Supports deferred lighting. */
-    bool                    supportsDeferredLighting() const override { return true; }
+    bool supportsDeferredLighting() const override { return caps.supportsFiveTargetGBuffer(); }
     /** @brief Draws deferred lighting. */
     void                    drawDeferredLighting() override;
     /** @brief Supports gpu driven 3 d. */
-    bool supportsGpuDriven3D() const override { return true; }
+    bool supportsGpuDriven3D() const override { return caps.supportsFiveTargetGBuffer(); }
     /** @brief Gpu driven enabled. */
     bool gpuDrivenEnabled() const override { return gpuDrivenEnabled_; }
     /** @brief Gpu driven set enabled. */
@@ -283,6 +284,17 @@ public:
     [[nodiscard]] Result<void> debugValidatePbrVariantPipeline(const PbrVariantSources &sources);
 
     void initHeadless(int width, int height) override;
+
+    /** @brief Finish headless initialization with a consumed device stage.
+     * @param width Logical and pixel width.
+     * @param height Logical and pixel height.
+     * @param dev Device stage, whose instance, adapter, device and queue become owned here.
+     * @lifetime Graphics retains the moved device resources until destruction.
+     * @cost Creates the default graphics resources once per renderer initialization.
+     * @thread Graphics initialization thread; no caller callback is invoked.
+     * @throws Exception for invalid dimensions, incomplete device stage, or repeated initialization.
+     */
+    void initHeadlessFromDevice(int width, int height, DeviceDone&& dev);
     /** @brief Initializes with window. */
     void initWithWindow(void *nativeWindow) override;
     /** @brief Present. */

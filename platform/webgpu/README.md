@@ -10,6 +10,11 @@ that targets the standard `webgpu.h` API, and can be produced two ways:
 - **Native desktop**: links Google Dawn (`dawn::webgpu_dawn`), which accepts WGSL (and
   SPIR-V) and runs on top of Vulkan/Metal/D3D12.
 
+Native builds store app data in an absolute `appdata` path under the launch
+directory by default. Set `EVENGINE_WEBGPU_APPDATA` to select another directory;
+relative values are resolved against the launch directory. Browser builds keep
+their `/persist` path.
+
 ## Prerequisites
 
 - **Emscripten** (`emsdk`, `emcmake`) with WebGPU support. Emscripten ships the
@@ -85,6 +90,18 @@ Open `http://127.0.0.1:8090/eve.html` in Chrome/Edge (WebGPU enabled). The page
 is the **online playground** — see the next section. Its status bar prints
 `crossOriginIsolated` and the resolved WebGPU adapter, so init failures are
 visible without DevTools.
+
+The CI browser check uses Playwright with the installed Chrome and captures
+only the WebGPU canvas for the default 3D, 2D sprite, and textured 3D demos:
+
+```sh
+python3 -m pip install pillow playwright
+python3 scripts/check_webgpu_browser.py --output build/webgpu-web/src/engine/browser-captures
+```
+
+Run it while `scripts/serve_webgpu.py` is serving the WASM build.
+On Windows, pass `--browser "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"`
+if Edge is not on `PATH`.
 
 ## Playground (online script editor)
 

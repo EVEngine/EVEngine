@@ -165,6 +165,7 @@
 
 ## RenderControl
 
+- `requestFeature(feature: string, enabled: bool)` → `Result`；能力不足的 GBuffer 相关请求返回 `Unsupported`。
 - `getPassCount()` → `int`；[绑定实现 L702](../../../../src/modules/graphics/Graphics.cpp#L702)。
 - `getPassName(index: int)` → `string`；[绑定实现 L703](../../../../src/modules/graphics/Graphics.cpp#L703)。
 - `hasPass(name: string)` → `bool`；[绑定实现 L704](../../../../src/modules/graphics/Graphics.cpp#L704)。
