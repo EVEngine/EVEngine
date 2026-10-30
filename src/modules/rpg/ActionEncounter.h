@@ -14,7 +14,8 @@ class Tracker;
  * @lifetime Retains handles and identity values only. Destroying either actor invalidates attacks.
  * Recreate and bind after restore; no transient combat state is serialized.
  * @thread Simulation owner thread only.
- * @reentrancy No scripts or unknown callbacks are invoked by this coordinator.
+ * @reentrancy Native provider supports queries must not mutate participants or registrations;
+ * no scripts are invoked by this coordinator.
  */
 class EVENGINE_API_PLATFORM ActionEncounter final {
 public:
@@ -42,6 +43,7 @@ public:
      * @return Actual applied damage or failure without HP mutation.
      * @remarks Host owns range, cooldown and windup admission. Tick is injected and nondecreasing;
      * no random stream is used. Pending player kill receipts block further hits until claimed.
+     * Multiple accepting providers are rejected before dispatch, independent of registration order.
      * @cost One settlement transaction per admitted hit, substantially more than reading HP.
      */
     [[nodiscard]] Result<double> hit(bool playerAttacks, double amount, int tick);

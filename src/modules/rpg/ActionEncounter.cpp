@@ -1,5 +1,6 @@
 #include "rpg/ActionEncounter.h"
 #include <cmath>
+#include "common/Capability.h"
 #include "rpg/ActionDamageSink.h"
 #include "rpg/ActionKillReward.h"
 #include "rpg/RPGActor.h"
@@ -57,6 +58,18 @@ Result<double> ActionEncounter::hit(bool playerAttacks, double amount, int tick)
     if (attacker->getCurrent("hp") <= 0 || defender->getCurrent("hp") <= 0)
         return Result<double>::failure(
             Diagnostic::error(DiagnosticCode::PreconditionViolation, "Both participants must be alive"));
+    // The registry chooses its first accepting provider. Reject ambiguous ownership
+    // before any provider can commit damage or enqueue a receipt for another encounter.
+    std::size_t accepting  = 0;
+    bool        ownsTarget = false;
+    cap::forEach<action::IActionDamageSink>([&](action::IActionDamageSink* sink) {
+        if (!sink->supports(target.actor)) return;
+        ++accepting;
+        ownsTarget = ownsTarget || sink == &impl_->sink;
+    });
+    if (accepting != 1 || !ownsTarget)
+        return Result<double>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "Encounter target must have exactly one owning damage provider"));
     auto registry = action::ActionNotifyRegistry::withBuiltins();
     if (!registry) return Result<double>::failure(registry.status());
     action::ActionTimelineEvent event;

@@ -340,3 +340,44 @@ TEST_CASE("Action encounter rejects stale participants and backwards ticks") {
     CHECK(!encounter.hit(false, 10, 5).ok());
     CHECK_EQ(f.enemy->getCurrent("hp"), 90.0);
 }
+
+
+TEST_CASE("Action encounter rejects overlapping providers before mutation in either registration order") {
+    for (bool rivalFirst : {false, true}) {
+        Fixture                          f(false);
+        std::unique_ptr<ActionEncounter> primary, rival;
+        if (rivalFirst) rival = std::make_unique<ActionEncounter>();
+        primary = std::make_unique<ActionEncounter>();
+        if (!rivalFirst) rival = std::make_unique<ActionEncounter>();
+        REQUIRE(primary->bind(*f.hero, *f.enemy, f.heroId.format(), f.enemyId.format()).ok());
+        REQUIRE(rival->bind(*f.hero, *f.enemy, f.heroId.format(), f.enemyId.format()).ok());
+        auto rejected = primary->hit(true, 100, 10);
+        REQUIRE(!rejected.ok());
+        CHECK_EQ(f.enemy->getCurrent("hp"), 100.0);
+        CHECK_EQ(f.hero->getCurrent("hp"), 100.0);
+        CHECK(!primary->hasPendingReward());
+        CHECK(!rival->hasPendingReward());
+        rival->close();
+        // A rejected command must not advance the encounter clock or consume a kill.
+        REQUIRE(primary->hit(true, 100, 9).ok());
+        REQUIRE(primary->hasPendingReward());
+        REQUIRE(primary->claim(f.state, f.tracker, "wolf").ok());
+        CHECK_EQ(f.state.getVariable("gold"), 10.0);
+    }
+}
+
+TEST_CASE("Action encounter permits disjoint providers without global exclusivity") {
+    Fixture         f(false);
+    ActionEncounter primary, other;
+    auto*           otherHero  = actor();
+    auto*           otherEnemy = actor();
+    REQUIRE(primary.bind(*f.hero, *f.enemy, f.heroId.format(), f.enemyId.format()).ok());
+    REQUIRE(other
+                .bind(*otherHero, *otherEnemy, "01020304-0506-0708-890a-0b0c0d0e0f20",
+                      "01020304-0506-0708-890a-0b0c0d0e0f21")
+                .ok());
+    REQUIRE(primary.hit(true, 10, 1).ok());
+    REQUIRE(other.hit(true, 20, 1).ok());
+    CHECK_EQ(f.enemy->getCurrent("hp"), 90.0);
+    CHECK_EQ(otherEnemy->getCurrent("hp"), 80.0);
+}

@@ -238,3 +238,12 @@ SaveSession 成功后清理瞬时遭遇，下一场重建 Link。保存只允许
 及完整重开后读档均通过，重复拾取不增加物品。engine-readback 截图已人工视检。
 绑定目录缓存曾未随源码更新，已通过重新生成 BindingContracts.generated.cpp 并正式重链接
 验证最终产物，而非绕过类型检查。首次脚本资源路径和操作回调环境问题均已修复后重验。
+
+
+### 后续加固：伤害 provider 归属冲突
+
+ActionEncounter 在分发前检查目标的 accepting provider：必须恰好一个且属于本遭遇。
+多个遭遇误绑定同一角色时返回 Conflict，不修改 HP、死亡回执或时钟；撤销冲突者后可重试。
+互不重叠的遭遇仍能同时存在，不实施进程级独占。provider 的 supports 必须是同步只读查询，
+不能修改参与者或注册表；无锁内回调。此检查沿用已有 capability 边界，没有新增状态 owner、
+公共数据格式或 ECS System。两种注册顺序与不相交遭遇由组合回归测试覆盖，无架构豁免。
