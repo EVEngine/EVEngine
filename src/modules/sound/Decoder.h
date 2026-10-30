@@ -61,7 +61,11 @@ public:
     /** @brief Total duration in seconds. */
     double getDuration();
 
-    /** @brief Underlying medialoader decoder (advanced). */
+    /**
+     * @brief Underlying medialoader decoder (advanced; null on browser builds).
+     * @ownership Borrowed from this Decoder. @lifetime Until this Decoder is destroyed.
+     * @nullable Yes on browser builds. @thread This Decoder's owning thread only.
+     */
     medialoader::Decoder *getImpl() {
 #if defined(__EMSCRIPTEN__)
         return nullptr;
