@@ -25,6 +25,13 @@ function spawn() {
     duel=eve.RPGActionEncounter(); checked(duel.bind(hero,enemy,heroId,enemyIds[index]));
     ex=650.0; ey=360.0; windup=0; recovery=60;
 }
+// Checkpoints restore persistent RPG owners; transient input/action state always starts clean.
+function resetTransient() {
+    px=300.0; py=360.0; tick=0; remainder=0.0;
+    cooldown=0; heavyCooldown=0; dodge=0; dodgeCooldown=0;
+    strike=0; power=0.0; windup=0; recovery=60; flash=0; keys={};
+    commands={x=0.0,y=0.0,attack=false,heavy=false,dodge=false};
+}
 function reset() {
     if(duel!=null) duel.close(); duel=null; save=null; world=null;
     if (enemy!=null) { enemy.release(); enemy=null; }
@@ -34,8 +41,7 @@ function reset() {
     bag=inv.newBag(2); bag.setId("hero.bag"); gear=inv.newEquipmentSet(); gear.setId("hero.gear"); gear.defineSlot("weapon");
     world=rpg.newWorldState(gs); save=eve.RPGSaveSession();
     if (save.bind(gs,tracker,hero,bag,gear)!=1 || save.setContentVersion("arpg-loop-v1")!=1) throw "save binding failed";
-    px=300.0; py=360.0; tick=0; cooldown=0; heavyCooldown=0; dodge=0; dodgeCooldown=0; strike=0; keys={};
-    commands={x=0.0,y=0.0,attack=false,heavy=false,dodge=false};
+    resetTransient();
     spawn(); message="J attack / K heavy / Space dodge. Three sentinels guard the altar.";
 }
 function pendingLoot() {
@@ -62,7 +68,7 @@ function loadCheckpoint() {
     local data=saveFs.readText("checkpoint.json");
     if(data=="" || save.restoreSnapshotJson(data)!=1) { message="No valid checkpoint; current run preserved."; return; }
     if(duel!=null) duel.close(); duel=null; if(enemy!=null) { enemy.release(); enemy=null; }
-    rpg.syncEquipModifiers(hero,gear); px=300.0; py=360.0; strike=0; windup=0; dodge=0; recovery=60;
+    rpg.syncEquipModifiers(hero,gear); resetTransient();
     message="Checkpoint restored. Rewards and caches remain deduplicated. N continues.";
 }
 function nextFight() {
@@ -108,7 +114,7 @@ function simulate() {
     }
 }
 function observe() {
-    gameState={tick=tick,hp=hero.getCurrent("hp"),enemyHp=enemy==null?0.0:enemy.getCurrent("hp"),kills=gs.getVariable("kills"),gold=gs.getVariable("gold"),level=hero.getLevel(),attack=hero.getFinalAttribute("attack"),items=bag.countItem("sentinel_blade"),pendingLoot=pendingLoot(),quest=tracker.getState("sentinels"),px=px,py=py,ex=ex,ey=ey,windup=windup,dodge=dodge,message=message};
+    gameState={tick=tick,hp=hero.getCurrent("hp"),enemyHp=enemy==null?0.0:enemy.getCurrent("hp"),kills=gs.getVariable("kills"),gold=gs.getVariable("gold"),level=hero.getLevel(),attack=hero.getFinalAttribute("attack"),items=bag.countItem("sentinel_blade"),pendingLoot=pendingLoot(),quest=tracker.getState("sentinels"),px=px,py=py,ex=ex,ey=ey,windup=windup,dodge=dodge,cooldown=cooldown,heavyCooldown=heavyCooldown,dodgeCooldown=dodgeCooldown,strike=strike,inputX=commands.x,inputY=commands.y,message=message};
 }
 game <- {};
 game.attack <- function(){commands.attack=true;}; game.heavy <- function(){commands.heavy=true;}; game.dodge <- function(){commands.dodge=true;};

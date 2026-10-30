@@ -52,6 +52,7 @@ def main():
     session = tool("eve_agent_session_start", objective="Verify complete ARPG combat-growth-checkpoint loop", criteria=[
         {"id": "loop", "description": "Three normal-input kills reward XP, gold, quest and gear"},
         {"id": "restore", "description": "Pending loot and equipped growth survive checkpoint restore without duplication"},
+        {"id": "defeat", "description": "Death blocks combat and save; restart and load clear transient actions"},
         {"id": "visual", "description": "Engine-owned frame displays the playable slice"},
     ])["sessionId"]
     for phase in ("modify", "run"):
@@ -121,16 +122,47 @@ def main():
     act("save")
     step(1)
     act("reset")
-    step(1)
+    fresh = step(1)
+    assert fresh["hp"] == 100 and fresh["kills"] == 0 and fresh["gold"] == 0, fresh
+    # Let ordinary AI attacks defeat the idle player; never edit HP through debug APIs.
+    death_deadline = time.monotonic() + 90
+    while time.monotonic() < death_deadline:
+        defeated = step(60)
+        if defeated["hp"] == 0:
+            break
+    assert defeated["hp"] == 0 and defeated["kills"] == 0, defeated
+    act("attack")
+    act("heavy")
+    act("dodge")
+    act("right")
+    after_death = step(30)
+    assert after_death["enemyHp"] == defeated["enemyHp"], after_death
+    assert after_death["px"] == defeated["px"] and after_death["dodge"] == 0, after_death
+    act("save")
+    assert "save after a kill" in step(1)["message"].lower()
+    capture("defeat.png")
+    act("reset")
+    restarted = step(1)
+    assert restarted["hp"] == 100 and restarted["kills"] == 0, restarted
+    # Establish real cooldowns and held movement, then queue more inputs before load.
+    act("heavy")
+    act("dodge")
+    act("right")
+    active = step(2)
+    assert active["heavyCooldown"] > 0 and active["dodgeCooldown"] > 0, active
+    act("attack")
     act("load")
     state = step(1)
+    assert state["px"] == 300 and state["py"] == 360, state
+    for field in ("cooldown", "heavyCooldown", "dodgeCooldown", "strike", "dodge", "windup", "inputX", "inputY"):
+        assert state[field] == 0, (field, state)
     assert state["kills"] == 3 and state["items"] == 2 and state["attack"] == 26 and state["quest"] == "completed", state
     picture = capture("victory-restored.png")
     artifact = output / "observations.json"
-    artifact.write_text(json.dumps({"combat": observations, "restored": state}, indent=2), encoding="utf-8")
+    artifact.write_text(json.dumps({"combat": observations, "defeated": defeated, "restarted": restarted, "beforeLoad": active, "restored": state}, indent=2), encoding="utf-8")
     for phase in ("observe", "verify"):
         tool("eve_agent_session_advance", sessionId=session, phase=phase)
-    for criterion, kind, path in [("loop", "runtime-observation", str(artifact.resolve())), ("restore", "runtime-observation", str(artifact.resolve())), ("visual", "screenshot", picture)]:
+    for criterion, kind, path in [("loop", "runtime-observation", str(artifact.resolve())), ("restore", "runtime-observation", str(artifact.resolve())), ("defeat", "runtime-observation", str(artifact.resolve())), ("visual", "screenshot", picture)]:
         tool("eve_agent_session_evidence", sessionId=session, criterionId=criterion, kind=kind, status="pass", summary="Normal input acceptance completed", artifact=path)
     completed = tool("eve_agent_session_complete", sessionId=session, summary="ARPG combat-growth-save loop verified")
     assert completed.get("phase") == "complete", completed

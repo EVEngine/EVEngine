@@ -31,3 +31,10 @@ passed, three-second example smoke passed. Run the live driver with
 `eve run --debug --mcp-port=7538` from this directory. It records observations and an
 engine-readback image. Final accepted state: level 3, 30 gold, 26 attack, completed
 quest, two bag items plus equipped weapon, and no remaining unclaimed caches.
+
+Recovery acceptance also lets normal enemy AI defeat an idle player, verifies that
+attacks/movement and saving are blocked while dead, then restarts and loads the
+previous checkpoint. Loading clears queued movement, attacks, windup, dodge and
+cooldowns; it does not carry transient combat state across the checkpoint boundary.
+The driver waits for simulation outcomes with a bounded wall-clock deadline because
+Play Host frame stepping and the game's fixed simulation ticks are distinct clocks.

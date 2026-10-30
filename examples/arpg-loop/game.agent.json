@@ -36,7 +36,13 @@
         "ey",
         "windup",
         "dodge",
-        "message"
+        "message",
+        "cooldown",
+        "heavyCooldown",
+        "dodgeCooldown",
+        "strike",
+        "inputX",
+        "inputY"
       ]
     }
   ],
