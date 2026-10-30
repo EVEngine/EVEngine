@@ -88,12 +88,12 @@ class MaterialDocument:
         self.root = Path(project).resolve()
         (self.root / 'generated').mkdir(parents=True, exist_ok=True)
         self.path = self.root / 'generated/material.json'
-        self.state = json.loads(self.path.read_text()) if self.path.exists() else {
+        self.state = json.loads(self.path.read_text(encoding="utf-8")) if self.path.exists() else {
             'revision': 0, 'baseColor': None, 'history': []}
         self.candidate = None
 
     def check_revision(self, expected):
-        disk = json.loads(self.path.read_text()) if self.path.exists() else self.state
+        disk = json.loads(self.path.read_text(encoding="utf-8")) if self.path.exists() else self.state
         if disk['revision'] != expected or self.state['revision'] != expected:
             raise ValueError('Material changed; reopen the editor before applying')
 

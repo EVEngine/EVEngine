@@ -369,6 +369,8 @@ void callRootFunc(HSQUIRRELVM vm, const std::string& name, const std::vector<Var
         sq_settop(vm, top);
         return;
     }
+    // Remove the lookup table so only the closure precedes receiver + arguments.
+    sq_remove(vm, -2);
     sq_pushroottable(vm);
     for (const auto& a : args) pushVar(vm, a);
     // `Var` is a runtime variant, so the shared helper's typed-argument form does not fit;

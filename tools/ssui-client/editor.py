@@ -13,16 +13,23 @@ from client import GenerationClient, MaterialDocument
 
 
 class Engine:
-    def __init__(self, executable, project):
-        self.process = subprocess.Popen([str(Path(executable).resolve()), 'mcp', '--root', str(project)],
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, bufsize=1)
+    def __init__(self, executable, project, *, worker=False):
+        command = [str(Path(executable).resolve()), 'mcp', '--timeout-ms', '30000', '--root', str(project)]
+        if worker:
+            command.append('--worker')
+        self.process = subprocess.Popen(command,
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, encoding="utf-8", bufsize=1)
         self.responses = queue.Queue()
         self.counter = 0
         threading.Thread(target=self.read, daemon=True).start()
-        self.rpc('initialize', {'protocolVersion': '2024-11-05', 'capabilities': {},
-                              'clientInfo': {'name': 'evengine-generation-client', 'version': '0.1'}})
-        self.process.stdin.write(json.dumps({'jsonrpc': '2.0', 'method': 'notifications/initialized'})+'\n')
-        self.process.stdin.flush()
+        try:
+            self.rpc('initialize', {'protocolVersion': '2024-11-05', 'capabilities': {},
+                                  'clientInfo': {'name': 'evengine-generation-client', 'version': '0.1'}})
+            self.process.stdin.write(json.dumps({'jsonrpc': '2.0', 'method': 'notifications/initialized'})+'\n')
+            self.process.stdin.flush()
+        except BaseException:
+            self.close()
+            raise
 
     def read(self):
         try:
@@ -69,6 +76,7 @@ class Engine:
             except subprocess.TimeoutExpired:
                 self.process.terminate()
                 self.process.wait(timeout=5)
+        return self.process.returncode
 
 
 class Editor:

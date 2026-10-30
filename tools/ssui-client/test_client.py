@@ -1,6 +1,5 @@
 import hashlib
 import io
-import json
 import tempfile
 import threading
 import unittest

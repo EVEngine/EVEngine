@@ -94,4 +94,4 @@ if (result.ok) {
 
 ## SSUI 素材生成插件
 
-项目内插件见 [plugins/ssui-generation](../../../plugins/ssui-generation/README.md)。通过 `plugins.load()` 注册 `eve.SSUIGeneration()`，提供异步生成、进度、取消、PNG 下载校验及材质应用/撤销；附带原生材质面板。运行时不依赖 Python 或 LLM，采用 SSUI 开放生成协议。构建、安装、打包与生命周期限制见插件 README。
+项目内插件见 [plugins/ssui-generation](../../../plugins/ssui-generation/README.md)。通过检查 `plugins.loadPlugin()` 的 Result 注册 `eve.SSUIGeneration()`，提供异步生成、进度、取消、PNG 下载校验及材质应用/撤销；附带原生材质面板。运行时不依赖 Python 或 LLM，采用 SSUI 开放生成协议。构建、安装、打包与生命周期限制见插件 README。

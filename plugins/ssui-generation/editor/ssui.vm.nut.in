@@ -1,8 +1,12 @@
 // Native plugin + editor ViewModel. No Python process or LLM is required.
+function ssuiValue(result) {
+    if (!result.ok) throw result.status.summary;
+    return result.value;
+}
 ::ssuiPlugins <- eve.Plugins();
-ssuiPlugins.load("./ssui_generation@CMAKE_SHARED_LIBRARY_SUFFIX@");
+ssuiValue(ssuiPlugins.loadPlugin("./ssui_generation@CMAKE_SHARED_LIBRARY_SUFFIX@"));
 ::ssui <- eve.SSUIGeneration();
-ssui.configure("http://127.0.0.1:7423", ".");
+ssuiValue(ssui.configure("http://127.0.0.1:7423", "."));
 ::ssuiGfx <- eve.Graphics();
 ::ssuiTexture <- null;
 function ssuiShow(path) {
@@ -25,27 +29,27 @@ function ssuiQuote(text) {
     server = "http://127.0.0.1:7423", prompt = "weathered red brick", seed = 0,
     status = "Ready", progress = 0.0, idle = true, hasCandidate = false, lastStatus = "",
     connect = function(editor,widget) {
-        try { ssui.configure(this.server,"."); ssuiShow(ssui.applied()); this.status="Connected"; }
+        try { ssuiValue(ssui.configure(this.server,".")); ssuiShow(ssui.applied()); this.status="Configured"; }
         catch(e) { this.status=e.tostring(); }
     },
     generate = function(editor,widget) {
         try {
             ssuiShow(ssui.applied());
-            ssui.start("mock.checker@1", "{\"prompt\":"+ssuiQuote(this.prompt)+",\"size\":256,\"seed\":"+this.seed.tointeger()+"}", "{}");
+            ssuiValue(ssui.start("mock.checker@1", "{\"prompt\":"+ssuiQuote(this.prompt)+",\"size\":256,\"seed\":"+this.seed.tointeger()+"}", "{}"));
         } catch(e) { this.status=e.tostring(); }
     },
-    cancel = function(editor,widget) { ssui.cancel(); },
+    cancel = function(editor,widget) { ssui.requestCancel(); },
     preview = function(editor,widget) {
-        try { if(ssui.candidate()=="") throw "Generate a candidate first"; ssuiShow(ssui.candidate()); this.status="Temporary preview"; }
+        try { if(ssui.candidate()=="") throw "Generate a candidate first"; ssuiShow(ssuiValue(ssui.completion())); this.status="Temporary preview"; }
         catch(e) { this.status=e.tostring(); }
     },
     restore = function(editor,widget) { ssuiShow(ssui.applied()); this.status="Applied material"; },
     apply = function(editor,widget) {
-        try { if(ssui.candidate()=="") throw "No candidate"; ssuiShow(ssui.candidate()); ssui.apply(); this.status="Applied"; }
+        try { if(ssui.candidate()=="") throw "No candidate"; ssuiShow(ssui.candidate()); ssuiValue(ssui.apply()); this.status="Applied"; }
         catch(e) { ssuiShow(ssui.applied()); this.status=e.tostring(); }
     },
     undo = function(editor,widget) {
-        try { ssuiShow(ssui.undo()); this.status="Undone"; } catch(e) { this.status=e.tostring(); }
+        try { ssuiShow(ssuiValue(ssui.undo())); this.status="Undone"; } catch(e) { this.status=e.tostring(); }
     }
 };
 ::ssuiInitFrames <- 0;
