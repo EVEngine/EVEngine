@@ -42,3 +42,12 @@ class WorkflowLayoutTests(unittest.TestCase):
         arm64 = (WORKFLOWS / "arm64-sdk.yml").read_text(encoding="utf-8")
         self.assertIn("platform: win32", arm64)
         self.assertIn("platform: linux", arm64)
+
+    def test_intel_gpu_acceptance_is_serial_and_validated(self):
+        release = (WORKFLOWS / "release-ci.yml").read_text(encoding="utf-8")
+        intel = release.split("  macos-x86_64:\n", 1)[1].split("  windows-arm64:\n", 1)[0]
+        self.assertIn('EVENGINE_VULKAN_VALIDATION: "1"', intel)
+        self.assertIn("--no-tests=error", intel)
+        self.assertIn("CTEST_JOBS=1 CTEST_REPEAT='' LABEL_FILTER=''", intel)
+        self.assertLess(intel.index("Validate Intel macOS rendering"),
+                        intel.index("Run native Intel macOS unit tests"))

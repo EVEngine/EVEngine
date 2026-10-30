@@ -61,6 +61,16 @@ printf '[package-check] passed: {frames} frames\\n' > "$output/acceptance.log"
         self.prepare(frames=29)
         self.assertNotEqual(self.run_transfer().returncode, 0)
 
+    def test_rejects_missing_or_duplicate_checksum_before_extracting(self):
+        self.prepare()
+        sums = self.root / "SHA256SUMS"
+        entry = sums.read_text(encoding="utf-8")
+        for content in ("", entry + entry, "invalid  eve-sdk-linux-v0.7.0.zip\n"):
+            with self.subTest(content=content):
+                sums.write_text(content, encoding="utf-8")
+                self.assertNotEqual(self.run_transfer().returncode, 0)
+                self.assertFalse((self.root / "eve-sdk").exists())
+
     def test_rejects_modified_sdk_before_running_it(self):
         self.prepare()
         with (self.root / "eve-sdk-linux-v0.7.0.zip").open("ab") as archive:

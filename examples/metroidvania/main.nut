@@ -40,7 +40,10 @@ function makeSpine(model, animationName, scale) {
     local modelPath = "spine/" + model + "/export/";
     local data = anim.newSpineSkeletonDataFromFile(modelPath + model + ".json");
     local atlas = anim.newSpineAtlasFromFile(modelPath + model + ".atlas");
-    if (data == null || atlas == null) return null;
+    if (data == null || atlas == null) {
+        print("Momentum Ruins: " + model + " Spine visual unavailable; drawing collision-sized actor.\n");
+        return null;
+    }
     local skeleton = anim.newSpineSkeleton(data);
     local player = anim.newSpineAnim(skeleton);
     player.setAtlas(atlas);
@@ -654,7 +657,7 @@ function updatePlayer(dt) {
     if (p.invulnerable > 0.0) p.invulnerable -= dt;
 
     if (p.attackTimer <= 0.0) {
-        p.spine.player.setSpeed(1.0);
+        if (p.spine != null) p.spine.player.setSpeed(1.0);
         local vy = p.body.getLinearVelocityY();
         if (p.grounded > 0) playSpine(p.spine, absf(p.body.getLinearVelocityX()) > 25.0 ? "Run" : "Idle");
         else playSpine(p.spine, vy < 0.0 ? "Jump" : "Fall");
@@ -841,6 +844,18 @@ eve_render = function() {
                 e.spine.player.setColor(1.0, 0.55, 0.48, 1.0);
             else e.spine.player.setColor(1.0, 1.0, 1.0, 1.0);
             e.spine.player.draw(gfx);
+        } else if (e.spine == null && (e.kind == "player" || e.kind == "boss" || startsWith(e.kind, "enemy")) &&
+                   (!("state" in e) || e.state != "dead")) {
+            local width = e.kind == "boss" ? 96.0 : 31.0;
+            local height = e.kind == "boss" ? 80.0 : 52.0;
+            local sx = screenX(e.body.getX());
+            local sy = screenY(e.body.getY());
+            gfx.drawSolidRect(sx - width * 0.5, sy - height * 0.5, width, height,
+                              e.kind == "player" ? 0.25 : 0.9,
+                              e.kind == "player" ? 0.78 : 0.3, 0.5, 1.0);
+            local facing = ("facing" in e) ? e.facing : 1;
+            gfx.drawSolidRect(sx + facing * width * 0.25 - 3.0, sy - height * 0.25,
+                              6.0, 6.0, 1.0, 1.0, 1.0, 1.0);
         }
     }
     foreach (effect in game.effects) {

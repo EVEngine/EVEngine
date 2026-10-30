@@ -34,3 +34,8 @@ the kick action while checking the engine log for frame/runtime errors.
   Hero may not be redistributed and Spineboy may not be used commercially.
 
 The generated map can be reproduced with `python generate_map.py`.
+
+The built-in Spine loader accepts only its documented subset. When a demo model
+uses unsupported features (such as IK or Bezier timelines), the example reports
+the unavailable visual and draws a colored, collision-sized actor with a facing
+marker. Movement, combat, and enemy behavior remain playable.

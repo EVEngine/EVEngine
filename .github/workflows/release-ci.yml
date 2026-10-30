@@ -88,7 +88,7 @@ jobs:
     name: macOS x86_64 (${{ matrix.configuration }}, build + test)
     needs: [debug-checks]
     runs-on: macos-15-intel
-    timeout-minutes: 240
+    timeout-minutes: 300
     strategy:
       fail-fast: false
       matrix:
@@ -142,15 +142,28 @@ jobs:
             exit 1
           fi
 
+      - name: Validate Intel macOS rendering before the full suite
+        timeout-minutes: 10
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_VULKAN_VALIDATION: "1"
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          ctest --test-dir "build/macosx-x86_64${suffix}" --output-on-failure -j 1 \
+            --no-tests=error -R '^map\.render\.orthoAndIsoPreview$'
+
       - name: Run native Intel macOS unit tests
-        timeout-minutes: 60
+        timeout-minutes: 150
         env:
           CONFIGURATION: ${{ matrix.configuration }}
           ALSOFT_DRIVERS: "null"
         run: |
           suffix=""
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
-          make "test/macosx-x86_64${suffix}" JOBS=4 CTEST_JOBS=4 LABEL_FILTER='' \
+          # Share the virtual GPU between one test process at a time.
+          make "test/macosx-x86_64${suffix}" JOBS=4 CTEST_JOBS=1 CTEST_REPEAT='' LABEL_FILTER='' \
             CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
 
       - name: Upload Intel macOS build diagnostics
