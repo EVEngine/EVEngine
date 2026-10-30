@@ -227,6 +227,9 @@
       // ---- console ---------------------------------------------------------
       function pgLog(kind, text) {
         if (text == null) text = '';
+        window.webgpuEarlyLogs = window.webgpuEarlyLogs || [];
+        if (window.webgpuEarlyLogs.length < 400)
+          window.webgpuEarlyLogs.push(String(text));
         var line = document.createElement('div');
         line.className = kind;
         line.textContent = String(text);

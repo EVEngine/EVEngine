@@ -77,6 +77,7 @@ def main() -> int:
             adapter = page.locator("#stAdapter").inner_text()
             print(f"browser ready: {adapter}")
 
+            failures = []
             for name, demo, initialized in SCENES:
                 if demo is None:
                     page.locator("#btnRestart").click()
@@ -100,12 +101,21 @@ def main() -> int:
                 except ValueError as error:
                     recent_log = page.locator("#log").inner_text()[-4000:]
                     status = page.locator("#status").inner_text()
-                    raise RuntimeError(
+                    early_logs = page.evaluate("window.webgpuEarlyLogs || []")
+                    relevant_early_logs = [
+                        line for line in early_logs
+                        if "[GPU_ERR]" in line or "[webgpu]" in line or "error" in line.lower()
+                    ][:40]
+                    failures.append(
                         f"{name}: {error}; status={status!r}; browser errors={browser_errors[-10:]!r}; "
                         f"first GPU messages={first_gpu_messages!r}; "
+                        f"early logs={relevant_early_logs!r}; "
                         f"page log:\n{recent_log}"
-                    ) from error
-                print(f"{name}: canvas OK, mean={mean:.3f}, stddev={deviation:.3f}")
+                    )
+                else:
+                    print(f"{name}: canvas OK, mean={mean:.3f}, stddev={deviation:.3f}")
+            if failures:
+                raise RuntimeError("\n\n".join(failures))
         finally:
             browser.close()
     return 0
