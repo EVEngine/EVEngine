@@ -1,0 +1,114 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/arpg-loop",
+  "entry": "main.nut",
+  "smoke": {
+    "scene": "arena",
+    "seed": 0,
+    "maxHostFrames": 180,
+    "mustReach": [
+      "loop"
+    ]
+  },
+  "clock": {
+    "defaultStep": "frame"
+  },
+  "observations": [
+    {
+      "id": "loop",
+      "kind": "script-root",
+      "path": "gameState",
+      "fields": [
+        "tick",
+        "hp",
+        "enemyHp",
+        "kills",
+        "gold",
+        "level",
+        "attack",
+        "items",
+        "pendingLoot",
+        "quest",
+        "px",
+        "py",
+        "ex",
+        "ey",
+        "windup",
+        "dodge",
+        "message"
+      ]
+    }
+  ],
+  "actions": {
+    "source": "script-map",
+    "map": [
+      {
+        "id": "attack",
+        "script": "game.attack()"
+      },
+      {
+        "id": "heavy",
+        "script": "game.heavy()"
+      },
+      {
+        "id": "dodge",
+        "script": "game.dodge()"
+      },
+      {
+        "id": "right",
+        "script": "game.right()"
+      },
+      {
+        "id": "left",
+        "script": "game.left()"
+      },
+      {
+        "id": "up",
+        "script": "game.up()"
+      },
+      {
+        "id": "down",
+        "script": "game.down()"
+      },
+      {
+        "id": "stop",
+        "script": "game.stop()"
+      },
+      {
+        "id": "pickup",
+        "script": "game.pickup()"
+      },
+      {
+        "id": "equip",
+        "script": "game.equip()"
+      },
+      {
+        "id": "save",
+        "script": "game.save()"
+      },
+      {
+        "id": "load",
+        "script": "game.load()"
+      },
+      {
+        "id": "next",
+        "script": "game.next()"
+      },
+      {
+        "id": "reset",
+        "script": "game.reset()"
+      }
+    ]
+  },
+  "capture": {
+    "requiredFor": [
+      "visual"
+    ],
+    "backend": "engine-readback"
+  },
+  "tolerances": {
+    "screenshot": "human-or-vlm",
+    "numericAbs": 0.0001
+  }
+}

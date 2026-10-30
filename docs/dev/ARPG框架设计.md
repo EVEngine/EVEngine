@@ -197,3 +197,44 @@ third-party 已同步到固定版本，整引擎构建随后在 `graphics/vulkan
 - [战斗系统与动作编辑器](战斗系统与动作编辑器.md)：能力、动作与表现生命周期。
 - [战斗载体与投射物行为组合框架](战斗载体与投射物行为组合框架.md)：投射物组合边界。
 - [结算与伤害数字](combat-settlement-damage-numbers.md)：战斗提交与表现连接。
+
+
+## 2026-10-30：可玩闭环切片
+
+`examples/arpg-loop` 提供三哨兵单人动作切片：移动→普攻/重击→敌人预警/闪避→
+Action Registry 的 combat:damage→RPG Vitals→死亡奖励→持久缓存拾取→装备属性→
+安全点保存/恢复→下一场。`ActionEncounter` 是双参与者协调器，不是新的角色根或 ECS System。
+
+module-interface 边界取证：E1 沿用 action damage-sink；E2 复用既有 action/settlement/inventory
+依赖；E3 只持有两个 generation-safe Handle 和每生命 SubjectRef；E4 消费拥有值的死亡回执；
+E5 暴露 RPGActionEncounter 的 bind/hit/claim/close/hasPendingReward；E6 复用示例声明的
+游戏操作协议，不新增 MCP 工具。未增加平行契约 JSON，也不据此声称整个 RPG 模块可裁剪。
+四轴：两个已知参与者、每次有效命中、已知协调器、伤害与奖励各自原子；复用现有接口。
+
+权威：脚本拥有位置、输入、攻击窗口与固定 60Hz 时序，RPG Vitals 唯一拥有 HP，GameState
+唯一拥有奖励和缓存消费事实，Inventory 拥有物品。无 RNG，固定步长下相同输入序列产生相同
+游戏决策；图形帧率不用于伤害计算，不宣称跨平台逐位回放或联网预测。脚本 observation 是
+只读投影，不参与判定。原生接口检查时间单调性、存活状态和实体 generation。
+
+生命周期：任一 actor 销毁后命中失败；close 即时撤销 provider，重开/读档必须调用，不能
+等脚本 GC。正常结束先 claim，失败保留回执；显式重开/读档则放弃原瞬时战斗。读档在完整
+SaveSession 成功后清理瞬时遭遇，下一场重建 Link。保存只允许无活动敌人、无待发奖回执、
+玩家存活的安全点。只恢复永久 RPG 状态，位置回营地，不保存半途动作、冷却或敌人血量。
+
+掉落不与死亡奖励假装成一个跨事务提交：死亡标记同时成为固定内容缓存的可领取条件，
+因此无另一个“生成掉落成功”标志。拾取使用 WorldInteraction 的 prepare/commit，满包不
+消费缓存，缓存仍可存档；装备成功后同步 modifier。重复领取不会添加物品或属性。
+固定内容版本 arpg-loop-v1，复用既有 SaveSession schema、未知字段拒绝和迁移入口。
+
+公开 API 使用 Result/nodiscard，声明同步寿命、线程、重入和成本；不持有跨帧裸 actor 指针，
+不在锁内调用脚本。没有新增可选后端，已有 provider 缺席/撤销测试继续执行。没有架构豁免。
+验收由原生组合测试及 examples/arpg-loop/agent_check.py 的真实 eve_play 输入完成；
+截图只取 engine-readback。该切片不包含多人、多目标遭遇奖励、随机词缀和战斗中快照。
+
+
+本轮验证结果：正式 macOS Debug 构建/链接通过；14 项 Action/RPG 组合测试通过；
+完整 make check 通过。新示例 smoke 连续运行 3 秒无错误。eve_play 正常操作验收达成
+3 次击杀、等级 3、金币 30、装备攻击 26、背包 2 件、任务 completed；未领缓存存档恢复
+及完整重开后读档均通过，重复拾取不增加物品。engine-readback 截图已人工视检。
+绑定目录缓存曾未随源码更新，已通过重新生成 BindingContracts.generated.cpp 并正式重链接
+验证最终产物，而非绕过类型检查。首次脚本资源路径和操作回调环境问题均已修复后重验。

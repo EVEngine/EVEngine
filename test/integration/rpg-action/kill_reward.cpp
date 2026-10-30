@@ -5,9 +5,12 @@
 // clang-format on
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
+#include "inventory/Item.h"
 #include "rpg/ActionDamageSink.h"
+#include "rpg/ActionEncounter.h"
 #include "rpg/ActionKillReward.h"
 #include "rpg/EncounterCatalogue.h"
+#include "rpg/EquipmentSystem.h"
 #include "rpg/GameState.h"
 #include "rpg/LevelSystem.h"
 #include "rpg/Quest.h"
@@ -15,6 +18,8 @@
 #include "rpg/RPGSaveSession.h"
 #include "rpg/Skill.h"
 #include "rpg/Tracker.h"
+#include "rpg/WorldInteraction.h"
+#include "rpg/WorldState.h"
 #include "zeroerr/unittest.h"
 
 namespace {
@@ -262,4 +267,76 @@ TEST_CASE("Action kill reward without quest prerequisite still notifies active q
     CHECK_EQ(f.state.getVariable("gold"), 20.0);
     CHECK_EQ(f.state.getVariable("kills"), 2.0);
     CHECK_EQ(f.tracker.getState("observer"), "completed");
+}
+
+TEST_CASE("Action encounter closes damage rewards full-bag pickup equipment and save restore") {
+    Fixture         f(false);
+    ActionEncounter encounter;
+    REQUIRE(encounter.bind(*f.hero, *f.enemy, f.heroId.format(), f.enemyId.format()).ok());
+    f.hero->setBaseAttribute("attack", 10);
+    auto hit = encounter.hit(true, 100, 1);
+    REQUIRE(hit.ok());
+    REQUIRE(encounter.hasPendingReward());
+    CHECK(!encounter.hit(true, 100, 2).ok());
+    CHECK(!encounter.claim(f.state, f.tracker, "missing").ok());
+    CHECK(encounter.hasPendingReward());
+    REQUIRE(encounter.claim(f.state, f.tracker, "wolf").ok());
+    CHECK(!encounter.hasPendingReward());
+    REQUIRE(encounter.claim(f.state, f.tracker, "wolf").ok());
+    CHECK_EQ(f.state.getVariable("gold"), 10.0);
+    inventory::ItemDefinition sword;
+    sword.id        = "loop.sword";
+    sword.equipSlot = "weapon";
+    inventory::ItemRegistry::registerItem(sword);
+    EquipmentSystem::registerItemStat(sword.id, {"attack", "add", 5, 0});
+    inventory::Bag bag(1);
+    bag.setId("loop.bag");
+    REQUIRE_EQ(bag.addItem(sword.id, 1), 1);
+    inventory::EquipmentSet equipment;
+    equipment.setId("loop.equipment");
+    equipment.defineSlot("weapon");
+    WorldLootRequest loot;
+    loot.mapId        = "loop.loot";
+    loot.objectId     = f.enemyId.format();
+    loot.itemId       = sword.id;
+    loot.itemQuantity = 1;
+    CHECK(!WorldInteraction::collectLoot(f.state, f.tracker, bag, loot).ok());
+    WorldState world(f.state);
+    CHECK(!world.isObjectConsumed(loot.mapId, loot.objectId));
+    REQUIRE(equipment.equipFromBag("weapon", &bag, 0));
+    REQUIRE_EQ(EquipmentSystem::syncEquipModifiers(f.hero, &equipment), 1);
+    CHECK_EQ(f.hero->getFinalAttribute("attack"), 15.0);
+    REQUIRE(WorldInteraction::collectLoot(f.state, f.tracker, bag, loot).ok());
+    CHECK(!WorldInteraction::collectLoot(f.state, f.tracker, bag, loot).ok());
+    CHECK_EQ(bag.countItem(sword.id), 1);
+    RPGSaveSession save;
+    save.bind(f.state, f.tracker, *f.hero, bag, equipment);
+    REQUIRE(save.setContentVersion("loop-v1").ok());
+    auto snapshot = save.snapshotJson();
+    REQUIRE(snapshot.ok());
+    REQUIRE(world.resetObject(loot.mapId, loot.objectId).ok());
+    f.state.setVariable("gold", 0);
+    REQUIRE(save.restoreSnapshotJson(snapshot.value()).ok());
+    CHECK(world.isObjectConsumed(loot.mapId, loot.objectId));
+    CHECK_EQ(f.state.getVariable("gold"), 10.0);
+    CHECK_EQ(f.hero->getFinalAttribute("attack"), 15.0);
+    CHECK_EQ(bag.countItem(sword.id), 1);
+    CHECK(!WorldInteraction::collectLoot(f.state, f.tracker, bag, loot).ok());
+    EquipmentSystem::clearAll();
+    inventory::ItemRegistry::clear();
+}
+
+TEST_CASE("Action encounter rejects stale participants and backwards ticks") {
+    Fixture         f(false);
+    ActionEncounter encounter;
+    REQUIRE(encounter.bind(*f.hero, *f.enemy, f.heroId.format(), f.enemyId.format()).ok());
+    REQUIRE(encounter.hit(true, 10, 4).ok());
+    CHECK(!encounter.hit(true, 10, 3).ok());
+    CHECK_EQ(f.enemy->getCurrent("hp"), 90.0);
+    encounter.close();
+    CHECK(!encounter.hit(false, 10, 5).ok());
+    REQUIRE(encounter.bind(*f.hero, *f.enemy, f.heroId.format(), f.enemyId.format()).ok());
+    f.hero->release();
+    CHECK(!encounter.hit(false, 10, 5).ok());
+    CHECK_EQ(f.enemy->getCurrent("hp"), 90.0);
 }
