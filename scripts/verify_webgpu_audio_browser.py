@@ -80,7 +80,7 @@ def main() -> int:
     deadline = time.monotonic() + args.timeout
     browser = Browser(args.port, deadline)
     try:
-        wait_for(browser, "document.getElementById('stEngine').className === 'ok'", deadline)
+        wait_for(browser, "document.getElementById('stEngine')?.className === 'ok'", deadline)
         browser.evaluate("""(() => {
             const menu = document.getElementById('exampleSel');
             menu.value = 'playground/demos/audio.nut';
