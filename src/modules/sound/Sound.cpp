@@ -222,21 +222,31 @@ Decoder *Sound::newDecoder(Data *data, int bufferSize) {
         browserDecodeRelease(id);
         throw eve::Exception("Could not decode browser audio data");
     }
-    std::vector<std::uint8_t> pcm(static_cast<std::size_t>(browserDecodeSize(id)));
-    const int                 rate     = browserDecodeRate(id);
-    const int                 channels = browserDecodeChannels(id);
-    browserDecodeCopyAndRelease(id, pcm.data());
-    return new Decoder(std::make_shared<const std::vector<std::uint8_t>>(std::move(pcm)), rate, channels, bufferSize);
+    const int size = browserDecodeSize(id);
+    if (size <= 0) {
+        browserDecodeRelease(id);
+        throw eve::Exception("Browser audio decoded to an empty buffer");
+    }
+    try {
+        std::vector<std::uint8_t> pcm(static_cast<std::size_t>(size));
+        const int                 rate     = browserDecodeRate(id);
+        const int                 channels = browserDecodeChannels(id);
+        browserDecodeCopyAndRelease(id, pcm.data());
+        return new Decoder(std::make_shared<const std::vector<std::uint8_t>>(std::move(pcm)), rate, channels,
+                           bufferSize);
+    } catch (...) {
+        browserDecodeRelease(id);
+        throw;
+    }
 #else
 
     std::vector<char> owned(static_cast<const char *>(data->getData()),
                             static_cast<const char *>(data->getData()) + data->getSize());
 
     std::string ext;
-    if (auto *fd = dynamic_cast<filesystem::FileData *>(data))
-        ext = lowerExt(fd->getExtension());
+    if (auto *fd = dynamic_cast<filesystem::FileData *>(data)) ext = lowerExt(fd->getExtension());
 
-    const char *ptr = owned.data();
+    const char *ptr  = owned.data();
     size_t size = owned.size();
 
     auto tryByExt = [&](const std::string &e) -> std::unique_ptr<medialoader::Decoder> {

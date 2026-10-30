@@ -52,7 +52,7 @@ int    Decoder::getChannelCount() const { return browserChannels; }
 int    Decoder::getBitDepth() const { return 16; }
 int    Decoder::getSampleRate() const { return browserSampleRate; }
 double Decoder::getDuration() {
-    return static_cast<double>(browserPcm->size()) / (browserSampleRate * browserChannels * 2);
+    return static_cast<double>(browserPcm->size()) / (static_cast<double>(browserSampleRate) * browserChannels * 2);
 }
 
 #else

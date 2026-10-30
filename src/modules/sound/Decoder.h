@@ -16,8 +16,8 @@ namespace sound {
 
 /**
  * @brief Streaming audio decoder (medialoader-backed).
- * Owns the raw encoded bytes and decodes incrementally via decode(). Clones
- * share immutable encoded storage and own independent playback positions.
+ * Native builds own encoded bytes and decode incrementally via decode(). Browser
+ * builds share fully decoded PCM instead. Clones own independent playback positions.
  * Each decoder is thread-affine; calls on one instance must be serialized.
  */
 class EVENGINE_API_PLATFORM Decoder {
