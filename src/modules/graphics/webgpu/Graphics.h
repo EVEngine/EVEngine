@@ -329,7 +329,6 @@ public:
     /** @brief Creates a texture. @ownership Caller deletes unless documented otherwise. */
     Texture *newTexture(int width, int height, const uint8_t *rgba,
                         const TextureCreateInfo &info) override;
-#if !defined(__EMSCRIPTEN__)
     /** @copydoc IResourceFactory::newTextureMipChain */
     /** @brief Creates a texture mip chain. @ownership Caller deletes unless documented otherwise. */
     [[nodiscard]] Result<Texture *> newTextureMipChain(uint32_t width, uint32_t height,
@@ -345,7 +344,6 @@ public:
     [[nodiscard]] Result<Texture *> newTexture3DRgba8(uint32_t width, uint32_t height,
                                                       uint32_t depth,
                                                       std::span<const uint8_t> rgba) override;
-#endif
     /** @brief Creates a cubemap. @ownership Caller deletes unless documented otherwise. */
     Texture *newCubemap(int faceSize, const uint8_t *rgbaFaces) override;
     /** @brief Creates a cubemap. @ownership Caller deletes unless documented otherwise. */
