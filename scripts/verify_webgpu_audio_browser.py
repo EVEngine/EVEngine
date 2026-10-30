@@ -28,7 +28,7 @@ class Browser:
             time.sleep(0.5)
         if not target:
             raise RuntimeError("Chrome did not open the WebGPU page")
-        self.socket = websocket.create_connection(target["webSocketDebuggerUrl"], timeout=15)
+        self.socket = websocket.create_connection(target["webSocketDebuggerUrl"], timeout=max(1, deadline - time.monotonic()))
 
     def call(self, method: str, params: dict) -> dict:
         self.sequence += 1
