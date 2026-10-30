@@ -112,7 +112,7 @@ scripts/smoke_examples.sh rpg` 通过；该检查只证明旧 RPG 示例能启�
 原生 `ActionKillReward::settle` 接收伤害 sink 的可信死亡 receipt，复用 `BattleVictory`
 提交经验、职业技能、金币、任务进度和计数。单成员 EncounterCatalogue 是奖励模板；
 多成员模板显式拒绝，避免每次击杀都领取整个遭遇奖励。模板沿用 BattleVictory 的
-有效活动任务等前置条件，尚不支持无任务奖励。既有遭遇入口与新入口共用字段投影。
+前置条件；2026-10-30 起，显式空的 requiredQuestId 表示普通敌人无需活动任务。既有遭遇入口与新入口共用字段投影。
 
 去重事实由 GameState 的 WorldState 消费标记唯一持有，保留作用域 `rpg.action-kill.v1`，
 以目标 SubjectRef 为键。宿主必须为每条生命分配不可复用的身份。尸体可以先销毁；收奖者
@@ -131,6 +131,18 @@ scripts/smoke_examples.sh rpg` 通过；该检查只证明旧 RPG 示例能启�
 验证：完整 `make check` 通过；正式 macOS Debug 构建与链接通过；
 `make test/macosx-debug JOBS=4 FILTER='Action kill reward'` 的 6 项集成测试全部通过，
 覆盖重复消费、尸体销毁、失败重试、失效收奖者、多敌人拒绝及 SaveSession 恢复去重。
+
+### 2026-10-30：普通敌人奖励
+
+EncounterCatalogue 的 `requiredQuestId` 仍是必填字符串；显式 `""` 表示无任务前置条件。
+缺失、错误类型、无效 ID 和非空但未注册的任务仍拒绝发布。BattleVictory 同步采用此契约：
+非空时检查活动任务，空时允许普通敌人奖励。击杀通知仍发给 Tracker，已激活的支线任务可
+独立观察同一击杀，不会把“领取击杀奖励”绑到“已接任务”。任务完成后普通敌人的后续击杀
+仍可发奖；每条生命的去重规则不变。
+
+这是既有原子事务的契约扩展，没有新增状态所有者、跨模块依赖、回调、随机源或存档字段。
+既有非空模板语义不变；旧内容无需迁移。新内容使用空值时必须升级运行时，旧运行时会明确
+拒绝该定义。Result、同步借用和模拟线程约束沿用既有接口；没有架构规则豁免。
 
 ### 余下宿主工作
 

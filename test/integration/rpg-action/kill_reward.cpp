@@ -40,7 +40,7 @@ struct Fixture {
     SubjectRef       enemyId = subject("01020304-0506-0708-890a-0b0c0d0e0f11");
     GameState        state;
     Tracker          tracker;
-    Fixture() {
+    explicit Fixture(bool questGated = true) {
         SkillDefinition skill;
         skill.id = "kill-reward.claw";
         SkillRegistry::registerSkill(skill);
@@ -48,15 +48,20 @@ struct Fixture {
         quest.id          = "kill-reward.hunt";
         quest.startPolicy = "auto";
         quest.objectives  = {{"kill", "kill", "wolf", 1}};
-        QuestRegistry::registerQuest(quest);
+        if (questGated) QuestRegistry::registerQuest(quest);
         tracker.syncAuto();
-        auto loaded = EncounterCatalogue::replaceFromJsonStrict(R"([
+        std::string definition = R"([
           {"id":"wolf","displayName":"Wolf","members":[
             {"id":"wolf","displayName":"Wolf","skillId":"kill-reward.claw","attack":1,"defense":0,"maxHp":100,"speed":1}],
            "xpReward":100,"xpGrowth":1.2,"goldReward":10,"requiredQuestId":"kill-reward.hunt",
            "notifyTopic":"kill","notifyTarget":"wolf","notifyAmount":1,
            "defeatCounterId":"kills","defeatCounterAmount":1,"levelPointAttributeId":"points","pointsPerLevel":2}
-        ])");
+        ])";
+        if (!questGated) {
+            const std::string gate = "\"requiredQuestId\":\"kill-reward.hunt\"";
+            definition.replace(definition.find(gate), gate.size(), "\"requiredQuestId\":\"\"");
+        }
+        auto loaded = EncounterCatalogue::replaceFromJsonStrict(definition);
         REQUIRE(loaded.ok());
     }
     ~Fixture() {
@@ -222,4 +227,39 @@ TEST_CASE("Action kill reward rejects a multi-member encounter without granting 
     CHECK_EQ(before.value(), after.value());
     CHECK_EQ(f.hero->getLevel(), 1);
     CHECK_EQ(f.tracker.getState("kill-reward.hunt"), "active");
+}
+
+TEST_CASE("Action kill reward without quest prerequisite grants ordinary enemy rewards once") {
+    Fixture    f(false);
+    const auto death  = f.kill();
+    auto       reward = ActionKillReward::settle(f.recipient(), f.state, f.tracker, death, "wolf");
+    REQUIRE(reward.ok());
+    CHECK_EQ(f.hero->getLevel(), 2);
+    CHECK_EQ(f.state.getVariable("gold"), 10.0);
+    CHECK_EQ(f.state.getVariable("kills"), 1.0);
+    auto repeat = ActionKillReward::settle(f.recipient(), f.state, f.tracker, death, "wolf");
+    REQUIRE(repeat.ok());
+    CHECK(repeat.code() == StatusCode::NoOp);
+    CHECK_EQ(f.state.getVariable("gold"), 10.0);
+}
+
+TEST_CASE("Action kill reward without quest prerequisite still notifies active quests") {
+    Fixture         f(false);
+    QuestDefinition quest;
+    quest.id          = "observer";
+    quest.startPolicy = "auto";
+    quest.objectives  = {{"kill", "kill", "wolf", 1}};
+    QuestRegistry::registerQuest(quest);
+    f.tracker.syncAuto();
+    auto reward = ActionKillReward::settle(f.recipient(), f.state, f.tracker, f.kill(), "wolf");
+    REQUIRE(reward.ok());
+    CHECK_EQ(f.tracker.getState("observer"), "completed");
+    f.enemy->release();
+    f.enemy   = actor();
+    f.enemyId = subject("01020304-0506-0708-890a-0b0c0d0e0f12");
+    auto next = ActionKillReward::settle(f.recipient(), f.state, f.tracker, f.kill(), "wolf");
+    REQUIRE(next.ok());
+    CHECK_EQ(f.state.getVariable("gold"), 20.0);
+    CHECK_EQ(f.state.getVariable("kills"), 2.0);
+    CHECK_EQ(f.tracker.getState("observer"), "completed");
 }

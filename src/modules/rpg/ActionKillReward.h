@@ -15,7 +15,7 @@ struct RPGActionDamageReceipt;
 /**
  * @brief Translate a committed action death into the existing atomic victory transaction.
  * @remarks Uses single-member EncounterCatalogue definitions as reward templates.
- * Templates must satisfy BattleVictory preconditions, including an active required quest.
+ * Templates satisfy BattleVictory preconditions; an empty requiredQuestId allows ordinary kills.
  * GameState owns the durable consumed fact under reserved scope rpg.action-kill.v1;
  * the target SubjectRef identifies one life, independent of execution, tick or map.
  * No additional registry, actor mirror, RNG or save format is introduced.
