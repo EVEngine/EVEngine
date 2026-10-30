@@ -347,7 +347,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         # C++ exceptions can be thrown through ASYNCIFY-wrapped frames (e.g. a
         # module expose() failing); keep JS-side catching enabled so the abort
         # helper is compiled instead of asserting on the first __cxa_throw.
-        -sNO_DISABLE_EXCEPTION_CATCHING=1
+        -fexceptions
         # The WebGPU backend spin-waits for requestAdapter/requestDevice with
         # emscripten_sleep(0); on the main thread that requires ASYNCIFY.
         -sASYNCIFY=1

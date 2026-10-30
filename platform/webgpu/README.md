@@ -66,6 +66,11 @@ module delete list.
   -mbulk-memory`** (engine and third-party). The page must still be served
   with COOP/COEP headers so `SharedArrayBuffer` is available.
 
+- **C++ exceptions**: engine and dependency C++ compilation, as well as the host
+  link, enable `-fexceptions`. A link-only exception setting cannot restore catch
+  blocks removed during compilation; recoverable parser or binding failures would
+  otherwise escape into JavaScript and interrupt startup.
+
 ### Serving + browser verification
 
 The output directory is `build/webgpu-web/src/engine/`. Serve it with a real
