@@ -2,6 +2,7 @@
 #include "common/Identity.h"
 #include "common/SquirrelBinding.h"
 #include "common/SubjectRef.h"
+#include "rpg/ActionEncounter.h"
 #include "rpg/Battle.h"
 #include "rpg/BattleControl.h"
 #include "rpg/BattleSystem.h"
@@ -10,6 +11,7 @@
 #include "rpg/Class.h"
 #include "rpg/Effect.h"
 #include "rpg/EncounterCatalogue.h"
+#include "rpg/EncounterVictoryInternal.h"
 #include "rpg/EquipmentSystem.h"
 #include "rpg/GameState.h"
 #include "rpg/LevelSystem.h"
@@ -270,21 +272,7 @@ RPG::settleEncounterVictory(RPGActor *actor, Tracker *tracker, GameState *gameSt
     if (!definition)
         return eve::Result<BattleVictoryReceipt>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::NotFound, "unknown encounter definition", "encounterId"));
-    BattleVictoryRequest request;
-    request.mapId = mapId;
-    request.objectId = objectId;
-    request.requiredQuestId = definition->requiredQuestId;
-    request.xpAmount = definition->xpReward;
-    request.xpGrowth = definition->xpGrowth;
-    request.attributeId = "gold";
-    request.attributeAmount = definition->goldReward;
-    request.notifyTopic = definition->notifyTopic;
-    request.notifyTarget = definition->notifyTarget;
-    request.notifyAmount = definition->notifyAmount;
-    request.defeatCounterId = definition->defeatCounterId;
-    request.defeatCounterAmount = definition->defeatCounterAmount;
-    request.levelPointAttributeId = definition->levelPointAttributeId;
-    request.pointsPerLevel = definition->pointsPerLevel;
+    const auto request = detail::encounterVictoryRequest(*definition, mapId, objectId);
     return BattleVictory::settle(*actor, *gameState, *tracker, request);
 }
 
@@ -1198,6 +1186,23 @@ void RPG::expose(ssq::Table &table) {
         const eve::Value* value = session->getStepPayload().find(fieldName);
         return value && value->isBool() && value->asBool();
     });
+
+    auto actionEncounter = table.addClass<ActionEncounter>(
+        "RPGActionEncounter", std::function<ActionEncounter *()>([]() { return new ActionEncounter(); }), true);
+    actionEncounter.addFunc("bind", [vm](ActionEncounter *session, RPGActor *player, RPGActor *enemy,
+                                         const std::string &playerId, const std::string &enemyId) {
+        return eve::script::projectResult(vm, session->bind(*player, *enemy, playerId, enemyId));
+    });
+    actionEncounter.addFunc("hit", [vm](ActionEncounter *session, bool playerAttacks, float amount, int tick) {
+        return eve::script::projectResult(vm, session->hit(playerAttacks, amount, tick),
+                                          [](double applied) { return eve::Value(applied); });
+    });
+    actionEncounter.addFunc(
+        "claim", [vm](ActionEncounter *session, GameState *state, Tracker *tracker, const std::string &encounterId) {
+            return eve::script::projectResult(vm, session->claim(*state, *tracker, encounterId));
+        });
+    actionEncounter.addFunc("close", [](ActionEncounter* session) { session->close(); });
+    actionEncounter.addFunc("hasPendingReward", &ActionEncounter::hasPendingReward);
 
     auto saveSession = table.addClass<RPGSaveSession>(
         "RPGSaveSession", std::function<RPGSaveSession *()>([]() { return new RPGSaveSession(); }), true);
