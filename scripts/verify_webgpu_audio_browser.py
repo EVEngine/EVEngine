@@ -89,7 +89,9 @@ def main() -> int:
     try:
         wait_for(browser, "document.getElementById('stEngine')?.className === 'ok'", deadline)
         wait_for(browser, "document.getElementById('log').textContent.includes('Music queued')", deadline)
-        duration = float(script_result(browser, "__pg.music.getDuration()"))
+        samples = int(script_result(browser, "__pg.musicData.getSampleCount()"))
+        rate = int(script_result(browser, "__pg.musicData.getSampleRate()"))
+        duration = samples / rate
         if duration < 1.9:
             raise RuntimeError(f"Music decoded to an unexpected duration: {duration}")
 
