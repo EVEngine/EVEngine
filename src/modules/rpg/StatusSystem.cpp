@@ -2,6 +2,7 @@
 #include "rpg/AttributeSystem.h"
 #include "rpg/Effect.h"
 #include "rpg/RPGActor.h"
+#include "rpg/SimulationEvents.h"
 
 #include <algorithm>
 #include <cmath>
@@ -17,15 +18,9 @@ using LifecycleInstance   = ::eve::effects::EffectInstance;
 using StatusMetadata      = StatusExecutorMetadata;
 using ModifierBinding     = std::pair<std::string, std::string>;
 
-std::vector<StatusTickEvent> &tickQueue() {
-    static std::vector<StatusTickEvent> q;
-    return q;
-}
+std::vector<StatusTickEvent>& tickQueue() { return detail::simulationEvents().ticks; }
 
-std::vector<StatusChangeEvent> &changeQueue() {
-    static std::vector<StatusChangeEvent> q;
-    return q;
-}
+std::vector<StatusChangeEvent>& changeQueue() { return detail::simulationEvents().changes; }
 
 eve::Status rejectedStatus(eve::DiagnosticCode code, std::string message,
                            eve::StatusCode statusCode = eve::StatusCode::Rejected) {

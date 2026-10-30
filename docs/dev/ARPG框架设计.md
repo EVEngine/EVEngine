@@ -1,0 +1,261 @@
+# EVEngine ARPG 框架设计
+
+更新：2026-10-28。基线：`origin/dev` 的 `900ee612c`。
+
+状态：已有通用能力与战斗基础；ARPG 跨模块游戏闭环待集成验收。本文描述合并后的模块归属和后续设计，不代表完整游戏已经运行通过。
+
+## 合并决策
+
+合并前原型保存在 `a3be8a862`。dev 已实现同名任务系统，并将属性、效果、动作、结算、存档拆为独立领域，因此采用 dev 的实现和测试，移除原型的重复运行时。原型提交仅用于设计追溯，不应直接恢复到当前构建。
+
+| 原型入口 | 合并后采用的实现 | 迁移注意 |
+| --- | --- | --- |
+| `CombatSystem::dealDamage` | `combat` + `settlement`；RPG 使用 `RPGSettlementAdapter` | 命中检测、数值计算、资源提交分别负责，不能靠直接修改基础生命值实现伤害 |
+| `ProgressionSystem` | `rpg::LevelSystem` | 使用 level/xp/xpToNext；原型最大等级和分配点不是现有保证 |
+| `QuestSystem` / `Tracker` | dev 同名实现 | 保留 dev 的校验、事件与奖励接口 |
+| `LootRegistry` / `LootRoll` | `rpg::LootSystem` | 注入随机流、逐条概率掉落并入 Bag；不等同于原型权重抽取、luck 和唯一抽取 |
+| `EquipmentSet::synchronizeAttributes` | `rpg::EquipmentSystem::syncEquipModifiers` | 按物品注册加成、按槽位管理 modifier source；inventory 不反向依赖 rpg |
+| `StateCodec` | `RPGSaveSession` / `RPGGameSaveParticipant` | 使用既有准备与提交边界，不恢复原型破坏式读档 |
+| `UtilityBrain` | `CombatEnemyIntentSource` 作为现有简单敌人入口 | 现有距离分段、预警、恢复行为不等同于通用 Utility AI |
+
+原型示例与七项测试依赖已撤下的 API；此次采用 dev 的 `examples/rpg` 与领域测试，不能把原型的历史测试结果视为本次合并验证。
+
+## 模块与状态所有权
+
+| 模块 | 权威状态 / 职责 | ARPG 组合方式 |
+| --- | --- | --- |
+| `attributes` / `effects` | 属性计算、效果容器 | RPGActor 适配已有容器，避免额外缓存成为第二份权威状态 |
+| `action` | 动作定义、执行阶段、能力请求、时间线 | 玩家与 AI 都提交能力意图；技能配置映射到动作定义 |
+| `combat` | 角色运动、近战命中、锁定、防御窗口、连招与打击反馈 | 宿主接线 `CombatLoop`，把命中事实交给选定的结算适配器 |
+| `settlement` | 统一结算协议及流水线 | 同一目标资源只走一个正式提交路径 |
+| `rpg` | Vitals、成长、职业、任务、装备属性适配、RPG 存档 | 维护长期角色进度；实时战斗与回合制 Battle 不并行扣同一份血 |
+| `inventory` | Bag、装备栏、物品数量与实例 | 负责物品所有权，RPG 负责其属性含义 |
+| 场景、物理、动画与表现 | 空间查询、碰撞、姿态、音画 | 通过已有接口组合，不把表现依赖塞进 action 核心 |
+
+```mermaid
+flowchart TD
+    Input[玩家输入 / 敌人意图] --> Action[action 能力与动作时间线]
+    Action --> Combat[combat 命中与窗口]
+    Combat --> Settlement[settlement 计算与提交]
+    Settlement --> Resources[角色资源权威状态]
+    Resources --> Facts[已提交的死亡 / 奖励事实]
+    Facts --> Quest[任务 Tracker]
+    Facts --> Level[LevelSystem]
+    Facts --> Loot[LootSystem 与 Bag]
+    Loot --> Equipment[装备栏]
+    Equipment --> Attributes[EquipmentSystem 与属性]
+    Attributes --> Settlement
+```
+
+图中跨域箭头是待明确验收的组合契约，不表示这些系统已经自动连通。
+
+## 经典设计的取舍
+
+以“战斗—奖励—装备—更强挑战”为产品循环，定义与实例分离，动作时序与数值结算分离。沿用仓库的能力、标签、效果和动作时间线设计；背景与细节见 [战斗系统与动作编辑器](战斗系统与动作编辑器.md)。不以另一套 ARPG 总管替代已有领域。
+
+随机数由宿主拥有并按用途分流；可设种子不等于跨平台确定性回放。任务观察提交后的事实，不负责推断命中；AI 输出意图，不直接扣血。游戏内容可以选择不同伤害公式，框架不在通用入口硬编码某款游戏的数值。
+
+## 宿主集成契约（待实现与验证）
+
+### 已接入：动作伤害 → RPG Vitals
+
+`rpg::RPGActionDamageSink` 是原生宿主显式创建的作用域 provider：现有
+`ActionNotifyRegistry` 的 `combat:damage` producer 经 `IActionDamageSink` 调用它，
+再由 `RPGSettlementAdapter` 与统一 Settlement 提交 `hp`。无需创建或同步 CombatState。
+定义、能力、动作的执行仍属于 action；这里不创建第二套动作状态机。
+
+宿主传入 `RPGDamageResolver`，把 action 实体映射为 RPGActor 的 generation handle 与稳定
+SubjectRef。sink 每次调用重新检查两个领域的实体；映射 owner 必须活得比 sink 久，源或目标
+先销毁均返回失败，sink 先销毁则撤销 provider。读档后宿主重建映射和 sink，不保存运行时指针。
+
+```cpp
+// resolveActionEntity 由宿主拥有，返回 optional<RPGDamageTarget>。
+eve::rpg::RPGActionDamageSink damageSink(resolveActionEntity);
+// 正常推进现有 ActionNotifyPlayback/Registry；无需另调用一次扣血。
+for (const auto& receipt : damageSink.takeReceipts()) {
+    if (receipt.killed) {
+        // 解析来源到有效 RPGDamageTarget 后调用 ActionKillReward::settle。
+        // 检查 Result；失败时保留 receipt 重试。此处不重复扣血。
+    }
+}
+```
+
+receipt 保存来源、目标、execution、模拟 tick、实际伤害与死亡转换，按提交顺序一次取走。
+多次命中同一 execution 可以是合法多段技，因此不按 execution 去重；已死亡目标再次受击
+不会重复报告死亡。它不向旧的裸指针 Vitals 队列发布事件，宿主消费拥有身份的 receipts。
+receipt 是瞬时观察；下述 ActionKillReward 提供已提交奖励的持久去重，但不持久化待处理 receipt。
+
+当前支持固定 `hp` 的默认 RPG 伤害结算；poise 和击退显式返回 Unsupported，preview/scrubbing
+不改变状态。存在 source 时必须有有效 RPG 映射，不把失效施法者静默降为环境伤害。
+同一目标只能由宿主选定一个伤害 provider；不要同时向 CombatState 和 Vitals 提交。
+
+边界审查：R-BOUND-2 使用既有 action/settlement 依赖，未引用 combat 实现；对象文件未定义符号
+检查确认新 adapter 不依赖 `eve::combat`（仅该 TU 的 L2 证据，不等于整个 RPG 模块裁剪）。
+R-MECH-1：多目标、每次命中、provider 运行期可选、资源提交须原子，复用既有 capability 路由
+与 Settlement 事务。E1 提供既有 damage-sink，E3 仅同步解析宿主 Link，E4 输出拥有值的 receipt，
+E5/E6 本轮无新增脚本/MCP API。未新增 ECS System、持久格式、热循环查表或全局注册表。
+线程、重入、寿命及成本按头文件声明；没有架构豁免。
+
+`test/integration/rpg-action/action_damage.cpp` 覆盖实际 Registry 分发、provider 缺席/撤销、
+源/目标销毁与 slot 复用、预览、无效数值、未支持的运动字段及死亡转换。原生宿主可以使用，
+尚未接入可玩示例的输入与奖励控制器。
+
+验证结果：完整 `make check` 通过；重新配置发现新文件后，`eve` 与 `unit_test` 正式链接通过；
+`make test/macosx-debug JOBS=4 FILTER='RPG action damage'` 的 4 项 CTest 全部通过。
+同一路径的独立测试程序报告 31 条断言通过。`MIN_RUN_SECONDS=2 RUN_SECONDS=3 bash
+scripts/smoke_examples.sh rpg` 通过；该检查只证明旧 RPG 示例能启动，不是新增原生桥接的可玩闭环验收。
+之前缺失 `vkbuilder.hpp` 的原因是 `third-party/VKBuilder` 固定子模块未初始化，现已补齐；
+未修改依赖源码，之前的构建阻塞已解除。
+
+### 2026-10-29：死亡奖励与存档去重
+
+原生 `ActionKillReward::settle` 接收伤害 sink 的可信死亡 receipt，复用 `BattleVictory`
+提交经验、职业技能、金币、任务进度和计数。单成员 EncounterCatalogue 是奖励模板；
+多成员模板显式拒绝，避免每次击杀都领取整个遭遇奖励。模板沿用 BattleVictory 的
+前置条件；2026-10-30 起，显式空的 requiredQuestId 表示普通敌人无需活动任务。既有遭遇入口与新入口共用字段投影。
+
+去重事实由 GameState 的 WorldState 消费标记唯一持有，保留作用域 `rpg.action-kill.v1`，
+以目标 SubjectRef 为键。宿主必须为每条生命分配不可复用的身份。尸体可以先销毁；收奖者
+必须仍是有效 ECS generation，且身份匹配死亡来源。重复消费先于模板与任务检查，成功
+发奖后即使任务完成或模板移除也返回 NoOp。失败不消耗死亡身份，调用者保留 receipt 重试。
+
+使用 RPGSaveSession 一起保存角色、任务和 GameState 后，恢复仍能拒绝重复发奖。
+这不是崩溃恢复的持久消息收件箱：未处理 receipt 仍是瞬时数据，宿主应在发奖完成后的安全点
+保存，或另行设计待处理记录。物品掉落、多人分配和多敌人遭遇的联合事务尚未接通。
+
+边界：E3 每次同步校验收奖者 Handle，E4 消费拥有身份值的 receipt；E1/E2/E5/E6 无新增接口。
+单收奖者、低频死亡事件、已知事务 owner、要求原子提交，因此直接复用 BattleVictory。
+未新增 ECS System、可选依赖、持久 schema 或第二份角色状态；沿用 SaveSession 版本与迁移。
+公开接口使用 nodiscard Result，声明寿命、线程、重入及成本；无架构规则豁免。
+
+验证：完整 `make check` 通过；正式 macOS Debug 构建与链接通过；
+`make test/macosx-debug JOBS=4 FILTER='Action kill reward'` 的 6 项集成测试全部通过，
+覆盖重复消费、尸体销毁、失败重试、失效收奖者、多敌人拒绝及 SaveSession 恢复去重。
+
+### 2026-10-30：普通敌人奖励
+
+EncounterCatalogue 的 `requiredQuestId` 仍是必填字符串；显式 `""` 表示无任务前置条件。
+缺失、错误类型、无效 ID 和非空但未注册的任务仍拒绝发布。BattleVictory 同步采用此契约：
+非空时检查活动任务，空时允许普通敌人奖励。击杀通知仍发给 Tracker，已激活的支线任务可
+独立观察同一击杀，不会把“领取击杀奖励”绑到“已接任务”。任务完成后普通敌人的后续击杀
+仍可发奖；每条生命的去重规则不变。
+
+这是既有原子事务的契约扩展，没有新增状态所有者、跨模块依赖、回调、随机源或存档字段。
+既有非空模板语义不变；旧内容无需迁移。新内容使用空值时必须升级运行时，旧运行时会明确
+拒绝该定义。Result、同步借用和模拟线程约束沿用既有接口；没有架构规则豁免。
+
+### 余下宿主工作
+
+1. 为场景实体、战斗主体和 RPGActor 建立可校验的身份映射；销毁或读档后旧 generation 不可继续生效。
+2. 每个模拟步收集玩家/AI 意图，推进能力、动作时间线与命中窗口。由宿主定义明确时序，不重复推进同一 runtime。
+3. 命中携带 execution、来源、目标、伤害描述进入结算；命中去重范围应区分单次挥击、多段技和持续区域。
+4. 结算成功后提交当前资源。生命上限来自属性，当前生命属于 Vitals 或明确选定的战斗状态；禁止两份状态各自修改后互相覆盖。
+5. 死亡转换只发一次奖励事实。经验、任务进度、掉落入包分别消费，并记录可重试边界。满包、来源销毁和重复事件必须有明确结果。
+6. 换装成功后同步属性；处理生命上限下降、效果到期与死亡状态之间的规则。
+7. 表现消费提交后的结果。受击停顿、伤害数字、音效失败不回滚已完成的游戏结算。
+8. 在安全点保存；先校验并准备所有参与者，再统一提交。静态内容版本、随机流、奖励去重记录与对象绑定均需明确覆盖范围。
+
+禁止用第二次 `rpg.update(0)` 作为通用事件刷新方式：事件消费和模拟推进应有明确所有者，避免重复处理或清空其他系统的事件。
+
+## 后续交付顺序与验收
+
+2026-10-28 增量：已将现有 `LootSystem::roll` 的逐项入包改为库存批量事务。
+满包、无效原生定义、未知命中物品不修改背包、随机流或事件；成功后钩子可安全重载掉落表。
+该修复只解决奖励的入包原子性，不表示战斗桥接、击杀去重、经验与任务联合提交已完成。
+
+本次边界审查（存量实现修复）：R-BOUND-2 复用 manifest 已声明的 rpg→inventory 硬依赖；
+R-MECH-1 的四轴为单 Bag、每次发奖、已知库存 owner、要求全成全败，故复用 prepare/commit。
+R-FACE-1 涉及库存事件 E4 和原有脚本入口 E5，未增加 capability、ECS/Link 或工具协议；
+R-COST-5 已记录整表遍历与背包复制成本。兼容计数入口统一进入内部 Result 路径，未新增平行状态。
+不涉及新持久格式、跨帧借用或可选 provider；不据此次检查宣称整个 rpg 模块达到 L2–L4 裁剪验收。
+
+增量验证：4 项 RPG→Inventory 组合回归测试、39 条断言通过（独立无图形测试程序）；
+完整 `make check` 通过；标准 `make debug JOBS=4` 中 `EVRPG` 编译通过。
+third-party 已同步到固定版本，整引擎构建随后在 `graphics/vulkan/ComputePass.h` 因缺少
+`vkbuilder.hpp` 失败，尚未完成整引擎链接或可玩示例验收。未以改写依赖头文件绕过问题。
+
+| 阶段 | 工作 | 完成条件 |
+| --- | --- | --- |
+| 1：状态与结算桥接 | 确认 combat 与 RPG 资源权威、身份映射、结算适配 | 一次攻击只扣一次血；旧身份、失败提交不改变目标 |
+| 2：奖励闭环 | 死亡→经验/任务/掉落→装备属性 | 重复死亡不重复发奖；满包行为明确；穿脱不残留 modifier |
+| 3：可玩切片 | 移动、普攻、技能、闪避、敌人预警/恢复、拾取、UI | 可实际操作完成一次战斗与成长循环，打断后窗口和表现资源清理 |
+| 4：保存恢复 | 复用 SaveSession 参与者、版本与迁移策略 | 错误存档无半恢复；恢复后属性、装备、任务、资源一致 |
+| 5：扩展 | 随机词缀、复杂 AI、Boss、多段技 | 在前四阶段测试基础上增加，不引入第二套领域状态 |
+
+通用 Utility AI、权重/唯一掉落、点数分配、完整网络预测和跨平台回放均为可选扩展，当前不承诺已实现。
+
+## 验证与阅读入口
+
+源代码检查使用根 Makefile：`make check/test-manifest check/module-layers check/examples`；完整源检查为 `make check`。构建使用 `make debug JOBS=4`。按宿主与配置选择领域测试，遵循根 AGENTS.md，避免启动本地全量图形测试。
+
+现有测试入口：`test/unit/rpg/rpg_tests.cpp`、`test/unit/combat/combat_tests.cpp`、`test/unit/action/action_tests.cpp` 与 `test/integration/combat-presentation/`。它们覆盖各自领域，ARPG 奖励与恢复的跨域验收仍需补充。
+
+本次合并验证：测试清单、模块分层、示例布局检查通过；`git diff --check` 通过。`make debug JOBS=4` 在配置阶段被本地 third-party 版本不匹配阻断（现有 `54725d0a`，要求 `e7e0a476`），未执行编译与运行测试。后续需同步固定依赖并重建；不能据此宣称运行验收通过。
+
+- [RPG 系统设计](RPG系统设计.md)：RPG 数值与兼容门面；其中早期组件示意需结合当前头文件阅读。
+- [任务系统设计](RPG任务系统设计.md)：Tracker 与任务事件。
+- [战斗系统与动作编辑器](战斗系统与动作编辑器.md)：能力、动作与表现生命周期。
+- [战斗载体与投射物行为组合框架](战斗载体与投射物行为组合框架.md)：投射物组合边界。
+- [结算与伤害数字](combat-settlement-damage-numbers.md)：战斗提交与表现连接。
+
+
+## 2026-10-30：可玩闭环切片
+
+`examples/arpg-loop` 提供三哨兵单人动作切片：移动→普攻/重击→敌人预警/闪避→
+Action Registry 的 combat:damage→RPG Vitals→死亡奖励→持久缓存拾取→装备属性→
+安全点保存/恢复→下一场。`ActionEncounter` 是双参与者协调器，不是新的角色根或 ECS System。
+
+module-interface 边界取证：E1 沿用 action damage-sink；E2 复用既有 action/settlement/inventory
+依赖；E3 只持有两个 generation-safe Handle 和每生命 SubjectRef；E4 消费拥有值的死亡回执；
+E5 暴露 RPGActionEncounter 的 bind/hit/claim/close/hasPendingReward；E6 复用示例声明的
+游戏操作协议，不新增 MCP 工具。未增加平行契约 JSON，也不据此声称整个 RPG 模块可裁剪。
+四轴：两个已知参与者、每次有效命中、已知协调器、伤害与奖励各自原子；复用现有接口。
+
+权威：脚本拥有位置、输入、攻击窗口与固定 60Hz 时序，RPG Vitals 唯一拥有 HP，GameState
+唯一拥有奖励和缓存消费事实，Inventory 拥有物品。无 RNG，固定步长下相同输入序列产生相同
+游戏决策；图形帧率不用于伤害计算，不宣称跨平台逐位回放或联网预测。脚本 observation 是
+只读投影，不参与判定。原生接口检查时间单调性、存活状态和实体 generation。
+
+生命周期：任一 actor 销毁后命中失败；close 即时撤销 provider，重开/读档必须调用，不能
+等脚本 GC。正常结束先 claim，失败保留回执；显式重开/读档则放弃原瞬时战斗。读档在完整
+SaveSession 成功后清理瞬时遭遇，下一场重建 Link。保存只允许无活动敌人、无待发奖回执、
+玩家存活的安全点。只恢复永久 RPG 状态，位置回营地，不保存半途动作、冷却或敌人血量。
+
+掉落不与死亡奖励假装成一个跨事务提交：死亡标记同时成为固定内容缓存的可领取条件，
+因此无另一个“生成掉落成功”标志。拾取使用 WorldInteraction 的 prepare/commit，满包不
+消费缓存，缓存仍可存档；装备成功后同步 modifier。重复领取不会添加物品或属性。
+固定内容版本 arpg-loop-v1，复用既有 SaveSession schema、未知字段拒绝和迁移入口。
+
+公开 API 使用 Result/nodiscard，声明同步寿命、线程、重入和成本；不持有跨帧裸 actor 指针，
+不在锁内调用脚本。没有新增可选后端，已有 provider 缺席/撤销测试继续执行。没有架构豁免。
+验收由原生组合测试及 examples/arpg-loop/agent_check.py 的真实 eve_play 输入完成；
+截图只取 engine-readback。该切片不包含多人、多目标遭遇奖励、随机词缀和战斗中快照。
+
+
+本轮验证结果：正式 macOS Debug 构建/链接通过；14 项 Action/RPG 组合测试通过；
+完整 make check 通过。新示例 smoke 连续运行 3 秒无错误。eve_play 正常操作验收达成
+3 次击杀、等级 3、金币 30、装备攻击 26、背包 2 件、任务 completed；未领缓存存档恢复
+及完整重开后读档均通过，重复拾取不增加物品。engine-readback 截图已人工视检。
+绑定目录缓存曾未随源码更新，已通过重新生成 BindingContracts.generated.cpp 并正式重链接
+验证最终产物，而非绕过类型检查。首次脚本资源路径和操作回调环境问题均已修复后重验。
+
+
+### 后续加固：伤害 provider 归属冲突
+
+ActionEncounter 在分发前检查目标的 accepting provider：必须恰好一个且属于本遭遇。
+多个遭遇误绑定同一角色时返回 Conflict，不修改 HP、死亡回执或时钟；撤销冲突者后可重试。
+互不重叠的遭遇仍能同时存在，不实施进程级独占。provider 的 supports 必须是同步只读查询，
+不能修改参与者或注册表；无锁内回调。此检查沿用已有 capability 边界，没有新增状态 owner、
+公共数据格式或 ECS System。两种注册顺序与不相交遭遇由组合回归测试覆盖，无架构豁免。
+
+
+### 后续加固：死亡与检查点恢复
+
+示例的 resetTransient 统一清理重开/成功读档后的输入队列、移动指令、攻击窗口、
+重击/闪避冷却、预警、闪光和固定步累积量。失败读档仍不清理当前会话。HP、任务、
+背包与装备继续从 SaveSession 的权威 owner 恢复，不创建状态镜像或新存档字段。
+原生 API 和模块边界无变更，无架构豁免。
+
+真实操作验收新增正常 AI 击败玩家、死后攻击/移动无效、死后拒绝覆盖安全点存档、
+重开恢复初始角色，以及带有活动冷却和排队指令时读档清理状态。以实际死亡状态和
+有界墙钟超时判定，不把渲染帧数当成固定模拟 tick 数。

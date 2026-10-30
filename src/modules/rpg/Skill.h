@@ -40,7 +40,7 @@ struct SkillDefinition {
     std::unordered_map<std::string, std::string> extra;  ///< 游戏自定义附加数据
 
     /** @brief True when tag. */
-    bool hasTag(const std::string &tag) const;
+    EVENGINE_API_PLATFORM bool hasTag(const std::string& tag) const;
 };
 
 /** @brief EVENGINE_API_PLATFORM public API. */

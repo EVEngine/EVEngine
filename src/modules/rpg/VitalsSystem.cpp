@@ -1,4 +1,5 @@
 #include "rpg/VitalsSystem.h"
+#include "rpg/SimulationEvents.h"
 
 #include "rpg/AttributeSystem.h"
 #include "rpg/RPGActor.h"
@@ -8,10 +9,7 @@
 namespace eve::rpg {
 
 namespace {
-std::vector<VitalsEvent> &vitalsEvents() {
-    static std::vector<VitalsEvent> events;
-    return events;
-}
+std::vector<VitalsEvent>& vitalsEvents() { return detail::simulationEvents().vitals; }
 
 void emit(RPGActor *actor, std::string resource, std::string action, double amount,
           std::string source, double current, double max) {

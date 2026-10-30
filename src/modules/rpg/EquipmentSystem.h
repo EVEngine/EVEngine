@@ -13,7 +13,9 @@
 
 #include "common/Result.h"
 
+#include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "common/Export.h"
@@ -56,6 +58,17 @@ public:
      * @return 本次实际施加的修改器条数。
      */
     static int syncEquipModifiers(RPGActor *actor, eve::inventory::EquipmentSet *equip);
+    /**
+     * @brief Atomically replace one equipment slot's modifier projection from an owning definition's stats.
+     * @param actor Borrowed actor; the caller owns its world and definition data.
+     * @param slot Nonempty equipment slot; previous equip:slot modifiers are replaced.
+     * @param stats Definition stats, borrowed only during this call; empty stats unequip the slot.
+     * @return Applied modifier count, or invalid data without changing actor attributes.
+     * @thread Actor owner thread. No callbacks, registry writes or retained references.
+     * @cost Copies this actor's attribute set once per slot; synchronize on equipment changes, not per frame.
+     */
+    [[nodiscard]] static eve::Result<int> projectSlot(RPGActor& actor, std::string_view slot,
+                                                      std::span<const EquipmentStat> stats);
 };
 
 }  // namespace eve::rpg

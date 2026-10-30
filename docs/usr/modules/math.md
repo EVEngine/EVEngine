@@ -122,3 +122,40 @@ if (t >= 0) {
 
 **源码：** [`src/modules/math/`](../../../src/modules/math/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `math`。
+
+## C++ 二维与三维凸包
+
+`math/ConvexHull.h` 提供无状态的 `eve::math::convexHull2D` 与
+`eve::math::convexHull3D`，输入为 `std::span<const HullPoint2/3>`
+（点为 `std::array<float, 2/3>`），输出使用引擎 `Result`。调用方必须检查
+`ok()` 后再读取 `value()`。结果拥有全部数据，不保留输入引用，支持任意线程
+独立调用，不依赖 Math 实例、脚本 VM、图形或物理后端。当前入口为 C++ API。
+
+```cpp
+#include "math/ConvexHull.h"
+
+std::vector<eve::math::HullPoint3> points{
+    {0,0,0}, {1,0,0}, {0,1,0}, {0,0,1}};
+auto result = eve::math::convexHull3D(points);
+if (result.ok()) {
+    const auto& hull = result.value();
+    // hull.vertices: 紧凑顶点数组；hull.faces: 顶点索引三元组。
+}
+```
+
+二维采用 Andrew 单调链，O(n log n) 时间、O(n) 空间，返回逆时针边界，
+不重复首点，删除精确重复点和共线边上的中间点。三维采用增量法，
+有序 horizon 边表使最坏时间为 O(n² log n)，空间 O(n)；实体三角形法线朝外。
+三维平面面片保留三角剖分，可能保留边上中间顶点。
+
+`HullDimension` 显式区分 Empty、Point、Segment、Plane、Volume。
+空集、单点、线段均成功且没有三角形；三维共面输入返回有序多边形边界和
+三角扇，共面边界方向未规定。NaN/Infinity 或非法 tolerance 返回
+`DiagnosticCode::InvalidArgument`，诊断路径分别为 `points`、`tolerance`。
+
+三维先平移并按包围盒最大边长归一化，使用 double 判定；默认 tolerance
+为 1e-10，表示相对该边长的距离，范围 [0,1)。容差以内的细节可能被省略，
+近共面结果仍保留被选中顶点的原始坐标。二维也使用 double 判定，但不使用
+容差合并。算法不使用精确几何谓词，不保证近退化点集的精确拓扑或跨平台
+逐位一致；同一平台相同点集的排序与处理顺序确定，不依赖输入排列。
+昂贵构建应按点集缓存，避免每帧重算。

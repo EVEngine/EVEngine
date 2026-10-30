@@ -32,6 +32,7 @@ struct EncounterDefinition {
     double      xpReward = 0.0;
     double      xpGrowth = 1.2;
     double      goldReward = 0.0;
+    /** @brief Empty disables the quest prerequisite; nonempty requires an active quest. */
     std::string requiredQuestId;
     std::string notifyTopic;
     std::string notifyTarget;
@@ -48,7 +49,8 @@ public:
     /**
      * @brief Validate and atomically replace every encounter definition.
      * @return Committed definition count, or a structured failure preserving the prior catalogue.
-     * @remarks Referenced skills and quests must already exist. Unknown fields are rejected.
+     * @remarks Referenced skills and nonempty quest IDs must already exist. Unknown fields are rejected.
+     * requiredQuestId is mandatory: an explicit empty string disables its prerequisite.
      * @thread Call on the owning content/simulation thread.
      * @reentrancy No callbacks are invoked.
      */

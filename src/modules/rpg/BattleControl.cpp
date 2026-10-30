@@ -724,7 +724,7 @@ bool finiteAddition(const GameState &state, const std::string &id, double amount
 
 eve::Result<BattleVictoryReceipt> BattleVictory::settle(RPGActor &actor, GameState &gameState, Tracker &tracker,
                                                         const BattleVictoryRequest &request) {
-    if (request.requiredQuestId.empty() || tracker.getState(request.requiredQuestId) != "active")
+    if (!request.requiredQuestId.empty() && tracker.getState(request.requiredQuestId) != "active")
         return victoryFailure(eve::DiagnosticCode::PreconditionViolation,
                               "required quest must be active before victory settlement", "requiredQuestId", request);
     if (request.notifyTopic.empty() || request.notifyTarget.empty() || request.notifyAmount <= 0)

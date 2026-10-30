@@ -5,6 +5,7 @@
 #include "rpg/AttributeSystem.h"
 #include "rpg/RPGActor.h"
 
+#include <cmath>
 #include <unordered_map>
 
 namespace eve::rpg {
@@ -62,20 +63,52 @@ int EquipmentSystem::syncEquipModifiers(RPGActor *actor, eve::inventory::Equipme
     int applied = 0;
     for (int i = 0; i < equip->getSlotCount(); ++i) {
         const std::string slot = equip->getSlotName(i);
-        const std::string source = "equip:" + slot;
-        // 先清除该槽位旧加成（覆盖换装/卸下的情况）。
-        AttributeSystem::removeAllModifiersBySource(actor, source);
-        if (equip->isSlotEmpty(slot)) continue;
+        if (equip->isSlotEmpty(slot)) {
+            projectSlot(*actor, slot, {}).ignore("legacy equipment synchronization projection");
+            continue;
+        }
         const std::string itemId = equip->getSlotItemId(slot);
         auto it = itemStatsTable().find(itemId);
-        if (it == itemStatsTable().end()) continue;
-        for (const auto &stat : it->second) {
-            AttributeSystem::addModifier(actor, stat.attribute, source, stat.op, stat.value,
-                                         stat.priority);
-            ++applied;
-        }
+        auto result = projectSlot(*actor, slot,
+                                  it == itemStatsTable().end() ? std::span<const EquipmentStat>{}
+                                                               : std::span<const EquipmentStat>(it->second));
+        if (result) applied += result.value();
     }
     return applied;
+}
+
+eve::Result<int> EquipmentSystem::projectSlot(RPGActor& actor, std::string_view slot,
+                                              std::span<const EquipmentStat> stats) {
+    if (slot.empty())
+        return eve::Result<int>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Equipment slot must not be empty"));
+    auto              staged  = actor.attributes()->values;
+    const std::string source  = "equip:" + std::string(slot);
+    auto              removed = staged.removeBySource(source);
+    if (!removed) return eve::Result<int>::failure(removed.status());
+    for (const auto& stat : stats) {
+        if (stat.attribute.empty() || !std::isfinite(stat.value))
+            return eve::Result<int>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Invalid equipment statistic"));
+        auto              parsed = eve::attributes::parseAttributeOperation(stat.op, stat.value);
+        AttributeModifier modifier;
+        modifier.attribute = stat.attribute;
+        modifier.source    = source;
+        modifier.priority  = stat.priority;
+        if (parsed) {
+            modifier.operation = parsed.value().operation;
+            modifier.value     = parsed.value().value;
+        } else if (AttributeSystem::customOps().has(stat.op)) {
+            modifier.operation = AttributeOperation::Custom;
+            modifier.policyId  = stat.op;
+            modifier.value     = stat.value;
+        } else
+            return eve::Result<int>::failure(parsed.status());
+        auto added = staged.addModifier(std::move(modifier));
+        if (!added) return eve::Result<int>::failure(added.status());
+    }
+    actor.attributes()->values = std::move(staged);
+    return eve::Result<int>::success(static_cast<int>(stats.size()));
 }
 
 }  // namespace eve::rpg

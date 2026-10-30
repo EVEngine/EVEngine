@@ -385,9 +385,13 @@ composed dependency contract, see
   a PR, and brand-new files are skipped with a warning. Before committing, run
   `git clang-format` (formats only your changed lines) and format new files by
   hand; never reformat whole files unrelated to your change.
-- **Tests stay per-module.** New tests go into their own file under `test/`
-  (zeroerr cases; each case is process-isolated via CTest). Do not grow a
-  shared test main.
+- **Tests stay per-module.** Add tests to the owning module's existing test
+  file when responsibilities remain cohesive; new tests do not automatically
+  require a new file. Keep small module suites consolidated as required by
+  `scripts/test_module_coverage.py` (currently below 5000 total unit-test lines).
+  Split only when suite size or distinct responsibilities justify it, and keep
+  integration tests organized by task. Use zeroerr cases, process-isolated via
+  CTest. Do not grow a shared test main.
   Ordinary `test/unit/<module>/` C++ files are discovered without registration;
   exceptional classifications and integration ownership belong in source-local
   `eve-test-policy` comments. There is no central Test Levels JSON; see `test/README.md`.

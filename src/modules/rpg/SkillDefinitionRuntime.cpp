@@ -10,6 +10,7 @@
 #include "common/Value.h"
 #include "rpg/AttributeSystem.h"
 #include "rpg/RPGActor.h"
+#include "rpg/SimulationEvents.h"
 #include "rpg/Skill.h"
 #include "rpg/SkillCondition.h"
 #include "rpg/SkillConditionCodec.h"
@@ -354,10 +355,7 @@ std::unordered_map<std::string, SkillSystem::CastCondition> &conditions() {
     return c;
 }
 
-std::vector<SkillCastEvent> &castQueue() {
-    static std::vector<SkillCastEvent> q;
-    return q;
-}
+std::vector<SkillCastEvent>& castQueue() { return detail::simulationEvents().casts; }
 
 bool checkCostsAffordable(RPGActor *actor, const SkillDefinition &def) {
     if (!def.cost) return true;

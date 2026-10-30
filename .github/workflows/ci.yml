@@ -172,6 +172,10 @@ jobs:
         timeout-minutes: 5
         run: python3 -m ruff check tools
 
+      - name: Test SSUI reference client
+        timeout-minutes: 5
+        run: python3 -m unittest discover -s tools/ssui-client -p 'test_*.py' -v
+
       - name: Test asset-pipeline-agent
         timeout-minutes: 5
         run: cd tools/asset-pipeline-agent && python3 -m unittest discover -s tests -v
@@ -550,6 +554,29 @@ jobs:
         with:
           path: ${{ steps.third-party-cache.outputs.path }}
           key: ${{ steps.third-party-cache.outputs.key }}
+
+      - name: Verify SSUI plugin against the built SDK
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: |
+          cmake --install build/macosx-debug --prefix "$RUNNER_TEMP/ssui-sdk"
+          # Use the host's resolved dependency tree (AUTO may select a release
+          # package). Relative prefixes otherwise resolve under the plugin source.
+          ssui_poco_prefix="$(sed -n 's/^EVENGINE_TP_INSTALL_PREFIX:INTERNAL=//p' build/macosx-debug/CMakeCache.txt)"
+          if [ -z "$ssui_poco_prefix" ]; then
+            ssui_poco_prefix="$(sed -n 's/^EVENGINE_THIRD_PARTY_BINARY_DIR:PATH=//p' build/macosx-debug/CMakeCache.txt)"
+          fi
+          test -n "$ssui_poco_prefix"
+          ssui_poco_prefix="$(cd "$ssui_poco_prefix" && pwd)"
+          cmake -S plugins/ssui-generation -B build/ssui-generation -DCMAKE_BUILD_TYPE=Debug \
+            -DEVEngine_DIR="$RUNNER_TEMP/ssui-sdk/cmake" \
+            -DCMAKE_PREFIX_PATH="$ssui_poco_prefix"
+          cmake --build build/ssui-generation -j 4
+          ctest --test-dir build/ssui-generation --output-on-failure
+          cmake --install build/ssui-generation --prefix "$RUNNER_TEMP/ssui-project"
+          python3 plugins/ssui-generation/tests/protocol_test.py --mode success \
+            --native-eve "$RUNNER_TEMP/ssui-sdk/bin/eve" --project "$RUNNER_TEMP/ssui-project"
 
       - name: Run macosx unit tests
         # Run 39701509245 completed 6597/7063 cases at the 60m guard
