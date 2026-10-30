@@ -4745,18 +4745,23 @@ void Graphics::pushValidationScope() {
 void Graphics::popValidationScope() {
 #ifdef EVENGINE_WEBGPU
     if (!device) return;
-    device.PopErrorScope(wgpu::CallbackMode::AllowProcessEvents, [](wgpu::PopErrorScopeStatus status,
-                                                                    wgpu::ErrorType type, wgpu::StringView message) {
-        (void)status;
-        if (message.data && type != wgpu::ErrorType::NoError) {
 #if defined(__EMSCRIPTEN__)
-            EM_ASM({ console.log("[GPU_ERR] type=" + $0 + " msg=" + UTF8ToString($1)); }, (int)type, message.data);
+    constexpr auto callbackMode = wgpu::CallbackMode::AllowSpontaneous;
+#else
+    constexpr auto callbackMode = wgpu::CallbackMode::AllowProcessEvents;
+#endif
+    device.PopErrorScope(
+        callbackMode, [](wgpu::PopErrorScopeStatus status, wgpu::ErrorType type, wgpu::StringView message) {
+            (void)status;
+            if (message.data && type != wgpu::ErrorType::NoError) {
+#if defined(__EMSCRIPTEN__)
+                EM_ASM({ console.log("[GPU_ERR] type=" + $0 + " msg=" + UTF8ToString($1)); }, (int)type, message.data);
 #else
                 std::fprintf(stderr, "[webgpu] validation error type=%d: %.*s\n", int(type),
                              static_cast<int>(message.length), message.data);
 #endif
-        }
-    });
+            }
+        });
 #endif
 }
 
