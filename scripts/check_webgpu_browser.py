@@ -85,7 +85,12 @@ def main() -> int:
                 page.wait_for_timeout(1500)
                 capture = args.output / f"{name}.png"
                 page.locator("#canvas").screenshot(path=str(capture), timeout=15000)
-                mean, deviation = validate(capture)
+                try:
+                    mean, deviation = validate(capture)
+                except ValueError as error:
+                    recent_log = page.locator("#log").inner_text()[-4000:]
+                    status = page.locator("#status").inner_text()
+                    raise RuntimeError(f"{name}: {error}; status={status!r}; page log:\n{recent_log}") from error
                 print(f"{name}: canvas OK, mean={mean:.3f}, stddev={deviation:.3f}")
         finally:
             browser.close()
