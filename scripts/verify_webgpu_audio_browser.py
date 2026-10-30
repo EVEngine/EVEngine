@@ -94,7 +94,12 @@ def main() -> int:
             menu.dispatchEvent(new Event('change'));
             document.getElementById('btnApply').click();
         })()""")
-        wait_for(browser, "document.getElementById('log').textContent.includes('Music queued')", deadline)
+        wait_for(browser, "document.getElementById('log').textContent.includes('Music queued') || "
+                 "document.getElementById('log').textContent.includes('[playground] eval error:')", deadline)
+        if not browser.evaluate("document.getElementById('log').textContent.includes('Music queued')"):
+            detail = script_result(browser, 'try { sound.newSoundDataFromFile("playground/assets/music_loop.wav"); '
+                                            'return "music loaded"; } catch (e) { return e; }')
+            raise RuntimeError(f"Audio demo initialization failed; sound load: {detail}")
         wait_for(browser, "document.getElementById('log').textContent.includes('demo applied')", deadline)
         duration = float(script_result(browser, "__pg.music.getDuration()"))
         if duration < 1.9:
