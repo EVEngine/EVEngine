@@ -4,6 +4,8 @@
 */
 // clang-format on
 
+// Keep this window integration case in the graphics executable: its Windows-only
+// registration must not create an otherwise empty platform executable on Linux.
 #include "mouse/Mouse.h"
 #include "window/Window.h"
 #include "zeroerr/unittest.h"
@@ -24,13 +26,14 @@ LRESULT CALLBACK suppressMouseMotion(int code, WPARAM removed, LPARAM message) {
 
 struct DesktopState {
     POINT                cursor{};
-    HHOOK                hook   = nullptr;
-    eve::window::Window* window = nullptr;
-    DesktopState() { GetCursorPos(&cursor); }
+    bool                 cursorKnown = false;
+    HHOOK                hook        = nullptr;
+    eve::window::Window* window      = nullptr;
+    DesktopState() { cursorKnown = GetCursorPos(&cursor) != 0; }
     ~DesktopState() {
         if (hook) UnhookWindowsHookEx(hook);
         if (window) window->close();
-        SetCursorPos(cursor.x, cursor.y);
+        if (cursorKnown) SetCursorPos(cursor.x, cursor.y);
     }
 };
 }  // namespace
@@ -65,19 +68,38 @@ TEST_CASE("mouse.positionWithoutMotionDelivery") {
     int cachedX, cachedY;
     SDL_GetMouseState(&cachedX, &cachedY);
     REQUIRE(cachedX != 80);
+    POINT  osCursor{};
     double x, y;
-    mouse->getPosition(x, y);
-    CHECK(x == 80);
-    CHECK(y == 60);
-    CHECK(mouse->getX() == 80);
-    CHECK(mouse->getY() == 60);
-    mouse->setY(90);
-    mouse->getPosition(x, y);
-    CHECK(x == 80);
-    CHECK(y == 90);
-    mouse->setX(100);
-    mouse->getPosition(x, y);
-    CHECK(x == 100);
-    CHECK(y == 90);
+    if (GetCursorPos(&osCursor)) {
+        mouse->getPosition(x, y);
+        CHECK(x == 80);
+        CHECK(y == 60);
+        CHECK(mouse->getX() == 80);
+        CHECK(mouse->getY() == 60);
+        mouse->setY(90);
+        mouse->getPosition(x, y);
+        CHECK(x == 80);
+        CHECK(y == 90);
+        mouse->setX(100);
+        mouse->getPosition(x, y);
+        CHECK(x == 100);
+        CHECK(y == 90);
+    } else {
+        // A service desktop may deny OS cursor access. Preserve real SDL state,
+        // rather than turning an unavailable global position into (-windowX,...).
+        mouse->getPosition(x, y);
+        CHECK(x == cachedX);
+        CHECK(y == cachedY);
+        CHECK(mouse->getX() == cachedX);
+        CHECK(mouse->getY() == cachedY);
+        mouse->setY(90);
+        mouse->getPosition(x, y);
+        CHECK(x == cachedX);
+        CHECK(y == cachedY);
+        mouse->setX(100);
+        mouse->getPosition(x, y);
+        CHECK(x == cachedX);
+        CHECK(y == cachedY);
+    }
 }
 #endif

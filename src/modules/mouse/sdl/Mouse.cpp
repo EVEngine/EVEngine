@@ -3,6 +3,9 @@
 #include "window/sdl/Window.h"
 
 #include <SDL2/SDL_mouse.h>
+#if defined(_WIN32)
+#include <windows.h>
+#endif
 
 namespace eve::mouse::sdl {
 
@@ -106,11 +109,15 @@ void Mouse::getPosition(double& x, double& y) const {
     // to the keyboard-focused window instead. Relative mode stays event-based.
     if (!SDL_GetMouseFocus() && !SDL_GetRelativeMouseMode()) {
         if (auto* focusedWindow = SDL_GetKeyboardFocus()) {
-            int windowX, windowY;
-            SDL_GetGlobalMouseState(&mx, &my);
-            SDL_GetWindowPosition(focusedWindow, &windowX, &windowY);
-            mx -= windowX;
-            my -= windowY;
+            POINT cursor;
+            // SDL_GetGlobalMouseState has no query-failure status. A service
+            // desktop can deny GetCursorPos; preserve SDL's cache in that case.
+            if (GetCursorPos(&cursor)) {
+                int windowX, windowY;
+                SDL_GetWindowPosition(focusedWindow, &windowX, &windowY);
+                mx = cursor.x - windowX;
+                my = cursor.y - windowY;
+            }
         }
     }
 #endif
