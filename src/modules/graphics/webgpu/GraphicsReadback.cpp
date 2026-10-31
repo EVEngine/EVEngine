@@ -397,7 +397,7 @@ bool Graphics::beginFrameReadback(const std::string &path) {
     pr->bgra        = bgra;
 
     WGPUBufferMapCallbackInfo cbInfo{};
-    cbInfo.mode     = WGPUCallbackMode_AllowProcessEvents;
+    cbInfo.mode     = WGPUCallbackMode_AllowSpontaneous;
     cbInfo.callback = [](WGPUMapAsyncStatus status, WGPUStringView /*message*/, void *userdata1, void * /*userdata2*/) {
         auto *p   = static_cast<PendingReadback *>(userdata1);
         p->mapped = (status == WGPUMapAsyncStatus_Success);

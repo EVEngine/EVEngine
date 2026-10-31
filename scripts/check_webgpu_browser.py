@@ -137,8 +137,9 @@ def main() -> int:
                 finally:
                     page.locator("#shotOverlay").evaluate("element => element.style.display = 'none'")
             if failures:
+                gpu_probe = None
                 try:
-                    page.evaluate("""async () => {
+                    gpu_probe = page.evaluate("""async () => {
                         const canvas = document.createElement('canvas');
                         canvas.id = 'webgpu-probe';
                         canvas.width = canvas.height = 64;
@@ -161,6 +162,21 @@ def main() -> int:
                         };
                         requestAnimationFrame(draw);
                         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                        const texture = device.createTexture({size: [1, 1], format: 'rgba8unorm',
+                            usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC});
+                        const buffer = device.createBuffer({size: 256,
+                            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ});
+                        const encoder = device.createCommandEncoder();
+                        const pass = encoder.beginRenderPass({colorAttachments: [{view: texture.createView(),
+                            loadOp: 'clear', storeOp: 'store', clearValue: {r: 1, g: 0, b: 1, a: 1}}]});
+                        pass.end();
+                        encoder.copyTextureToBuffer({texture}, {buffer, bytesPerRow: 256}, [1, 1]);
+                        device.queue.submit([encoder.finish()]);
+                        await Promise.race([buffer.mapAsync(GPUMapMode.READ),
+                            new Promise((_, reject) => setTimeout(() => reject(Error('GPU buffer map timed out')), 5000))]);
+                        const pixel = Array.from(new Uint8Array(buffer.getMappedRange()).slice(0, 4));
+                        buffer.unmap();
+                        return pixel;
                     }""")
                     probe_path = args.output / "webgpu_probe.png"
                     page.locator("#webgpu-probe").screenshot(path=str(probe_path))
@@ -168,7 +184,8 @@ def main() -> int:
                         probe_result = probe_image.convert("RGB").getpixel((32, 32))
                 except Exception as error:
                     probe_result = f"failed: {error}"
-                raise RuntimeError(f"browser WebGPU probe={probe_result!r}\n\n" + "\n\n".join(failures))
+                raise RuntimeError(f"browser WebGPU probe canvas={probe_result!r}, buffer={gpu_probe!r}\n\n"
+                                   + "\n\n".join(failures))
         finally:
             browser.close()
     return 0
