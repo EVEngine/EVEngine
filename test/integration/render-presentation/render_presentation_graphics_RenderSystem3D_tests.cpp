@@ -254,8 +254,7 @@ TEST_CASE("RenderSystem.sprite2dPropertyApiReachesDrawItem") {
     auto *fs = eve::filesystem::Filesystem::create();
     // Unique identity per caller: CTest runs GraphicsSmoke.* in parallel and the
     // Filesystem module is a process-wide singleton — shared write dirs race on macOS.
-    REQUIRE(fs->setIdentity(identity, true));
-    REQUIRE(fs->setupWriteDirectory());
+    if (!fs || !fs->setIdentity(identity, true) || !fs->setupWriteDirectory()) return nullptr;
     return fs;
 }
 
@@ -277,6 +276,7 @@ TEST_CASE("GraphicsSmoke.clearAndPresentWindow") {
     gfx->setBackgroundColor(Color(0.12f, 0.14f, 0.22f, 1.0f));
 
     auto                        *fs          = bootstrapFilesystemForSaveIO("evengine_gfx_smoke_clear");
+    REQUIRE(fs != nullptr);
     [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
     auto                  checkerPx = makeCheckerRGBA(64, 64, 8, 255, 220, 60, 40, 40, 180);
@@ -412,7 +412,7 @@ TEST_CASE("Canvas.offscreenGetPixelAndSampleOnScreen") {
     } catch (const eve::Exception &) {
         presentThrew = true;
     }
-    CHECK(presentThrew);
+    REQUIRE(presentThrew);
     gfx->setCanvas();
 
     Canvas *c2 = gfx->newCanvas(128, 128);
@@ -448,7 +448,7 @@ TEST_CASE("Canvas.offscreenGetPixelAndSampleOnScreen") {
     }
 
     Color p2 = c2->getPixel(64, 64);
-    CHECK(std::abs(p2.g - 0.8f) < 0.15f);
+    REQUIRE(std::abs(p2.g - 0.8f) < 0.15f);
 
     win->close();
 }
@@ -3241,8 +3241,15 @@ TEST_CASE("GraphicsSmoke.cubemapGeneratesMipChain") {
     std::vector<uint8_t> faces(size_t(face) * face * 4 * 6, 128);
     Texture             *cube = fx.gfx->newCubemap(face, faces.data());
     REQUIRE(cube != nullptr);
-    CHECK_EQ(cube->getMipmapCount(), mipmapCountForSize(face, face));
-    CHECK_EQ(static_cast<int>(cube->getSampler().mipmap), static_cast<int>(MipmapMode::Linear));
+    REQUIRE_EQ(cube->getMipmapCount(), mipmapCountForSize(face, face));
+    REQUIRE_EQ(static_cast<int>(cube->getSampler().mipmap), static_cast<int>(MipmapMode::Linear));
+    REQUIRE_EQ(cube->pixelWidth, face);
+    REQUIRE_EQ(cube->pixelHeight, face);
+    REQUIRE_EQ(cube->layers, 6);
+
+    Texture* unmipped = fx.gfx->newCubemap(face, faces.data(), TextureCreateInfo::defaults());
+    REQUIRE(unmipped != nullptr);
+    REQUIRE_EQ(unmipped->getMipmapCount(), 1);
 }
 
 

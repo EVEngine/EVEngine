@@ -2,6 +2,7 @@
 
 #include "common/Exception.h"
 
+#include <algorithm>
 #include <atomic>
 #include <cstdio>
 #include <cstring>
@@ -73,7 +74,7 @@ AdapterDone InitFlow::requestAdapter(InstanceDone&& prev, const wgpu::Surface& c
     return AdapterDone{std::move(instance), std::move(result.adapter)};
 }
 
-DeviceDone InitFlow::requestDevice(AdapterDone&& prev) {
+DeviceDone InitFlow::requestDevice(AdapterDone&& prev, uint32_t colorAttachmentByteBudget) {
     wgpu::Instance& instance = prev.instance;
     wgpu::Adapter&  adapter  = prev.adapter;
 
@@ -85,30 +86,36 @@ DeviceDone InitFlow::requestDevice(AdapterDone&& prev) {
 
     WGPUDeviceDescriptor devDesc{};
     devDesc.label = sv("eve_device");
-    // Mesh3D bind group samples albedo/normal/env/shadow/height/depth/AO/extras.
-    constexpr std::uint32_t requiredSampledTextures = 16;
-    // Phase B GBuffer is five RGBA8Unorm color targets (5×8 = 40 bytes/sample).
-    // WebGPU's default maxColorAttachmentBytesPerSample is 32; Dawn/macOS
-    // adapters advertise 128 but only grant it when requested here.
-    constexpr std::uint32_t requiredColorAttachmentBytes = 40;
+    // Fixed pipelines fit the baseline 16-texture limit. Extended PBR variants
+    // are checked against the captured device limit before their layouts are made.
+    constexpr std::uint32_t baselineSampledTextures = 16;
+    constexpr std::uint32_t extendedSampledTextures = 17;
+    // The five-target GBuffer needs 40 bytes/sample. Request that budget when
+    // available, but keep the baseline 32-byte device usable for forward rendering.
+    if (colorAttachmentByteBudget < 32)
+        throw Exception("WebGPU: requested color attachment budget (%u) is below the 32-byte baseline",
+                        colorAttachmentByteBudget);
     wgpu::Limits            adapterLimits{};
     if (adapter.GetLimits(&adapterLimits) != wgpu::Status::Success ||
-        adapterLimits.maxSampledTexturesPerShaderStage < requiredSampledTextures)
+        adapterLimits.maxSampledTexturesPerShaderStage < baselineSampledTextures)
         throw Exception("WebGPU: adapter exposes fewer than %u sampled textures per shader stage",
-                        requiredSampledTextures);
-    if (adapterLimits.maxColorAttachmentBytesPerSample < requiredColorAttachmentBytes)
-        throw Exception(
-            "WebGPU: adapter maxColorAttachmentBytesPerSample (%u) is below the "
-            "GBuffer requirement (%u)",
-            adapterLimits.maxColorAttachmentBytesPerSample, requiredColorAttachmentBytes);
+                        baselineSampledTextures);
     WGPULimits requiredLimits                       = WGPU_LIMITS_INIT;
-    requiredLimits.maxSampledTexturesPerShaderStage = requiredSampledTextures;
-    requiredLimits.maxColorAttachmentBytesPerSample = requiredColorAttachmentBytes;
+    requiredLimits.maxSampledTexturesPerShaderStage =
+        std::min(adapterLimits.maxSampledTexturesPerShaderStage, extendedSampledTextures);
+    requiredLimits.maxColorAttachmentBytesPerSample =
+        std::min(adapterLimits.maxColorAttachmentBytesPerSample, colorAttachmentByteBudget);
     // Leave maxColorAttachments at the WGPU default (8); only raise bytes/sample.
     devDesc.requiredLimits                          = &requiredLimits;
     devDesc.uncapturedErrorCallbackInfo.callback    = [](WGPUDevice const*, WGPUErrorType type, WGPUStringView message,
                                                          void*, void*) {
         std::fprintf(stderr, "[webgpu] uncaptured error type=%d: %.*s\n", int(type), int(message.length),
+                     message.data ? message.data : "");
+    };
+    devDesc.deviceLostCallbackInfo.mode     = WGPUCallbackMode_AllowSpontaneous;
+    devDesc.deviceLostCallbackInfo.callback = [](WGPUDevice const*, WGPUDeviceLostReason reason, WGPUStringView message,
+                                                 void*, void*) {
+        std::fprintf(stderr, "[webgpu] device lost reason=%d: %.*s\n", int(reason), int(message.length),
                      message.data ? message.data : "");
     };
 

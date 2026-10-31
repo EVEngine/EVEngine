@@ -11,6 +11,8 @@ WGSL is embedded word-aligned via uint32_t storage, mirroring the existing
 
 Existing files are only rewritten when the WGSL content actually changes, so the
 committed `.inc` files stay stable across builds.
+When an available compiler or Tint fails, exit nonzero and print its diagnostic
+instead of allowing the build to silently reuse a stale `.inc` file.
 
 Usage:
     python3 scripts/compile_webgpu_shaders.py --shaders-dir <dir> [--tint <path>] [--glslc <path>]
@@ -151,6 +153,13 @@ def compile_one(glsl_path: Path, glslc, glslang, tint, scratch: Path):
     emit_wgsl_inc(glsl_path, wgsl)
 
 
+def tool_failure_detail(error: subprocess.CalledProcessError) -> str:
+    output = error.stderr or error.stdout or b""
+    if isinstance(output, bytes):
+        output = output.decode("utf-8", errors="replace")
+    return output.strip() or str(error)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--shaders-dir", required=True)
@@ -175,13 +184,18 @@ def main():
 
     with tempfile.TemporaryDirectory(prefix="eve_wgsl_") as td:
         scratch = Path(td)
+        failed = False
         for glsl_path in sorted(shaders_dir.glob("*")):
             if glsl_path.suffix.lower() in STAGE_EXT:
                 try:
                     compile_one(glsl_path, glslc, glslang, tint, scratch)
-                except (subprocess.CalledProcessError, OSError) as e:
-                    print(f"[webgpu-shaders] ERROR {glsl_path.name}: {e}", file=sys.stderr)
-    return 0
+                except subprocess.CalledProcessError as error:
+                    failed = True
+                    print(f"[webgpu-shaders] ERROR {glsl_path.name}: {tool_failure_detail(error)}", file=sys.stderr)
+                except (OSError, ValueError) as error:
+                    failed = True
+                    print(f"[webgpu-shaders] ERROR {glsl_path.name}: {error}", file=sys.stderr)
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

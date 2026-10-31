@@ -1,11 +1,13 @@
 #include "graphics/webgpu/Graphics.h"
 
-#if !defined(__EMSCRIPTEN__)
 #include <algorithm>
 #include <array>
 #include <chrono>
 #include <cstring>
 #include <limits>
+#if defined(__EMSCRIPTEN__)
+#include <emscripten/emscripten.h>
+#endif
 
 namespace eve::graphics::webgpu {
 namespace {
@@ -13,10 +15,11 @@ struct UploadError {
     wgpu::PopErrorScopeStatus status = wgpu::PopErrorScopeStatus::Error;
     wgpu::ErrorType           type   = wgpu::ErrorType::NoError;
     std::array<char, 512>     message{};
+    bool                      done = false;
 };
 
-// Scopes belong to this graphics-thread operation. Only its own callbacks are
-// dispatched by WaitAny; callback state outlives a failed/timed-out observation.
+// Scopes belong to this graphics-thread operation. Callback state outlives a
+// failed or timed-out observation on both native Dawn and Emscripten.
 class UploadScopes {
 public:
     explicit UploadScopes(const wgpu::Device& device) : device_(device) {
@@ -41,7 +44,11 @@ public:
         std::array<wgpu::Future, 3> futures{};
         for (size_t i = 0; i < futures.size(); ++i) {
             futures[i] = device_.PopErrorScope(
+#if defined(__EMSCRIPTEN__)
+                wgpu::CallbackMode::AllowProcessEvents,
+#else
                 wgpu::CallbackMode::WaitAnyOnly,
+#endif
                 [result = results_[i]](wgpu::PopErrorScopeStatus status, wgpu::ErrorType type,
                                        wgpu::StringView message) noexcept {
                     result->status = status;
@@ -50,18 +57,30 @@ public:
                         const auto length = message.length == WGPU_STRLEN ? std::strlen(message.data) : message.length;
                         std::memcpy(result->message.data(), message.data, std::min(length, result->message.size() - 1));
                     }
+                    result->done = true;
                 });
             --pending_;
         }
         const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(30);
-        for (auto future : futures) {
-            const auto remaining = deadline - std::chrono::steady_clock::now();
-            const auto timeout =
-                std::max<int64_t>(0, std::chrono::duration_cast<std::chrono::nanoseconds>(remaining).count());
-            if (instance.WaitAny(future, uint64_t(timeout)) != wgpu::WaitStatus::Success)
+        for (size_t i = 0; i < futures.size(); ++i) {
+#if defined(__EMSCRIPTEN__)
+            while (!results_[i]->done && std::chrono::steady_clock::now() < deadline) {
+                emscripten_sleep(0);
+                wgpuInstanceProcessEvents(instance.Get());
+            }
+            if (!results_[i]->done)
                 return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed,
                                                                "WebGPU mip upload error scope could not be observed",
                                                                {}, {}, "graphics.texture.mips"));
+#else
+            const auto remaining = deadline - std::chrono::steady_clock::now();
+            const auto timeout =
+                std::max<int64_t>(0, std::chrono::duration_cast<std::chrono::nanoseconds>(remaining).count());
+            if (instance.WaitAny(futures[i], uint64_t(timeout)) != wgpu::WaitStatus::Success)
+                return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed,
+                                                               "WebGPU mip upload error scope could not be observed",
+                                                               {}, {}, "graphics.texture.mips"));
+#endif
         }
         for (const auto& result : results_)
             if (result->status != wgpu::PopErrorScopeStatus::Success || result->type != wgpu::ErrorType::NoError)
@@ -285,4 +304,3 @@ Result<Texture*> Graphics::newTexture3DRgba8(uint32_t width, uint32_t height, ui
     }
 }
 }  // namespace eve::graphics::webgpu
-#endif

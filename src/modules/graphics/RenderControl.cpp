@@ -43,6 +43,13 @@ bool isKnownFeature(const std::string &feature) {
     return false;
 }
 
+bool requiresGBuffer(const std::string& feature) {
+    return feature == "gbuffer" || feature == "gbufferAlbedo" || feature == "ao" || feature == "gi" ||
+           feature == "outline" || feature == "decal" || feature == "gpuDriven" || feature == "visResolve" ||
+           feature == "ssr" || feature == "rtgi" || feature == "reflectionChain" || feature == "rtx" ||
+           feature == "volumetricFog" || feature == "fogLocalVolumes" || feature == "fogTemporal";
+}
+
 }  // namespace
 
 RenderControl::RenderControl() {
@@ -221,12 +228,31 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
     dirty_ = true;
 }
 
-void RenderControl::enable(const std::string &feature) { setFeature(feature, true); }
+Result<void> RenderControl::requestFeature(const std::string& feature, bool enabled) {
+    if (!isKnownFeature(feature))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "unknown render feature: " + feature, "graphics.RenderControl.feature"));
+    if (enabled && requiresGBuffer(feature) && gfx_ && !gfx_->supportsGBufferPost())
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                       "render feature requires an unavailable GBuffer: " + feature,
+                                                       "graphics.RenderControl.feature"));
+    setFeature(feature, enabled);
+    return Result<void>::success();
+}
 
-void RenderControl::disable(const std::string &feature) { setFeature(feature, false); }
+void RenderControl::enable(const std::string& feature) {
+    auto result = requestFeature(feature, true);
+    result.ignore();
+}
+
+void RenderControl::disable(const std::string& feature) {
+    auto result = requestFeature(feature, false);
+    result.ignore();
+}
 
 bool RenderControl::isEnabled(const std::string &feature) const {
     if (feature == "clusteredDeferred") return lightingMode_ == LightingMode::Hybrid;
+    if (gfx_ && requiresGBuffer(feature) && !gfx_->supportsGBufferPost()) return false;
     auto it = features_.find(feature);
     return it != features_.end() && it->second;
 }
@@ -242,7 +268,9 @@ void RenderControl::compile() {
     passes_.clear();
 
     const bool wantHybrid   = lightingMode_ == LightingMode::Hybrid;
-    const bool gbufferOn    = isEnabled("gbuffer") || isEnabled("gbufferAlbedo") || isEnabled("ao") || isEnabled("gi");
+    const bool gbufferAvailable = gfx_ == nullptr || gfx_->supportsGBufferPost();
+    const bool gbufferOn =
+        gbufferAvailable && (isEnabled("gbuffer") || isEnabled("gbufferAlbedo") || isEnabled("ao") || isEnabled("gi"));
     // GPU-driven opaque and visibility resolve belong to ForwardPlus. Preserve
     // the requested mode while exposing this explicit feature's priority in the
     // effective pass list instead of silently disabling it during rendering.
@@ -256,7 +284,7 @@ void RenderControl::compile() {
 
     if (isEnabled("shadow")) passes_.push_back("shadow");
     if (gbufferOn || canHybrid) passes_.push_back("gbuffer");
-    if (isEnabled("decal")) passes_.push_back("decal");
+    if (gbufferAvailable && isEnabled("decal")) passes_.push_back("decal");
     if (canHybrid) passes_.push_back("deferredLighting");
     if (isEnabled("forward")) passes_.push_back("forward");
     if (isEnabled("atmosphere")) passes_.push_back("atmosphere");

@@ -1154,7 +1154,7 @@ jobs:
           done
           [ "$apt_ok" -eq 1 ] || exit 1
           sudo apt-get install -y --no-install-recommends \
-            git ninja-build python3 python3-pip
+            git ninja-build python3 python3-pip libvulkan1 mesa-vulkan-drivers xvfb xauth
 
       - name: Install CMake 3.29 (Emscripten is incompatible with CMake 4.x)
         timeout-minutes: 10
@@ -1243,20 +1243,23 @@ jobs:
           test -f build/webgpu-web/src/engine/eve.wasm
           ls -lh build/webgpu-web/src/engine/eve.*
 
-      - name: Capture browser WebGPU frame
-        timeout-minutes: 10
+      - name: Verify browser WebGPU scenes
+        timeout-minutes: 20
         run: |
-          python3 -m pip install --quiet pillow
-          cd build/webgpu-web/src/engine
-          python3 -m http.server 8090 >webgpu-http.log 2>&1 &
+          python3 -m pip install --quiet pillow playwright
+          python3 -m playwright install chromium
+          python3 scripts/serve_webgpu.py >build/webgpu-web/src/engine/webgpu-http.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid"' EXIT
-          google-chrome --headless=new --no-sandbox --disable-gpu-sandbox \
-            --enable-unsafe-webgpu --enable-features=Vulkan \
-            --use-vulkan=swiftshader --window-size=800,600 \
-            --timeout=20000 --screenshot=webgpu-browser.png \
-            http://127.0.0.1:8090/eve.html
-          python3 "$GITHUB_WORKSPACE/scripts/validate_render_frame.py" webgpu-browser.png
+          for attempt in $(seq 1 30); do
+            curl --fail --silent --output /dev/null http://127.0.0.1:8090/eve.html && break
+            sleep 1
+          done
+          export VK_ICD_FILENAMES="$(find /usr/share/vulkan/icd.d -name 'lvp_icd*.json' -print -quit)"
+          test -n "$VK_ICD_FILENAMES"
+          xvfb-run -a python3 scripts/check_webgpu_browser.py \
+            --profile vulkan-swiftshader-headed \
+            --output build/webgpu-web/src/engine/browser-captures
 
       - name: Verify browser audio playback
         timeout-minutes: 20
@@ -1271,30 +1274,24 @@ jobs:
             -DCMAKE_EXE_LINKER_FLAGS_RELEASE=-O1 \
             -DEVENGINE_WEBGPU_GAME_DIR="$GITHUB_WORKSPACE/build/webgpu-audio-game-shell"
           cmake --build build/webgpu-web --parallel "$(nproc)"
-          python3 -m pip install --quiet websocket-client
           python3 scripts/serve_webgpu.py build/webgpu-web/src/engine 8091 >webgpu-audio-http.log 2>&1 &
           server_pid=$!
-          profile_dir="$(mktemp -d)"
-          google-chrome --headless=new --no-sandbox --disable-gpu-sandbox \
-            --enable-unsafe-webgpu --enable-features=Vulkan \
-            --use-vulkan=swiftshader --window-size=1400,900 \
-            --remote-debugging-port=9223 --remote-allow-origins='*' \
-            --user-data-dir="$profile_dir" \
-            http://127.0.0.1:8091/eve.html >webgpu-audio-browser.log 2>&1 &
-          browser_pid=$!
-          trap 'kill "$browser_pid" "$server_pid" 2>/dev/null || true' EXIT
-          python3 scripts/verify_webgpu_audio_browser.py --port 9223 --timeout 90
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            curl --fail --silent --output /dev/null http://127.0.0.1:8091/eve.html && break
+            sleep 1
+          done
+          xvfb-run -a python3 scripts/verify_webgpu_audio_browser.py --timeout 90
 
-      - name: Upload browser WebGPU frame
+      - name: Upload browser WebGPU scenes
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: webgpu-browser-frame
+          name: webgpu-browser-scenes
           path: |
-            build/webgpu-web/src/engine/webgpu-browser.png
+            build/webgpu-web/src/engine/browser-captures/**/*.png
             build/webgpu-web/src/engine/webgpu-http.log
             webgpu-audio-http.log
-            webgpu-audio-browser.log
           if-no-files-found: warn
 
       - name: Save Emscripten SDK cache
