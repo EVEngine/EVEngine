@@ -1245,8 +1245,6 @@ jobs:
 
       - name: Verify browser WebGPU scenes
         timeout-minutes: 20
-        env:
-          DEBUG: pw:browser
         run: |
           python3 -m pip install --quiet pillow playwright
           python3 -m playwright install chromium

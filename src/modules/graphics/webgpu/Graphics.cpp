@@ -145,10 +145,6 @@ Graphics::Graphics() {
 }
 
 Graphics::~Graphics() {
-#if defined(__EMSCRIPTEN__)
-    std::fprintf(stderr, "[webgpu] graphics destroy this=%p instance=%p\n", static_cast<void*>(this),
-                 static_cast<void*>(instance.Get()));
-#endif
     destroyDeferredLightingResources();
     retireResourceLifetime();
     detachGraphicsArtifactProvider(this);
@@ -284,10 +280,6 @@ void Graphics::initWithWindow(void* nativeWindow) {
     device   = std::move(dev.device);
     queue    = std::move(dev.queue);
     caps     = std::move(dev.caps);
-#if defined(__EMSCRIPTEN__)
-    std::fprintf(stderr, "[webgpu] graphics init this=%p instance=%p\n", static_cast<void*>(this),
-                 static_cast<void*>(instance.Get()));
-#endif
     // Preferred surface format comes from wgpuSurfaceGetCapabilities in the
     // current ABI (Surface::GetPreferredFormat was removed).
     WGPUSurfaceCapabilities caps{};
@@ -4768,14 +4760,6 @@ void Graphics::popValidationScope() {
 
 
 void Graphics::present() {
-#if defined(__EMSCRIPTEN__)
-    static bool firstPresent = true;
-    auto        trace        = [](const char* stage) {
-        if (firstPresent) std::fprintf(stderr, "[webgpu] first present: %s\n", stage);
-    };
-#else
-    auto trace = [](const char*) {};
-#endif
     ensureFileTexturesReady();
     applyPendingResourceChanges();
     if (headless_) return;
@@ -4793,9 +4777,6 @@ void Graphics::present() {
     wgpu::TextureView surfaceView;
     wgpu::Texture     surfaceTex;
     if (!acquireSurfaceTexture(surfaceView, surfaceTex)) {
-#if defined(__EMSCRIPTEN__)
-        if (firstPresent) std::fprintf(stderr, "[webgpu] first present: surface texture unavailable\n");
-#endif
         return;
     }
 
@@ -4813,18 +4794,15 @@ void Graphics::present() {
     hasPendingClear = false;
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
-    trace("gpu compute");
     // Compute compaction writes the visible-model table and indexed-indirect
     // commands consumed by the scene render pass below. Ending the compute
     // pass establishes the required WebGPU storage-to-indirect dependency.
     recordGpuDrivenCompute(encoder);
 
-    trace("shadow passes");
     recordDirectionalShadowPasses(encoder);
 
     // Stage-3 visibility pass consumes the compute-compacted instance table
     // before the scene pass resolves material shading.
-    trace("visibility passes");
     recordGpuDrivenVisibility(encoder);
 
     // Hybrid: GBuffer must be written before deferred lighting samples it into
@@ -4912,7 +4890,6 @@ void Graphics::present() {
             if (wantDeferredLighting) flushDeferredLighting(pass);
             flushVoxelDraws(pass, sceneColorFormat);
             flushGpuDrivenResolve(pass);
-            trace("scene mesh pass");
             flushMesh3D(pass, sceneColorFormat);
             flushGpuDrivenDraws(pass, /*canvasTarget*/ false);
             flushPrimitive3D(pass, sceneColorFormat, slot.sampleCount);
@@ -5000,11 +4977,6 @@ void Graphics::present() {
         colorAtt.loadOp     = WGPULoadOp_Clear;
         colorAtt.storeOp    = WGPUStoreOp_Store;
         colorAtt.clearValue = {clearColor.r, clearColor.g, clearColor.b, 1.f};
-#if defined(__EMSCRIPTEN__)
-        if (firstPresent)
-            std::fprintf(stderr, "[webgpu] first present: swapchain clear %.3f %.3f %.3f, scene=%d\n", clearColor.r,
-                         clearColor.g, clearColor.b, bool(sceneView));
-#endif
         WGPURenderPassDescriptor rp{};
         rp.colorAttachmentCount = 1;
         rp.colorAttachments     = &colorAtt;
@@ -5040,7 +5012,6 @@ void Graphics::present() {
             sceneGpu.sampler           = createLinearSampler(device);
             wgpu::BindGroup bg         = makeTex2DBindGroup(&sceneGpu, nullptr);
             uint32_t        offsets[1] = {0};
-            trace("scene composite pipeline");
             pass.SetPipeline(get2DTexturedPipeline(BlendMode::Alpha, false));
             pass.SetBindGroup(0, bg, 1, offsets);
             pass.SetVertexBuffer(0, fullscreenQuadVb, 0, 4 * 32);
@@ -5062,11 +5033,6 @@ void Graphics::present() {
     if (screenReadbackEnabled && surfaceCanCopySrc) recordPresentedReadback(encoder, surfaceTex);
     wgpu::CommandBuffer cmd = encoder.Finish();
     queue.Submit(1, &cmd);
-#if defined(__EMSCRIPTEN__)
-    if (firstPresent)
-        std::fprintf(stderr, "[webgpu] first present: command submitted this=%p instance=%p\n",
-                     static_cast<void*>(this), static_cast<void*>(instance.Get()));
-#endif
     // emdawnwebgpu implements the GPU on the JS main thread: queued commands
     // (draws, writes) only execute when ProcessEvents drives the work queue.
     // Without this, render-pass draws are silently never executed (only the
@@ -5084,9 +5050,6 @@ void Graphics::present() {
 #endif
 
     frameIndex++;
-#if defined(__EMSCRIPTEN__)
-    firstPresent = false;
-#endif
     frame3DStarted      = false;
     frameHad3DThisFrame = false;
     frameHad3D          = false;

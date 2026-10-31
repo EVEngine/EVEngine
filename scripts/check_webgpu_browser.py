@@ -19,21 +19,6 @@ SCENES = (
 )
 
 BROWSER_PROFILES = {
-    "vulkan-swiftshader": (True, (
-        "--use-angle=vulkan", "--enable-features=Vulkan", "--disable-vulkan-surface",
-        "--use-vulkan=swiftshader", "--use-webgpu-adapter=swiftshader",
-    )),
-    "angle-swiftshader": (True, (
-        "--use-gl=angle", "--use-angle=swiftshader", "--enable-features=Vulkan",
-        "--use-vulkan=swiftshader", "--use-webgpu-adapter=swiftshader",
-    )),
-    "lavapipe-vulkan": (True, (
-        "--use-angle=vulkan", "--enable-features=Vulkan", "--disable-vulkan-surface",
-    )),
-    "angle-swiftshader-headed": (False, (
-        "--use-gl=angle", "--use-angle=swiftshader", "--enable-features=Vulkan",
-        "--use-vulkan=swiftshader", "--use-webgpu-adapter=swiftshader",
-    )),
     "vulkan-swiftshader-headed": (False, (
         "--use-angle=vulkan", "--enable-features=Vulkan", "--disable-vulkan-surface",
         "--use-vulkan=swiftshader", "--use-webgpu-adapter=swiftshader",
@@ -46,7 +31,7 @@ def main() -> int:
     parser.add_argument("--url", default="http://127.0.0.1:8090/eve.html")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--browser", type=Path, help="Chrome, Chromium, or Edge executable")
-    parser.add_argument("--profile", choices=BROWSER_PROFILES, default="vulkan-swiftshader")
+    parser.add_argument("--profile", choices=BROWSER_PROFILES, default="vulkan-swiftshader-headed")
     args = parser.parse_args()
     from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, sync_playwright
 
@@ -174,15 +159,9 @@ def main() -> int:
                 except ValueError as error:
                     recent_log = page.locator("#log").inner_text()[-4000:]
                     status = page.locator("#status").inner_text()
-                    early_logs = page.evaluate("window.webgpuEarlyLogs || []")
-                    relevant_early_logs = [
-                        line for line in early_logs
-                        if "[GPU_ERR]" in line or "[webgpu]" in line or "error" in line.lower()
-                    ][:40]
                     failures.append(
                         f"{name}: {error}; status={status!r}; browser errors={browser_errors[-10:]!r}; "
                         f"first GPU messages={first_gpu_messages!r}; "
-                        f"early logs={relevant_early_logs!r}; "
                         f"page log:\n{recent_log}"
                     )
                 else:
