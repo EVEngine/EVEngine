@@ -49,6 +49,9 @@ def main() -> int:
                 const adapter = await navigator.gpu.requestAdapter();
                 if (!adapter) throw Error('no WebGPU adapter before engine startup');
                 const device = await adapter.requestDevice();
+                window.webgpuPreflightDevice = device;
+                device.lost.then(info => { window.webgpuPreflightLost =
+                    {reason: info.reason, message: info.message}; });
                 const texture = device.createTexture({size: [1, 1], format: 'rgba8unorm',
                     usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC});
                 const buffer = device.createBuffer({size: 256,
@@ -64,7 +67,6 @@ def main() -> int:
                 buffer.unmap();
                 return pixel;
             }""")
-            probe_page.close()
             if preflight_pixel != [255, 0, 255, 255]:
                 raise RuntimeError(f"pre-engine WebGPU buffer pixel mismatch: {preflight_pixel!r}")
             print(f"pre-engine WebGPU buffer OK: {preflight_pixel!r}")
@@ -195,7 +197,9 @@ def main() -> int:
                         probe_result = probe_image.convert("RGB").getpixel((32, 32))
                 except Exception as error:
                     probe_result = f"failed: {error}"
-                raise RuntimeError(f"browser WebGPU probe canvas={probe_result!r}, buffer={gpu_probe!r}\n\n"
+                preflight_lost = probe_page.evaluate("window.webgpuPreflightLost || null")
+                raise RuntimeError(f"preflight device lost={preflight_lost!r}; "
+                                   f"browser WebGPU probe canvas={probe_result!r}, buffer={gpu_probe!r}\n\n"
                                    + "\n\n".join(failures))
         finally:
             browser.close()

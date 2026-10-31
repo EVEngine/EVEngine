@@ -112,6 +112,12 @@ DeviceDone InitFlow::requestDevice(AdapterDone&& prev, uint32_t colorAttachmentB
         std::fprintf(stderr, "[webgpu] uncaptured error type=%d: %.*s\n", int(type), int(message.length),
                      message.data ? message.data : "");
     };
+    devDesc.deviceLostCallbackInfo.mode     = WGPUCallbackMode_AllowSpontaneous;
+    devDesc.deviceLostCallbackInfo.callback = [](WGPUDevice const*, WGPUDeviceLostReason reason, WGPUStringView message,
+                                                 void*, void*) {
+        std::fprintf(stderr, "[webgpu] device lost reason=%d: %.*s\n", int(reason), int(message.length),
+                     message.data ? message.data : "");
+    };
 
     WGPURequestDeviceCallbackInfo cbInfo{};
     cbInfo.nextInChain = nullptr;
