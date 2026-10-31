@@ -145,6 +145,10 @@ Graphics::Graphics() {
 }
 
 Graphics::~Graphics() {
+#if defined(__EMSCRIPTEN__)
+    std::fprintf(stderr, "[webgpu] graphics destroy this=%p instance=%p\n", static_cast<void*>(this),
+                 static_cast<void*>(instance.Get()));
+#endif
     destroyDeferredLightingResources();
     retireResourceLifetime();
     detachGraphicsArtifactProvider(this);
@@ -280,6 +284,10 @@ void Graphics::initWithWindow(void* nativeWindow) {
     device   = std::move(dev.device);
     queue    = std::move(dev.queue);
     caps     = std::move(dev.caps);
+#if defined(__EMSCRIPTEN__)
+    std::fprintf(stderr, "[webgpu] graphics init this=%p instance=%p\n", static_cast<void*>(this),
+                 static_cast<void*>(instance.Get()));
+#endif
 #if !defined(__EMSCRIPTEN__)
     // Preferred surface format comes from wgpuSurfaceGetCapabilities in the
     // current ABI (Surface::GetPreferredFormat was removed).
@@ -5055,7 +5063,9 @@ void Graphics::present() {
     wgpu::CommandBuffer cmd = encoder.Finish();
     queue.Submit(1, &cmd);
 #if defined(__EMSCRIPTEN__)
-    if (firstPresent) std::fprintf(stderr, "[webgpu] first present: command submitted\n");
+    if (firstPresent)
+        std::fprintf(stderr, "[webgpu] first present: command submitted this=%p instance=%p\n",
+                     static_cast<void*>(this), static_cast<void*>(instance.Get()));
 #endif
     // emdawnwebgpu implements the GPU on the JS main thread: queued commands
     // (draws, writes) only execute when ProcessEvents drives the work queue.
