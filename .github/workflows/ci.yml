@@ -1154,7 +1154,7 @@ jobs:
           done
           [ "$apt_ok" -eq 1 ] || exit 1
           sudo apt-get install -y --no-install-recommends \
-            git ninja-build python3 python3-pip
+            git ninja-build python3 python3-pip libvulkan1 mesa-vulkan-drivers
 
       - name: Install CMake 3.29 (Emscripten is incompatible with CMake 4.x)
         timeout-minutes: 10
@@ -1247,6 +1247,7 @@ jobs:
         timeout-minutes: 10
         run: |
           python3 -m pip install --quiet pillow playwright
+          python3 -m playwright install chromium
           python3 scripts/serve_webgpu.py >build/webgpu-web/src/engine/webgpu-http.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid"' EXIT

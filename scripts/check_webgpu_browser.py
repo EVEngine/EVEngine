@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import shutil
 from pathlib import Path
 
 from PIL import Image
@@ -26,34 +25,21 @@ def main() -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--browser", type=Path, help="Chrome, Chromium, or Edge executable")
     args = parser.parse_args()
-    chrome = args.browser or next(
-        (
-            executable
-            for name in ("google-chrome", "chromium", "msedge")
-            if (executable := shutil.which(name))
-        ),
-        None,
-    )
-    if chrome is None:
-        raise RuntimeError("Chrome, Chromium, or Edge is required for the browser smoke test")
-
     from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, sync_playwright
 
     args.output.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(
-            executable_path=str(chrome),
+            executable_path=str(args.browser) if args.browser else None,
             headless=True,
             args=[
                 "--no-sandbox",
                 "--disable-gpu-sandbox",
                 "--enable-unsafe-webgpu",
                 "--enable-unsafe-swiftshader",
-                "--enable-features=Vulkan",
-                "--disable-vulkan-surface",
-                "--use-angle=vulkan",
-                "--use-vulkan=swiftshader",
                 "--use-webgpu-adapter=swiftshader",
+                "--use-gpu-in-tests",
+                "--enable-accelerated-2d-canvas",
             ],
         )
         try:
