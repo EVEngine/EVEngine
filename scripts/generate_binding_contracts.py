@@ -886,7 +886,10 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
             f'{cpp_string(contract.documentation_id)}, {cpp_string(contract.source)}, '
             f'{cpp_string(contract.cpp_symbol)}, {architecture}, {semantics}, {{{", ".join(parameters)}}});'
         )
-    chunk_size = 128
+    # Exception-enabled Wasm expands each registration into many locals. Keep
+    # cold V8 compilation bounded as well as the link-time Binaryen passes;
+    # large chunks block the browser event loop during registry initialization.
+    chunk_size = 16
     chunk_count = (len(calls) + chunk_size - 1) // chunk_size
     for index in range(chunk_count):
         lines += [
