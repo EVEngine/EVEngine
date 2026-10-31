@@ -48,8 +48,12 @@ def main() -> int:
                 "--no-sandbox",
                 "--disable-gpu-sandbox",
                 "--enable-unsafe-webgpu",
+                "--enable-unsafe-swiftshader",
                 "--enable-features=Vulkan",
+                "--disable-vulkan-surface",
+                "--use-angle=vulkan",
                 "--use-vulkan=swiftshader",
+                "--use-webgpu-adapter=swiftshader",
             ],
         )
         try:
