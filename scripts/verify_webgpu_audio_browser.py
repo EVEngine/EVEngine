@@ -58,8 +58,13 @@ class Browser:
 
 def wait_for(browser: Browser, expression: str, deadline: float):
     while time.monotonic() < deadline:
-        if browser.evaluate(expression):
-            return
+        try:
+            if browser.evaluate(expression):
+                return
+        except RuntimeError as error:
+            # Chrome briefly drops the default context while navigating to eve.html.
+            if "Cannot find default execution context" not in str(error):
+                raise
         time.sleep(0.5)
     state = browser.evaluate("""(() => ({
         ready: document.readyState,

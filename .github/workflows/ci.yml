@@ -1280,9 +1280,13 @@ jobs:
           python3 scripts/serve_webgpu.py build/webgpu-web/src/engine 8091 >webgpu-audio-http.log 2>&1 &
           server_pid=$!
           profile_dir="$(mktemp -d)"
-          google-chrome --headless=new --no-sandbox --disable-gpu-sandbox \
-            --enable-unsafe-webgpu --enable-features=Vulkan \
-            --use-vulkan=swiftshader --window-size=1400,900 \
+          browser_executable="$(python3 -c 'from playwright.sync_api import sync_playwright; p = sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
+          xvfb-run -a "$browser_executable" --no-sandbox --disable-gpu-sandbox \
+            --enable-unsafe-webgpu --enable-unsafe-swiftshader --ignore-gpu-blocklist \
+            --enable-gpu --use-gpu-in-tests --enable-accelerated-2d-canvas \
+            --use-angle=vulkan --enable-features=Vulkan --disable-vulkan-surface \
+            --use-vulkan=swiftshader --use-webgpu-adapter=swiftshader \
+            --window-size=1400,900 \
             --remote-debugging-port=9223 --remote-allow-origins='*' \
             --user-data-dir="$profile_dir" \
             http://127.0.0.1:8091/eve.html >webgpu-audio-browser.log 2>&1 &
