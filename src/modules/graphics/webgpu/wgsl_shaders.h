@@ -2194,7 +2194,7 @@ fn vs_main(@builtin(vertex_index) vid: u32) -> VSOut {
  * PBR + CSM + clustered points; mirrors Vulkan deferred_lighting.frag).
  * @borrowed Static storage; valid for the process lifetime.
  */
-inline const char* kDeferredLightingFragWgsl = R"wgsl(
+inline const char *kDeferredLightingFragWgsl = R"wgsl(
 /** @brief Light3D public API. */
 struct Light3D {
     posRadius: vec4f,

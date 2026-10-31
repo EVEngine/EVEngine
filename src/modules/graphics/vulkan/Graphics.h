@@ -343,6 +343,8 @@ struct GpuShader {
     vk::Pipeline       mesh3dHdrOffscreenPipeline;
     vk::PipelineLayout pipelineLayout;
     vk::DescriptorSet                                                resourceSet;
+    // Borrowed from resources; identical compact frame ABI for all resource programs.
+    vk::DescriptorSetLayout                                          resourceFrameLayout;
     std::unique_ptr<MeshShaderResources, MeshShaderResourcesDeleter> resources;
     bool isMesh3D = false;
     bool isHair3D = false;
@@ -1297,10 +1299,10 @@ private:
     /** @brief Release the readback staging ring (callers hold waitIdle). */
     void          destroyReadbackResources();
     void          ensurePresentCaptureHook();
-    vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
-                               GpuTexture *heightTex, GpuTexture *depthTex, GpuTexture *sceneColorTex,
-                               GpuTexture *decalAlbedo, GpuTexture *decalNormal,
-                               GpuTexture *decalParams, Mesh3dFrameSlots &fslots);
+    vkb::BoundSet mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex, GpuTexture *heightTex,
+                               GpuTexture *depthTex, GpuTexture *sceneColorTex, GpuTexture *decalAlbedo,
+                               GpuTexture *decalNormal, GpuTexture *decalParams, Mesh3dFrameSlots &fslots,
+                               vk::DescriptorSetLayout resourceLayout);
     void          ensureDefaultEnvCubemap();
     void          ensureFlatNormalTexture3D();
     void          ensureFlatHeightTexture3D();
@@ -1498,24 +1500,25 @@ private:
         GpuTexture *decalNormal = nullptr;
         GpuTexture *decalParams = nullptr;
         size_t      paletteSlot      = 0;
+        bool        resourceProgram  = false;
         /** @brief Operator ==. */
         bool operator==(const Mesh3dSetKey &o) const {
             return albedo == o.albedo && normal == o.normal && env == o.env && reflectionProbe0 == o.reflectionProbe0 &&
                    reflectionProbe1 == o.reflectionProbe1 && height == o.height && depth == o.depth &&
                    sceneColor == o.sceneColor && decalAlbedo == o.decalAlbedo && decalNormal == o.decalNormal &&
-                   decalParams == o.decalParams && paletteSlot == o.paletteSlot;
+                   decalParams == o.decalParams && paletteSlot == o.paletteSlot && resourceProgram == o.resourceProgram;
         }
     };
     struct Mesh3dSetKeyHash {
         /** @brief Operator . */
         size_t operator()(const Mesh3dSetKey &k) const {
-            return std::hash<GpuTexture*>()(k.albedo) ^ (std::hash<GpuTexture*>()(k.normal) << 1) ^
-                   (std::hash<GpuTexture*>()(k.env) << 2) ^ (std::hash<GpuTexture*>()(k.height) << 3) ^
-                   (std::hash<GpuTexture*>()(k.reflectionProbe0) << 8) ^
-                   (std::hash<GpuTexture*>()(k.reflectionProbe1) << 9) ^ (std::hash<GpuTexture*>()(k.depth) << 4) ^
-                   (std::hash<GpuTexture*>()(k.sceneColor) << 10) ^ (std::hash<GpuTexture*>()(k.decalAlbedo) << 5) ^
-                   (std::hash<GpuTexture*>()(k.decalNormal) << 6) ^ (std::hash<GpuTexture*>()(k.decalParams) << 7) ^
-                   k.paletteSlot;
+            return std::hash<GpuTexture *>()(k.albedo) ^ (std::hash<GpuTexture *>()(k.normal) << 1) ^
+                   (std::hash<GpuTexture *>()(k.env) << 2) ^ (std::hash<GpuTexture *>()(k.height) << 3) ^
+                   (std::hash<GpuTexture *>()(k.reflectionProbe0) << 8) ^
+                   (std::hash<GpuTexture *>()(k.reflectionProbe1) << 9) ^ (std::hash<GpuTexture *>()(k.depth) << 4) ^
+                   (std::hash<GpuTexture *>()(k.sceneColor) << 10) ^ (std::hash<GpuTexture *>()(k.decalAlbedo) << 5) ^
+                   (std::hash<GpuTexture *>()(k.decalNormal) << 6) ^ (std::hash<GpuTexture *>()(k.decalParams) << 7) ^
+                   k.paletteSlot ^ (size_t(k.resourceProgram) << 11);
         }
     };
     // Per-frame-slot UBO rings, keyed by Present::frames_in_flight so a frame

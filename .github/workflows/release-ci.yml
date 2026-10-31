@@ -84,11 +84,40 @@ jobs:
         timeout-minutes: 10
         run: make profile/smoke
 
+  macos-metal-probe:
+    name: Native Intel Metal preflight
+    runs-on: macos-15-intel
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        timeout-minutes: 5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - name: Probe native Intel Metal rasterization
+        timeout-minutes: 5
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          clang++ -std=c++20 -fobjc-arc .github/scripts/probe-metal-render.mm \
+            -framework Foundation -framework Metal -o build/probe-metal-render
+          build/probe-metal-render 2>&1 | tee build/macosx-x86_64-metal-probe.log
+
+      - name: Upload native Metal probe evidence
+        if: ${{ !cancelled() }}
+        timeout-minutes: 5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: macosx-native-metal-probe
+          path: build/macosx-x86_64-metal-probe.log
+          if-no-files-found: error
+
   macos-x86_64:
     name: macOS x86_64 (${{ matrix.configuration }}, build + test)
-    needs: [debug-checks]
+    needs: [debug-checks, macos-metal-probe]
     runs-on: macos-15-intel
-    timeout-minutes: 300
+    timeout-minutes: 360
     strategy:
       fail-fast: false
       matrix:
@@ -143,7 +172,7 @@ jobs:
           fi
 
       - name: Validate Intel macOS rendering before the full suite
-        timeout-minutes: 10
+        timeout-minutes: 20
         env:
           CONFIGURATION: ${{ matrix.configuration }}
           ALSOFT_DRIVERS: "null"
@@ -151,8 +180,11 @@ jobs:
         run: |
           suffix=""
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          # Cover independent paths in one bounded pass, so one blank map does
+          # not hide texture, skinning, frame-slot or compute failures.
           ctest --test-dir "build/macosx-x86_64${suffix}" --output-on-failure -j 1 \
-            --no-tests=error -R '^map\.render\.orthoAndIsoPreview$'
+            --timeout 120 --no-tests=error \
+            -R '^(map\.render\.orthoAndIsoPreview|spritestack\.render\.(pure2DStack|rotationChangesPixels)|model3d\.render\.gltfEmbeddedUvOrientation|animation\.skinned\.render\.bindPose|graphics\.frameRecording\.fxaaSlotReuseResizeAndPersistentCanvas|fluids\.ocean\.gpuSpectrumMatchesCpuAndRejectsStaleFrames|graphics\.resources\.customProgramsDoNotReserveUnusedMaterialSamplers|procgen\.roguelike\.bothLBendsConnectAllRooms)$'
 
       - name: Run native Intel macOS unit tests
         timeout-minutes: 150
@@ -954,7 +986,7 @@ jobs:
     # Run even if later unit tests fail, provided the build published a runtime.
     if: ${{ !cancelled() && needs.linux-release.outputs.smoke-runtime != '' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 100
+    timeout-minutes: 150
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -1030,21 +1062,29 @@ jobs:
         timeout-minutes: 5
         run: bash .github/scripts/setup-software-vulkan.sh
 
-      # 150 headless Lavapipe smokes have finished green then still hit the old
-      # 20-minute step guard during teardown (PR #586 run 38844868063;
-      # run 38775560674). Keep headroom above the ~15+ minute live window.
+      # Startup compilation has its own bounded budget; observe gameplay only
+      # after initialization, and preserve every example's complete transcript.
       - name: Smoke all examples (headless, >=2s alive each)
-        # 151 examples take up to 151 * (6s run + 3s termination grace),
-        # already over 22 minutes before process/display setup overhead.
-        timeout-minutes: 30
+        timeout-minutes: 50
         env:
           ALSOFT_DRIVERS: "null"
           # Contract for examples/README.md "示例规范": every runnable example
           # must still be running MIN_RUN_SECONDS after launch, with no error
           # markers in its log; dying early or exiting non-zero fails the job.
           MIN_RUN_SECONDS: "2"
+          STARTUP_SECONDS: "60"
+          SMOKE_LOG_DIR: build/example-smoke-logs
         run: |
           xvfb-run -a -s "-screen 0 1280x800x24" make smoke/examples
+
+      - name: Upload complete example smoke logs
+        if: ${{ !cancelled() }}
+        timeout-minutes: 10
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: linux-example-smoke-logs
+          path: build/example-smoke-logs/
+          if-no-files-found: error
 
   linux-release:
     name: Linux (Release)

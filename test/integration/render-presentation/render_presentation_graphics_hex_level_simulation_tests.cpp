@@ -2104,7 +2104,7 @@ TEST_CASE("mouse.positionRoundTrip") {
         SDL_PumpEvents();
     }
     if (std::abs(m->getX() - 80.0) >= 2.0) {
-        auto* window  = static_cast<SDL_Window*>(handle);
+        auto *window  = static_cast<SDL_Window *>(handle);
         int   globalX = 0, globalY = 0, windowX = 0, windowY = 0;
         SDL_GetGlobalMouseState(&globalX, &globalY);
         SDL_GetWindowPosition(window, &windowX, &windowY);

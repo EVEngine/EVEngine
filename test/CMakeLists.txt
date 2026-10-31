@@ -53,7 +53,7 @@ eve_test_source_properties(physics_jolt.cpp physics_jolt_cooking.cpp physics_jol
 # Resource sharing must test the same optional validation provider as EVGraphics.
 get_target_property(_eve_graphics_definitions EVGraphics COMPILE_DEFINITIONS)
 if("EVENGINE_SPIRV_ASSET_VALIDATION=1" IN_LIST _eve_graphics_definitions)
-  eve_resolve_test_sources(_eve_validation_sources ShaderResourceSharing.cpp SkyTextureGpu.cpp
+  eve_resolve_test_sources(_eve_validation_sources ShaderResourceSharing.cpp integration/render-presentation/resource_program_descriptor_limits.cpp SkyTextureGpu.cpp
     SkyAtmospherePass.cpp SkyRuntime.cpp SkyWisps.cpp SkyScriptBindings.cpp BloomPyramid.cpp)
   set_property(SOURCE ${_eve_validation_sources} APPEND PROPERTY COMPILE_DEFINITIONS EVE_TEST_RESOURCE_VALIDATION=1)
 endif()

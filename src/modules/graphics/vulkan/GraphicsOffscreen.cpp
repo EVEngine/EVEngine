@@ -447,7 +447,7 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
     auto&      draws = r.frames[frame];
     const auto index = fslots.drawIndex++;
     while (draws.size() <= index) draws.emplace_back(std::make_unique<PbrResources::Draw>());
-    auto& draw = *draws[index];
+    auto&         draw = *draws[index];
     const auto&   s = *pbrSurface_;
     PbrUniformGpu u;
     u.model    = model;
@@ -785,8 +785,8 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
     }
     // The existing immediate draw API reports failures by exception. Preserve the
     // structured diagnostic through the Result expectation bridge at that boundary.
-    const auto   binding = planPbrSamplerBinding(uniqueSamplers.size(), device.physical_device.properties.limits)
-                               .expect("Cannot draw PBR material");
+    const auto binding = planPbrSamplerBinding(uniqueSamplers.size(), device.physical_device.properties.limits)
+                             .expect("Cannot draw PBR material");
     const bool   separatedSamplers = binding == PbrSamplerBinding::Separated;
     const size_t mode              = separatedSamplers ? 1u : 0u;
     if (!r.setLayouts[mode]) {

@@ -5135,7 +5135,7 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device& dev, wgpu::PipelineLayo
         fragmentModule = dev.CreateShaderModule(reinterpret_cast<const wgpu::ShaderModuleDescriptor*>(&md));
         fs.module      = fragmentModule.Get();
         fs.entryPoint  = sv("fs_main");
-        fs.targetCount = 1;
+        fs.targetCount   = 1;
         target.format    = format;
         target.writeMask = WGPUColorWriteMask_All;
         if (blend) {

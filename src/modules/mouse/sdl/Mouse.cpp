@@ -100,7 +100,7 @@ double Mouse::getY() const {
     return y;
 }
 
-void Mouse::getPosition(double& x, double& y) const {
+void Mouse::getPosition(double &x, double &y) const {
     int mx, my;
     SDL_GetMouseState(&mx, &my);
 #if defined(_WIN32)
@@ -108,7 +108,7 @@ void Mouse::getPosition(double& x, double& y) const {
     // mouse focus SDL retains its old event coordinates; query the OS relative
     // to the keyboard-focused window instead. Relative mode stays event-based.
     if (!SDL_GetMouseFocus() && !SDL_GetRelativeMouseMode()) {
-        if (auto* focusedWindow = SDL_GetKeyboardFocus()) {
+        if (auto *focusedWindow = SDL_GetKeyboardFocus()) {
             POINT cursor;
             // SDL_GetGlobalMouseState has no query-failure status. A service
             // desktop can deny GetCursorPos; preserve SDL's cache in that case.

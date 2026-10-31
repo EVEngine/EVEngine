@@ -53,9 +53,7 @@
       "model3d.materialApi.objMtl",
       "model3d.newModelData.rock1Fbx",
       "model3d.newModelDataFromFile.cached",
-      "model3d.newModelDataFromFile.sofaObjMtl",
-      "spritestack.render.batchUses2DStacks",
-      "spritestack.render.pure2DStack"
+      "model3d.newModelDataFromFile.sofaObjMtl"
     ],
     "render-window": [
       "SceneLoader.load.buildsGameObjectTreeWithRenderables",
@@ -72,7 +70,9 @@
       "model3d.render.rock1Fbx",
       "model3d.render.rock1ToonShader",
       "model3d.render.sofaObjMtl",
-      "particles.render.fireAndSmokePreview"
+      "particles.render.fireAndSmokePreview",
+      "spritestack.render.batchUses2DStacks",
+      "spritestack.render.pure2DStack"
     ]
   }
 }
@@ -3782,7 +3782,11 @@ TEST_CASE("spritestack.render.pure2DStack") {
     int changed = 0;
     for (int y = 30; y < 210; ++y) {
         for (int x = 60; x < 260; ++x) {
-            const Colorf pixel = frame->getPixel(x, y);
+            // ImageData is in physical pixels; this region is in logical window
+            // coordinates. Sample the same region on Retina and 1x displays.
+            const int    px    = x * frame->getWidth() / fx.gfx->getWidth();
+            const int    py    = y * frame->getHeight() / fx.gfx->getHeight();
+            const Colorf pixel = frame->getPixel(px, py);
             if (pixel.g > 0.20f && pixel.g > pixel.r * 1.15f) ++changed;
         }
     }

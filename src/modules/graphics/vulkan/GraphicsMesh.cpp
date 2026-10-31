@@ -952,8 +952,9 @@ void Graphics::drawMeshShaderRange(Mesh *mesh, const glm::mat4 &model, Texture *
             }
         }
     }
-    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, gpuSceneColor,
-                                         gpuDecalAlb, gpuDecalNrm, gpuDecalPrm, fslots);
+    vk::DescriptorSet set = mesh3dSetFor(
+        gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, gpuSceneColor, gpuDecalAlb, gpuDecalNrm, gpuDecalPrm, fslots,
+        shader ? static_cast<GpuShader *>(shader->gpuHandle)->resourceFrameLayout : vk::DescriptorSetLayout{});
     const uint32_t dynOffsets[2] = {uboOffset, shadowOffset};
 
     if (shader) {
