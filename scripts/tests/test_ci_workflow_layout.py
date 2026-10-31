@@ -57,6 +57,13 @@ class WorkflowLayoutTests(unittest.TestCase):
         self.assertIn("uses: ./.github/actions/setup-webgpu-browser", workflow)
         self.assertIn("scripts/verify_webgpu_audio_browser.py", workflow)
         self.assertIn("p.chromium.executable_path", workflow)
+        # Audio must use the software Vulkan configuration already exercised by
+        # the extracted-SDK browser gate on the same runner.
+        sdk_browser = (ROOT / "scripts/test_webgpu_sdk.py").read_text(encoding="utf-8")
+        for flag in ("--enable-gpu", "--use-angle=vulkan", "--disable-vulkan-surface"):
+            self.assertIn(flag, sdk_browser)
+            self.assertIn(flag, workflow.split("name: Verify browser audio playback", 1)[1]
+                          .split("name: Upload browser audio diagnostics", 1)[0])
         self.assertLess(workflow.index("name: Verify browser audio playback"),
                         workflow.index("name: Upload verified WebGPU SDK"))
 

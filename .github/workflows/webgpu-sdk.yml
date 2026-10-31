@@ -211,7 +211,8 @@ jobs:
           browser="$(python3 -c 'from playwright.sync_api import sync_playwright; p = sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
           "$browser" --headless=new --no-sandbox --disable-gpu-sandbox \
             --enable-unsafe-webgpu --enable-features=Vulkan \
-            --use-vulkan=swiftshader --window-size=1400,900 \
+            --use-vulkan=swiftshader --enable-gpu --use-angle=vulkan \
+            --disable-vulkan-surface --window-size=1400,900 \
             --remote-debugging-port=9223 --remote-allow-origins='*' \
             --user-data-dir="$profile_dir" \
             http://127.0.0.1:8091/eve.html >webgpu-audio-browser.log 2>&1 &
