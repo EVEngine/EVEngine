@@ -86,7 +86,7 @@ DeviceDone InitFlow::requestDevice(AdapterDone&& prev) {
     WGPUDeviceDescriptor devDesc{};
     devDesc.label = sv("eve_device");
     // Mesh3D bind group samples albedo/normal/env/shadow/height/depth/AO/extras.
-    constexpr std::uint32_t requiredSampledTextures = 17;
+    constexpr std::uint32_t requiredSampledTextures = 16;
     // Phase B GBuffer is five RGBA8Unorm color targets (5×8 = 40 bytes/sample).
     // WebGPU's default maxColorAttachmentBytesPerSample is 32; Dawn/macOS
     // adapters advertise 128 but only grant it when requested here.

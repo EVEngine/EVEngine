@@ -215,6 +215,7 @@
         { path: 'playground/demos/3d_sphere.nut', label: '3D 旋转球体（默认）' },
         { path: 'playground/demos/2d_sprites.nut', label: '2D 精灵 + 键盘' },
         { path: 'playground/demos/3d_textured.nut', label: '3D 纹理立方体' },
+        { path: 'playground/demos/audio.nut', label: '音效 + 循环音乐' },
         { path: 'playground/demos/hot_state.nut', label: '热更新状态演示' }
       ];
 
@@ -344,15 +345,20 @@
                Module._eve_playground_read_bytes && Module._eve_playground_capture &&
                Module._eve_playground_readback_status && Module._eve_playground_reset;
       }
+      var bridgeQueue = Promise.resolve();
+      function asyncBridge(name, resultType, types, values) {
+        if (!bridgesAvailable()) return Promise.reject(new Error('Playground bridge unavailable'));
+        var call = bridgeQueue.then(function () {
+          return Module.ccall(name, resultType, types, values, { async: true });
+        });
+        bridgeQueue = call.catch(function () {});
+        return call;
+      }
       function pgApply(src) {
-        if (!bridgesAvailable()) { pgLog('err', '[playground] 桥接函数缺失：eve.js 版本过旧？'); return; }
-        withCString(src, function (p) { Module._eve_playground_apply(p); });
+        return asyncBridge('eve_playground_apply', null, ['string'], [src]);
       }
       function pgEval(src) {
-        if (!bridgesAvailable()) { pgLog('err', '[playground] 桥接函数缺失：eve.js 版本过旧？'); return ''; }
-        return withCString(src, function (p) {
-          return Module.UTF8ToString(Module._eve_playground_eval(p));
-        });
+        return asyncBridge('eve_playground_eval', 'string', ['string'], [src]);
       }
       function pgRead(path) {
         if (!bridgesAvailable()) return '';
@@ -362,8 +368,7 @@
       }
       function pgSetPaused(on) { Module._eve_playground_set_paused(on ? 1 : 0); }
       function pgReset() {
-        if (!bridgesAvailable()) return;
-        Module._eve_playground_reset();
+        return asyncBridge('eve_playground_reset', null, [], []);
       }
       function pgReadBytes(path, cap) {
         if (!bridgesAvailable()) return null;
@@ -387,31 +392,39 @@
       // __pg); edits to the same script keep hot-reload state.
       var appliedDemoPath = null;
       var pendingDemoPath = null;
-      function applyNow() {
+      async function applyNow() {
         if (!engineReady) return;
         var isSwitch = pendingDemoPath && pendingDemoPath !== appliedDemoPath;
         if (isSwitch) {
-          pgReset();
+          try { await pgReset(); }
+          catch (e) { pgLog('err', '[playground] 场景重置失败：' + e); return; }
           appliedDemoPath = pendingDemoPath;
         }
         saveLocal();
-        pgApply(ta.value);
+        try {
+          await pgApply(ta.value);
+        } catch (e) { pgLog('err', '[playground] 应用失败：' + e); return; }
         if (isSwitch) {
           // 热重载只替换脚本、不会自动调用 eve_init；切换 demo 后需要重建场景。
-          var r = pgEval('if ("eve_init" in getroottable()) { eve_init(); "demo applied"; } else "no eve_init"');
-          pgLog('sys', '[playground] ' + r);
+          try {
+            var r = await pgEval('if ("eve_init" in getroottable()) { eve_init(); "demo applied"; } else "no eve_init"');
+            pgLog('sys', '[playground] ' + r);
+          } catch (e) { pgLog('err', '[playground] 初始化失败：' + e); }
         }
         setSave('已应用 ' + timeStr());
       }
-      function restartNow() {
+      async function restartNow() {
         if (!engineReady) return;
         // 销毁旧 ECS 实体并清空 __pg → 重新应用脚本 → 重跑 eve_init 重建场景。
-        pgReset();
+        try { await pgReset(); }
+        catch (e) { pgLog('err', '[playground] 场景重置失败：' + e); return; }
         pgLog('sys', '[playground] 状态已清空（旧实体已销毁）');
         saveLocal();
-        pgApply(ta.value);
-        var r2 = pgEval('if ("eve_init" in getroottable()) { eve_init(); "init re-run"; } else "no eve_init"');
-        pgLog('sys', '[playground] ' + r2);
+        try {
+          await pgApply(ta.value);
+          var r2 = await pgEval('if ("eve_init" in getroottable()) { eve_init(); "init re-run"; } else "no eve_init"');
+          pgLog('sys', '[playground] ' + r2);
+        } catch (e) { pgLog('err', '[playground] 重置失败：' + e); return; }
         setSave('已重置状态并应用 ' + timeStr());
       }
       $('btnApply').addEventListener('click', applyNow);
@@ -459,7 +472,8 @@
         var v = this.value.trim();
         if (!v || !engineReady) return;
         pgLog('cmd', '> ' + v);
-        pgLog('out', String(pgEval(v)));
+        pgEval(v).then(function (result) { pgLog('out', String(result)); })
+                 .catch(function (error) { pgLog('err', String(error)); });
         this.value = '';
       });
 
@@ -515,8 +529,8 @@
         // 会话恢复：如果本地保存的脚本和当前 main.nut 不同，自动应用
         try { saved = localStorage.getItem(PG_KEY); } catch (e) { saved = null; }
         if (saved != null && saved !== '' && saved !== pgRead('main.nut')) {
-          pgApply(saved);
-          setSave('已恢复上次会话并应用 ' + timeStr());
+          pgApply(saved).then(function () { setSave('已恢复上次会话并应用 ' + timeStr()); })
+                        .catch(function (error) { pgLog('err', '[playground] 会话恢复失败：' + error); });
         } else {
           setSave('就绪 ' + timeStr());
         }
