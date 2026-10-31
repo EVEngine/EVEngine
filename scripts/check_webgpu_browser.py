@@ -21,20 +21,22 @@ SCENES = (
 BROWSER_PROFILES = {
     "vulkan-swiftshader": (True, (
         "--use-angle=vulkan", "--enable-features=Vulkan", "--disable-vulkan-surface",
-        "--use-webgpu-adapter=swiftshader",
+        "--use-vulkan=swiftshader", "--use-webgpu-adapter=swiftshader",
     )),
     "angle-swiftshader": (True, (
-        "--use-gl=angle", "--use-angle=swiftshader", "--use-webgpu-adapter=swiftshader",
+        "--use-gl=angle", "--use-angle=swiftshader", "--enable-features=Vulkan",
+        "--use-vulkan=swiftshader", "--use-webgpu-adapter=swiftshader",
     )),
     "lavapipe-vulkan": (True, (
         "--use-angle=vulkan", "--enable-features=Vulkan", "--disable-vulkan-surface",
     )),
     "angle-swiftshader-headed": (False, (
-        "--use-gl=angle", "--use-angle=swiftshader", "--use-webgpu-adapter=swiftshader",
+        "--use-gl=angle", "--use-angle=swiftshader", "--enable-features=Vulkan",
+        "--use-vulkan=swiftshader", "--use-webgpu-adapter=swiftshader",
     )),
     "vulkan-swiftshader-headed": (False, (
         "--use-angle=vulkan", "--enable-features=Vulkan", "--disable-vulkan-surface",
-        "--use-webgpu-adapter=swiftshader",
+        "--use-vulkan=swiftshader", "--use-webgpu-adapter=swiftshader",
     )),
 }
 
@@ -57,9 +59,14 @@ def main() -> int:
             headless=headless,
             args=[
                 "--no-sandbox",
+                "--disable-setuid-sandbox",
                 "--disable-gpu-sandbox",
+                "--disable-dev-shm-usage",
                 "--enable-unsafe-webgpu",
                 "--enable-unsafe-swiftshader",
+                "--ignore-gpu-blocklist",
+                "--enable-gpu",
+                "--window-size=1400,900",
                 "--use-gpu-in-tests",
                 "--enable-accelerated-2d-canvas",
                 *profile_args,

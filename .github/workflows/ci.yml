@@ -1259,8 +1259,8 @@ jobs:
           done
           export VK_ICD_FILENAMES="$(find /usr/share/vulkan/icd.d -name 'lvp_icd*.json' -print -quit)"
           test -n "$VK_ICD_FILENAMES"
-          for profile in angle-swiftshader vulkan-swiftshader lavapipe-vulkan \
-                         angle-swiftshader-headed vulkan-swiftshader-headed; do
+          for profile in vulkan-swiftshader-headed angle-swiftshader \
+                         angle-swiftshader-headed vulkan-swiftshader lavapipe-vulkan; do
             if xvfb-run -a python3 scripts/check_webgpu_browser.py \
                 --profile "$profile" \
                 --output "build/webgpu-web/src/engine/browser-captures/$profile"; then
