@@ -1276,23 +1276,14 @@ jobs:
             -DCMAKE_EXE_LINKER_FLAGS_RELEASE=-O1 \
             -DEVENGINE_WEBGPU_GAME_DIR="$GITHUB_WORKSPACE/build/webgpu-audio-game-shell"
           cmake --build build/webgpu-web --parallel "$(nproc)"
-          python3 -m pip install --quiet websocket-client
           python3 scripts/serve_webgpu.py build/webgpu-web/src/engine 8091 >webgpu-audio-http.log 2>&1 &
           server_pid=$!
-          profile_dir="$(mktemp -d)"
-          browser_executable="$(python3 -c 'from playwright.sync_api import sync_playwright; p = sync_playwright().start(); print(p.chromium.executable_path); p.stop()')"
-          xvfb-run -a "$browser_executable" --no-sandbox --disable-gpu-sandbox \
-            --enable-unsafe-webgpu --enable-unsafe-swiftshader --ignore-gpu-blocklist \
-            --enable-gpu --use-gpu-in-tests --enable-accelerated-2d-canvas \
-            --use-angle=vulkan --enable-features=Vulkan --disable-vulkan-surface \
-            --use-vulkan=swiftshader --use-webgpu-adapter=swiftshader \
-            --window-size=1400,900 \
-            --remote-debugging-port=9223 --remote-allow-origins='*' \
-            --user-data-dir="$profile_dir" \
-            http://127.0.0.1:8091/eve.html >webgpu-audio-browser.log 2>&1 &
-          browser_pid=$!
-          trap 'kill "$browser_pid" "$server_pid" 2>/dev/null || true' EXIT
-          python3 scripts/verify_webgpu_audio_browser.py --port 9223 --timeout 90
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            curl --fail --silent --output /dev/null http://127.0.0.1:8091/eve.html && break
+            sleep 1
+          done
+          xvfb-run -a python3 scripts/verify_webgpu_audio_browser.py --timeout 90
 
       - name: Upload browser WebGPU scenes
         if: always()
@@ -1303,7 +1294,6 @@ jobs:
             build/webgpu-web/src/engine/browser-captures/**/*.png
             build/webgpu-web/src/engine/webgpu-http.log
             webgpu-audio-http.log
-            webgpu-audio-browser.log
           if-no-files-found: warn
 
       - name: Save Emscripten SDK cache
