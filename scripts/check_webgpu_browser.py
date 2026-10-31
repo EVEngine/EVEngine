@@ -37,6 +37,9 @@ def main() -> int:
                 "--disable-gpu-sandbox",
                 "--enable-unsafe-webgpu",
                 "--enable-unsafe-swiftshader",
+                "--use-angle=vulkan",
+                "--enable-features=Vulkan",
+                "--disable-vulkan-surface",
                 "--use-webgpu-adapter=swiftshader",
                 "--use-gpu-in-tests",
                 "--enable-accelerated-2d-canvas",
@@ -65,11 +68,35 @@ def main() -> int:
                 await buffer.mapAsync(GPUMapMode.READ);
                 const pixel = Array.from(new Uint8Array(buffer.getMappedRange()).slice(0, 4));
                 buffer.unmap();
+                const canvas = document.createElement('canvas');
+                canvas.id = 'webgpu-preflight-canvas';
+                canvas.width = canvas.height = 64;
+                document.body.appendChild(canvas);
+                const context = canvas.getContext('webgpu');
+                context.configure({device, format: navigator.gpu.getPreferredCanvasFormat(), alphaMode: 'opaque'});
+                const draw = () => {
+                    const frame = device.createCommandEncoder();
+                    const pass = frame.beginRenderPass({colorAttachments: [{
+                        view: context.getCurrentTexture().createView(), loadOp: 'clear', storeOp: 'store',
+                        clearValue: {r: 1, g: 0, b: 1, a: 1}}]});
+                    pass.end();
+                    device.queue.submit([frame.finish()]);
+                    requestAnimationFrame(draw);
+                };
+                requestAnimationFrame(draw);
                 return pixel;
             }""")
             if preflight_pixel != [255, 0, 255, 255]:
                 raise RuntimeError(f"pre-engine WebGPU buffer pixel mismatch: {preflight_pixel!r}")
             print(f"pre-engine WebGPU buffer OK: {preflight_pixel!r}")
+            probe_page.wait_for_timeout(200)
+            preflight_canvas = args.output / "webgpu_preflight.png"
+            probe_page.locator("#webgpu-preflight-canvas").screenshot(path=str(preflight_canvas))
+            with Image.open(preflight_canvas) as probe_image:
+                canvas_pixel = probe_image.convert("RGB").getpixel((32, 32))
+            if not (canvas_pixel[0] > 200 and canvas_pixel[1] < 80 and canvas_pixel[2] > 200):
+                raise RuntimeError(f"pre-engine WebGPU canvas pixel mismatch: {canvas_pixel!r}")
+            print(f"pre-engine WebGPU canvas OK: {canvas_pixel!r}")
             page = browser.new_page(viewport={"width": 1200, "height": 800})
             browser_errors = []
             first_gpu_messages = []

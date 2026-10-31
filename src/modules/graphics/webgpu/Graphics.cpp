@@ -288,7 +288,6 @@ void Graphics::initWithWindow(void* nativeWindow) {
     std::fprintf(stderr, "[webgpu] graphics init this=%p instance=%p\n", static_cast<void*>(this),
                  static_cast<void*>(instance.Get()));
 #endif
-#if !defined(__EMSCRIPTEN__)
     // Preferred surface format comes from wgpuSurfaceGetCapabilities in the
     // current ABI (Surface::GetPreferredFormat was removed).
     WGPUSurfaceCapabilities caps{};
@@ -298,6 +297,7 @@ void Graphics::initWithWindow(void* nativeWindow) {
         // an additional hardware transfer function. Fall back only when the
         // platform does not expose either common UNORM surface format.
         surfaceFormat = caps.formats[0];
+#if !defined(__EMSCRIPTEN__)
         for (size_t i = 0; i < caps.formatCount; ++i) {
             if (caps.formats[i] == WGPUTextureFormat_BGRA8Unorm) {
                 surfaceFormat = caps.formats[i];
@@ -307,9 +307,9 @@ void Graphics::initWithWindow(void* nativeWindow) {
                 surfaceFormat = caps.formats[i];
             }
         }
+#endif
     }
     wgpuSurfaceCapabilitiesFreeMembers(caps);
-#endif
 
     swapchainConfigured = false;
     // Bind group layouts / pipelines must exist before the default textures
