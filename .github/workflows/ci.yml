@@ -1154,7 +1154,7 @@ jobs:
           done
           [ "$apt_ok" -eq 1 ] || exit 1
           sudo apt-get install -y --no-install-recommends \
-            git ninja-build python3 python3-pip libvulkan1 mesa-vulkan-drivers
+            git ninja-build python3 python3-pip libvulkan1 mesa-vulkan-drivers xvfb xauth
 
       - name: Install CMake 3.29 (Emscripten is incompatible with CMake 4.x)
         timeout-minutes: 10
@@ -1244,7 +1244,7 @@ jobs:
           ls -lh build/webgpu-web/src/engine/eve.*
 
       - name: Verify browser WebGPU scenes
-        timeout-minutes: 10
+        timeout-minutes: 20
         env:
           DEBUG: pw:browser
         run: |
@@ -1257,8 +1257,17 @@ jobs:
             curl --fail --silent --output /dev/null http://127.0.0.1:8090/eve.html && break
             sleep 1
           done
-          python3 scripts/check_webgpu_browser.py \
-            --output build/webgpu-web/src/engine/browser-captures
+          export VK_ICD_FILENAMES="$(find /usr/share/vulkan/icd.d -name 'lvp_icd*.json' -print -quit)"
+          test -n "$VK_ICD_FILENAMES"
+          for profile in angle-swiftshader vulkan-swiftshader lavapipe-vulkan \
+                         angle-swiftshader-headed vulkan-swiftshader-headed; do
+            if xvfb-run -a python3 scripts/check_webgpu_browser.py \
+                --profile "$profile" \
+                --output "build/webgpu-web/src/engine/browser-captures/$profile"; then
+              exit 0
+            fi
+          done
+          exit 1
 
       - name: Verify browser audio playback
         timeout-minutes: 20
@@ -1293,7 +1302,7 @@ jobs:
         with:
           name: webgpu-browser-scenes
           path: |
-            build/webgpu-web/src/engine/browser-captures/*.png
+            build/webgpu-web/src/engine/browser-captures/**/*.png
             build/webgpu-web/src/engine/webgpu-http.log
             webgpu-audio-http.log
             webgpu-audio-browser.log

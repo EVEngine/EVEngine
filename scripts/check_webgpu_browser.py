@@ -18,31 +18,51 @@ SCENES = (
     ("3d_textured", "playground/demos/3d_textured.nut", "3d textured demo init ok"),
 )
 
+BROWSER_PROFILES = {
+    "vulkan-swiftshader": (True, (
+        "--use-angle=vulkan", "--enable-features=Vulkan", "--disable-vulkan-surface",
+        "--use-webgpu-adapter=swiftshader",
+    )),
+    "angle-swiftshader": (True, (
+        "--use-gl=angle", "--use-angle=swiftshader", "--use-webgpu-adapter=swiftshader",
+    )),
+    "lavapipe-vulkan": (True, (
+        "--use-angle=vulkan", "--enable-features=Vulkan", "--disable-vulkan-surface",
+    )),
+    "angle-swiftshader-headed": (False, (
+        "--use-gl=angle", "--use-angle=swiftshader", "--use-webgpu-adapter=swiftshader",
+    )),
+    "vulkan-swiftshader-headed": (False, (
+        "--use-angle=vulkan", "--enable-features=Vulkan", "--disable-vulkan-surface",
+        "--use-webgpu-adapter=swiftshader",
+    )),
+}
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--url", default="http://127.0.0.1:8090/eve.html")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--browser", type=Path, help="Chrome, Chromium, or Edge executable")
+    parser.add_argument("--profile", choices=BROWSER_PROFILES, default="vulkan-swiftshader")
     args = parser.parse_args()
     from playwright.sync_api import TimeoutError as PlaywrightTimeoutError, sync_playwright
 
     args.output.mkdir(parents=True, exist_ok=True)
+    headless, profile_args = BROWSER_PROFILES[args.profile]
+    print(f"browser profile: {args.profile}", flush=True)
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(
             executable_path=str(args.browser) if args.browser else None,
-            headless=True,
+            headless=headless,
             args=[
                 "--no-sandbox",
                 "--disable-gpu-sandbox",
                 "--enable-unsafe-webgpu",
                 "--enable-unsafe-swiftshader",
-                "--use-angle=vulkan",
-                "--enable-features=Vulkan",
-                "--disable-vulkan-surface",
-                "--use-webgpu-adapter=swiftshader",
                 "--use-gpu-in-tests",
                 "--enable-accelerated-2d-canvas",
+                *profile_args,
             ],
         )
         try:
