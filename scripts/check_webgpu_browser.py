@@ -57,6 +57,31 @@ def main() -> int:
             ],
         )
         try:
+            probe_page = browser.new_page()
+            probe_page.goto(args.url.rsplit("/", 1)[0] + "/__webgpu_probe__", wait_until="domcontentloaded")
+            preflight_pixel = probe_page.evaluate("""async () => {
+                const adapter = await navigator.gpu.requestAdapter();
+                if (!adapter) throw Error('no WebGPU adapter before engine startup');
+                const device = await adapter.requestDevice();
+                const texture = device.createTexture({size: [1, 1], format: 'rgba8unorm',
+                    usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC});
+                const buffer = device.createBuffer({size: 256,
+                    usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ});
+                const encoder = device.createCommandEncoder();
+                const pass = encoder.beginRenderPass({colorAttachments: [{view: texture.createView(),
+                    loadOp: 'clear', storeOp: 'store', clearValue: {r: 1, g: 0, b: 1, a: 1}}]});
+                pass.end();
+                encoder.copyTextureToBuffer({texture}, {buffer, bytesPerRow: 256}, [1, 1]);
+                device.queue.submit([encoder.finish()]);
+                await buffer.mapAsync(GPUMapMode.READ);
+                const pixel = Array.from(new Uint8Array(buffer.getMappedRange()).slice(0, 4));
+                buffer.unmap();
+                return pixel;
+            }""")
+            probe_page.close()
+            if preflight_pixel != [255, 0, 255, 255]:
+                raise RuntimeError(f"pre-engine WebGPU buffer pixel mismatch: {preflight_pixel!r}")
+            print(f"pre-engine WebGPU buffer OK: {preflight_pixel!r}")
             page = browser.new_page(viewport={"width": 1200, "height": 800})
             browser_errors = []
             first_gpu_messages = []
