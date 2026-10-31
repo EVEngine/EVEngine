@@ -32,7 +32,7 @@ eve_declare_module(NAME model3d LIB EVModel3D LAYER 4 SCRIPT Model3D SLOT model3
 eve_declare_module(NAME sound LAYER 1 SCRIPT Sound SLOT sound
                    DEPS filesystem
                    THIRDPARTY medialoader_sound audio_codecs
-                   GROUP 2d 3d)
+                   GROUP 2d 3d web)
 eve_declare_module(NAME network LAYER 1 SCRIPT Network
                    DEPS data platform_event
                    THIRDPARTY poco)

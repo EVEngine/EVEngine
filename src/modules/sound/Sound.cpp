@@ -8,16 +8,21 @@
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 
+#if defined(__EMSCRIPTEN__)
+#include <emscripten/emscripten.h>
+#else
 #include "medialoader/Exception.h"
 #include "medialoader/sound/WaveDecoder.h"
 #include "medialoader/sound/VorbisDecoder.h"
 #include "medialoader/sound/Mpg123Decoder.h"
 #include "medialoader/sound/FLACDecoder.h"
 #include "medialoader/sound/ModPlugDecoder.h"
+#endif
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
 #include <cctype>
+#include <chrono>
 #include <cstring>
 #include <fstream>
 #include <string>
@@ -114,6 +119,70 @@ Sound::~Sound() = default;
 
 namespace {
 
+#if defined(__EMSCRIPTEN__)
+// clang-format off
+EM_JS(int, startBrowserDecode, (const void* bytes, int size), {
+    try {
+        const encoded = HEAPU8.slice(bytes, bytes + size);
+        const store = globalThis.eveSoundDecode ||= { next: 1, requests: new Map(), context: null };
+        const id = store.next++;
+        const request = { status: 0, pcm: null, rate: 0, channels: 0 };
+        store.requests.set(id, request);
+        const Context = globalThis.AudioContext || globalThis.webkitAudioContext;
+        if (!Context) throw new Error('Web Audio is unavailable');
+        store.context ||= new Context();
+        store.context.decodeAudioData(encoded.buffer).then((buffer) => {
+            if (buffer.numberOfChannels < 1 || buffer.numberOfChannels > 2 ||
+                buffer.length * buffer.numberOfChannels * 2 > 0x7fffffff) {
+                request.status = -1;
+                return;
+            }
+            const channels = buffer.numberOfChannels;
+            const pcm = new Uint8Array(buffer.length * channels * 2);
+            const view = new DataView(pcm.buffer);
+            const samples = Array.from({ length: channels }, (_, c) => buffer.getChannelData(c));
+            for (let frame = 0; frame < buffer.length; ++frame) {
+                for (let channel = 0; channel < channels; ++channel) {
+                    const sample = Math.max(-1, Math.min(1, samples[channel][frame]));
+                    view.setInt16((frame * channels + channel) * 2,
+                                  sample < 0 ? Math.round(sample * 32768) : Math.round(sample * 32767), true);
+                }
+            }
+            request.pcm = pcm;
+            request.rate = buffer.sampleRate;
+            request.channels = channels;
+            request.status = 1;
+        }).catch((error) => { console.error('[Sound] Browser decode failed', error); request.status = -1; });
+        return id;
+    } catch (error) {
+        console.error('[Sound] Browser decode could not start', error);
+        return -1;
+    }
+});
+EM_JS(int, browserDecodeStatus, (int id), {
+    const request = globalThis.eveSoundDecode?.requests.get(id);
+    return request ? request.status : -1;
+});
+EM_JS(int, browserDecodeSize, (int id), {
+    return globalThis.eveSoundDecode.requests.get(id).pcm.length;
+});
+EM_JS(int, browserDecodeRate, (int id), {
+    return globalThis.eveSoundDecode.requests.get(id).rate;
+});
+EM_JS(int, browserDecodeChannels, (int id), {
+    return globalThis.eveSoundDecode.requests.get(id).channels;
+});
+EM_JS(void, browserDecodeCopyAndRelease, (int id, void* destination), {
+    const store = globalThis.eveSoundDecode;
+    const request = store.requests.get(id);
+    HEAPU8.set(request.pcm, destination);
+    store.requests.delete(id);
+});
+EM_JS(void, browserDecodeRelease, (int id), {
+    globalThis.eveSoundDecode?.requests.delete(id);
+});
+// clang-format on
+#else
 std::string lowerExt(std::string ext) {
     for (char &c : ext)
         c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
@@ -130,6 +199,7 @@ std::unique_ptr<medialoader::Decoder> tryMake(const char *data, size_t size, int
         return nullptr;
     }
 }
+#endif
 
 }  // namespace
 
@@ -137,14 +207,46 @@ Decoder *Sound::newDecoder(Data *data, int bufferSize) {
     if (data == nullptr || data->getData() == nullptr || data->getSize() == 0)
         throw eve::Exception("Cannot decode empty sound data");
 
+#if defined(__EMSCRIPTEN__)
+    if (data->getSize() > static_cast<std::size_t>(0x7fffffff) || bufferSize <= 0)
+        throw eve::Exception("Browser audio data is too large or buffer size is invalid");
+    const int id = startBrowserDecode(data->getData(), static_cast<int>(data->getSize()));
+    if (id < 0) throw eve::Exception("Could not start browser audio decode");
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(30);
+    int        status   = browserDecodeStatus(id);
+    while (status == 0 && std::chrono::steady_clock::now() < deadline) {
+        emscripten_sleep(1);
+        status = browserDecodeStatus(id);
+    }
+    if (status != 1) {
+        browserDecodeRelease(id);
+        throw eve::Exception("Could not decode browser audio data");
+    }
+    const int size = browserDecodeSize(id);
+    if (size <= 0) {
+        browserDecodeRelease(id);
+        throw eve::Exception("Browser audio decoded to an empty buffer");
+    }
+    try {
+        std::vector<std::uint8_t> pcm(static_cast<std::size_t>(size));
+        const int                 rate     = browserDecodeRate(id);
+        const int                 channels = browserDecodeChannels(id);
+        browserDecodeCopyAndRelease(id, pcm.data());
+        return new Decoder(std::make_shared<const std::vector<std::uint8_t>>(std::move(pcm)), rate, channels,
+                           bufferSize);
+    } catch (...) {
+        browserDecodeRelease(id);
+        throw;
+    }
+#else
+
     std::vector<char> owned(static_cast<const char *>(data->getData()),
                             static_cast<const char *>(data->getData()) + data->getSize());
 
     std::string ext;
-    if (auto *fd = dynamic_cast<filesystem::FileData *>(data))
-        ext = lowerExt(fd->getExtension());
+    if (auto *fd = dynamic_cast<filesystem::FileData *>(data)) ext = lowerExt(fd->getExtension());
 
-    const char *ptr = owned.data();
+    const char *ptr  = owned.data();
     size_t size = owned.size();
 
     auto tryByExt = [&](const std::string &e) -> std::unique_ptr<medialoader::Decoder> {
@@ -176,6 +278,7 @@ Decoder *Sound::newDecoder(Data *data, int bufferSize) {
         throw eve::Exception("Could not decode sound data: unsupported format");
 
     return new Decoder(std::move(impl), std::move(owned));
+#endif
 }
 
 SoundData *Sound::newSoundDataFromDecoder(Decoder *decoder) {

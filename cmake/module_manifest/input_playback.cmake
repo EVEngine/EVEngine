@@ -57,7 +57,7 @@ eve_declare_module(NAME audio LAYER 2 SCRIPT Audio SLOT audio
                    DEPS action platform_event sound
                    OPTIONAL_DEPS scene
                    THIRDPARTY openal
-                   GROUP 2d 3d)
+                   GROUP 2d 3d web)
 eve_declare_module(NAME font LAYER 2 SCRIPT Font SLOT font
                    DEPS filesystem image
                    THIRDPARTY freetype

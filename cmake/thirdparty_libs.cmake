@@ -27,14 +27,14 @@ function(eve_thirdparty_libs out_var)
     endif()
 
     # The Emscripten aggregate only builds the simple vendored libraries; the
-    # heavy ones are skipped and most module code that would need them is
-    # compiled out (see EVENGINE_EXCLUDED_MODULE_FILES and the module guards).
+    # heavy ones are skipped. Browser audio uses Emscripten's OpenAL and
+    # Web Audio decoding instead of the vendored OpenAL Soft / codec archives.
     # FreeType is an exception: the browser build enables Emscripten's port,
     # which supplies its headers and archive without a conventional link name.
     # Asking for these groups on WASM must resolve to nothing, not to a missing
     # archive.
     set(_skip_on_emscripten
-        assimp medialoader_model medialoader_sound audio_codecs openal freetype poco poco_data)
+        assimp medialoader_model medialoader_sound audio_codecs freetype poco poco_data)
 
     set(_libs "")
     foreach(g IN LISTS ARGN)
