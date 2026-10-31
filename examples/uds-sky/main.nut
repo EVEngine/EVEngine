@@ -14,7 +14,7 @@ eve_init <- function() {
     local bloom = gfx.setBloomFilter("gaussianPyramid", 0.68, 6, 65472.0);
     assert(bloom.ok, "Photographic bloom unavailable");
     local prepared = daynight.prepareSky(gfx, fs.readText(skyProfileFile));
-    assert(prepared.ok, "Independent sky preparation failed");
+    if (!prepared.ok) throw "Independent sky preparation failed: " + prepared.status.summary;
     print("Sky resource source: " + prepared.assetSource + "\n");
     sky = prepared.value;
     local attached = sky.attach();

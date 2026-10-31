@@ -3,6 +3,9 @@
 #include "window/sdl/Window.h"
 
 #include <SDL2/SDL_mouse.h>
+#if defined(_WIN32)
+#include <windows.h>
+#endif
 
 namespace eve::mouse::sdl {
 
@@ -85,36 +88,43 @@ bool Mouse::isCursorSupported() const
 	return SDL_GetDefaultCursor() != nullptr;
 }
 
-double Mouse::getX() const
-{
-	int x;
-	SDL_GetMouseState(&x, nullptr);
-
-	double dx = (double) x;
-	windowToDPICoords(&dx, nullptr);
-
-	return dx;
+double Mouse::getX() const {
+    double x, y;
+    getPosition(x, y);
+    return x;
 }
 
-double Mouse::getY() const
-{
-	int y;
-	SDL_GetMouseState(nullptr, &y);
-
-	double dy = (double) y;
-	windowToDPICoords(nullptr, &dy);
-
-	return dy;
+double Mouse::getY() const {
+    double x, y;
+    getPosition(x, y);
+    return y;
 }
 
-void Mouse::getPosition(double &x, double &y) const
-{
-	int mx, my;
-	SDL_GetMouseState(&mx, &my);
+void Mouse::getPosition(double &x, double &y) const {
+    int mx, my;
+    SDL_GetMouseState(&mx, &my);
+#if defined(_WIN32)
+    // A warp can move the OS cursor without delivering WM_MOUSEMOVE. With no
+    // mouse focus SDL retains its old event coordinates; query the OS relative
+    // to the keyboard-focused window instead. Relative mode stays event-based.
+    if (!SDL_GetMouseFocus() && !SDL_GetRelativeMouseMode()) {
+        if (auto *focusedWindow = SDL_GetKeyboardFocus()) {
+            POINT cursor;
+            // SDL_GetGlobalMouseState has no query-failure status. A service
+            // desktop can deny GetCursorPos; preserve SDL's cache in that case.
+            if (GetCursorPos(&cursor)) {
+                int windowX, windowY;
+                SDL_GetWindowPosition(focusedWindow, &windowX, &windowY);
+                mx = cursor.x - windowX;
+                my = cursor.y - windowY;
+            }
+        }
+    }
+#endif
 
-	x = (double) mx;
-	y = (double) my;
-	windowToDPICoords(&x, &y);
+    x = (double)mx;
+    y = (double)my;
+    windowToDPICoords(&x, &y);
 }
 
 void Mouse::setPosition(double x, double y)

@@ -2871,8 +2871,10 @@ TEST_CASE("graphics.sky descriptor limit rejects clouds and leaves atmosphere pr
         uint32_t  previous;
         ~RestoreLimit() { value = previous; }
     } restore{limit, limit};
-    // Exercise the actual admission path at Vulkan's minimum sampler budget.
-    limit      = 16;
+    // Inject a budget that fits two atmosphere images plus the compact frame
+    // ABI, but cannot also fit cloud resources. Core Vulkan's 16 slots now fit
+    // both, so that real device limit must not be used as a failure injection.
+    limit      = 4;
     auto asset = SkyWispsAsset::generate(2026);
     REQUIRE(asset.ok());
     auto layer                = asset.value().layer();

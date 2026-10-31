@@ -886,7 +886,10 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
             f'{cpp_string(contract.documentation_id)}, {cpp_string(contract.source)}, '
             f'{cpp_string(contract.cpp_symbol)}, {architecture}, {semantics}, {{{", ".join(parameters)}}});'
         )
-    chunk_size = 128
+    # Exception-enabled Wasm expands each registration into many locals. Keep
+    # cold V8 compilation bounded as well as the link-time Binaryen passes;
+    # large chunks block the browser event loop during registry initialization.
+    chunk_size = 16
     chunk_count = (len(calls) + chunk_size - 1) // chunk_size
     for index in range(chunk_count):
         lines += [
@@ -912,8 +915,19 @@ def write_cpp(path: Path, contracts: list[Contract]) -> None:
     lines += ['}  // namespace', '',
               f'std::string_view scriptStructureProviderHash() {{ return "{provider_hash.hexdigest()}"; }}', '',
               'void registerEngineBindingContracts(BindingContractRegistry& registry) {']
-    for index in range(chunk_count):
-        lines.append(f'    registerChunk{index}(registry);')
+    if chunk_count:
+        # Binaryen can inline LLVM's noinline chunks again at link time. Keep
+        # startup dispatch indirect, and prevent Clang from first unrolling it
+        # back into direct calls (which creates a huge local-coalescing problem).
+        lines += ['    using RegisterChunk = void (*)(BindingContractRegistry&);',
+                  '    static constexpr RegisterChunk chunks[] = {']
+        for index in range(chunk_count):
+            lines.append(f'        registerChunk{index},')
+        lines += ['    };',
+                  '#if defined(__EMSCRIPTEN__)',
+                  '#pragma clang loop unroll(disable)',
+                  '#endif',
+                  '    for (auto chunk : chunks) chunk(registry);']
     lines += ['}', '', '}  // namespace eve::script', '']
     path.parent.mkdir(parents=True, exist_ok=True)
     text = "\n".join(lines)

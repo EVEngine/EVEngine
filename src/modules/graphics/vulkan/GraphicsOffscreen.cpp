@@ -9,6 +9,7 @@
 #include "common/Profile.h"
 #include "graphics/PbrGpuUniform.h"
 #include "graphics/shaders/pbr_surface_frag_spv.inc"
+#include "graphics/shaders/pbr_surface_separated_frag_spv.inc"
 #include "graphics/shaders/pbr_surface_vert_spv.inc"
 #include "graphics/vulkan/Canvas.h"
 #include "graphics/vulkan/Graphics.h"
@@ -274,10 +275,27 @@ vk::SamplerAddressMode addressMode(uint32_t value) {
            : value == 33648 ? vk::SamplerAddressMode::eMirroredRepeat
                             : vk::SamplerAddressMode::eRepeat;
 }
+enum class PbrSamplerBinding { Combined, Separated };
+Result<PbrSamplerBinding> planPbrSamplerBinding(size_t uniqueOrdinarySamplers, const vk::PhysicalDeviceLimits& limits) {
+    // Three combined vertex resources are independent of the fragment budget.
+    const auto supports = [&](uint32_t fragmentSamplers) {
+        return limits.maxPerStageDescriptorSamplers >= fragmentSamplers &&
+               limits.maxDescriptorSetSamplers >= fragmentSamplers + 3u &&
+               limits.maxPerStageDescriptorSampledImages >= 19u && limits.maxDescriptorSetSampledImages >= 22u;
+    };
+    if (uniqueOrdinarySamplers <= 15 && supports(16))
+        return Result<PbrSamplerBinding>::success(PbrSamplerBinding::Separated);
+    if (supports(19)) return Result<PbrSamplerBinding>::success(PbrSamplerBinding::Combined);
+    return Result<PbrSamplerBinding>::failure(
+        Diagnostic::error(DiagnosticCode::Unsupported,
+                          "PBR material exceeds the device sampler/image descriptor budget", "graphics.pbr.samplers"));
+}
 vk::Pipeline createPbrPipeline(vkb::Device& device, vk::PipelineLayout layout, const vkb::BuiltRenderPass& pass,
                                vk::SampleCountFlagBits samples, BlendMode blend, bool depthWrite, PbrCullMode cullMode,
-                               bool alphaToCoverage) {
-    ShaderModulePair shaders(device, embeddedSpirv(pbr_surface_vert_spv), embeddedSpirv(pbr_surface_frag_spv));
+                               bool alphaToCoverage, bool separatedSamplers) {
+    ShaderModulePair shaders(
+        device, embeddedSpirv(pbr_surface_vert_spv),
+        separatedSamplers ? embeddedSpirv(pbr_surface_separated_frag_spv) : embeddedSpirv(pbr_surface_frag_spv));
     auto             input = vkb::VertexInputStateBuilder();
     input.addInputBinding<MeshVertex>();
     // The dedicated PBR shader reserves locations 5..15 for its eleven material
@@ -324,24 +342,27 @@ vk::Pipeline createPbrPipeline(vkb::Device& device, vk::PipelineLayout layout, c
 }  // namespace
 struct Graphics::PbrResources {
     struct Draw {
-        vkb::GenericBuffer uniform, uv, skin, shadow;
-        vk::DescriptorPool pool{};
-        vk::DescriptorSet  set{};
+        vkb::GenericBuffer                uniform, uv, skin, shadow, samplerSlots;
+        std::array<vk::DescriptorPool, 2> pools{};
+        std::array<vk::DescriptorSet, 2>  sets{};
     };
     vk::Device                                                         device{};
-    vk::DescriptorSetLayout                                            setLayout{};
-    vk::PipelineLayout                                                 layout{};
-    std::map<std::tuple<VkRenderPass, uint32_t, size_t>, vk::Pipeline> pipelines;
+    std::array<vk::DescriptorSetLayout, 2>                                   setLayouts{};
+    std::array<vk::PipelineLayout, 2>                                        layouts{};
+    std::map<std::tuple<VkRenderPass, uint32_t, size_t, bool>, vk::Pipeline> pipelines;
     std::map<std::array<uint32_t, 4>, vk::Sampler>                     samplers;
     std::vector<std::vector<std::unique_ptr<Draw>>>                    frames;
     ~PbrResources() {
         for (auto& frame : frames)
             for (auto& draw : frame)
-                if (draw->pool) device.destroyDescriptorPool(draw->pool);
+                for (auto pool : draw->pools)
+                    if (pool) device.destroyDescriptorPool(pool);
         for (auto& [key, pipeline] : pipelines) device.destroyPipeline(pipeline);
         for (auto& [key, sampler] : samplers) device.destroySampler(sampler);
-        if (layout) device.destroyPipelineLayout(layout);
-        if (setLayout) device.destroyDescriptorSetLayout(setLayout);
+        for (auto layout : layouts)
+            if (layout) device.destroyPipelineLayout(layout);
+        for (auto setLayout : setLayouts)
+            if (setLayout) device.destroyDescriptorSetLayout(setLayout);
     }
 };
 void         Graphics::deletePbrResources(PbrResources* resources) { delete resources; }
@@ -417,32 +438,6 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
         pbrResources_.reset(new PbrResources());
         auto& r             = *pbrResources_;
         r.device            = device.instance;
-        const auto both     = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
-        const auto fragment = vk::ShaderStageFlagBits::eFragment;
-        const auto vertex   = vk::ShaderStageFlagBits::eVertex;
-        // Keep fragment-only arrays after the vertex resources. Older Metal
-        // translators size inactive array placeholders as one element, shifting
-        // the storage-buffer addresses that follow them in an argument buffer.
-        std::array<vk::DescriptorSetLayoutBinding, 14> bindings{
-            {{0, vk::DescriptorType::eUniformBuffer, 1, both},
-             {14, vk::DescriptorType::eCombinedImageSampler, 11, fragment},
-             {3, vk::DescriptorType::eStorageBuffer, 1, vertex},
-             {4, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
-             {5, vk::DescriptorType::eUniformBuffer, 1, fragment},
-             {6, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
-             {15, vk::DescriptorType::eCombinedImageSampler, 3, fragment},
-             {8, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
-             {9, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
-             {10, vk::DescriptorType::eCombinedImageSampler, 1, vertex},
-             {11, vk::DescriptorType::eCombinedImageSampler, 1, vertex},
-             {12, vk::DescriptorType::eCombinedImageSampler, 1, vertex},
-             {13, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
-             {2, vk::DescriptorType::eStorageBuffer, 1, vertex}}};
-        vk::DescriptorSetLayoutCreateInfo info{};
-        info.bindingCount = uint32_t(bindings.size());
-        info.pBindings    = bindings.data();
-        r.setLayout       = device->createDescriptorSetLayout(info);
-        r.layout          = createPipelineLayout(device, r.setLayout);
     }
     auto& r      = *pbrResources_;
     auto& fslots = currentMesh3dFrameSlots();
@@ -452,22 +447,7 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
     auto&      draws = r.frames[frame];
     const auto index = fslots.drawIndex++;
     while (draws.size() <= index) draws.emplace_back(std::make_unique<PbrResources::Draw>());
-    auto& draw = *draws[index];
-    if (!draw.pool) {
-        std::array<vk::DescriptorPoolSize, 3> sizes{{{vk::DescriptorType::eUniformBuffer, 2},
-                                                     {vk::DescriptorType::eStorageBuffer, 2},
-                                                     {vk::DescriptorType::eCombinedImageSampler, 22}}};
-        vk::DescriptorPoolCreateInfo          info{};
-        info.maxSets       = 1;
-        info.poolSizeCount = 3;
-        info.pPoolSizes    = sizes.data();
-        draw.pool          = device->createDescriptorPool(info);
-        vk::DescriptorSetAllocateInfo alloc{};
-        alloc.descriptorPool     = draw.pool;
-        alloc.descriptorSetCount = 1;
-        alloc.pSetLayouts        = &r.setLayout;
-        draw.set                 = device->allocateDescriptorSets(alloc).front();
-    }
+    auto&         draw = *draws[index];
     const auto&   s = *pbrSurface_;
     PbrUniformGpu u;
     u.model    = model;
@@ -782,14 +762,107 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
     vk::DescriptorImageInfo envInfo{env->sampler, env->imageView(), vk::ImageLayout::eShaderReadOnlyOptimal};
     vk::DescriptorImageInfo shadowInfo{shadowSampler, currentShadowArrayView(),
                                        currentShadowMap().image.currentLayout()};
+    // The shader keeps all eighteen ordinary images. Only identical sampler
+    // handles share a slot, so distinct filtering and wrapping remain intact.
+    std::array<vk::DescriptorImageInfo, 18> ordinaryImages{};
+    std::copy(images.begin(), images.end(), ordinaryImages.begin());
+    std::copy(detailImages.begin(), detailImages.end(), ordinaryImages.begin() + 11);
+    ordinaryImages[14] = envInfo;
+    ordinaryImages[15] = extrasImage;
+    ordinaryImages[16] = colorsImage;
+    ordinaryImages[17] = fadeNoiseImage;
+    std::vector<vk::Sampler> uniqueSamplers;
+    std::array<uint32_t, 20> samplerSlots{};
+    for (size_t role = 0; role < ordinaryImages.size(); ++role) {
+        const auto sampler = ordinaryImages[role].sampler;
+        auto       found   = std::find(uniqueSamplers.begin(), uniqueSamplers.end(), sampler);
+        if (found == uniqueSamplers.end()) {
+            samplerSlots[role] = uint32_t(uniqueSamplers.size());
+            uniqueSamplers.push_back(sampler);
+        } else {
+            samplerSlots[role] = uint32_t(found - uniqueSamplers.begin());
+        }
+    }
+    // The existing immediate draw API reports failures by exception. Preserve the
+    // structured diagnostic through the Result expectation bridge at that boundary.
+    const auto binding = planPbrSamplerBinding(uniqueSamplers.size(), device.physical_device.properties.limits)
+                             .expect("Cannot draw PBR material");
+    const bool   separatedSamplers = binding == PbrSamplerBinding::Separated;
+    const size_t mode              = separatedSamplers ? 1u : 0u;
+    if (!r.setLayouts[mode]) {
+        const auto both     = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
+        const auto fragment = vk::ShaderStageFlagBits::eFragment;
+        const auto vertex   = vk::ShaderStageFlagBits::eVertex;
+        // Keep fragment-only arrays after the vertex resources. Older Metal
+        // translators size inactive array placeholders as one element, shifting
+        // the storage-buffer addresses that follow them in an argument buffer.
+        std::vector<vk::DescriptorSetLayoutBinding> bindings{
+            {0, vk::DescriptorType::eUniformBuffer, 1, both},
+            {14, vk::DescriptorType::eCombinedImageSampler, 11, fragment},
+            {3, vk::DescriptorType::eStorageBuffer, 1, vertex},
+            {4, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
+            {5, vk::DescriptorType::eUniformBuffer, 1, fragment},
+            {6, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
+            {15, vk::DescriptorType::eCombinedImageSampler, 3, fragment},
+            {8, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
+            {9, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
+            {10, vk::DescriptorType::eCombinedImageSampler, 1, vertex},
+            {11, vk::DescriptorType::eCombinedImageSampler, 1, vertex},
+            {12, vk::DescriptorType::eCombinedImageSampler, 1, vertex},
+            {13, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
+            {2, vk::DescriptorType::eStorageBuffer, 1, vertex}};
+        if (separatedSamplers) {
+            for (auto& binding : bindings)
+                if (binding.binding == 14 || binding.binding == 15 || binding.binding == 4 || binding.binding == 8 ||
+                    binding.binding == 9 || binding.binding == 13)
+                    binding.descriptorType = vk::DescriptorType::eSampledImage;
+            bindings.emplace_back(16, vk::DescriptorType::eSampler, 15, fragment);
+            bindings.emplace_back(17, vk::DescriptorType::eUniformBuffer, 1, fragment);
+        }
+        vk::DescriptorSetLayoutCreateInfo info{};
+        info.bindingCount  = uint32_t(bindings.size());
+        info.pBindings     = bindings.data();
+        r.setLayouts[mode] = device->createDescriptorSetLayout(info);
+        r.layouts[mode]    = createPipelineLayout(device, r.setLayouts[mode]);
+    }
+    if (!draw.pools[mode]) {
+        std::vector<vk::DescriptorPoolSize> sizes{{vk::DescriptorType::eUniformBuffer, 2},
+                                                  {vk::DescriptorType::eStorageBuffer, 2},
+                                                  {vk::DescriptorType::eCombinedImageSampler, 22}};
+        if (separatedSamplers) {
+            sizes[0].descriptorCount = 3;
+            sizes[2].descriptorCount = 4;
+            sizes.emplace_back(vk::DescriptorType::eSampledImage, 18);
+            sizes.emplace_back(vk::DescriptorType::eSampler, 15);
+        }
+        vk::DescriptorPoolCreateInfo info{};
+        info.maxSets       = 1;
+        info.poolSizeCount = uint32_t(sizes.size());
+        info.pPoolSizes    = sizes.data();
+        draw.pools[mode]   = device->createDescriptorPool(info);
+        vk::DescriptorSetAllocateInfo alloc{};
+        alloc.descriptorPool     = draw.pools[mode];
+        alloc.descriptorSetCount = 1;
+        alloc.pSetLayouts        = &r.setLayouts[mode];
+        draw.sets[mode]          = device->allocateDescriptorSets(alloc).front();
+    }
+    const auto                              set = draw.sets[mode];
+    std::array<vk::DescriptorImageInfo, 15> samplerInfos{};
+    vk::DescriptorBufferInfo                samplerSlotsInfo{};
+    if (separatedSamplers) {
+        for (size_t i = 0; i < samplerInfos.size(); ++i)
+            samplerInfos[i].sampler = uniqueSamplers[i < uniqueSamplers.size() ? i : 0];
+        upload(draw.samplerSlots, vk::BufferUsageFlagBits::eUniformBuffer, samplerSlots.data(), sizeof(samplerSlots));
+        samplerSlotsInfo = vk::DescriptorBufferInfo{draw.samplerSlots.buffer, 0, sizeof(samplerSlots)};
+    }
     std::array<vk::DescriptorBufferInfo, 4> buffers{{{draw.uniform.buffer, 0, sizeof(u)},
                                                      {draw.skin.buffer, 0, draw.skin.size},
                                                      {draw.shadow.buffer, 0, sizeof(shadow)},
                                                      {draw.uv.buffer, 0, draw.uv.size}}};
-    std::array<vk::WriteDescriptorSet, 14>  writes{};
+    std::vector<vk::WriteDescriptorSet>     writes(14);
     const std::array<uint32_t, 14>          bindings{0, 14, 3, 4, 5, 6, 15, 8, 9, 10, 11, 12, 13, 2};
     for (size_t i = 0; i < writes.size(); ++i) {
-        writes[i].dstSet          = draw.set;
+        writes[i].dstSet          = set;
         writes[i].dstBinding      = bindings[i];
         writes[i].descriptorCount = 1;
     }
@@ -813,6 +886,23 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
     writes[10].pImageInfo                                         = &motionImage;
     writes[11].pImageInfo                                         = &noiseImage;
     writes[12].pImageInfo                                         = &fadeNoiseImage;
+    if (separatedSamplers) {
+        for (size_t index : {1u, 3u, 6u, 7u, 8u, 12u}) writes[index].descriptorType = vk::DescriptorType::eSampledImage;
+        vk::WriteDescriptorSet samplersWrite{};
+        samplersWrite.dstSet          = set;
+        samplersWrite.dstBinding      = 16;
+        samplersWrite.descriptorCount = uint32_t(samplerInfos.size());
+        samplersWrite.descriptorType  = vk::DescriptorType::eSampler;
+        samplersWrite.pImageInfo      = samplerInfos.data();
+        writes.push_back(samplersWrite);
+        vk::WriteDescriptorSet slotsWrite{};
+        slotsWrite.dstSet          = set;
+        slotsWrite.dstBinding      = 17;
+        slotsWrite.descriptorCount = 1;
+        slotsWrite.descriptorType  = vk::DescriptorType::eUniformBuffer;
+        slotsWrite.pBufferInfo     = &samplerSlotsInfo;
+        writes.push_back(slotsWrite);
+    }
     device->updateDescriptorSets(writes, {});
     const auto&  rp = offscreen3DPassOpen ? (offscreen3DHDRActive ? hdrOffscreen3DRenderPass : offscreen3DRenderPass)
                                           : activeScenePass();
@@ -826,16 +916,16 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
     const bool   alphaToCoverage = s.alphaToCoverage && mesh3dSurfaceMode == SurfaceMode::Masked;
     const size_t pipelineVariant =
         size_t(blend) * 12u + (depthWrite ? 6u : 0u) + (alphaToCoverage ? 3u : 0u) + size_t(resolvedCull) - 1u;
-    auto key   = std::make_tuple(VkRenderPass(rp.handle), uint32_t(samples), pipelineVariant);
+    auto key   = std::make_tuple(VkRenderPass(rp.handle), uint32_t(samples), pipelineVariant, separatedSamplers);
     auto found = r.pipelines.find(key);
     if (found == r.pipelines.end())
         found = r.pipelines
-                    .emplace(key, createPbrPipeline(device, r.layout, rp, samples, blend, depthWrite, resolvedCull,
-                                                    alphaToCoverage))
+                    .emplace(key, createPbrPipeline(device, r.layouts[mode], rp, samples, blend, depthWrite,
+                                                    resolvedCull, alphaToCoverage, separatedSamplers))
                     .first;
     auto& cb = currentPresentCb();
     cb.bindPipeline(vk::PipelineBindPoint::eGraphics, found->second);
-    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, r.layout, 0, 1, &draw.set, 0, nullptr);
+    cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, r.layouts[mode], 0, 1, &set, 0, nullptr);
     std::array<vk::Buffer, 11> uvBuffers;
     uvBuffers.fill(draw.uv.buffer);
     std::array<vk::DeviceSize, 11> uvOffsets{};

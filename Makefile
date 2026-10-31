@@ -624,7 +624,8 @@ unit-test/%:
 	  echo "domains are declared in test/test_domains.cmake"; exit 2; }
 	@if [ ! -f build/$*/build.ninja ] && [ ! -f build/$*/Makefile ]; then \
 	  echo "build/$* is not configured; run: make build/$*"; exit 2; fi
-	@if ! ctest --test-dir build/$* -N -L '^unit_test_$(DOMAIN)$$' 2>/dev/null | grep -q 'Total Tests: [1-9]'; then \
+	@# CTest discovers cases after linking; inspect the configured split before the first build.
+	@if ! grep -Eq '^EVENGINE_TEST_DOMAIN_SPLIT:BOOL=(ON|TRUE|1)$$' build/$*/CMakeCache.txt; then \
 	  echo "build/$* has no unit_test_$(DOMAIN): the suite is monolithic there"; \
 	  echo "(EVENGINE_TEST_DOMAIN_SPLIT=OFF). Reconfigure with"; \
 	  echo "-DEVENGINE_TEST_DOMAIN_SPLIT=ON for per-domain units, or build the whole"; \

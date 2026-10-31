@@ -2304,7 +2304,7 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, biasAmt: f32) -> f32 {
     else if (cascade == 1) { uvScale = shadow.cascadeUvScale.y; }
     uvScale = max(uvScale, 1e-4);
     /** @brief Texture sample compare. */
-    return textureSampleCompare(shadowMap, shadowSamp, uv * uvScale, cascade, depth - biasAmt);
+    return textureSampleCompareLevel(shadowMap, shadowSamp, uv * uvScale, cascade, depth - biasAmt);
 }
 /** @brief Sample shadow pcf. */
 fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, nDotL: f32) -> f32 {
@@ -2415,7 +2415,7 @@ fn fs_main(in: FSIn) -> FSOut {
                         let zref = ndc.z - shadow.localBias[si];
                         var vis = 1.0;
                         if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0 && lc.w > 0.0) {
-                            vis = textureSampleCompare(shadowMap, shadowSamp, uv, 3 + si, zref);
+                            vis = textureSampleCompareLevel(shadowMap, shadowSamp, uv, 3 + si, zref);
                         }
                         atten = atten * mix(1.0 - shadow.splits.w, 1.0, vis);
                     }

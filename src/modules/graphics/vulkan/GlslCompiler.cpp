@@ -1,5 +1,6 @@
 #include "graphics/vulkan/GlslCompiler.h"
 
+#include <cerrno>
 #include <cstdio>
 #include <cstring>
 #include <stdexcept>
@@ -11,6 +12,7 @@
 #if defined(_WIN32)
 #include <windows.h>
 #else
+#include <sys/wait.h>
 #include <unistd.h>
 #endif
 
@@ -256,7 +258,7 @@ std::vector<std::uint32_t> compileWithExternalGlslc(const std::string &source, G
         }
     }
 
-    const std::string command = std::string("glslc -fshader-stage=") + stageArgument(stage) + " \"" + inputPath +
+    const std::string command = std::string("exec glslc -fshader-stage=") + stageArgument(stage) + " \"" + inputPath +
                                 "\" -o \"" + outputPath + "\" 2>&1";
     FILE *pipe = popen(command.c_str(), "r");
     if (!pipe) {
@@ -267,10 +269,20 @@ std::vector<std::uint32_t> compileWithExternalGlslc(const std::string &source, G
     std::string errors;
     while (fgets(buffer, sizeof(buffer), pipe)) errors += buffer;
     const int status = pclose(pipe);
+    const int waitError = errno;
     unlink(inputPath);
     if (status != 0) {
         unlink(outputPath.c_str());
-        throw compileFailure("glslc failed for " + debugName + ":\n" + errors);
+        std::string outcome;
+        if (status == -1)
+            outcome = "wait failed: " + std::string(std::strerror(waitError));
+        else if (WIFSIGNALED(status))
+            outcome = "signal " + std::to_string(WTERMSIG(status));
+        else if (WIFEXITED(status))
+            outcome = "exit " + std::to_string(WEXITSTATUS(status));
+        else
+            outcome = "wait status " + std::to_string(status);
+        throw compileFailure("glslc failed for " + debugName + " (" + outcome + "):\n" + errors);
     }
     return readCompiledFile(outputPath, true);
 }

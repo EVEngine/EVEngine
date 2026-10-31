@@ -1169,9 +1169,8 @@ void Graphics::ensureFlatHeightTexture3D() {
 
 vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, GpuTexture *envTex,
                                      GpuTexture *heightTex, GpuTexture *depthTex, GpuTexture *sceneColorTex,
-                                     GpuTexture *decalAlbedo, GpuTexture *decalNormal,
-                                     GpuTexture *decalParams,
-                                     Mesh3dFrameSlots &fslots) {
+                                     GpuTexture *decalAlbedo, GpuTexture *decalNormal, GpuTexture *decalParams,
+                                     Mesh3dFrameSlots &fslots, vk::DescriptorSetLayout resourceLayout) {
     ASSERT(gpuTex != nullptr);
     ASSERT(normalTex != nullptr);
     ASSERT(envTex != nullptr);
@@ -1199,6 +1198,7 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     Mesh3dSetKey key{gpuTex, normalTex, envTex, probe0, probe1, heightTex, depthTex, sceneColorTex,
                      decalAlbedo, decalNormal, decalParams};
     key.paletteSlot = fslots.activePalette;
+    key.resourceProgram = bool(resourceLayout);
     if (fslots.palettes.empty()) uploadSkinPalette(nullptr, fslots);
     auto it = fslots.sets.find(key);
     if (it != fslots.sets.end()) return it->second;
@@ -1206,9 +1206,27 @@ vkb::BoundSet Graphics::mesh3dSetFor(GpuTexture *gpuTex, GpuTexture *normalTex, 
     vk::DescriptorSetAllocateInfo alloc{};
     alloc.descriptorPool = descriptorPool;
     alloc.descriptorSetCount = 1;
-    alloc.pSetLayouts = &mesh3dSetLayout;
+    alloc.pSetLayouts        = resourceLayout ? &resourceLayout : &mesh3dSetLayout;
     vkb::UnboundSet unbound{device->allocateDescriptorSets(alloc).front()};
 
+    if (resourceLayout) {
+        vkb::DescriptorSetUpdater updater(3, 2, 0);
+        updater.beginDescriptorSet(unbound)
+            .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)
+            .buffer(fslots.uboRing.buffer, 0, sizeof(Mesh3DUBO))
+            .beginBuffers(4, 0, vk::DescriptorType::eUniformBufferDynamic)
+            .buffer(fslots.shadowRing.buffer, 0, sizeof(ShadowUBO))
+            .beginBuffers(21, 0, vk::DescriptorType::eStorageBuffer)
+            .buffer(fslots.palettes[fslots.activePalette].buffer, 0, fslots.palettes[fslots.activePalette].capacity)
+            .beginImages(1, 0, vk::DescriptorType::eCombinedImageSampler)
+            .image(vkb::SampledImage::forLaterSample(gpuTex->sampler, gpuTex->imageView()))
+            .beginImages(18, 0, vk::DescriptorType::eCombinedImageSampler)
+            .image(vkb::SampledImage::forLaterSample(sceneColorTex->sampler, sceneColorTex->imageView()))
+            .update(device.instance);
+        auto bound = std::move(unbound).publish();
+        fslots.sets.emplace(key, bound);
+        return bound;
+    }
     vkb::DescriptorSetUpdater updater(16, 16, 0);
     updater.beginDescriptorSet(unbound)
         .beginBuffers(0, 0, vk::DescriptorType::eUniformBufferDynamic)

@@ -5,7 +5,8 @@
 # thing `make run GAME=examples/<name>` does).  The harness enforces two things
 # before it kills the process:
 #
-#   1. the example must still be running after MIN_RUN_SECONDS_PER seconds, so a
+#   1. initialization must finish within STARTUP_SECONDS_PER, and the example
+#      must then stay alive for MIN_RUN_SECONDS_PER gameplay seconds, so a
 #      project that dies during startup can never be reported as a pass; and
 #   2. its stdout/stderr must be free of the known error markers below.
 #
@@ -17,7 +18,7 @@
 #   scripts/smoke_examples.sh                          # all examples
 #   scripts/smoke_examples.sh basic tree-generator    # only these examples
 #   EVE=.../eve.exe RUN_SECONDS=8 scripts/smoke_examples.sh
-#   MIN_RUN_SECONDS=2 RUN_SECONDS=6 scripts/smoke_examples.sh
+#   MIN_RUN_SECONDS=2 RUN_SECONDS=6 STARTUP_SECONDS=60 scripts/smoke_examples.sh
 #
 # Exit status is non-zero if any example failed.
 
@@ -38,6 +39,7 @@ else
 fi
 
 RUN_SECONDS_PER="${RUN_SECONDS:-6}"
+STARTUP_SECONDS_PER="${STARTUP_SECONDS:-60}"
 
 # Every example must survive at least this long: "started, rendered and did not
 # die" is the contract `scripts/check_examples.py` points at for new examples.
@@ -88,7 +90,7 @@ else
   done
 fi
 
-echo "Smoke: ${#EXAMPLES[@]} example(s), alive window ${RUN_SECONDS_PER}s, minimum ${MIN_RUN_SECONDS_PER}s, binary ${EVE_BIN}"
+echo "Smoke: ${#EXAMPLES[@]} example(s), startup budget ${STARTUP_SECONDS_PER}s, alive window ${RUN_SECONDS_PER}s, minimum ${MIN_RUN_SECONDS_PER}s, binary ${EVE_BIN}"
 
 FAILED=0
 PASSED=0
@@ -113,7 +115,7 @@ for name in "${EXAMPLES[@]}"; do
   if [[ "$use_timeout" -eq 1 ]]; then
     # `exec` makes $! the timeout process itself, so liveness of the timeout is
     # liveness of the example.
-    ( cd "$dir" && exec timeout -k 3 "$RUN_SECONDS_PER" "$EVE_BIN" run $extra >"$log" 2>&1 ) &
+    ( cd "$dir" && exec timeout -k 3 "$((STARTUP_SECONDS_PER + RUN_SECONDS_PER + 2))" "$EVE_BIN" run $extra >"$log" 2>&1 ) &
   else
     # Windows: GNU timeout on MSYS cannot reliably terminate the native GUI
     # process (SIGTERM is ignored), so launch in the background and force-kill
@@ -122,7 +124,24 @@ for name in "${EXAMPLES[@]}"; do
   fi
   pid=$!
 
-  sleep "$MIN_RUN_SECONDS_PER"
+  # Initialization may compile shaders or generate assets. Do not terminate its
+  # child compiler merely because it uses the entire gameplay observation window.
+  # A live but stuck initializer or renderer still fails within a separate
+  # startup budget. The first completed present proves startup reached rendering.
+  startup_ready=0
+  startup_deadline=$((SECONDS + STARTUP_SECONDS_PER))
+  while kill -0 "$pid" 2>/dev/null && [[ "$SECONDS" -lt "$startup_deadline" ]]; do
+    if grep -qE 'eve_init failed|Run failed:|engine build is missing the window or graphics module' "$log"; then
+      break
+    fi
+    if grep -qF "[startup] first present" "$log"; then
+      startup_ready=1
+      break
+    fi
+    sleep 0.1
+  done
+
+  if [[ "$startup_ready" -eq 1 ]]; then sleep "$MIN_RUN_SECONDS_PER"; fi
   early_exit=0
   killed_by_harness=0
   if ! kill -0 "$pid" 2>/dev/null; then
@@ -132,24 +151,23 @@ for name in "${EXAMPLES[@]}"; do
     rc=$?
   else
     remaining=$((RUN_SECONDS_PER - MIN_RUN_SECONDS_PER))
-    [[ "$remaining" -gt 0 ]] && sleep "$remaining"
-    if [[ "$use_timeout" -eq 0 ]] && kill -0 "$pid" 2>/dev/null; then
+    if [[ "$startup_ready" -eq 1 && "$remaining" -gt 0 ]]; then sleep "$remaining"; fi
+    if kill -0 "$pid" 2>/dev/null; then
       killed_by_harness=1
-      if is_windows; then
+      if [[ "$use_timeout" -eq 1 ]]; then
+        # GNU timeout forwards termination to the engine and its child processes.
+        kill -TERM "$pid" 2>/dev/null || true
+      elif is_windows; then
         # MSYS kill resolves its PID to the matching native Windows process.
         # The shell builtin cannot force termination of a native GUI process.
         /bin/kill -f -s KILL "$pid" 2>/dev/null || true
       else
         kill "$pid" 2>/dev/null || true
         # macOS ships without GNU timeout; bound shutdown just like timeout -k.
-        sleep 3
-        if kill -0 "$pid" 2>/dev/null; then
-          kill -KILL "$pid" 2>/dev/null || true
-        fi
-      fi
-      if ! is_windows; then
-        # Bound teardown on hosts without GNU timeout, including macOS GUI loops.
-        sleep 3
+        for attempt in {1..30}; do
+          kill -0 "$pid" 2>/dev/null || break
+          sleep 0.1
+        done
         if kill -0 "$pid" 2>/dev/null; then
           kill -KILL "$pid" 2>/dev/null || true
         fi
@@ -170,7 +188,9 @@ for name in "${EXAMPLES[@]}"; do
   # clean self-exit.  Both must be rebuilt every iteration.
   reason=""
   note=""
-  if [[ "$early_exit" -eq 1 ]]; then
+  if [[ "$startup_ready" -eq 0 ]]; then
+    reason="did not finish initialization within ${STARTUP_SECONDS_PER}s (exit code ${rc})"
+  elif [[ "$early_exit" -eq 1 ]]; then
     reason="died inside the ${MIN_RUN_SECONDS_PER}s liveness window (exit code ${rc})"
   elif [[ "$killed_by_harness" -eq 0 ]]; then
     if [[ "$rc" -eq 0 ]]; then
@@ -215,6 +235,10 @@ for name in "${EXAMPLES[@]}"; do
       echo "       note: no 'first present' startup line in the captured log"
     fi
     PASSED=$((PASSED + 1))
+  fi
+  if [[ -n "${SMOKE_LOG_DIR:-}" ]]; then
+    mkdir -p "$SMOKE_LOG_DIR"
+    cp "$log" "$SMOKE_LOG_DIR/$name.log"
   fi
   rm -f "$log"
 done

@@ -88,17 +88,21 @@ namespace detail {
                                                                   bool assertionsEnabled);
 }  // namespace detail
 
-/** @brief Construct a failed editing result with explicit status and diagnostic categories. */
-template <class T>
+/**
+ * @brief Construct a failed editing result with explicit status and diagnostic categories.
+ * @tparam T Result payload type.
+ * @tparam AssertionsEnabled Caller assertion policy, encoded in the specialization so
+ *         Release libraries and assertion-enabled consumers cannot share the wrong body.
+ */
+#if !defined(ZEROERR_NO_ASSERT)
+template <class T, bool AssertionsEnabled = true>
+#else
+template <class T, bool AssertionsEnabled = false>
+#endif
 /** @brief Failed. */
 [[nodiscard]] Result<T> failed(Status status, eve::DiagnosticCode code, RuleId rule, std::string message) {
-#if !defined(ZEROERR_NO_ASSERT)
-    constexpr bool assertionsEnabled = true;
-#else
-    constexpr bool assertionsEnabled = false;
-#endif
     return Result<T>::failure(detail::makeFailureStatus(status, code, std::move(rule), std::move(message), __FILE__,
-                                                        __LINE__, assertionsEnabled));
+                                                        __LINE__, AssertionsEnabled));
 }
 
 /** @brief Coarse default diagnostic category for a failure status. */
@@ -118,11 +122,19 @@ template <class T>
     return eve::DiagnosticCode::Failed;
 }
 
-/** @brief Migration convenience using the canonical coarse category for the failure status. */
-template <class T>
+/**
+ * @brief Migration convenience using the canonical coarse category for the failure status.
+ * @tparam T Result payload type.
+ * @tparam AssertionsEnabled Caller assertion policy, forwarded to the explicit-category factory.
+ */
+#if !defined(ZEROERR_NO_ASSERT)
+template <class T, bool AssertionsEnabled = true>
+#else
+template <class T, bool AssertionsEnabled = false>
+#endif
 /** @brief Failed. */
 [[nodiscard]] Result<T> failed(Status status, RuleId rule, std::string message) {
-    return failed<T>(status, diagnosticCodeForStatus(status), std::move(rule), std::move(message));
+    return failed<T, AssertionsEnabled>(status, diagnosticCodeForStatus(status), std::move(rule), std::move(message));
 }
 
 /** @brief Construct a Rejected result for invalid editing input or preconditions. */

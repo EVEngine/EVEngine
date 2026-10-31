@@ -1599,8 +1599,8 @@ Graphics::GpuDrivenFrameSet0 Graphics::gpuDrivenFrameSet0() {
                               ? &sceneColorSlots[completedSceneColorSlot].colorGpu
                               : static_cast<GpuTexture *>(whiteTexture->gpuHandle);
     uploadSkinPalette(nullptr, fslots);
-    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, gpuSceneColor,
-                                         gpuDecalAlb, gpuDecalNrm, gpuDecalPrm, fslots);
+    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, gpuSceneColor, gpuDecalAlb,
+                                         gpuDecalNrm, gpuDecalPrm, fslots, {});
     return {set, uboOffset, shadowOffset};
 }
 

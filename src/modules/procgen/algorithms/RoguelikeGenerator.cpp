@@ -154,13 +154,13 @@ void carveCorridor(Grid2D &out, int ax, int ay, int bx, int by, int width, const
         cornerY = by;
     }
 
-    const int x0 = std::min(ax, cornerX);
-    const int x1 = std::max(ax, cornerX);
+    const int x0 = std::min(ax, bx);
+    const int x1 = std::max(ax, bx);
     for (int x = x0; x <= x1; ++x)
         for (int oy = 0; oy < width; ++oy) carve(x, cornerY + oy);
 
-    const int y0 = std::min(cornerY, by);
-    const int y1 = std::max(cornerY, by);
+    const int y0 = std::min(ay, by);
+    const int y1 = std::max(ay, by);
     for (int y = y0; y <= y1; ++y)
         for (int ox = 0; ox < width; ++ox) carve(cornerX + ox, y);
 }

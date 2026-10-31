@@ -6,6 +6,7 @@ target_compile_features(EVPlatformMacOSX PUBLIC cxx_std_20)
 target_link_libraries(EVPlatformMacOSX PUBLIC
     "-framework Foundation"
     "-framework AppKit"
+    "-framework Metal"
 )
 
 set(EVENGINE_PLATFORM_LIB EVPlatformMacOSX CACHE INTERNAL "Platform library for the active BUILD_PLATFORM")
