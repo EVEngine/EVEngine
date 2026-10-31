@@ -116,25 +116,46 @@ def main() -> int:
                     )
                 else:
                     print(f"{name}: canvas OK, mean={mean:.3f}, stddev={deviation:.3f}")
+                page.locator("#btnShot").click()
+                try:
+                    page.wait_for_function(
+                        "document.getElementById('shotOverlay').style.display === 'flex' && "
+                        "document.getElementById('shotImg').naturalWidth > 0",
+                        timeout=12000,
+                    )
+                    engine_capture = args.output / f"{name}_engine.png"
+                    page.locator("#shotImg").screenshot(path=str(engine_capture))
+                    engine_mean, engine_deviation = validate(engine_capture)
+                    print(f"{name}: engine readback OK, mean={engine_mean:.3f}, stddev={engine_deviation:.3f}")
+                except Exception as error:
+                    failures.append(f"{name}: engine readback failed: {error}; page log: "
+                                    f"{page.locator('#log').inner_text()[-1500:]}")
+                finally:
+                    page.locator("#shotOverlay").evaluate("element => element.style.display = 'none'")
             if failures:
                 try:
                     page.evaluate("""async () => {
                         const canvas = document.createElement('canvas');
                         canvas.id = 'webgpu-probe';
                         canvas.width = canvas.height = 64;
+                        canvas.style.cssText = 'position:fixed;top:0;left:0;z-index:1000;width:64px;height:64px';
                         document.body.appendChild(canvas);
                         const adapter = await navigator.gpu.requestAdapter();
                         const device = await adapter.requestDevice();
                         const context = canvas.getContext('webgpu');
                         context.configure({device, format: navigator.gpu.getPreferredCanvasFormat(), alphaMode: 'opaque'});
-                        const encoder = device.createCommandEncoder();
-                        const pass = encoder.beginRenderPass({colorAttachments: [{
-                            view: context.getCurrentTexture().createView(),
-                            loadOp: 'clear', storeOp: 'store',
-                            clearValue: {r: 1, g: 0, b: 1, a: 1}
-                        }]});
-                        pass.end();
-                        device.queue.submit([encoder.finish()]);
+                        const draw = () => {
+                            const encoder = device.createCommandEncoder();
+                            const pass = encoder.beginRenderPass({colorAttachments: [{
+                                view: context.getCurrentTexture().createView(),
+                                loadOp: 'clear', storeOp: 'store',
+                                clearValue: {r: 1, g: 0, b: 1, a: 1}
+                            }]});
+                            pass.end();
+                            device.queue.submit([encoder.finish()]);
+                            requestAnimationFrame(draw);
+                        };
+                        requestAnimationFrame(draw);
                         await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
                     }""")
                     probe_path = args.output / "webgpu_probe.png"
