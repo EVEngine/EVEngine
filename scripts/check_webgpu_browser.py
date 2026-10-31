@@ -7,6 +7,8 @@ import argparse
 import shutil
 from pathlib import Path
 
+from PIL import Image
+
 import utf8_stdio
 from validate_render_frame import validate
 
@@ -115,7 +117,33 @@ def main() -> int:
                 else:
                     print(f"{name}: canvas OK, mean={mean:.3f}, stddev={deviation:.3f}")
             if failures:
-                raise RuntimeError("\n\n".join(failures))
+                try:
+                    page.evaluate("""async () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.id = 'webgpu-probe';
+                        canvas.width = canvas.height = 64;
+                        document.body.appendChild(canvas);
+                        const adapter = await navigator.gpu.requestAdapter();
+                        const device = await adapter.requestDevice();
+                        const context = canvas.getContext('webgpu');
+                        context.configure({device, format: navigator.gpu.getPreferredCanvasFormat(), alphaMode: 'opaque'});
+                        const encoder = device.createCommandEncoder();
+                        const pass = encoder.beginRenderPass({colorAttachments: [{
+                            view: context.getCurrentTexture().createView(),
+                            loadOp: 'clear', storeOp: 'store',
+                            clearValue: {r: 1, g: 0, b: 1, a: 1}
+                        }]});
+                        pass.end();
+                        device.queue.submit([encoder.finish()]);
+                        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                    }""")
+                    probe_path = args.output / "webgpu_probe.png"
+                    page.locator("#webgpu-probe").screenshot(path=str(probe_path))
+                    with Image.open(probe_path) as probe_image:
+                        probe_result = probe_image.convert("RGB").getpixel((32, 32))
+                except Exception as error:
+                    probe_result = f"failed: {error}"
+                raise RuntimeError(f"browser WebGPU probe={probe_result!r}\n\n" + "\n\n".join(failures))
         finally:
             browser.close()
     return 0

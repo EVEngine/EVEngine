@@ -4785,6 +4785,9 @@ void Graphics::present() {
     wgpu::TextureView surfaceView;
     wgpu::Texture     surfaceTex;
     if (!acquireSurfaceTexture(surfaceView, surfaceTex)) {
+#if defined(__EMSCRIPTEN__)
+        if (firstPresent) std::fprintf(stderr, "[webgpu] first present: surface texture unavailable\n");
+#endif
         return;
     }
 
@@ -4989,6 +4992,11 @@ void Graphics::present() {
         colorAtt.loadOp     = WGPULoadOp_Clear;
         colorAtt.storeOp    = WGPUStoreOp_Store;
         colorAtt.clearValue = {clearColor.r, clearColor.g, clearColor.b, 1.f};
+#if defined(__EMSCRIPTEN__)
+        if (firstPresent)
+            std::fprintf(stderr, "[webgpu] first present: swapchain clear %.3f %.3f %.3f, scene=%d\n", clearColor.r,
+                         clearColor.g, clearColor.b, bool(sceneView));
+#endif
         WGPURenderPassDescriptor rp{};
         rp.colorAttachmentCount = 1;
         rp.colorAttachments     = &colorAtt;
@@ -5046,6 +5054,9 @@ void Graphics::present() {
     if (screenReadbackEnabled && surfaceCanCopySrc) recordPresentedReadback(encoder, surfaceTex);
     wgpu::CommandBuffer cmd = encoder.Finish();
     queue.Submit(1, &cmd);
+#if defined(__EMSCRIPTEN__)
+    if (firstPresent) std::fprintf(stderr, "[webgpu] first present: command submitted\n");
+#endif
     // emdawnwebgpu implements the GPU on the JS main thread: queued commands
     // (draws, writes) only execute when ProcessEvents drives the work queue.
     // Without this, render-pass draws are silently never executed (only the
