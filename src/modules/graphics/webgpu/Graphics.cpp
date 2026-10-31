@@ -4737,31 +4737,24 @@ bool Graphics::acquireSurfaceTexture(wgpu::TextureView& view, wgpu::Texture& tex
 }
 
 void Graphics::pushValidationScope() {
-#ifdef EVENGINE_WEBGPU
+    // Browser validation is reported by the device uncaptured-error callback.
+    // Emdawnwebgpu scope callbacks can report a dropped instance every frame.
+#if defined(EVENGINE_WEBGPU) && !defined(__EMSCRIPTEN__)
     if (device) device.PushErrorScope(wgpu::ErrorFilter::Validation);
 #endif
 }
 
 void Graphics::popValidationScope() {
-#ifdef EVENGINE_WEBGPU
+#if defined(EVENGINE_WEBGPU) && !defined(__EMSCRIPTEN__)
     if (!device) return;
-#if defined(__EMSCRIPTEN__)
-    constexpr auto callbackMode = wgpu::CallbackMode::AllowSpontaneous;
-#else
-    constexpr auto callbackMode = wgpu::CallbackMode::AllowProcessEvents;
-#endif
-    device.PopErrorScope(
-        callbackMode, [](wgpu::PopErrorScopeStatus status, wgpu::ErrorType type, wgpu::StringView message) {
-            (void)status;
-            if (message.data && type != wgpu::ErrorType::NoError) {
-#if defined(__EMSCRIPTEN__)
-                EM_ASM({ console.log("[GPU_ERR] type=" + $0 + " msg=" + UTF8ToString($1)); }, (int)type, message.data);
-#else
-                std::fprintf(stderr, "[webgpu] validation error type=%d: %.*s\n", int(type),
-                             static_cast<int>(message.length), message.data);
-#endif
-            }
-        });
+    device.PopErrorScope(wgpu::CallbackMode::AllowProcessEvents,
+                         [](wgpu::PopErrorScopeStatus status, wgpu::ErrorType type, wgpu::StringView message) {
+                             (void)status;
+                             if (message.data && type != wgpu::ErrorType::NoError) {
+                                 std::fprintf(stderr, "[webgpu] validation error type=%d: %.*s\n", int(type),
+                                              static_cast<int>(message.length), message.data);
+                             }
+                         });
 #endif
 }
 
