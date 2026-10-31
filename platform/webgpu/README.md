@@ -42,6 +42,7 @@ module delete list.
 
 - **Skipped third-party groups** (see `cmake/thirdparty_libs.cmake`): Poco,
   OpenAL-soft, Assimp / `medialoader_model`, audio codecs / `medialoader_sound`.
+  Browser audio uses Emscripten's OpenAL implementation and Web Audio decoding.
   SDL2, zlib and FreeType come from Emscripten ports (`-sUSE_SDL=2`, `-sUSE_ZLIB`,
   `-sUSE_FREETYPE=1`). Kept from the vendored aggregate: squirrel/simplesquirrel,
   physfs, lz4, Box2D/box3d, xxHash, imgui, and `medialoader_image` (stb/lodepng/dds/
@@ -52,7 +53,7 @@ module delete list.
   `font` (FreeType port). Interactive `Snow` drops when `procgen` is absent;
   `spritestack.sliceModel` drops when `model3d` is absent.
 - **Still outside `web`**: `model3d` / `animation` / `sceneloader` / `avatar`
-  (Assimp), `audio` / `sound`, `network` / `database` / `plugins` / `devtools`,
+  (Assimp), `network` / `database` / `plugins` / `devtools`,
   `particles` (Poco JSON + animation), `procgen` / `map` / `voxel` / `hd2d`
   (map→Poco; voxel embeds procgen types in its public header), and shells that
   need those (`rpg`, `dialogue`, `building`, …).
@@ -188,6 +189,6 @@ when not running from the game directory itself.
 - ImGui overlays use `imgui_impl_wgpu.cpp` (compiled by the EVUI module scan;
   `imgui_impl_wgpu.cpp` includes `common/config.h` **before** its
   `#if defined(EVENGINE_WEBGPU)` guard so the platform define is visible).
-- Poco / OpenAL / Assimp are not linked on WASM; FreeType is the Emscripten
+- Poco / OpenAL Soft / Assimp are not linked on WASM; Emscripten OpenAL supplies browser audio. FreeType is the Emscripten
   port. Module membership follows the `web` profile (see above). Native Dawn
   still builds the full third-party set.

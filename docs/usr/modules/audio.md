@@ -4,6 +4,13 @@
 
 创建可播放 Source，控制音量、音高、循环、进度和 3D 声源位置。
 
+浏览器 WebGPU 构建使用相同的 `eve.Sound()`、`eve.Audio()`、`Source` API。
+`Sound.newSoundDataFromFile(path)` 从已打包的游戏资源读取文件，由浏览器解码为 PCM；
+`Audio.newSource(data)` 播放音效，循环播放可用作背景音乐。浏览器可解码的格式取决于
+浏览器实现，建议使用 WAV、MP3 或 Ogg。首次播放可能等待用户点击或按键，Emscripten
+OpenAL 会在交互后恢复播放。浏览器解码目前会将整个文件载入内存；流式 Source 仍按块
+向 OpenAL 提交 PCM，但不会节省压缩文件的解码内存。
+
 ## 脚本生成 PCM 音频
 
 `audio.newPcmStream(sampleRate, channels)` 返回 Result，成功时 `value` 是脚本拥有的
