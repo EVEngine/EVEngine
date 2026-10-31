@@ -1,0 +1,374 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/ScriptComponentStore.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ScriptComponentStore.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ScriptComponentStore_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ScriptComponentStore_8h.html">common/ScriptComponentStore.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Diagnostic_8h.html">common/Diagnostic.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">using </span>Store = std::map&lt;ScriptComponentStoreKey, Value&gt;;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>Store&amp; scriptComponentStore() {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keyword">static</span> Store store;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">return</span> store;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>std::uint64_t&amp; scriptComponentRevisionCounter() {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">static</span> std::uint64_t <a class="code hl_variable" href="AudioSourcePreview_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a> = 1;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="AudioSourcePreview_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keywordtype">void</span> bumpScriptComponentRevision() { ++scriptComponentRevisionCounter(); }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><a class="code hl_typedef" href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">Diagnostic</a> storeDiagnostic(<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::string <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::move(<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>), <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, {}, <span class="stringliteral">&quot;ecs.component.store&quot;</span>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="namespaceeve.html#a394171ca57b6bb76106700ba5f2a02d6">   32</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve.html#a394171ca57b6bb76106700ba5f2a02d6">setScriptComponentValues</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ScriptComponentStoreKey.html">ScriptComponentStoreKey</a>&amp; <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>, <a class="code hl_class" href="classeve_1_1Value.html">Value</a> <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.isObject())</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            storeDiagnostic(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;script component values must be an object&quot;</span>, <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>.name));</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    scriptComponentStore()[<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>] = std::move(<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    bumpScriptComponentRevision();</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#a1ac047776b44c594af4da63d122f7054">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="}">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="namespaceeve.html#a18b79959425e328ff5c7f92e262e95d3">   41</a></span><span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">Value</a>* <a class="code hl_function" href="namespaceeve.html#a18b79959425e328ff5c7f92e262e95d3">findScriptComponentValues</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ScriptComponentStoreKey.html">ScriptComponentStoreKey</a>&amp; <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keyword">const</span> Store&amp; store = scriptComponentStore();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">const</span> <span class="keyword">auto</span>   <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> = store.find(<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> == store.end() ? nullptr : &amp;<a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="}">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="namespaceeve.html#ade6df41234c49c4beb13e150cf2fa6d1">   47</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;Value&gt;</a> <a class="code hl_function" href="namespaceeve.html#ade6df41234c49c4beb13e150cf2fa6d1">scriptComponentField</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ScriptComponentStoreKey.html">ScriptComponentStoreKey</a>&amp; <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>, <span class="keyword">const</span> std::string&amp; field) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">Value</a>* <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a> = <a class="code hl_function" href="namespaceeve.html#a18b79959425e328ff5c7f92e262e95d3">findScriptComponentValues</a>(<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a> == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;Value&gt;::failure</a>(</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            storeDiagnostic(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">DiagnosticCode::NotFound</a>, <span class="stringliteral">&quot;no stored values for this component generation&quot;</span>, <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>.name));</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">Value</a>* <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> = <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>-&gt;<a class="code hl_function" href="classeve_1_1Value.html#afd64facea7492338bd76d36768d7c788">find</a>(field);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;Value&gt;::failure</a>(</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            storeDiagnostic(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">DiagnosticCode::NotFound</a>, <span class="stringliteral">&quot;field is not part of the component schema&quot;</span>, field));</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;Value&gt;::success</a>(*<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>}</div>
+</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="}">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="namespaceeve.html#a9051d8f6a99cb6065ad2d88dca1b54d9">   59</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve.html#a9051d8f6a99cb6065ad2d88dca1b54d9">setScriptComponentField</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1ScriptComponentStoreKey.html">ScriptComponentStoreKey</a>&amp; <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>, <span class="keyword">const</span> std::string&amp; field, <a class="code hl_class" href="classeve_1_1Value.html">Value</a> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    Store&amp;     store = scriptComponentStore();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> = store.find(<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> == store.end())</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            storeDiagnostic(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">DiagnosticCode::NotFound</a>, <span class="stringliteral">&quot;no stored values for this component generation&quot;</span>, <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>.name));</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second.isObject() || <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second.find(field) == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            storeDiagnostic(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">DiagnosticCode::NotFound</a>, <span class="stringliteral">&quot;field is not part of the component schema&quot;</span>, field));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    *<a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;second.find(field) = std::move(<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    bumpScriptComponentRevision();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#a1ac047776b44c594af4da63d122f7054">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
+</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="foldopen" id="foldopen00073" data-start="{" data-end="}">
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="namespaceeve.html#aa4ef997c3365cd827cb7e163bea0e603">   73</a></span>std::vector&lt;ScriptComponentStoreEntry&gt; <a class="code hl_function" href="namespaceeve.html#aa4ef997c3365cd827cb7e163bea0e603">scriptComponentStoreEntries</a>() {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">const</span> Store&amp;                           store = scriptComponentStore();</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    std::vector&lt;ScriptComponentStoreEntry&gt; <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.reserve(store.size());</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>, <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>] : store) <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.push_back(<a class="code hl_struct" href="structeve_1_1ScriptComponentStoreEntry.html">ScriptComponentStoreEntry</a>{<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>, <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>});</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="namespaceeve.html#a243678ea99d1db388dd859c4b9d836c3">   81</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve.html#a243678ea99d1db388dd859c4b9d836c3">replaceScriptComponentValues</a>(std::vector&lt;ScriptComponentStoreEntry&gt; <a class="code hl_variable" href="BattleControl_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    Store replacement;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; entry : <a class="code hl_variable" href="BattleControl_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a>) replacement[entry.key] = std::move(entry.values);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    scriptComponentStore() = std::move(replacement);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    bumpScriptComponentRevision();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="foldopen" id="foldopen00088" data-start="{" data-end="}">
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="namespaceeve.html#aae2a05185b4cf287cd044d01e9091522">   88</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve.html#aae2a05185b4cf287cd044d01e9091522">reconcileScriptComponentValues</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SchemaVersion</a> <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#aad880fc4455c253781e8968f2239d56f">version</a>,</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                                    <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; <a class="code hl_variable" href="ECS_8cpp.html#acf26f1505f276ea0dbf631c4bf19727a">fields</a>, <span class="keyword">const</span> std::vector&lt;Value&gt;&amp; <a class="code hl_variable" href="ECS_8cpp.html#a109fe3813d449335d4179e5d01425077">defaults</a>) {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    Store&amp; store   = scriptComponentStore();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">bool</span>   <a class="code hl_variable" href="PixelWorld_8cpp.html#a8fe66c0c875caf2910531c672f278fe6">touched</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>, <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>] : store) {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>.name != <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> || <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>.version != <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#aad880fc4455c253781e8968f2239d56f">version</a>) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="comment">// 逐字段重建：旧的留着、新的取默认值、不再声明的丢掉。原地改 value 而不是插删键，</span></div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="comment">// 迭代器因此不会失效。</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a> rebuilt;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">for</span> (std::size_t <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> = 0; <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> &lt; <a class="code hl_variable" href="ECS_8cpp.html#acf26f1505f276ea0dbf631c4bf19727a">fields</a>.size(); ++<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">Value</a>* existing = <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.<a class="code hl_function" href="classeve_1_1Value.html#ada425d4505031bff67bc1ff521e964ff">isObject</a>() ? <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>.find(<a class="code hl_variable" href="ECS_8cpp.html#acf26f1505f276ea0dbf631c4bf19727a">fields</a>[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>]) : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="keywordflow">if</span> (existing != <span class="keyword">nullptr</span>) {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                rebuilt.emplace(<a class="code hl_variable" href="ECS_8cpp.html#acf26f1505f276ea0dbf631c4bf19727a">fields</a>[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>], *existing);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                rebuilt.emplace(<a class="code hl_variable" href="ECS_8cpp.html#acf26f1505f276ea0dbf631c4bf19727a">fields</a>[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>], <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> &lt; <a class="code hl_variable" href="ECS_8cpp.html#a109fe3813d449335d4179e5d01425077">defaults</a>.size() ? <a class="code hl_variable" href="ECS_8cpp.html#a109fe3813d449335d4179e5d01425077">defaults</a>[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>] : Value::null());</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>  = Value::object(std::move(rebuilt));</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <a class="code hl_variable" href="PixelWorld_8cpp.html#a8fe66c0c875caf2910531c672f278fe6">touched</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="PixelWorld_8cpp.html#a8fe66c0c875caf2910531c672f278fe6">touched</a>) bumpScriptComponentRevision();</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>}</div>
+</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="foldopen" id="foldopen00111" data-start="{" data-end="}">
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="namespaceeve.html#a01d770d05cf193d861bca9926a0c3bc0">  111</a></span>std::size_t <a class="code hl_function" href="namespaceeve.html#a01d770d05cf193d861bca9926a0c3bc0">removeScriptComponentValues</a>(std::uint64_t entityId) {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    Store&amp;      store   = scriptComponentStore();</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    std::size_t <a class="code hl_variable" href="SceneCapabilities_8cpp.html#aa72a7853b4a4529a809c8ecd8b06ce9b">removed</a> = 0;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> it = store.begin(); it != store.end();) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">if</span> (it-&gt;first.entityId == entityId) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            it = store.erase(it);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            ++<a class="code hl_variable" href="SceneCapabilities_8cpp.html#aa72a7853b4a4529a809c8ecd8b06ce9b">removed</a>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            ++it;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="SceneCapabilities_8cpp.html#aa72a7853b4a4529a809c8ecd8b06ce9b">removed</a> &gt; 0) bumpScriptComponentRevision();</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="SceneCapabilities_8cpp.html#aa72a7853b4a4529a809c8ecd8b06ce9b">removed</a>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}</div>
+</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="foldopen" id="foldopen00126" data-start="{" data-end="}">
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="namespaceeve.html#a908964a32263843974bfa1e06bb66f01">  126</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve.html#a908964a32263843974bfa1e06bb66f01">clearScriptComponentStore</a>() {</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordflow">if</span> (!scriptComponentStore().empty()) bumpScriptComponentRevision();</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    scriptComponentStore().clear();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}</div>
+</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="namespaceeve.html#a0f4f460c727268322fb4303d85263355">  131</a></span>std::size_t <a class="code hl_function" href="namespaceeve.html#a0f4f460c727268322fb4303d85263355">scriptComponentStoreSize</a>() { <span class="keywordflow">return</span> scriptComponentStore().size(); }</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="namespaceeve.html#a4e261836f901420f6ff4098bb7892e72">  133</a></span>std::uint64_t <a class="code hl_function" href="namespaceeve.html#a4e261836f901420f6ff4098bb7892e72">scriptComponentStoreRevision</a>() { <span class="keywordflow">return</span> scriptComponentRevisionCounter(); }</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aAudioSourcePreview_8cpp_html_a55dd0dc755bde1067aa82a718ea2288c"><div class="ttname"><a href="AudioSourcePreview_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a></div><div class="ttdeci">std::uint64_t revision</div><div class="ttdef"><b>Definition</b> <a href="AudioSourcePreview_8cpp_source.html#l00027">AudioSourcePreview.cpp:27</a></div></div>
+<div class="ttc" id="aBattleControl_8cpp_html_aeab8fb65bf7593cd8b7f00fb67d2dc09"><div class="ttname"><a href="BattleControl_8cpp.html#aeab8fb65bf7593cd8b7f00fb67d2dc09">entries</a></div><div class="ttdeci">std::unordered_map&lt; std::string, QuestRuntime &gt; entries</div><div class="ttdef"><b>Definition</b> <a href="BattleControl_8cpp_source.html#l00706">BattleControl.cpp:706</a></div></div>
+<div class="ttc" id="aDiagnostic_8h_html"><div class="ttname"><a href="Diagnostic_8h.html">Diagnostic.h</a></div><div class="ttdoc">Stable, structured diagnostics shared by engine modules.</div></div>
+<div class="ttc" id="aECS_8cpp_html_a109fe3813d449335d4179e5d01425077"><div class="ttname"><a href="ECS_8cpp.html#a109fe3813d449335d4179e5d01425077">defaults</a></div><div class="ttdeci">std::vector&lt; Value &gt; defaults</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00049">ECS.cpp:49</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a1f53a56adfc8a8f39c5e553c97a7b2ff"><div class="ttname"><a href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a></div><div class="ttdeci">SQObjectPtr key</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00155">ECS.cpp:155</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00154">ECS.cpp:154</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_acf26f1505f276ea0dbf631c4bf19727a"><div class="ttname"><a href="ECS_8cpp.html#acf26f1505f276ea0dbf631c4bf19727a">fields</a></div><div class="ttdeci">std::vector&lt; std::string &gt; fields</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00042">ECS.cpp:42</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_ae9304e5e48b5f29bd2351ffc45b2b11a"><div class="ttname"><a href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a></div><div class="ttdeci">DiagnosticCode code</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00016">GltfAnimation.cpp:16</a></div></div>
+<div class="ttc" id="aPixelWorld_8cpp_html_a8fe66c0c875caf2910531c672f278fe6"><div class="ttname"><a href="PixelWorld_8cpp.html#a8fe66c0c875caf2910531c672f278fe6">touched</a></div><div class="ttdeci">bool touched</div><div class="ttdef"><b>Definition</b> <a href="PixelWorld_8cpp_source.html#l00064">PixelWorld.cpp:64</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00111">PlayHost.cpp:111</a></div></div>
+<div class="ttc" id="aProjectIndexAutomatic_8cpp_html_a6c4a6d51eafaf91a7fcb4b346264fd92"><div class="ttname"><a href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a></div><div class="ttdeci">std::set&lt; std::string &gt; values</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexAutomatic_8cpp_source.html#l00016">ProjectIndexAutomatic.cpp:16</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aRpgDialect_8cpp_html_a7141f237b2648c631ce5b73215683565"><div class="ttname"><a href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a></div><div class="ttdeci">bool found</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00331">RpgDialect.cpp:331</a></div></div>
+<div class="ttc" id="aSceneCapabilities_8cpp_html_aa72a7853b4a4529a809c8ecd8b06ce9b"><div class="ttname"><a href="SceneCapabilities_8cpp.html#aa72a7853b4a4529a809c8ecd8b06ce9b">removed</a></div><div class="ttdeci">int removed</div><div class="ttdef"><b>Definition</b> <a href="SceneCapabilities_8cpp_source.html#l00671">SceneCapabilities.cpp:671</a></div></div>
+<div class="ttc" id="aScriptComponentStore_8h_html"><div class="ttname"><a href="ScriptComponentStore_8h.html">ScriptComponentStore.h</a></div><div class="ttdoc">脚本组件字段的引擎侧权威存储。</div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a4eeac3157ac481ce95fa8dd8e5e12a5f"><div class="ttname"><a href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a></div><div class="ttdeci">ScriptStructure out</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00023">ScriptStructure.cpp:23</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_aad880fc4455c253781e8968f2239d56f"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#aad880fc4455c253781e8968f2239d56f">version</a></div><div class="ttdeci">int version</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00035">TerrainGenerationSession.cpp:35</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00021">Diagnostic.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00184">Result.h:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_a1ac047776b44c594af4da63d122f7054"><div class="ttname"><a href="classeve_1_1Status.html#a1ac047776b44c594af4da63d122f7054">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8cpp_source.html#l00019">Status.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a2d59a6ba7d844c2561c606a8973be87d"><div class="ttname"><a href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00034">Value.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_ada425d4505031bff67bc1ff521e964ff"><div class="ttname"><a href="classeve_1_1Value.html#ada425d4505031bff67bc1ff521e964ff">eve::Value::isObject</a></div><div class="ttdeci">bool isObject() const noexcept</div><div class="ttdoc">Return true when this value is an object.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00110">Value.h:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_afd64facea7492338bd76d36768d7c788"><div class="ttname"><a href="classeve_1_1Value.html#afd64facea7492338bd76d36768d7c788">eve::Value::find</a></div><div class="ttdeci">Value * find(const std::string &amp;key) noexcept</div><div class="ttdoc">Return an object member, or nullptr when absent.</div><div class="ttdef"><b>Definition</b> <a href="Value_8cpp_source.html#l00244">Value.cpp:244</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; detail::SchemaVersionTag &gt;</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a2bc4edda3fe2aa99250094310f05eae9"><div class="ttname"><a href="namespaceeve_1_1editing.html#a2bc4edda3fe2aa99250094310f05eae9">eve::editing::Diagnostic</a></div><div class="ttdeci">eve::Diagnostic Diagnostic</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00015">EditingResult.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a01d770d05cf193d861bca9926a0c3bc0"><div class="ttname"><a href="namespaceeve.html#a01d770d05cf193d861bca9926a0c3bc0">eve::removeScriptComponentValues</a></div><div class="ttdeci">std::size_t removeScriptComponentValues(std::uint64_t entityId)</div><div class="ttdoc">实体销毁时清掉它的全部组件数据。</div><div class="ttdef"><b>Definition</b> <a href="ScriptComponentStore_8cpp_source.html#l00111">ScriptComponentStore.cpp:111</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a></div><div class="ttdeci">@ NotFound</div></div>
+<div class="ttc" id="anamespaceeve_html_a0f4f460c727268322fb4303d85263355"><div class="ttname"><a href="namespaceeve.html#a0f4f460c727268322fb4303d85263355">eve::scriptComponentStoreSize</a></div><div class="ttdeci">std::size_t scriptComponentStoreSize()</div><div class="ttdoc">当前数据条数（诊断与测试用）。</div><div class="ttdef"><b>Definition</b> <a href="ScriptComponentStore_8cpp_source.html#l00131">ScriptComponentStore.cpp:131</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a18b79959425e328ff5c7f92e262e95d3"><div class="ttname"><a href="namespaceeve.html#a18b79959425e328ff5c7f92e262e95d3">eve::findScriptComponentValues</a></div><div class="ttdeci">const Value * findScriptComponentValues(const ScriptComponentStoreKey &amp;key)</div><div class="ttdoc">读一条组件数据。</div><div class="ttdef"><b>Definition</b> <a href="ScriptComponentStore_8cpp_source.html#l00041">ScriptComponentStore.cpp:41</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a243678ea99d1db388dd859c4b9d836c3"><div class="ttname"><a href="namespaceeve.html#a243678ea99d1db388dd859c4b9d836c3">eve::replaceScriptComponentValues</a></div><div class="ttdeci">void replaceScriptComponentValues(std::vector&lt; ScriptComponentStoreEntry &gt; entries)</div><div class="ttdoc">用给定条目**整体替换**存储（恢复快照用）。</div><div class="ttdef"><b>Definition</b> <a href="ScriptComponentStore_8cpp_source.html#l00081">ScriptComponentStore.cpp:81</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a394171ca57b6bb76106700ba5f2a02d6"><div class="ttname"><a href="namespaceeve.html#a394171ca57b6bb76106700ba5f2a02d6">eve::setScriptComponentValues</a></div><div class="ttdeci">Result&lt; void &gt; setScriptComponentValues(const ScriptComponentStoreKey &amp;key, Value values)</div><div class="ttdoc">写入一条组件的引擎侧数据（创建实体、或迁移到新代时调用）。</div><div class="ttdef"><b>Definition</b> <a href="ScriptComponentStore_8cpp_source.html#l00032">ScriptComponentStore.cpp:32</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a></div><div class="ttdeci">@ Applied</div></div>
+<div class="ttc" id="anamespaceeve_html_a4e261836f901420f6ff4098bb7892e72"><div class="ttname"><a href="namespaceeve.html#a4e261836f901420f6ff4098bb7892e72">eve::scriptComponentStoreRevision</a></div><div class="ttdeci">std::uint64_t scriptComponentStoreRevision()</div><div class="ttdoc">存储的单调版本号：任何一次写（含恢复、换代对齐、实体销毁）都会 +1。</div><div class="ttdef"><b>Definition</b> <a href="ScriptComponentStore_8cpp_source.html#l00133">ScriptComponentStore.cpp:133</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a9051d8f6a99cb6065ad2d88dca1b54d9"><div class="ttname"><a href="namespaceeve.html#a9051d8f6a99cb6065ad2d88dca1b54d9">eve::setScriptComponentField</a></div><div class="ttdeci">Result&lt; void &gt; setScriptComponentField(const ScriptComponentStoreKey &amp;key, const std::string &amp;field, Value value)</div><div class="ttdoc">写一个字段（脚本侧的写入与原生侧的写入都走这里）。</div><div class="ttdef"><b>Definition</b> <a href="ScriptComponentStore_8cpp_source.html#l00059">ScriptComponentStore.cpp:59</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a908964a32263843974bfa1e06bb66f01"><div class="ttname"><a href="namespaceeve.html#a908964a32263843974bfa1e06bb66f01">eve::clearScriptComponentStore</a></div><div class="ttdeci">void clearScriptComponentStore()</div><div class="ttdoc">换 VM 时清空：脚本世界连同它的组件数据一起消失。</div><div class="ttdef"><b>Definition</b> <a href="ScriptComponentStore_8cpp_source.html#l00126">ScriptComponentStore.cpp:126</a></div></div>
+<div class="ttc" id="anamespaceeve_html_aa4ef997c3365cd827cb7e163bea0e603"><div class="ttname"><a href="namespaceeve.html#aa4ef997c3365cd827cb7e163bea0e603">eve::scriptComponentStoreEntries</a></div><div class="ttdeci">std::vector&lt; ScriptComponentStoreEntry &gt; scriptComponentStoreEntries()</div><div class="ttdoc">列出存储里的全部条目，按 (实体, 组件名, 版本) 升序。</div><div class="ttdef"><b>Definition</b> <a href="ScriptComponentStore_8cpp_source.html#l00073">ScriptComponentStore.cpp:73</a></div></div>
+<div class="ttc" id="anamespaceeve_html_aae2a05185b4cf287cd044d01e9091522"><div class="ttname"><a href="namespaceeve.html#aae2a05185b4cf287cd044d01e9091522">eve::reconcileScriptComponentValues</a></div><div class="ttdeci">void reconcileScriptComponentValues(const std::string &amp;name, SchemaVersion version, const std::vector&lt; std::string &gt; &amp;fields, const std::vector&lt; Value &gt; &amp;defaults)</div><div class="ttdoc">把某个组件（名字 + 版本）在**所有实体**上的数据重建到新 schema 上（热重载换代）。</div><div class="ttdef"><b>Definition</b> <a href="ScriptComponentStore_8cpp_source.html#l00088">ScriptComponentStore.cpp:88</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ade6df41234c49c4beb13e150cf2fa6d1"><div class="ttname"><a href="namespaceeve.html#ade6df41234c49c4beb13e150cf2fa6d1">eve::scriptComponentField</a></div><div class="ttdeci">Result&lt; Value &gt; scriptComponentField(const ScriptComponentStoreKey &amp;key, const std::string &amp;field)</div><div class="ttdoc">读一个字段。</div><div class="ttdef"><b>Definition</b> <a href="ScriptComponentStore_8cpp_source.html#l00047">ScriptComponentStore.cpp:47</a></div></div>
+<div class="ttc" id="astructeve_1_1ScriptComponentStoreEntry_html"><div class="ttname"><a href="structeve_1_1ScriptComponentStoreEntry.html">eve::ScriptComponentStoreEntry</a></div><div class="ttdoc">存储里的一条数据：键 + 一份字段对象。</div><div class="ttdef"><b>Definition</b> <a href="ScriptComponentStore_8h_source.html#l00078">ScriptComponentStore.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1ScriptComponentStoreKey_html"><div class="ttname"><a href="structeve_1_1ScriptComponentStoreKey.html">eve::ScriptComponentStoreKey</a></div><div class="ttdoc">一条脚本组件数据的键：实体 + 组件名 + 版本。</div><div class="ttdef"><b>Definition</b> <a href="ScriptComponentStore_8h_source.html#l00023">ScriptComponentStore.h:23</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

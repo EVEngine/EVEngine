@@ -1,0 +1,900 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::building::BuildingInstanceSnapshot结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building.html">building</a></li><li class="navelem"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1building_1_1BuildingInstanceSnapshot-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::building::BuildingInstanceSnapshot结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Complete runtime-neutral placed-building snapshot.  
+ <a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ab1df5c0b780a7488c374f18c592e1527" id="r_ab1df5c0b780a7488c374f18c592e1527"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ab1df5c0b780a7488c374f18c592e1527">instanceId</a> = 0</td></tr>
+<tr class="separator:ab1df5c0b780a7488c374f18c592e1527"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f397987ced759758a077bf880a0d4b1" id="r_a8f397987ced759758a077bf880a0d4b1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a8f397987ced759758a077bf880a0d4b1">buildingId</a></td></tr>
+<tr class="separator:a8f397987ced759758a077bf880a0d4b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06b6a289fb8793cfb0d885a19cc8632e" id="r_a06b6a289fb8793cfb0d885a19cc8632e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a06b6a289fb8793cfb0d885a19cc8632e">placementKind</a> = &quot;cell&quot;</td></tr>
+<tr class="memdesc:a06b6a289fb8793cfb0d885a19cc8632e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Placement coordinate domain: <code>cell</code>, <code>edge</code>, <code>corner</code>, or <code>free</code>.  <br /></td></tr>
+<tr class="separator:a06b6a289fb8793cfb0d885a19cc8632e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e208929d7e08fd31904789f5245acb8" id="r_a5e208929d7e08fd31904789f5245acb8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a5e208929d7e08fd31904789f5245acb8">edgeX</a> = 0</td></tr>
+<tr class="memdesc:a5e208929d7e08fd31904789f5245acb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical edge origin when placementKind is <code>edge</code>.  <br /></td></tr>
+<tr class="separator:a5e208929d7e08fd31904789f5245acb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a488d76cdf586dbb4033750aa3a557a" id="r_a5a488d76cdf586dbb4033750aa3a557a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a5a488d76cdf586dbb4033750aa3a557a">edgeY</a> = 0</td></tr>
+<tr class="separator:a5a488d76cdf586dbb4033750aa3a557a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f8de333486a302b5d13bc99507f0fb3" id="r_a7f8de333486a302b5d13bc99507f0fb3"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7f8de333486a302b5d13bc99507f0fb3">edgeAxis</a> = &quot;horizontal&quot;</td></tr>
+<tr class="memdesc:a7f8de333486a302b5d13bc99507f0fb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical edge axis: <code>horizontal</code> or <code>vertical</code>.  <br /></td></tr>
+<tr class="separator:a7f8de333486a302b5d13bc99507f0fb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec799c486d683bf092fb2a6b33251f1e" id="r_aec799c486d683bf092fb2a6b33251f1e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aec799c486d683bf092fb2a6b33251f1e">cornerX</a> = 0</td></tr>
+<tr class="memdesc:aec799c486d683bf092fb2a6b33251f1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grid vertex address when placementKind is <code>corner</code>.  <br /></td></tr>
+<tr class="separator:aec799c486d683bf092fb2a6b33251f1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a0c98e7b31d838c268ef0332d52fa14" id="r_a7a0c98e7b31d838c268ef0332d52fa14"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7a0c98e7b31d838c268ef0332d52fa14">cornerY</a> = 0</td></tr>
+<tr class="separator:a7a0c98e7b31d838c268ef0332d52fa14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac45385a20a12baa1d977ee1a2d430e22" id="r_ac45385a20a12baa1d977ee1a2d430e22"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac45385a20a12baa1d977ee1a2d430e22">freeRadius</a> = 0.0</td></tr>
+<tr class="memdesc:ac45385a20a12baa1d977ee1a2d430e22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Committed free-domain collision radius in world-plane units.  <br /></td></tr>
+<tr class="separator:ac45385a20a12baa1d977ee1a2d430e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec6de9234d2cd9781a7440d44af965b6" id="r_aec6de9234d2cd9781a7440d44af965b6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aec6de9234d2cd9781a7440d44af965b6">freeHalfWidth</a> = 0.0</td></tr>
+<tr class="memdesc:aec6de9234d2cd9781a7440d44af965b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Committed free-domain OBB half width; zero denotes circular collision.  <br /></td></tr>
+<tr class="separator:aec6de9234d2cd9781a7440d44af965b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cde4eca8ba3d2b45718276fd78266c0" id="r_a7cde4eca8ba3d2b45718276fd78266c0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7cde4eca8ba3d2b45718276fd78266c0">freeHalfHeight</a> = 0.0</td></tr>
+<tr class="memdesc:a7cde4eca8ba3d2b45718276fd78266c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Committed free-domain OBB half height; zero denotes circular collision.  <br /></td></tr>
+<tr class="separator:a7cde4eca8ba3d2b45718276fd78266c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2e103520813c2e7cc35c703d57b3ae3" id="r_ac2e103520813c2e7cc35c703d57b3ae3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac2e103520813c2e7cc35c703d57b3ae3">freeFootprintVertices</a></td></tr>
+<tr class="memdesc:ac2e103520813c2e7cc35c703d57b3ae3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Committed convex local polygon as world-plane x/y pairs.  <br /></td></tr>
+<tr class="separator:ac2e103520813c2e7cc35c703d57b3ae3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f503203fd209ba7af2982bd7721ce8b" id="r_a7f503203fd209ba7af2982bd7721ce8b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7f503203fd209ba7af2982bd7721ce8b">cellX</a> = 0</td></tr>
+<tr class="separator:a7f503203fd209ba7af2982bd7721ce8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5845ea1d0f82eba62d08353dedbdf89" id="r_ad5845ea1d0f82eba62d08353dedbdf89"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ad5845ea1d0f82eba62d08353dedbdf89">cellY</a> = 0</td></tr>
+<tr class="separator:ad5845ea1d0f82eba62d08353dedbdf89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3054605459999ce1e9bb39df1b2ce8a" id="r_aa3054605459999ce1e9bb39df1b2ce8a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aa3054605459999ce1e9bb39df1b2ce8a">level</a> = 0</td></tr>
+<tr class="memdesc:aa3054605459999ce1e9bb39df1b2ce8a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoritative discrete floor coordinate.  <br /></td></tr>
+<tr class="separator:aa3054605459999ce1e9bb39df1b2ce8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b4a11965f445b7a48ebf5318313447a" id="r_a4b4a11965f445b7a48ebf5318313447a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a4b4a11965f445b7a48ebf5318313447a">worldX</a> = 0.0</td></tr>
+<tr class="separator:a4b4a11965f445b7a48ebf5318313447a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6ecb44cf8e4c5cb84644a2e1312e16c" id="r_ae6ecb44cf8e4c5cb84644a2e1312e16c"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ae6ecb44cf8e4c5cb84644a2e1312e16c">worldY</a> = 0.0</td></tr>
+<tr class="separator:ae6ecb44cf8e4c5cb84644a2e1312e16c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97506607b9e13f88525be09cca502824" id="r_a97506607b9e13f88525be09cca502824"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a97506607b9e13f88525be09cca502824">elevation</a> = 0.0</td></tr>
+<tr class="separator:a97506607b9e13f88525be09cca502824"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fad5d2fc4312a81273bc886ba04904a" id="r_a4fad5d2fc4312a81273bc886ba04904a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a4fad5d2fc4312a81273bc886ba04904a">surfaceId</a></td></tr>
+<tr class="memdesc:a4fad5d2fc4312a81273bc886ba04904a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable surface provider identity captured at placement time.  <br /></td></tr>
+<tr class="separator:a4fad5d2fc4312a81273bc886ba04904a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46f99eb386a8d25f1857148982a1a3a0" id="r_a46f99eb386a8d25f1857148982a1a3a0"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a46f99eb386a8d25f1857148982a1a3a0">surfaceRevision</a> = 0</td></tr>
+<tr class="memdesc:a46f99eb386a8d25f1857148982a1a3a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Surface provider revision captured at placement time.  <br /></td></tr>
+<tr class="separator:a46f99eb386a8d25f1857148982a1a3a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f62df8627f9e27bfa2bb87464446bc5" id="r_a1f62df8627f9e27bfa2bb87464446bc5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a1f62df8627f9e27bfa2bb87464446bc5">surfaceNormalX</a> = 0.0</td></tr>
+<tr class="memdesc:a1f62df8627f9e27bfa2bb87464446bc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captured unit surface normal.  <br /></td></tr>
+<tr class="separator:a1f62df8627f9e27bfa2bb87464446bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4397296194b8a8b44ea1a5628c2b6534" id="r_a4397296194b8a8b44ea1a5628c2b6534"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a4397296194b8a8b44ea1a5628c2b6534">surfaceNormalY</a> = 1.0</td></tr>
+<tr class="separator:a4397296194b8a8b44ea1a5628c2b6534"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac287f694ddfc6fc252b8a7e7ae3b07cd" id="r_ac287f694ddfc6fc252b8a7e7ae3b07cd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac287f694ddfc6fc252b8a7e7ae3b07cd">surfaceNormalZ</a> = 0.0</td></tr>
+<tr class="separator:ac287f694ddfc6fc252b8a7e7ae3b07cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd5fc6796e00276afc22101fcdd309f5" id="r_acd5fc6796e00276afc22101fcdd309f5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#acd5fc6796e00276afc22101fcdd309f5">surfaceTangentX</a> = 1.0</td></tr>
+<tr class="memdesc:acd5fc6796e00276afc22101fcdd309f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Captured unit surface tangent.  <br /></td></tr>
+<tr class="separator:acd5fc6796e00276afc22101fcdd309f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec0944140117644ded3bc6112535964e" id="r_aec0944140117644ded3bc6112535964e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aec0944140117644ded3bc6112535964e">surfaceTangentY</a> = 0.0</td></tr>
+<tr class="separator:aec0944140117644ded3bc6112535964e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4f6d6abe750271e68c65152a597288f" id="r_aa4f6d6abe750271e68c65152a597288f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aa4f6d6abe750271e68c65152a597288f">surfaceTangentZ</a> = 0.0</td></tr>
+<tr class="separator:aa4f6d6abe750271e68c65152a597288f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1898320d84740aed92aac06b5ef09d72" id="r_a1898320d84740aed92aac06b5ef09d72"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a1898320d84740aed92aac06b5ef09d72">surfaceSampleCount</a> = 0</td></tr>
+<tr class="memdesc:a1898320d84740aed92aac06b5ef09d72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of footprint surface samples represented by this snapshot.  <br /></td></tr>
+<tr class="separator:a1898320d84740aed92aac06b5ef09d72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a68207c9628f0d894d2313164138916" id="r_a9a68207c9628f0d894d2313164138916"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a9a68207c9628f0d894d2313164138916">surfaceMaxSlopeDegrees</a> = 0.0</td></tr>
+<tr class="memdesc:a9a68207c9628f0d894d2313164138916"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum sampled footprint slope in degrees.  <br /></td></tr>
+<tr class="separator:a9a68207c9628f0d894d2313164138916"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4e914d292981b4d2129db751ce15ba2" id="r_ae4e914d292981b4d2129db751ce15ba2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ae4e914d292981b4d2129db751ce15ba2">surfaceHeightDelta</a> = 0.0</td></tr>
+<tr class="memdesc:ae4e914d292981b4d2129db751ce15ba2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sampled footprint height range.  <br /></td></tr>
+<tr class="separator:ae4e914d292981b4d2129db751ce15ba2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab59c8d9478247688b54adf4348981f68" id="r_ab59c8d9478247688b54adf4348981f68"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ab59c8d9478247688b54adf4348981f68">rotationDegrees</a> = 0.0</td></tr>
+<tr class="separator:ab59c8d9478247688b54adf4348981f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a015d196b2adb44e5b94f25f486addcc6" id="r_a015d196b2adb44e5b94f25f486addcc6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a015d196b2adb44e5b94f25f486addcc6">channel</a></td></tr>
+<tr class="separator:a015d196b2adb44e5b94f25f486addcc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a662883d83c813b9dc2d23ac1a2d786d7" id="r_a662883d83c813b9dc2d23ac1a2d786d7"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a662883d83c813b9dc2d23ac1a2d786d7">properties</a></td></tr>
+<tr class="separator:a662883d83c813b9dc2d23ac1a2d786d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f1c4d96641cf06cd3736f51aa45379c" id="r_a2f1c4d96641cf06cd3736f51aa45379c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a2f1c4d96641cf06cd3736f51aa45379c">tags</a></td></tr>
+<tr class="separator:a2f1c4d96641cf06cd3736f51aa45379c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af627ff25f7f4ce360fc0fc8c06d40e39" id="r_af627ff25f7f4ce360fc0fc8c06d40e39"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html">BuildingGarrisonMemberRecord</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#af627ff25f7f4ce360fc0fc8c06d40e39">garrison</a></td></tr>
+<tr class="separator:af627ff25f7f4ce360fc0fc8c06d40e39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac27a6c60c6b1156ec2ebc8fc8d302bc0" id="r_ac27a6c60c6b1156ec2ebc8fc8d302bc0"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac27a6c60c6b1156ec2ebc8fc8d302bc0">garrisonRevision</a> = 0</td></tr>
+<tr class="separator:ac27a6c60c6b1156ec2ebc8fc8d302bc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Complete runtime-neutral placed-building snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a8f397987ced759758a077bf880a0d4b1" name="a8f397987ced759758a077bf880a0d4b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f397987ced759758a077bf880a0d4b1">&#9670;&#160;</a></span>buildingId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::BuildingInstanceSnapshot::buildingId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l00213">eve::building_editing::BuildingPlacementTarget::makeMove()</a>, <a class="el" href="BuildingTarget_8cpp_source.html#l00260">eve::building_editing::BuildingPlacementTarget::makeMoveFree()</a> , 以及 <a class="el" href="BuildingTarget_8cpp_source.html#l00289">eve::building_editing::BuildingPlacementTarget::makeReplace()</a>.</p>
+
+</div>
+</div>
+<a id="a7f503203fd209ba7af2982bd7721ce8b" name="a7f503203fd209ba7af2982bd7721ce8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f503203fd209ba7af2982bd7721ce8b">&#9670;&#160;</a></span>cellX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::BuildingInstanceSnapshot::cellX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l00213">eve::building_editing::BuildingPlacementTarget::makeMove()</a>.</p>
+
+</div>
+</div>
+<a id="ad5845ea1d0f82eba62d08353dedbdf89" name="ad5845ea1d0f82eba62d08353dedbdf89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5845ea1d0f82eba62d08353dedbdf89">&#9670;&#160;</a></span>cellY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::BuildingInstanceSnapshot::cellY = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l00213">eve::building_editing::BuildingPlacementTarget::makeMove()</a>.</p>
+
+</div>
+</div>
+<a id="a015d196b2adb44e5b94f25f486addcc6" name="a015d196b2adb44e5b94f25f486addcc6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a015d196b2adb44e5b94f25f486addcc6">&#9670;&#160;</a></span>channel</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::BuildingInstanceSnapshot::channel</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec799c486d683bf092fb2a6b33251f1e" name="aec799c486d683bf092fb2a6b33251f1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec799c486d683bf092fb2a6b33251f1e">&#9670;&#160;</a></span>cornerX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::BuildingInstanceSnapshot::cornerX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Grid vertex address when placementKind is <code>corner</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l00213">eve::building_editing::BuildingPlacementTarget::makeMove()</a>.</p>
+
+</div>
+</div>
+<a id="a7a0c98e7b31d838c268ef0332d52fa14" name="a7a0c98e7b31d838c268ef0332d52fa14"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a0c98e7b31d838c268ef0332d52fa14">&#9670;&#160;</a></span>cornerY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::BuildingInstanceSnapshot::cornerY = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l00213">eve::building_editing::BuildingPlacementTarget::makeMove()</a>.</p>
+
+</div>
+</div>
+<a id="a7f8de333486a302b5d13bc99507f0fb3" name="a7f8de333486a302b5d13bc99507f0fb3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f8de333486a302b5d13bc99507f0fb3">&#9670;&#160;</a></span>edgeAxis</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::BuildingInstanceSnapshot::edgeAxis = &quot;horizontal&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical edge axis: <code>horizontal</code> or <code>vertical</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5e208929d7e08fd31904789f5245acb8" name="a5e208929d7e08fd31904789f5245acb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e208929d7e08fd31904789f5245acb8">&#9670;&#160;</a></span>edgeX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::BuildingInstanceSnapshot::edgeX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical edge origin when placementKind is <code>edge</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5a488d76cdf586dbb4033750aa3a557a" name="a5a488d76cdf586dbb4033750aa3a557a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a488d76cdf586dbb4033750aa3a557a">&#9670;&#160;</a></span>edgeY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::BuildingInstanceSnapshot::edgeY = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a97506607b9e13f88525be09cca502824" name="a97506607b9e13f88525be09cca502824"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97506607b9e13f88525be09cca502824">&#9670;&#160;</a></span>elevation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::elevation = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l00213">eve::building_editing::BuildingPlacementTarget::makeMove()</a> , 以及 <a class="el" href="BuildingTarget_8cpp_source.html#l00260">eve::building_editing::BuildingPlacementTarget::makeMoveFree()</a>.</p>
+
+</div>
+</div>
+<a id="ac2e103520813c2e7cc35c703d57b3ae3" name="ac2e103520813c2e7cc35c703d57b3ae3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2e103520813c2e7cc35c703d57b3ae3">&#9670;&#160;</a></span>freeFootprintVertices</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; eve::building::BuildingInstanceSnapshot::freeFootprintVertices</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Committed convex local polygon as world-plane x/y pairs. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7cde4eca8ba3d2b45718276fd78266c0" name="a7cde4eca8ba3d2b45718276fd78266c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cde4eca8ba3d2b45718276fd78266c0">&#9670;&#160;</a></span>freeHalfHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::freeHalfHeight = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Committed free-domain OBB half height; zero denotes circular collision. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec6de9234d2cd9781a7440d44af965b6" name="aec6de9234d2cd9781a7440d44af965b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec6de9234d2cd9781a7440d44af965b6">&#9670;&#160;</a></span>freeHalfWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::freeHalfWidth = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Committed free-domain OBB half width; zero denotes circular collision. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac45385a20a12baa1d977ee1a2d430e22" name="ac45385a20a12baa1d977ee1a2d430e22"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac45385a20a12baa1d977ee1a2d430e22">&#9670;&#160;</a></span>freeRadius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::freeRadius = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Committed free-domain collision radius in world-plane units. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af627ff25f7f4ce360fc0fc8c06d40e39" name="af627ff25f7f4ce360fc0fc8c06d40e39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af627ff25f7f4ce360fc0fc8c06d40e39">&#9670;&#160;</a></span>garrison</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html">BuildingGarrisonMemberRecord</a>&gt; eve::building::BuildingInstanceSnapshot::garrison</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00052">eve::building::codec::instanceValue()</a>.</p>
+
+</div>
+</div>
+<a id="ac27a6c60c6b1156ec2ebc8fc8d302bc0" name="ac27a6c60c6b1156ec2ebc8fc8d302bc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac27a6c60c6b1156ec2ebc8fc8d302bc0">&#9670;&#160;</a></span>garrisonRevision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::building::BuildingInstanceSnapshot::garrisonRevision = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab1df5c0b780a7488c374f18c592e1527" name="ab1df5c0b780a7488c374f18c592e1527"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1df5c0b780a7488c374f18c592e1527">&#9670;&#160;</a></span>instanceId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::BuildingInstanceSnapshot::instanceId = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l00033">eve::building_editing::target_detail::areaOperation()</a>, <a class="el" href="BuildingSnapshot_8cpp_source.html#l00103">eve::building::codec::parseInstance()</a> , 以及 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00270">eve::building::codec::snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="aa3054605459999ce1e9bb39df1b2ce8a" name="aa3054605459999ce1e9bb39df1b2ce8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3054605459999ce1e9bb39df1b2ce8a">&#9670;&#160;</a></span>level</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::BuildingInstanceSnapshot::level = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Authoritative discrete floor coordinate. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l00213">eve::building_editing::BuildingPlacementTarget::makeMove()</a> , 以及 <a class="el" href="BuildingTarget_8cpp_source.html#l00260">eve::building_editing::BuildingPlacementTarget::makeMoveFree()</a>.</p>
+
+</div>
+</div>
+<a id="a06b6a289fb8793cfb0d885a19cc8632e" name="a06b6a289fb8793cfb0d885a19cc8632e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06b6a289fb8793cfb0d885a19cc8632e">&#9670;&#160;</a></span>placementKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::BuildingInstanceSnapshot::placementKind = &quot;cell&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Placement coordinate domain: <code>cell</code>, <code>edge</code>, <code>corner</code>, or <code>free</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l00213">eve::building_editing::BuildingPlacementTarget::makeMove()</a>.</p>
+
+</div>
+</div>
+<a id="a662883d83c813b9dc2d23ac1a2d786d7" name="a662883d83c813b9dc2d23ac1a2d786d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a662883d83c813b9dc2d23ac1a2d786d7">&#9670;&#160;</a></span>properties</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::map&lt;std::string, std::string&gt; eve::building::BuildingInstanceSnapshot::properties</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00052">eve::building::codec::instanceValue()</a>.</p>
+
+</div>
+</div>
+<a id="ab59c8d9478247688b54adf4348981f68" name="ab59c8d9478247688b54adf4348981f68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab59c8d9478247688b54adf4348981f68">&#9670;&#160;</a></span>rotationDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::rotationDegrees = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l00213">eve::building_editing::BuildingPlacementTarget::makeMove()</a> , 以及 <a class="el" href="BuildingTarget_8cpp_source.html#l00260">eve::building_editing::BuildingPlacementTarget::makeMoveFree()</a>.</p>
+
+</div>
+</div>
+<a id="ae4e914d292981b4d2129db751ce15ba2" name="ae4e914d292981b4d2129db751ce15ba2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4e914d292981b4d2129db751ce15ba2">&#9670;&#160;</a></span>surfaceHeightDelta</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::surfaceHeightDelta = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sampled footprint height range. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4fad5d2fc4312a81273bc886ba04904a" name="a4fad5d2fc4312a81273bc886ba04904a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fad5d2fc4312a81273bc886ba04904a">&#9670;&#160;</a></span>surfaceId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::building::BuildingInstanceSnapshot::surfaceId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable surface provider identity captured at placement time. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9a68207c9628f0d894d2313164138916" name="a9a68207c9628f0d894d2313164138916"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a68207c9628f0d894d2313164138916">&#9670;&#160;</a></span>surfaceMaxSlopeDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::surfaceMaxSlopeDegrees = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Maximum sampled footprint slope in degrees. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1f62df8627f9e27bfa2bb87464446bc5" name="a1f62df8627f9e27bfa2bb87464446bc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f62df8627f9e27bfa2bb87464446bc5">&#9670;&#160;</a></span>surfaceNormalX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::surfaceNormalX = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captured unit surface normal. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4397296194b8a8b44ea1a5628c2b6534" name="a4397296194b8a8b44ea1a5628c2b6534"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4397296194b8a8b44ea1a5628c2b6534">&#9670;&#160;</a></span>surfaceNormalY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::surfaceNormalY = 1.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac287f694ddfc6fc252b8a7e7ae3b07cd" name="ac287f694ddfc6fc252b8a7e7ae3b07cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac287f694ddfc6fc252b8a7e7ae3b07cd">&#9670;&#160;</a></span>surfaceNormalZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::surfaceNormalZ = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a46f99eb386a8d25f1857148982a1a3a0" name="a46f99eb386a8d25f1857148982a1a3a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46f99eb386a8d25f1857148982a1a3a0">&#9670;&#160;</a></span>surfaceRevision</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::building::BuildingInstanceSnapshot::surfaceRevision = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Surface provider revision captured at placement time. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1898320d84740aed92aac06b5ef09d72" name="a1898320d84740aed92aac06b5ef09d72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1898320d84740aed92aac06b5ef09d72">&#9670;&#160;</a></span>surfaceSampleCount</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::BuildingInstanceSnapshot::surfaceSampleCount = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of footprint surface samples represented by this snapshot. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd5fc6796e00276afc22101fcdd309f5" name="acd5fc6796e00276afc22101fcdd309f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd5fc6796e00276afc22101fcdd309f5">&#9670;&#160;</a></span>surfaceTangentX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::surfaceTangentX = 1.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Captured unit surface tangent. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec0944140117644ded3bc6112535964e" name="aec0944140117644ded3bc6112535964e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec0944140117644ded3bc6112535964e">&#9670;&#160;</a></span>surfaceTangentY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::surfaceTangentY = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa4f6d6abe750271e68c65152a597288f" name="aa4f6d6abe750271e68c65152a597288f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4f6d6abe750271e68c65152a597288f">&#9670;&#160;</a></span>surfaceTangentZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::surfaceTangentZ = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2f1c4d96641cf06cd3736f51aa45379c" name="a2f1c4d96641cf06cd3736f51aa45379c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f1c4d96641cf06cd3736f51aa45379c">&#9670;&#160;</a></span>tags</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::building::BuildingInstanceSnapshot::tags</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4b4a11965f445b7a48ebf5318313447a" name="a4b4a11965f445b7a48ebf5318313447a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b4a11965f445b7a48ebf5318313447a">&#9670;&#160;</a></span>worldX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::worldX = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l00213">eve::building_editing::BuildingPlacementTarget::makeMove()</a> , 以及 <a class="el" href="BuildingTarget_8cpp_source.html#l00260">eve::building_editing::BuildingPlacementTarget::makeMoveFree()</a>.</p>
+
+</div>
+</div>
+<a id="ae6ecb44cf8e4c5cb84644a2e1312e16c" name="ae6ecb44cf8e4c5cb84644a2e1312e16c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6ecb44cf8e4c5cb84644a2e1312e16c">&#9670;&#160;</a></span>worldY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::building::BuildingInstanceSnapshot::worldY = 0.0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a> 第 <a class="el" href="BuildingSnapshot_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTarget_8cpp_source.html#l00213">eve::building_editing::BuildingPlacementTarget::makeMove()</a> , 以及 <a class="el" href="BuildingTarget_8cpp_source.html#l00260">eve::building_editing::BuildingPlacementTarget::makeMoveFree()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/building/<a class="el" href="BuildingSnapshot_8h_source.html">BuildingSnapshot.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

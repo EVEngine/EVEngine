@@ -1,0 +1,271 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/backend/bake/DeformTopology.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_086dc6fd0a23062cea21f20b29df48da.html">backend</a></li><li class="navelem"><a class="el" href="dir_90ac479e93ff9c44af9d62e7b33960ca.html">bake</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">DeformTopology.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DeformTopology_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="DeformTopology_8h.html">physics/backend/bake/DeformTopology.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;bit&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="BakedAssetFile_8h.html">physics/backend/bake/BakedAssetFile.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="};">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DeformTopology_1_1Data.html">    8</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1DeformTopology_1_1Data.html">DeformTopology::Data</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#a51d74db0eb5ed1be4f053c0c83f3dc18">    9</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a73553858624b0970bbec54f87c4ac434">DeformPrimitive</a>            <a class="code hl_variable" href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#a51d74db0eb5ed1be4f053c0c83f3dc18">primitive</a>;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#a45b60c0610564af441a48bd1c33325e0">   10</a></span>    std::size_t                <a class="code hl_variable" href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#a45b60c0610564af441a48bd1c33325e0">vertexCount</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#a69afebdf9dd1f5aa634c80ce4306d849">   11</a></span>    std::vector&lt;std::uint32_t&gt; <a class="code hl_variable" href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#a69afebdf9dd1f5aa634c80ce4306d849">indices</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#a1eab7b4802e9ce10719f6495a40ec966">   12</a></span>    std::vector&lt;DeformUV&gt;      <a class="code hl_variable" href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#a1eab7b4802e9ce10719f6495a40ec966">uv</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#ae1e2b3caea1616e587d9f07bafa091df">   13</a></span>    std::string                <a class="code hl_variable" href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#ae1e2b3caea1616e587d9f07bafa091df">key</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>};</div>
+</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>DeformTopology::DeformTopology(std::shared_ptr&lt;const Data&gt; data) : data_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(data)) {}</div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="}">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1DeformTopology.html#a0ae47e2b384ff71fd0b603ffc23bc2b7">   16</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;DeformTopology&gt;</a> <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a0ae47e2b384ff71fd0b603ffc23bc2b7">DeformTopology::prepare</a>(<a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a73553858624b0970bbec54f87c4ac434">DeformPrimitive</a> <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a90b974edaf5c9c2178c9f54acfc794e9">primitive</a>, std::size_t <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a923028606aa12f19af461e3e1029e8a6">vertexCount</a>,</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                                               std::vector&lt;std::uint32_t&gt; <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">indices</a>, std::vector&lt;DeformUV&gt; <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a8494e9e20f1a88c6dd5dfaae7900473c">uv</a>) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">auto</span> failure = [] {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;DeformTopology&gt;::failure</a>(</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;invalid deformation topology&quot;</span>, <span class="stringliteral">&quot;deformTopology&quot;</span>));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    };</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a90b974edaf5c9c2178c9f54acfc794e9">primitive</a> != <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a73553858624b0970bbec54f87c4ac434afb9a488a6fe2d37f9a17651d744997f6">DeformPrimitive::Segments</a> &amp;&amp; <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a90b974edaf5c9c2178c9f54acfc794e9">primitive</a> != <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a73553858624b0970bbec54f87c4ac434a7ca66fdfaad3eb33fc65d7490178f856">DeformPrimitive::Triangles</a>) <span class="keywordflow">return</span> failure();</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">const</span> std::size_t arity = <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a90b974edaf5c9c2178c9f54acfc794e9">primitive</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a73553858624b0970bbec54f87c4ac434afb9a488a6fe2d37f9a17651d744997f6">DeformPrimitive::Segments</a> ? 2 : 3;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a923028606aa12f19af461e3e1029e8a6">vertexCount</a> == 0 || <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a923028606aa12f19af461e3e1029e8a6">vertexCount</a> &gt; 1048576 || <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">indices</a>.empty() || <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">indices</a>.size() &gt; 6291456 ||</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">indices</a>.size() % arity != 0 || (!<a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a8494e9e20f1a88c6dd5dfaae7900473c">uv</a>.empty() &amp;&amp; <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a8494e9e20f1a88c6dd5dfaae7900473c">uv</a>.size() != <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a923028606aa12f19af461e3e1029e8a6">vertexCount</a>))</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordflow">return</span> failure();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">for</span> (std::size_t <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> = 0; <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> &lt; <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">indices</a>.size(); <a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> += arity) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">for</span> (std::size_t corner = 0; corner &lt; arity; ++corner) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">indices</a>[<a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> + corner] &gt;= <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a923028606aa12f19af461e3e1029e8a6">vertexCount</a>) <span class="keywordflow">return</span> failure();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keywordflow">for</span> (std::size_t prior = 0; prior &lt; corner; ++prior)</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">indices</a>[<a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> + prior] == <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">indices</a>[<a class="code hl_variable" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a> + corner]) <span class="keywordflow">return</span> failure();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; coordinate : <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a8494e9e20f1a88c6dd5dfaae7900473c">uv</a>) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">if</span> (!std::isfinite(coordinate.u) || !std::isfinite(coordinate.v)) <span class="keywordflow">return</span> failure();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">if</span> (coordinate.u == 0) coordinate.u = 0;  <span class="comment">// Normalize signed zero in canonical identity.</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">if</span> (coordinate.v == 0) coordinate.v = 0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    std::string <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a> = <span class="stringliteral">&quot;EVEDEFT1&quot;</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>.reserve(24 + <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">indices</a>.size() * 4 + <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a8494e9e20f1a88c6dd5dfaae7900473c">uv</a>.size() * 8);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="devtools_2LanguageServer_8cpp.html#a5ee566002626114272def590e5eecf76">word</a> = [&amp;](std::uint32_t <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>) {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> shift = 0; shift &lt; 32; shift += 8) <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>.push_back(<span class="keyword">static_cast&lt;</span><span class="keywordtype">char</span><span class="keyword">&gt;</span>((<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> &gt;&gt; shift) &amp; 255));</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    };</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_variable" href="devtools_2LanguageServer_8cpp.html#a5ee566002626114272def590e5eecf76">word</a>(<span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(arity));</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_variable" href="devtools_2LanguageServer_8cpp.html#a5ee566002626114272def590e5eecf76">word</a>(<span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(<a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a923028606aa12f19af461e3e1029e8a6">vertexCount</a>));</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <a class="code hl_variable" href="devtools_2LanguageServer_8cpp.html#a5ee566002626114272def590e5eecf76">word</a>(<span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(<a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">indices</a>.size()));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_variable" href="devtools_2LanguageServer_8cpp.html#a5ee566002626114272def590e5eecf76">word</a>(<span class="keyword">static_cast&lt;</span>std::uint32_t<span class="keyword">&gt;</span>(<a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a8494e9e20f1a88c6dd5dfaae7900473c">uv</a>.size()));</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> : <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">indices</a>) <a class="code hl_variable" href="devtools_2LanguageServer_8cpp.html#a5ee566002626114272def590e5eecf76">word</a>(<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> coordinate : <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a8494e9e20f1a88c6dd5dfaae7900473c">uv</a>) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <a class="code hl_variable" href="devtools_2LanguageServer_8cpp.html#a5ee566002626114272def590e5eecf76">word</a>(std::bit_cast&lt;std::uint32_t&gt;(coordinate.u));</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <a class="code hl_variable" href="devtools_2LanguageServer_8cpp.html#a5ee566002626114272def590e5eecf76">word</a>(std::bit_cast&lt;std::uint32_t&gt;(coordinate.v));</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">auto</span> <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a148ecdc35eea9bba2033705356a7c7de">key</a> = <a class="code hl_function" href="namespaceeve_1_1physics.html#a77375a4d5372ca6d52686cdbd82c13e9">bakedAssetContentKey</a>(<a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;DeformTopology&gt;::success</a>(<a class="code hl_class" href="classeve_1_1physics_1_1DeformTopology.html">DeformTopology</a>(</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        std::make_shared&lt;const Data&gt;(<a class="code hl_struct" href="structeve_1_1physics_1_1DeformTopology_1_1Data.html">Data</a>{<a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a90b974edaf5c9c2178c9f54acfc794e9">primitive</a>, <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a923028606aa12f19af461e3e1029e8a6">vertexCount</a>, std::move(<a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">indices</a>), std::move(<a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a8494e9e20f1a88c6dd5dfaae7900473c">uv</a>), std::move(<a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a148ecdc35eea9bba2033705356a7c7de">key</a>)})));</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1DeformTopology.html#a90b974edaf5c9c2178c9f54acfc794e9">   57</a></span><a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a73553858624b0970bbec54f87c4ac434">DeformPrimitive</a>                <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a90b974edaf5c9c2178c9f54acfc794e9">DeformTopology::primitive</a>() const noexcept { <span class="keywordflow">return</span> data_-&gt;primitive; }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1DeformTopology.html#a923028606aa12f19af461e3e1029e8a6">   58</a></span>std::size_t                    <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a923028606aa12f19af461e3e1029e8a6">DeformTopology::vertexCount</a>() const noexcept { <span class="keywordflow">return</span> data_-&gt;vertexCount; }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">   59</a></span>std::span&lt;const std::uint32_t&gt; <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">DeformTopology::indices</a>() const noexcept { <span class="keywordflow">return</span> data_-&gt;indices; }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1DeformTopology.html#a8494e9e20f1a88c6dd5dfaae7900473c">   60</a></span>std::span&lt;const DeformUV&gt;      <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a8494e9e20f1a88c6dd5dfaae7900473c">DeformTopology::uv</a>() const noexcept { <span class="keywordflow">return</span> data_-&gt;uv; }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1DeformTopology.html#a148ecdc35eea9bba2033705356a7c7de">   61</a></span>std::string_view               <a class="code hl_function" href="classeve_1_1physics_1_1DeformTopology.html#a148ecdc35eea9bba2033705356a7c7de">DeformTopology::key</a>() const noexcept { <span class="keywordflow">return</span> data_-&gt;key; }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aBakedAssetFile_8h_html"><div class="ttname"><a href="BakedAssetFile_8h.html">BakedAssetFile.h</a></div></div>
+<div class="ttc" id="aDeformTopology_8h_html"><div class="ttname"><a href="DeformTopology_8h.html">DeformTopology.h</a></div></div>
+<div class="ttc" id="aLanguageIndex_8cpp_html_aadb6d6eb83e646653a1402032e45dcab"><div class="ttname"><a href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a></div><div class="ttdeci">size_t offset</div><div class="ttdef"><b>Definition</b> <a href="LanguageIndex_8cpp_source.html#l00019">LanguageIndex.cpp:19</a></div></div>
+<div class="ttc" id="aMcpRuntimeTools_8cpp_html_a3a00ca04c0ed87681f126e891122e276"><div class="ttname"><a href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a></div><div class="ttdeci">std::uint64_t bytes</div><div class="ttdef"><b>Definition</b> <a href="McpRuntimeTools_8cpp_source.html#l00157">McpRuntimeTools.cpp:157</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00021">Diagnostic.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00184">Result.h:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1DeformTopology_html"><div class="ttname"><a href="classeve_1_1physics_1_1DeformTopology.html">eve::physics::DeformTopology</a></div><div class="ttdoc">Immutable connectivity and UV ownership for fixed-topology deformation playback. @ownership Copies sh...</div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8h_source.html#l00023">DeformTopology.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1DeformTopology_html_a0ae47e2b384ff71fd0b603ffc23bc2b7"><div class="ttname"><a href="classeve_1_1physics_1_1DeformTopology.html#a0ae47e2b384ff71fd0b603ffc23bc2b7">eve::physics::DeformTopology::prepare</a></div><div class="ttdeci">static Result&lt; DeformTopology &gt; prepare(DeformPrimitive primitive, std::size_t vertexCount, std::vector&lt; std::uint32_t &gt; indices, std::vector&lt; DeformUV &gt; uv)</div><div class="ttdoc">Validate bounded connectivity and freeze it with a deterministic content identity.</div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8cpp_source.html#l00016">DeformTopology.cpp:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1DeformTopology_html_a148ecdc35eea9bba2033705356a7c7de"><div class="ttname"><a href="classeve_1_1physics_1_1DeformTopology.html#a148ecdc35eea9bba2033705356a7c7de">eve::physics::DeformTopology::key</a></div><div class="ttdeci">std::string_view key() const noexcept</div><div class="ttdoc">Borrow the precomputed noncryptographic content key; no per-frame hashing or allocation.</div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8cpp_source.html#l00061">DeformTopology.cpp:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1DeformTopology_html_a8494e9e20f1a88c6dd5dfaae7900473c"><div class="ttname"><a href="classeve_1_1physics_1_1DeformTopology.html#a8494e9e20f1a88c6dd5dfaae7900473c">eve::physics::DeformTopology::uv</a></div><div class="ttdeci">std::span&lt; const DeformUV &gt; uv() const noexcept</div><div class="ttdoc">Borrow immutable UVs; empty means no UV channel.</div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8cpp_source.html#l00060">DeformTopology.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1DeformTopology_html_a90b974edaf5c9c2178c9f54acfc794e9"><div class="ttname"><a href="classeve_1_1physics_1_1DeformTopology.html#a90b974edaf5c9c2178c9f54acfc794e9">eve::physics::DeformTopology::primitive</a></div><div class="ttdeci">DeformPrimitive primitive() const noexcept</div><div class="ttdoc">Primitive interpretation of the index stream.</div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8cpp_source.html#l00057">DeformTopology.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1DeformTopology_html_a923028606aa12f19af461e3e1029e8a6"><div class="ttname"><a href="classeve_1_1physics_1_1DeformTopology.html#a923028606aa12f19af461e3e1029e8a6">eve::physics::DeformTopology::vertexCount</a></div><div class="ttdeci">std::size_t vertexCount() const noexcept</div><div class="ttdoc">Number of stable vertex slots.</div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8cpp_source.html#l00058">DeformTopology.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1DeformTopology_html_a9ffdf644114a98001073ad28ac9f8b71"><div class="ttname"><a href="classeve_1_1physics_1_1DeformTopology.html#a9ffdf644114a98001073ad28ac9f8b71">eve::physics::DeformTopology::indices</a></div><div class="ttdeci">std::span&lt; const std::uint32_t &gt; indices() const noexcept</div><div class="ttdoc">Borrow immutable ordered connectivity, bounded by this shared storage lifetime.</div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8cpp_source.html#l00059">DeformTopology.cpp:59</a></div></div>
+<div class="ttc" id="adevtools_2LanguageServer_8cpp_html_a5ee566002626114272def590e5eecf76"><div class="ttname"><a href="devtools_2LanguageServer_8cpp.html#a5ee566002626114272def590e5eecf76">word</a></div><div class="ttdeci">std::string word</div><div class="ttdef"><b>Definition</b> <a href="devtools_2LanguageServer_8cpp_source.html#l00237">LanguageServer.cpp:237</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00036">Climbing.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a73553858624b0970bbec54f87c4ac434"><div class="ttname"><a href="namespaceeve_1_1physics.html#a73553858624b0970bbec54f87c4ac434">eve::physics::DeformPrimitive</a></div><div class="ttdeci">DeformPrimitive</div><div class="ttdoc">Explicit primitive arity; connectivity retains order and triangle winding.</div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8h_source.html#l00012">DeformTopology.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a73553858624b0970bbec54f87c4ac434a7ca66fdfaad3eb33fc65d7490178f856"><div class="ttname"><a href="namespaceeve_1_1physics.html#a73553858624b0970bbec54f87c4ac434a7ca66fdfaad3eb33fc65d7490178f856">eve::physics::DeformPrimitive::Triangles</a></div><div class="ttdeci">@ Triangles</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a73553858624b0970bbec54f87c4ac434afb9a488a6fe2d37f9a17651d744997f6"><div class="ttname"><a href="namespaceeve_1_1physics.html#a73553858624b0970bbec54f87c4ac434afb9a488a6fe2d37f9a17651d744997f6">eve::physics::DeformPrimitive::Segments</a></div><div class="ttdeci">@ Segments</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a77375a4d5372ca6d52686cdbd82c13e9"><div class="ttname"><a href="namespaceeve_1_1physics.html#a77375a4d5372ca6d52686cdbd82c13e9">eve::physics::bakedAssetContentKey</a></div><div class="ttdeci">std::string bakedAssetContentKey(std::string_view source)</div><div class="ttdoc">Stable noncryptographic 128-bit content digest, encoded as 32 lowercase hexadecimal bytes....</div><div class="ttdef"><b>Definition</b> <a href="BakedAssetFile_8cpp_source.html#l00014">BakedAssetFile.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DeformTopology_1_1Data_html"><div class="ttname"><a href="structeve_1_1physics_1_1DeformTopology_1_1Data.html">eve::physics::DeformTopology::Data</a></div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8cpp_source.html#l00008">DeformTopology.cpp:8</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DeformTopology_1_1Data_html_a1eab7b4802e9ce10719f6495a40ec966"><div class="ttname"><a href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#a1eab7b4802e9ce10719f6495a40ec966">eve::physics::DeformTopology::Data::uv</a></div><div class="ttdeci">std::vector&lt; DeformUV &gt; uv</div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8cpp_source.html#l00012">DeformTopology.cpp:12</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DeformTopology_1_1Data_html_a45b60c0610564af441a48bd1c33325e0"><div class="ttname"><a href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#a45b60c0610564af441a48bd1c33325e0">eve::physics::DeformTopology::Data::vertexCount</a></div><div class="ttdeci">std::size_t vertexCount</div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8cpp_source.html#l00010">DeformTopology.cpp:10</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DeformTopology_1_1Data_html_a51d74db0eb5ed1be4f053c0c83f3dc18"><div class="ttname"><a href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#a51d74db0eb5ed1be4f053c0c83f3dc18">eve::physics::DeformTopology::Data::primitive</a></div><div class="ttdeci">DeformPrimitive primitive</div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8cpp_source.html#l00009">DeformTopology.cpp:9</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DeformTopology_1_1Data_html_a69afebdf9dd1f5aa634c80ce4306d849"><div class="ttname"><a href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#a69afebdf9dd1f5aa634c80ce4306d849">eve::physics::DeformTopology::Data::indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8cpp_source.html#l00011">DeformTopology.cpp:11</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DeformTopology_1_1Data_html_ae1e2b3caea1616e587d9f07bafa091df"><div class="ttname"><a href="structeve_1_1physics_1_1DeformTopology_1_1Data.html#ae1e2b3caea1616e587d9f07bafa091df">eve::physics::DeformTopology::Data::key</a></div><div class="ttdeci">std::string key</div><div class="ttdef"><b>Definition</b> <a href="DeformTopology_8cpp_source.html#l00013">DeformTopology.cpp:13</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

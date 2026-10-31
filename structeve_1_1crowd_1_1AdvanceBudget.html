@@ -1,0 +1,430 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::crowd::AdvanceBudget结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1crowd.html">crowd</a></li><li class="navelem"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html">AdvanceBudget</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1crowd_1_1AdvanceBudget-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::crowd::AdvanceBudget结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic operation budgets; exhaustion rejects the entire step before publication.  
+ <a href="structeve_1_1crowd_1_1AdvanceBudget.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Crowd_8h_source.html">Crowd.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a152113266d527b075a3b38cede00ed7f" id="r_a152113266d527b075a3b38cede00ed7f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html#a152113266d527b075a3b38cede00ed7f">maxSubsteps</a> = 1024</td></tr>
+<tr class="separator:a152113266d527b075a3b38cede00ed7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a541108482c3987dd41a6796018e26cd3" id="r_a541108482c3987dd41a6796018e26cd3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html#a541108482c3987dd41a6796018e26cd3">maxContactPasses</a> = 12</td></tr>
+<tr class="separator:a541108482c3987dd41a6796018e26cd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c17fd3658385d8c188dceceb954ed6c" id="r_a2c17fd3658385d8c188dceceb954ed6c"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html#a2c17fd3658385d8c188dceceb954ed6c">maxGridCells</a> = 4 * 1024 * 1024</td></tr>
+<tr class="memdesc:a2c17fd3658385d8c188dceceb954ed6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Occupied sparse cells, independent of empty world extent.  <br /></td></tr>
+<tr class="separator:a2c17fd3658385d8c188dceceb954ed6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b96a3cff359f2bd551e0244bd2aa3ec" id="r_a6b96a3cff359f2bd551e0244bd2aa3ec"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html#a6b96a3cff359f2bd551e0244bd2aa3ec">maxNeighborVisits</a> = std::numeric_limits&lt;std::int64_t&gt;<a class="el" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">::max</a>()</td></tr>
+<tr class="separator:a6b96a3cff359f2bd551e0244bd2aa3ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e5e59531f454dbd165d1e32caae6bd6" id="r_a9e5e59531f454dbd165d1e32caae6bd6"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html#a9e5e59531f454dbd165d1e32caae6bd6">maxPredictionChecks</a> = std::numeric_limits&lt;std::int64_t&gt;<a class="el" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">::max</a>()</td></tr>
+<tr class="separator:a9e5e59531f454dbd165d1e32caae6bd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4694d2ae4de46a785c9c8d439ecd989e" id="r_a4694d2ae4de46a785c9c8d439ecd989e"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html#a4694d2ae4de46a785c9c8d439ecd989e">maxContactChecks</a> = std::numeric_limits&lt;std::int64_t&gt;<a class="el" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">::max</a>()</td></tr>
+<tr class="separator:a4694d2ae4de46a785c9c8d439ecd989e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1161d6b2d2a9ab154d83acb58810f56f" id="r_a1161d6b2d2a9ab154d83acb58810f56f"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html#a1161d6b2d2a9ab154d83acb58810f56f">maxSpatialVisits</a> = std::numeric_limits&lt;std::int64_t&gt;<a class="el" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">::max</a>()</td></tr>
+<tr class="memdesc:a1161d6b2d2a9ab154d83acb58810f56f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query row/cell/binary-search work.  <br /></td></tr>
+<tr class="separator:a1161d6b2d2a9ab154d83acb58810f56f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac18515988133bffb41206fed94d5dea8" id="r_ac18515988133bffb41206fed94d5dea8"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html#ac18515988133bffb41206fed94d5dea8">maxContactPairs</a> = 1000000</td></tr>
+<tr class="memdesc:ac18515988133bffb41206fed94d5dea8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Live candidate-pair entries per pass; never truncated.  <br /></td></tr>
+<tr class="separator:ac18515988133bffb41206fed94d5dea8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacc682b72233284d75226cf219c3dcdf" id="r_aacc682b72233284d75226cf219c3dcdf"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html#aacc682b72233284d75226cf219c3dcdf">maxPairVisits</a></td></tr>
+<tr class="memdesc:aacc682b72233284d75226cf219c3dcdf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count/prefix/init/fill/sort work per advance.  <br /></td></tr>
+<tr class="separator:aacc682b72233284d75226cf219c3dcdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5dc4cd6eed6593b337585bb39a560f0f" id="r_a5dc4cd6eed6593b337585bb39a560f0f"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html#a5dc4cd6eed6593b337585bb39a560f0f">maxPreferredNeighbors</a></td></tr>
+<tr class="memdesc:a5dc4cd6eed6593b337585bb39a560f0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Complete preferred-neighbor entries per substep; never truncated.  <br /></td></tr>
+<tr class="separator:a5dc4cd6eed6593b337585bb39a560f0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a6446c75ea550cda05ae6993ebfd062" id="r_a7a6446c75ea550cda05ae6993ebfd062"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html#a7a6446c75ea550cda05ae6993ebfd062">maxPreferredVisits</a></td></tr>
+<tr class="memdesc:a7a6446c75ea550cda05ae6993ebfd062"><td class="mdescLeft">&#160;</td><td class="mdescRight">Workspace/count/prefix/fill/force visits.  <br /></td></tr>
+<tr class="separator:a7a6446c75ea550cda05ae6993ebfd062"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic operation budgets; exhaustion rejects the entire step before publication. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00071">71</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a4694d2ae4de46a785c9c8d439ecd989e" name="a4694d2ae4de46a785c9c8d439ecd989e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4694d2ae4de46a785c9c8d439ecd989e">&#9670;&#160;</a></span>maxContactChecks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::AdvanceBudget::maxContactChecks = std::numeric_limits&lt;std::int64_t&gt;<a class="el" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">::max</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdContactSolver_8cpp_source.html#l00004">eve::crowd::Crowd::Impl::resolveOverlapsPass()</a>.</p>
+
+</div>
+</div>
+<a id="ac18515988133bffb41206fed94d5dea8" name="ac18515988133bffb41206fed94d5dea8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac18515988133bffb41206fed94d5dea8">&#9670;&#160;</a></span>maxContactPairs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::AdvanceBudget::maxContactPairs = 1000000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Live candidate-pair entries per pass; never truncated. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdContactSolver_8cpp_source.html#l00004">eve::crowd::Crowd::Impl::resolveOverlapsPass()</a>.</p>
+
+</div>
+</div>
+<a id="a541108482c3987dd41a6796018e26cd3" name="a541108482c3987dd41a6796018e26cd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a541108482c3987dd41a6796018e26cd3">&#9670;&#160;</a></span>maxContactPasses</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::AdvanceBudget::maxContactPasses = 12</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c17fd3658385d8c188dceceb954ed6c" name="a2c17fd3658385d8c188dceceb954ed6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c17fd3658385d8c188dceceb954ed6c">&#9670;&#160;</a></span>maxGridCells</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::AdvanceBudget::maxGridCells = 4 * 1024 * 1024</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Occupied sparse cells, independent of empty world extent. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdSimulation_8cpp_source.html#l00013">eve::crowd::Crowd::Impl::rebuildGrid()</a>.</p>
+
+</div>
+</div>
+<a id="a6b96a3cff359f2bd551e0244bd2aa3ec" name="a6b96a3cff359f2bd551e0244bd2aa3ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b96a3cff359f2bd551e0244bd2aa3ec">&#9670;&#160;</a></span>maxNeighborVisits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::AdvanceBudget::maxNeighborVisits = std::numeric_limits&lt;std::int64_t&gt;<a class="el" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">::max</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdInternal_8h_source.html#l00248">eve::crowd::Crowd::Impl::forEachNeighbor()</a> , 以及 <a class="el" href="CrowdAvoidance_8cpp_source.html#l00031">eve::crowd::Crowd::Impl::prepareAvoidanceNeighbors()</a>.</p>
+
+</div>
+</div>
+<a id="aacc682b72233284d75226cf219c3dcdf" name="aacc682b72233284d75226cf219c3dcdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacc682b72233284d75226cf219c3dcdf">&#9670;&#160;</a></span>maxPairVisits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::AdvanceBudget::maxPairVisits</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        std::numeric_limits&lt;std::int64_t&gt;::max()</div>
+</div><!-- fragment -->
+<p>Count/prefix/init/fill/sort work per advance. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdContactSolver_8cpp_source.html#l00004">eve::crowd::Crowd::Impl::resolveOverlapsPass()</a>.</p>
+
+</div>
+</div>
+<a id="a9e5e59531f454dbd165d1e32caae6bd6" name="a9e5e59531f454dbd165d1e32caae6bd6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e5e59531f454dbd165d1e32caae6bd6">&#9670;&#160;</a></span>maxPredictionChecks</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::AdvanceBudget::maxPredictionChecks = std::numeric_limits&lt;std::int64_t&gt;<a class="el" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">::max</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5dc4cd6eed6593b337585bb39a560f0f" name="a5dc4cd6eed6593b337585bb39a560f0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5dc4cd6eed6593b337585bb39a560f0f">&#9670;&#160;</a></span>maxPreferredNeighbors</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::AdvanceBudget::maxPreferredNeighbors</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        1000000</div>
+</div><!-- fragment -->
+<p>Complete preferred-neighbor entries per substep; never truncated. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7a6446c75ea550cda05ae6993ebfd062" name="a7a6446c75ea550cda05ae6993ebfd062"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a6446c75ea550cda05ae6993ebfd062">&#9670;&#160;</a></span>maxPreferredVisits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::AdvanceBudget::maxPreferredVisits</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        std::numeric_limits&lt;std::int64_t&gt;::max()</div>
+</div><!-- fragment -->
+<p>Workspace/count/prefix/fill/force visits. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdPreferred_8cpp_source.html#l00007">eve::crowd::Crowd::Impl::spendPreferredWork()</a>.</p>
+
+</div>
+</div>
+<a id="a1161d6b2d2a9ab154d83acb58810f56f" name="a1161d6b2d2a9ab154d83acb58810f56f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1161d6b2d2a9ab154d83acb58810f56f">&#9670;&#160;</a></span>maxSpatialVisits</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::crowd::AdvanceBudget::maxSpatialVisits = std::numeric_limits&lt;std::int64_t&gt;<a class="el" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">::max</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query row/cell/binary-search work. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdInternal_8h_source.html#l00248">eve::crowd::Crowd::Impl::forEachNeighbor()</a> , 以及 <a class="el" href="CrowdAvoidance_8cpp_source.html#l00031">eve::crowd::Crowd::Impl::prepareAvoidanceNeighbors()</a>.</p>
+
+</div>
+</div>
+<a id="a152113266d527b075a3b38cede00ed7f" name="a152113266d527b075a3b38cede00ed7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a152113266d527b075a3b38cede00ed7f">&#9670;&#160;</a></span>maxSubsteps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::crowd::AdvanceBudget::maxSubsteps = 1024</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/crowd/<a class="el" href="Crowd_8h_source.html">Crowd.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

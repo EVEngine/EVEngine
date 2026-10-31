@@ -1,0 +1,745 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::building::placement_detail 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building.html">building</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html">placement_detail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::building::placement_detail 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:ad717c9faee0ce84dbc82cc3f7d324fbd" id="r_ad717c9faee0ce84dbc82cc3f7d324fbd"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbd">SurfaceFrameStatus</a> { <a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbda66b28fcf83c9f24cd5b4d7bdc8f8ba0e">Normalized</a>
+, <a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbda4bbb8f967da6d1a610596d7257179c2b">Invalid</a>
+ }</td></tr>
+<tr class="separator:ad717c9faee0ce84dbc82cc3f7d324fbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:ab3d7a6702cc61ff7826a212e966357e1" id="r_ab3d7a6702cc61ff7826a212e966357e1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#ab3d7a6702cc61ff7826a212e966357e1">hasFreeEdgeOverlap</a> (const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world, const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;freeDefinition, const <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> &amp;footprint, const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;edgeDefinition, <a class="el" href="structeve_1_1building_1_1EdgeAddress.html">EdgeAddress</a> <a class="el" href="RoadBakeFacilityLinks_8cpp.html#adda0ba751e9c4d6c1129871ea6259f54">edge</a>)</td></tr>
+<tr class="separator:ab3d7a6702cc61ff7826a212e966357e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66de9039d708ac4efe1748bd5bc03180" id="r_a66de9039d708ac4efe1748bd5bc03180"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#a66de9039d708ac4efe1748bd5bc03180">wrapDeg</a> (float deg)</td></tr>
+<tr class="separator:a66de9039d708ac4efe1748bd5bc03180"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad07f5459bffbe4a9b1d68127e5805f95" id="r_ad07f5459bffbe4a9b1d68127e5805f95"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#ad07f5459bffbe4a9b1d68127e5805f95">cardinalQuarter</a> (float rotationDeg)</td></tr>
+<tr class="separator:ad07f5459bffbe4a9b1d68127e5805f95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac195067104ff32a34e9d10b2714851b8" id="r_ac195067104ff32a34e9d10b2714851b8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#ac195067104ff32a34e9d10b2714851b8">length3</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:ac195067104ff32a34e9d10b2714851b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93ec87ef6d0ccadf8e6db88ebd8d60fd" id="r_a93ec87ef6d0ccadf8e6db88ebd8d60fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#a93ec87ef6d0ccadf8e6db88ebd8d60fd">definitionFreeFootprint</a> (const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;definition, const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float rotationDeg)</td></tr>
+<tr class="separator:a93ec87ef6d0ccadf8e6db88ebd8d60fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac76bafaf1073c7274553a295ad4cf6e2" id="r_ac76bafaf1073c7274553a295ad4cf6e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#ac76bafaf1073c7274553a295ad4cf6e2">applyDefinitionFreeFootprint</a> (<a class="el" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a> &amp;<a class="el" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>, const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;definition, const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world)</td></tr>
+<tr class="separator:ac76bafaf1073c7274553a295ad4cf6e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac97523284f8d489fee53623fcb4bfbe3" id="r_ac97523284f8d489fee53623fcb4bfbe3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#ac97523284f8d489fee53623fcb4bfbe3">placedFreeFootprint</a> (const <a class="el" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a> &amp;<a class="el" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>)</td></tr>
+<tr class="separator:ac97523284f8d489fee53623fcb4bfbe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a973a8a60277cd9bbc9e8f12879cfce45" id="r_a973a8a60277cd9bbc9e8f12879cfce45"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point.html">FreeFootprint::Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#a973a8a60277cd9bbc9e8f12879cfce45">worldVertices</a> (const <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> &amp;footprint)</td></tr>
+<tr class="memdesc:a973a8a60277cd9bbc9e8f12879cfce45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform footprint vertices. @cost Copies vertex count per overlap query.  <br /></td></tr>
+<tr class="separator:a973a8a60277cd9bbc9e8f12879cfce45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44f2f8b7be12e079856814e92e26bad9" id="r_a44f2f8b7be12e079856814e92e26bad9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#a44f2f8b7be12e079856814e92e26bad9">isPointInPolygon</a> (const <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> &amp;polygon, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a44f2f8b7be12e079856814e92e26bad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af70db51794f5a071a825c2c5a7b4f5a4" id="r_af70db51794f5a071a825c2c5a7b4f5a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#af70db51794f5a071a825c2c5a7b4f5a4">hasFreeFootprintOverlap</a> (const <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> &amp;<a class="el" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, const <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> &amp;<a class="el" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>)</td></tr>
+<tr class="separator:af70db51794f5a071a825c2c5a7b4f5a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a030317e32bf98dc97be18e18482cf4c7" id="r_a030317e32bf98dc97be18e18482cf4c7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#a030317e32bf98dc97be18e18482cf4c7">containsFreeFootprintPoint</a> (const <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> &amp;footprint, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a030317e32bf98dc97be18e18482cf4c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeb71f45ca0ac968bb7ce407ff898b3c" id="r_aeeb71f45ca0ac968bb7ce407ff898b3c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#aeeb71f45ca0ac968bb7ce407ff898b3c">cross3</a> (float ax, float ay, float az, float bx, float by, float bz, float &amp;<a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float &amp;<a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float &amp;<a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:aeeb71f45ca0ac968bb7ce407ff898b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b7871422fa72bf83804a01ec3d9c53a" id="r_a6b7871422fa72bf83804a01ec3d9c53a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbd">SurfaceFrameStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#a6b7871422fa72bf83804a01ec3d9c53a">normalizeSurfaceFrame</a> (<a class="el" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html">PlacementSystem::PlacementHit</a> &amp;<a class="el" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>)</td></tr>
+<tr class="separator:a6b7871422fa72bf83804a01ec3d9c53a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="ad717c9faee0ce84dbc82cc3f7d324fbd" name="ad717c9faee0ce84dbc82cc3f7d324fbd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad717c9faee0ce84dbc82cc3f7d324fbd">&#9670;&#160;</a></span>SurfaceFrameStatus</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbd">eve::building::placement_detail::SurfaceFrameStatus</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ad717c9faee0ce84dbc82cc3f7d324fbda66b28fcf83c9f24cd5b4d7bdc8f8ba0e" name="ad717c9faee0ce84dbc82cc3f7d324fbda66b28fcf83c9f24cd5b4d7bdc8f8ba0e"></a>Normalized&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad717c9faee0ce84dbc82cc3f7d324fbda4bbb8f967da6d1a610596d7257179c2b" name="ad717c9faee0ce84dbc82cc3f7d324fbda4bbb8f967da6d1a610596d7257179c2b"></a>Invalid&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="PlacementInternal_8h_source.html">PlacementInternal.h</a> 第 <a class="el" href="PlacementInternal_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="ac76bafaf1073c7274553a295ad4cf6e2" name="ac76bafaf1073c7274553a295ad4cf6e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac76bafaf1073c7274553a295ad4cf6e2">&#9670;&#160;</a></span>applyDefinitionFreeFootprint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::placement_detail::applyDefinitionFreeFootprint </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a> &amp;&#160;</td>
+          <td class="paramname"><em>placed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>definition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementGeometry_8cpp_source.html">PlacementGeometry.cpp</a> 第 <a class="el" href="PlacementGeometry_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementGeometry_8cpp_source.html#l00060">definitionFreeFootprint()</a>, <a class="el" href="PlacementInternal_8h_source.html#l00016">eve::building::placement_detail::FreeFootprint::halfHeight</a>, <a class="el" href="PlacementInternal_8h_source.html#l00015">eve::building::placement_detail::FreeFootprint::halfWidth</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00148">placed</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00304">point</a>, <a class="el" href="PlacementInternal_8h_source.html#l00014">eve::building::placement_detail::FreeFootprint::radius</a> , 以及 <a class="el" href="PlacementInternal_8h_source.html#l00018">eve::building::placement_detail::FreeFootprint::vertices</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementDomains_8cpp_source.html#l00301">eve::building::PlacementSystem::placeFreeResult()</a>, <a class="el" href="PlacementDomains_8cpp_source.html#l00344">eve::building::PlacementSystem::placeFreeSurfaceResult()</a>, <a class="el" href="PlacementMove_8cpp_source.html#l00367">eve::building::PlacementSystem::replaceBuildingResult()</a> , 以及 <a class="el" href="PlacementRestore_8cpp_source.html#l00020">eve::building::PlacementSystem::restoreExact()</a>.</p>
+
+</div>
+</div>
+<a id="ad07f5459bffbe4a9b1d68127e5805f95" name="ad07f5459bffbe4a9b1d68127e5805f95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad07f5459bffbe4a9b1d68127e5805f95">&#9670;&#160;</a></span>cardinalQuarter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::building::placement_detail::cardinalQuarter </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotationDeg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementGeometry_8cpp_source.html">PlacementGeometry.cpp</a> 第 <a class="el" href="PlacementGeometry_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a> , 以及 <a class="el" href="PlacementGeometry_8cpp_source.html#l00044">wrapDeg()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementSystem_8cpp_source.html#l00471">eve::building::PlacementSystem::effectiveFootprint()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00487">eve::building::PlacementSystem::foreachFootprintCell()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00457">eve::building::PlacementSystem::normalizeRotation()</a>.</p>
+
+</div>
+</div>
+<a id="a030317e32bf98dc97be18e18482cf4c7" name="a030317e32bf98dc97be18e18482cf4c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a030317e32bf98dc97be18e18482cf4c7">&#9670;&#160;</a></span>containsFreeFootprintPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::placement_detail::containsFreeFootprintPoint </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> &amp;&#160;</td>
+          <td class="paramname"><em>footprint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementGeometry_8cpp_source.html">PlacementGeometry.cpp</a> 第 <a class="el" href="PlacementGeometry_8cpp_source.html#l00203">203</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00025">dx</a>, <a class="el" href="Shadow_8cpp_source.html#l00151">dy</a>, <a class="el" href="PlacementGeometry_8cpp_source.html#l00129">isPointInPolygon()</a>, <a class="el" href="PlacementInternal_8h_source.html#l00020">eve::building::placement_detail::FreeFootprint::isPolygon()</a>, <a class="el" href="PlacementInternal_8h_source.html#l00014">eve::building::placement_detail::FreeFootprint::radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="PlacementInternal_8h_source.html#l00012">eve::building::placement_detail::FreeFootprint::x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="PlacementInternal_8h_source.html#l00013">eve::building::placement_detail::FreeFootprint::y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementDomains_8cpp_source.html#l00297">eve::building::PlacementSystem::containsFreePoint()</a>.</p>
+
+</div>
+</div>
+<a id="aeeb71f45ca0ac968bb7ce407ff898b3c" name="aeeb71f45ca0ac968bb7ce407ff898b3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeeb71f45ca0ac968bb7ce407ff898b3c">&#9670;&#160;</a></span>cross3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::placement_detail::cross3 </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ay</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>az</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>by</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float &amp;&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementGeometry_8cpp_source.html">PlacementGeometry.cpp</a> 第 <a class="el" href="PlacementGeometry_8cpp_source.html#l00210">210</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementGeometry_8cpp_source.html#l00216">normalizeSurfaceFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a93ec87ef6d0ccadf8e6db88ebd8d60fd" name="a93ec87ef6d0ccadf8e6db88ebd8d60fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93ec87ef6d0ccadf8e6db88ebd8d60fd">&#9670;&#160;</a></span>definitionFreeFootprint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> eve::building::placement_detail::definitionFreeFootprint </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>definition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rotationDeg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementGeometry_8cpp_source.html">PlacementGeometry.cpp</a> 第 <a class="el" href="PlacementGeometry_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="PlacementGeometry_8cpp_source.html#l00044">wrapDeg()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="PlacementInternal_8h_source.html#l00012">eve::building::placement_detail::FreeFootprint::x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementGeometry_8cpp_source.html#l00085">applyDefinitionFreeFootprint()</a>, <a class="el" href="PlacementDomains_8cpp_source.html#l00240">eve::building::PlacementSystem::canPlaceFree()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00185">eve::building::PlacementSystem::sampleSurfacePatch()</a>.</p>
+
+</div>
+</div>
+<a id="ab3d7a6702cc61ff7826a212e966357e1" name="ab3d7a6702cc61ff7826a212e966357e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3d7a6702cc61ff7826a212e966357e1">&#9670;&#160;</a></span>hasFreeEdgeOverlap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::placement_detail::hasFreeEdgeOverlap </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>freeDefinition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> &amp;&#160;</td>
+          <td class="paramname"><em>footprint</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>edgeDefinition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1building_1_1EdgeAddress.html">EdgeAddress</a>&#160;</td>
+          <td class="paramname"><em>edge</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementGeometry_8cpp_source.html">PlacementGeometry.cpp</a> 第 <a class="el" href="PlacementGeometry_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingTypes_8h_source.html#l00125">eve::building::BuildingDefinition::blockedByEdgeChannels</a>, <a class="el" href="BuildingTypes_8h_source.html#l00107">eve::building::BuildingDefinition::channel</a>, <a class="el" href="RoadBakeFacilityLinks_8cpp_source.html#l00013">edge</a>, <a class="el" href="BuildingTypes_8h_source.html#l00123">eve::building::BuildingDefinition::edgeThicknessCells</a>, <a class="el" href="PlacementInternal_8h_source.html#l00016">eve::building::placement_detail::FreeFootprint::halfHeight</a>, <a class="el" href="PlacementInternal_8h_source.html#l00015">eve::building::placement_detail::FreeFootprint::halfWidth</a>, <a class="el" href="PlacementGeometry_8cpp_source.html#l00145">hasFreeFootprintOverlap()</a>, <a class="el" href="namespaceeve_1_1building.html#ae3284fe6b5aff145b13a23e6df15082dac1b5fa03ecdb95d4a45dd1c40b02527f">eve::building::Horizontal</a>, <a class="el" href="PlacementInternal_8h_source.html#l00017">eve::building::placement_detail::FreeFootprint::rotationRadians</a>, <a class="el" href="namespaceeve_1_1building.html#ae3284fe6b5aff145b13a23e6df15082da06ce2a25e5d12c166a36f654dbea6012">eve::building::Vertical</a>, <a class="el" href="PlacementInternal_8h_source.html#l00018">eve::building::placement_detail::FreeFootprint::vertices</a>, <a class="el" href="PlacementInternal_8h_source.html#l00012">eve::building::placement_detail::FreeFootprint::x</a> , 以及 <a class="el" href="PlacementInternal_8h_source.html#l00013">eve::building::placement_detail::FreeFootprint::y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementDomains_8cpp_source.html#l00042">eve::building::PlacementSystem::canPlaceEdge()</a> , 以及 <a class="el" href="PlacementDomains_8cpp_source.html#l00240">eve::building::PlacementSystem::canPlaceFree()</a>.</p>
+
+</div>
+</div>
+<a id="af70db51794f5a071a825c2c5a7b4f5a4" name="af70db51794f5a071a825c2c5a7b4f5a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af70db51794f5a071a825c2c5a7b4f5a4">&#9670;&#160;</a></span>hasFreeFootprintOverlap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::placement_detail::hasFreeFootprintOverlap </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> &amp;&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> &amp;&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementGeometry_8cpp_source.html">PlacementGeometry.cpp</a> 第 <a class="el" href="PlacementGeometry_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="RockMesh_8cpp_source.html#l00022">axisX</a>, <a class="el" href="RockMesh_8cpp_source.html#l00022">axisY</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00025">dx</a>, <a class="el" href="Shadow_8cpp_source.html#l00151">dy</a>, <a class="el" href="PlacementGeometry_8cpp_source.html#l00129">isPointInPolygon()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a>, <a class="el" href="PlacementInternal_8h_source.html#l00014">eve::building::placement_detail::FreeFootprint::radius</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00082">vertices</a>, <a class="el" href="PlacementGeometry_8cpp_source.html#l00119">worldVertices()</a>, <a class="el" href="PlacementInternal_8h_source.html#l00012">eve::building::placement_detail::FreeFootprint::x</a>, <a class="el" href="RoadBakeInternal_8h_source.html#l00063">eve::procgen::road::detail::V3::x</a> , 以及 <a class="el" href="PlacementInternal_8h_source.html#l00013">eve::building::placement_detail::FreeFootprint::y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementDomains_8cpp_source.html#l00240">eve::building::PlacementSystem::canPlaceFree()</a> , 以及 <a class="el" href="PlacementGeometry_8cpp_source.html#l00020">hasFreeEdgeOverlap()</a>.</p>
+
+</div>
+</div>
+<a id="a44f2f8b7be12e079856814e92e26bad9" name="a44f2f8b7be12e079856814e92e26bad9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44f2f8b7be12e079856814e92e26bad9">&#9670;&#160;</a></span>isPointInPolygon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::building::placement_detail::isPointInPolygon </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementGeometry_8cpp_source.html">PlacementGeometry.cpp</a> 第 <a class="el" href="PlacementGeometry_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00082">vertices</a>, <a class="el" href="PlacementGeometry_8cpp_source.html#l00119">worldVertices()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementGeometry_8cpp_source.html#l00203">containsFreeFootprintPoint()</a> , 以及 <a class="el" href="PlacementGeometry_8cpp_source.html#l00145">hasFreeFootprintOverlap()</a>.</p>
+
+</div>
+</div>
+<a id="ac195067104ff32a34e9d10b2714851b8" name="ac195067104ff32a34e9d10b2714851b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac195067104ff32a34e9d10b2714851b8">&#9670;&#160;</a></span>length3()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::placement_detail::length3 </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementGeometry_8cpp_source.html">PlacementGeometry.cpp</a> 第 <a class="el" href="PlacementGeometry_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementGeometry_8cpp_source.html#l00216">normalizeSurfaceFrame()</a>.</p>
+
+</div>
+</div>
+<a id="a6b7871422fa72bf83804a01ec3d9c53a" name="a6b7871422fa72bf83804a01ec3d9c53a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b7871422fa72bf83804a01ec3d9c53a">&#9670;&#160;</a></span>normalizeSurfaceFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbd">SurfaceFrameStatus</a> eve::building::placement_detail::normalizeSurfaceFrame </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html">PlacementSystem::PlacementHit</a> &amp;&#160;</td>
+          <td class="paramname"><em>hit</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementGeometry_8cpp_source.html">PlacementGeometry.cpp</a> 第 <a class="el" href="PlacementGeometry_8cpp_source.html#l00216">216</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementGeometry_8cpp_source.html#l00210">cross3()</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00077">hit</a> , 以及 <a class="el" href="PlacementGeometry_8cpp_source.html#l00057">length3()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementSystem_8cpp_source.html#l00161">eve::building::PlacementSystem::sampleSurface()</a>.</p>
+
+</div>
+</div>
+<a id="ac97523284f8d489fee53623fcb4bfbe3" name="ac97523284f8d489fee53623fcb4bfbe3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac97523284f8d489fee53623fcb4bfbe3">&#9670;&#160;</a></span>placedFreeFootprint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> eve::building::placement_detail::placedFreeFootprint </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a> &amp;&#160;</td>
+          <td class="paramname"><em>placed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementGeometry_8cpp_source.html">PlacementGeometry.cpp</a> 第 <a class="el" href="PlacementGeometry_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPersistence_8cpp_source.html#l00148">placed</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="PlacementGeometry_8cpp_source.html#l00044">wrapDeg()</a> , 以及 <a class="el" href="PlacementInternal_8h_source.html#l00012">eve::building::placement_detail::FreeFootprint::x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementDomains_8cpp_source.html#l00042">eve::building::PlacementSystem::canPlaceEdge()</a>, <a class="el" href="PlacementDomains_8cpp_source.html#l00240">eve::building::PlacementSystem::canPlaceFree()</a> , 以及 <a class="el" href="PlacementDomains_8cpp_source.html#l00297">eve::building::PlacementSystem::containsFreePoint()</a>.</p>
+
+</div>
+</div>
+<a id="a973a8a60277cd9bbc9e8f12879cfce45" name="a973a8a60277cd9bbc9e8f12879cfce45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a973a8a60277cd9bbc9e8f12879cfce45">&#9670;&#160;</a></span>worldVertices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point.html">FreeFootprint::Point</a> &gt; eve::building::placement_detail::worldVertices </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> &amp;&#160;</td>
+          <td class="paramname"><em>footprint</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transform footprint vertices. @cost Copies vertex count per overlap query. </p>
+
+<p class="definition">在文件 <a class="el" href="PlacementGeometry_8cpp_source.html">PlacementGeometry.cpp</a> 第 <a class="el" href="PlacementGeometry_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00076">c</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00304">point</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="PlacementInternal_8h_source.html#l00017">eve::building::placement_detail::FreeFootprint::rotationRadians</a>, <a class="el" href="BattleControl_8cpp_source.html#l00325">s</a>, <a class="el" href="PlacementInternal_8h_source.html#l00018">eve::building::placement_detail::FreeFootprint::vertices</a>, <a class="el" href="PlacementInternal_8h_source.html#l00012">eve::building::placement_detail::FreeFootprint::x</a> , 以及 <a class="el" href="PlacementInternal_8h_source.html#l00013">eve::building::placement_detail::FreeFootprint::y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementGeometry_8cpp_source.html#l00145">hasFreeFootprintOverlap()</a>, <a class="el" href="PlacementGeometry_8cpp_source.html#l00129">isPointInPolygon()</a> , 以及 <a class="el" href="PlacementSystem_8cpp_source.html#l00185">eve::building::PlacementSystem::sampleSurfacePatch()</a>.</p>
+
+</div>
+</div>
+<a id="a66de9039d708ac4efe1748bd5bc03180" name="a66de9039d708ac4efe1748bd5bc03180"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66de9039d708ac4efe1748bd5bc03180">&#9670;&#160;</a></span>wrapDeg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::building::placement_detail::wrapDeg </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>deg</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="PlacementGeometry_8cpp_source.html">PlacementGeometry.cpp</a> 第 <a class="el" href="PlacementGeometry_8cpp_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PlacementGeometry_8cpp_source.html#l00050">cardinalQuarter()</a>, <a class="el" href="PlacementGeometry_8cpp_source.html#l00060">definitionFreeFootprint()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00471">eve::building::PlacementSystem::effectiveFootprint()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00487">eve::building::PlacementSystem::foreachFootprintCell()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00457">eve::building::PlacementSystem::normalizeRotation()</a> , 以及 <a class="el" href="PlacementGeometry_8cpp_source.html#l00101">placedFreeFootprint()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

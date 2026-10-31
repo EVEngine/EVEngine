@@ -1,0 +1,249 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">IJointBackend3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::physics::IJointBackend3D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#abb05cebc702c02b25b7421254c8e6aec">bindOwner</a>(Joint3D &amp;owner) noexcept=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a8c3334836cdce42b4a77f971b7f5dbd7">destroy</a>() noexcept=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a309beba205234a5df151b681bc28dbdd">getAngularSeparation</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a2ca684d4e929ab61b4789c554be1f0ac">getCollideConnected</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a5a8464dc703d9358ea60c119f68844b0">getConstraintForceX</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#ad8e0da2952baab0d1a1e1c1bdabc243b">getConstraintForceY</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#ac42197297d4b965725e3023130801747">getConstraintForceZ</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a0c667c677018414a8801eb26a2b5d6f7">getConstraintTorqueX</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a689edefba903eb1e820f4c704eb3cefc">getConstraintTorqueY</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#aed1c7420ed5398324585ea15b0dcff43">getConstraintTorqueZ</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a47d1edb8876dc6482538c76f26cb5c18">getDistanceCurrentLength</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#ada1d1cdc56f20a07aee58525043e8be5">getDistanceLength</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a056020f16c5990792642a1268433e0f1">getForceThreshold</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a0c916138e4ca75229b1aa8377a04f95f">getLinearSeparation</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a56ce112e144b52ca92e9ae7fb9ff6a2c">getMotorAngularVelocityX</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#aa94af684c4dc55f122ec9eb43ee290f6">getMotorAngularVelocityY</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#ae10082ca79a0c01ec4c861492b92cb56">getMotorAngularVelocityZ</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#aa23198640f7e59a0191b1d768b0b095a">getMotorLinearVelocityX</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a0254df22cf48d662f75eca707440e182">getMotorLinearVelocityY</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#ac28a635f28c65dbf7128c1685cabc76c">getMotorLinearVelocityZ</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#aaaa5453e7c2872a4898a88f5f3cc0da7">getParallelDampingRatio</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a08abe6f390df72c4eb956bd7788c6c24">getParallelHertz</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#aff25e876eff3ac794c8fcc1ea52c8d95">getParallelMaxTorque</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a2b3a74e44da60cab13e3fafa8761a0c1">getPrismaticMotorForce</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#aca52759ba8c00add012d6f1f167d5e2e">getPrismaticSpeed</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#aae125c4a2435d85a0cb09cf166d13e9b">getPrismaticTranslation</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a17c602b9569b781e365b0936c86e3e94">getRevoluteAngle</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a6f93b310d886f34c83ad7fab0c6417cc">getRevoluteMotorTorque</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a21dabb48eaeb9ca776330b4c5e874319">getSphericalConeAngle</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a6b1eab24be917f6c62e80e1766f8036d">getSphericalTwistAngle</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a7425d96b13692cd990a0506a1bd674af">getTorqueThreshold</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a0a3ac80a87988c3cd804616d1e2b6968">getWeldAngularDampingRatio</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a0b75501cfeb24de737a3c4fbdeced01c">getWeldAngularHertz</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a7c43aa8f9bfec93a5ee7690e7c9ce788">getWeldLinearDampingRatio</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a9e7ff55f7a7e2ba1dd0acf6674cb07ee">getWeldLinearHertz</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a177c8eefefef26a2a84f65c358ce8f51">getWheelSpinSpeed</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a1ba0143f33a3f770b9fdaa0bf58baf64">getWheelSpinTorque</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#aee598a8916bfa5df43ec583fa58f4511">getWheelSteeringAngle</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a1454d87bb2f1c367cd8792b065378ca0">getWheelSteeringTorque</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a339506d777b136f7bb35218395f9ff35">invalidate</a>() noexcept=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#ae04b8c08441999340c0b5c2f2295d12b">isValid</a>() const noexcept=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a11d0bd458cc2562c1ffe9a060835b352">localFrames</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a41d629331728379ebf6f879e1ad865a4">setCollideConnected</a>(bool collide)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a8a4daa3800dfda471063c3eedb0c9375">setDistanceLength</a>(float length)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a69154d7956cb7ecdf7b614be20cd55ab">setDistanceLimits</a>(bool enabled, float minimum, float maximum)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#ac26be5206c7686422bc2c8399bdf60d5">setDistanceMotor</a>(bool enabled, float speed, float maxForce)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#ad139b8cc5fda3241a6261eb9b8bef9fe">setDistanceSpring</a>(bool enabled, float hertz, float dampingRatio)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a87e5c29717ae5aa5ee31623df3da1132">setForceThreshold</a>(float threshold)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a3d84c3d791fad7792171be3d1ec82d4d">setMotorAngularSpring</a>(float hertz, float dampingRatio, float maxTorque)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#af39dbbb4fca9539b8b4f10b50035394f">setMotorAngularVelocity</a>(float wx, float wy, float wz)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a6aaadf6efbbffbe7520975a5c4f4e6ac">setMotorLinearSpring</a>(float hertz, float dampingRatio, float maxForce)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a75e2562e42c960bb88026c56d2e6947b">setMotorLinearVelocity</a>(float vx, float vy, float vz)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#ad3bfb4591449d23d452da71bc2724316">setMotorVelocityLimits</a>(float maxForce, float maxTorque)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#abe09f6d0b5d8174453f00ee413f9dab6">setParallelSpring</a>(float hertz, float dampingRatio, float maxTorque)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#aee9ced5a927caedc8955050e6a265c1e">setPrismaticLimits</a>(bool enabled, float lower, float upper)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a469ef84dbe27833839cfcedd4c3884ce">setPrismaticMotor</a>(bool enabled, float speed, float maxForce)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a3bd42bad5f54bae0e14c0f5fe33afecf">setPrismaticSpring</a>(bool enabled, float targetTranslation, float hertz, float dampingRatio)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#aab1c0092d771522fadbc98ffaf3290f5">setRevoluteLimits</a>(bool enabled, float lower, float upper)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a0101c3cdd37c843e931e18ff0bb01140">setRevoluteMotor</a>(bool enabled, float speed, float maxTorque)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a94e23eeeefb589b6beb82bf3a9a426fb">setRevoluteSpring</a>(bool enabled, float targetAngle, float hertz, float dampingRatio)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#ae3b7c8b244b7ef1e112ca2f1ba164f81">setSphericalConeLimit</a>(bool enabled, float angle)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a2a54b5451269d80f5d68b6a4d23b9367">setSphericalMotor</a>(bool enabled, float velocityX, float velocityY, float velocityZ, float maxTorque)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a9d5018eda533952c37c16d3b5f356561">setSphericalTwistLimits</a>(bool enabled, float lower, float upper)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#ae6cb2adc63b35bba85e4af4f4778eccb">setTorqueThreshold</a>(float threshold)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a654a7c76c547e5b8f58c73c510d76450">setWeldAngularSpring</a>(float hertz, float dampingRatio)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#ac37e1d25e8d2e80e12e141d563bd2f8e">setWeldLinearSpring</a>(float hertz, float dampingRatio)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#ad59c400f2af702b4bbd73c77efe96fde">setWheelSpinMotor</a>(bool enabled, float speed, float maxTorque)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a71902d1991944602c4f6e71438a6776d">setWheelSteering</a>(bool enabled, float targetAngle, float hertz, float dampingRatio, float maxTorque)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a316657ca88e3ec05a1f52a151395e4e4">setWheelSteeringLimits</a>(bool enabled, float lower, float upper)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a763f141405719035d9bcaf4d41050986">setWheelSuspension</a>(bool enabled, float hertz, float dampingRatio)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a2d34bafd3bed48dd9bbf3100c565b7e6">setWheelSuspensionLimits</a>(bool enabled, float lower, float upper)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html#a9039bc1b0c13e9aea7fe4cb07caa5fe3">~IJointBackend3D</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IJointBackend3D.html">eve::physics::IJointBackend3D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

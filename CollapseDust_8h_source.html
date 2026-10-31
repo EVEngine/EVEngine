@@ -1,0 +1,323 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/destruction/fx/CollapseDust.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_753f4e9b1c9b357f6e302b80627231b1.html">destruction</a></li><li class="navelem"><a class="el" href="dir_167c2bfd9ee1f35719b835d9f2928d00.html">fx</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CollapseDust.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CollapseDust_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;future&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;glm/mat4x4.hpp&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span>VolumeFluid;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>}  <span class="comment">// namespace eve::fluids</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">class </span>Camera3D;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">class </span>AtmosphereVolume;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">Graphics</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ab58f96281585822e94cace95ce53fcecaa3e8ae43188ae76d38f414b2bdb0077b">Texture</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>Volumetric;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">class </span>CollapseAnimation;</div>
+<div class="foldopen" id="foldopen00024" data-start="{" data-end="};">
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DustFogView.html">   24</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1DustFogView.html">DustFogView</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DustFogView.html#aad793c083f90fa6394c0d953f7c9a115">   25</a></span>    glm::mat4 <a class="code hl_variable" href="structeve_1_1physics_1_1DustFogView.html#aa8a659d5c380cd42c101b37f6432822d">view</a>{1.f}, <a class="code hl_variable" href="structeve_1_1physics_1_1DustFogView.html#aad793c083f90fa6394c0d953f7c9a115">inverseViewProjection</a>{1.f};</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DustFogView.html#a3efa6e7ee6cd00a2ca7b4d5c1c121611">   26</a></span>    <span class="keywordtype">float</span>     <a class="code hl_variable" href="structeve_1_1physics_1_1DustFogView.html#a781db5ccee22ff891a2ebdea56b744f8">fov</a> = 39.f, <a class="code hl_variable" href="structeve_1_1physics_1_1DustFogView.html#a110343ac3afad2d2c5f935f25bb377a9">nearDistance</a> = 0.2f, <a class="code hl_variable" href="structeve_1_1physics_1_1DustFogView.html#a3efa6e7ee6cd00a2ca7b4d5c1c121611">farDistance</a> = 65.f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DustFogFrame.html">   29</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1DustFogFrame.html">DustFogFrame</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DustFogFrame.html#ab64fe76703852dd1cd440fe556d6e847">   30</a></span>    std::vector&lt;unsigned char&gt; <a class="code hl_variable" href="structeve_1_1physics_1_1DustFogFrame.html#ab64fe76703852dd1cd440fe556d6e847">atlas</a>, <a class="code hl_variable" href="structeve_1_1physics_1_1DustFogFrame.html#ae3a6038120b10aa5421db47c917fe220">depth</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DustFogFrame.html#a5f67a5f6eb19c42c27abce97b2dc6a10">   31</a></span>    <span class="keywordtype">int</span>                        <a class="code hl_variable" href="structeve_1_1physics_1_1DustFogFrame.html#a0f726f12bc5e14925803891fa48bb1a2">atlasWidth</a> = 0, <a class="code hl_variable" href="structeve_1_1physics_1_1DustFogFrame.html#a5f67a5f6eb19c42c27abce97b2dc6a10">atlasHeight</a> = 0, <a class="code hl_variable" href="structeve_1_1physics_1_1DustFogFrame.html#a1fcc77567c307f135a2b6dfd26ef7133">depthWidth</a> = 0, <a class="code hl_variable" href="structeve_1_1physics_1_1DustFogFrame.html#afb296ead62209a48b612cb17dbda573c">depthHeight</a> = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DustFogFrame.html#aacd3c7908a3f5531f69c7bd41887bd3b">   32</a></span>    <a class="code hl_struct" href="structeve_1_1physics_1_1DustFogView.html">DustFogView</a>                <a class="code hl_variable" href="structeve_1_1physics_1_1DustFogFrame.html#aacd3c7908a3f5531f69c7bd41887bd3b">view</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1DustFogFrame.html#a897c0131b7924b29c9b8e8a5f9440f84">   33</a></span>    <span class="keywordtype">float</span>                      <a class="code hl_variable" href="structeve_1_1physics_1_1DustFogFrame.html#a897c0131b7924b29c9b8e8a5f9440f84">seconds</a> = 0.f;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4a">   36</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4a">DustFogRequest</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4aa8428552d86c0d262a542a528af490afa">Started</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4aad8a942ef2b04672adfafef0ad817a407">Busy</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4aa5ff3c6978f87d96febfdc8ed3899a97e">Unchanged</a> };</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics.html#a678ee9fcb3a3bc8eb2dcad617daa896d">   38</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a678ee9fcb3a3bc8eb2dcad617daa896d">DustFogDisplay</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a678ee9fcb3a3bc8eb2dcad617daa896da2d13df6f8b5e4c5af9f87e0dc39df69d">Pending</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a678ee9fcb3a3bc8eb2dcad617daa896dae7d31fc0602fb2ede144d18cdffd816b">Ready</a> };</div>
+<div class="foldopen" id="foldopen00047" data-start="{" data-end="};">
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapseDust.html">   47</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a> {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapseDust.html#afcc884fa7f7b507fe848ca0d858f344e">   50</a></span>    <a class="code hl_function" href="classeve_1_1physics_1_1CollapseDust.html#afcc884fa7f7b507fe848ca0d858f344e">CollapseDust</a>();</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_class" href="classeve_1_1physics_1_1CollapseDust.html">~CollapseDust</a>();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapseDust.html#a81a1b5fecb2ac19b73a4a069692f5f12">   53</a></span>    <a class="code hl_function" href="classeve_1_1physics_1_1CollapseDust.html#a81a1b5fecb2ac19b73a4a069692f5f12">CollapseDust</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapseDust.html#af4e1292d0a72dbf9ef86f4f5273c80ed">   54</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a>&amp; <a class="code hl_function" href="classeve_1_1physics_1_1CollapseDust.html#af4e1292d0a72dbf9ef86f4f5273c80ed">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapseDust.html#a6d1150bdf2ecd8e4b5560707b5066419">   55</a></span>    <a class="code hl_function" href="classeve_1_1physics_1_1CollapseDust.html#a6d1150bdf2ecd8e4b5560707b5066419">CollapseDust</a>(<a class="code hl_class" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a>&amp;&amp;)                 = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapseDust.html#a268562b9d75af8fbb9c7378a4911b0db">   56</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a>&amp; <a class="code hl_function" href="classeve_1_1physics_1_1CollapseDust.html#a268562b9d75af8fbb9c7378a4911b0db">operator=</a>(<a class="code hl_class" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a>&amp;&amp;)      = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> capture(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1VolumeFluid.html">fluids::VolumeFluid</a>&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, <span class="keywordtype">float</span> seconds);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> present(<a class="code hl_class" href="classeve_1_1fluids_1_1VolumeFluid.html">fluids::VolumeFluid</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <span class="keywordtype">float</span> seconds) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> save(std::string_view <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> load(std::string_view <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapseDust.html#a9c81f07f991a9e27c2fe28e0995c3b38">   80</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1CollapseDust.html#a9c81f07f991a9e27c2fe28e0995c3b38">frameCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(frames_.size()); }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> prepareDepth(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> injectFog(<a class="code hl_class" href="classeve_1_1graphics_1_1AtmosphereVolume.html">graphics::AtmosphereVolume</a>&amp; grid, <span class="keyword">const</span> glm::mat4&amp; inverseViewProjection,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                                         <span class="keywordtype">float</span> seconds, <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> updateDepthTexture(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>&amp; <a class="code hl_variable" href="SceneVisibilityProvider_8cpp.html#a7b4888a79ec6bf11e4dab85b0657ac78">graphics</a>, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a>&amp; texture,</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                                                  <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1CollapseAnimation.html">CollapseAnimation</a>&amp; <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>, <span class="keywordtype">float</span> seconds,</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                                                  <a class="code hl_class" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a>&amp; <a class="code hl_variable" href="GraphicsParticles_8cpp.html#a1468de14d9d902d332a919bb846dc8f2">camera</a>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> prepareFog(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1CollapseAnimation.html">CollapseAnimation</a>&amp; <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>, <span class="keywordtype">int</span> depthWidth, <span class="keywordtype">int</span> depthHeight, <span class="keywordtype">int</span> gridWidth,</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                                          <span class="keywordtype">int</span> gridHeight, <span class="keywordtype">int</span> gridDepth);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;DustFogRequest&gt;</a> requestFog(<span class="keywordtype">float</span> seconds, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1DustFogView.html">DustFogView</a>&amp; <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a20f7a01c65e0cec1613314b7c3e174f2">view</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a>,</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                                                    <span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::optional&lt;DustFogFrame&gt;</a>&gt; takeFogFrame();</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;DustFogDisplay&gt;</a> updateFog(<a class="code hl_class" href="classeve_1_1graphics_1_1Volumetric.html">graphics::Volumetric</a>&amp; fog, <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>&amp; <a class="code hl_variable" href="SceneVisibilityProvider_8cpp.html#a7b4888a79ec6bf11e4dab85b0657ac78">graphics</a>,</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                                                   <span class="keywordtype">float</span> seconds, <a class="code hl_class" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a>&amp; <a class="code hl_variable" href="GraphicsParticles_8cpp.html#a1468de14d9d902d332a919bb846dc8f2">camera</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a>,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                                                   <span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> rasterizeDepth(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1CollapseAnimation.html">CollapseAnimation</a>&amp; <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>, <span class="keywordtype">float</span> seconds, <a class="code hl_class" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a>&amp; <a class="code hl_variable" href="GraphicsParticles_8cpp.html#a1468de14d9d902d332a919bb846dc8f2">camera</a>);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> rasterizeDepthView(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1CollapseAnimation.html">CollapseAnimation</a>&amp; <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>, <span class="keywordtype">float</span> seconds,</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                                                  <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1DustFogView.html">DustFogView</a>&amp; <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a20f7a01c65e0cec1613314b7c3e174f2">view</a>);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keyword">struct </span>Frame {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keywordtype">float</span>                             seconds;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="keywordtype">float</span>                             <a class="code hl_variable" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        std::vector&lt;std::array&lt;float, 7&gt;&gt; <a class="code hl_variable" href="PhysicsBake_8cpp.html#ae015899567f7b1e6cf706b28ac57cb19">particles</a>;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    };</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    std::vector&lt;Frame&gt;                       frames_;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    std::vector&lt;float&gt;                       depth_;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    std::vector&lt;unsigned char&gt;               depthPixels_;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordtype">int</span>                                      width_ = 0, height_ = 0;</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    std::shared_ptr&lt;const CollapseAnimation&gt; fogClip_;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordtype">int</span>                                      gridWidth_ = 0, gridHeight_ = 0, gridDepth_ = 0;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordtype">float</span>       requestedSeconds_ = -1.f, requestedDensity_ = -1.f, requestedRadius_ = -1.f;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    DustFogView requestedView_, presentedView_;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordtype">bool</span>        presented_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="comment">// Declared last so the sole future joins before other member destruction.</span></div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    std::future&lt;Result&lt;DustFogFrame&gt;&gt; future_;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>};</div>
+</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a16c9300acaea4db7696fb24b3802bfa5"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00151">ActionNotifyRegistry.cpp:151</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aForceBindings_8cpp_html_af5d1a3cc4fffecd94d9cb9eb0096b071"><div class="ttname"><a href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a></div><div class="ttdeci">float density</div><div class="ttdef"><b>Definition</b> <a href="ForceBindings_8cpp_source.html#l00080">ForceBindings.cpp:80</a></div></div>
+<div class="ttc" id="aGraphicsParticles_8cpp_html_a1468de14d9d902d332a919bb846dc8f2"><div class="ttname"><a href="GraphicsParticles_8cpp.html#a1468de14d9d902d332a919bb846dc8f2">camera</a></div><div class="ttdeci">float camera[2]</div><div class="ttdef"><b>Definition</b> <a href="GraphicsParticles_8cpp_source.html#l00062">GraphicsParticles.cpp:62</a></div></div>
+<div class="ttc" id="aGraphicsVirtualGeometry_8cpp_html_a30a948bc4ba3defbec563e070a66fbc6"><div class="ttname"><a href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a></div><div class="ttdeci">glm::vec4 clip</div><div class="ttdef"><b>Definition</b> <a href="GraphicsVirtualGeometry_8cpp_source.html#l00045">GraphicsVirtualGeometry.cpp:45</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00014">ImageImporter.cpp:14</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00013">ImageImporter.cpp:13</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a3f67c53b80389c5f53961936edba04c9"><div class="ttname"><a href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a></div><div class="ttdeci">double radius</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00042">MeleeHit.cpp:42</a></div></div>
+<div class="ttc" id="aOceanSprayBindings_8cpp_html_a20f7a01c65e0cec1613314b7c3e174f2"><div class="ttname"><a href="OceanSprayBindings_8cpp.html#a20f7a01c65e0cec1613314b7c3e174f2">view</a></div><div class="ttdeci">OceanSprayView view</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayBindings_8cpp_source.html#l00030">OceanSprayBindings.cpp:30</a></div></div>
+<div class="ttc" id="aPhysicsBake_8cpp_html_ae015899567f7b1e6cf706b28ac57cb19"><div class="ttname"><a href="PhysicsBake_8cpp.html#ae015899567f7b1e6cf706b28ac57cb19">particles</a></div><div class="ttdeci">std::vector&lt; BakedParticleSample &gt; particles</div><div class="ttdef"><b>Definition</b> <a href="PhysicsBake_8cpp_source.html#l00130">PhysicsBake.cpp:130</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00111">PlayHost.cpp:111</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSceneVisibilityProvider_8cpp_html_a7b4888a79ec6bf11e4dab85b0657ac78"><div class="ttname"><a href="SceneVisibilityProvider_8cpp.html#a7b4888a79ec6bf11e4dab85b0657ac78">graphics</a></div><div class="ttdeci">Graphics * graphics</div><div class="ttdef"><b>Definition</b> <a href="SceneVisibilityProvider_8cpp_source.html#l00019">SceneVisibilityProvider.cpp:19</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aa035d90db0e334b2f2f53e55a79e621f"><div class="ttname"><a href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a></div><div class="ttdeci">std::string_view source</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00020">ScriptStructure.cpp:20</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_a12acf4cc0533ead229b8b9f6c86b7fe6"><div class="ttname"><a href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a></div><div class="ttdeci">int spacing</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00087">TileConfig.cpp:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1VolumeFluid_html"><div class="ttname"><a href="classeve_1_1fluids_1_1VolumeFluid.html">eve::fluids::VolumeFluid</a></div><div class="ttdoc">CPU position-based free-volume fluid with a bounded spatial grid. @ownership Owns all particle state;...</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluid_8h_source.html#l00517">VolumeFluid.h:517</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1AtmosphereVolume_html"><div class="ttname"><a href="classeve_1_1graphics_1_1AtmosphereVolume.html">eve::graphics::AtmosphereVolume</a></div><div class="ttdoc">Camera-frustum volume used by the volumetric fog passes and CPU references.</div><div class="ttdef"><b>Definition</b> <a href="AtmosphereVolume_8h_source.html#l00037">AtmosphereVolume.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Camera3D_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Camera3D.html">eve::graphics::Camera3D</a></div><div class="ttdoc">EVENGINE_API_BACKENDS public API.</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8h_source.html#l00028">RenderSystem3D.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00120">Graphics.h:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00015">Texture.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Volumetric_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Volumetric.html">eve::graphics::Volumetric</a></div><div class="ttdoc">Volumetric light + fog.</div><div class="ttdef"><b>Definition</b> <a href="Volumetric_8h_source.html#l00038">Volumetric.h:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1CollapseAnimation_html"><div class="ttname"><a href="classeve_1_1physics_1_1CollapseAnimation.html">eve::physics::CollapseAnimation</a></div><div class="ttdoc">Owning, solver-independent baked rigid-fragment animation within Physics. @ownership Owns all samples...</div><div class="ttdef"><b>Definition</b> <a href="backend_2bake_2collapse_2CollapseAnimation_8h_source.html#l00027">CollapseAnimation.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1CollapseDust_html"><div class="ttname"><a href="classeve_1_1physics_1_1CollapseDust.html">eve::physics::CollapseDust</a></div><div class="ttdoc">Owning gas presentation cache, independent of the source solver. @ownership Owns frames and depth scr...</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00047">CollapseDust.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1CollapseDust_html_a268562b9d75af8fbb9c7378a4911b0db"><div class="ttname"><a href="classeve_1_1physics_1_1CollapseDust.html#a268562b9d75af8fbb9c7378a4911b0db">eve::physics::CollapseDust::operator=</a></div><div class="ttdeci">CollapseDust &amp; operator=(CollapseDust &amp;&amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1CollapseDust_html_a6d1150bdf2ecd8e4b5560707b5066419"><div class="ttname"><a href="classeve_1_1physics_1_1CollapseDust.html#a6d1150bdf2ecd8e4b5560707b5066419">eve::physics::CollapseDust::CollapseDust</a></div><div class="ttdeci">CollapseDust(CollapseDust &amp;&amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1CollapseDust_html_a81a1b5fecb2ac19b73a4a069692f5f12"><div class="ttname"><a href="classeve_1_1physics_1_1CollapseDust.html#a81a1b5fecb2ac19b73a4a069692f5f12">eve::physics::CollapseDust::CollapseDust</a></div><div class="ttdeci">CollapseDust(const CollapseDust &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1CollapseDust_html_a9c81f07f991a9e27c2fe28e0995c3b38"><div class="ttname"><a href="classeve_1_1physics_1_1CollapseDust.html#a9c81f07f991a9e27c2fe28e0995c3b38">eve::physics::CollapseDust::frameCount</a></div><div class="ttdeci">int frameCount() const</div><div class="ttdoc">Recorded frame count.</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00080">CollapseDust.h:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1CollapseDust_html_af4e1292d0a72dbf9ef86f4f5273c80ed"><div class="ttname"><a href="classeve_1_1physics_1_1CollapseDust.html#af4e1292d0a72dbf9ef86f4f5273c80ed">eve::physics::CollapseDust::operator=</a></div><div class="ttdeci">CollapseDust &amp; operator=(const CollapseDust &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1CollapseDust_html_afcc884fa7f7b507fe848ca0d858f344e"><div class="ttname"><a href="classeve_1_1physics_1_1CollapseDust.html#afcc884fa7f7b507fe848ca0d858f344e">eve::physics::CollapseDust::CollapseDust</a></div><div class="ttdeci">CollapseDust()</div><div class="ttdoc">Construct an empty owning cache; no worker starts until requested.</div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidTarget_8h_source.html#l00012">FluidTarget.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00025">Animation.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00036">Climbing.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a678ee9fcb3a3bc8eb2dcad617daa896d"><div class="ttname"><a href="namespaceeve_1_1physics.html#a678ee9fcb3a3bc8eb2dcad617daa896d">eve::physics::DustFogDisplay</a></div><div class="ttdeci">DustFogDisplay</div><div class="ttdoc">Whether a matching-view fog image is available for compositing.</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00038">CollapseDust.h:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a678ee9fcb3a3bc8eb2dcad617daa896da2d13df6f8b5e4c5af9f87e0dc39df69d"><div class="ttname"><a href="namespaceeve_1_1physics.html#a678ee9fcb3a3bc8eb2dcad617daa896da2d13df6f8b5e4c5af9f87e0dc39df69d">eve::physics::DustFogDisplay::Pending</a></div><div class="ttdeci">@ Pending</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a678ee9fcb3a3bc8eb2dcad617daa896dae7d31fc0602fb2ede144d18cdffd816b"><div class="ttname"><a href="namespaceeve_1_1physics.html#a678ee9fcb3a3bc8eb2dcad617daa896dae7d31fc0602fb2ede144d18cdffd816b">eve::physics::DustFogDisplay::Ready</a></div><div class="ttdeci">@ Ready</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_af72edd973b0dec466f12eb63c2f88d4a"><div class="ttname"><a href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4a">eve::physics::DustFogRequest</a></div><div class="ttdeci">DustFogRequest</div><div class="ttdoc">Explicit worker admission state.</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00036">CollapseDust.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_af72edd973b0dec466f12eb63c2f88d4aa5ff3c6978f87d96febfdc8ed3899a97e"><div class="ttname"><a href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4aa5ff3c6978f87d96febfdc8ed3899a97e">eve::physics::DustFogRequest::Unchanged</a></div><div class="ttdeci">@ Unchanged</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_af72edd973b0dec466f12eb63c2f88d4aa8428552d86c0d262a542a528af490afa"><div class="ttname"><a href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4aa8428552d86c0d262a542a528af490afa">eve::physics::DustFogRequest::Started</a></div><div class="ttdeci">@ Started</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_af72edd973b0dec466f12eb63c2f88d4aad8a942ef2b04672adfafef0ad817a407"><div class="ttname"><a href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4aad8a942ef2b04672adfafef0ad817a407">eve::physics::DustFogRequest::Busy</a></div><div class="ttdeci">@ Busy</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ab58f96281585822e94cace95ce53fcecaa3e8ae43188ae76d38f414b2bdb0077b"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ab58f96281585822e94cace95ce53fcecaa3e8ae43188ae76d38f414b2bdb0077b">eve::procgen::TerrainOperationDomain::Texture</a></div><div class="ttdeci">@ Texture</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">eve::PhotoModeDomain::Graphics</a></div><div class="ttdeci">@ Graphics</div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogFrame_html"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogFrame.html">eve::physics::DustFogFrame</a></div><div class="ttdoc">Owning worker output; no GPU or source pointers. Graphics borrows pixels only for upload.</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00029">CollapseDust.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogFrame_html_a0f726f12bc5e14925803891fa48bb1a2"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogFrame.html#a0f726f12bc5e14925803891fa48bb1a2">eve::physics::DustFogFrame::atlasWidth</a></div><div class="ttdeci">int atlasWidth</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00031">CollapseDust.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogFrame_html_a1fcc77567c307f135a2b6dfd26ef7133"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogFrame.html#a1fcc77567c307f135a2b6dfd26ef7133">eve::physics::DustFogFrame::depthWidth</a></div><div class="ttdeci">int depthWidth</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00031">CollapseDust.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogFrame_html_a5f67a5f6eb19c42c27abce97b2dc6a10"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogFrame.html#a5f67a5f6eb19c42c27abce97b2dc6a10">eve::physics::DustFogFrame::atlasHeight</a></div><div class="ttdeci">int atlasHeight</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00031">CollapseDust.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogFrame_html_a897c0131b7924b29c9b8e8a5f9440f84"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogFrame.html#a897c0131b7924b29c9b8e8a5f9440f84">eve::physics::DustFogFrame::seconds</a></div><div class="ttdeci">float seconds</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00033">CollapseDust.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogFrame_html_aacd3c7908a3f5531f69c7bd41887bd3b"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogFrame.html#aacd3c7908a3f5531f69c7bd41887bd3b">eve::physics::DustFogFrame::view</a></div><div class="ttdeci">DustFogView view</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00032">CollapseDust.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogFrame_html_ab64fe76703852dd1cd440fe556d6e847"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogFrame.html#ab64fe76703852dd1cd440fe556d6e847">eve::physics::DustFogFrame::atlas</a></div><div class="ttdeci">std::vector&lt; unsigned char &gt; atlas</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00030">CollapseDust.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogFrame_html_ae3a6038120b10aa5421db47c917fe220"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogFrame.html#ae3a6038120b10aa5421db47c917fe220">eve::physics::DustFogFrame::depth</a></div><div class="ttdeci">std::vector&lt; unsigned char &gt; depth</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00030">CollapseDust.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogFrame_html_afb296ead62209a48b612cb17dbda573c"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogFrame.html#afb296ead62209a48b612cb17dbda573c">eve::physics::DustFogFrame::depthHeight</a></div><div class="ttdeci">int depthHeight</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00031">CollapseDust.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogView_html"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogView.html">eve::physics::DustFogView</a></div><div class="ttdoc">Owning camera snapshot; CPU workers never access an ECS camera.</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00024">CollapseDust.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogView_html_a110343ac3afad2d2c5f935f25bb377a9"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogView.html#a110343ac3afad2d2c5f935f25bb377a9">eve::physics::DustFogView::nearDistance</a></div><div class="ttdeci">float nearDistance</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00026">CollapseDust.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogView_html_a3efa6e7ee6cd00a2ca7b4d5c1c121611"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogView.html#a3efa6e7ee6cd00a2ca7b4d5c1c121611">eve::physics::DustFogView::farDistance</a></div><div class="ttdeci">float farDistance</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00026">CollapseDust.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogView_html_a781db5ccee22ff891a2ebdea56b744f8"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogView.html#a781db5ccee22ff891a2ebdea56b744f8">eve::physics::DustFogView::fov</a></div><div class="ttdeci">float fov</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00026">CollapseDust.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogView_html_aa8a659d5c380cd42c101b37f6432822d"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogView.html#aa8a659d5c380cd42c101b37f6432822d">eve::physics::DustFogView::view</a></div><div class="ttdeci">glm::mat4 view</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00025">CollapseDust.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1DustFogView_html_aad793c083f90fa6394c0d953f7c9a115"><div class="ttname"><a href="structeve_1_1physics_1_1DustFogView.html#aad793c083f90fa6394c0d953f7c9a115">eve::physics::DustFogView::inverseViewProjection</a></div><div class="ttdeci">glm::mat4 inverseViewProjection</div><div class="ttdef"><b>Definition</b> <a href="CollapseDust_8h_source.html#l00025">CollapseDust.h:25</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

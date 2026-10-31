@@ -1,0 +1,254 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">IWorldBackend3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::physics::IWorldBackend3D 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a00711fd4fbdb0db02420980e5736b3e8">castBoxAll</a>(float x, float y, float z, float width, float height, float depth, float qx, float qy, float qz, float qw, float dx, float dy, float dz, int maxHits)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#add45b7371a34cc8a88fbfceb7bc0d59a">castCapsuleAll</a>(float ax, float ay, float az, float bx, float by, float bz, float radius, float dx, float dy, float dz, int maxHits)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a5b58f48f989c623b7300a91c2ba1e1bb">castSphereAll</a>(float x, float y, float z, float radius, float dx, float dy, float dz, int maxHits)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a77e7ff8db676c65af7e88898c9645574">closestPoint</a>(float x, float y, float z, float maxDistance)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#aad3cc07e3ce373f1d5fc9ab68e097dac">collectEvents</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#ae8d50538b3490e93af370c4167aac1f1">createBody</a>(std::string_view type, float x, float y, float z)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a983eaeed14e391a7b45a408acb67e1a0">destroy</a>() noexcept=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#aad2c4546717c2fa84730a34389088e2d">explode</a>(float x, float y, float z, float radius, float falloff, float impulsePerArea, int maskBits)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a2731bbf568ea39c8a9b0f27d05f474ed">getAwakeBodyCount</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a3938fcb0da01b540164f35df878987e8">getAwakeContactCount</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a8d974dd1eb8d1fa290497d2c25c55448">getBodyCount</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#aca8983432d9796b5786c43a545db16f6">getBoundsMaxX</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a5e03caea6f177aa7fbbf66530e4c1744">getBoundsMaxY</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#ae33cffdd389346727087f59e3153a976">getBoundsMaxZ</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a277716bc71943989d6fb1cc166060648">getBoundsMinX</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a8edd88855f32b88f4495b5fe9d6cee9c">getBoundsMinY</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a73cf7c5e74a0dccc3866dfae0417b8d9">getBoundsMinZ</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a0c830d49b0b1a0d8ec918c5acf875f79">getContactCount</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a7156dd8c03af71e4285bb24c23c139ca">getContactRecycleDistance</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a292458a440e9f83fadb881e82cd116a0">getDynamicTreeHeight</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#aa34120624da49f10b957e82cc4865e9e">getGravityX</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a32dc7ae2770692dc7339e35b4c121e8e">getGravityY</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#abef083b1376f8895b6b99fa143952516">getGravityZ</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a877a621dc03ffb385af066cf6ac75559">getHitEventThreshold</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a7cfab4d4c80e87f74db5826115bd06c0">getIslandCount</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#ae4bd2d8f232ea4a855de86ec9e7c1a42">getJointCount</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#af54652214726eb6b3422498078ff4dfe">getMaximumLinearSpeed</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#aacd5bf2b3e944be57bce083bfaf83adc">getMemoryByteCount</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a77a5932ca396fee9bd2879ee0cd0c46f">getProfileBulletsMs</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#ace03ceb386600c48b1f266b90ec68377">getProfileCollideMs</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a3bc711ec28ea0818b402c07f500ee727">getProfilePairsMs</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a3a8ad78314a018e72f8da5ad0ba2a2ea">getProfileSensorsMs</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a32db797b77bf7a07abfda80f01b1571d">getProfileSolveMs</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a24dd98e1f895635112745e3987c27b97">getProfileStepMs</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#aea7551fd695de14d8f5d81da56c598cf">getRecycledContactCount</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a9920ebc0e1dd60b03324c714dddc9185">getRestitutionThreshold</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a45df7f59791d4283872a121331f4ee64">getShapeCount</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a853787aca12d3bc58d7c8f2a2816e187">getStaticTreeHeight</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a1ab1989001e9d40ef19c1ae09ad5c72b">isContinuousCollisionEnabled</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a900d0634d41afc66c81676da58f1d10d">isValid</a>() const noexcept=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#ae27bf294c3a29bf813c8587e96e04d85">isWarmStartingEnabled</a>() const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#af959deddfc247b285717411f054be2e9">moveCapsule</a>(float ax, float ay, float az, float bx, float by, float bz, float radius, float dx, float dy, float dz)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#ad11f0b37328ac16a4b8ab0e8530a769e">moveCapsuleOwned</a>(float ax, float ay, float az, float bx, float by, float bz, float radius, float dx, float dy, float dz, QueryFilter3D filter, CapsuleMovePolicy3D policy)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a34d086e4d6b7b386f61af537f1fe26b2">newDistanceJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float anchorAX, float anchorAY, float anchorAZ, float anchorBX, float anchorBY, float anchorBZ, float length, bool collideConnected)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a951ccc0dcc599c0f5327c5c4fbf3c19d">newFilterJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#abdbae8250795144eaa399aea16b5fe7d">newMotorJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, bool collideConnected)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#af35459fb9174aa9b39446a76b6d6ad9a">newParallelJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float axisX, float axisY, float axisZ, bool collideConnected)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#ac4b5273775e1c9ae085c17a66674a760">newPrismaticJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float anchorX, float anchorY, float anchorZ, float axisX, float axisY, float axisZ, bool collideConnected)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a0632d9c56cb39e26c026434119952b6e">newRevoluteJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float anchorX, float anchorY, float anchorZ, float axisX, float axisY, float axisZ, bool collideConnected)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a3b731ea15b3afbd5f3e16816a5aaf4cd">newSphericalJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float anchorX, float anchorY, float anchorZ, float axisX, float axisY, float axisZ, bool collideConnected)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a22b09829c8b22126f4ee43d6c7229fbf">newWeldJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float anchorX, float anchorY, float anchorZ, bool collideConnected)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a8d5108c6a85da4c541c19571d34d94ad">newWheelJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float anchorX, float anchorY, float anchorZ, float suspensionAxisX, float suspensionAxisY, float suspensionAxisZ, float wheelAxisX, float wheelAxisY, float wheelAxisZ, bool collideConnected)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a7641bac2778e126d3f0466df77c47fd8">pointProbeFiltered</a>(float x, float y, float z, float radius, uint64_t categoryBits, uint64_t maskBits) const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#acd9cca2654359ef0bfb295235a66796d">queryAABB</a>(float minX, float minY, float minZ, float maxX, float maxY, float maxZ)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#ad8b6162d430757f5bb75673a2f447e4b">queryAabbBroadPhaseOwned</a>(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, QueryFilter3D filter)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a995ead94ede9831ac6fa5a52f67ab7ba">queryBodyContactsOwned</a>(PhysicsBodyHandle body, int maxPoints) const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a1bc5bc61b22819a47fff9094d31f86f8">queryBox</a>(float x, float y, float z, float width, float height, float depth, float qx, float qy, float qz, float qw)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#ae592a7f5c89505a13ad7b34d08ac4324">queryCapsule</a>(float ax, float ay, float az, float bx, float by, float bz, float radius)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a3b84b55f0d35bf35af416873b0356740">queryCapsuleOwned</a>(float ax, float ay, float az, float bx, float by, float bz, float radius, QueryFilter3D filter)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#ab503be72e1969f1c2ecdd5df709e87f4">querySphere</a>(float x, float y, float z, float radius)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a36c50cc807d8e1ecc03d3998dfff9409">rayCastAll</a>(float x1, float y1, float z1, float x2, float y2, float z2, int maxHits)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#ae005fccd0b74295b1eec3755992221ca">rayCastFiltered</a>(float x1, float y1, float z1, float x2, float y2, float z2, uint64_t maskBits)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a5b5bef8ab1e76a14d681b255af5bce0f">rayCastOwned</a>(float x1, float y1, float z1, float x2, float y2, float z2, QueryFilter3D filter)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a36d3263b1c76fb2da74d19ca0e519121">selectSimulation</a>()=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a114a9a9dfd00cfb258e2ba9dd07f2604">setContactRecycleDistance</a>(float distance)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a3f3c1aaabf0bd74b7e7234986291edad">setContactTuning</a>(float hertz, float dampingRatio, float pushOutSpeed)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#abcb51c882d79315d6d8292c224731cd1">setContinuousCollisionEnabled</a>(bool enabled)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#afa8ef135f9d49bac0fbd30bc7d21acf3">setGravity</a>(float gx, float gy, float gz)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a045aaad9b244f1de1ac5ba1c6f6b1af1">setHitEventThreshold</a>(float speed)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a2b023bb1277897ce25d39500ae546861">setMaximumLinearSpeed</a>(float speed)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a04f59d81e176db5d07048440d8855e01">setMoverUp</a>(float x, float y, float z)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a4f27b9626609809d0f5e5ab2c55bdbcf">setRestitutionThreshold</a>(float speed)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a1541b0f986d932a4e95602ebc0f33c28">setWarmStartingEnabled</a>(bool enabled)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#ae5975c7c88faf44d3275f46dc81e5acc">shapeKey</a>(const Shape3D &amp;shape) const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a936f5b2d9ffa94cccd9f19bfdb579b4d">sphereCast</a>(float x1, float y1, float z1, float x2, float y2, float z2, float radius, uint64_t maskBits, int ignoredBodyId) const =0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a5df79bf26e7d24f0f201a69bddba5d9e">swapTopology</a>(IWorldBackend3D &amp;prepared)=0</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">pure virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a97b4c8d24b4b44424e243654db62f831">~IWorldBackend3D</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/action/ActionNotifyPlayback.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_4132021be2fc4b1a23b2cac06bb68e21.html">action</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ActionNotifyPlayback.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ActionNotifyPlayback_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="ActionNotifyPlayback_8h.html">action/ActionNotifyPlayback.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1action.html">eve::action</a> {</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="foldopen" id="foldopen00005" data-start="{" data-end="}">
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1ActionNotifyPlayback.html#acbeebe7acfdd470f03825758c0040ab5">    5</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;ActionNotifyPlayback&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyPlayback.html#acbeebe7acfdd470f03825758c0040ab5">ActionNotifyPlayback::withBuiltins</a>() {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>    <span class="keyword">auto</span> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyPlayback.html#a331f5bc04c077b56dbcdcbb9036299af">registry</a> = <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyRegistry.html#ad77fb452d78b76a486e27d10327ec392">ActionNotifyRegistry::withBuiltins</a>();</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyPlayback.html#a331f5bc04c077b56dbcdcbb9036299af">registry</a>) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;ActionNotifyPlayback&gt;</a>&gt;::failure(<a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyPlayback.html#a331f5bc04c077b56dbcdcbb9036299af">registry</a>.status());</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;ActionNotifyPlayback&gt;</a>&gt;::success(</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>        std::make_unique&lt;ActionNotifyPlayback&gt;(std::move(<a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyPlayback.html#a331f5bc04c077b56dbcdcbb9036299af">registry</a>).takeValue()));</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>}</div>
+</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1ActionNotifyPlayback.html#ad94b9bdf7e50899ed0b6dae0d6184806">   12</a></span><a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyPlayback.html#ad94b9bdf7e50899ed0b6dae0d6184806">ActionNotifyPlayback::ActionNotifyPlayback</a>(<a class="code hl_class" href="classeve_1_1action_1_1ActionNotifyRegistry.html">ActionNotifyRegistry</a> <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a>) : registry_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(<a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a>)) {}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="}">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1ActionNotifyPlayback.html#a1cf7903cda986462dd733c60230bec1c">   14</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyPlayback.html#a1cf7903cda986462dd733c60230bec1c">ActionNotifyPlayback::apply</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionAdvance.html">ActionAdvance</a>&amp; advance, <a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a> <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">return</span> blocks_.<a class="code hl_function" href="classeve_1_1action_1_1ActionBlockRuntime.html#a529d9f650b204f28984355615bfb7454">apply</a>(advance, std::move(<a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>));</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1ActionNotifyPlayback.html#af3d10fa934db8324845e04b91c65d878">   18</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyPlayback.html#af3d10fa934db8324845e04b91c65d878">ActionNotifyPlayback::interrupt</a>(<a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a> <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">return</span> blocks_.<a class="code hl_function" href="classeve_1_1action_1_1ActionBlockRuntime.html#ab2e5708ad1aa57a6bd943034438733df">interrupt</a>(std::move(<a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>));</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1action_1_1ActionNotifyPlayback.html#a56e409a022e38efa08e4167ac9cfd4c3">   22</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1action_1_1ActionNotifyPlayback.html#a56e409a022e38efa08e4167ac9cfd4c3">ActionNotifyPlayback::sample</a>(<span class="keyword">const</span> std::vector&lt;ActionActiveBlock&gt;&amp; blocks,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                                          <a class="code hl_struct" href="structeve_1_1action_1_1ActionNotifyContext.html">ActionNotifyContext</a>                   <a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">return</span> blocks_.<a class="code hl_function" href="classeve_1_1action_1_1ActionBlockRuntime.html#ae896685093833a056a89347ec8472c5c">sample</a>(blocks, std::move(<a class="code hl_variable" href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a>));</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}  <span class="comment">// namespace eve::action</span></div>
+<div class="ttc" id="aActionNotifyPlayback_8h_html"><div class="ttname"><a href="ActionNotifyPlayback_8h.html">ActionNotifyPlayback.h</a></div><div class="ttdoc">Host-owned composition of ActionNotifyRegistry + ActionBlockRuntime.</div></div>
+<div class="ttc" id="aProjectIndexAutomatic_8cpp_html_af921fa52c376e1d3dfe04f7f70926b51"><div class="ttname"><a href="ProjectIndexAutomatic_8cpp.html#af921fa52c376e1d3dfe04f7f70926b51">registry</a></div><div class="ttdeci">const eve::script::BindingContractRegistry &amp; registry</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexAutomatic_8cpp_source.html#l00024">ProjectIndexAutomatic.cpp:24</a></div></div>
+<div class="ttc" id="aVegetationPreset_8cpp_html_aa677a20ed09a5d6c839a3d7a4d53cb9c"><div class="ttname"><a href="VegetationPreset_8cpp.html#aa677a20ed09a5d6c839a3d7a4d53cb9c">context</a></div><div class="ttdeci">const VegetationPresetContext &amp; context</div><div class="ttdef"><b>Definition</b> <a href="VegetationPreset_8cpp_source.html#l00094">VegetationPreset.cpp:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionBlockRuntime_html_a529d9f650b204f28984355615bfb7454"><div class="ttname"><a href="classeve_1_1action_1_1ActionBlockRuntime.html#a529d9f650b204f28984355615bfb7454">eve::action::ActionBlockRuntime::apply</a></div><div class="ttdeci">Result&lt; void &gt; apply(const ActionAdvance &amp;advance, ActionNotifyContext context)</div><div class="ttdoc">Deliver boundaries and active updates from one authoritative advance.</div><div class="ttdef"><b>Definition</b> <a href="ActionBlockRuntime_8cpp_source.html#l00010">ActionBlockRuntime.cpp:10</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionBlockRuntime_html_ab2e5708ad1aa57a6bd943034438733df"><div class="ttname"><a href="classeve_1_1action_1_1ActionBlockRuntime.html#ab2e5708ad1aa57a6bd943034438733df">eve::action::ActionBlockRuntime::interrupt</a></div><div class="ttdeci">Result&lt; void &gt; interrupt(ActionNotifyContext context)</div><div class="ttdoc">Emit paired exits for all blocks retained for one interrupted execution.</div><div class="ttdef"><b>Definition</b> <a href="ActionBlockRuntime_8cpp_source.html#l00031">ActionBlockRuntime.cpp:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionBlockRuntime_html_ae896685093833a056a89347ec8472c5c"><div class="ttname"><a href="classeve_1_1action_1_1ActionBlockRuntime.html#ae896685093833a056a89347ec8472c5c">eve::action::ActionBlockRuntime::sample</a></div><div class="ttdeci">Result&lt; void &gt; sample(const std::vector&lt; ActionActiveBlock &gt; &amp;blocks, ActionNotifyContext context) const</div><div class="ttdoc">Evaluate active blocks for editor scrubbing without retaining lifecycle state.</div><div class="ttdef"><b>Definition</b> <a href="ActionBlockRuntime_8cpp_source.html#l00048">ActionBlockRuntime.cpp:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyPlayback_html_a1cf7903cda986462dd733c60230bec1c"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyPlayback.html#a1cf7903cda986462dd733c60230bec1c">eve::action::ActionNotifyPlayback::apply</a></div><div class="ttdeci">Result&lt; void &gt; apply(const ActionAdvance &amp;advance, ActionNotifyContext context)</div><div class="ttdoc">Deliver boundaries and active updates from one ActionRuntime advance.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyPlayback_8cpp_source.html#l00014">ActionNotifyPlayback.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyPlayback_html_a331f5bc04c077b56dbcdcbb9036299af"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyPlayback.html#a331f5bc04c077b56dbcdcbb9036299af">eve::action::ActionNotifyPlayback::registry</a></div><div class="ttdeci">ActionNotifyRegistry &amp; registry() noexcept</div><div class="ttdoc">Mutable registry for installing provider handlers.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyPlayback_8h_source.html#l00051">ActionNotifyPlayback.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyPlayback_html_a56e409a022e38efa08e4167ac9cfd4c3"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyPlayback.html#a56e409a022e38efa08e4167ac9cfd4c3">eve::action::ActionNotifyPlayback::sample</a></div><div class="ttdeci">Result&lt; void &gt; sample(const std::vector&lt; ActionActiveBlock &gt; &amp;blocks, ActionNotifyContext context) const</div><div class="ttdoc">Side-effect-free preview sample path.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyPlayback_8cpp_source.html#l00022">ActionNotifyPlayback.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyPlayback_html_acbeebe7acfdd470f03825758c0040ab5"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyPlayback.html#acbeebe7acfdd470f03825758c0040ab5">eve::action::ActionNotifyPlayback::withBuiltins</a></div><div class="ttdeci">static Result&lt; std::unique_ptr&lt; ActionNotifyPlayback &gt; &gt; withBuiltins()</div><div class="ttdoc">Build heap-owned playback with the engine's standard notify descriptors/handlers.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyPlayback_8cpp_source.html#l00005">ActionNotifyPlayback.cpp:5</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyPlayback_html_ad94b9bdf7e50899ed0b6dae0d6184806"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyPlayback.html#ad94b9bdf7e50899ed0b6dae0d6184806">eve::action::ActionNotifyPlayback::ActionNotifyPlayback</a></div><div class="ttdeci">ActionNotifyPlayback(ActionNotifyRegistry registry)</div><div class="ttdoc">Take ownership of an already-configured registry.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyPlayback_8cpp_source.html#l00012">ActionNotifyPlayback.cpp:12</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyPlayback_html_af3d10fa934db8324845e04b91c65d878"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyPlayback.html#af3d10fa934db8324845e04b91c65d878">eve::action::ActionNotifyPlayback::interrupt</a></div><div class="ttdeci">Result&lt; void &gt; interrupt(ActionNotifyContext context)</div><div class="ttdoc">Emit paired exits for one interrupted execution.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyPlayback_8cpp_source.html#l00018">ActionNotifyPlayback.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html">eve::action::ActionNotifyRegistry</a></div><div class="ttdoc">Canonical notify descriptor owner and runtime handler router.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00145">ActionNotifyRegistry.h:145</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionNotifyRegistry_html_ad77fb452d78b76a486e27d10327ec392"><div class="ttname"><a href="classeve_1_1action_1_1ActionNotifyRegistry.html#ad77fb452d78b76a486e27d10327ec392">eve::action::ActionNotifyRegistry::withBuiltins</a></div><div class="ttdeci">static Result&lt; ActionNotifyRegistry &gt; withBuiltins()</div><div class="ttdoc">Build a registry containing the engine's standard semantic notify types.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00172">ActionNotifyRegistry.cpp:172</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1action_html"><div class="ttname"><a href="namespaceeve_1_1action.html">eve::action</a></div><div class="ttdef"><b>Definition</b> <a href="AbilityAsset_8cpp_source.html#l00011">AbilityAsset.cpp:11</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionAdvance_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionAdvance.html">eve::action::ActionAdvance</a></div><div class="ttdoc">Result payload for one deterministic advance call.</div><div class="ttdef"><b>Definition</b> <a href="Action_8h_source.html#l00204">Action.h:204</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionNotifyContext_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionNotifyContext.html">eve::action::ActionNotifyContext</a></div><div class="ttdoc">Context linking a routed event to its action execution.</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8h_source.html#l00041">ActionNotifyRegistry.h:41</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

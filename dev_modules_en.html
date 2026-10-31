@@ -1,0 +1,215 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: Module Development</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">Module Development</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>Developing and Reviewing a Module</h1>
+<p>Sources: <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/dev/模块接口契约与机制选型规范.md">interface/mechanism specification (Chinese)</a>, <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/dev/模块边界审查清单.md">boundary checklist (Chinese)</a>. <a class="el" href="dev_guide_en.html">Developer index</a>.</p>
+<p>This practical companion translates the principal review rules. Stable rule IDs remain authoritative references; detailed gate implementation states and historical audit counts stay in the Chinese specifications.</p>
+<h2>Declare the boundary</h2>
+<p>External exchanges belong to six faces:</p>
+<ol type="1">
+<li>Provided capabilities: name, implementation and observed absence behavior.</li>
+<li>Consumed dependencies: required/optional capabilities and explicit fallback.</li>
+<li>Data/relationships: ECS components or scene Links, owner, stale detection and destruction order.</li>
+<li>Events: type, ordering, dispatch phase and reentrancy.</li>
+<li>Script surface: eve classes/methods and ownership.</li>
+<li>Tool protocols where applicable: MCP/LSP/DAP names and response shapes.</li>
+</ol>
+<p>Declarations must be falsifiable against source/build/tests (<code>R-FACE-1..5</code>). Domains own their interfaces/state; common owns mechanisms and domain-neutral values/envelopes.</p>
+<p>Architecture CI (<code>make check/architecture-contracts</code>) lints changed C++ lines only — api-shape, ownership/lifetime Doxygen on raw pointers, runtime lookup bans, hot-path primitives, <code>@cost</code>. There is <b>no</b> hand-maintained JSON catalogue. Mark hot paths with a leading <code>// eve-hot-path</code> comment, or a directory-local <code>.eve-hot-path</code> policy containing <code>eve.hot-path-directory/v1:*.cpp</code>. Design notes: <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md"><code>docs/dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md</code></a>.</p>
+<h2>Include dependencies and trimming</h2>
+<p>Includes measure rebuild radius and layering. Link dependencies come from undefined symbols, construction/destruction, non-inline calls and RTTI. Include graphs cannot prove link-time omission (<code>R-BOUND-1..4</code>).</p>
+<p>State the tested layer: compilation without the module (L1), linking without its objects (L2), handled runtime absence (L3), or tested present/absent profiles (L4). Use symbol evidence or a real configure/build/link/start sequence for trimming claims. Name the profile.</p>
+<p>Unused code is not proof of independence: object-library inputs and dead-code elimination can change the outcome. Test the actual linkage configuration.</p>
+<h2>Derive the mechanism</h2>
+<p>For a new exchange, state cardinality, frequency, whether observers are known and atomicity (<code>R-MECH-1</code>).</p>
+<ul>
+<li>Per-entity every-frame data: ECS views.</li>
+<li>Process-level provider needed every frame: resolve once at startup, retain the dependency.</li>
+<li>Low-frequency ordered provider fallback: listeners and ordered traversal.</li>
+<li>State changes with unknown observers: Observer/events.</li>
+<li>Owned relationships: typed handles/Links with invalidation.</li>
+<li>Multi-step all-or-nothing changes: existing transaction/publication contracts.</li>
+</ul>
+<p>Keep discovery in composition roots, adapters or explicit boundaries. Do not scatter absence branches in business logic or perform module/capability lookup per entity/frame. Declare real hot-path files; moving work outside declared globs is evasion. Do not add module-internal feature flags when the boundary should be another module (<code>R-MECH-2..6</code>).</p>
+<h2>Mechanism and policy</h2>
+<p>Merge only code sharing an invariant, reason to change and owner (<code>R-COHESION-1</code>). Similar shape is insufficient. Reuse provider lifecycle mechanisms rather than inventing another registry; keep domain policy separate (<code>R-COHESION-3..4</code>).</p>
+<p>The consumer owns the interface for its question; the provider implements it. For a cross-domain concept, first try a typed relationship, then a lower-level mechanism with consumer-specific interfaces. Create a new domain only with its own invariant, lifetime and owner that neither existing domain can own (<code>R-COHESION-5..6</code>).</p>
+<h2>Visible cost and ownership</h2>
+<p>Expensive public operations need a concrete, current Doxygen <code>@cost</code>: relative scale, amortization and side effects (<code>R-COST-1..5</code>). Use distinct names or return/token shapes for cheap/expensive paths; default arguments must not silently choose another cost tier. Do not add ceremonial builders/options for cheap operations.</p>
+<p>Public headers use Doxygen comments with brief/parameter/return and relevant failure/ownership/thread/lifetime details. Follow <a class="el" href="dev_results_en.html">Result contracts</a> and <a class="el" href="dev_bindings_en.html">binding style</a>. Handbooks describe tasks/binding differences; references provide signatures.</p>
+<h2>Review evidence</h2>
+<div class="fragment"><div class="line">python3 scripts/module_boundary_audit.py --capabilities</div>
+<div class="line">python3 scripts/module_boundary_audit.py --findings</div>
+<div class="line">python3 scripts/module_depgraph.py --check --check-layers</div>
+<div class="line">ARCHITECTURE_BASE=HEAD make check/architecture-contracts</div>
+<div class="line">make check</div>
+</div><!-- fragment --><p>The audit is read-only evidence, not a gate substitute. Candidates need human PASS/FAIL decisions; unverified properties stay UNVERIFIED with missing evidence named. A full boundary review updates the Chinese ledger.</p>
+<p>Report the boundary/owner, stable rule IDs, mechanism derivation, present/absent behavior, tests and limitations. Existing modules improve when touched; an old full-repository audit does not require fixing every module in one PR. </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::fluids::ShallowWaterField 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a7f8d781f588756a29d812ca2d247ccff">addImpulse</a>(float worldX, float worldZ, float radius, float strength)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a3ae2acd930f5d624eb1c72e894868244">beds</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a92c4e496b17a73babb606f26770ab822">buildSurfaceMesh</a>(std::vector&lt; float &gt; &amp;positionsXYZ, std::vector&lt; float &gt; &amp;normalsXYZ, std::vector&lt; float &gt; &amp;uvsST, std::vector&lt; uint32_t &gt; &amp;indices, float visualHeightGain=1.f, std::vector&lt; float &gt; *colorsRGBA=nullptr) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#ac04f247e59032bda6baed5adb406a45e">cellCount</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a370171756db5ea065145512e3025c78b">cellSize</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#af6266bc94c6de661efd0d85238c950ff">colliders</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a9d959c7104c5be9c4bedafb8c41ec6f2">copyFieldToImage</a>(image::ImageData &amp;image, float velocityScale=2.f, float depthContrast=0.f) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a7f600ef026ba79b9542e2b2368110551">copyNormalToImage</a>(image::ImageData &amp;image, float normalStrength=6.f) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#aed7e4c2d55780e94d7cd35ded0d1b2ce">copyShadedAlbedoToImage</a>(image::ImageData &amp;image, float restDepth, float velocityScale=2.f) const</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#aaacc51feffe693a13174977922e4e461">create</a>(const ShallowWaterSettings &amp;settings)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a11293231ab9c1cb42e66a5c4a5b14f8d">depthAt</a>(float worldX, float worldZ) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a0404750c96d79587539eb0f48fec5c71">depths</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a875acdba44d337d6620ffac695724985">disturbAt</a>(float worldX, float worldZ, float radius, float heightDelta, float radialSpeed=0.f)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a3298ff257e75df0494a392c9240ea278">fillDepth</a>(float depth)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a22f726aed1d53666b01712ce4fba7e16">fillSurface</a>(float surfaceY)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a1515fb24b2cf41815c12f96c4b68d28e">momentumX</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a3029b2c9b16091a6b2cddd24b04e269c">momentumZ</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a4b75a83b69f11327dd18e86dae88f4f1">operator=</a>(const ShallowWaterField &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a5cce6a06181ef399c6ba6b17dc4532f1">origin</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#af20f9936b58ce339207e35f62e50d23f">resolutionX</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#ac6c0fad80789b6e59548dad3ca59fc1c">resolutionZ</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a49f224f203ef16fce6c040117f4855f3">setBed</a>(std::span&lt; const float &gt; beds)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#aefc2440c3107ad32f2ccf22dc125fd4c">setColliders</a>(std::span&lt; const ShallowWaterCollider &gt; colliders)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#afc904dac02959fb9304ad55f9a06cdb7">settings</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#aefe242256e61f6cbafa325cfb53f41c8">ShallowWaterField</a>(const ShallowWaterField &amp;)=delete</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a79de1a34985afb07b5787aecb6d7c4bc">step</a>(float dt)</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#ae8189a0acfa560e80c7c214f078daf3e">surfaceHeightAt</a>(float worldX, float worldZ) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a52bc21b44be44ec59be04baecedee23c">usedBackendFallback</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a9f8a9b1c1afd99f8bd347ac3506f1dcb">usingGpu</a>() const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#ac4daf6ac03af43a431d6387a226e94a1">velocityAt</a>(float worldX, float worldZ) const noexcept</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html#a0137fa80da7b36d469947167abb0f63d">~ShallowWaterField</a>()</td><td class="entry"><a class="el" href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

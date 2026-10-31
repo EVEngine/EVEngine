@@ -1,0 +1,345 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/ControlRig.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ControlRig.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ControlRig_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="AnimMath_8h.html">animation/AnimMath.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">class </span><a class="code hl_typedef" href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">Value</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span>AnimClip;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span>AnimPose;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>AnimSkeleton;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigKey.html">   22</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1RigKey.html">RigKey</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigKey.html#adb071296488af237ceb9a8d9719af0c2">   23</a></span>    <span class="keywordtype">double</span>       <a class="code hl_variable" href="structeve_1_1animation_1_1RigKey.html#adb071296488af237ceb9a8d9719af0c2">time</a> = 0;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigKey.html#a9a0725c335307006deb35834472c8c72">   24</a></span>    <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a> <a class="code hl_variable" href="structeve_1_1animation_1_1RigKey.html#a9a0725c335307006deb35834472c8c72">transform</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>};</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#aa6913a66782f96b8b2b41e6fc593af9d">   27</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#aa6913a66782f96b8b2b41e6fc593af9d">RigAxisMode</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#aa6913a66782f96b8b2b41e6fc593af9dab24ce0cd392a5b0b8dedc66c25213594">Free</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#aa6913a66782f96b8b2b41e6fc593af9dad0f2e5376298c880665077b565ffd7dd">Locked</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#aa6913a66782f96b8b2b41e6fc593af9da7c2131ec78876ce749c2dadd24d47065">Limited</a> };</div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="};">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigAxisLimit.html">   29</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1RigAxisLimit.html">RigAxisLimit</a> {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigAxisLimit.html#a704bdb99c83aa48669dd73ba3f0affbe">   30</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#aa6913a66782f96b8b2b41e6fc593af9d">RigAxisMode</a> <a class="code hl_variable" href="structeve_1_1animation_1_1RigAxisLimit.html#a704bdb99c83aa48669dd73ba3f0affbe">mode</a>    = <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#aa6913a66782f96b8b2b41e6fc593af9dab24ce0cd392a5b0b8dedc66c25213594">RigAxisMode::Free</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigAxisLimit.html#a96a299bd8e7e76c37642ec3795deda00">   31</a></span>    <span class="keywordtype">float</span>       <a class="code hl_variable" href="structeve_1_1animation_1_1RigAxisLimit.html#a6c3d06fecc98131e4e684de50718bc87">minimum</a> = 0, <a class="code hl_variable" href="structeve_1_1animation_1_1RigAxisLimit.html#a96a299bd8e7e76c37642ec3795deda00">maximum</a> = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00037" data-start="{" data-end="};">
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigControlLimits.html">   37</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1RigControlLimits.html">RigControlLimits</a> {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigControlLimits.html#a78d97019d22c85dc4ad0af00ed6ed423">   38</a></span>    <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a>                <a class="code hl_variable" href="structeve_1_1animation_1_1RigControlLimits.html#a78d97019d22c85dc4ad0af00ed6ed423">reference</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigControlLimits.html#a3f39830f98bebb68ae61744b2b89ed35">   39</a></span>    std::array&lt;RigAxisLimit, 3&gt; <a class="code hl_variable" href="structeve_1_1animation_1_1RigControlLimits.html#aa202f39afb2bb4b9ede5c11007d00e29">translation</a>, <a class="code hl_variable" href="structeve_1_1animation_1_1RigControlLimits.html#a3f39830f98bebb68ae61744b2b89ed35">rotation</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigControlLimits.html#ad651c0fbff57d61506cd20450d7a7558">   40</a></span>    <a class="code hl_struct" href="structeve_1_1animation_1_1RigAxisLimit.html">RigAxisLimit</a>                <a class="code hl_variable" href="structeve_1_1animation_1_1RigControlLimits.html#ad651c0fbff57d61506cd20450d7a7558">scale</a>{<a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#aa6913a66782f96b8b2b41e6fc593af9dab24ce0cd392a5b0b8dedc66c25213594">RigAxisMode::Free</a>, 1, 1};</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigControlLimits.html#a8a76661c7ac12130ea143eb2001fd1a6">   41</a></span>    <span class="keywordtype">bool</span>                        <a class="code hl_variable" href="structeve_1_1animation_1_1RigControlLimits.html#a8a76661c7ac12130ea143eb2001fd1a6">extension</a>     = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigControlLimits.html#a35094bec639ad1f9a2db8f9821daddba">   42</a></span>    <span class="keywordtype">float</span>                       <a class="code hl_variable" href="structeve_1_1animation_1_1RigControlLimits.html#a74177aad4ea0e3b17dc59422e6b92663">minimumLength</a> = 1, <a class="code hl_variable" href="structeve_1_1animation_1_1RigControlLimits.html#a35094bec639ad1f9a2db8f9821daddba">maximumLength</a> = 1;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00045" data-start="{" data-end="};">
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigControl.html">   45</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1RigControl.html">RigControl</a> {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigControl.html#afb15ecbba720517c0228fd1be4c9a7c1">   46</a></span>    std::string         <a class="code hl_variable" href="structeve_1_1animation_1_1RigControl.html#afb15ecbba720517c0228fd1be4c9a7c1">id</a>, <a class="code hl_variable" href="structeve_1_1animation_1_1RigControl.html#a2be77c3e3eecba8b13e259ad1d9179ff">parent</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigControl.html#a8fc54187ab596160e7da756de0daa266">   47</a></span>    <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a>        <a class="code hl_variable" href="structeve_1_1animation_1_1RigControl.html#a8fc54187ab596160e7da756de0daa266">initial</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigControl.html#a2decb94ed14f818d46a232d778e8d477">   48</a></span>    std::vector&lt;RigKey&gt; <a class="code hl_variable" href="structeve_1_1animation_1_1RigControl.html#a2decb94ed14f818d46a232d778e8d477">keys</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigControl.html#a91c5a0cc18c59faa29b7e07a08225155">   49</a></span>    <span class="keywordtype">float</span>               <a class="code hl_variable" href="structeve_1_1animation_1_1RigControl.html#a91c5a0cc18c59faa29b7e07a08225155">shapeSize</a> = 0.12f;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigControl.html#aac67eceaf3928b1637c7be131cb19ece">   50</a></span>    <a class="code hl_struct" href="structeve_1_1animation_1_1RigControlLimits.html">RigControlLimits</a>    <a class="code hl_variable" href="structeve_1_1animation_1_1RigControl.html#aac67eceaf3928b1637c7be131cb19ece">limits</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>};</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a96de1b0e6e3b4618eec99ac3b8330689">   53</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a96de1b0e6e3b4618eec99ac3b8330689">RigOperation</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a96de1b0e6e3b4618eec99ac3b8330689a8c8ba29dafd95af91e280d1e80b81773">FK</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a96de1b0e6e3b4618eec99ac3b8330689ab411698a2e2efe81fd342944b923145e">Aim</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a96de1b0e6e3b4618eec99ac3b8330689a706778778d0885820cabed26fa23c43a">TwoBoneIK</a> };</div>
+<div class="foldopen" id="foldopen00055" data-start="{" data-end="};">
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigNode.html">   55</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1RigNode.html">RigNode</a> {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigNode.html#a31b8e0a7746d8c7b809a840be106098d">   56</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1animation_1_1RigNode.html#a89c3ed14b202d04b6e4c1b557013cde1">id</a>, <a class="code hl_variable" href="structeve_1_1animation_1_1RigNode.html#a9bd39b8be0b1ed8d52e8843631c4d75f">control</a>, <a class="code hl_variable" href="structeve_1_1animation_1_1RigNode.html#a31b8e0a7746d8c7b809a840be106098d">bone</a>, <a class="code hl_variable" href="structeve_1_1animation_1_1RigNode.html#a51e467274ec887e46c7c25224e1cf8f2">middle</a>, <a class="code hl_variable" href="structeve_1_1animation_1_1RigNode.html#a05f45f8becbf6888c598ca63790ce2d7">tip</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigNode.html#a69c12c4efac013bbd48fab1f1bb9633a">   57</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a96de1b0e6e3b4618eec99ac3b8330689">RigOperation</a>             <a class="code hl_variable" href="structeve_1_1animation_1_1RigNode.html#a69c12c4efac013bbd48fab1f1bb9633a">operation</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a96de1b0e6e3b4618eec99ac3b8330689a8c8ba29dafd95af91e280d1e80b81773">RigOperation::FK</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigNode.html#a89b3df23fa9f9e1406243a7a8b95951f">   58</a></span>    <span class="keywordtype">float</span>                    <a class="code hl_variable" href="structeve_1_1animation_1_1RigNode.html#a89b3df23fa9f9e1406243a7a8b95951f">weight</a>    = 1.f;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigNode.html#a6918bbe6a5896c832b2a3675113dfdbd">   59</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1animation_1_1RigNode.html#a6918bbe6a5896c832b2a3675113dfdbd">after</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="};">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigDefinition.html">   62</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1RigDefinition.html">RigDefinition</a> {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigDefinition.html#a5d9c7154692948ad5a483e59c18edaad">   63</a></span>    std::vector&lt;RigControl&gt; <a class="code hl_variable" href="structeve_1_1animation_1_1RigDefinition.html#a5d9c7154692948ad5a483e59c18edaad">controls</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigDefinition.html#a354a3cb987f9a5bacdb471244c7a32a4">   64</a></span>    std::vector&lt;RigNode&gt;    <a class="code hl_variable" href="structeve_1_1animation_1_1RigDefinition.html#a354a3cb987f9a5bacdb471244c7a32a4">nodes</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1RigDefinition.html#a6cf9ab9655a9fa6f47b913a5db6c02f3">   65</a></span>    <span class="keywordtype">double</span>                  <a class="code hl_variable" href="structeve_1_1animation_1_1RigDefinition.html#a6cf9ab9655a9fa6f47b913a5db6c02f3">duration</a> = 2.0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>};</div>
+</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="};">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlRig.html">   76</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1animation_1_1ControlRig.html">ControlRig</a> {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlRig.html#a13a9c7c7aa6139fad5be032b7e781662">   79</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1ControlRig.html#a13a9c7c7aa6139fad5be032b7e781662">~ControlRig</a>();</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlRig.html#a93f66d7084569416247b4c75b9736a04">   80</a></span>    <a class="code hl_function" href="classeve_1_1animation_1_1ControlRig.html#a93f66d7084569416247b4c75b9736a04">ControlRig</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1ControlRig.html">ControlRig</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1ControlRig.html#ae7555c3e7e0b4e718fa950821eeceddb">   81</a></span>    <a class="code hl_class" href="classeve_1_1animation_1_1ControlRig.html">ControlRig</a>&amp; <a class="code hl_function" href="classeve_1_1animation_1_1ControlRig.html#ae7555c3e7e0b4e718fa950821eeceddb">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1ControlRig.html">ControlRig</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;ControlRig&gt;</a>&gt; compile(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1RigDefinition.html">RigDefinition</a>&amp; <a class="code hl_variable" href="EnvironmentQuery_8cpp.html#a6b991c4d1663f888502f923764395e62">definition</a>,</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                                                                     <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a>&amp;  skeleton);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> evaluate(<span class="keywordtype">double</span> seconds, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>&amp; <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>,</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                                        <span class="keyword">const</span> std::vector&lt;TransformTRS&gt;&amp; overrides = {}) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;TransformTRS&gt;</a>&gt; sampleControls(<span class="keywordtype">double</span> seconds) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;TransformTRS&gt;</a>&gt; controlWorlds(<span class="keyword">const</span> std::vector&lt;TransformTRS&gt;&amp; locals) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;TransformTRS&gt;</a> localFromWorld(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1TransformTRS.html">TransformTRS</a>&amp; world, <span class="keywordtype">double</span> seconds) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;TransformTRS&gt;</a>&gt; matchFK(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>&amp; <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;AnimClip&gt;</a>&gt; bake(<span class="keywordtype">double</span> sampleRate, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>&amp; <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">struct </span>Impl;</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1animation_1_1ControlRig.html">ControlRig</a>(std::unique_ptr&lt;Impl&gt; implementation);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    std::unique_ptr&lt;Impl&gt; impl_;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>};</div>
+</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1animation.html#ae3256aded4b0cd3aed7a9700d3468bfc">validateRigDefinition</a>(<span class="keyword">const</span> RigDefinition&amp; <a class="code hl_variable" href="EnvironmentQuery_8cpp.html#a6b991c4d1663f888502f923764395e62">definition</a>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;TransformTRS&gt;</a> <a class="code hl_function" href="namespaceeve_1_1animation.html#a86cee98dbd36031c3df0351772f3e6ca">constrainRigControl</a>(<span class="keyword">const</span> RigControlLimits&amp; <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a>,</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                                                                          <span class="keyword">const</span> TransformTRS&amp;     transform);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;Value&gt;</a> <a class="code hl_function" href="namespaceeve_1_1animation.html#ad843ed56dd93940dd3154e1ffe1bbae9">encodeControlRig</a>(<span class="keyword">const</span> RigDefinition&amp; <a class="code hl_variable" href="EnvironmentQuery_8cpp.html#a6b991c4d1663f888502f923764395e62">definition</a>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;RigDefinition&gt;</a> <a class="code hl_function" href="namespaceeve_1_1animation.html#a55dd58882a29631f23736682b4162ef8">decodeControlRig</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">Value</a>&amp; <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1animation.html#acadc2713ed4d1c3bbeb4067e357c6379">reparentRigControl</a>(RigDefinition&amp; <a class="code hl_variable" href="EnvironmentQuery_8cpp.html#a6b991c4d1663f888502f923764395e62">definition</a>, std::string_view control,</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                                                                 std::string_view <a class="code hl_variable" href="LDrawImporter_8cpp.html#aa77d8b2654f3ab520ecdff679da7f8c4">parent</a>);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAnimMath_8h_html"><div class="ttname"><a href="AnimMath_8h.html">AnimMath.h</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a69da28b7f372dd6b6fffa28d0214e4de"><div class="ttname"><a href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a></div><div class="ttdeci">std::string output</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00169">AssetCommand.cpp:169</a></div></div>
+<div class="ttc" id="aAudioCapabilities_8cpp_html_ac8f9d11b63bfd0cfb294366658eb7e91"><div class="ttname"><a href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a></div><div class="ttdeci">eve::EntitySpatialPose pose</div><div class="ttdef"><b>Definition</b> <a href="AudioCapabilities_8cpp_source.html#l00379">AudioCapabilities.cpp:379</a></div></div>
+<div class="ttc" id="aEnvironmentQuery_8cpp_html_a6b991c4d1663f888502f923764395e62"><div class="ttname"><a href="EnvironmentQuery_8cpp.html#a6b991c4d1663f888502f923764395e62">definition</a></div><div class="ttdeci">EnvironmentTest definition</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentQuery_8cpp_source.html#l00035">EnvironmentQuery.cpp:35</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00170">Evpack.cpp:170</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_afb52228b1e5307ee220679412a790429"><div class="ttname"><a href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a></div><div class="ttdeci">#define EVENGINE_API_WORLD</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00109">Export.h:109</a></div></div>
+<div class="ttc" id="aLDrawImporter_8cpp_html_aa77d8b2654f3ab520ecdff679da7f8c4"><div class="ttname"><a href="LDrawImporter_8cpp.html#aa77d8b2654f3ab520ecdff679da7f8c4">parent</a></div><div class="ttdeci">const ColourScope * parent</div><div class="ttdef"><b>Definition</b> <a href="LDrawImporter_8cpp_source.html#l00073">LDrawImporter.cpp:73</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_ac305f1e828b2cf82b0d6fed8194ce85c"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#ac305f1e828b2cf82b0d6fed8194ce85c">limits</a></div><div class="ttdeci">const AssetImportLimits &amp; limits</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00030">UnityVegetationPreset.cpp:30</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html">eve::animation::AnimPose</a></div><div class="ttdoc">Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00017">AnimPose.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00016">AnimSkeleton.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlRig_html"><div class="ttname"><a href="classeve_1_1animation_1_1ControlRig.html">eve::animation::ControlRig</a></div><div class="ttdoc">Compiled rig with an owned skeleton snapshot and indexed solve schedule. @ownership Owns all retained...</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00076">ControlRig.h:76</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlRig_html_a13a9c7c7aa6139fad5be032b7e781662"><div class="ttname"><a href="classeve_1_1animation_1_1ControlRig.html#a13a9c7c7aa6139fad5be032b7e781662">eve::animation::ControlRig::~ControlRig</a></div><div class="ttdeci">~ControlRig()</div><div class="ttdoc">Destroy the owned compiled program and skeleton.</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlRig_html_a93f66d7084569416247b4c75b9736a04"><div class="ttname"><a href="classeve_1_1animation_1_1ControlRig.html#a93f66d7084569416247b4c75b9736a04">eve::animation::ControlRig::ControlRig</a></div><div class="ttdeci">ControlRig(const ControlRig &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1ControlRig_html_ae7555c3e7e0b4e718fa950821eeceddb"><div class="ttname"><a href="classeve_1_1animation_1_1ControlRig.html#ae7555c3e7e0b4e718fa950821eeceddb">eve::animation::ControlRig::operator=</a></div><div class="ttdeci">ControlRig &amp; operator=(const ControlRig &amp;)=delete</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00058">Animation.cpp:58</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a55dd58882a29631f23736682b4162ef8"><div class="ttname"><a href="namespaceeve_1_1animation.html#a55dd58882a29631f23736682b4162ef8">eve::animation::decodeControlRig</a></div><div class="ttdeci">EVENGINE_API_WORLD Result&lt; RigDefinition &gt; decodeControlRig(const Value &amp;value)</div><div class="ttdoc">Decode atomically; rejects unknown versions/fields. Pure, no retained input references.</div><div class="ttdef"><b>Definition</b> <a href="ControlRigCodec_8cpp_source.html#l00137">ControlRigCodec.cpp:137</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a86cee98dbd36031c3df0351772f3e6ca"><div class="ttname"><a href="namespaceeve_1_1animation.html#a86cee98dbd36031c3df0351772f3e6ca">eve::animation::constrainRigControl</a></div><div class="ttdeci">EVENGINE_API_WORLD Result&lt; TransformTRS &gt; constrainRigControl(const RigControlLimits &amp;limits, const TransformTRS &amp;transform)</div><div class="ttdoc">Project a local TRS into limits, returning an owned value or invalid-config diagnostic.</div><div class="ttdef"><b>Definition</b> <a href="ControlRigLimits_8cpp_source.html#l00017">ControlRigLimits.cpp:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a96de1b0e6e3b4618eec99ac3b8330689"><div class="ttname"><a href="namespaceeve_1_1animation.html#a96de1b0e6e3b4618eec99ac3b8330689">eve::animation::RigOperation</a></div><div class="ttdeci">RigOperation</div><div class="ttdoc">Ordered rig operation; controls and bones use persistent names.</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00053">ControlRig.h:53</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a96de1b0e6e3b4618eec99ac3b8330689a706778778d0885820cabed26fa23c43a"><div class="ttname"><a href="namespaceeve_1_1animation.html#a96de1b0e6e3b4618eec99ac3b8330689a706778778d0885820cabed26fa23c43a">eve::animation::RigOperation::TwoBoneIK</a></div><div class="ttdeci">@ TwoBoneIK</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a96de1b0e6e3b4618eec99ac3b8330689a8c8ba29dafd95af91e280d1e80b81773"><div class="ttname"><a href="namespaceeve_1_1animation.html#a96de1b0e6e3b4618eec99ac3b8330689a8c8ba29dafd95af91e280d1e80b81773">eve::animation::RigOperation::FK</a></div><div class="ttdeci">@ FK</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a96de1b0e6e3b4618eec99ac3b8330689ab411698a2e2efe81fd342944b923145e"><div class="ttname"><a href="namespaceeve_1_1animation.html#a96de1b0e6e3b4618eec99ac3b8330689ab411698a2e2efe81fd342944b923145e">eve::animation::RigOperation::Aim</a></div><div class="ttdeci">@ Aim</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_aa6913a66782f96b8b2b41e6fc593af9d"><div class="ttname"><a href="namespaceeve_1_1animation.html#aa6913a66782f96b8b2b41e6fc593af9d">eve::animation::RigAxisMode</a></div><div class="ttdeci">RigAxisMode</div><div class="ttdoc">Axis freedom relative to a constraint reference pose.</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00027">ControlRig.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_aa6913a66782f96b8b2b41e6fc593af9da7c2131ec78876ce749c2dadd24d47065"><div class="ttname"><a href="namespaceeve_1_1animation.html#aa6913a66782f96b8b2b41e6fc593af9da7c2131ec78876ce749c2dadd24d47065">eve::animation::RigAxisMode::Limited</a></div><div class="ttdeci">@ Limited</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_aa6913a66782f96b8b2b41e6fc593af9dab24ce0cd392a5b0b8dedc66c25213594"><div class="ttname"><a href="namespaceeve_1_1animation.html#aa6913a66782f96b8b2b41e6fc593af9dab24ce0cd392a5b0b8dedc66c25213594">eve::animation::RigAxisMode::Free</a></div><div class="ttdeci">@ Free</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_aa6913a66782f96b8b2b41e6fc593af9dad0f2e5376298c880665077b565ffd7dd"><div class="ttname"><a href="namespaceeve_1_1animation.html#aa6913a66782f96b8b2b41e6fc593af9dad0f2e5376298c880665077b565ffd7dd">eve::animation::RigAxisMode::Locked</a></div><div class="ttdeci">@ Locked</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_acadc2713ed4d1c3bbeb4067e357c6379"><div class="ttname"><a href="namespaceeve_1_1animation.html#acadc2713ed4d1c3bbeb4067e357c6379">eve::animation::reparentRigControl</a></div><div class="ttdeci">Result&lt; void &gt; reparentRigControl(RigDefinition &amp;d, std::string_view control, std::string_view parent)</div><div class="ttdoc">Reparent a control while preserving its initial model transform; rejects animated controls.</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8cpp_source.html#l00324">ControlRig.cpp:324</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_ad843ed56dd93940dd3154e1ffe1bbae9"><div class="ttname"><a href="namespaceeve_1_1animation.html#ad843ed56dd93940dd3154e1ffe1bbae9">eve::animation::encodeControlRig</a></div><div class="ttdeci">EVENGINE_API_WORLD Result&lt; Value &gt; encodeControlRig(const RigDefinition &amp;definition)</div><div class="ttdoc">Encode a validated rig as eve.control-rig v2. Pure, no callbacks, owns result.</div><div class="ttdef"><b>Definition</b> <a href="ControlRigCodec_8cpp_source.html#l00095">ControlRigCodec.cpp:95</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_ae3256aded4b0cd3aed7a9700d3468bfc"><div class="ttname"><a href="namespaceeve_1_1animation.html#ae3256aded4b0cd3aed7a9700d3468bfc">eve::animation::validateRigDefinition</a></div><div class="ttdeci">Result&lt; void &gt; validateRigDefinition(const RigDefinition &amp;d)</div><div class="ttdoc">Validate data-only rig constraints without a runtime skeleton.</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8cpp_source.html#l00025">ControlRig.cpp:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1database_html_a75dfba93933e5172c94376060426f2f4"><div class="ttname"><a href="namespaceeve_1_1database.html#a75dfba93933e5172c94376060426f2f4">eve::database::Value</a></div><div class="ttdeci">std::variant&lt; std::monostate, std::int64_t, double, std::string, bool &gt; Value</div><div class="ttdef"><b>Definition</b> <a href="Database_8h_source.html#l00026">Database.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigAxisLimit_html"><div class="ttname"><a href="structeve_1_1animation_1_1RigAxisLimit.html">eve::animation::RigAxisLimit</a></div><div class="ttdoc">Limited bounds include the neutral value (0 for position/angle, 1 for scale).</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00029">ControlRig.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigAxisLimit_html_a6c3d06fecc98131e4e684de50718bc87"><div class="ttname"><a href="structeve_1_1animation_1_1RigAxisLimit.html#a6c3d06fecc98131e4e684de50718bc87">eve::animation::RigAxisLimit::minimum</a></div><div class="ttdeci">float minimum</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00031">ControlRig.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigAxisLimit_html_a704bdb99c83aa48669dd73ba3f0affbe"><div class="ttname"><a href="structeve_1_1animation_1_1RigAxisLimit.html#a704bdb99c83aa48669dd73ba3f0affbe">eve::animation::RigAxisLimit::mode</a></div><div class="ttdeci">RigAxisMode mode</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00030">ControlRig.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigAxisLimit_html_a96a299bd8e7e76c37642ec3795deda00"><div class="ttname"><a href="structeve_1_1animation_1_1RigAxisLimit.html#a96a299bd8e7e76c37642ec3795deda00">eve::animation::RigAxisLimit::maximum</a></div><div class="ttdeci">float maximum</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00031">ControlRig.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControlLimits_html"><div class="ttname"><a href="structeve_1_1animation_1_1RigControlLimits.html">eve::animation::RigControlLimits</a></div><div class="ttdoc">Owning parent-local limits; rotation is reference-relative XYZ in degrees.</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00037">ControlRig.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControlLimits_html_a35094bec639ad1f9a2db8f9821daddba"><div class="ttname"><a href="structeve_1_1animation_1_1RigControlLimits.html#a35094bec639ad1f9a2db8f9821daddba">eve::animation::RigControlLimits::maximumLength</a></div><div class="ttdeci">float maximumLength</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00042">ControlRig.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControlLimits_html_a3f39830f98bebb68ae61744b2b89ed35"><div class="ttname"><a href="structeve_1_1animation_1_1RigControlLimits.html#a3f39830f98bebb68ae61744b2b89ed35">eve::animation::RigControlLimits::rotation</a></div><div class="ttdeci">std::array&lt; RigAxisLimit, 3 &gt; rotation</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00039">ControlRig.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControlLimits_html_a74177aad4ea0e3b17dc59422e6b92663"><div class="ttname"><a href="structeve_1_1animation_1_1RigControlLimits.html#a74177aad4ea0e3b17dc59422e6b92663">eve::animation::RigControlLimits::minimumLength</a></div><div class="ttdeci">float minimumLength</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00042">ControlRig.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControlLimits_html_a78d97019d22c85dc4ad0af00ed6ed423"><div class="ttname"><a href="structeve_1_1animation_1_1RigControlLimits.html#a78d97019d22c85dc4ad0af00ed6ed423">eve::animation::RigControlLimits::reference</a></div><div class="ttdeci">TransformTRS reference</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00038">ControlRig.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControlLimits_html_a8a76661c7ac12130ea143eb2001fd1a6"><div class="ttname"><a href="structeve_1_1animation_1_1RigControlLimits.html#a8a76661c7ac12130ea143eb2001fd1a6">eve::animation::RigControlLimits::extension</a></div><div class="ttdeci">bool extension</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00041">ControlRig.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControlLimits_html_aa202f39afb2bb4b9ede5c11007d00e29"><div class="ttname"><a href="structeve_1_1animation_1_1RigControlLimits.html#aa202f39afb2bb4b9ede5c11007d00e29">eve::animation::RigControlLimits::translation</a></div><div class="ttdeci">std::array&lt; RigAxisLimit, 3 &gt; translation</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00039">ControlRig.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControlLimits_html_ad651c0fbff57d61506cd20450d7a7558"><div class="ttname"><a href="structeve_1_1animation_1_1RigControlLimits.html#ad651c0fbff57d61506cd20450d7a7558">eve::animation::RigControlLimits::scale</a></div><div class="ttdeci">RigAxisLimit scale</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00040">ControlRig.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControl_html"><div class="ttname"><a href="structeve_1_1animation_1_1RigControl.html">eve::animation::RigControl</a></div><div class="ttdoc">Authored control or null. Empty parent means skeleton model space.</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00045">ControlRig.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControl_html_a2be77c3e3eecba8b13e259ad1d9179ff"><div class="ttname"><a href="structeve_1_1animation_1_1RigControl.html#a2be77c3e3eecba8b13e259ad1d9179ff">eve::animation::RigControl::parent</a></div><div class="ttdeci">std::string parent</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00046">ControlRig.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControl_html_a2decb94ed14f818d46a232d778e8d477"><div class="ttname"><a href="structeve_1_1animation_1_1RigControl.html#a2decb94ed14f818d46a232d778e8d477">eve::animation::RigControl::keys</a></div><div class="ttdeci">std::vector&lt; RigKey &gt; keys</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00048">ControlRig.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControl_html_a8fc54187ab596160e7da756de0daa266"><div class="ttname"><a href="structeve_1_1animation_1_1RigControl.html#a8fc54187ab596160e7da756de0daa266">eve::animation::RigControl::initial</a></div><div class="ttdeci">TransformTRS initial</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00047">ControlRig.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControl_html_a91c5a0cc18c59faa29b7e07a08225155"><div class="ttname"><a href="structeve_1_1animation_1_1RigControl.html#a91c5a0cc18c59faa29b7e07a08225155">eve::animation::RigControl::shapeSize</a></div><div class="ttdeci">float shapeSize</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00049">ControlRig.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControl_html_aac67eceaf3928b1637c7be131cb19ece"><div class="ttname"><a href="structeve_1_1animation_1_1RigControl.html#aac67eceaf3928b1637c7be131cb19ece">eve::animation::RigControl::limits</a></div><div class="ttdeci">RigControlLimits limits</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00050">ControlRig.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigControl_html_afb15ecbba720517c0228fd1be4c9a7c1"><div class="ttname"><a href="structeve_1_1animation_1_1RigControl.html#afb15ecbba720517c0228fd1be4c9a7c1">eve::animation::RigControl::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00046">ControlRig.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigDefinition_html"><div class="ttname"><a href="structeve_1_1animation_1_1RigDefinition.html">eve::animation::RigDefinition</a></div><div class="ttdoc">Owning, versioned rig authoring data; no runtime pointers or indices.</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00062">ControlRig.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigDefinition_html_a354a3cb987f9a5bacdb471244c7a32a4"><div class="ttname"><a href="structeve_1_1animation_1_1RigDefinition.html#a354a3cb987f9a5bacdb471244c7a32a4">eve::animation::RigDefinition::nodes</a></div><div class="ttdeci">std::vector&lt; RigNode &gt; nodes</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00064">ControlRig.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigDefinition_html_a5d9c7154692948ad5a483e59c18edaad"><div class="ttname"><a href="structeve_1_1animation_1_1RigDefinition.html#a5d9c7154692948ad5a483e59c18edaad">eve::animation::RigDefinition::controls</a></div><div class="ttdeci">std::vector&lt; RigControl &gt; controls</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00063">ControlRig.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigDefinition_html_a6cf9ab9655a9fa6f47b913a5db6c02f3"><div class="ttname"><a href="structeve_1_1animation_1_1RigDefinition.html#a6cf9ab9655a9fa6f47b913a5db6c02f3">eve::animation::RigDefinition::duration</a></div><div class="ttdeci">double duration</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00065">ControlRig.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigKey_html"><div class="ttname"><a href="structeve_1_1animation_1_1RigKey.html">eve::animation::RigKey</a></div><div class="ttdoc">Stable authored control key; time is seconds, transform is parent-local.</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00022">ControlRig.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigKey_html_a9a0725c335307006deb35834472c8c72"><div class="ttname"><a href="structeve_1_1animation_1_1RigKey.html#a9a0725c335307006deb35834472c8c72">eve::animation::RigKey::transform</a></div><div class="ttdeci">TransformTRS transform</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00024">ControlRig.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigKey_html_adb071296488af237ceb9a8d9719af0c2"><div class="ttname"><a href="structeve_1_1animation_1_1RigKey.html#adb071296488af237ceb9a8d9719af0c2">eve::animation::RigKey::time</a></div><div class="ttdeci">double time</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00023">ControlRig.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigNode_html"><div class="ttname"><a href="structeve_1_1animation_1_1RigNode.html">eve::animation::RigNode</a></div><div class="ttdoc">A solve node; after names prerequisite nodes. Stable declaration order breaks ties.</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00055">ControlRig.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigNode_html_a05f45f8becbf6888c598ca63790ce2d7"><div class="ttname"><a href="structeve_1_1animation_1_1RigNode.html#a05f45f8becbf6888c598ca63790ce2d7">eve::animation::RigNode::tip</a></div><div class="ttdeci">std::string tip</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00056">ControlRig.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigNode_html_a31b8e0a7746d8c7b809a840be106098d"><div class="ttname"><a href="structeve_1_1animation_1_1RigNode.html#a31b8e0a7746d8c7b809a840be106098d">eve::animation::RigNode::bone</a></div><div class="ttdeci">std::string bone</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00056">ControlRig.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigNode_html_a51e467274ec887e46c7c25224e1cf8f2"><div class="ttname"><a href="structeve_1_1animation_1_1RigNode.html#a51e467274ec887e46c7c25224e1cf8f2">eve::animation::RigNode::middle</a></div><div class="ttdeci">std::string middle</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00056">ControlRig.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigNode_html_a6918bbe6a5896c832b2a3675113dfdbd"><div class="ttname"><a href="structeve_1_1animation_1_1RigNode.html#a6918bbe6a5896c832b2a3675113dfdbd">eve::animation::RigNode::after</a></div><div class="ttdeci">std::vector&lt; std::string &gt; after</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00059">ControlRig.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigNode_html_a69c12c4efac013bbd48fab1f1bb9633a"><div class="ttname"><a href="structeve_1_1animation_1_1RigNode.html#a69c12c4efac013bbd48fab1f1bb9633a">eve::animation::RigNode::operation</a></div><div class="ttdeci">RigOperation operation</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00057">ControlRig.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigNode_html_a89b3df23fa9f9e1406243a7a8b95951f"><div class="ttname"><a href="structeve_1_1animation_1_1RigNode.html#a89b3df23fa9f9e1406243a7a8b95951f">eve::animation::RigNode::weight</a></div><div class="ttdeci">float weight</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00058">ControlRig.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigNode_html_a89c3ed14b202d04b6e4c1b557013cde1"><div class="ttname"><a href="structeve_1_1animation_1_1RigNode.html#a89c3ed14b202d04b6e4c1b557013cde1">eve::animation::RigNode::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00056">ControlRig.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RigNode_html_a9bd39b8be0b1ed8d52e8843631c4d75f"><div class="ttname"><a href="structeve_1_1animation_1_1RigNode.html#a9bd39b8be0b1ed8d52e8843631c4d75f">eve::animation::RigNode::control</a></div><div class="ttdeci">std::string control</div><div class="ttdef"><b>Definition</b> <a href="ControlRig_8h_source.html#l00056">ControlRig.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1TransformTRS_html"><div class="ttname"><a href="structeve_1_1animation_1_1TransformTRS.html">eve::animation::TransformTRS</a></div><div class="ttdoc">Local TRS used by skeletal animation (quaternion xyzw).</div><div class="ttdef"><b>Definition</b> <a href="AnimMath_8h_source.html#l00009">AnimMath.h:9</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

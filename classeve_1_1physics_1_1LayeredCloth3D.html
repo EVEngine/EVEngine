@@ -1,0 +1,708 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::LayeredCloth3D类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html">LayeredCloth3D</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1LayeredCloth3D-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::LayeredCloth3D类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owns multiple cloth sheets and advances their contacts synchronously. @ownership Owns every layer; no external runtime pointers are retained. @thread All operations run on the owning physics thread, between draw calls. @reentrancy No callbacks. No concurrent calls or layer updates during <a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#a4c98ad1e47715e9fd1239d8933aa2be6" title="Advance all layers by finite dt in [0,0.05], without dropping time.">update()</a>. Runtime-only state; no persistence or GPU parity is claimed. Replays use fixed dt and stable layer order, with a 1e-5 metre tolerance on the same CPU build.  
+ <a href="classeve_1_1physics_1_1LayeredCloth3D.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="LayeredCloth3D_8h_source.html">LayeredCloth3D.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aaaccb428e1a3f202f76473a751a8dd5b" id="r_aaaccb428e1a3f202f76473a751a8dd5b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#aaaccb428e1a3f202f76473a751a8dd5b">LayeredCloth3D</a> (int <a class="el" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a>, int <a class="el" href="FloorTextures_8cpp.html#a4407a60bc4387adae24cee658711f2d9">cols</a>, int <a class="el" href="FloorTextures_8cpp.html#a061459acc9e078fa4699e0e349887215">rows</a>, float <a class="el" href="TileConfig_8cpp.html#a12acf4cc0533ead229b8b9f6c86b7fe6">spacing</a>, float <a class="el" href="CableTextures_8cpp.html#a825c8b5fcb954eb72eccfea1f5ce4299">gap</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:aaaccb428e1a3f202f76473a751a8dd5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct parallel XZ grids, separated along +Y.  <br /></td></tr>
+<tr class="separator:aaaccb428e1a3f202f76473a751a8dd5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c245a9d80348d0f63e7bd34be8f7776" id="r_a4c245a9d80348d0f63e7bd34be8f7776"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#a4c245a9d80348d0f63e7bd34be8f7776">LayeredCloth3D</a> (std::span&lt; const <a class="el" href="classeve_1_1physics_1_1ClothModel.html">ClothModel</a> &gt; models)</td></tr>
+<tr class="memdesc:a4c245a9d80348d0f63e7bd34be8f7776"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy validated arbitrary mesh models; source span is borrowed only during construction.  <br /></td></tr>
+<tr class="separator:a4c245a9d80348d0f63e7bd34be8f7776"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a032842f183060c269f832b1485b365" id="r_a0a032842f183060c269f832b1485b365"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#a0a032842f183060c269f832b1485b365">~LayeredCloth3D</a> ()</td></tr>
+<tr class="memdesc:a0a032842f183060c269f832b1485b365"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release owned runtime layers; render resources follow the graphics owner.  <br /></td></tr>
+<tr class="separator:a0a032842f183060c269f832b1485b365"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a790c1553755fe4edfdf3b182fb90ac7d" id="r_a790c1553755fe4edfdf3b182fb90ac7d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#a790c1553755fe4edfdf3b182fb90ac7d">LayeredCloth3D</a> (const <a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html">LayeredCloth3D</a> &amp;)=delete</td></tr>
+<tr class="memdesc:a790c1553755fe4edfdf3b182fb90ac7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned layers cannot be copied between groups.  <br /></td></tr>
+<tr class="separator:a790c1553755fe4edfdf3b182fb90ac7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a377d58a68fcf5a0183ce69e00ca4023a" id="r_a377d58a68fcf5a0183ce69e00ca4023a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html">LayeredCloth3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#a377d58a68fcf5a0183ce69e00ca4023a">operator=</a> (const <a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html">LayeredCloth3D</a> &amp;)=delete</td></tr>
+<tr class="memdesc:a377d58a68fcf5a0183ce69e00ca4023a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned layers cannot be copy-assigned between groups.  <br /></td></tr>
+<tr class="separator:a377d58a68fcf5a0183ce69e00ca4023a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5aab121ea73f3f741622c56f9a190b37" id="r_a5aab121ea73f3f741622c56f9a190b37"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">Cloth3D</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#a5aab121ea73f3f741622c56f9a190b37">layer</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)</td></tr>
+<tr class="memdesc:a5aab121ea73f3f741622c56f9a190b37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow a layer for synchronous configuration; valid until owner destruction. Do not destroy or independently update it while the group is active.  <br /></td></tr>
+<tr class="separator:a5aab121ea73f3f741622c56f9a190b37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f4792f469fbf1fc6b4af264a44fbc27" id="r_a6f4792f469fbf1fc6b4af264a44fbc27"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#a6f4792f469fbf1fc6b4af264a44fbc27">getLayerCount</a> () const</td></tr>
+<tr class="memdesc:a6f4792f469fbf1fc6b4af264a44fbc27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of owned sheets.  <br /></td></tr>
+<tr class="separator:a6f4792f469fbf1fc6b4af264a44fbc27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c98ad1e47715e9fd1239d8933aa2be6" id="r_a4c98ad1e47715e9fd1239d8933aa2be6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#a4c98ad1e47715e9fd1239d8933aa2be6">update</a> (float <a class="el" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>)</td></tr>
+<tr class="memdesc:a4c98ad1e47715e9fd1239d8933aa2be6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance all layers by finite dt in [0,0.05], without dropping time.  <br /></td></tr>
+<tr class="separator:a4c98ad1e47715e9fd1239d8933aa2be6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e66b5bfb7e9726e2c239070b2b5cd36" id="r_a8e66b5bfb7e9726e2c239070b2b5cd36"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#a8e66b5bfb7e9726e2c239070b2b5cd36">setSolver</a> (int substeps, int passes)</td></tr>
+<tr class="memdesc:a8e66b5bfb7e9726e2c239070b2b5cd36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure substeps [1,32] and coupling passes [1,16]; throws on invalid input.  <br /></td></tr>
+<tr class="separator:a8e66b5bfb7e9726e2c239070b2b5cd36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0855f1bf1bf596d0b02b831a79b14db3" id="r_a0855f1bf1bf596d0b02b831a79b14db3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#a0855f1bf1bf596d0b02b831a79b14db3">setInterCollision</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>)</td></tr>
+<tr class="memdesc:a0855f1bf1bf596d0b02b831a79b14db3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable only contacts between different sheets.  <br /></td></tr>
+<tr class="separator:a0855f1bf1bf596d0b02b831a79b14db3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa4bd5c9ed081a36b3c02548676376d1" id="r_afa4bd5c9ed081a36b3c02548676376d1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#afa4bd5c9ed081a36b3c02548676376d1">getInterCollision</a> () const</td></tr>
+<tr class="memdesc:afa4bd5c9ed081a36b3c02548676376d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return whether inter-layer contacts are enabled.  <br /></td></tr>
+<tr class="separator:afa4bd5c9ed081a36b3c02548676376d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3119de4dd132f7902c192d899a9e08b" id="r_aa3119de4dd132f7902c192d899a9e08b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#aa3119de4dd132f7902c192d899a9e08b">getContactCount</a> () const</td></tr>
+<tr class="memdesc:aa3119de4dd132f7902c192d899a9e08b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return projected contacts in the most recent update, including repeated passes.  <br /></td></tr>
+<tr class="separator:aa3119de4dd132f7902c192d899a9e08b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a947a42973f6a2a4d80f2ce18785d9d19" id="r_a947a42973f6a2a4d80f2ce18785d9d19"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#a947a42973f6a2a4d80f2ce18785d9d19">setWindVelocity</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a947a42973f6a2a4d80f2ce18785d9d19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the air velocity of every sheet; throws on nonfinite input.  <br /></td></tr>
+<tr class="separator:a947a42973f6a2a4d80f2ce18785d9d19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d14c8ee98d01eb16f4480c10c7bbc39" id="r_a2d14c8ee98d01eb16f4480c10c7bbc39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#a2d14c8ee98d01eb16f4480c10c7bbc39">reset</a> ()</td></tr>
+<tr class="memdesc:a2d14c8ee98d01eb16f4480c10c7bbc39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore every layer's authored pose and clear contact statistics.  <br /></td></tr>
+<tr class="separator:a2d14c8ee98d01eb16f4480c10c7bbc39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aadc0732252e0b86f9be770457775716c" id="r_aadc0732252e0b86f9be770457775716c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#aadc0732252e0b86f9be770457775716c">draw</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:aadc0732252e0b86f9be770457775716c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw owned cloth surfaces in an open 3D frame.  <br /></td></tr>
+<tr class="separator:aadc0732252e0b86f9be770457775716c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owns multiple cloth sheets and advances their contacts synchronously. @ownership Owns every layer; no external runtime pointers are retained. @thread All operations run on the owning physics thread, between draw calls. @reentrancy No callbacks. No concurrent calls or layer updates during <a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html#a4c98ad1e47715e9fd1239d8933aa2be6" title="Advance all layers by finite dt in [0,0.05], without dropping time.">update()</a>. Runtime-only state; no persistence or GPU parity is claimed. Replays use fixed dt and stable layer order, with a 1e-5 metre tolerance on the same CPU build. </p>
+
+<p class="definition">在文件 <a class="el" href="LayeredCloth3D_8h_source.html">LayeredCloth3D.h</a> 第 <a class="el" href="LayeredCloth3D_8h_source.html#l00015">15</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aaaccb428e1a3f202f76473a751a8dd5b" name="aaaccb428e1a3f202f76473a751a8dd5b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaaccb428e1a3f202f76473a751a8dd5b">&#9670;&#160;</a></span>LayeredCloth3D() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::LayeredCloth3D::LayeredCloth3D </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>count</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cols</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rows</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>spacing</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct parallel XZ grids, separated along +Y. </p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1Exception.html" title="EVENGINE_API_FOUNDATION public API.">eve::Exception</a></td><td>for invalid grid, count, gap or coordinates. @cost Allocation and constraint baking scale with total grid particles; construct once and amortize over simulation frames. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01368">1368</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FloorTextures_8cpp_source.html#l00209">cols</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00031">count</a>, <a class="el" href="CableTextures_8cpp_source.html#l00149">gap</a>, <a class="el" href="FloorTextures_8cpp_source.html#l00208">rows</a>, <a class="el" href="TileConfig_8cpp_source.html#l00087">spacing</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a4c245a9d80348d0f63e7bd34be8f7776" name="a4c245a9d80348d0f63e7bd34be8f7776"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c245a9d80348d0f63e7bd34be8f7776">&#9670;&#160;</a></span>LayeredCloth3D() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::LayeredCloth3D::LayeredCloth3D </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="classeve_1_1physics_1_1ClothModel.html">ClothModel</a> &gt;&#160;</td>
+          <td class="paramname"><em>models</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copy validated arbitrary mesh models; source span is borrowed only during construction. </p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1Exception.html" title="EVENGINE_API_FOUNDATION public API.">eve::Exception</a></td><td>if the model span is empty. @cost Copies topology and allocates each runtime once, amortized over frames. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01385">1385</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RenderSystem3D_8cpp_source.html#l00677">model</a>.</p>
+
+</div>
+</div>
+<a id="a0a032842f183060c269f832b1485b365" name="a0a032842f183060c269f832b1485b365"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a032842f183060c269f832b1485b365">&#9670;&#160;</a></span>~LayeredCloth3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::LayeredCloth3D::~LayeredCloth3D </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Release owned runtime layers; render resources follow the graphics owner. </p>
+
+</div>
+</div>
+<a id="a790c1553755fe4edfdf3b182fb90ac7d" name="a790c1553755fe4edfdf3b182fb90ac7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a790c1553755fe4edfdf3b182fb90ac7d">&#9670;&#160;</a></span>LayeredCloth3D() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::LayeredCloth3D::LayeredCloth3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html">LayeredCloth3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Owned layers cannot be copied between groups. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aadc0732252e0b86f9be770457775716c" name="aadc0732252e0b86f9be770457775716c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aadc0732252e0b86f9be770457775716c">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::LayeredCloth3D::draw </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw owned cloth surfaces in an open 3D frame. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Borrowed graphics ABI pointer, used only for this call; must be nonnull. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01412">1412</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa3119de4dd132f7902c192d899a9e08b" name="aa3119de4dd132f7902c192d899a9e08b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3119de4dd132f7902c192d899a9e08b">&#9670;&#160;</a></span>getContactCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::LayeredCloth3D::getContactCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return projected contacts in the most recent update, including repeated passes. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01403">1403</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afa4bd5c9ed081a36b3c02548676376d1" name="afa4bd5c9ed081a36b3c02548676376d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa4bd5c9ed081a36b3c02548676376d1">&#9670;&#160;</a></span>getInterCollision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::LayeredCloth3D::getInterCollision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return whether inter-layer contacts are enabled. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01402">1402</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6f4792f469fbf1fc6b4af264a44fbc27" name="a6f4792f469fbf1fc6b4af264a44fbc27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f4792f469fbf1fc6b4af264a44fbc27">&#9670;&#160;</a></span>getLayerCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::LayeredCloth3D::getLayerCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the number of owned sheets. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01394">1394</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Cloth3D_8cpp_source.html#l01390">layer()</a>.</p>
+
+</div>
+</div>
+<a id="a5aab121ea73f3f741622c56f9a190b37" name="a5aab121ea73f3f741622c56f9a190b37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5aab121ea73f3f741622c56f9a190b37">&#9670;&#160;</a></span>layer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Cloth3D.html">Cloth3D</a> &amp; eve::physics::LayeredCloth3D::layer </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrow a layer for synchronous configuration; valid until owner destruction. Do not destroy or independently update it while the group is active. </p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1Exception.html" title="EVENGINE_API_FOUNDATION public API.">eve::Exception</a></td><td>for invalid index. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01390">1390</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Cloth3D_8cpp_source.html#l01394">getLayerCount()</a> , 以及 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>.</p>
+
+</div>
+</div>
+<a id="a377d58a68fcf5a0183ce69e00ca4023a" name="a377d58a68fcf5a0183ce69e00ca4023a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a377d58a68fcf5a0183ce69e00ca4023a">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html">LayeredCloth3D</a> &amp; eve::physics::LayeredCloth3D::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1LayeredCloth3D.html">LayeredCloth3D</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Owned layers cannot be copy-assigned between groups. </p>
+
+</div>
+</div>
+<a id="a2d14c8ee98d01eb16f4480c10c7bbc39" name="a2d14c8ee98d01eb16f4480c10c7bbc39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d14c8ee98d01eb16f4480c10c7bbc39">&#9670;&#160;</a></span>reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::LayeredCloth3D::reset </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore every layer's authored pose and clear contact statistics. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01408">1408</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0855f1bf1bf596d0b02b831a79b14db3" name="a0855f1bf1bf596d0b02b831a79b14db3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0855f1bf1bf596d0b02b831a79b14db3">&#9670;&#160;</a></span>setInterCollision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::LayeredCloth3D::setInterCollision </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable or disable only contacts between different sheets. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01401">1401</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>.</p>
+
+</div>
+</div>
+<a id="a8e66b5bfb7e9726e2c239070b2b5cd36" name="a8e66b5bfb7e9726e2c239070b2b5cd36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e66b5bfb7e9726e2c239070b2b5cd36">&#9670;&#160;</a></span>setSolver()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::LayeredCloth3D::setSolver </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>substeps</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>passes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configure substeps [1,32] and coupling passes [1,16]; throws on invalid input. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01395">1395</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a947a42973f6a2a4d80f2ce18785d9d19" name="a947a42973f6a2a4d80f2ce18785d9d19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a947a42973f6a2a4d80f2ce18785d9d19">&#9670;&#160;</a></span>setWindVelocity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::LayeredCloth3D::setWindVelocity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the air velocity of every sheet; throws on nonfinite input. </p>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01404">1404</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a4c98ad1e47715e9fd1239d8933aa2be6" name="a4c98ad1e47715e9fd1239d8933aa2be6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c98ad1e47715e9fd1239d8933aa2be6">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::LayeredCloth3D::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance all layers by finite dt in [0,0.05], without dropping time. </p>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname"><a class="el" href="classeve_1_1Exception.html" title="EVENGINE_API_FOUNDATION public API.">eve::Exception</a></td><td>on invalid dt or a destroyed layer, before mutation. @cost Substeps times constraint iterations plus broad-phase candidate triangle contacts; dense overlaps can be quadratic in triangle count. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a> 第 <a class="el" href="Cloth3D_8cpp_source.html#l01415">1415</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00076">c</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/cloth/<a class="el" href="LayeredCloth3D_8h_source.html">LayeredCloth3D.h</a></li>
+<li>src/modules/physics/cloth/<a class="el" href="Cloth3D_8cpp_source.html">Cloth3D.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1080 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::ScriptProviderRegistry类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="classeve_1_1ScriptProviderRegistry.html">ScriptProviderRegistry</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1ScriptProviderRegistry-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::ScriptProviderRegistry类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Named script objects that native systems drive through named methods.  
+ <a href="classeve_1_1ScriptProviderRegistry.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ScriptProvider_8h_source.html">ScriptProvider.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1ScriptProviderRegistry_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aae3fa2b5e1ab875d40f00920bf8006fc" id="r_aae3fa2b5e1ab875d40f00920bf8006fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#aae3fa2b5e1ab875d40f00920bf8006fc">publish</a> (std::string <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const ssq::Object &amp;<a class="el" href="classeve_1_1ScriptProviderRegistry.html#a2cf2b18b18bc95a50cc1ed4db1330c46">instance</a>)</td></tr>
+<tr class="memdesc:aae3fa2b5e1ab875d40f00920bf8006fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish one live script instance under a stable name.  <br /></td></tr>
+<tr class="separator:aae3fa2b5e1ab875d40f00920bf8006fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56d95f1e00347cf91fc35d8e62d33a97" id="r_a56d95f1e00347cf91fc35d8e62d33a97"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#a56d95f1e00347cf91fc35d8e62d33a97">unload</a> (const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;<a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)</td></tr>
+<tr class="memdesc:a56d95f1e00347cf91fc35d8e62d33a97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retire exactly one published generation.  <br /></td></tr>
+<tr class="separator:a56d95f1e00347cf91fc35d8e62d33a97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7f4faa4d09444268d65455b52f72fbf" id="r_aa7f4faa4d09444268d65455b52f72fbf"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#aa7f4faa4d09444268d65455b52f72fbf">generationOf</a> (std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:aa7f4faa4d09444268d65455b52f72fbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current published generation for <code>name</code>, or 0 when absent.  <br /></td></tr>
+<tr class="separator:aa7f4faa4d09444268d65455b52f72fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69cdbb44200b81775acb91e0de67eb96" id="r_a69cdbb44200b81775acb91e0de67eb96"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#a69cdbb44200b81775acb91e0de67eb96">contains</a> (std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a69cdbb44200b81775acb91e0de67eb96"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether <code>name</code> currently has a published provider.  <br /></td></tr>
+<tr class="separator:a69cdbb44200b81775acb91e0de67eb96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1838f0f557540ec37a3e6154c90bc1f" id="r_aa1838f0f557540ec37a3e6154c90bc1f"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#aa1838f0f557540ec37a3e6154c90bc1f">size</a> () const</td></tr>
+<tr class="memdesc:aa1838f0f557540ec37a3e6154c90bc1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of published providers.  <br /></td></tr>
+<tr class="separator:aa1838f0f557540ec37a3e6154c90bc1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70225fa674be754833abc93e5862ae06" id="r_a70225fa674be754833abc93e5862ae06"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#a70225fa674be754833abc93e5862ae06">capabilities</a> () const</td></tr>
+<tr class="memdesc:a70225fa674be754833abc93e5862ae06"><td class="mdescLeft">&#160;</td><td class="mdescRight">Names of every capability that has a declared script binding seam.  <br /></td></tr>
+<tr class="separator:a70225fa674be754833abc93e5862ae06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a614d06a400f8ca8003d58eb815b1265b" id="r_a614d06a400f8ca8003d58eb815b1265b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1ScriptProviderInfo.html">ScriptProviderInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#a614d06a400f8ca8003d58eb815b1265b">published</a> () const</td></tr>
+<tr class="memdesc:a614d06a400f8ca8003d58eb815b1265b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Every currently published provider.  <br /></td></tr>
+<tr class="separator:a614d06a400f8ca8003d58eb815b1265b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad416db4c1bc4035185af529e9db6a450" id="r_ad416db4c1bc4035185af529e9db6a450"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#ad416db4c1bc4035185af529e9db6a450">clearAll</a> ()</td></tr>
+<tr class="memdesc:ad416db4c1bc4035185af529e9db6a450"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop every published provider and release its VM reference.  <br /></td></tr>
+<tr class="separator:ad416db4c1bc4035185af529e9db6a450"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5fdb90d2f521bd035c832fdde70787d" id="r_ac5fdb90d2f521bd035c832fdde70787d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#ac5fdb90d2f521bd035c832fdde70787d">call</a> (const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;<a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::string_view <a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a>) const</td></tr>
+<tr class="memdesc:ac5fdb90d2f521bd035c832fdde70787d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method()</a></code> on a published provider.  <br /></td></tr>
+<tr class="separator:ac5fdb90d2f521bd035c832fdde70787d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab073dbabfe3890d647408f462f9acd6a" id="r_ab073dbabfe3890d647408f462f9acd6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#ab073dbabfe3890d647408f462f9acd6a">call</a> (const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;<a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::string_view <a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a>, double <a class="el" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>) const</td></tr>
+<tr class="memdesc:ab073dbabfe3890d647408f462f9acd6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method(dt)</a></code> on a published provider.  <br /></td></tr>
+<tr class="separator:ab073dbabfe3890d647408f462f9acd6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bd09ca5e5ab024ad4f1eb8e990284b4" id="r_a7bd09ca5e5ab024ad4f1eb8e990284b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#a7bd09ca5e5ab024ad4f1eb8e990284b4">call</a> (const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;<a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::string_view <a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a>, std::span&lt; const <a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a> &gt; args) const</td></tr>
+<tr class="memdesc:a7bd09ca5e5ab024ad4f1eb8e990284b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method(...)</a></code> with explicit arguments.  <br /></td></tr>
+<tr class="separator:a7bd09ca5e5ab024ad4f1eb8e990284b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3606d9c31d367681af2b7ea56266b8ed" id="r_a3606d9c31d367681af2b7ea56266b8ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#a3606d9c31d367681af2b7ea56266b8ed">callNumber</a> (const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;<a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::string_view <a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a>, double <a class="el" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>) const</td></tr>
+<tr class="memdesc:a3606d9c31d367681af2b7ea56266b8ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method(dt)</a></code> and read a numeric result.  <br /></td></tr>
+<tr class="separator:a3606d9c31d367681af2b7ea56266b8ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa38ff73f4745651f545ccdbad78d71c7" id="r_aa38ff73f4745651f545ccdbad78d71c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#aa38ff73f4745651f545ccdbad78d71c7">callNumber</a> (const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;<a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::string_view <a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a>, std::span&lt; const <a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a> &gt; args) const</td></tr>
+<tr class="memdesc:aa38ff73f4745651f545ccdbad78d71c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method(...)</a></code> with explicit scalar arguments and read a numeric result.  <br /></td></tr>
+<tr class="separator:aa38ff73f4745651f545ccdbad78d71c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e4331e8d464d2cf62b25908520e0242" id="r_a2e4331e8d464d2cf62b25908520e0242"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#a2e4331e8d464d2cf62b25908520e0242">callNumbers</a> (const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;<a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::string_view <a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a>) const</td></tr>
+<tr class="memdesc:a2e4331e8d464d2cf62b25908520e0242"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method()</a></code> and read an array of numbers.  <br /></td></tr>
+<tr class="separator:a2e4331e8d464d2cf62b25908520e0242"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a545ec174ef631b9bb52f4ee9e1f4e2f6" id="r_a545ec174ef631b9bb52f4ee9e1f4e2f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#a545ec174ef631b9bb52f4ee9e1f4e2f6">callNumbers</a> (const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;<a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::string_view <a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a>, std::span&lt; const <a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a> &gt; args) const</td></tr>
+<tr class="memdesc:a545ec174ef631b9bb52f4ee9e1f4e2f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method(...)</a></code> with explicit scalar arguments and read an array of numbers.  <br /></td></tr>
+<tr class="separator:a545ec174ef631b9bb52f4ee9e1f4e2f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba1aab8a888e476b4e163452843fd25b" id="r_aba1aab8a888e476b4e163452843fd25b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#aba1aab8a888e476b4e163452843fd25b">callValue</a> (const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;<a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::string_view <a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a>, std::span&lt; const <a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a> &gt; args) const</td></tr>
+<tr class="memdesc:aba1aab8a888e476b4e163452843fd25b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method(...)</a></code> and read the script result as an owning <code><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">eve::Value</a></code>.  <br /></td></tr>
+<tr class="separator:aba1aab8a888e476b4e163452843fd25b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a00221c5276fb274cbbe4e28c5ba9cc" id="r_a9a00221c5276fb274cbbe4e28c5ba9cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#a9a00221c5276fb274cbbe4e28c5ba9cc">callValue</a> (const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;<a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, std::string_view <a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method</a>) const</td></tr>
+<tr class="memdesc:a9a00221c5276fb274cbbe4e28c5ba9cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">No-argument overload of the structured call.  <br /></td></tr>
+<tr class="separator:a9a00221c5276fb274cbbe4e28c5ba9cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9390eb56135704478af6881dc81f2270" id="r_a9390eb56135704478af6881dc81f2270"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#a9390eb56135704478af6881dc81f2270">declareCapability</a> (std::string capability, <a class="el" href="namespaceeve.html#aea83e3b5182d3d1dbe8b3a7f4939c110">ScriptCapabilityBinder</a> binder, <a class="el" href="namespaceeve.html#abd6249bc32409da8e58af21dbcb7f5c0">ScriptCapabilityUnbinder</a> unbinder)</td></tr>
+<tr class="memdesc:a9390eb56135704478af6881dc81f2270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declare that one native capability may be served by a script provider.  <br /></td></tr>
+<tr class="separator:a9390eb56135704478af6881dc81f2270"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e4590fc25ff0938fd04e7bdddf0e6a1" id="r_a5e4590fc25ff0938fd04e7bdddf0e6a1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#a5e4590fc25ff0938fd04e7bdddf0e6a1">hasCapabilitySeam</a> (std::string_view capability) const</td></tr>
+<tr class="memdesc:a5e4590fc25ff0938fd04e7bdddf0e6a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether <code>capability</code> has a declared script binding seam.  <br /></td></tr>
+<tr class="separator:a5e4590fc25ff0938fd04e7bdddf0e6a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a271acadc6e294b154d2d94fb5f150d0b" id="r_a271acadc6e294b154d2d94fb5f150d0b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#a271acadc6e294b154d2d94fb5f150d0b">removeCapability</a> (std::string_view capability)</td></tr>
+<tr class="memdesc:a271acadc6e294b154d2d94fb5f150d0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Withdraw a declared seam when its owning module goes away.  <br /></td></tr>
+<tr class="separator:a271acadc6e294b154d2d94fb5f150d0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac83fad856fc92739abbb19fe6aa41b2a" id="r_ac83fad856fc92739abbb19fe6aa41b2a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#ac83fad856fc92739abbb19fe6aa41b2a">publishForCapability</a> (std::string_view capability, std::string <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, const ssq::Object &amp;<a class="el" href="classeve_1_1ScriptProviderRegistry.html#a2cf2b18b18bc95a50cc1ed4db1330c46">instance</a>)</td></tr>
+<tr class="memdesc:ac83fad856fc92739abbb19fe6aa41b2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish one script instance as the provider of a declared capability.  <br /></td></tr>
+<tr class="separator:ac83fad856fc92739abbb19fe6aa41b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a2cf2b18b18bc95a50cc1ed4db1330c46" id="r_a2cf2b18b18bc95a50cc1ed4db1330c46"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1ScriptProviderRegistry.html">ScriptProviderRegistry</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1ScriptProviderRegistry.html#a2cf2b18b18bc95a50cc1ed4db1330c46">instance</a> ()</td></tr>
+<tr class="memdesc:a2cf2b18b18bc95a50cc1ed4db1330c46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process-lifetime registry; <code>clearAll</code> is the only reset.  <br /></td></tr>
+<tr class="separator:a2cf2b18b18bc95a50cc1ed4db1330c46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Named script objects that native systems drive through named methods. </p>
+<p>A native system needs to call into user script without knowing the script class. This registry is that seam: a script object is published under a stable name, the registry roots it for as long as it is published, and callers invoke a method by name. A method the object does not implement is <code>Unsupported</code>, not a crash and not a silent no-op.</p>
+<p>Deliberately minimal: it resolves nothing by itself. A caller that wants to serve a <code>cap::</code> capability from script publishes the instance here and adapts it; the registry only owns the identity, the rooting and the call.</p>
+<p>@ownership The registry owns one VM reference per published provider. Callers hold borrowed handles, never the object. @lifetime A published provider stays valid until <code>unload</code> or <code>clearAll</code>. Handles outlive retirement on purpose and then report <code>StaleHandle</code>. @thread Main/script thread only, like every other Squirrel entry point. There is no internal lock: a lookup and a call both touch the VM. @reentrancy A published method is user script and may re-enter the registry (<code>publish</code>, <code>unload</code>) while it runs. <code>call</code> therefore re-resolves after the call only for its own bookkeeping and never holds a reference to the provider across an invocation it does not own. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8h_source.html">ScriptProvider.h</a> 第 <a class="el" href="ScriptProvider_8h_source.html#l00114">114</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="ac5fdb90d2f521bd035c832fdde70787d" name="ac5fdb90d2f521bd035c832fdde70787d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5fdb90d2f521bd035c832fdde70787d">&#9670;&#160;</a></span>call() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ScriptProviderRegistry::call </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>method</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method()</a></code> on a published provider. </p>
+<dl class="section return"><dt>返回</dt><dd>Success; <code>Unsupported</code> when the instance has no such method; <code>StaleHandle</code> when the generation is no longer published; <code>Failed</code> when the script call raised. @cost One name lookup in the script object's delegate chain plus one script call. Callers on a per-entity path must resolve the handle once and keep it, not re-derive it per entity. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00518">518</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00318">instance()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00151">method</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ab073dbabfe3890d647408f462f9acd6a" name="ab073dbabfe3890d647408f462f9acd6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab073dbabfe3890d647408f462f9acd6a">&#9670;&#160;</a></span>call() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ScriptProviderRegistry::call </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>method</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method(dt)</a></code> on a published provider. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dt</td><td>Seconds; the caller owns the simulation step, never a wall clock. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>As the zero-argument overload. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00526">526</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00287">eve::ScriptArg::fromNumber()</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00318">instance()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00151">method</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a7bd09ca5e5ab024ad4f1eb8e990284b4" name="a7bd09ca5e5ab024ad4f1eb8e990284b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bd09ca5e5ab024ad4f1eb8e990284b4">&#9670;&#160;</a></span>call() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ScriptProviderRegistry::call </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>method</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a> &gt;&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method(...)</a></code> with explicit arguments. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>Positional arguments in call order; may be empty. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>As the zero-argument overload, plus <code>InvalidArgument</code> when the script method rejects an argument (wrong arity or type). @cost One script call, plus one VM push per argument: a scalar argument is one push, a <code>Table</code> argument is one <code><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">eve::Value</a></code> tree projection (depth and element-count bounded by <code><a class="el" href="SquirrelBinding_8h.html" title="The single Squirrel projection for common Result, Status and Value.">common/SquirrelBinding.h</a></code>). Marshalling is the caller's: this is for capability seams that genuinely need several values or one record, not a general-purpose reflection bridge. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Overload resolution is unambiguous in practice because a braced argument list of one or more elements cannot initialize the <code>double</code> overload. Spell an intentionally empty list as the zero-argument overload instead of <code>{}</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00536">536</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00318">instance()</a>, <a class="el" href="EvaArchive_8cpp_source.html#l00151">method</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3606d9c31d367681af2b7ea56266b8ed" name="a3606d9c31d367681af2b7ea56266b8ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3606d9c31d367681af2b7ea56266b8ed">&#9670;&#160;</a></span>callNumber() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt; eve::ScriptProviderRegistry::callNumber </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>method</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method(dt)</a></code> and read a numeric result. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dt</td><td>Seconds. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The script result as a double, or the same failures as <code>call</code>, plus <code>InvalidArgument</code> when the method returned a non-numeric value. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00545">545</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00287">eve::ScriptArg::fromNumber()</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00318">instance()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00151">method</a>.</p>
+
+</div>
+</div>
+<a id="aa38ff73f4745651f545ccdbad78d71c7" name="aa38ff73f4745651f545ccdbad78d71c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa38ff73f4745651f545ccdbad78d71c7">&#9670;&#160;</a></span>callNumber() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt; eve::ScriptProviderRegistry::callNumber </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>method</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a> &gt;&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method(...)</a></code> with explicit scalar arguments and read a numeric result. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>Positional arguments in call order; may be empty. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>As the <code>double</code> overload of <code>callNumber</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00553">553</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00318">instance()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00151">method</a>.</p>
+
+</div>
+</div>
+<a id="a2e4331e8d464d2cf62b25908520e0242" name="a2e4331e8d464d2cf62b25908520e0242"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e4331e8d464d2cf62b25908520e0242">&#9670;&#160;</a></span>callNumbers() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; double &gt; &gt; eve::ScriptProviderRegistry::callNumbers </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>method</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method()</a></code> and read an array of numbers. </p>
+<dl class="section return"><dt>返回</dt><dd>The script result as doubles, or the same failures as <code>call</code>, plus <code>InvalidArgument</code> when the method returned a non-array, a non-numeric element, or more than 64 elements. @cost One script call plus one copy per element. For a target that reports a whole transform back, not for streaming data: the result is copied, not viewed. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00560">560</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00318">instance()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00151">method</a>.</p>
+
+</div>
+</div>
+<a id="a545ec174ef631b9bb52f4ee9e1f4e2f6" name="a545ec174ef631b9bb52f4ee9e1f4e2f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a545ec174ef631b9bb52f4ee9e1f4e2f6">&#9670;&#160;</a></span>callNumbers() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; double &gt; &gt; eve::ScriptProviderRegistry::callNumbers </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>method</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a> &gt;&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method(...)</a></code> with explicit scalar arguments and read an array of numbers. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">args</td><td>Positional arguments in call order; may be empty. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>As the zero-argument overload of <code>callNumbers</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00567">567</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00318">instance()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00151">method</a>.</p>
+
+</div>
+</div>
+<a id="a9a00221c5276fb274cbbe4e28c5ba9cc" name="a9a00221c5276fb274cbbe4e28c5ba9cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a00221c5276fb274cbbe4e28c5ba9cc">&#9670;&#160;</a></span>callValue() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::ScriptProviderRegistry::callValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>method</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>No-argument overload of the structured call. </p>
+<dl class="section return"><dt>返回</dt><dd>As <code>callValue</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00582">582</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptProvider_8cpp_source.html#l00575">callValue()</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00151">method</a>.</p>
+
+</div>
+</div>
+<a id="aba1aab8a888e476b4e163452843fd25b" name="aba1aab8a888e476b4e163452843fd25b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba1aab8a888e476b4e163452843fd25b">&#9670;&#160;</a></span>callValue() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::ScriptProviderRegistry::callValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>method</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1ScriptArg.html">ScriptArg</a> &gt;&#160;</td>
+          <td class="paramname"><em>args</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Call <code><a class="el" href="EvaArchive_8cpp.html#a479a2ee6f46f3e24484628e37ee7460b">method(...)</a></code> and read the script result as an owning <code><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">eve::Value</a></code>. </p>
+<p>决定③（2026-09-20）的"结构化返回"这一半：插座可以拿到一个**对象/数组**而不是一个数。 典型用途是 <code>ISensingCandidateProvider</code> / <code>IStateQuery</code> 这类"问一次、答一组"的接口。</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>Published provider handle. </td></tr>
+    <tr><td class="paramname">method</td><td>Method name on the provider object. </td></tr>
+    <tr><td class="paramname">args</td><td>Positional arguments in call order; may be empty. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The result as an owning <code><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a></code> tree: <code>Null</code>/<code>Bool</code>/<code>Int64</code>/<code>Double</code>/<code>String</code>/ <code>Array</code>/<code>Object</code>，或与 <code>call</code> 相同的失败（<code>Unsupported</code>/<code>StaleHandle</code>/<code>Failed</code>）， 外加转换失败时的 <code>InvalidArgument</code>。 @cost One script call plus one whole-tree projection. The result is <b>copied</b>, not viewed: per-frame callers should keep asking for scalars (<code>callNumber</code>) and only reach for a structured return when the payload genuinely is a record. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>载荷边界由 <code><a class="el" href="SquirrelBinding_8h.html" title="The single Squirrel projection for common Result, Status and Value.">common/SquirrelBinding.h</a></code> 的权威转换负责（默认深度 64、元素 100000， 拒绝环与非有限数）。需要更紧的上限就用 <code>callNumbers</code>（64 个元素）那条路。 @lifetime 返回值拥有自己的存储，脚本 VM 销毁后依然可用。 </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00575">575</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00318">instance()</a> , 以及 <a class="el" href="EvaArchive_8cpp_source.html#l00151">method</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptProvider_8cpp_source.html#l00582">callValue()</a>.</p>
+
+</div>
+</div>
+<a id="a70225fa674be754833abc93e5862ae06" name="a70225fa674be754833abc93e5862ae06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70225fa674be754833abc93e5862ae06">&#9670;&#160;</a></span>capabilities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::ScriptProviderRegistry::capabilities </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Names of every capability that has a declared script binding seam. </p>
+<dl class="section return"><dt>返回</dt><dd>Names sorted lexicographically, so script-visible output is stable across runs and hash orders. @cost O(capabilities) with one string copy each. Discovery only. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00381">381</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00154">name</a> , 以及 <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00013">seam</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SquirrelBinding_8cpp_source.html#l00608">eve::script::exposeProviderBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ad416db4c1bc4035185af529e9db6a450" name="ad416db4c1bc4035185af529e9db6a450"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad416db4c1bc4035185af529e9db6a450">&#9670;&#160;</a></span>clearAll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ScriptProviderRegistry::clearAll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Drop every published provider and release its VM reference. </p>
+<dl class="section remark"><dt>备注</dt><dd>Test-only reset, and the hook the runtime uses at shutdown: a rooted <code>ssq::Object</code> must not outlive its VM. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00479">479</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00671">removed</a> , 以及 <a class="el" href="ClimbingServices_8cpp_source.html#l00188">retired</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Runtime_8cpp_source.html#l00488">eve::Runtime::shutdown()</a>.</p>
+
+</div>
+</div>
+<a id="a69cdbb44200b81775acb91e0de67eb96" name="a69cdbb44200b81775acb91e0de67eb96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69cdbb44200b81775acb91e0de67eb96">&#9670;&#160;</a></span>contains()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ScriptProviderRegistry::contains </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether <code>name</code> currently has a published provider. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00370">370</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptProvider_8cpp_source.html#l00364">generationOf()</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00154">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SquirrelBinding_8cpp_source.html#l00608">eve::script::exposeProviderBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a9390eb56135704478af6881dc81f2270" name="a9390eb56135704478af6881dc81f2270"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9390eb56135704478af6881dc81f2270">&#9670;&#160;</a></span>declareCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::ScriptProviderRegistry::declareCapability </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>capability</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#aea83e3b5182d3d1dbe8b3a7f4939c110">ScriptCapabilityBinder</a>&#160;</td>
+          <td class="paramname"><em>binder</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abd6249bc32409da8e58af21dbcb7f5c0">ScriptCapabilityUnbinder</a>&#160;</td>
+          <td class="paramname"><em>unbinder</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Declare that one native capability may be served by a script provider. </p>
+<p>Called once per capability by the module that owns the interface, at composition time. The module supplies the marshalling because it is the only party that knows its own interface; the registry just routes the binding, so no central table has to enumerate every capability.</p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">capability</td><td>Native <code>capabilityName</code> string, e.g. <code>"IVehicleDamageModifier"</code>. </td></tr>
+    <tr><td class="paramname">binder</td><td>Installs the native adapter for one published provider. Called synchronously during <code>publishForCapability</code>. </td></tr>
+    <tr><td class="paramname">unbinder</td><td>Removes the adapter again. Called by <code>unload</code>, <code>clearAll</code> and a failed <code>publishForCapability</code>. @cost One map insert. Declare at composition time, never per frame. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section remark"><dt>备注</dt><dd>Redeclaring the same capability replaces the previous pair. Both callbacks must be callable: a capability with no unbinder would leak its adapter across a hot reload. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00404">404</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Assert_8h_source.html#l00030">EV_PARAM_CHECK</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingServices_8cpp_source.html#l00198">eve::climbing::declareScriptClimbingEventSeam()</a>, <a class="el" href="PcgPhotoModeApplySeam_8cpp_source.html#l00126">eve::ui::declareScriptPhotoModeApplySeam()</a>, <a class="el" href="WeaponSystem_8cpp_source.html#l00564">eve::weapon::declareScriptProjectileSeam()</a>, <a class="el" href="SensingScriptCandidateSeam_8cpp_source.html#l00403">eve::sensing::declareScriptSensingCandidateSeam()</a>, <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00237">eve::dialogue::declareScriptStateMutationSeam()</a>, <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00198">eve::dialogue::declareScriptStateQuerySeam()</a> , 以及 <a class="el" href="TileCollisionScriptSink_8cpp_source.html#l00096">eve::map::declareScriptTileCollisionSinkSeam()</a>.</p>
+
+</div>
+</div>
+<a id="aa7f4faa4d09444268d65455b52f72fbf" name="aa7f4faa4d09444268d65455b52f72fbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7f4faa4d09444268d65455b52f72fbf">&#9670;&#160;</a></span>generationOf()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::ScriptProviderRegistry::generationOf </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current published generation for <code>name</code>, or 0 when absent. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00364">364</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00154">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptProvider_8cpp_source.html#l00370">contains()</a> , 以及 <a class="el" href="SquirrelBinding_8cpp_source.html#l00608">eve::script::exposeProviderBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a5e4590fc25ff0938fd04e7bdddf0e6a1" name="a5e4590fc25ff0938fd04e7bdddf0e6a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e4590fc25ff0938fd04e7bdddf0e6a1">&#9670;&#160;</a></span>hasCapabilitySeam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::ScriptProviderRegistry::hasCapabilitySeam </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>capability</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether <code>capability</code> has a declared script binding seam. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00412">412</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2cf2b18b18bc95a50cc1ed4db1330c46" name="a2cf2b18b18bc95a50cc1ed4db1330c46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2cf2b18b18bc95a50cc1ed4db1330c46">&#9670;&#160;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1ScriptProviderRegistry.html">ScriptProviderRegistry</a> &amp; eve::ScriptProviderRegistry::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Process-lifetime registry; <code>clearAll</code> is the only reset. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00318">318</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00024">registry</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptProvider_8cpp_source.html#l00518">call()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00526">call()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00536">call()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00545">callNumber()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00553">callNumber()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00560">callNumbers()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00567">callNumbers()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00575">callValue()</a>, <a class="el" href="ClimbingServices_8cpp_source.html#l00198">eve::climbing::declareScriptClimbingEventSeam()</a>, <a class="el" href="PcgPhotoModeApplySeam_8cpp_source.html#l00126">eve::ui::declareScriptPhotoModeApplySeam()</a>, <a class="el" href="WeaponSystem_8cpp_source.html#l00564">eve::weapon::declareScriptProjectileSeam()</a>, <a class="el" href="SensingScriptCandidateSeam_8cpp_source.html#l00403">eve::sensing::declareScriptSensingCandidateSeam()</a>, <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00237">eve::dialogue::declareScriptStateMutationSeam()</a>, <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00198">eve::dialogue::declareScriptStateQuerySeam()</a>, <a class="el" href="TileCollisionScriptSink_8cpp_source.html#l00096">eve::map::declareScriptTileCollisionSinkSeam()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00608">eve::script::exposeProviderBindings()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00325">publish()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00425">publishForCapability()</a>, <a class="el" href="Runtime_8cpp_source.html#l00488">eve::Runtime::shutdown()</a>, <a class="el" href="ClimbingServices_8cpp_source.html#l00231">eve::climbing::withdrawScriptClimbingEventSeam()</a>, <a class="el" href="PcgPhotoModeApplySeam_8cpp_source.html#l00160">eve::ui::withdrawScriptPhotoModeApplySeam()</a>, <a class="el" href="WeaponSystem_8cpp_source.html#l00599">eve::weapon::withdrawScriptProjectileSeam()</a>, <a class="el" href="SensingScriptCandidateSeam_8cpp_source.html#l00437">eve::sensing::withdrawScriptSensingCandidateSeam()</a>, <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00267">eve::dialogue::withdrawScriptStateMutationSeam()</a>, <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00225">eve::dialogue::withdrawScriptStateQuerySeam()</a> , 以及 <a class="el" href="TileCollisionScriptSink_8cpp_source.html#l00123">eve::map::withdrawScriptTileCollisionSinkSeam()</a>.</p>
+
+</div>
+</div>
+<a id="aae3fa2b5e1ab875d40f00920bf8006fc" name="aae3fa2b5e1ab875d40f00920bf8006fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae3fa2b5e1ab875d40f00920bf8006fc">&#9670;&#160;</a></span>publish()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &gt; eve::ScriptProviderRegistry::publish </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Publish one live script instance under a stable name. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>Non-empty stable provider name; republishing supersedes it. </td></tr>
+    <tr><td class="paramname">instance</td><td>Live script instance; the registry takes its own VM reference. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The new generation-qualified handle, or a structured failure. @cost One VM reference plus a map insert. Call at load/publish time, never per frame. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Republishing the same name retires the previous generation without destroying it: outstanding handles report <code>StaleHandle</code> afterwards. When the superseded generation was capability-bound, its unbinder runs first and a failure there fails this call &ndash; the superseded generation stays retired either way, so the name has no live provider afterwards. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00325">325</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ECS_8cpp_source.html#l00040">generation</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00318">instance()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00018">previous</a>, <a class="el" href="ClimbingServices_8cpp_source.html#l00188">retired</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptProvider_8cpp_source.html#l00425">publishForCapability()</a>.</p>
+
+</div>
+</div>
+<a id="a614d06a400f8ca8003d58eb815b1265b" name="a614d06a400f8ca8003d58eb815b1265b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a614d06a400f8ca8003d58eb815b1265b">&#9670;&#160;</a></span>published()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1ScriptProviderInfo.html">ScriptProviderInfo</a> &gt; eve::ScriptProviderRegistry::published </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Every currently published provider. </p>
+<dl class="section return"><dt>返回</dt><dd>Entries sorted by name for deterministic script-visible output. @cost O(published) with string copies. Discovery/diagnostics only. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00392">392</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BattleControl_8cpp_source.html#l00706">entries</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00154">name</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SquirrelBinding_8cpp_source.html#l00608">eve::script::exposeProviderBindings()</a> , 以及 <a class="el" href="ScriptProvider_8cpp_source.html#l00425">publishForCapability()</a>.</p>
+
+</div>
+</div>
+<a id="ac83fad856fc92739abbb19fe6aa41b2a" name="ac83fad856fc92739abbb19fe6aa41b2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac83fad856fc92739abbb19fe6aa41b2a">&#9670;&#160;</a></span>publishForCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &gt; eve::ScriptProviderRegistry::publishForCapability </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>capability</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ssq::Object &amp;&#160;</td>
+          <td class="paramname"><em>instance</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Publish one script instance as the provider of a declared capability. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">capability</td><td>Capability declared through <code>declareCapability</code>. </td></tr>
+    <tr><td class="paramname">name</td><td>Stable provider name; republishing supersedes it. </td></tr>
+    <tr><td class="paramname">instance</td><td>Live script instance; the registry takes its own VM reference. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The new handle, <code>NotFound</code> when nothing declared <code>capability</code>, or whatever the binder reported. @cost One publish plus one binder invocation. Call at load/publish time. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Atomic: a binder failure unloads the fresh generation again, so a caller never observes a published provider that serves nothing. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00425">425</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00318">instance()</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="BattleControl_8cpp_source.html#l00708">pending</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00325">publish()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00392">published()</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00013">seam</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ScriptProvider_8cpp_source.html#l00352">unload()</a>.</p>
+
+</div>
+</div>
+<a id="a271acadc6e294b154d2d94fb5f150d0b" name="a271acadc6e294b154d2d94fb5f150d0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a271acadc6e294b154d2d94fb5f150d0b">&#9670;&#160;</a></span>removeCapability()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ScriptProviderRegistry::removeCapability </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>capability</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Withdraw a declared seam when its owning module goes away. </p>
+<dl class="section return"><dt>返回</dt><dd>Success, or <code>NotFound</code> when <code>capability</code> was never declared. @cost One map erase. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Only the ability to bind again is withdrawn. A provider that is already published keeps its generation and its installed adapter, so unloading it still runs the unbinder it was published with. A seam that outlived its owner would otherwise advertise a binding that can only fail later, at publish time. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00416">416</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ECS_8cpp_source.html#l00155">key</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ClimbingServices_8cpp_source.html#l00231">eve::climbing::withdrawScriptClimbingEventSeam()</a>, <a class="el" href="PcgPhotoModeApplySeam_8cpp_source.html#l00160">eve::ui::withdrawScriptPhotoModeApplySeam()</a>, <a class="el" href="WeaponSystem_8cpp_source.html#l00599">eve::weapon::withdrawScriptProjectileSeam()</a>, <a class="el" href="SensingScriptCandidateSeam_8cpp_source.html#l00437">eve::sensing::withdrawScriptSensingCandidateSeam()</a>, <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00267">eve::dialogue::withdrawScriptStateMutationSeam()</a>, <a class="el" href="StateAccessScriptSeam_8cpp_source.html#l00225">eve::dialogue::withdrawScriptStateQuerySeam()</a> , 以及 <a class="el" href="TileCollisionScriptSink_8cpp_source.html#l00123">eve::map::withdrawScriptTileCollisionSinkSeam()</a>.</p>
+
+</div>
+</div>
+<a id="aa1838f0f557540ec37a3e6154c90bc1f" name="aa1838f0f557540ec37a3e6154c90bc1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1838f0f557540ec37a3e6154c90bc1f">&#9670;&#160;</a></span>size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::ScriptProviderRegistry::size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of published providers. </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00372">372</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SquirrelBinding_8cpp_source.html#l00031">count</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00155">key</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SquirrelBinding_8cpp_source.html#l00608">eve::script::exposeProviderBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a56d95f1e00347cf91fc35d8e62d33a97" name="a56d95f1e00347cf91fc35d8e62d33a97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56d95f1e00347cf91fc35d8e62d33a97">&#9670;&#160;</a></span>unload()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::ScriptProviderRegistry::unload </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ScriptProviderHandle.html">ScriptProviderHandle</a> &amp;&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retire exactly one published generation. </p>
+<dl class="section return"><dt>返回</dt><dd>Success; <code>StaleHandle</code> when it was already retired or superseded; or whatever a capability unbinder reported, after the generation is already retired. @cost One map erase plus a VM release, plus one unbinder invocation when the provider was published through <code>publishForCapability</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a> 第 <a class="el" href="ScriptProvider_8cpp_source.html#l00352">352</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptProvider_8cpp_source.html#l00425">publishForCapability()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/engine/common/<a class="el" href="ScriptProvider_8h_source.html">ScriptProvider.h</a></li>
+<li>src/engine/common/<a class="el" href="ScriptProvider_8cpp_source.html">ScriptProvider.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

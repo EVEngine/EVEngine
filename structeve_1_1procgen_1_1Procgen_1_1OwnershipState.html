@@ -1,0 +1,865 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::Procgen::OwnershipState结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1Procgen.html">Procgen</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html">OwnershipState</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::Procgen::OwnershipState结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Module-owned registries and mutable caches behind the <a class="el" href="classeve_1_1procgen_1_1Procgen.html" title="Procedural generation module. Phase A: runtime maps (semantic Grid2D → TileLayer)....">Procgen</a> facade.  
+ <a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a9800f229d25f1c8374f7f55ca018546b" id="r_a9800f229d25f1c8374f7f55ca018546b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1OutputSpec.html">OutputSpec</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenOutputHandleTag.html">ProcgenOutputHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a9800f229d25f1c8374f7f55ca018546b">outputs</a></td></tr>
+<tr class="separator:a9800f229d25f1c8374f7f55ca018546b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff4b3714b3837961c3de1cef37dc4900" id="r_aff4b3714b3837961c3de1cef37dc4900"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenPointSetHandleTag.html">ProcgenPointSetHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aff4b3714b3837961c3de1cef37dc4900">points</a></td></tr>
+<tr class="separator:aff4b3714b3837961c3de1cef37dc4900"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54863144d7ecb7c71cf975739623d744" id="r_a54863144d7ecb7c71cf975739623d744"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">TerrainSampler</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenTerrainSamplerHandleTag.html">ProcgenTerrainSamplerHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a54863144d7ecb7c71cf975739623d744">samplers</a></td></tr>
+<tr class="separator:a54863144d7ecb7c71cf975739623d744"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ae8d363d7e0b1e45b3ddf983c33faf8" id="r_a9ae8d363d7e0b1e45b3ddf983c33faf8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenHeightmapHandleTag.html">ProcgenHeightmapHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a9ae8d363d7e0b1e45b3ddf983c33faf8">heightmaps</a></td></tr>
+<tr class="separator:a9ae8d363d7e0b1e45b3ddf983c33faf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e7f399126ce39685296b7a26ac59728" id="r_a6e7f399126ce39685296b7a26ac59728"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1CloudField.html">CloudField</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenCloudFieldHandleTag.html">ProcgenCloudFieldHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6e7f399126ce39685296b7a26ac59728">clouds</a></td></tr>
+<tr class="separator:a6e7f399126ce39685296b7a26ac59728"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0c98e8b2f0140e6c639f6b505e09c2b" id="r_ad0c98e8b2f0140e6c639f6b505e09c2b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1CloudShadow.html">CloudShadow</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenCloudShadowHandleTag.html">ProcgenCloudShadowHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad0c98e8b2f0140e6c639f6b505e09c2b">shadows</a></td></tr>
+<tr class="separator:ad0c98e8b2f0140e6c639f6b505e09c2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad72f3e00899b10dbc41c33b8e805b64d" id="r_ad72f3e00899b10dbc41c33b8e805b64d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenPbrMaterialHandleTag.html">ProcgenPbrMaterialHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad72f3e00899b10dbc41c33b8e805b64d">pbr</a></td></tr>
+<tr class="separator:ad72f3e00899b10dbc41c33b8e805b64d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a327e64468d732792703a04d5238fa82b" id="r_a327e64468d732792703a04d5238fa82b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenMeshBuildHandleTag.html">ProcgenMeshBuildHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a327e64468d732792703a04d5238fa82b">meshes</a></td></tr>
+<tr class="separator:a327e64468d732792703a04d5238fa82b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36cedf11bcf723d5285d601fc9be290f" id="r_a36cedf11bcf723d5285d601fc9be290f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenImageHandleTag.html">ProcgenImageHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a36cedf11bcf723d5285d601fc9be290f">images</a></td></tr>
+<tr class="separator:a36cedf11bcf723d5285d601fc9be290f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7409e3618dcdec2d51bafe7e458eb27" id="r_aa7409e3618dcdec2d51bafe7e458eb27"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenNormalImageHandleTag.html">ProcgenNormalImageHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aa7409e3618dcdec2d51bafe7e458eb27">normalImages</a></td></tr>
+<tr class="separator:aa7409e3618dcdec2d51bafe7e458eb27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc174bd9adb1bf8c085fedf3bf6176b2" id="r_adc174bd9adb1bf8c085fedf3bf6176b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenParamsHandleTag.html">ProcgenParamsHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#adc174bd9adb1bf8c085fedf3bf6176b2">params</a></td></tr>
+<tr class="separator:adc174bd9adb1bf8c085fedf3bf6176b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a575b6aeab957cf7a03734b792ace203f" id="r_a575b6aeab957cf7a03734b792ace203f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenGridHandleTag.html">ProcgenGridHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a575b6aeab957cf7a03734b792ace203f">grids</a></td></tr>
+<tr class="separator:a575b6aeab957cf7a03734b792ace203f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6983572e4b7a72163287c9c7509dd5f" id="r_ad6983572e4b7a72163287c9c7509dd5f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">ProcgenContext</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenContextHandleTag.html">ProcgenContextHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad6983572e4b7a72163287c9c7509dd5f">contexts</a></td></tr>
+<tr class="separator:ad6983572e4b7a72163287c9c7509dd5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab047765fb36575e3b18da5a78bcd356" id="r_aab047765fb36575e3b18da5a78bcd356"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenSpatialDataHandleTag.html">ProcgenSpatialDataHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aab047765fb36575e3b18da5a78bcd356">spatialData</a></td></tr>
+<tr class="separator:aab047765fb36575e3b18da5a78bcd356"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56b69a48f1017a0983993cd58413bb0f" id="r_a56b69a48f1017a0983993cd58413bb0f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">RuntimeGeneration</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenRuntimeGenerationHandleTag.html">ProcgenRuntimeGenerationHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a56b69a48f1017a0983993cd58413bb0f">runtimeGenerations</a></td></tr>
+<tr class="separator:a56b69a48f1017a0983993cd58413bb0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab504da901290269e534e790c813624b5" id="r_ab504da901290269e534e790c813624b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenPointGraphHandleTag.html">ProcgenPointGraphHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ab504da901290269e534e790c813624b5">pointGraphs</a></td></tr>
+<tr class="separator:ab504da901290269e534e790c813624b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3757c4bdfb432df8009c8e475923049" id="r_ab3757c4bdfb432df8009c8e475923049"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html">MeshModifierGraph</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenMeshModifierGraphHandleTag.html">ProcgenMeshModifierGraphHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ab3757c4bdfb432df8009c8e475923049">meshModifierGraphs</a></td></tr>
+<tr class="separator:ab3757c4bdfb432df8009c8e475923049"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac314563bd53006e1dd62c23255db96a" id="r_aac314563bd53006e1dd62c23255db96a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html">MeshDeformationSession</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenMeshDeformationSessionHandleTag.html">ProcgenMeshDeformationSessionHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aac314563bd53006e1dd62c23255db96a">meshDeformationSessions</a></td></tr>
+<tr class="separator:aac314563bd53006e1dd62c23255db96a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f3f37535909642fa9c99178587dde47" id="r_a6f3f37535909642fa9c99178587dde47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1DynamicMeshUvPaintSession.html">DynamicMeshUvPaintSession</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenDynamicMeshUvPaintSessionHandleTag.html">ProcgenDynamicMeshUvPaintSessionHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6f3f37535909642fa9c99178587dde47">dynamicMeshUvPaintSessions</a></td></tr>
+<tr class="separator:a6f3f37535909642fa9c99178587dde47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ff829f3596da3a0902f2af84677e373" id="r_a9ff829f3596da3a0902f2af84677e373"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1SplinePath.html">SplinePath</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenSplinePathHandleTag.html">ProcgenSplinePathHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a9ff829f3596da3a0902f2af84677e373">splinePaths</a></td></tr>
+<tr class="separator:a9ff829f3596da3a0902f2af84677e373"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa338fdae81c93870e764085e2e7a70ca" id="r_aa338fdae81c93870e764085e2e7a70ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1GridGraph.html">GridGraph</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenGridGraphHandleTag.html">ProcgenGridGraphHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aa338fdae81c93870e764085e2e7a70ca">gridGraphs</a></td></tr>
+<tr class="separator:aa338fdae81c93870e764085e2e7a70ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cc9af33e443682976aed264a545faf6" id="r_a8cc9af33e443682976aed264a545faf6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshGraph.html">MeshGraph</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenMeshGraphHandleTag.html">ProcgenMeshGraphHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a8cc9af33e443682976aed264a545faf6">meshGraphs</a></td></tr>
+<tr class="separator:a8cc9af33e443682976aed264a545faf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16e0a95a6c3bef04e97f17bed859f930" id="r_a16e0a95a6c3bef04e97f17bed859f930"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1BiomeRules.html">BiomeRules</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenBiomeRulesHandleTag.html">ProcgenBiomeRulesHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a16e0a95a6c3bef04e97f17bed859f930">biomeRules</a></td></tr>
+<tr class="separator:a16e0a95a6c3bef04e97f17bed859f930"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1411f14580d88c2843d71c2ce15004f" id="r_ad1411f14580d88c2843d71c2ce15004f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html">ShapeGrammar</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenShapeGrammarHandleTag.html">ProcgenShapeGrammarHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad1411f14580d88c2843d71c2ce15004f">shapeGrammars</a></td></tr>
+<tr class="separator:ad1411f14580d88c2843d71c2ce15004f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a529765f3c0e74ba4b36129fbc2ee1b53" id="r_a529765f3c0e74ba4b36129fbc2ee1b53"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt; <a class="el" href="classeve_1_1procgen_1_1LSystem.html">LSystem</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenLSystemHandleTag.html">ProcgenLSystemHandleTag</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a529765f3c0e74ba4b36129fbc2ee1b53">lsystems</a></td></tr>
+<tr class="separator:a529765f3c0e74ba4b36129fbc2ee1b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ac1752a6a5b51155e27e720e0563977" id="r_a6ac1752a6a5b51155e27e720e0563977"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1PaletteTable.html">PaletteTable</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6ac1752a6a5b51155e27e720e0563977">palettes</a></td></tr>
+<tr class="separator:a6ac1752a6a5b51155e27e720e0563977"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e2823cae374f388d2fa5066b9ee89cc" id="r_a1e2823cae374f388d2fa5066b9ee89cc"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, <a class="el" href="structeve_1_1procgen_1_1ProcgenSystemSnapshot.html">ProcgenSystemSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a1e2823cae374f388d2fa5066b9ee89cc">systems</a></td></tr>
+<tr class="separator:a1e2823cae374f388d2fa5066b9ee89cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fac13566257432e666443faf6bc563c" id="r_a6fac13566257432e666443faf6bc563c"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, <a class="el" href="structeve_1_1procgen_1_1ProcgenSystemSnapshot.html">ProcgenSystemSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6fac13566257432e666443faf6bc563c">previousSystems</a></td></tr>
+<tr class="separator:a6fac13566257432e666443faf6bc563c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac5bade29f602c60366a7cdc516325367" id="r_ac5bade29f602c60366a7cdc516325367"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1ArtifactStore.html">ArtifactStore</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ac5bade29f602c60366a7cdc516325367">artifactStore</a></td></tr>
+<tr class="separator:ac5bade29f602c60366a7cdc516325367"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4aefeabcfb792ab57925eb0e45fd0416" id="r_a4aefeabcfb792ab57925eb0e45fd0416"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a4aefeabcfb792ab57925eb0e45fd0416">nextArtifactSequence</a> = 1</td></tr>
+<tr class="separator:a4aefeabcfb792ab57925eb0e45fd0416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3feea65d9378ee662552f13933c1bb9a" id="r_a3feea65d9378ee662552f13933c1bb9a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a3feea65d9378ee662552f13933c1bb9a">compatMessage</a></td></tr>
+<tr class="separator:a3feea65d9378ee662552f13933c1bb9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d715256f42d0baa85e492d7aa6db399" id="r_a4d715256f42d0baa85e492d7aa6db399"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a4d715256f42d0baa85e492d7aa6db399">algorithmIdsCache</a></td></tr>
+<tr class="separator:a4d715256f42d0baa85e492d7aa6db399"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7572474854dd41915f8af3a3a56352ff" id="r_a7572474854dd41915f8af3a3a56352ff"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a7572474854dd41915f8af3a3a56352ff">textureRecipeIdsCache</a></td></tr>
+<tr class="separator:a7572474854dd41915f8af3a3a56352ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ffba2f2620b25f6693d2217ed5a0260" id="r_a3ffba2f2620b25f6693d2217ed5a0260"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a3ffba2f2620b25f6693d2217ed5a0260">pbrRecipeIdsCache</a></td></tr>
+<tr class="separator:a3ffba2f2620b25f6693d2217ed5a0260"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d28e29f261d94a29a6ad06cabbb89f1" id="r_a5d28e29f261d94a29a6ad06cabbb89f1"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a5d28e29f261d94a29a6ad06cabbb89f1">meshRecipeIdsCache</a></td></tr>
+<tr class="separator:a5d28e29f261d94a29a6ad06cabbb89f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Module-owned registries and mutable caches behind the <a class="el" href="classeve_1_1procgen_1_1Procgen.html" title="Procedural generation module. Phase A: runtime maps (semantic Grid2D → TileLayer)....">Procgen</a> facade. </p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00042">42</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a4d715256f42d0baa85e492d7aa6db399" name="a4d715256f42d0baa85e492d7aa6db399"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d715256f42d0baa85e492d7aa6db399">&#9670;&#160;</a></span>algorithmIdsCache</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::procgen::Procgen::OwnershipState::algorithmIdsCache</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac5bade29f602c60366a7cdc516325367" name="ac5bade29f602c60366a7cdc516325367"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5bade29f602c60366a7cdc516325367">&#9670;&#160;</a></span>artifactStore</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1ArtifactStore.html">ArtifactStore</a> eve::procgen::Procgen::OwnershipState::artifactStore</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00075">75</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a16e0a95a6c3bef04e97f17bed859f930" name="a16e0a95a6c3bef04e97f17bed859f930"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16e0a95a6c3bef04e97f17bed859f930">&#9670;&#160;</a></span>biomeRules</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1BiomeRules.html">BiomeRules</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenBiomeRulesHandleTag.html">ProcgenBiomeRulesHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::biomeRules</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00068">68</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6e7f399126ce39685296b7a26ac59728" name="a6e7f399126ce39685296b7a26ac59728"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e7f399126ce39685296b7a26ac59728">&#9670;&#160;</a></span>clouds</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1CloudField.html">CloudField</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenCloudFieldHandleTag.html">ProcgenCloudFieldHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::clouds</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3feea65d9378ee662552f13933c1bb9a" name="a3feea65d9378ee662552f13933c1bb9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3feea65d9378ee662552f13933c1bb9a">&#9670;&#160;</a></span>compatMessage</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::Procgen::OwnershipState::compatMessage</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Scratch buffer for legacy generate/palette paths that still take a string* error out-param. </p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00078">78</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad6983572e4b7a72163287c9c7509dd5f" name="ad6983572e4b7a72163287c9c7509dd5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6983572e4b7a72163287c9c7509dd5f">&#9670;&#160;</a></span>contexts</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1ProcgenContext.html">ProcgenContext</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenContextHandleTag.html">ProcgenContextHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::contexts</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6f3f37535909642fa9c99178587dde47" name="a6f3f37535909642fa9c99178587dde47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f3f37535909642fa9c99178587dde47">&#9670;&#160;</a></span>dynamicMeshUvPaintSessions</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1DynamicMeshUvPaintSession.html">DynamicMeshUvPaintSession</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenDynamicMeshUvPaintSessionHandleTag.html">ProcgenDynamicMeshUvPaintSessionHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::dynamicMeshUvPaintSessions</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa338fdae81c93870e764085e2e7a70ca" name="aa338fdae81c93870e764085e2e7a70ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa338fdae81c93870e764085e2e7a70ca">&#9670;&#160;</a></span>gridGraphs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1GridGraph.html">GridGraph</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenGridGraphHandleTag.html">ProcgenGridGraphHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::gridGraphs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00066">66</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a575b6aeab957cf7a03734b792ace203f" name="a575b6aeab957cf7a03734b792ace203f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a575b6aeab957cf7a03734b792ace203f">&#9670;&#160;</a></span>grids</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1Grid2D.html">Grid2D</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenGridHandleTag.html">ProcgenGridHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::grids</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9ae8d363d7e0b1e45b3ddf983c33faf8" name="a9ae8d363d7e0b1e45b3ddf983c33faf8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ae8d363d7e0b1e45b3ddf983c33faf8">&#9670;&#160;</a></span>heightmaps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenHeightmapHandleTag.html">ProcgenHeightmapHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::heightmaps</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a36cedf11bcf723d5285d601fc9be290f" name="a36cedf11bcf723d5285d601fc9be290f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36cedf11bcf723d5285d601fc9be290f">&#9670;&#160;</a></span>images</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenImageHandleTag.html">ProcgenImageHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::images</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a529765f3c0e74ba4b36129fbc2ee1b53" name="a529765f3c0e74ba4b36129fbc2ee1b53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a529765f3c0e74ba4b36129fbc2ee1b53">&#9670;&#160;</a></span>lsystems</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1LSystem.html">LSystem</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenLSystemHandleTag.html">ProcgenLSystemHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::lsystems</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aac314563bd53006e1dd62c23255db96a" name="aac314563bd53006e1dd62c23255db96a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac314563bd53006e1dd62c23255db96a">&#9670;&#160;</a></span>meshDeformationSessions</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1MeshDeformationSession.html">MeshDeformationSession</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenMeshDeformationSessionHandleTag.html">ProcgenMeshDeformationSessionHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::meshDeformationSessions</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a327e64468d732792703a04d5238fa82b" name="a327e64468d732792703a04d5238fa82b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a327e64468d732792703a04d5238fa82b">&#9670;&#160;</a></span>meshes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenMeshBuildHandleTag.html">ProcgenMeshBuildHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::meshes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8cc9af33e443682976aed264a545faf6" name="a8cc9af33e443682976aed264a545faf6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cc9af33e443682976aed264a545faf6">&#9670;&#160;</a></span>meshGraphs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1MeshGraph.html">MeshGraph</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenMeshGraphHandleTag.html">ProcgenMeshGraphHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::meshGraphs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00067">67</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab3757c4bdfb432df8009c8e475923049" name="ab3757c4bdfb432df8009c8e475923049"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3757c4bdfb432df8009c8e475923049">&#9670;&#160;</a></span>meshModifierGraphs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1MeshModifierGraph.html">MeshModifierGraph</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenMeshModifierGraphHandleTag.html">ProcgenMeshModifierGraphHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::meshModifierGraphs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5d28e29f261d94a29a6ad06cabbb89f1" name="a5d28e29f261d94a29a6ad06cabbb89f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d28e29f261d94a29a6ad06cabbb89f1">&#9670;&#160;</a></span>meshRecipeIdsCache</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::procgen::Procgen::OwnershipState::meshRecipeIdsCache</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4aefeabcfb792ab57925eb0e45fd0416" name="a4aefeabcfb792ab57925eb0e45fd0416"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4aefeabcfb792ab57925eb0e45fd0416">&#9670;&#160;</a></span>nextArtifactSequence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::procgen::Procgen::OwnershipState::nextArtifactSequence = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa7409e3618dcdec2d51bafe7e458eb27" name="aa7409e3618dcdec2d51bafe7e458eb27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7409e3618dcdec2d51bafe7e458eb27">&#9670;&#160;</a></span>normalImages</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenNormalImageHandleTag.html">ProcgenNormalImageHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::normalImages</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9800f229d25f1c8374f7f55ca018546b" name="a9800f229d25f1c8374f7f55ca018546b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9800f229d25f1c8374f7f55ca018546b">&#9670;&#160;</a></span>outputs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1OutputSpec.html">OutputSpec</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenOutputHandleTag.html">ProcgenOutputHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::outputs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6ac1752a6a5b51155e27e720e0563977" name="a6ac1752a6a5b51155e27e720e0563977"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ac1752a6a5b51155e27e720e0563977">&#9670;&#160;</a></span>palettes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1PaletteTable.html">PaletteTable</a> eve::procgen::Procgen::OwnershipState::palettes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00072">72</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adc174bd9adb1bf8c085fedf3bf6176b2" name="adc174bd9adb1bf8c085fedf3bf6176b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc174bd9adb1bf8c085fedf3bf6176b2">&#9670;&#160;</a></span>params</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenParamsHandleTag.html">ProcgenParamsHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::params</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad72f3e00899b10dbc41c33b8e805b64d" name="ad72f3e00899b10dbc41c33b8e805b64d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad72f3e00899b10dbc41c33b8e805b64d">&#9670;&#160;</a></span>pbr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenPbrMaterialHandleTag.html">ProcgenPbrMaterialHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::pbr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3ffba2f2620b25f6693d2217ed5a0260" name="a3ffba2f2620b25f6693d2217ed5a0260"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ffba2f2620b25f6693d2217ed5a0260">&#9670;&#160;</a></span>pbrRecipeIdsCache</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::procgen::Procgen::OwnershipState::pbrRecipeIdsCache</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab504da901290269e534e790c813624b5" name="ab504da901290269e534e790c813624b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab504da901290269e534e790c813624b5">&#9670;&#160;</a></span>pointGraphs</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1PointGraph.html">PointGraph</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenPointGraphHandleTag.html">ProcgenPointGraphHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::pointGraphs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aff4b3714b3837961c3de1cef37dc4900" name="aff4b3714b3837961c3de1cef37dc4900"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff4b3714b3837961c3de1cef37dc4900">&#9670;&#160;</a></span>points</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenPointSetHandleTag.html">ProcgenPointSetHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::points</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6fac13566257432e666443faf6bc563c" name="a6fac13566257432e666443faf6bc563c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6fac13566257432e666443faf6bc563c">&#9670;&#160;</a></span>previousSystems</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, <a class="el" href="structeve_1_1procgen_1_1ProcgenSystemSnapshot.html">ProcgenSystemSnapshot</a>&gt; eve::procgen::Procgen::OwnershipState::previousSystems</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a56b69a48f1017a0983993cd58413bb0f" name="a56b69a48f1017a0983993cd58413bb0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56b69a48f1017a0983993cd58413bb0f">&#9670;&#160;</a></span>runtimeGenerations</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1RuntimeGeneration.html">RuntimeGeneration</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenRuntimeGenerationHandleTag.html">ProcgenRuntimeGenerationHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::runtimeGenerations</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54863144d7ecb7c71cf975739623d744" name="a54863144d7ecb7c71cf975739623d744"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54863144d7ecb7c71cf975739623d744">&#9670;&#160;</a></span>samplers</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1TerrainSampler.html">TerrainSampler</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenTerrainSamplerHandleTag.html">ProcgenTerrainSamplerHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::samplers</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad0c98e8b2f0140e6c639f6b505e09c2b" name="ad0c98e8b2f0140e6c639f6b505e09c2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0c98e8b2f0140e6c639f6b505e09c2b">&#9670;&#160;</a></span>shadows</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1CloudShadow.html">CloudShadow</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenCloudShadowHandleTag.html">ProcgenCloudShadowHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::shadows</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad1411f14580d88c2843d71c2ce15004f" name="ad1411f14580d88c2843d71c2ce15004f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1411f14580d88c2843d71c2ce15004f">&#9670;&#160;</a></span>shapeGrammars</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1ShapeGrammar.html">ShapeGrammar</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenShapeGrammarHandleTag.html">ProcgenShapeGrammarHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::shapeGrammars</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aab047765fb36575e3b18da5a78bcd356" name="aab047765fb36575e3b18da5a78bcd356"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab047765fb36575e3b18da5a78bcd356">&#9670;&#160;</a></span>spatialData</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1SpatialData.html">SpatialData</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenSpatialDataHandleTag.html">ProcgenSpatialDataHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::spatialData</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9ff829f3596da3a0902f2af84677e373" name="a9ff829f3596da3a0902f2af84677e373"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9ff829f3596da3a0902f2af84677e373">&#9670;&#160;</a></span>splinePaths</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a>&lt;<a class="el" href="classeve_1_1procgen_1_1SplinePath.html">SplinePath</a>, <a class="el" href="structeve_1_1procgen_1_1ProcgenSplinePathHandleTag.html">ProcgenSplinePathHandleTag</a>&gt; eve::procgen::Procgen::OwnershipState::splinePaths</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00065">65</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e2823cae374f388d2fa5066b9ee89cc" name="a1e2823cae374f388d2fa5066b9ee89cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e2823cae374f388d2fa5066b9ee89cc">&#9670;&#160;</a></span>systems</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;std::string, <a class="el" href="structeve_1_1procgen_1_1ProcgenSystemSnapshot.html">ProcgenSystemSnapshot</a>&gt; eve::procgen::Procgen::OwnershipState::systems</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7572474854dd41915f8af3a3a56352ff" name="a7572474854dd41915f8af3a3a56352ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7572474854dd41915f8af3a3a56352ff">&#9670;&#160;</a></span>textureRecipeIdsCache</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; eve::procgen::Procgen::OwnershipState::textureRecipeIdsCache</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">mutable</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a> 第 <a class="el" href="ProcgenOwnership_8h_source.html#l00080">80</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/<a class="el" href="ProcgenOwnership_8h_source.html">ProcgenOwnership.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

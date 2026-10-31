@@ -1,0 +1,234 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: Result Contracts</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">Result Contracts</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>Checked Results and Return Values</h1>
+<p><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/dev/Result检查与不得丢弃返回值规范.md">中文</a> · <a class="el" href="dev_bindings_en.html">Bindings</a> · <a class="el" href="dev_guide_en.html">Developer index</a></p>
+<p>This contributor guide translates the operational rules of the Chinese specification. Detailed migration inventories and audit history remain in the authoritative source.</p>
+<h2>Two protections</h2>
+<p>For APIs that can fail or whose return affects correctness, <code>[[nodiscard]]</code> warns against discarding a return. In Debug, Result tracks whether it was observed before destruction and uses <code>EV_ASSERT</code> if it was not. Release removes observation overhead while retaining the attribute.</p>
+<p>The public type carries the attribute:</p>
+<div class="fragment"><div class="line"><span class="keyword">template</span>&lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><span class="keyword">class </span>[[nodiscard(<span class="stringliteral">&quot;Result must be checked or explicitly ignored&quot;</span>)]] Result;</div>
+</div><!-- fragment --><p>The specification's Debug-only observed/must-observe flags describe the shared Result implementation; do not introduce a second implementation.</p>
+<h2>Observation</h2>
+<p>Status checks (<code>ok</code>, <code>accepted</code>, <code>status</code>, explicit boolean conversion), value access (<code>value</code>, <code>valueOr</code>, <code>takeValue</code>), diagnostics/error access, composition helpers and explicit ignore/discard operations mark observation. A Result-to-exception bridge, where available, also consumes it. Checking failure counts just as checking a value does.</p>
+<p>Construction, moving, assignment, printing an address, unrelated debug labels and storage in a container do not discharge responsibility.</p>
+<p>Explicitly state intentional ignoring:</p>
+<div class="fragment"><div class="line"><a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>().ignore();</div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a1d8330996490721964918f24590a398b"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a></div><div class="ttdeci">ActionParameterOperation operation</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00152">ActionNotifyRegistry.cpp:152</a></div></div>
+</div><!-- fragment --><p>An optional reason records best-effort intent. Do not use <code>(void)<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation()</a></code> to bypass the contract: compiler diagnostics differ, but Debug destruction must still detect an unobserved Result. For required success, use the API's explicit <code>expect(...)</code> helper where available; ignoring is not a success assertion.</p>
+<h2>Move responsibility</h2>
+<p>Result is preferably move-only. Moving transfers responsibility and disarms the source. Move assignment must first handle an unobserved destination, rather than silently overwriting it.</p>
+<p>If copying is needed later, independent observation flags create false positives. Use a shared Debug observation token or clone a plain value without responsibility. Do not enable copying just for convenience.</p>
+<h2>Short-circuit trap</h2>
+<p>Observe every Result before making a combined decision:</p>
+<div class="fragment"><div class="line"><span class="comment">// Wrong: b and c are never inspected if a fails.</span></div>
+<div class="line"><span class="keywordflow">if</span> (!<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a> || !<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a> || !<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) <span class="keywordflow">return</span> fail&lt;T&gt;(DiagnosticCode::ParseError, <span class="stringliteral">&quot;invalid fields&quot;</span>, <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"> </div>
+<div class="line"><span class="comment">// Correct: observe all arguments without short-circuiting.</span></div>
+<div class="line"><span class="keywordflow">if</span> (!<a class="code hl_function" href="namespaceeve.html#a895e561059e927cd14059e8e2920b718">eve::everyResultValid</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>))</div>
+<div class="line">    <span class="keywordflow">return</span> fail&lt;T&gt;(DiagnosticCode::ParseError, <span class="stringliteral">&quot;invalid fields&quot;</span>, <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a6508ac0a45fccabd203a6f520c69dca8"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a></div><div class="ttdeci">std::int32_t c</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00076">HexSphereTopology.cpp:76</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a234e391f8e3e00f064813b98fb8f3cdb"><div class="ttname"><a href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a></div><div class="ttdeci">MeleePoint3 b</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00041">MeleeHit.cpp:41</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a65cfd4d3d71b298048a6baf087fe6579"><div class="ttname"><a href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a></div><div class="ttdeci">MeleePoint3 a</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00040">MeleeHit.cpp:40</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00111">PlayHost.cpp:111</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a895e561059e927cd14059e8e2920b718"><div class="ttname"><a href="namespaceeve.html#a895e561059e927cd14059e8e2920b718">eve::everyResultValid</a></div><div class="ttdeci">bool everyResultValid(const Results &amp;... results) noexcept</div><div class="ttdoc">True only when every argument Result succeeded, observing all of them.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00602">Result.h:602</a></div></div>
+</div><!-- fragment --><p>To preserve the first failure's status:</p>
+<div class="fragment"><div class="line"><span class="keyword">const</span> <span class="keywordtype">bool</span> aOk = <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.ok();</div>
+<div class="line"><span class="keyword">const</span> <span class="keywordtype">bool</span> bOk = <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>.ok();</div>
+<div class="line"><span class="keywordflow">if</span> (!aOk) <span class="keywordflow">return</span> Result&lt;T&gt;::failure(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.status());</div>
+<div class="line"><span class="keywordflow">if</span> (!bOk) <span class="keywordflow">return</span> Result&lt;T&gt;::failure(<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>.status());</div>
+</div><!-- fragment --><p>Multiple unobserved destructions during stack unwinding can terminate before useful diagnostics appear. Plain pointers/optionals/count checks may short-circuit; do not mix them with unobserved Results in a way that skips observation.</p>
+<h2>Classify return values by meaning</h2>
+<ul>
+<li>Checked Result: fallible create/load/save/import/build operations, transactions, registry mutation, resource transfers, actions/orders/effects, schema validation/restoration, editor commands and hot reload.</li>
+<li>Non-Result nodiscard: identity/ownership handles, persistent IDs, subscriptions, task/transaction tokens, locks/guards and paired scope objects. Ordinary values do not automatically need Result observation fields.</li>
+<li>Risk-dependent annotation: cache hit/miss, statistics, ordinary optional queries or booleans meaning only changed/not-changed. Avoid warning noise for correct ignoring.</li>
+<li>Safely discardable: void setters, explicit fire-and-forget operations and logging/telemetry. Do not hide a fallible Result behind a default silent void wrapper.</li>
+</ul>
+<p>Factories, ownership transfer and side-effecting consume/pop/take operations require particular care: discarding may lose a resource or consumed data. Retain subscriptions; dropping an RAII subscription usually unsubscribes immediately. Detached tasks require explicit semantics rather than accidental handle destruction.</p>
+<p>Distinguish changed from success. Annotate important non-Result returns consistently on public base/override declarations; function attributes should not be assumed to propagate to every static call type. Ordinary getters are not a bulk-annotation target.</p>
+<h2>Asynchronous results</h2>
+<p>Starting and completing a task are separate responsibilities: the start API may return <code>Result&lt;TaskHandle&gt;</code>, and completion <code>Result&lt;Artifact&gt;</code>. Handle destruction follows its own/cancel/detach contract; an observed flag does not manage task lifetime. A Future/Promise carrying Result requires observation by the final consumer.</p>
+<h2>Script projection</h2>
+<p>Squirrel GC cannot guarantee prompt destruction. Bindings consume the C++ Result when producing the shared projection in <code><a class="el" href="SquirrelBinding_8h.html" title="The single Squirrel projection for common Result, Status and Value.">src/engine/common/SquirrelBinding.h</a></code>:</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">  ok, code, hasValue, checked: true, ignored, ignoreReason,</div>
+<div class="line">  status: { ok, code, summary, diagnostics, diagnosticCount },</div>
+<div class="line">  diagnostics: [{ code, severity, message, path, source, details }],</div>
+<div class="line">  value: Value | null</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Callers check <code>ok</code> or call <code>eve.result.ignore(result, reason)</code> with a nonempty reason. Ignoring does not turn failure into success. Branch on stable codes/paths, not human-readable message text. Source identifies the producer/binding.</p>
+<p>The common <code><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">eve::Value</a></code> adapter accepts Null/Bool/Int64/finite Double/String/Array/Object. It bounds nesting/elements and rejects cycles, non-string table keys, non-finite numbers and unsupported objects, preserving diagnostic path/source. Failed reverse push restores the VM stack.</p>
+<p>Canonical checked bindings share this projection. Historical modules may still return integers, booleans or strings; their actual binding contract remains authoritative until explicitly migrated. Do not reinterpret those returns as tables.</p>
+<h2>Verify and migrate</h2>
+<p>Test compiler diagnostics, unobserved Debug destruction, observing accessors, explicit ignoring, failure diagnostics, moves/assignment, forwarding, Release overhead removal and binding consumption. Include the combined-condition trap. <code>make check/nodiscard</code> and <code>make check/adhoc-result-tables</code> provide source gates.</p>
+<p>Migrate shared Result types first, then high-risk Transaction/Schema/Editor writes, procgen/restoration/registry changes and other gameplay mutations. Audit handles/tokens/subscriptions before retiring <code>bool/nullptr + lastError</code>. Detailed audited API families and migration status remain in the Chinese source. </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

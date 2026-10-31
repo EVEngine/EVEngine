@@ -1,0 +1,289 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1crowd.html">crowd</a></li><li class="navelem"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">Crowd</a></li><li class="navelem"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">Impl</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::crowd::Crowd::Impl 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae2ed910636eb3b605f7a0f54c291fa90">actions</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a46ed099965c80b58d2da8adb9faca1a0">activeBudget</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a9bc370b7d3297836baa504f0dad5f0f0">alignWeight</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ab71703481778b1c8e0ce21b1d676de8b">appendAgentIdentity</a>(int denseIndex)</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ad5cdad7d9aa653f138d3532fafd8b457">applyAgentUpdate</a>(const AgentUpdate &amp;update, std::size_t slot)</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ac9059546db7cd5da9476b615c03e6539">arriveFactors</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a43fd03b49db539292ed808800244fdf8">arriveRadius</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aadb300014f70ba21ba3ceb41156e2191">avoidance</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a547927468f3e5f625530f15f3f3c579e">avoidanceChecks</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a514a03f9012a58cc2f26186fbe98e798">avoidanceMaxRadius</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a392a457a6e57b848230cc64b02daa4a5">avoidanceMaxSpeed</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ad30214c4abb2293f311c7c3ad47697e7">avoidancePriorities</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aad21bdbf4081dc9b4b73aafd77e8a5fd">avoidanceTruncations</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a92a84de1682baf809dadfd0e6a128d93">budgetActive</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a7104eaacb5eef66924805589da839d77">canAvoid</a>(size_t a, size_t b) const</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a6f8baf95a4ddbe44fab4e8e8956896c1">canContact</a>(size_t a, size_t b) const</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a26729da0ee191ca02529394beace65fd">clampToField</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a645414f7fe73798420731d935dcf5c66">clearAgentIdentities</a>()</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aba92f89d389ca0c753bed1c543a9e916">clock</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#acef81e0033066ee33c426c41967d1cdf">cohesionWeight</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ad0310d9d52515f004c062deee4e90b49">contactDeltas</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a8f5cb55aa1713d2978f1fb28afe5b3c3">contactPairs</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a4f8b053a4345b25ee88082718831688e">correctionXs</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ab412e1654328de361aada4ad73b2df60">correctionYs</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a96c9d063932ede439d3939ba63eec7a1">datas</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#acea0bfab8d7b44c782e74a688aaee375">defaultRadius</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a0c6ba9e0e4a0aff74331b6276c50784d">defaultSpeed</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a714ba337c2d384eeb719d515383277fa">defaultTurnRate</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a66558e84f074c3308eb05b159d2dd4e7">denseToRegistry</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a9aaa18007154324df438c3e1b565a1a1">dispatchWork</a>(std::size_t items, const std::function&lt; void(std::size_t, std::size_t)&gt; &amp;body)</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a6e1eafcf00844c25cdb833e8a4fe2162">elapsed</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a78a42ccdc1ea45051f96dc06036fabb7">eraseAgentIdentity</a>(int denseIndex)</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a2c1dd4e7c3ad92bf31b5bcc9cb72331d">execution</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a94fc85caea5ba08e64d6ad8aa896efa1">field</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ab221f67984991da44d7a1fa1514799df">flowCache</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aa22ee39698152d2148fdc00cd95978da">flowCacheBudget</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5a5404d05c6da3c79e68c8e1abc9f7c4">flows</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aac03cdebaf6402a4529b64b2e440da24">forEachNeighbor</a>(float qx, float qy, float radius, Fn &amp;&amp;fn, StepReport *partitionReport=nullptr) const</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a9a8558f1575c68ed7d3a730e32f9f374">freeRegistry</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a09d4a69141282e59b2beed80acc84452">goalWeight</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae41a74b985e6d5e58540abc62830bfc5">hasTargets</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a39e849c97b1b417543adfa9125d9e903">headings</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a0be4445c8034bf2671c09e74ebddbc84">Impl</a>()</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a62531ab258cdf10076df0ef115d3e28e">incidentPairs</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a4aa959df3cfc686540575e4f2ca23a40">incidentStarts</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ab61cdf656247feec90ae8e9cafe9e6a8">interactions</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ab90e4794c96a6763e20889e8ed57b2e4">isFlowKeyBefore</a>(const FlowCacheEntry &amp;a, const FlowCacheEntry &amp;b)</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aaf0dbbaf64c30f39c58344685dfb0804">isFlowLeaseCurrent</a>(const FlowLease &amp;lease) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a0662f846b41d2a0b04b661d75e0e388f">isMovementCompatible</a>(size_t index) const</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a150c8a1bbf9039c26192e32d912692cc">leaseFor</a>(FlowCacheEntry &amp;entry)</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a9b4bd66ef47c86337f6600579299b8cc">maxAccels</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae22f09759460bb3bf12f0a06c0693417">maxAgents</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a3f50e709f60d68315dbd9f725c1e77c1">maxSpeeds</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a27a16ce1efb5c094892abaaf1970d7ba">movements</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aa5fcdd918e14ae9e031f6355635acb72">namedAgents</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ac348efed32029b100b7ca28202feb4a8">namedTieKeys</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ac1cbe945c5e27ffb99e7acc7b87907d9">navigationField</a>(size_t index) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a4e0c84d35db714b6a7f4f0f35cd63057">navigationMismatchCount</a>() const noexcept</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a03b92d86ce35621b160de527ce3734d2">nextAnonymousTieKey</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a99b45350972f87ffb3d05c3fb498c7a4">nextFlowGeneration</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#acd496b8b206f83d7dfd6f1578a4b30af">nextVxs</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#acaa4a180d94d4c65ba0246ebef5009d4">nextVys</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#abf673232f218fb0542bdb30d95ab7111">owner</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5de6dbfdb242e68592d9504448f7083e">pairCounts</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a59eac13eaaefbad7772e8c3e69c3141a">pairStarts</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#acc7d5aad5b906eb6ac84c09300c6bda6">perceiveRadius</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ad4584ea5d21f44c790d9a4e6e41070c7">predictionNeighbors</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a0709ec6ad115d2f9f6e41dc9702cc5c5">preferredCounts</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ac53de5d2eeeafee62d2fdf112d5ca527">preferredFlows</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a82df46fe431b09533b9e1b7e8c420472">preferredNeighbors</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a05b4b40e63fccaacf3bc848b0d8e875e">preferredStarts</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a6b1f20815040977e189fd3d383b69a4d">preferredVxs</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a252455b1e97ba26ccf3428928ee84e65">preferredVys</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a698c6f5cf4b1d8d5fb9494853bbbcac3">prepareAvoidanceNeighbors</a>()</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ad7e60544d4b10a319509b3ffd8331e95">preparePreferredNeighbors</a>()</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ac25a9fbc9270eca6f9919a518480eaf9">preparePreferredVelocities</a>(float dt)</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae671e1f9f1942429985f2d15b341ae45">radii</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5ccda3c9f416864c8167fe0a9248928f">rebuildGrid</a>()</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5a6fd8ec1344d97950f40fd79defb007">registry</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a93e31c2c3133d1985ff06ea7c56a8748">reserveAgentAppend</a>()</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ac1aab9834d85ec7e403e67d406125efc">resolveAgent</a>(AgentRef reference) const noexcept</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a7c6da0338dac1306a3b4cddcc2b5562d">resolveOverlaps</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a55ca05c722c2c57a265318213d5487a7">resolveOverlapsPass</a>()</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a7c400a63390c330db5ea62c2c61140aa">resolveWalls</a>()</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ac2abb74b7103fa60d956241d17c2263e">retainedFlowBytes</a>(const CrowdField &amp;value)</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a518bd03f80b606e5d458f356f7890435">rollback</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ad99225aa4b24c8e31454cc379cf7be54">selectAvoidanceVelocity</a>(size_t index, float dt, float &amp;vx, float &amp;vy)</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a29cfc841120ee91a6a5b736fd0bd296f">sepRadius</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a03c83e96a4d1fdae5e2ab81373ffb795">sepWeight</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a55630481a395e97c908bd3a9ba4c618e">simTime</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ad30c34b4b194bcd5d9dfc059fa9988b6">spatialIndex</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#afdbb49273b19577105376754291f1031">speeds</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a70a518a773bc16da4411eb9184b8c682">spendPreferredWork</a>(std::int64_t amount)</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#af4cdb12d8540ad5b27ba5befd517b5d4">stableIds</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ab12ce39c989d0f8ee94133acec0bd110">stageFlowCache</a>(std::uint64_t budget, std::uint64_t bytes, size_t count) const</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a40dd1fbf41a876bc7ffdd4dcd1f19cf1">stepAgents</a>(float dt)</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a8cea9a35e348fdf47a1d047bb2a5703b">surfaceStamp</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aeb3a4c62cda83701f3ffa88e72b823cf">targetXs</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a6fe95f39bbc81dd74d7e42748a8cd31c">targetYs</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aad983c02d85f7a7c7ee4a0deff280d47">tick</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#adde25dd6a99ac9ae2280dbdce687cfc2">TieKey</a> typedef</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aa6b0a8557212104fe73c3fb20a162419">tieKeys</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a6661b4b188a7194f86ff98fc2bbb9a53">turnRates</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a69d5d19ce0be519a982a55dff570c038">validId</a>(int id) const</td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"><span class="mlabel">inline</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ad1eacf79e8f91ebd7da1b9aed1e56ebc">vxs</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5bd807a86cc9327890dc0a2bf7c3937a">vys</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#abf3f217819f412c6b3b2ed7f299b00b0">wanderPhases</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a1ab1b2f2857d66a8c0d079130ef36821">wanderWeight</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a4ec0a2627f449a54e562beffbb01f2e5">workReport</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"><span class="mlabel">mutable</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a4c95adf022bb4e31755813e40c0440ed">workScheduler</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a09e8f2bb918a9f7f739e249953679389">xs</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5c866caa66b7329ef940d71a862db6e8">ys</a></td><td class="entry"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html">eve::crowd::Crowd::Impl</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

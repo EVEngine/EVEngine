@@ -1,0 +1,317 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/sensing/EnvironmentQuery.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e83e372481ad83f7bc4ebb27f8e1729d.html">sensing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a>  </div>
+  <div class="headertitle"><div class="title">EnvironmentQuery.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Export_8h_source.html">common/Export.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Value_8h_source.html">common/Value.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Targeting_8h_source.html">sensing/Targeting.h</a>&quot;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;span&gt;</code><br />
+</div>
+<p><a href="EnvironmentQuery_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentItem.html">eve::sensing::EnvironmentItem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A query-local identity and typed location; subjectKey names a mirrored fact, not a UUID.  <a href="structeve_1_1sensing_1_1EnvironmentItem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentContext.html">eve::sensing::EnvironmentContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning context snapshot, resolved once at instance creation.  <a href="structeve_1_1sensing_1_1EnvironmentContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentRequest.html">eve::sensing::EnvironmentRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-execution values. No world pointers or callbacks are retained.  <a href="structeve_1_1sensing_1_1EnvironmentRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentServices.html">eve::sensing::EnvironmentServices</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed providers for this synchronous execution only.  <a href="structeve_1_1sensing_1_1EnvironmentServices.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentMetricContract.html">eve::sensing::EnvironmentMetricContract</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Intrinsic metric guarantees; false reorderable preserves an ordering barrier.  <a href="structeve_1_1sensing_1_1EnvironmentMetricContract.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1IEnvironmentMetric.html">eve::sensing::IEnvironmentMetric</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable measurement extension; filtering, aggregation and scoring belong to the executor. @ownership Definitions and compiled plans share ownership because either may outlive the other. @thread Called synchronously on the provider's simulation thread; never retain borrowed arguments. @reentrancy No locks are held. A metric must not mutate the queried world or this instance.  <a href="classeve_1_1sensing_1_1IEnvironmentMetric.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentGenerator.html">eve::sensing::EnvironmentGenerator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generator parameters; maxItems is a hard resource bound, never silent truncation.  <a href="structeve_1_1sensing_1_1EnvironmentGenerator.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html">eve::sensing::EnvironmentTest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One metric with independent filtering and scoring parameters.  <a href="structeve_1_1sensing_1_1EnvironmentTest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentOption.html">eve::sensing::EnvironmentOption</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ordered alternative: advance only when this option has no valid items.  <a href="structeve_1_1sensing_1_1EnvironmentOption.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentQueryDefinition.html">eve::sensing::EnvironmentQueryDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoring value; compile validates and owns a copy. Not a persistent wire format.  <a href="structeve_1_1sensing_1_1EnvironmentQueryDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentContribution.html">eve::sensing::EnvironmentContribution</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-item score contribution with its exact normalization population bounds.  <a href="structeve_1_1sensing_1_1EnvironmentContribution.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentStageTrace.html">eve::sensing::EnvironmentStageTrace</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stage counts include deferred tests and actual backend measurement calls.  <a href="structeve_1_1sensing_1_1EnvironmentStageTrace.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentItemTrace.html">eve::sensing::EnvironmentItemTrace</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounded explanation for one option-local candidate.  <a href="structeve_1_1sensing_1_1EnvironmentItemTrace.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTrace.html">eve::sensing::EnvironmentTrace</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning trace survives failed execution; untested is distinct from passed.  <a href="structeve_1_1sensing_1_1EnvironmentTrace.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentRankedItem.html">eve::sensing::EnvironmentRankedItem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One owning ranked candidate.  <a href="structeve_1_1sensing_1_1EnvironmentRankedItem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentQueryResult.html">eve::sensing::EnvironmentQueryResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning result; empty ranked is successful exhaustion, not a backend failure.  <a href="structeve_1_1sensing_1_1EnvironmentQueryResult.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1EnvironmentQueryPlan.html">eve::sensing::EnvironmentQueryPlan</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable resolved plan, safe to reuse after definitions are edited or destroyed. @ownership Shares immutable compiled data with instances; no borrowed definition storage.  <a href="classeve_1_1sensing_1_1EnvironmentQueryPlan.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1EnvironmentQueryInstance.html">eve::sensing::EnvironmentQueryInstance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One-shot synchronous execution state with query-local contexts and diagnostics. @thread Execute on the simulation thread required by services. No concurrent mutation. @reentrancy Re-entering run is rejected. No callbacks are invoked while holding locks.  <a href="classeve_1_1sensing_1_1EnvironmentQueryInstance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1sensing" id="r_namespaceeve_1_1sensing"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html">eve::sensing</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:aa1ada2ae13d57c0815bbcb0a77cf21ad" id="r_aa1ada2ae13d57c0815bbcb0a77cf21ad"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#aa1ada2ae13d57c0815bbcb0a77cf21ad">eve::sensing::EnvironmentCost</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#aa1ada2ae13d57c0815bbcb0a77cf21ada28d0edd045e05cf5af64e35ae0c4c6ef">eve::sensing::Low</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#aa1ada2ae13d57c0815bbcb0a77cf21ada87f8a6ab85c9ced3702b4ea641ad4bb5">eve::sensing::Medium</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#aa1ada2ae13d57c0815bbcb0a77cf21ada655d20c1ca69519ca647684edbb2db35">eve::sensing::High</a>
+ }</td></tr>
+<tr class="memdesc:aa1ada2ae13d57c0815bbcb0a77cf21ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cost tiers used only for explicitly reorderable tests.  <a href="namespaceeve_1_1sensing.html#aa1ada2ae13d57c0815bbcb0a77cf21ad">更多...</a><br /></td></tr>
+<tr class="separator:aa1ada2ae13d57c0815bbcb0a77cf21ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9eca7b1d9a37eeaa01c612fb6b6b2dda" id="r_a9eca7b1d9a37eeaa01c612fb6b6b2dda"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2dda">eve::sensing::EnvironmentPurpose</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2ddaad7778d0c64b6ba21494c97f77a66885a">eve::sensing::Filter</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2ddaa5dd135d1bcfa7f63c3b7f25425c2a4a1">eve::sensing::Score</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2ddaab1fea61a7a7c3d54561d4b1727c7449e">eve::sensing::FilterAndScore</a>
+ }</td></tr>
+<tr class="memdesc:a9eca7b1d9a37eeaa01c612fb6b6b2dda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Independent hard constraint and utility purposes.  <a href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2dda">更多...</a><br /></td></tr>
+<tr class="separator:a9eca7b1d9a37eeaa01c612fb6b6b2dda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e9abd868ebfe8c7211cc3956e4ba7bd" id="r_a0e9abd868ebfe8c7211cc3956e4ba7bd"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a0e9abd868ebfe8c7211cc3956e4ba7bd">eve::sensing::EnvironmentFilterOp</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a0e9abd868ebfe8c7211cc3956e4ba7bdab1c94ca2fbc3e78fc30069c8d0f01680">eve::sensing::All</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a0e9abd868ebfe8c7211cc3956e4ba7bdaed36a1ef76a59ee3f15180e0441188ad">eve::sensing::Any</a>
+ }</td></tr>
+<tr class="memdesc:a0e9abd868ebfe8c7211cc3956e4ba7bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">How repeated context measurements determine acceptance.  <a href="namespaceeve_1_1sensing.html#a0e9abd868ebfe8c7211cc3956e4ba7bd">更多...</a><br /></td></tr>
+<tr class="separator:a0e9abd868ebfe8c7211cc3956e4ba7bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a428524b4955fff96c90f9d824442d16e" id="r_a428524b4955fff96c90f9d824442d16e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16e">eve::sensing::EnvironmentAggregate</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16eab1897515d548a960afe49ecf66a29021">eve::sensing::Average</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16eaa1d0ec6d56f8833a078b5a7ac4caf2d4">eve::sensing::Minimum</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16ea8321e79c278ec510f63675c040594892">eve::sensing::Maximum</a>
+ }</td></tr>
+<tr class="memdesc:a428524b4955fff96c90f9d824442d16e"><td class="mdescLeft">&#160;</td><td class="mdescRight">How repeated context measurements form one raw metric.  <a href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16e">更多...</a><br /></td></tr>
+<tr class="separator:a428524b4955fff96c90f9d824442d16e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1919f6dc243a7c6709a2bfca0bbd61b" id="r_aa1919f6dc243a7c6709a2bfca0bbd61b"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#aa1919f6dc243a7c6709a2bfca0bbd61b">eve::sensing::EnvironmentNormalization</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#aa1919f6dc243a7c6709a2bfca0bbd61ba37d43dc9c013afb13184a891bfdf241b">eve::sensing::FixedRange</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#aa1919f6dc243a7c6709a2bfca0bbd61baa62f61b18934d1ae213bb0335f998872">eve::sensing::ActivePopulation</a>
+ }</td></tr>
+<tr class="memdesc:aa1919f6dc243a7c6709a2bfca0bbd61b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit scoring reference population.  <a href="namespaceeve_1_1sensing.html#aa1919f6dc243a7c6709a2bfca0bbd61b">更多...</a><br /></td></tr>
+<tr class="separator:aa1919f6dc243a7c6709a2bfca0bbd61b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a462dcfdd0bb33713675df801472c4823" id="r_a462dcfdd0bb33713675df801472c4823"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823">eve::sensing::EnvironmentCurve</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823a32a843da6ea40ab3b17a3421ccdf671b">eve::sensing::Linear</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823aceb46ca115d05c51aa5a16a8867c3304">eve::sensing::Square</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823ae6c1b4ee758a2636a6eaf99105103c56">eve::sensing::SquareRoot</a>
+ }</td></tr>
+<tr class="memdesc:a462dcfdd0bb33713675df801472c4823"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utility curve applied after normalization and preference direction.  <a href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823">更多...</a><br /></td></tr>
+<tr class="separator:a462dcfdd0bb33713675df801472c4823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72ab2f701734ff1387b5a0fd442525b6" id="r_a72ab2f701734ff1387b5a0fd442525b6"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6">eve::sensing::EnvironmentPreference</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6ad030eeeb593b8cd94e564bc42e01d146">eve::sensing::Higher</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6ab75fcdd2d72d9e000beab48622402d93">eve::sensing::Lower</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6a63d5049791d9d79d86e9a108b0a999ca">eve::sensing::Reference</a>
+ }</td></tr>
+<tr class="memdesc:a72ab2f701734ff1387b5a0fd442525b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ranking preference; reference uses distance from a target raw value.  <a href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6">更多...</a><br /></td></tr>
+<tr class="separator:a72ab2f701734ff1387b5a0fd442525b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42953e52acc2d4fd7b658e3e96f04233" id="r_a42953e52acc2d4fd7b658e3e96f04233"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a42953e52acc2d4fd7b658e3e96f04233">eve::sensing::EnvironmentRunMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a42953e52acc2d4fd7b658e3e96f04233ab1c94ca2fbc3e78fc30069c8d0f01680">eve::sensing::All</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a42953e52acc2d4fd7b658e3e96f04233a68ef004de6166492c1d668eb8efe09bd">eve::sensing::Best</a>
+ }</td></tr>
+<tr class="memdesc:a42953e52acc2d4fd7b658e3e96f04233"><td class="mdescLeft">&#160;</td><td class="mdescRight">All retains ranked candidates; Best returns one candidate without assigning primary.  <a href="namespaceeve_1_1sensing.html#a42953e52acc2d4fd7b658e3e96f04233">更多...</a><br /></td></tr>
+<tr class="separator:a42953e52acc2d4fd7b658e3e96f04233"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5d3a832a5d37a933e28679812dbb00a" id="r_ab5d3a832a5d37a933e28679812dbb00a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#ab5d3a832a5d37a933e28679812dbb00a">eve::sensing::EnvironmentTraceLevel</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#ab5d3a832a5d37a933e28679812dbb00aa6adf97f83acf6453d4a6a4b1070f3754">eve::sensing::None</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#ab5d3a832a5d37a933e28679812dbb00aa290612199861c31d1036b185b4e69b75">eve::sensing::Summary</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#ab5d3a832a5d37a933e28679812dbb00aa4042fcadbe61a3300451157e2c9fe651">eve::sensing::Detailed</a>
+ }</td></tr>
+<tr class="memdesc:ab5d3a832a5d37a933e28679812dbb00a"><td class="mdescLeft">&#160;</td><td class="mdescRight">None, bounded stage counts, or bounded per-item explanations.  <a href="namespaceeve_1_1sensing.html#ab5d3a832a5d37a933e28679812dbb00a">更多...</a><br /></td></tr>
+<tr class="separator:ab5d3a832a5d37a933e28679812dbb00a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd474b27dff70c84b04987bce8c80e87" id="r_afd474b27dff70c84b04987bce8c80e87"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#afd474b27dff70c84b04987bce8c80e87">eve::sensing::EnvironmentGeneratorKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#afd474b27dff70c84b04987bce8c80e87a324118a6721dd6b8a9b9f4e327df2bf5">eve::sensing::Input</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#afd474b27dff70c84b04987bce8c80e87ad4db177c94738b72bf9ce61e988ab1f1">eve::sensing::Ring</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#afd474b27dff70c84b04987bce8c80e87a5174d1309f275ba6f275db3af9eb3e18">eve::sensing::Grid</a>
+ }</td></tr>
+<tr class="memdesc:afd474b27dff70c84b04987bce8c80e87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Input facts or generated points on a world-space XY plane.  <a href="namespaceeve_1_1sensing.html#afd474b27dff70c84b04987bce8c80e87">更多...</a><br /></td></tr>
+<tr class="separator:afd474b27dff70c84b04987bce8c80e87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f85c2b147f3ef7e5b6598ec7673978d" id="r_a3f85c2b147f3ef7e5b6598ec7673978d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978d">eve::sensing::EnvironmentMetricKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978da0aa6f4210bf373c95eda00232e93cd98">eve::sensing::Distance</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978da34acc05b5850b2afb01e099004ff7f33">eve::sensing::LineOfSight</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978da90589c47f06eb971d548591f23c285af">eve::sensing::Custom</a>
+ }</td></tr>
+<tr class="memdesc:a3f85c2b147f3ef7e5b6598ec7673978d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Built-in measurements and the typed extension point.  <a href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978d">更多...</a><br /></td></tr>
+<tr class="separator:a3f85c2b147f3ef7e5b6598ec7673978d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

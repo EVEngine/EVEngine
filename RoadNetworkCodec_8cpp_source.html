@@ -1,0 +1,353 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/road/RoadNetworkCodec.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_eae28a20e025a9c7686e9c0b6d57b77b.html">road</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RoadNetworkCodec.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RoadNetworkCodec_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="RoadNetworkCodec_8h.html">procgen/road/RoadNetworkCodec.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen_1_1road.html">eve::procgen::road</a> {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">using </span><a class="code hl_typedef" href="namespaceeve_1_1procgen__editing_1_1detail.html#a5d3358d081a09efe66ad456597ce0230">RoadCodecValue</a> = <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;procgen/road/RoadValueReaders.inc&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keywordtype">bool</span>           <a class="code hl_function" href="namespaceeve_1_1procgen__editing_1_1detail.html#acecc46d2d7787d7c6140c5379d186445">readSmallInt</a>(<span class="keyword">const</span> RoadCodecValue&amp;, <span class="keyword">const</span> <span class="keywordtype">char</span>*, <span class="keywordtype">int</span>, <span class="keywordtype">int</span>, <span class="keywordtype">int</span>&amp;);</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><a class="code hl_typedef" href="namespaceeve_1_1procgen__editing_1_1detail.html#a5d3358d081a09efe66ad456597ce0230">RoadCodecValue</a> encodeStyle(std::uint32_t, <span class="keyword">const</span> RoadStyle&amp;);</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keywordtype">bool</span>           decodeStyle(<span class="keyword">const</span> RoadCodecValue&amp;, std::uint32_t&amp;, RoadStyle&amp;);</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;procgen/road/RoadConnectionCodec.inc&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;procgen/road/RoadPointCodec.inc&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;procgen/road/RoadRecordCodec.inc&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;procgen/road/RoadStyleCodec.inc&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>Result&lt;T&gt; <a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#ac70ee5cf2b438340799cdb35f5fd4165">invalid</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;T&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, <span class="stringliteral">&quot;networkSnapshot&quot;</span>));</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keywordtype">bool</span> withinBudget(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>, std::size_t <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>, std::size_t&amp; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a>, std::size_t&amp; <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>) {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a> &gt; 64 || ++<a class="code hl_variable" href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a> &gt; 262144) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a> = <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.getIf&lt;std::string&gt;()) <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a> += <a class="code hl_variable" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>-&gt;size();</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span>* array = <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.getIf&lt;<a class="code hl_typedef" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">eve::Value::Array</a>&gt;()) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">if</span> (array-&gt;size() &gt; 262144 - <a class="code hl_variable" href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; item : *array)</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            if (!withinBudget(item, <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a> + 1, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a>, <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>)) return false;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span>* <span class="keywordtype">object</span> = <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.getIf&lt;<a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a>&gt;()) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>-&gt;size() &gt; 262144 - <a class="code hl_variable" href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>, item] : *<a class="code hl_variable" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a> += <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>.size();</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a> &gt; 8u * 1024u * 1024u || !withinBudget(item, <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a> + 1, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a>, <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a> &lt;= 8u * 1024u * 1024u;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}  <span class="comment">// namespace</span></div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen_1_1road.html#a1e6910fe839c91ccacb70e395c6dde7d">   38</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;eve::Value&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1road.html#a1e6910fe839c91ccacb70e395c6dde7d">captureRoadNetwork</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html">RoadNetwork</a>&amp; network) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#a7b29ad4eaed8c1d20d5eb359922edf02">validate</a>();</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;eve::Value&gt;::failure</a>(<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.status());</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">if</span> (network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#ade8e8906e5b15410ec6a3474c193a8c9">nodes</a>().size() &gt; 65536 || network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#a39ae1003e48652e5ead650f7831723f3">edges</a>().size() &gt; 65536 || network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#aba8515f374cfad47bbd50e2003651be7">laneLinks</a>().size() &gt; 262144 ||</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#acdc529e245b26a515de9d25f2bd16c75">blockedLaneLinks</a>().size() &gt; 262144)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">return</span> invalid&lt;eve::Value&gt;(<span class="stringliteral">&quot;Road snapshot exceeds the graph budget&quot;</span>);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="RoadBakeFacilityLinks_8cpp.html#adda0ba751e9c4d6c1129871ea6259f54">edge</a> : network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#a39ae1003e48652e5ead650f7831723f3">edges</a>())</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RoadBakeFacilityLinks_8cpp.html#adda0ba751e9c4d6c1129871ea6259f54">edge</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a2818b5247b184289d2553e8f6d65ca22">controlPoints</a>.size() &gt; 4096) <span class="keywordflow">return</span> invalid&lt;eve::Value&gt;(<span class="stringliteral">&quot;Road snapshot exceeds the marker budget&quot;</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    RoadCodecValue::Array <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ac544da480f9b8ec5f4ffb7cd59d1717a">nodes</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ac544da480f9b8ec5f4ffb7cd59d1717a">nodes</a>.reserve(network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#ade8e8906e5b15410ec6a3474c193a8c9">nodes</a>().size());</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a> : network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#ade8e8906e5b15410ec6a3474c193a8c9">nodes</a>()) <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ac544da480f9b8ec5f4ffb7cd59d1717a">nodes</a>.push_back(encodeNodeRecord(<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>));</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    RoadCodecValue::Array <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#a6e1a666aaa9b44fde4499dd9e35b493f">edges</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#a6e1a666aaa9b44fde4499dd9e35b493f">edges</a>.reserve(network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#a39ae1003e48652e5ead650f7831723f3">edges</a>().size());</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="RoadBakeFacilityLinks_8cpp.html#adda0ba751e9c4d6c1129871ea6259f54">edge</a> : network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#a39ae1003e48652e5ead650f7831723f3">edges</a>()) <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#a6e1a666aaa9b44fde4499dd9e35b493f">edges</a>.push_back(encodeEdgeRecord(<a class="code hl_variable" href="RoadBakeFacilityLinks_8cpp.html#adda0ba751e9c4d6c1129871ea6259f54">edge</a>, {}, {}));</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    RoadCodecValue::Array laneLinks;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    laneLinks.reserve(network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#aba8515f374cfad47bbd50e2003651be7">laneLinks</a>().size());</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a> : network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#aba8515f374cfad47bbd50e2003651be7">laneLinks</a>()) laneLinks.push_back(encodeLink(<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>));</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    RoadCodecValue::Array blockedLaneLinks;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    blockedLaneLinks.reserve(network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#acdc529e245b26a515de9d25f2bd16c75">blockedLaneLinks</a>().size());</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a> : network.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#acdc529e245b26a515de9d25f2bd16c75">blockedLaneLinks</a>()) blockedLaneLinks.push_back(encodeLink(<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>));</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a> <a class="code hl_variable" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a> = RoadCodecValue::Object{</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        {<span class="stringliteral">&quot;schema&quot;</span>, <span class="stringliteral">&quot;eve.procgen.roadNetwork&quot;</span>}, {<span class="stringliteral">&quot;schemaVersion&quot;</span>, std::int64_t{1}},</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        {<span class="stringliteral">&quot;nodes&quot;</span>, std::move(<a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ac544da480f9b8ec5f4ffb7cd59d1717a">nodes</a>)},           {<span class="stringliteral">&quot;edges&quot;</span>, std::move(<a class="code hl_variable" href="McpArchitectureTools_8cpp.html#a6e1a666aaa9b44fde4499dd9e35b493f">edges</a>)},</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        {<span class="stringliteral">&quot;laneLinks&quot;</span>, std::move(laneLinks)},   {<span class="stringliteral">&quot;blockedLaneLinks&quot;</span>, std::move(blockedLaneLinks)}};</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    std::size_t <a class="code hl_variable" href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a> = 0, <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a> = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> (!withinBudget(<a class="code hl_variable" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>, 0, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a>, <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>))</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">return</span> invalid&lt;eve::Value&gt;(<span class="stringliteral">&quot;Road snapshot exceeds the value budget&quot;</span>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;eve::Value&gt;::success</a>(std::move(<a class="code hl_variable" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>));</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="}">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen_1_1road.html#a82cb2448d9385de4af28d394c3fc91e6">   70</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;RoadNetwork&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1road.html#a82cb2448d9385de4af28d394c3fc91e6">restoreRoadNetwork</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">eve::Value</a>&amp; snapshot) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::size_t <a class="code hl_variable" href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a> = 0, <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a> = 0;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">if</span> (!withinBudget(<a class="code hl_variable" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>, 0, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a>, <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>))</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">return</span> invalid&lt;RoadNetwork&gt;(<span class="stringliteral">&quot;Road snapshot exceeds the value budget&quot;</span>);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* schemaValue  = field(<a class="code hl_variable" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>, <span class="stringliteral">&quot;schema&quot;</span>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* versionValue = field(<a class="code hl_variable" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>, <span class="stringliteral">&quot;schemaVersion&quot;</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* nodesValue   = field(<a class="code hl_variable" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>, <span class="stringliteral">&quot;nodes&quot;</span>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* edgesValue   = field(<a class="code hl_variable" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>, <span class="stringliteral">&quot;edges&quot;</span>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* linksValue   = field(<a class="code hl_variable" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>, <span class="stringliteral">&quot;laneLinks&quot;</span>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* blockedValue = field(<a class="code hl_variable" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>, <span class="stringliteral">&quot;blockedLaneLinks&quot;</span>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* schema       = schemaValue ? schemaValue-&gt;getIf&lt;std::string&gt;() : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#aad880fc4455c253781e8968f2239d56f">version</a>      = versionValue ? versionValue-&gt;getIf&lt;std::int64_t&gt;() : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ac544da480f9b8ec5f4ffb7cd59d1717a">nodes</a>        = nodesValue ? nodesValue-&gt;getIf&lt;RoadCodecValue::Array&gt;() : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#a6e1a666aaa9b44fde4499dd9e35b493f">edges</a>        = edgesValue ? edgesValue-&gt;getIf&lt;RoadCodecValue::Array&gt;() : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* links        = linksValue ? linksValue-&gt;getIf&lt;RoadCodecValue::Array&gt;() : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* blocked      = blockedValue ? blockedValue-&gt;getIf&lt;RoadCodecValue::Array&gt;() : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (!schema || *schema != <span class="stringliteral">&quot;eve.procgen.roadNetwork&quot;</span> || !<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#aad880fc4455c253781e8968f2239d56f">version</a> || *<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#aad880fc4455c253781e8968f2239d56f">version</a> != 1 || !<a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ac544da480f9b8ec5f4ffb7cd59d1717a">nodes</a> || !<a class="code hl_variable" href="McpArchitectureTools_8cpp.html#a6e1a666aaa9b44fde4499dd9e35b493f">edges</a> || !links ||</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        (blockedValue &amp;&amp; !blocked))</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">return</span> invalid&lt;RoadNetwork&gt;(<span class="stringliteral">&quot;Road snapshot schema is unsupported&quot;</span>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keyword">constexpr</span> std::size_t maximumNodes = 65536u, maximumEdges = 65536u, maximumLinks = 262144u;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ac544da480f9b8ec5f4ffb7cd59d1717a">nodes</a>-&gt;size() &gt; maximumNodes || <a class="code hl_variable" href="McpArchitectureTools_8cpp.html#a6e1a666aaa9b44fde4499dd9e35b493f">edges</a>-&gt;size() &gt; maximumEdges || links-&gt;size() &gt; maximumLinks ||</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        (blocked &amp;&amp; blocked-&gt;size() &gt; maximumLinks))</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordflow">return</span> invalid&lt;RoadNetwork&gt;(<span class="stringliteral">&quot;Road snapshot exceeds the graph budget&quot;</span>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html">procgen::road::RoadNetwork</a> candidate;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; encoded : *<a class="code hl_variable" href="McpArchitectureTools_8cpp.html#ac544da480f9b8ec5f4ffb7cd59d1717a">nodes</a>) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadNode.html">procgen::road::RoadNode</a> <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">if</span> (!decodeNodeRecord(encoded, <a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>)) <span class="keywordflow">return</span> invalid&lt;RoadNetwork&gt;(<span class="stringliteral">&quot;Road snapshot contains an invalid node&quot;</span>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keyword">auto</span> restored = candidate.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#a6bd6a20760564d6efcec1803b35f54d5">restoreNode</a>(<a class="code hl_variable" href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">if</span> (!restored.ok()) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;RoadNetwork&gt;::failure</a>(restored.status());</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; encoded : *<a class="code hl_variable" href="McpArchitectureTools_8cpp.html#a6e1a666aaa9b44fde4499dd9e35b493f">edges</a>) {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadEdge.html">procgen::road::RoadEdge</a>                        <a class="code hl_variable" href="RoadBakeFacilityLinks_8cpp.html#adda0ba751e9c4d6c1129871ea6259f54">edge</a>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        std::vector&lt;procgen::road::RoadLaneConnection&gt; embeddedLinks;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keywordflow">if</span> (!decodeEdgeRecord(encoded, <a class="code hl_variable" href="RoadBakeFacilityLinks_8cpp.html#adda0ba751e9c4d6c1129871ea6259f54">edge</a>, embeddedLinks, <span class="keyword">nullptr</span>) || !embeddedLinks.empty())</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keywordflow">return</span> invalid&lt;RoadNetwork&gt;(<span class="stringliteral">&quot;Road snapshot contains an invalid edge&quot;</span>);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keyword">auto</span> restored = candidate.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#ad95c5401715f257caad8cacd6b06d777">restoreEdge</a>(std::move(<a class="code hl_variable" href="RoadBakeFacilityLinks_8cpp.html#adda0ba751e9c4d6c1129871ea6259f54">edge</a>));</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keywordflow">if</span> (!restored.ok()) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;RoadNetwork&gt;::failure</a>(restored.status());</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; encoded : *links) {</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html">procgen::road::RoadLaneConnection</a> <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordflow">if</span> (!decodeLink(encoded, <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>)) <span class="keywordflow">return</span> invalid&lt;RoadNetwork&gt;(<span class="stringliteral">&quot;Road snapshot contains an invalid lane link&quot;</span>);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">auto</span> restored = candidate.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#a4e52e789f3a9c0e61c4f443b76d60c1b">addLaneLink</a>(<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">if</span> (!restored.ok()) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;RoadNetwork&gt;::failure</a>(restored.status());</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">if</span> (blocked) {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; encoded : *blocked) {</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <a class="code hl_struct" href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html">procgen::road::RoadLaneConnection</a> <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="keywordflow">if</span> (!decodeLink(encoded, <a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>))</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                <span class="keywordflow">return</span> invalid&lt;RoadNetwork&gt;(<span class="stringliteral">&quot;Road snapshot contains an invalid blocked lane link&quot;</span>);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            <span class="keyword">auto</span> restored = candidate.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#aaeb2ff25e22e308493cd7b45474ad4f3">blockLaneLink</a>(<a class="code hl_variable" href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a>);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            <span class="keywordflow">if</span> (!restored.ok()) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;RoadNetwork&gt;::failure</a>(restored.status());</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            <span class="keywordflow">if</span> (restored.value())</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                <span class="keywordflow">return</span> invalid&lt;RoadNetwork&gt;(<span class="stringliteral">&quot;Road snapshot marks the same lane link active and blocked&quot;</span>);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = candidate.<a class="code hl_function" href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#a7b29ad4eaed8c1d20d5eb359922edf02">validate</a>();</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;RoadNetwork&gt;::failure</a>(<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.status());</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;RoadNetwork&gt;::success</a>(std::move(candidate));</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}</div>
+</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}  <span class="comment">// namespace eve::procgen::road</span></div>
+<div class="ttc" id="aECS_8cpp_html_a1f53a56adfc8a8f39c5e553c97a7b2ff"><div class="ttname"><a href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a></div><div class="ttdeci">SQObjectPtr key</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00155">ECS.cpp:155</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aJoint2DBindings_8cpp_html_ae80b27e9552504bb73e5997d6bf3b515"><div class="ttname"><a href="Joint2DBindings_8cpp.html#ae80b27e9552504bb73e5997d6bf3b515">link</a></div><div class="ttdeci">PhysicsJointLink link</div><div class="ttdef"><b>Definition</b> <a href="Joint2DBindings_8cpp_source.html#l00066">Joint2DBindings.cpp:66</a></div></div>
+<div class="ttc" id="aMcpArchitectureTools_8cpp_html_a6e1a666aaa9b44fde4499dd9e35b493f"><div class="ttname"><a href="McpArchitectureTools_8cpp.html#a6e1a666aaa9b44fde4499dd9e35b493f">edges</a></div><div class="ttdeci">std::vector&lt; Edge &gt; edges</div><div class="ttdef"><b>Definition</b> <a href="McpArchitectureTools_8cpp_source.html#l00025">McpArchitectureTools.cpp:25</a></div></div>
+<div class="ttc" id="aMcpArchitectureTools_8cpp_html_ac544da480f9b8ec5f4ffb7cd59d1717a"><div class="ttname"><a href="McpArchitectureTools_8cpp.html#ac544da480f9b8ec5f4ffb7cd59d1717a">nodes</a></div><div class="ttdeci">std::map&lt; std::string, Node &gt; nodes</div><div class="ttdef"><b>Definition</b> <a href="McpArchitectureTools_8cpp_source.html#l00024">McpArchitectureTools.cpp:24</a></div></div>
+<div class="ttc" id="aMcpProjectIndexTools_8cpp_html_ad48627cd289655d382112b727e253919"><div class="ttname"><a href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a></div><div class="ttdeci">Snapshot snapshot</div><div class="ttdef"><b>Definition</b> <a href="McpProjectIndexTools_8cpp_source.html#l00018">McpProjectIndexTools.cpp:18</a></div></div>
+<div class="ttc" id="aMcpRuntimeTools_8cpp_html_a3a00ca04c0ed87681f126e891122e276"><div class="ttname"><a href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a></div><div class="ttdeci">std::uint64_t bytes</div><div class="ttdef"><b>Definition</b> <a href="McpRuntimeTools_8cpp_source.html#l00157">McpRuntimeTools.cpp:157</a></div></div>
+<div class="ttc" id="aMcpServer_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="McpServer_8cpp_source.html#l00315">McpServer.cpp:315</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aRoadBakeFacilityLinks_8cpp_html_adda0ba751e9c4d6c1129871ea6259f54"><div class="ttname"><a href="RoadBakeFacilityLinks_8cpp.html#adda0ba751e9c4d6c1129871ea6259f54">edge</a></div><div class="ttdeci">const RoadEdge * edge</div><div class="ttdef"><b>Definition</b> <a href="RoadBakeFacilityLinks_8cpp_source.html#l00013">RoadBakeFacilityLinks.cpp:13</a></div></div>
+<div class="ttc" id="aRoadNetworkCodec_8h_html"><div class="ttname"><a href="RoadNetworkCodec_8h.html">RoadNetworkCodec.h</a></div></div>
+<div class="ttc" id="aRoadTraffic_8cpp_html_a01b9cdd37a32341c192e0756617f9dc0"><div class="ttname"><a href="RoadTraffic_8cpp.html#a01b9cdd37a32341c192e0756617f9dc0">node</a></div><div class="ttdeci">const RoadNode * node</div><div class="ttdef"><b>Definition</b> <a href="RoadTraffic_8cpp_source.html#l00015">RoadTraffic.cpp:15</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00011">ScriptStructure.cpp:11</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_a9cb7ebae0f472ee88c186932fb62a8a1"><div class="ttname"><a href="SquirrelBinding_8cpp.html#a9cb7ebae0f472ee88c186932fb62a8a1">elements</a></div><div class="ttdeci">std::size_t elements</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00090">SquirrelBinding.cpp:90</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_aad880fc4455c253781e8968f2239d56f"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#aad880fc4455c253781e8968f2239d56f">version</a></div><div class="ttdeci">int version</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00035">TerrainGenerationSession.cpp:35</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_aafc558973cd5f224af88e41f9a5f34d0"><div class="ttname"><a href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a></div><div class="ttdeci">Json object</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00784">TileConfig.cpp:784</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a3f756ed587723434bfe4adef4d8f3bfd"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a></div><div class="ttdeci">std::uint32_t depth</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00034">UnityVegetationPreset.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00021">Diagnostic.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00184">Result.h:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a2d59a6ba7d844c2561c606a8973be87d"><div class="ttname"><a href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00034">Value.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_ab1d85b7f682f864577d9030a3e7ea6c5"><div class="ttname"><a href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">eve::Value::Array</a></div><div class="ttdeci">std::vector&lt; Value &gt; Array</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00033">Value.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1road_1_1RoadNetwork_html"><div class="ttname"><a href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html">eve::procgen::road::RoadNetwork</a></div><div class="ttdoc">Owning directed road graph with lane connectivity.</div><div class="ttdef"><b>Definition</b> <a href="RoadNetwork_8h_source.html#l00019">RoadNetwork.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1road_1_1RoadNetwork_html_a39ae1003e48652e5ead650f7831723f3"><div class="ttname"><a href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#a39ae1003e48652e5ead650f7831723f3">eve::procgen::road::RoadNetwork::edges</a></div><div class="ttdeci">const std::vector&lt; RoadEdge &gt; &amp; edges() const noexcept</div><div class="ttdoc">Edges.</div><div class="ttdef"><b>Definition</b> <a href="RoadNetwork_8h_source.html#l00265">RoadNetwork.h:265</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1road_1_1RoadNetwork_html_a4e52e789f3a9c0e61c4f443b76d60c1b"><div class="ttname"><a href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#a4e52e789f3a9c0e61c4f443b76d60c1b">eve::procgen::road::RoadNetwork::addLaneLink</a></div><div class="ttdeci">Result&lt; void &gt; addLaneLink(RoadLaneConnection link)</div><div class="ttdoc">Register one legal turn inside a shared junction node.</div><div class="ttdef"><b>Definition</b> <a href="RoadNetwork_8cpp_source.html#l00291">RoadNetwork.cpp:291</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1road_1_1RoadNetwork_html_a6bd6a20760564d6efcec1803b35f54d5"><div class="ttname"><a href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#a6bd6a20760564d6efcec1803b35f54d5">eve::procgen::road::RoadNetwork::restoreNode</a></div><div class="ttdeci">Result&lt; void &gt; restoreNode(RoadNode node)</div><div class="ttdoc">Restore a node with an explicit stable id for undo/import paths.</div><div class="ttdef"><b>Definition</b> <a href="RoadNetwork_8cpp_source.html#l00147">RoadNetwork.cpp:147</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1road_1_1RoadNetwork_html_a7b29ad4eaed8c1d20d5eb359922edf02"><div class="ttname"><a href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#a7b29ad4eaed8c1d20d5eb359922edf02">eve::procgen::road::RoadNetwork::validate</a></div><div class="ttdeci">Result&lt; void &gt; validate() const</div><div class="ttdoc">Validate graph, endpoint and lane-link invariants without mutation.</div><div class="ttdef"><b>Definition</b> <a href="RoadNetwork_8cpp_source.html#l00404">RoadNetwork.cpp:404</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1road_1_1RoadNetwork_html_aaeb2ff25e22e308493cd7b45474ad4f3"><div class="ttname"><a href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#aaeb2ff25e22e308493cd7b45474ad4f3">eve::procgen::road::RoadNetwork::blockLaneLink</a></div><div class="ttdeci">Result&lt; bool &gt; blockLaneLink(RoadLaneConnection link)</div><div class="ttdoc">Persistently forbid one exact legal lane connection and remove it if currently active.</div><div class="ttdef"><b>Definition</b> <a href="RoadNetwork_8cpp_source.html#l00307">RoadNetwork.cpp:307</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1road_1_1RoadNetwork_html_aba8515f374cfad47bbd50e2003651be7"><div class="ttname"><a href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#aba8515f374cfad47bbd50e2003651be7">eve::procgen::road::RoadNetwork::laneLinks</a></div><div class="ttdeci">const std::vector&lt; RoadLaneConnection &gt; &amp; laneLinks() const noexcept</div><div class="ttdoc">Lane links.</div><div class="ttdef"><b>Definition</b> <a href="RoadNetwork_8h_source.html#l00267">RoadNetwork.h:267</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1road_1_1RoadNetwork_html_acdc529e245b26a515de9d25f2bd16c75"><div class="ttname"><a href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#acdc529e245b26a515de9d25f2bd16c75">eve::procgen::road::RoadNetwork::blockedLaneLinks</a></div><div class="ttdeci">const std::vector&lt; RoadLaneConnection &gt; &amp; blockedLaneLinks() const noexcept</div><div class="ttdoc">Borrow deterministic persistent turn prohibitions until the next network mutation.</div><div class="ttdef"><b>Definition</b> <a href="RoadNetwork_8h_source.html#l00269">RoadNetwork.h:269</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1road_1_1RoadNetwork_html_ad95c5401715f257caad8cacd6b06d777"><div class="ttname"><a href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#ad95c5401715f257caad8cacd6b06d777">eve::procgen::road::RoadNetwork::restoreEdge</a></div><div class="ttdeci">Result&lt; void &gt; restoreEdge(RoadEdge edge)</div><div class="ttdoc">Restore an edge with an explicit stable id for undo/import paths.</div><div class="ttdef"><b>Definition</b> <a href="RoadNetwork_8cpp_source.html#l00225">RoadNetwork.cpp:225</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1road_1_1RoadNetwork_html_ade8e8906e5b15410ec6a3474c193a8c9"><div class="ttname"><a href="classeve_1_1procgen_1_1road_1_1RoadNetwork.html#ade8e8906e5b15410ec6a3474c193a8c9">eve::procgen::road::RoadNetwork::nodes</a></div><div class="ttdeci">const std::vector&lt; RoadNode &gt; &amp; nodes() const noexcept</div><div class="ttdoc">Nodes.</div><div class="ttdef"><b>Definition</b> <a href="RoadNetwork_8h_source.html#l00263">RoadNetwork.h:263</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1raster__detail_html_ac70ee5cf2b438340799cdb35f5fd4165"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1raster__detail.html#ac70ee5cf2b438340799cdb35f5fd4165">eve::procgen::raster_detail::invalid</a></div><div class="ttdeci">Result&lt; int &gt; invalid(std::string message)</div><div class="ttdoc">Invalid.</div><div class="ttdef"><b>Definition</b> <a href="TerrainRasterInternal_8h_source.html#l00025">TerrainRasterInternal.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html">eve::procgen::road</a></div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspace_8h_source.html#l00012">TerrainWorldWorkspace.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_a1e6910fe839c91ccacb70e395c6dde7d"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#a1e6910fe839c91ccacb70e395c6dde7d">eve::procgen::road::captureRoadNetwork</a></div><div class="ttdeci">Result&lt; eve::Value &gt; captureRoadNetwork(const RoadNetwork &amp;network)</div><div class="ttdoc">Capture validated, owning author data using the editor-compatible roadNetwork schema v1....</div><div class="ttdef"><b>Definition</b> <a href="RoadNetworkCodec_8cpp_source.html#l00038">RoadNetworkCodec.cpp:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1road_html_a82cb2448d9385de4af28d394c3fc91e6"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1road.html#a82cb2448d9385de4af28d394c3fc91e6">eve::procgen::road::restoreRoadNetwork</a></div><div class="ttdeci">Result&lt; RoadNetwork &gt; restoreRoadNetwork(const eve::Value &amp;snapshot)</div><div class="ttdoc">Decode schema v1 privately; unknown fields are ignored and unsupported versions rejected.</div><div class="ttdef"><b>Definition</b> <a href="RoadNetworkCodec_8cpp_source.html#l00070">RoadNetworkCodec.cpp:70</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen__editing_1_1detail_html_a5d3358d081a09efe66ad456597ce0230"><div class="ttname"><a href="namespaceeve_1_1procgen__editing_1_1detail.html#a5d3358d081a09efe66ad456597ce0230">eve::procgen_editing::detail::RoadCodecValue</a></div><div class="ttdeci">EditorValue RoadCodecValue</div><div class="ttdef"><b>Definition</b> <a href="RoadNetworkConnectionCodec_8cpp_source.html#l00007">RoadNetworkConnectionCodec.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen__editing_1_1detail_html_acecc46d2d7787d7c6140c5379d186445"><div class="ttname"><a href="namespaceeve_1_1procgen__editing_1_1detail.html#acecc46d2d7787d7c6140c5379d186445">eve::procgen_editing::detail::readSmallInt</a></div><div class="ttdeci">bool readSmallInt(const EditorValue &amp;value, const char *name, int minimum, int maximum, int &amp;output)</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadEdge_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadEdge.html">eve::procgen::road::RoadEdge</a></div><div class="ttdoc">Directed centerline edge with optional reverse lanes.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00286">RoadTypes.h:286</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadEdge_html_a2818b5247b184289d2553e8f6d65ca22"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadEdge.html#a2818b5247b184289d2553e8f6d65ca22">eve::procgen::road::RoadEdge::controlPoints</a></div><div class="ttdeci">std::vector&lt; RoadControlPoint &gt; controlPoints</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00290">RoadTypes.h:290</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadLaneConnection_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadLaneConnection.html">eve::procgen::road::RoadLaneConnection</a></div><div class="ttdoc">One legal lane-to-lane connection inside a junction.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00315">RoadTypes.h:315</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1road_1_1RoadNode_html"><div class="ttname"><a href="structeve_1_1procgen_1_1road_1_1RoadNode.html">eve::procgen::road::RoadNode</a></div><div class="ttdoc">Junction node owned by a road network.</div><div class="ttdef"><b>Definition</b> <a href="RoadTypes_8h_source.html#l00275">RoadTypes.h:275</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

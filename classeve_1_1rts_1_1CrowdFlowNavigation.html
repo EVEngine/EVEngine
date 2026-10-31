@@ -1,0 +1,970 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::rts::CrowdFlowNavigation类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1rts.html">rts</a></li><li class="navelem"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html">CrowdFlowNavigation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1rts_1_1CrowdFlowNavigation-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::rts::CrowdFlowNavigation类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owner-thread derived shared static-goal navigation service; retains no ECS pointers.  
+ <a href="classeve_1_1rts_1_1CrowdFlowNavigation.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html">RTSCrowdFlowNavigationInternal.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CrowdFlowNavigation_1_1GroupInput.html">GroupInput</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning group projection prepared once before the motion phase.  <a href="structeve_1_1rts_1_1CrowdFlowNavigation_1_1GroupInput.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CrowdFlowNavigation_1_1GroupMember.html">GroupMember</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transient group member binding; <a class="el" href="classeve_1_1rts_1_1RTS.html" title="Owns RTS root entities and coordinates the phase-one systems.">RTS</a> remains the membership authority.  <a href="structeve_1_1rts_1_1CrowdFlowNavigation_1_1GroupMember.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1rts_1_1CrowdFlowNavigation_1_1Notice.html">Notice</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning deferred notification; stale handles are resolved at delivery.  <a href="structeve_1_1rts_1_1CrowdFlowNavigation_1_1Notice.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation_1_1Route.html">Route</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque owning steering selection, valid only for the captured Crowd input epoch.  <a href="classeve_1_1rts_1_1CrowdFlowNavigation_1_1Route.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a1512f5e06d3d422e70228fd7497bd85e" id="r_a1512f5e06d3d422e70228fd7497bd85e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a1512f5e06d3d422e70228fd7497bd85e">InputChange</a> { <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a1512f5e06d3d422e70228fd7497bd85ea5ff3c6978f87d96febfdc8ed3899a97e">Unchanged</a>
+, <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a1512f5e06d3d422e70228fd7497bd85ea820dbd2b8f606aff866c0bbfb6b737c1">Changed</a>
+ }</td></tr>
+<tr class="separator:a1512f5e06d3d422e70228fd7497bd85e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0e248bdabe334e3fceac6d4a81e67ce" id="r_ac0e248bdabe334e3fceac6d4a81e67ce"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ac0e248bdabe334e3fceac6d4a81e67ce">DriveState</a> { <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ac0e248bdabe334e3fceac6d4a81e67cea2d13df6f8b5e4c5af9f87e0dc39df69d">Pending</a>
+, <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ac0e248bdabe334e3fceac6d4a81e67ceae7d31fc0602fb2ede144d18cdffd816b">Ready</a>
+, <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ac0e248bdabe334e3fceac6d4a81e67cea4bed942140642650ca78039de000796a">Unreachable</a>
+, <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ac0e248bdabe334e3fceac6d4a81e67cea453e6aa38d87b28ccae545967c53004f">Unavailable</a>
+ }</td></tr>
+<tr class="separator:ac0e248bdabe334e3fceac6d4a81e67ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a2ac0b11ec92ff7f52a15a4dd1b7f65a6" id="r_a2ac0b11ec92ff7f52a15a4dd1b7f65a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a2ac0b11ec92ff7f52a15a4dd1b7f65a6">replaceGroups</a> (<a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;crowd, std::vector&lt; <a class="el" href="structeve_1_1rts_1_1CrowdFlowNavigation_1_1GroupInput.html">GroupInput</a> &gt; <a class="el" href="OnnxGpgpu_8cpp.html#a00921b24efd4597f8c48e380e195a80c">groups</a>)</td></tr>
+<tr class="memdesc:a2ac0b11ec92ff7f52a15a4dd1b7f65a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace derived group bindings after validating the complete projection. @ownership Consumes owning input, retains handles and immutable keys, no ECS pointers. @thread Owner thread. @reentrancy No callbacks. @cost Sorting per group and member lookup table, amortized once per group phase.  <br /></td></tr>
+<tr class="separator:a2ac0b11ec92ff7f52a15a4dd1b7f65a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af34442cdff8e8b37ab5b3e1530e1c27f" id="r_af34442cdff8e8b37ab5b3e1530e1c27f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation_1_1Route.html">Route</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#af34442cdff8e8b37ab5b3e1530e1c27f">requestRoute</a> (<a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;crowd, ecs::EntityHandle <a class="el" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>, std::string_view orderId, <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> <a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:af34442cdff8e8b37ab5b3e1530e1c27f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collect the applicable group or exact-terminal request for one current order. @ownership Borrows inputs only for this call; returned route owns its immutable key. @thread Owner thread. @reentrancy No callbacks. @cost Logarithmic member lookup and bounded cell lookup; no repeated group sorting.  <br /></td></tr>
+<tr class="separator:af34442cdff8e8b37ab5b3e1530e1c27f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2bf5625d6b1f35417ce5f0be4f20758" id="r_ad2bf5625d6b1f35417ce5f0be4f20758"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ac0e248bdabe334e3fceac6d4a81e67ce">DriveState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ad2bf5625d6b1f35417ce5f0be4f20758">steerRoute</a> (<a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;crowd, <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, const <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation_1_1Route.html">Route</a> &amp;route, float <a class="el" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, <a class="el" href="structeve_1_1crowd_1_1MovementBinding.html">crowd::MovementBinding</a> movement, <a class="el" href="structeve_1_1crowd_1_1AgentUpdate.html">crowd::AgentUpdate</a> &amp;update)</td></tr>
+<tr class="memdesc:ad2bf5625d6b1f35417ce5f0be4f20758"><td class="mdescLeft">&#160;</td><td class="mdescRight">Steer a previously collected route without repeating target-set conversion. @ownership Borrows route for this call; update receives an owning lease. @thread Owner thread. @reentrancy No callbacks. @cost Bounded canonical job lookup per unit.  <br /></td></tr>
+<tr class="separator:ad2bf5625d6b1f35417ce5f0be4f20758"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f059796adbc370050016d8a6f61208f" id="r_a3f059796adbc370050016d8a6f61208f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a3f059796adbc370050016d8a6f61208f">CrowdFlowNavigation</a> (<a class="el" href="structeve_1_1rts_1_1CrowdFlowNavigationSettings.html">CrowdFlowNavigationSettings</a> <a class="el" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>)</td></tr>
+<tr class="memdesc:a3f059796adbc370050016d8a6f61208f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store cheap owning quotas without preparing graph work.  <br /></td></tr>
+<tr class="separator:a3f059796adbc370050016d8a6f61208f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a804bce58fed7a8006841f6c35fa22ae7" id="r_a804bce58fed7a8006841f6c35fa22ae7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a804bce58fed7a8006841f6c35fa22ae7">enabled</a> () const noexcept</td></tr>
+<tr class="memdesc:a804bce58fed7a8006841f6c35fa22ae7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observe policy enablement; owner thread, no callbacks or provider access.  <br /></td></tr>
+<tr class="separator:a804bce58fed7a8006841f6c35fa22ae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2da538507b957c5983c2b5565bd1d757" id="r_a2da538507b957c5983c2b5565bd1d757"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a2da538507b957c5983c2b5565bd1d757">configure</a> (<a class="el" href="structeve_1_1rts_1_1CrowdFlowNavigationSettings.html">CrowdFlowNavigationSettings</a> <a class="el" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>) noexcept</td></tr>
+<tr class="memdesc:a2da538507b957c5983c2b5565bd1d757"><td class="mdescLeft">&#160;</td><td class="mdescRight">Change cheap quotas without losing jobs or the owner/tick spending latch. @ownership Stores values only. @thread Owner thread. @reentrancy No callbacks.  <br /></td></tr>
+<tr class="separator:a2da538507b957c5983c2b5565bd1d757"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3965ff833d8069db2eca34add91a225f" id="r_a3965ff833d8069db2eca34add91a225f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a3965ff833d8069db2eca34add91a225f">disable</a> () noexcept</td></tr>
+<tr class="memdesc:a3965ff833d8069db2eca34add91a225f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disable policy and release jobs/leases while retaining the current spending boundary. @thread Owner thread. @reentrancy No callbacks. No provider pointer is retained.  <br /></td></tr>
+<tr class="separator:a3965ff833d8069db2eca34add91a225f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79008d9281aa1648d892c3e7a1ca9c2a" id="r_a79008d9281aa1648d892c3e7a1ca9c2a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a1512f5e06d3d422e70228fd7497bd85e">InputChange</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a79008d9281aa1648d892c3e7a1ca9c2a">begin</a> (<a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;crowd, const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:a79008d9281aa1648d892c3e7a1ca9c2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reconcile owner/input epochs and retire unused goals; owner thread, no callbacks.  <br /></td></tr>
+<tr class="separator:a79008d9281aa1648d892c3e7a1ca9c2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb39d16ecbada5a9ff510be15d168327" id="r_acb39d16ecbada5a9ff510be15d168327"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#acb39d16ecbada5a9ff510be15d168327">request</a> (<a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;crowd, <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> <a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="separator:acb39d16ecbada5a9ff510be15d168327"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3650c40199ded4f5bbaa1161e338155d" id="r_a3650c40199ded4f5bbaa1161e338155d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a3650c40199ded4f5bbaa1161e338155d">pump</a> (<a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;crowd, const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="separator:a3650c40199ded4f5bbaa1161e338155d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab28e58584b4da13de4f897e12384e8de" id="r_ab28e58584b4da13de4f897e12384e8de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ac0e248bdabe334e3fceac6d4a81e67ce">DriveState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ab28e58584b4da13de4f897e12384e8de">steer</a> (<a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;crowd, <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> <a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, float <a class="el" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, <a class="el" href="structeve_1_1crowd_1_1MovementBinding.html">crowd::MovementBinding</a> movement, <a class="el" href="structeve_1_1crowd_1_1AgentUpdate.html">crowd::AgentUpdate</a> &amp;update)</td></tr>
+<tr class="separator:ab28e58584b4da13de4f897e12384e8de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a139c43fe591128ada6d6b80e3ca49e9d" id="r_a139c43fe591128ada6d6b80e3ca49e9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a139c43fe591128ada6d6b80e3ca49e9d">request</a> (<a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;crowd, std::span&lt; const <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> &gt; <a class="el" href="ForceBindings_8cpp.html#a76784f58666ff01eaacea421395b430d">targets</a>, <a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>)</td></tr>
+<tr class="memdesc:a139c43fe591128ada6d6b80e3ca49e9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collect a canonical multi-slot target set into the same quota service. @ownership Copies input values, retaining no spans. @thread Owner thread. @reentrancy No callbacks. @cost Bounded goal conversion/sort; amortize per shared group request.  <br /></td></tr>
+<tr class="separator:a139c43fe591128ada6d6b80e3ca49e9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2fd32b8d1fee48b89c6cf717a4131904" id="r_a2fd32b8d1fee48b89c6cf717a4131904"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ac0e248bdabe334e3fceac6d4a81e67ce">DriveState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a2fd32b8d1fee48b89c6cf717a4131904">steer</a> (<a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;crowd, <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, std::span&lt; const <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> &gt; <a class="el" href="ForceBindings_8cpp.html#a76784f58666ff01eaacea421395b430d">targets</a>, <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> exactTarget, float <a class="el" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, <a class="el" href="structeve_1_1crowd_1_1MovementBinding.html">crowd::MovementBinding</a> movement, <a class="el" href="structeve_1_1crowd_1_1AgentUpdate.html">crowd::AgentUpdate</a> &amp;update)</td></tr>
+<tr class="memdesc:a2fd32b8d1fee48b89c6cf717a4131904"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select a multi-slot shared field while preserving this unit's exact destination. @ownership Borrows inputs for this call; only an owning lease enters update. @thread Owner thread. @reentrancy No callbacks. @cost Bounded canonical key lookup; amortize at shared steering boundaries.  <br /></td></tr>
+<tr class="separator:a2fd32b8d1fee48b89c6cf717a4131904"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95ba7100a01aaab88824dd533c9f9379" id="r_a95ba7100a01aaab88824dd533c9f9379"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="structeve_1_1rts_1_1CrowdFlowNavigationObservation.html">CrowdFlowNavigationObservation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a95ba7100a01aaab88824dd533c9f9379">observation</a> () const noexcept</td></tr>
+<tr class="memdesc:a95ba7100a01aaab88824dd533c9f9379"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observe bounded work metadata without field copies; owner thread only.  <br /></td></tr>
+<tr class="separator:a95ba7100a01aaab88824dd533c9f9379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bc8b4e1eda004b4c9fa900e77825ed2" id="r_a3bc8b4e1eda004b4c9fa900e77825ed2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a3bc8b4e1eda004b4c9fa900e77825ed2">queueNotice</a> (ecs::EntityHandle <a class="el" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>, const <a class="el" href="structeve_1_1rts_1_1OrderRecord.html">OrderRecord</a> &amp;<a class="el" href="MeshContactBlend_8cpp.html#a60a7fb4d9322c3ce2c36a55154a398bd">order</a>)</td></tr>
+<tr class="memdesc:a3bc8b4e1eda004b4c9fa900e77825ed2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append an owning post-commit event; failure leaves this notice unpublished.  <br /></td></tr>
+<tr class="separator:a3bc8b4e1eda004b4c9fa900e77825ed2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad34b47c8b35a0d123fca01376b506f42" id="r_ad34b47c8b35a0d123fca01376b506f42"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1rts_1_1CrowdFlowNavigation_1_1Notice.html">Notice</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ad34b47c8b35a0d123fca01376b506f42">takeNotices</a> ()</td></tr>
+<tr class="memdesc:ad34b47c8b35a0d123fca01376b506f42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer committed notices to caller before invoking unknown callbacks. @ownership Caller owns moved records/handles and resolves liveness before delivery. @cost Constant-time buffer ownership transfer, amortized per motion phase; delivery is separate.  <br /></td></tr>
+<tr class="separator:ad34b47c8b35a0d123fca01376b506f42"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owner-thread derived shared static-goal navigation service; retains no ECS pointers. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html">RTSCrowdFlowNavigationInternal.h</a> 第 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html#l00007">7</a> 行定义.</p>
+</div><h2 class="groupheader">成员枚举类型说明</h2>
+<a id="ac0e248bdabe334e3fceac6d4a81e67ce" name="ac0e248bdabe334e3fceac6d4a81e67ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0e248bdabe334e3fceac6d4a81e67ce">&#9670;&#160;</a></span>DriveState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ac0e248bdabe334e3fceac6d4a81e67ce">eve::rts::CrowdFlowNavigation::DriveState</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ac0e248bdabe334e3fceac6d4a81e67cea2d13df6f8b5e4c5af9f87e0dc39df69d" name="ac0e248bdabe334e3fceac6d4a81e67cea2d13df6f8b5e4c5af9f87e0dc39df69d"></a>Pending&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac0e248bdabe334e3fceac6d4a81e67ceae7d31fc0602fb2ede144d18cdffd816b" name="ac0e248bdabe334e3fceac6d4a81e67ceae7d31fc0602fb2ede144d18cdffd816b"></a>Ready&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac0e248bdabe334e3fceac6d4a81e67cea4bed942140642650ca78039de000796a" name="ac0e248bdabe334e3fceac6d4a81e67cea4bed942140642650ca78039de000796a"></a>Unreachable&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ac0e248bdabe334e3fceac6d4a81e67cea453e6aa38d87b28ccae545967c53004f" name="ac0e248bdabe334e3fceac6d4a81e67cea453e6aa38d87b28ccae545967c53004f"></a>Unavailable&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html">RTSCrowdFlowNavigationInternal.h</a> 第 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html#l00010">10</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1512f5e06d3d422e70228fd7497bd85e" name="a1512f5e06d3d422e70228fd7497bd85e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1512f5e06d3d422e70228fd7497bd85e">&#9670;&#160;</a></span>InputChange</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a1512f5e06d3d422e70228fd7497bd85e">eve::rts::CrowdFlowNavigation::InputChange</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a1512f5e06d3d422e70228fd7497bd85ea5ff3c6978f87d96febfdc8ed3899a97e" name="a1512f5e06d3d422e70228fd7497bd85ea5ff3c6978f87d96febfdc8ed3899a97e"></a>Unchanged&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1512f5e06d3d422e70228fd7497bd85ea820dbd2b8f606aff866c0bbfb6b737c1" name="a1512f5e06d3d422e70228fd7497bd85ea820dbd2b8f606aff866c0bbfb6b737c1"></a>Changed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html">RTSCrowdFlowNavigationInternal.h</a> 第 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html#l00009">9</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a3f059796adbc370050016d8a6f61208f" name="a3f059796adbc370050016d8a6f61208f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f059796adbc370050016d8a6f61208f">&#9670;&#160;</a></span>CrowdFlowNavigation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::rts::CrowdFlowNavigation::CrowdFlowNavigation </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1rts_1_1CrowdFlowNavigationSettings.html">CrowdFlowNavigationSettings</a>&#160;</td>
+          <td class="paramname"><em>settings</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Store cheap owning quotas without preparing graph work. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html">RTSCrowdFlowNavigationInternal.h</a> 第 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a79008d9281aa1648d892c3e7a1ca9c2a" name="a79008d9281aa1648d892c3e7a1ca9c2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79008d9281aa1648d892c3e7a1ca9c2a">&#9670;&#160;</a></span>begin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a1512f5e06d3d422e70228fd7497bd85e">CrowdFlowNavigation::InputChange</a> &gt; eve::rts::CrowdFlowNavigation::begin </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;&#160;</td>
+          <td class="paramname"><em>crowd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reconcile owner/input epochs and retire unused goals; owner thread, no callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html">RTSCrowdFlowNavigation.cpp</a> 第 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Coupling3DStep_8cpp_source.html#l00027">changed</a>, <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a1512f5e06d3d422e70228fd7497bd85ea820dbd2b8f606aff866c0bbfb6b737c1">Changed</a>, <a class="el" href="Crowd_8cpp_source.html#l00062">eve::crowd::Crowd::getFieldStatus()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00020">source</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#a1512f5e06d3d422e70228fd7497bd85ea5ff3c6978f87d96febfdc8ed3899a97e">Unchanged</a>.</p>
+
+</div>
+</div>
+<a id="a2da538507b957c5983c2b5565bd1d757" name="a2da538507b957c5983c2b5565bd1d757"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2da538507b957c5983c2b5565bd1d757">&#9670;&#160;</a></span>configure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::rts::CrowdFlowNavigation::configure </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1rts_1_1CrowdFlowNavigationSettings.html">CrowdFlowNavigationSettings</a>&#160;</td>
+          <td class="paramname"><em>settings</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Change cheap quotas without losing jobs or the owner/tick spending latch. @ownership Stores values only. @thread Owner thread. @reentrancy No callbacks. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied/NoOp; caller validates quota ranges before entry. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html">RTSCrowdFlowNavigation.cpp</a> 第 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00010">settings</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a3965ff833d8069db2eca34add91a225f" name="a3965ff833d8069db2eca34add91a225f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3965ff833d8069db2eca34add91a225f">&#9670;&#160;</a></span>disable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rts::CrowdFlowNavigation::disable </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Disable policy and release jobs/leases while retaining the current spending boundary. @thread Owner thread. @reentrancy No callbacks. No provider pointer is retained. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html">RTSCrowdFlowNavigation.cpp</a> 第 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a804bce58fed7a8006841f6c35fa22ae7" name="a804bce58fed7a8006841f6c35fa22ae7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a804bce58fed7a8006841f6c35fa22ae7">&#9670;&#160;</a></span>enabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::rts::CrowdFlowNavigation::enabled </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observe policy enablement; owner thread, no callbacks or provider access. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html">RTSCrowdFlowNavigationInternal.h</a> 第 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a95ba7100a01aaab88824dd533c9f9379" name="a95ba7100a01aaab88824dd533c9f9379"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95ba7100a01aaab88824dd533c9f9379">&#9670;&#160;</a></span>observation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1rts_1_1CrowdFlowNavigationObservation.html">CrowdFlowNavigationObservation</a> eve::rts::CrowdFlowNavigation::observation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observe bounded work metadata without field copies; owner thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html">RTSCrowdFlowNavigation.cpp</a> 第 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html#l00271">271</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RTS_8h_source.html#l00058">eve::rts::CrowdFlowNavigationObservation::pendingGoals</a> , 以及 <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>.</p>
+
+</div>
+</div>
+<a id="a3650c40199ded4f5bbaa1161e338155d" name="a3650c40199ded4f5bbaa1161e338155d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3650c40199ded4f5bbaa1161e338155d">&#9670;&#160;</a></span>pump()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::rts::CrowdFlowNavigation::pump </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;&#160;</td>
+          <td class="paramname"><em>crowd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html">RTSCrowdFlowNavigation.cpp</a> 第 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CrowdFlowCache_8cpp_source.html#l00098">eve::crowd::Crowd::acquireFlowField()</a>, <a class="el" href="CrowdNavigation_8cpp_source.html#l00054">eve::crowd::Crowd::advanceFlowBuild()</a>, <a class="el" href="RTS_8h_source.html#l00060">eve::rts::CrowdFlowNavigationObservation::cacheHits</a>, <a class="el" href="RTS_8h_source.html#l00061">eve::rts::CrowdFlowNavigationObservation::cachePressure</a>, <a class="el" href="McpFrameCapture_8cpp_source.html#l00090">cancelled</a>, <a class="el" href="classeve_1_1crowd_1_1Crowd.html#a216543fdb15203eeb34f20d66294dde9aa149e85a44aeec9140e92733d9ed694e">eve::crowd::Crowd::Cancelled</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00031">count</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="RTS_8h_source.html#l00059">eve::rts::CrowdFlowNavigationObservation::lastStarts</a>, <a class="el" href="RTS_8h_source.html#l00059">eve::rts::CrowdFlowNavigationObservation::lastWork</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00219">left</a>, <a class="el" href="RTS_8h_source.html#l00054">eve::rts::CrowdFlowNavigationSettings::maxStartsPerTick</a>, <a class="el" href="RTS_8h_source.html#l00054">eve::rts::CrowdFlowNavigationSettings::maxWorkPerTick</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::NoOp</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Joint3DParameters_8cpp_source.html#l00015">ordered</a>, <a class="el" href="classeve_1_1crowd_1_1Crowd.html#a216543fdb15203eeb34f20d66294dde9a2d13df6f8b5e4c5af9f87e0dc39df69d">eve::crowd::Crowd::Pending</a>, <a class="el" href="RTS_8h_source.html#l00060">eve::rts::CrowdFlowNavigationObservation::prepared</a>, <a class="el" href="CrowdNavigation_8cpp_source.html#l00031">eve::crowd::Crowd::prepareFlowBuild()</a>, <a class="el" href="classeve_1_1crowd_1_1Crowd.html#a216543fdb15203eeb34f20d66294dde9ae7d31fc0602fb2ede144d18cdffd816b">eve::crowd::Crowd::Ready</a>, <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fad37b1f6c0512e2118cee17fea015b699">eve::Rejected</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00220">right</a>, <a class="el" href="AnimationClipPreview_8cpp_source.html#l00056">selected</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="classeve_1_1crowd_1_1Crowd.html#a216543fdb15203eeb34f20d66294dde9a4bed942140642650ca78039de000796a">eve::crowd::Crowd::Unreachable</a>.</p>
+
+</div>
+</div>
+<a id="a3bc8b4e1eda004b4c9fa900e77825ed2" name="a3bc8b4e1eda004b4c9fa900e77825ed2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bc8b4e1eda004b4c9fa900e77825ed2">&#9670;&#160;</a></span>queueNotice()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::rts::CrowdFlowNavigation::queueNotice </td>
+          <td>(</td>
+          <td class="paramtype">ecs::EntityHandle&#160;</td>
+          <td class="paramname"><em>unit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1rts_1_1OrderRecord.html">OrderRecord</a> &amp;&#160;</td>
+          <td class="paramname"><em>order</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Append an owning post-commit event; failure leaves this notice unpublished. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html">RTSCrowdFlowNavigationInternal.h</a> 第 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeshContactBlend_8cpp_source.html#l00126">order</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00143">unit</a>.</p>
+
+</div>
+</div>
+<a id="a2ac0b11ec92ff7f52a15a4dd1b7f65a6" name="a2ac0b11ec92ff7f52a15a4dd1b7f65a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ac0b11ec92ff7f52a15a4dd1b7f65a6">&#9670;&#160;</a></span>replaceGroups()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::rts::CrowdFlowNavigation::replaceGroups </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;&#160;</td>
+          <td class="paramname"><em>crowd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1rts_1_1CrowdFlowNavigation_1_1GroupInput.html">GroupInput</a> &gt;&#160;</td>
+          <td class="paramname"><em>groups</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Atomically replace derived group bindings after validating the complete projection. @ownership Consumes owning input, retains handles and immutable keys, no ECS pointers. @thread Owner thread. @reentrancy No callbacks. @cost Sorting per group and member lookup table, amortized once per group phase. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowGroups_8cpp_source.html">RTSCrowdFlowGroups.cpp</a> 第 <a class="el" href="RTSCrowdFlowGroups_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticlesCapabilities_8cpp_source.html#l00171">binding</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Crowd_8cpp_source.html#l00062">eve::crowd::Crowd::getFieldStatus()</a>, <a class="el" href="StandardAbilities_8cpp_source.html#l00024">group</a>, <a class="el" href="OnnxGpgpu_8cpp_source.html#l00039">groups</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00219">left</a>, <a class="el" href="UiPreview_8cpp_source.html#l00186">member</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00018">previous</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00220">right</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00020">source</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a139c43fe591128ada6d6b80e3ca49e9d" name="a139c43fe591128ada6d6b80e3ca49e9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a139c43fe591128ada6d6b80e3ca49e9d">&#9670;&#160;</a></span>request() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::rts::CrowdFlowNavigation::request </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;&#160;</td>
+          <td class="paramname"><em>crowd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> &gt;&#160;</td>
+          <td class="paramname"><em>targets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Collect a canonical multi-slot target set into the same quota service. @ownership Copies input values, retaining no spans. @thread Owner thread. @reentrancy No callbacks. @cost Bounded goal conversion/sort; amortize per shared group request. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html">RTSCrowdFlowNavigation.cpp</a> 第 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00165">targets</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>.</p>
+
+</div>
+</div>
+<a id="acb39d16ecbada5a9ff510be15d168327" name="acb39d16ecbada5a9ff510be15d168327"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb39d16ecbada5a9ff510be15d168327">&#9670;&#160;</a></span>request() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::rts::CrowdFlowNavigation::request </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;&#160;</td>
+          <td class="paramname"><em>crowd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html">RTSCrowdFlowNavigation.cpp</a> 第 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a>.</p>
+
+</div>
+</div>
+<a id="af34442cdff8e8b37ab5b3e1530e1c27f" name="af34442cdff8e8b37ab5b3e1530e1c27f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af34442cdff8e8b37ab5b3e1530e1c27f">&#9670;&#160;</a></span>requestRoute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation_1_1Route.html">CrowdFlowNavigation::Route</a> &gt; eve::rts::CrowdFlowNavigation::requestRoute </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;&#160;</td>
+          <td class="paramname"><em>crowd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">ecs::EntityHandle&#160;</td>
+          <td class="paramname"><em>unit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>orderId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td>
+          <td class="paramname"><em>tick</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Collect the applicable group or exact-terminal request for one current order. @ownership Borrows inputs only for this call; returned route owns its immutable key. @thread Owner thread. @reentrancy No callbacks. @cost Logarithmic member lookup and bounded cell lookup; no repeated group sorting. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowGroups_8cpp_source.html">RTSCrowdFlowGroups.cpp</a> 第 <a class="el" href="RTSCrowdFlowGroups_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ParticlesCapabilities_8cpp_source.html#l00171">binding</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00016">cell</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Crowd_8cpp_source.html#l00062">eve::crowd::Crowd::getFieldStatus()</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="UiPreview_8cpp_source.html#l00186">member</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00020">source</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a> , 以及 <a class="el" href="TacticsPersistence_8cpp_source.html#l00143">unit</a>.</p>
+
+</div>
+</div>
+<a id="a2fd32b8d1fee48b89c6cf717a4131904" name="a2fd32b8d1fee48b89c6cf717a4131904"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2fd32b8d1fee48b89c6cf717a4131904">&#9670;&#160;</a></span>steer() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ac0e248bdabe334e3fceac6d4a81e67ce">CrowdFlowNavigation::DriveState</a> &gt; eve::rts::CrowdFlowNavigation::steer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;&#160;</td>
+          <td class="paramname"><em>crowd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> &gt;&#160;</td>
+          <td class="paramname"><em>targets</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>&#160;</td>
+          <td class="paramname"><em>exactTarget</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1crowd_1_1MovementBinding.html">crowd::MovementBinding</a>&#160;</td>
+          <td class="paramname"><em>movement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1crowd_1_1AgentUpdate.html">crowd::AgentUpdate</a> &amp;&#160;</td>
+          <td class="paramname"><em>update</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select a multi-slot shared field while preserving this unit's exact destination. @ownership Borrows inputs for this call; only an owning lease enters update. @thread Owner thread. @reentrancy No callbacks. @cost Bounded canonical key lookup; amortize at shared steering boundaries. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html">RTSCrowdFlowNavigation.cpp</a> 第 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html#l00218">218</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00042">radius</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a> , 以及 <a class="el" href="ForceBindings_8cpp_source.html#l00165">targets</a>.</p>
+
+</div>
+</div>
+<a id="ab28e58584b4da13de4f897e12384e8de" name="ab28e58584b4da13de4f897e12384e8de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab28e58584b4da13de4f897e12384e8de">&#9670;&#160;</a></span>steer() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ac0e248bdabe334e3fceac6d4a81e67ce">CrowdFlowNavigation::DriveState</a> &gt; eve::rts::CrowdFlowNavigation::steer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;&#160;</td>
+          <td class="paramname"><em>crowd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1crowd_1_1MovementBinding.html">crowd::MovementBinding</a>&#160;</td>
+          <td class="paramname"><em>movement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1crowd_1_1AgentUpdate.html">crowd::AgentUpdate</a> &amp;&#160;</td>
+          <td class="paramname"><em>update</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html">RTSCrowdFlowNavigation.cpp</a> 第 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00042">radius</a>, <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html#l00212">steer()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html#l00212">steer()</a>.</p>
+
+</div>
+</div>
+<a id="ad2bf5625d6b1f35417ce5f0be4f20758" name="ad2bf5625d6b1f35417ce5f0be4f20758"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad2bf5625d6b1f35417ce5f0be4f20758">&#9670;&#160;</a></span>steerRoute()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation.html#ac0e248bdabe334e3fceac6d4a81e67ce">CrowdFlowNavigation::DriveState</a> &gt; eve::rts::CrowdFlowNavigation::steerRoute </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a> &amp;&#160;</td>
+          <td class="paramname"><em>crowd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1rts_1_1CrowdFlowNavigation_1_1Route.html">Route</a> &amp;&#160;</td>
+          <td class="paramname"><em>route</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1crowd_1_1MovementBinding.html">crowd::MovementBinding</a>&#160;</td>
+          <td class="paramname"><em>movement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1crowd_1_1AgentUpdate.html">crowd::AgentUpdate</a> &amp;&#160;</td>
+          <td class="paramname"><em>update</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Steer a previously collected route without repeating target-set conversion. @ownership Borrows route for this call; update receives an owning lease. @thread Owner thread. @reentrancy No callbacks. @cost Bounded canonical job lookup per unit. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowGroups_8cpp_source.html">RTSCrowdFlowGroups.cpp</a> 第 <a class="el" href="RTSCrowdFlowGroups_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Crowd_8cpp_source.html#l00062">eve::crowd::Crowd::getFieldStatus()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00042">radius</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00020">source</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>.</p>
+
+</div>
+</div>
+<a id="ad34b47c8b35a0d123fca01376b506f42" name="ad34b47c8b35a0d123fca01376b506f42"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad34b47c8b35a0d123fca01376b506f42">&#9670;&#160;</a></span>takeNotices()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1rts_1_1CrowdFlowNavigation_1_1Notice.html">Notice</a> &gt; eve::rts::CrowdFlowNavigation::takeNotices </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transfer committed notices to caller before invoking unknown callbacks. @ownership Caller owns moved records/handles and resolves liveness before delivery. @cost Constant-time buffer ownership transfer, amortized per motion phase; delivery is separate. </p>
+
+<p class="definition">在文件 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html">RTSCrowdFlowNavigationInternal.h</a> 第 <a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/rts/<a class="el" href="RTSCrowdFlowNavigationInternal_8h_source.html">RTSCrowdFlowNavigationInternal.h</a></li>
+<li>src/modules/rts/<a class="el" href="RTSCrowdFlowGroups_8cpp_source.html">RTSCrowdFlowGroups.cpp</a></li>
+<li>src/modules/rts/<a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html">RTSCrowdFlowNavigation.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

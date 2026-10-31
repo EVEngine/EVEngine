@@ -1,0 +1,863 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::vulkan::Graphics::InspectionService结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics_1_1vulkan.html">vulkan</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">Graphics</a></li><li class="navelem"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html">InspectionService</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::vulkan::Graphics::InspectionService结构体 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+<div class="dynheader">
+类 eve::graphics::vulkan::Graphics::InspectionService 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.png" usemap="#eve::graphics::vulkan::Graphics::InspectionService_map" alt=""/>
+  <map id="eve::graphics::vulkan::Graphics::InspectionService_map" name="eve::graphics::vulkan::Graphics::InspectionService_map">
+<area href="classeve_1_1IEntityInspection.html" title="Optional native geometry-inspection provider, independent of graphics types. @thread Engine owner thr..." alt="eve::IEntityInspection" shape="rect" coords="0,0,295,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a6646a1901a098c653829c8283ff6be68" id="r_a6646a1901a098c653829c8283ff6be68"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a6646a1901a098c653829c8283ff6be68">InspectionService</a> (<a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">Graphics</a> &amp;<a class="el" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a>)</td></tr>
+<tr class="separator:a6646a1901a098c653829c8283ff6be68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff7143101d08cc6f98c7d25e26d44960" id="r_aff7143101d08cc6f98c7d25e26d44960"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#aff7143101d08cc6f98c7d25e26d44960">~InspectionService</a> () override</td></tr>
+<tr class="separator:aff7143101d08cc6f98c7d25e26d44960"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1575bef40190200f5ed3cbd39202cd4d" id="r_a1575bef40190200f5ed3cbd39202cd4d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a1575bef40190200f5ed3cbd39202cd4d">clearGpu</a> ()</td></tr>
+<tr class="separator:a1575bef40190200f5ed3cbd39202cd4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82d1f7088d9ba6c73514591335d1bf2f" id="r_a82d1f7088d9ba6c73514591335d1bf2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a82d1f7088d9ba6c73514591335d1bf2f">request</a> (<a class="el" href="structeve_1_1EntityViewRequest.html">EntityViewRequest</a> request) override</td></tr>
+<tr class="memdesc:a82d1f7088d9ba6c73514591335d1bf2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue a bounded geometry-only capture; never wait for GPU completion.  <br /></td></tr>
+<tr class="separator:a82d1f7088d9ba6c73514591335d1bf2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f57b430d0979609f6881e4b210530fe" id="r_a4f57b430d0979609f6881e4b210530fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1EntityViewSnapshot.html">EntityViewSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a4f57b430d0979609f6881e4b210530fe">snapshot</a> (std::string_view requested) override</td></tr>
+<tr class="memdesc:a4f57b430d0979609f6881e4b210530fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Poll token without waiting; returns owning metadata and CPU lease only when ready.  <br /></td></tr>
+<tr class="separator:a4f57b430d0979609f6881e4b210530fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82017bedc42d714f3cc405338fc5ca1b" id="r_a82017bedc42d714f3cc405338fc5ca1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208">FrameCapturePhase</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a82017bedc42d714f3cc405338fc5ca1b">release</a> (std::string_view requested) override</td></tr>
+<tr class="memdesc:a82017bedc42d714f3cc405338fc5ca1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel/release; submitted resources survive until their fence completes.  <br /></td></tr>
+<tr class="separator:a82017bedc42d714f3cc405338fc5ca1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae832b2a400139d48edcab45cd7be4a0b" id="r_ae832b2a400139d48edcab45cd7be4a0b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Primitive3DVertex.html">Primitive3DVertex</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#ae832b2a400139d48edcab45cd7be4a0b">freeze</a> ()</td></tr>
+<tr class="separator:ae832b2a400139d48edcab45cd7be4a0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a187a1d8f3bc6a2b7a74f4be6b91033a4" id="r_a187a1d8f3bc6a2b7a74f4be6b91033a4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a187a1d8f3bc6a2b7a74f4be6b91033a4">record</a> (const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Primitive3DVertex.html">Primitive3DVertex</a> &gt; &amp;geometry)</td></tr>
+<tr class="separator:a187a1d8f3bc6a2b7a74f4be6b91033a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e7d218077ae5e08b14a4206e982ed0f" id="r_a5e7d218077ae5e08b14a4206e982ed0f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a5e7d218077ae5e08b14a4206e982ed0f">poll</a> ()</td></tr>
+<tr class="separator:a5e7d218077ae5e08b14a4206e982ed0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1IEntityInspection"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1IEntityInspection')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1IEntityInspection.html">eve::IEntityInspection</a></td></tr>
+<tr class="memitem:a1edabb7e85dde416624a6fb7b4ae565e inherit pub_methods_classeve_1_1IEntityInspection" id="r_a1edabb7e85dde416624a6fb7b4ae565e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEntityInspection.html#a1edabb7e85dde416624a6fb7b4ae565e">~IEntityInspection</a> ()=default</td></tr>
+<tr class="memdesc:a1edabb7e85dde416624a6fb7b4ae565e inherit pub_methods_classeve_1_1IEntityInspection"><td class="mdescLeft">&#160;</td><td class="mdescRight">Withdraw registration before destroying the provider.  <br /></td></tr>
+<tr class="separator:a1edabb7e85dde416624a6fb7b4ae565e inherit pub_methods_classeve_1_1IEntityInspection"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ab85e858d9ec8c49b0f3f129952e0af4e" id="r_ab85e858d9ec8c49b0f3f129952e0af4e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">Graphics</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#ab85e858d9ec8c49b0f3f129952e0af4e">graphics</a></td></tr>
+<tr class="separator:ab85e858d9ec8c49b0f3f129952e0af4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac03593e3d8789675485aa9f6f1a35095" id="r_ac03593e3d8789675485aa9f6f1a35095"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1FrameCaptureStore.html">FrameCaptureStore</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#ac03593e3d8789675485aa9f6f1a35095">store</a></td></tr>
+<tr class="separator:ac03593e3d8789675485aa9f6f1a35095"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0426abe4a46eb0004e80cbb1bf1d0d82" id="r_a0426abe4a46eb0004e80cbb1bf1d0d82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1EntityViewSnapshot.html">EntityViewSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a0426abe4a46eb0004e80cbb1bf1d0d82">evidence</a></td></tr>
+<tr class="separator:a0426abe4a46eb0004e80cbb1bf1d0d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c6b74eb884e24cdd12c37181856c411" id="r_a7c6b74eb884e24cdd12c37181856c411"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a7c6b74eb884e24cdd12c37181856c411">token</a></td></tr>
+<tr class="separator:a7c6b74eb884e24cdd12c37181856c411"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac92efff94ee5f8ff473b6914939ffdfb" id="r_ac92efff94ee5f8ff473b6914939ffdfb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Primitive3DVertex.html">Primitive3DVertex</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#ac92efff94ee5f8ff473b6914939ffdfb">frozenGeometry</a></td></tr>
+<tr class="separator:ac92efff94ee5f8ff473b6914939ffdfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae315d4396574f1994a677cb1e57202f" id="r_aae315d4396574f1994a677cb1e57202f"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#aae315d4396574f1994a677cb1e57202f">frozenFrame</a> = 0</td></tr>
+<tr class="separator:aae315d4396574f1994a677cb1e57202f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a58dac9e77aaf9a8d4a9425d168fa12" id="r_a3a58dac9e77aaf9a8d4a9425d168fa12"><td class="memItemLeft" align="right" valign="top">vkb::ColorTarget&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a3a58dac9e77aaf9a8d4a9425d168fa12">color</a></td></tr>
+<tr class="separator:a3a58dac9e77aaf9a8d4a9425d168fa12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a311e83b1c6dd1970bd5b91e81612aed2" id="r_a311e83b1c6dd1970bd5b91e81612aed2"><td class="memItemLeft" align="right" valign="top">vkb::DepthTarget&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a311e83b1c6dd1970bd5b91e81612aed2">depth</a></td></tr>
+<tr class="separator:a311e83b1c6dd1970bd5b91e81612aed2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f269c2ff4c46fea8d9f9d267a38fb1e" id="r_a3f269c2ff4c46fea8d9f9d267a38fb1e"><td class="memItemLeft" align="right" valign="top">vkb::HostVertexBuffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a3f269c2ff4c46fea8d9f9d267a38fb1e">vertices</a></td></tr>
+<tr class="separator:a3f269c2ff4c46fea8d9f9d267a38fb1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3c02d517e969d37a5af96ab4f30f334" id="r_aa3c02d517e969d37a5af96ab4f30f334"><td class="memItemLeft" align="right" valign="top">vkb::GenericBuffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#aa3c02d517e969d37a5af96ab4f30f334">staging</a></td></tr>
+<tr class="separator:aa3c02d517e969d37a5af96ab4f30f334"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63e9e3059fbdcccfa0e7c90ee0264170" id="r_a63e9e3059fbdcccfa0e7c90ee0264170"><td class="memItemLeft" align="right" valign="top">vkb::BuiltRenderPass&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a63e9e3059fbdcccfa0e7c90ee0264170">pass</a></td></tr>
+<tr class="separator:a63e9e3059fbdcccfa0e7c90ee0264170"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b36efe19cc027af9f1bd774c7e6f5ce" id="r_a7b36efe19cc027af9f1bd774c7e6f5ce"><td class="memItemLeft" align="right" valign="top">vk::Framebuffer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a7b36efe19cc027af9f1bd774c7e6f5ce">framebuffer</a> {}</td></tr>
+<tr class="separator:a7b36efe19cc027af9f1bd774c7e6f5ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4658b26df7e3768230294d1312bab167" id="r_a4658b26df7e3768230294d1312bab167"><td class="memItemLeft" align="right" valign="top">vk::PipelineLayout&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a4658b26df7e3768230294d1312bab167">layout</a> {}</td></tr>
+<tr class="separator:a4658b26df7e3768230294d1312bab167"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80204304a00369eb65166dfa946bc588" id="r_a80204304a00369eb65166dfa946bc588"><td class="memItemLeft" align="right" valign="top">vk::Pipeline&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a80204304a00369eb65166dfa946bc588">pipeline</a> {}</td></tr>
+<tr class="separator:a80204304a00369eb65166dfa946bc588"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66fcdd20ae2fd51d69344d064c4b1f15" id="r_a66fcdd20ae2fd51d69344d064c4b1f15"><td class="memItemLeft" align="right" valign="top">vk::CommandPool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#a66fcdd20ae2fd51d69344d064c4b1f15">pool</a> {}</td></tr>
+<tr class="separator:a66fcdd20ae2fd51d69344d064c4b1f15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbaa39eff94fcc60931873f428259712" id="r_adbaa39eff94fcc60931873f428259712"><td class="memItemLeft" align="right" valign="top">vk::Fence&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#adbaa39eff94fcc60931873f428259712">fence</a> {}</td></tr>
+<tr class="separator:adbaa39eff94fcc60931873f428259712"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa7e986da6e7b5192205b074b40be556" id="r_afa7e986da6e7b5192205b074b40be556"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Graphics_1_1InspectionService.html#afa7e986da6e7b5192205b074b40be556">submitted</a> = false</td></tr>
+<tr class="separator:afa7e986da6e7b5192205b074b40be556"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1IEntityInspection"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1IEntityInspection')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1IEntityInspection.html">eve::IEntityInspection</a></td></tr>
+<tr class="memitem:a614a3e40d5e1bbc662d5256b3a8a30be inherit pub_static_attribs_classeve_1_1IEntityInspection" id="r_a614a3e40d5e1bbc662d5256b3a8a30be"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IEntityInspection.html#a614a3e40d5e1bbc662d5256b3a8a30be">capabilityName</a> = &quot;IEntityInspection&quot;</td></tr>
+<tr class="separator:a614a3e40d5e1bbc662d5256b3a8a30be inherit pub_static_attribs_classeve_1_1IEntityInspection"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00023">23</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a6646a1901a098c653829c8283ff6be68" name="a6646a1901a098c653829c8283ff6be68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6646a1901a098c653829c8283ff6be68">&#9670;&#160;</a></span>InspectionService()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::vulkan::Graphics::InspectionService::InspectionService </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>owner</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00162">caps</a>, <a class="el" href="FrameCapture_8cpp_source.html#l00072">eve::FrameCaptureStore::configure()</a>, <a class="el" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676abeae421a14a34f831c113f61323d1ab3">eve::Final</a> , 以及 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00025">store</a>.</p>
+
+</div>
+</div>
+<a id="aff7143101d08cc6f98c7d25e26d44960" name="aff7143101d08cc6f98c7d25e26d44960"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff7143101d08cc6f98c7d25e26d44960">&#9670;&#160;</a></span>~InspectionService()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::vulkan::Graphics::InspectionService::~InspectionService </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">clearGpu()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a1575bef40190200f5ed3cbd39202cd4d" name="a1575bef40190200f5ed3cbd39202cd4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1575bef40190200f5ed3cbd39202cd4d">&#9670;&#160;</a></span>clearGpu()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::vulkan::Graphics::InspectionService::clearGpu </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00030">color</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00031">depth</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00316">device</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00039">fence</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00035">framebuffer</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00024">graphics</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00036">layout</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00034">pass</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00037">pipeline</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00038">pool</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00033">staging</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00040">submitted</a> , 以及 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00032">vertices</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00048">~InspectionService()</a>.</p>
+
+</div>
+</div>
+<a id="ae832b2a400139d48edcab45cd7be4a0b" name="ae832b2a400139d48edcab45cd7be4a0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae832b2a400139d48edcab45cd7be4a0b">&#9670;&#160;</a></span>freeze()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Primitive3DVertex.html">Primitive3DVertex</a> &gt; &gt; eve::graphics::vulkan::Graphics::InspectionService::freeze </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint2DBindings_8cpp_source.html#l00016">axis</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="EntityInspection_8h_source.html#l00023">eve::EntityViewSnapshot::bounds</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00050">bounds</a>, <a class="el" href="McpRuntimeTools_8cpp_source.html#l00157">bytes</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00062">camera</a>, <a class="el" href="ClipSpace_8h_source.html#l00038">eve::graphics::cameraProjectionVulkanRH_ZO()</a>, <a class="el" href="EntityInspection_8h_source.html#l00022">eve::EntityViewSnapshot::cameras</a>, <a class="el" href="EntityInspection_8h_source.html#l00007">eve::EntityViewRequest::cellSize</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00031">count</a>, <a class="el" href="GraphicsMesh_8cpp_source.html#l00311">eve::graphics::vulkan::Graphics::describeMesh()</a>, <a class="el" href="SpellFragmentCompiler_8cpp_source.html#l00074">element</a>, <a class="el" href="EntityInspection_8h_source.html#l00007">eve::EntityViewRequest::entityId</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00026">evidence</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EntityInspection_8h_source.html#l00007">eve::EntityViewRequest::generation</a>, <a class="el" href="Graphics_8h_source.html#l00482">eve::graphics::Graphics::getPixelHeight()</a>, <a class="el" href="Graphics_8h_source.html#l00480">eve::graphics::Graphics::getPixelWidth()</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00038">gpu</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00024">graphics</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="InspectionPlan_8h_source.html#l00017">eve::graphics::InspectionCamera::height</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00019">indices</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="RenderSystem3D_8h_source.html#l00227">eve::graphics::Renderable3D::MeshRenderer::kMaxParts</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00675">material</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00026">mesh</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00677">model</a>, <a class="el" href="RenderTransformProjection_8cpp_source.html#l00007">eve::graphics::detail::modelFromTransform()</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00162">normal</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00169">output</a>, <a class="el" href="FloorTextures_8cpp_source.html#l00239">palette</a>, <a class="el" href="InspectionPlan_8cpp_source.html#l00022">eve::graphics::planInspectionViews()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00016">position</a>, <a class="el" href="InspectionPlan_8h_source.html#l00016">eve::graphics::InspectionCamera::projection</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00037">renderer</a>, <a class="el" href="EntityInspection_8h_source.html#l00021">eve::EntityViewSnapshot::request</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00156">size</a>, <a class="el" href="EntityInspection_8h_source.html#l00011">eve::EntityViewRequest::skinPalettes</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00020">source</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00030">view</a>, <a class="el" href="InspectionPlan_8h_source.html#l00016">eve::graphics::InspectionCamera::view</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00082">weights</a>, <a class="el" href="InspectionPlan_8h_source.html#l00017">eve::graphics::InspectionCamera::width</a> , 以及 <a class="el" href="EntityInspection_8h_source.html#l00024">eve::EntityViewSnapshot::worldUnitsPerPixel</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00070">request()</a>.</p>
+
+</div>
+</div>
+<a id="a5e7d218077ae5e08b14a4206e982ed0f" name="a5e7d218077ae5e08b14a4206e982ed0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e7d218077ae5e08b14a4206e982ed0f">&#9670;&#160;</a></span>poll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::vulkan::Graphics::InspectionService::poll </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00365">365</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FrameCapture_8cpp_source.html#l00174">eve::FrameCaptureStore::begin()</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00013">begin</a>, <a class="el" href="OnnxGpgpu_8cpp_source.html#l00026">buffer</a>, <a class="el" href="FrameCapture_8h_source.html#l00081">eve::FrameCaptureSnapshot::buffers</a>, <a class="el" href="McpRuntimeTools_8cpp_source.html#l00157">bytes</a>, <a class="el" href="FrameCapture_8cpp_source.html#l00077">eve::FrameCaptureStore::collect()</a>, <a class="el" href="FrameCapture_8cpp_source.html#l00194">eve::FrameCaptureStore::complete()</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00021">evidence</a>, <a class="el" href="SceneVisibilityProvider_8cpp_source.html#l00019">graphics</a>, <a class="el" href="BattleControl_8cpp_source.html#l00708">pending</a>, <a class="el" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208a7b2f31b90fe1c2cc33a52233c1925df3">eve::Queued</a>, <a class="el" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208a0995b7b11da1280bec02effb34c76f76">eve::ReadbackPending</a>, <a class="el" href="ECS_8cpp_source.html#l00228">record</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="FrameCapture_8cpp_source.html#l00242">eve::FrameCaptureStore::retire()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00156">size</a>, <a class="el" href="FrameCapture_8cpp_source.html#l00138">eve::FrameCaptureStore::snapshot()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00015">status</a>, <a class="el" href="FrameCapture_8cpp_source.html#l00187">eve::FrameCaptureStore::submitted()</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00039">token</a> , 以及 <a class="el" href="FrameCapture_8h_source.html#l00064">eve::FrameCaptureBuffer::width</a>.</p>
+
+</div>
+</div>
+<a id="a187a1d8f3bc6a2b7a74f4be6b91033a4" name="a187a1d8f3bc6a2b7a74f4be6b91033a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a187a1d8f3bc6a2b7a74f4be6b91033a4">&#9670;&#160;</a></span>record()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::vulkan::Graphics::InspectionService::record </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Primitive3DVertex.html">Primitive3DVertex</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00013">begin</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00062">camera</a>, <a class="el" href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00051">color</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00031">count</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00034">depth</a>, <a class="el" href="GraphicsInternal_8h_source.html#l00316">device</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00021">evidence</a>, <a class="el" href="SceneVisibilityProvider_8cpp_source.html#l00019">graphics</a>, <a class="el" href="FloorTextures_8cpp_source.html#l00206">layout</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="FrameReadback_8h_source.html#l00012">eve::graphics::vulkan::detail::recordFrameReadback()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00156">size</a> , 以及 <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00082">vertices</a>.</p>
+
+</div>
+</div>
+<a id="a82017bedc42d714f3cc405338fc5ca1b" name="a82017bedc42d714f3cc405338fc5ca1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82017bedc42d714f3cc405338fc5ca1b">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208">FrameCapturePhase</a> &gt; eve::graphics::vulkan::Graphics::InspectionService::release </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>token</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cancel/release; submitted resources survive until their fence completes. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IEntityInspection.html#a05a2ed7682159df654b44a8f24a4444f">eve::IEntityInspection</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00028">frozenGeometry</a>, <a class="el" href="FrameCapture_8cpp_source.html#l00145">eve::FrameCaptureStore::release()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00025">store</a> , 以及 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00027">token</a>.</p>
+
+</div>
+</div>
+<a id="a82d1f7088d9ba6c73514591335d1bf2f" name="a82d1f7088d9ba6c73514591335d1bf2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82d1f7088d9ba6c73514591335d1bf2f">&#9670;&#160;</a></span>request()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::graphics::vulkan::Graphics::InspectionService::request </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1EntityViewRequest.html">EntityViewRequest</a>&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Queue a bounded geometry-only capture; never wait for GPU completion. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">request</td><td>Owning target identity and panel dimensions; resolved and frozen on this owner-thread call. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Opaque token or explicit unsupported/budget diagnostic. @cost Four extra raster views plus readback per request; reuse the resulting snapshot. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1IEntityInspection.html#a3a2ebfb122f6d5fcc2dab0f2b22f29e3">eve::IEntityInspection</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FrameCapture_8h_source.html#l00054">eve::FrameCaptureRequest::attachments</a>, <a class="el" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208aa149e85a44aeec9140e92733d9ed694e">eve::Cancelled</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00026">evidence</a>, <a class="el" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208a24fe48030f7d3097d5882535b04c3fa8">eve::Expired</a>, <a class="el" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676abeae421a14a34f831c113f61323d1ab3">eve::Final</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00113">freeze()</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00029">frozenFrame</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00028">frozenGeometry</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00024">graphics</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="OnnxGpgpu_8cpp_source.html#l00060">queued</a>, <a class="el" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208aea1e34304a5d8ffa7c9b0ed8ede4ef1a">eve::Released</a>, <a class="el" href="EntityInspection_8h_source.html#l00021">eve::EntityViewSnapshot::request</a>, <a class="el" href="FrameCapture_8cpp_source.html#l00098">eve::FrameCaptureStore::request()</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="EntityInspection_8h_source.html#l00011">eve::EntityViewRequest::skinPalettes</a>, <a class="el" href="FrameCapture_8cpp_source.html#l00138">eve::FrameCaptureStore::snapshot()</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00025">store</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00040">submitted</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00027">token</a>.</p>
+
+</div>
+</div>
+<a id="a4f57b430d0979609f6881e4b210530fe" name="a4f57b430d0979609f6881e4b210530fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f57b430d0979609f6881e4b210530fe">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1EntityViewSnapshot.html">EntityViewSnapshot</a> &gt; eve::graphics::vulkan::Graphics::InspectionService::snapshot </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>token</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Poll token without waiting; returns owning metadata and CPU lease only when ready. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IEntityInspection.html#ab96d09ad032ad163cacde488baa8f320">eve::IEntityInspection</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EntityInspection_8h_source.html#l00020">eve::EntityViewSnapshot::capture</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00026">evidence</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="FrameCapture_8cpp_source.html#l00138">eve::FrameCaptureStore::snapshot()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00025">store</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00027">token</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a3a58dac9e77aaf9a8d4a9425d168fa12" name="a3a58dac9e77aaf9a8d4a9425d168fa12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a58dac9e77aaf9a8d4a9425d168fa12">&#9670;&#160;</a></span>color</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::ColorTarget eve::graphics::vulkan::Graphics::InspectionService::color</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a311e83b1c6dd1970bd5b91e81612aed2" name="a311e83b1c6dd1970bd5b91e81612aed2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a311e83b1c6dd1970bd5b91e81612aed2">&#9670;&#160;</a></span>depth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::DepthTarget eve::graphics::vulkan::Graphics::InspectionService::depth</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a0426abe4a46eb0004e80cbb1bf1d0d82" name="a0426abe4a46eb0004e80cbb1bf1d0d82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0426abe4a46eb0004e80cbb1bf1d0d82">&#9670;&#160;</a></span>evidence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1EntityViewSnapshot.html">EntityViewSnapshot</a> eve::graphics::vulkan::Graphics::InspectionService::evidence</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00113">freeze()</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00070">request()</a> , 以及 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00097">snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="adbaa39eff94fcc60931873f428259712" name="adbaa39eff94fcc60931873f428259712"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbaa39eff94fcc60931873f428259712">&#9670;&#160;</a></span>fence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::Fence eve::graphics::vulkan::Graphics::InspectionService::fence {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a7b36efe19cc027af9f1bd774c7e6f5ce" name="a7b36efe19cc027af9f1bd774c7e6f5ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b36efe19cc027af9f1bd774c7e6f5ce">&#9670;&#160;</a></span>framebuffer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::Framebuffer eve::graphics::vulkan::Graphics::InspectionService::framebuffer {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="aae315d4396574f1994a677cb1e57202f" name="aae315d4396574f1994a677cb1e57202f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae315d4396574f1994a677cb1e57202f">&#9670;&#160;</a></span>frozenFrame</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::graphics::vulkan::Graphics::InspectionService::frozenFrame = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00070">request()</a>.</p>
+
+</div>
+</div>
+<a id="ac92efff94ee5f8ff473b6914939ffdfb" name="ac92efff94ee5f8ff473b6914939ffdfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac92efff94ee5f8ff473b6914939ffdfb">&#9670;&#160;</a></span>frozenGeometry</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1graphics_1_1vulkan_1_1Primitive3DVertex.html">Primitive3DVertex</a>&gt; eve::graphics::vulkan::Graphics::InspectionService::frozenGeometry</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00106">release()</a> , 以及 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00070">request()</a>.</p>
+
+</div>
+</div>
+<a id="ab85e858d9ec8c49b0f3f129952e0af4e" name="ab85e858d9ec8c49b0f3f129952e0af4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab85e858d9ec8c49b0f3f129952e0af4e">&#9670;&#160;</a></span>graphics</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html">Graphics</a>&amp; eve::graphics::vulkan::Graphics::InspectionService::graphics</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">clearGpu()</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00113">freeze()</a> , 以及 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00070">request()</a>.</p>
+
+</div>
+</div>
+<a id="a4658b26df7e3768230294d1312bab167" name="a4658b26df7e3768230294d1312bab167"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4658b26df7e3768230294d1312bab167">&#9670;&#160;</a></span>layout</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::PipelineLayout eve::graphics::vulkan::Graphics::InspectionService::layout {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a63e9e3059fbdcccfa0e7c90ee0264170" name="a63e9e3059fbdcccfa0e7c90ee0264170"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63e9e3059fbdcccfa0e7c90ee0264170">&#9670;&#160;</a></span>pass</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::BuiltRenderPass eve::graphics::vulkan::Graphics::InspectionService::pass</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a80204304a00369eb65166dfa946bc588" name="a80204304a00369eb65166dfa946bc588"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80204304a00369eb65166dfa946bc588">&#9670;&#160;</a></span>pipeline</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::Pipeline eve::graphics::vulkan::Graphics::InspectionService::pipeline {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="a66fcdd20ae2fd51d69344d064c4b1f15" name="a66fcdd20ae2fd51d69344d064c4b1f15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66fcdd20ae2fd51d69344d064c4b1f15">&#9670;&#160;</a></span>pool</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vk::CommandPool eve::graphics::vulkan::Graphics::InspectionService::pool {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="aa3c02d517e969d37a5af96ab4f30f334" name="aa3c02d517e969d37a5af96ab4f30f334"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3c02d517e969d37a5af96ab4f30f334">&#9670;&#160;</a></span>staging</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::GenericBuffer eve::graphics::vulkan::Graphics::InspectionService::staging</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">clearGpu()</a>.</p>
+
+</div>
+</div>
+<a id="ac03593e3d8789675485aa9f6f1a35095" name="ac03593e3d8789675485aa9f6f1a35095"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac03593e3d8789675485aa9f6f1a35095">&#9670;&#160;</a></span>store</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1FrameCaptureStore.html">FrameCaptureStore</a> eve::graphics::vulkan::Graphics::InspectionService::store</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00042">InspectionService()</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00106">release()</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00070">request()</a> , 以及 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00097">snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="afa7e986da6e7b5192205b074b40be556" name="afa7e986da6e7b5192205b074b40be556"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa7e986da6e7b5192205b074b40be556">&#9670;&#160;</a></span>submitted</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::graphics::vulkan::Graphics::InspectionService::submitted = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">clearGpu()</a> , 以及 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00070">request()</a>.</p>
+
+</div>
+</div>
+<a id="a7c6b74eb884e24cdd12c37181856c411" name="a7c6b74eb884e24cdd12c37181856c411"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c6b74eb884e24cdd12c37181856c411">&#9670;&#160;</a></span>token</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::graphics::vulkan::Graphics::InspectionService::token</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00106">release()</a>, <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00070">request()</a> , 以及 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00097">snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="a3f269c2ff4c46fea8d9f9d267a38fb1e" name="a3f269c2ff4c46fea8d9f9d267a38fb1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f269c2ff4c46fea8d9f9d267a38fb1e">&#9670;&#160;</a></span>vertices</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">vkb::HostVertexBuffer eve::graphics::vulkan::Graphics::InspectionService::vertices</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a> 第 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00032">32</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="GraphicsEntityInspection_8cpp_source.html#l00050">clearGpu()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/graphics/vulkan/<a class="el" href="GraphicsEntityInspection_8cpp_source.html">GraphicsEntityInspection.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

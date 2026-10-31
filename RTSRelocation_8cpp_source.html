@@ -1,0 +1,275 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rts/RTSRelocation.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b34b76c5127db2af25782628231a25c8.html">rts</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RTSRelocation.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RTSRelocation_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Crowd_8h.html">crowd/Crowd.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="RTS_8h.html">rts/RTS.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;new&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rts.html">eve::rts</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classeve_1_1rts_1_1RTS.html#a186b76c5e7737cbaf7e3447fd5e3d964">   10</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::size_t&gt;</a> <a class="code hl_function" href="classeve_1_1rts_1_1RTS.html#a186b76c5e7737cbaf7e3447fd5e3d964">RTS::relocateUnits</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rts_1_1UnitRelocationBatch.html">UnitRelocationBatch</a>&amp; batch) <span class="keyword">try</span> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a> = checkCrowdLifetime();</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;std::size_t&gt;::failure</a>(<a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>.status());</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">const</span> <span class="keyword">auto</span> failure = [](<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;std::size_t&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, <span class="stringliteral">&quot;relocationBatch&quot;</span>));</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    };</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">if</span> (batch.<a class="code hl_variable" href="structeve_1_1rts_1_1UnitRelocationBatch.html#a56620d763b41b7f09643974faf15da43">units</a>.size() &gt; 1024 || batch.<a class="code hl_variable" href="structeve_1_1rts_1_1UnitRelocationBatch.html#a5bf3609669009c0116a0ce32aa4b2cdd">maxChecks</a> &lt; 1 || batch.<a class="code hl_variable" href="structeve_1_1rts_1_1UnitRelocationBatch.html#a5bf3609669009c0116a0ce32aa4b2cdd">maxChecks</a> &gt; 10000000)</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">return</span> failure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Invalid relocation count or work budget&quot;</span>);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    std::vector&lt;Unit*&gt;          <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_struct" href="structeve_1_1crowd_1_1AgentRelocationBatch.html">crowd::AgentRelocationBatch</a> placements;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    placements.<a class="code hl_variable" href="structeve_1_1crowd_1_1AgentRelocationBatch.html#a0d85465ef2bac3cab2706e2537d39b85">maxChecks</a> = batch.<a class="code hl_variable" href="structeve_1_1rts_1_1UnitRelocationBatch.html#a5bf3609669009c0116a0ce32aa4b2cdd">maxChecks</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a>.reserve(batch.<a class="code hl_variable" href="structeve_1_1rts_1_1UnitRelocationBatch.html#a56620d763b41b7f09643974faf15da43">units</a>.size());</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    placements.<a class="code hl_variable" href="structeve_1_1crowd_1_1AgentRelocationBatch.html#ad1a37f22c8ef9dcde9ef3e86564cc553">agents</a>.reserve(batch.<a class="code hl_variable" href="structeve_1_1rts_1_1UnitRelocationBatch.html#a56620d763b41b7f09643974faf15da43">units</a>.size());</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a> : batch.<a class="code hl_variable" href="structeve_1_1rts_1_1UnitRelocationBatch.html#a56620d763b41b7f09643974faf15da43">units</a>) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keyword">auto</span>* <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a> = <a class="code hl_function" href="classeve_1_1rts_1_1RTS.html#a80c087a4b87b552d109c6ca7baefa67f">findUnit</a>(<a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>.subject);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a> == <span class="keyword">nullptr</span>) <span class="keywordflow">return</span> failure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">DiagnosticCode::NotFound</a>, <span class="stringliteral">&quot;Relocation unit not owned by this RTS&quot;</span>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>.position.x) || !std::isfinite(<a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>.position.y))</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <span class="keywordflow">return</span> failure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Relocation coordinates must be finite&quot;</span>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">if</span> (std::find(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a>.begin(), <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a>.end(), <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>) != <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a>.end())</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            <span class="keywordflow">return</span> failure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;Duplicate unit relocation&quot;</span>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;containment()-&gt;container.isBound())</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keywordflow">return</span> failure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>, <span class="stringliteral">&quot;Contained unit cannot be relocated independently&quot;</span>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;crowd()-&gt;link.isBound()) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1crowd_1_1AgentRef.html">crowd::AgentRef</a> <a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>{<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;crowd()-&gt;runtimeAgent, <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;crowd()-&gt;runtimeOwner};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keywordflow">if</span> (crowd_ == <span class="keyword">nullptr</span> || !crowd_-&gt;<a class="code hl_function" href="classeve_1_1crowd_1_1Crowd.html#ad13f5d720f45f78ba793463888fab3a4">isAgentAlive</a>(<a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>))</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                <span class="keywordflow">return</span> failure(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>, <span class="stringliteral">&quot;Relocation requires a current Crowd projection&quot;</span>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            placements.<a class="code hl_variable" href="structeve_1_1crowd_1_1AgentRelocationBatch.html#ad1a37f22c8ef9dcde9ef3e86564cc553">agents</a>.push_back({<a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>, <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>.position.x, <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>.position.y});</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a>.push_back(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (!placements.<a class="code hl_variable" href="structeve_1_1crowd_1_1AgentRelocationBatch.html#ad1a37f22c8ef9dcde9ef3e86564cc553">agents</a>.empty()) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a> = crowd_-&gt;<a class="code hl_function" href="classeve_1_1crowd_1_1Crowd.html#aeda08d59b2342192e7b428c0619e4ef9">relocateAgents</a>(placements);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;std::size_t&gt;::failure</a>(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>.status());</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    }</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">for</span> (std::size_t <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> = 0; <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> &lt; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a>.size(); ++<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keyword">auto</span>* <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>              = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a>[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>];</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;motion()-&gt;x       = batch.<a class="code hl_variable" href="structeve_1_1rts_1_1UnitRelocationBatch.html#a56620d763b41b7f09643974faf15da43">units</a>[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>].position.x;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;motion()-&gt;y       = batch.<a class="code hl_variable" href="structeve_1_1rts_1_1UnitRelocationBatch.html#a56620d763b41b7f09643974faf15da43">units</a>[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>].position.y;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;motion()-&gt;arrived = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;navigation()-&gt;waypoints.clear();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;navigation()-&gt;plannedOrderId.clear();</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;navigation()-&gt;formationTarget.reset();</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;navigation()-&gt;combatSlotTarget.reset();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;navigation()-&gt;combatSlotWaiting = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;navigation()-&gt;trafficRecoveryTarget.reset();</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;std::size_t&gt;::success</a>(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a>.size(),</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                                        <a class="code hl_function" href="classeve_1_1Status.html#a1ac047776b44c594af4da63d122f7054">Status::success</a>(<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a>.empty() ? <a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">StatusCode::NoOp</a> : <a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>} <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::bad_alloc&amp;) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;std::size_t&gt;::failure</a>(</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <span class="stringliteral">&quot;Cannot allocate relocation preparation&quot;</span>, <span class="stringliteral">&quot;relocationBatch&quot;</span>));</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>}  <span class="comment">// namespace eve::rts</span></div>
+<div class="ttc" id="aAuthority_8cpp_html_a7e214a50596aaa2c6748b6e36dda4f63"><div class="ttname"><a href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a></div><div class="ttdeci">AuthorityStoreHandleRef reference</div><div class="ttdef"><b>Definition</b> <a href="Authority_8cpp_source.html#l00024">Authority.cpp:24</a></div></div>
+<div class="ttc" id="aCrowd_8h_html"><div class="ttname"><a href="Crowd_8h.html">Crowd.h</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_ae9304e5e48b5f29bd2351ffc45b2b11a"><div class="ttname"><a href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a></div><div class="ttdeci">DiagnosticCode code</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00016">GltfAnimation.cpp:16</a></div></div>
+<div class="ttc" id="aGltfMaterials_8cpp_html_aea0a36efa06819e651a8cc3c0f4cd3ca"><div class="ttname"><a href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a></div><div class="ttdeci">const GltfImportRequest &amp; request</div><div class="ttdef"><b>Definition</b> <a href="GltfMaterials_8cpp_source.html#l00031">GltfMaterials.cpp:31</a></div></div>
+<div class="ttc" id="aRTS_8h_html"><div class="ttname"><a href="RTS_8h.html">RTS.h</a></div><div class="ttdoc">RTS module owner and phase-one composition profile entry point.</div></div>
+<div class="ttc" id="aScriptLinks_8cpp_html_a5d842a6f5624813bbf240ce6655aa1af"><div class="ttname"><a href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a></div><div class="ttdeci">ScriptProviderHandle provider</div><div class="ttdef"><b>Definition</b> <a href="ScriptLinks_8cpp_source.html#l00075">ScriptLinks.cpp:75</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a5b77101175f979d95b9601fe99c12994"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a></div><div class="ttdeci">TacticalUnit * unit</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00143">TacticsPersistence.cpp:143</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a641a6c4dd6318fe795c49915a3da8a9f"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a></div><div class="ttdeci">bool placed</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00148">TacticsPersistence.cpp:148</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a6624d1de442bbcda2a15f1d01f704d05"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a6624d1de442bbcda2a15f1d01f704d05">units</a></div><div class="ttdeci">std::vector&lt; UnitCandidate &gt; units</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00163">TacticsPersistence.cpp:163</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00021">Diagnostic.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00184">Result.h:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_a1ac047776b44c594af4da63d122f7054"><div class="ttname"><a href="classeve_1_1Status.html#a1ac047776b44c594af4da63d122f7054">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8cpp_source.html#l00019">Status.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1Crowd_html_ad13f5d720f45f78ba793463888fab3a4"><div class="ttname"><a href="classeve_1_1crowd_1_1Crowd.html#ad13f5d720f45f78ba793463888fab3a4">eve::crowd::Crowd::isAgentAlive</a></div><div class="ttdeci">bool isAgentAlive(AgentRef reference) const noexcept</div><div class="ttdoc">Whether the owner and generation still identify a live agent. @thread Simulation thread only; the cal...</div><div class="ttdef"><b>Definition</b> <a href="CrowdRegistry_8cpp_source.html#l00124">CrowdRegistry.cpp:124</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1Crowd_html_aeda08d59b2342192e7b428c0619e4ef9"><div class="ttname"><a href="classeve_1_1crowd_1_1Crowd.html#aeda08d59b2342192e7b428c0619e4ef9">eve::crowd::Crowd::relocateAgents</a></div><div class="ttdeci">Result&lt; AgentBatchReceipt &gt; relocateAgents(const AgentRelocationBatch &amp;batch)</div><div class="ttdoc">Atomically relocate live agents to exact clear positions; failure preserves all motion state....</div><div class="ttdef"><b>Definition</b> <a href="CrowdRelocation_8cpp_source.html#l00007">CrowdRelocation.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTS_html_a186b76c5e7737cbaf7e3447fd5e3d964"><div class="ttname"><a href="classeve_1_1rts_1_1RTS.html#a186b76c5e7737cbaf7e3447fd5e3d964">eve::rts::RTS::relocateUnits</a></div><div class="ttdeci">Result&lt; std::size_t &gt; relocateUnits(const UnitRelocationBatch &amp;batch)</div><div class="ttdoc">Atomically relocate owned units; preserves orders and invalidates derived navigation routes....</div><div class="ttdef"><b>Definition</b> <a href="RTSRelocation_8cpp_source.html#l00010">RTSRelocation.cpp:10</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTS_html_a80c087a4b87b552d109c6ca7baefa67f"><div class="ttname"><a href="classeve_1_1rts_1_1RTS.html#a80c087a4b87b552d109c6ca7baefa67f">eve::rts::RTS::findUnit</a></div><div class="ttdeci">Unit * findUnit(SubjectRef subject) const noexcept</div><div class="ttdoc">Resolve a module-owned unit by persistent subject identity.</div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00791">RTS.cpp:791</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html"><div class="ttname"><a href="namespaceeve_1_1rts.html">eve::rts</a></div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00029">RTS.cpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a></div><div class="ttdeci">@ NotFound</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a></div><div class="ttdeci">@ Conflict</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa60832e2e4bbebccf26555b9ba658bad5">eve::StatusCode::NoOp</a></div><div class="ttdeci">@ NoOp</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a></div><div class="ttdeci">@ Applied</div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1AgentRef_html"><div class="ttname"><a href="structeve_1_1crowd_1_1AgentRef.html">eve::crowd::AgentRef</a></div><div class="ttdoc">Agent identity qualified by the Crowd instance that owns its registry. @ownership Value only; it neit...</div><div class="ttdef"><b>Definition</b> <a href="CrowdTypes_8h_source.html#l00090">CrowdTypes.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1AgentRelocationBatch_html"><div class="ttname"><a href="structeve_1_1crowd_1_1AgentRelocationBatch.html">eve::crowd::AgentRelocationBatch</a></div><div class="ttdoc">Atomic exact placement batch; rejects terrain/contact violations without pushing neighbors.</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00186">Crowd.h:186</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1AgentRelocationBatch_html_a0d85465ef2bac3cab2706e2537d39b85"><div class="ttname"><a href="structeve_1_1crowd_1_1AgentRelocationBatch.html#a0d85465ef2bac3cab2706e2537d39b85">eve::crowd::AgentRelocationBatch::maxChecks</a></div><div class="ttdeci">int maxChecks</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00188">Crowd.h:188</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1AgentRelocationBatch_html_ad1a37f22c8ef9dcde9ef3e86564cc553"><div class="ttname"><a href="structeve_1_1crowd_1_1AgentRelocationBatch.html#ad1a37f22c8ef9dcde9ef3e86564cc553">eve::crowd::AgentRelocationBatch::agents</a></div><div class="ttdeci">std::vector&lt; AgentRelocation &gt; agents</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00187">Crowd.h:187</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1UnitRelocationBatch_html"><div class="ttname"><a href="structeve_1_1rts_1_1UnitRelocationBatch.html">eve::rts::UnitRelocationBatch</a></div><div class="ttdoc">Caller-built atomic exact-placement request; Crowd-linked units must already be projected.</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8h_source.html#l00276">RTSSystems.h:276</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1UnitRelocationBatch_html_a56620d763b41b7f09643974faf15da43"><div class="ttname"><a href="structeve_1_1rts_1_1UnitRelocationBatch.html#a56620d763b41b7f09643974faf15da43">eve::rts::UnitRelocationBatch::units</a></div><div class="ttdeci">std::vector&lt; UnitRelocation &gt; units</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8h_source.html#l00277">RTSSystems.h:277</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1UnitRelocationBatch_html_a5bf3609669009c0116a0ce32aa4b2cdd"><div class="ttname"><a href="structeve_1_1rts_1_1UnitRelocationBatch.html#a5bf3609669009c0116a0ce32aa4b2cdd">eve::rts::UnitRelocationBatch::maxChecks</a></div><div class="ttdeci">int maxChecks</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8h_source.html#l00278">RTSSystems.h:278</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

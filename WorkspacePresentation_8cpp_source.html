@@ -1,0 +1,337 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/presentation/WorkspacePresentation.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li><li class="navelem"><a class="el" href="dir_ae3797acb656870f765640961d3a9f61.html">presentation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WorkspacePresentation.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WorkspacePresentation_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="WorkspacePresentation_8h.html">editor/presentation/WorkspacePresentation.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span>Result&lt;void&gt; failure(<a class="code hl_typedef" href="namespaceeve_1_1editor.html#ae8532d855d61b248701557b893f90949">EditorStatus</a> <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>, std::string <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>    <span class="keywordflow">return</span> editing::failed&lt;void&gt;(<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.presentation&quot;</span>), std::move(<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>));</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>}</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1WorkspacePresentation.html#a89c16f4ff1523168b659e5ee9b34fb75">   10</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1WorkspacePresentation.html#a89c16f4ff1523168b659e5ee9b34fb75">WorkspacePresentation::stage</a>(<a class="code hl_class" href="classeve_1_1editor_1_1IWorkspacePresentationSource.html">IWorkspacePresentationSource</a>&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>) {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordflow">if</span> (draft_ &amp;&amp; draft_-&gt;path != <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <span class="keywordflow">return</span> failure(EditorStatus::Conflict, <span class="stringliteral">&quot;Finish or cancel the active field before editing another field&quot;</span>);</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.state();</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">if</span> (draft_ &amp;&amp; (draft_-&gt;start.revision != <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.revision || draft_-&gt;start.context != <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.context)) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <a class="code hl_function" href="classeve_1_1editor_1_1WorkspacePresentation.html#a337d73059ed978201c0d16b92d0af382">cancel</a>();</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keywordflow">return</span> failure(EditorStatus::Conflict, <span class="stringliteral">&quot;Document or selection changed during editing&quot;</span>);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    }</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a> = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.schema().find(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>) <span class="keywordflow">return</span> failure(EditorStatus::NotFound, <span class="stringliteral">&quot;Property is unavailable: &quot;</span> + <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.value());</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">if</span> (hasPropertyFlag(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>-&gt;flags, PropertyFlag::ReadOnly))</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keywordflow">return</span> failure(EditorStatus::Rejected, <span class="stringliteral">&quot;Property is read-only: &quot;</span> + <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.value());</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = validatePropertyValue(*<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>, <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <a class="code hl_function" href="classeve_1_1editor_1_1WorkspacePresentation.html#a337d73059ed978201c0d16b92d0af382">cancel</a>();</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>-&gt;type == PropertyType::Float)</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span>* integer = <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.getIf&lt;std::int64_t&gt;()) <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(*integer);</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a> = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.read(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.state != PropertyReadState::Value)</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">return</span> failure(EditorStatus::Rejected, <span class="stringliteral">&quot;Property has no single editable value: &quot;</span> + <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>.value());</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">if</span> (!draft_)</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        draft_ = Draft{std::move(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>), std::move(<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>), <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.value, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        draft_-&gt;value = std::move(<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span> editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1WorkspacePresentation.html#ab98da56856137df5630ec5e89cfd5a88">   39</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1WorkspacePresentation.html#ab98da56856137df5630ec5e89cfd5a88">WorkspacePresentation::commit</a>(<a class="code hl_class" href="classeve_1_1editor_1_1IWorkspacePresentationSource.html">IWorkspacePresentationSource</a>&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">if</span> (!draft_) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#ac47a05926d5cb9b5531d89b68505abde">editing::noOp</a>();</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    Draft <a class="code hl_variable" href="RoadPresetDocument_8cpp.html#a2241b8d353b11d324ae82a00e6a1100b">draft</a> = std::move(*draft_);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_function" href="classeve_1_1editor_1_1WorkspacePresentation.html#a337d73059ed978201c0d16b92d0af382">cancel</a>();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.state();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RoadPresetDocument_8cpp.html#a2241b8d353b11d324ae82a00e6a1100b">draft</a>.start.revision != <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.revision || <a class="code hl_variable" href="RoadPresetDocument_8cpp.html#a2241b8d353b11d324ae82a00e6a1100b">draft</a>.start.context != <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.context)</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span> failure(EditorStatus::Conflict, <span class="stringliteral">&quot;Document or selection changed during editing&quot;</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="RoadPresetDocument_8cpp.html#a2241b8d353b11d324ae82a00e6a1100b">draft</a>.value == <a class="code hl_variable" href="RoadPresetDocument_8cpp.html#a2241b8d353b11d324ae82a00e6a1100b">draft</a>.original) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#ac47a05926d5cb9b5531d89b68505abde">editing::noOp</a>();</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a> = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.schema().find(<a class="code hl_variable" href="RoadPresetDocument_8cpp.html#a2241b8d353b11d324ae82a00e6a1100b">draft</a>.path);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a> || hasPropertyFlag(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>-&gt;flags, PropertyFlag::ReadOnly))</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">return</span> failure(EditorStatus::Rejected, <span class="stringliteral">&quot;Property became unavailable during editing&quot;</span>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = validatePropertyValue(*<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>, <a class="code hl_variable" href="RoadPresetDocument_8cpp.html#a2241b8d353b11d324ae82a00e6a1100b">draft</a>.value);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.write(<a class="code hl_variable" href="RoadPresetDocument_8cpp.html#a2241b8d353b11d324ae82a00e6a1100b">draft</a>.path, <a class="code hl_variable" href="RoadPresetDocument_8cpp.html#a2241b8d353b11d324ae82a00e6a1100b">draft</a>.value);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>}</div>
+</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1WorkspacePresentation.html#a337d73059ed978201c0d16b92d0af382">   55</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1WorkspacePresentation.html#a337d73059ed978201c0d16b92d0af382">WorkspacePresentation::cancel</a>() noexcept { draft_.reset(); }</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1WorkspacePresentation.html#a83412edd90deb9f3fb543dd8ddd0ab89">   57</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1WorkspacePresentation.html#a83412edd90deb9f3fb543dd8ddd0ab89">WorkspacePresentation::edit</a>(<a class="code hl_class" href="classeve_1_1editor_1_1IWorkspacePresentationSource.html">IWorkspacePresentationSource</a>&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, <a class="code hl_class" href="classeve_1_1editing_1_1PropertyPath.html">PropertyPath</a> <a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>) {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">auto</span> staged = <a class="code hl_function" href="classeve_1_1editor_1_1WorkspacePresentation.html#a89c16f4ff1523168b659e5ee9b34fb75">stage</a>(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, std::move(<a class="code hl_variable" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>), std::move(<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>));</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">if</span> (!staged.ok()) <span class="keywordflow">return</span> staged;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1editor_1_1WorkspacePresentation.html#ab98da56856137df5630ec5e89cfd5a88">commit</a>(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
+</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1WorkspacePresentation.html#a38bdbd6da914e77a9077028dca89082a">   63</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1WorkspacePresentation.html#a38bdbd6da914e77a9077028dca89082a">WorkspacePresentation::action</a>(<a class="code hl_class" href="classeve_1_1editor_1_1IWorkspacePresentationSource.html">IWorkspacePresentationSource</a>&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, std::string_view <span class="keywordtype">id</span>) {</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_function" href="classeve_1_1editor_1_1WorkspacePresentation.html#a337d73059ed978201c0d16b92d0af382">cancel</a>();</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.state();</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> ((<span class="keywordtype">id</span> == <span class="stringliteral">&quot;undo&quot;</span> &amp;&amp; !<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.canUndo) || (<span class="keywordtype">id</span> == <span class="stringliteral">&quot;redo&quot;</span> &amp;&amp; !<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.canRedo))</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">return</span> failure(EditorStatus::Rejected, <span class="stringliteral">&quot;History action is unavailable&quot;</span>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.action(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="foldopen" id="foldopen00071" data-start="{" data-end="}">
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1WorkspacePresentation.html#a313e8a3909b71a26ed5d758fb3a93d9b">   71</a></span><a class="code hl_class" href="classeve_1_1Value.html">Value</a> <a class="code hl_function" href="classeve_1_1editor_1_1WorkspacePresentation.html#a313e8a3909b71a26ed5d758fb3a93d9b">WorkspacePresentation::snapshot</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1IWorkspacePresentationSource.html">IWorkspacePresentationSource</a>&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keyword">const</span> <span class="keyword">auto</span>   <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.state();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_typedef" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">Value::Array</a> <a class="code hl_variable" href="FloorTextures_8cpp.html#a061459acc9e078fa4699e0e349887215">rows</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a> : <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.schema().properties) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keyword">const</span> <span class="keyword">auto</span>  <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a> = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.read(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.path);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        std::string <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">switch</span> (<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.type) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keywordflow">case</span> PropertyType::Bool: <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> = <span class="stringliteral">&quot;bool&quot;</span>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">case</span> PropertyType::Float:</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordflow">case</span> PropertyType::Int: <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> = <span class="stringliteral">&quot;number&quot;</span>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="keywordflow">case</span> PropertyType::Enum: <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> = <span class="stringliteral">&quot;enum&quot;</span>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="keywordflow">default</span>: <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> = <span class="stringliteral">&quot;text&quot;</span>; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <a class="code hl_typedef" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">Value::Array</a> <a class="code hl_variable" href="MapObjectContract_8cpp.html#afc61633d2882ae8efad1625ac43e9951">choices</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; choice : <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.enumItems) <a class="code hl_variable" href="MapObjectContract_8cpp.html#afc61633d2882ae8efad1625ac43e9951">choices</a>.emplace_back(choice);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> editable = !hasPropertyFlag(<a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.flags, PropertyFlag::ReadOnly) &amp;&amp;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                              <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.state == PropertyReadState::Value &amp;&amp;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                              (<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> != <span class="stringliteral">&quot;text&quot;</span> || <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.type == PropertyType::String ||</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                               <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.type == PropertyType::AssetRef || <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.type == PropertyType::ObjectRef);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> = <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.value;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">if</span> (draft_ &amp;&amp; draft_-&gt;path == <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.path) <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> = draft_-&gt;value;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keyword">auto</span>        projected = toPresentationValue(<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        std::string display;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.state == PropertyReadState::Mixed)</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            display = <span class="stringliteral">&quot;Mixed values&quot;</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.state != PropertyReadState::Value)</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            display = <span class="stringliteral">&quot;Unavailable&quot;</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a> = projected.getIf&lt;std::string&gt;())</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            display = *<a class="code hl_variable" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <span class="keyword">auto</span> encoded = projected.toJson();</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            display      = encoded.ok() ? encoded.value() : <span class="stringliteral">&quot;Unavailable&quot;</span>;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        }</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <a class="code hl_variable" href="FloorTextures_8cpp.html#a061459acc9e078fa4699e0e349887215">rows</a>.emplace_back(<a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>{{<span class="stringliteral">&quot;path&quot;</span>, <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.path.value()},</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                                        {<span class="stringliteral">&quot;label&quot;</span>, <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.displayNameKey},</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                                        {<span class="stringliteral">&quot;kind&quot;</span>, <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>},</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                                        {<span class="stringliteral">&quot;value&quot;</span>, std::move(projected)},</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                                        {<span class="stringliteral">&quot;display&quot;</span>, std::move(display)},</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                                        {<span class="stringliteral">&quot;editable&quot;</span>, editable},</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                                        {<span class="stringliteral">&quot;minimum&quot;</span>, <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.numeric.minimum.value_or(-1000000.0)},</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                                        {<span class="stringliteral">&quot;maximum&quot;</span>, <a class="code hl_variable" href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a>.numeric.maximum.value_or(1000000.0)},</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                                        {<span class="stringliteral">&quot;choices&quot;</span>, std::move(<a class="code hl_variable" href="MapObjectContract_8cpp.html#afc61633d2882ae8efad1625ac43e9951">choices</a>)}});</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">return</span> <a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>{{<span class="stringliteral">&quot;revision&quot;</span>, <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.revision)},</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                         {<span class="stringliteral">&quot;context&quot;</span>, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.context},</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                         {<span class="stringliteral">&quot;canUndo&quot;</span>, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.canUndo},</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                         {<span class="stringliteral">&quot;canRedo&quot;</span>, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.canRedo},</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                         {<span class="stringliteral">&quot;playing&quot;</span>, <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.playing},</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                         {<span class="stringliteral">&quot;rows&quot;</span>, std::move(<a class="code hl_variable" href="FloorTextures_8cpp.html#a061459acc9e078fa4699e0e349887215">rows</a>)}};</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>}</div>
+</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00033">ActionTimelineWidget.cpp:33</a></div></div>
+<div class="ttc" id="aAssetCommand_8cpp_html_a834ec2851d25006c87763cec4bedd900"><div class="ttname"><a href="AssetCommand_8cpp.html#a834ec2851d25006c87763cec4bedd900">descriptor</a></div><div class="ttdeci">std::string descriptor</div><div class="ttdef"><b>Definition</b> <a href="AssetCommand_8cpp_source.html#l00171">AssetCommand.cpp:171</a></div></div>
+<div class="ttc" id="aFloorTextures_8cpp_html_a061459acc9e078fa4699e0e349887215"><div class="ttname"><a href="FloorTextures_8cpp.html#a061459acc9e078fa4699e0e349887215">rows</a></div><div class="ttdeci">int rows</div><div class="ttdef"><b>Definition</b> <a href="FloorTextures_8cpp_source.html#l00208">FloorTextures.cpp:208</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGraphicsTextureMips_8cpp_html_ae2ee633a7768658281259907a29fc401"><div class="ttname"><a href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a></div><div class="ttdeci">wgpu::PopErrorScopeStatus status</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTextureMips_8cpp_source.html#l00015">GraphicsTextureMips.cpp:15</a></div></div>
+<div class="ttc" id="aMapObjectContract_8cpp_html_afc61633d2882ae8efad1625ac43e9951"><div class="ttname"><a href="MapObjectContract_8cpp.html#afc61633d2882ae8efad1625ac43e9951">choices</a></div><div class="ttdeci">std::set&lt; std::string &gt; choices</div><div class="ttdef"><b>Definition</b> <a href="MapObjectContract_8cpp_source.html#l00069">MapObjectContract.cpp:69</a></div></div>
+<div class="ttc" id="aMcpServer_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="McpServer_8cpp_source.html#l00315">McpServer.cpp:315</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a4d455efceee21e97d8e21ee40e9b4a20"><div class="ttname"><a href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a></div><div class="ttdeci">std::string path</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00111">PlayHost.cpp:111</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aRoadPresetDocument_8cpp_html_a2241b8d353b11d324ae82a00e6a1100b"><div class="ttname"><a href="RoadPresetDocument_8cpp.html#a2241b8d353b11d324ae82a00e6a1100b">draft</a></div><div class="ttdeci">RoadPresetDraft draft</div><div class="ttdef"><b>Definition</b> <a href="RoadPresetDocument_8cpp_source.html#l00327">RoadPresetDocument.cpp:327</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00011">ScriptStructure.cpp:11</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aa035d90db0e334b2f2f53e55a79e621f"><div class="ttname"><a href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a></div><div class="ttdeci">std::string_view source</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00020">ScriptStructure.cpp:20</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aca87c2bbc26e697653e2d8461c76a361"><div class="ttname"><a href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00011">ScriptStructure.cpp:11</a></div></div>
+<div class="ttc" id="aSettlementModule_8cpp_html_ae36027a2ebe1db7af7b94bb1f5ebb1fc"><div class="ttname"><a href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a></div><div class="ttdeci">double current</div><div class="ttdef"><b>Definition</b> <a href="SettlementModule_8cpp_source.html#l00035">SettlementModule.cpp:35</a></div></div>
+<div class="ttc" id="aWorkspacePresentation_8h_html"><div class="ttname"><a href="WorkspacePresentation_8h.html">WorkspacePresentation.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a2d59a6ba7d844c2561c606a8973be87d"><div class="ttname"><a href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00034">Value.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_ab1d85b7f682f864577d9030a3e7ea6c5"><div class="ttname"><a href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">eve::Value::Array</a></div><div class="ttdeci">std::vector&lt; Value &gt; Array</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00033">Value.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1PropertyPath_html"><div class="ttname"><a href="classeve_1_1editing_1_1PropertyPath.html">eve::editing::PropertyPath</a></div><div class="ttdoc">Dotted property path (layout.size) compared and persisted as text.</div><div class="ttdef"><b>Definition</b> <a href="EditingIds_8h_source.html#l00078">EditingIds.h:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00023">EditingValue.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IWorkspacePresentationSource_html"><div class="ttname"><a href="classeve_1_1editor_1_1IWorkspacePresentationSource.html">eve::editor::IWorkspacePresentationSource</a></div><div class="ttdoc">Synchronous adapter for an open domain editor, without UI or domain includes. @ownership Caller owns ...</div><div class="ttdef"><b>Definition</b> <a href="WorkspacePresentation_8h_source.html#l00027">WorkspacePresentation.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1WorkspacePresentation_html_a313e8a3909b71a26ed5d758fb3a93d9b"><div class="ttname"><a href="classeve_1_1editor_1_1WorkspacePresentation.html#a313e8a3909b71a26ed5d758fb3a93d9b">eve::editor::WorkspacePresentation::snapshot</a></div><div class="ttdeci">Value snapshot(const IWorkspacePresentationSource &amp;source) const</div><div class="ttdoc">Immutable current schema/value projection, including any local draft.</div><div class="ttdef"><b>Definition</b> <a href="WorkspacePresentation_8cpp_source.html#l00071">WorkspacePresentation.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1WorkspacePresentation_html_a337d73059ed978201c0d16b92d0af382"><div class="ttname"><a href="classeve_1_1editor_1_1WorkspacePresentation.html#a337d73059ed978201c0d16b92d0af382">eve::editor::WorkspacePresentation::cancel</a></div><div class="ttdeci">void cancel() noexcept</div><div class="ttdoc">Cancel the draft without changing the domain or history.</div><div class="ttdef"><b>Definition</b> <a href="WorkspacePresentation_8cpp_source.html#l00055">WorkspacePresentation.cpp:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1WorkspacePresentation_html_a38bdbd6da914e77a9077028dca89082a"><div class="ttname"><a href="classeve_1_1editor_1_1WorkspacePresentation.html#a38bdbd6da914e77a9077028dca89082a">eve::editor::WorkspacePresentation::action</a></div><div class="ttdeci">Result&lt; void &gt; action(IWorkspacePresentationSource &amp;source, std::string_view id)</div><div class="ttdoc">Route an action through the domain backend; pending drafts are cancelled first.</div><div class="ttdef"><b>Definition</b> <a href="WorkspacePresentation_8cpp_source.html#l00063">WorkspacePresentation.cpp:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1WorkspacePresentation_html_a83412edd90deb9f3fb543dd8ddd0ab89"><div class="ttname"><a href="classeve_1_1editor_1_1WorkspacePresentation.html#a83412edd90deb9f3fb543dd8ddd0ab89">eve::editor::WorkspacePresentation::edit</a></div><div class="ttdeci">Result&lt; void &gt; edit(IWorkspacePresentationSource &amp;source, PropertyPath path, EditorValue value)</div><div class="ttdoc">Validate and commit one discrete keyboard/checkbox edit.</div><div class="ttdef"><b>Definition</b> <a href="WorkspacePresentation_8cpp_source.html#l00057">WorkspacePresentation.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1WorkspacePresentation_html_a89c16f4ff1523168b659e5ee9b34fb75"><div class="ttname"><a href="classeve_1_1editor_1_1WorkspacePresentation.html#a89c16f4ff1523168b659e5ee9b34fb75">eve::editor::WorkspacePresentation::stage</a></div><div class="ttdeci">Result&lt; void &gt; stage(IWorkspacePresentationSource &amp;source, PropertyPath path, EditorValue value)</div><div class="ttdoc">Stage an owning draft; repeated updates create no document/history mutation.</div><div class="ttdef"><b>Definition</b> <a href="WorkspacePresentation_8cpp_source.html#l00010">WorkspacePresentation.cpp:10</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1WorkspacePresentation_html_ab98da56856137df5630ec5e89cfd5a88"><div class="ttname"><a href="classeve_1_1editor_1_1WorkspacePresentation.html#ab98da56856137df5630ec5e89cfd5a88">eve::editor::WorkspacePresentation::commit</a></div><div class="ttdeci">Result&lt; void &gt; commit(IWorkspacePresentationSource &amp;source)</div><div class="ttdoc">Commit the draft once; rejects revision or selection changes and consumes the draft.</div><div class="ttdef"><b>Definition</b> <a href="WorkspacePresentation_8cpp_source.html#l00039">WorkspacePresentation.cpp:39</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_ac47a05926d5cb9b5531d89b68505abde"><div class="ttname"><a href="namespaceeve_1_1editing.html#ac47a05926d5cb9b5531d89b68505abde">eve::editing::noOp</a></div><div class="ttdeci">Result&lt; void &gt; noOp(std::vector&lt; Diagnostic &gt; diagnostics={})</div><div class="ttdoc">Construct a successful void result for an operation that made no change.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00062">EditingResult.h:62</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a6683873993ae84ab3ab178edae377c88"><div class="ttname"><a href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">eve::editor::RuleId</a></div><div class="ttdeci">eve::editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00032">EditorIds.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ae8532d855d61b248701557b893f90949"><div class="ttname"><a href="namespaceeve_1_1editor.html#ae8532d855d61b248701557b893f90949">eve::editor::EditorStatus</a></div><div class="ttdeci">eve::StatusCode EditorStatus</div><div class="ttdef"><b>Definition</b> <a href="EditorResult_8h_source.html#l00008">EditorResult.h:8</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

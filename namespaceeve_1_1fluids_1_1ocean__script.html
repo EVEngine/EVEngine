@@ -1,0 +1,411 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids::ocean_script 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html">ocean_script</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids::ocean_script 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1ocean__script_1_1FixedTime.html">FixedTime</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a757dfadc9cc6392d30972043d7fadad6" id="r_a757dfadc9cc6392d30972043d7fadad6"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">class</a> T &gt; </td></tr>
+<tr class="memitem:a757dfadc9cc6392d30972043d7fadad6"><td class="memTemplItemLeft" align="right" valign="top">ssq::Table&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#a757dfadc9cc6392d30972043d7fadad6">ownedPointerResult</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; T &gt; &gt; <a class="el" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>)</td></tr>
+<tr class="separator:a757dfadc9cc6392d30972043d7fadad6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43315d74ca0630edf7a6cf1d3fbaa51f" id="r_a43315d74ca0630edf7a6cf1d3fbaa51f"><td class="memTemplParams" colspan="2">template&lt;<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">class</a> T &gt; </td></tr>
+<tr class="memitem:a43315d74ca0630edf7a6cf1d3fbaa51f"><td class="memTemplItemLeft" align="right" valign="top">ssq::Table&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#a43315d74ca0630edf7a6cf1d3fbaa51f">ownedResult</a> (<a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="el" href="classeve_1_1Result.html">Result</a>&lt; T &gt; <a class="el" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>)</td></tr>
+<tr class="separator:a43315d74ca0630edf7a6cf1d3fbaa51f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91cb495bb52a9eb357b27dc2829ea438" id="r_a91cb495bb52a9eb357b27dc2829ea438"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#a91cb495bb52a9eb357b27dc2829ea438">invalid</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">char</a> *<a class="el" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>)</td></tr>
+<tr class="separator:a91cb495bb52a9eb357b27dc2829ea438"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85ea9f61d8ef7c190ac41bdf5a7f166d" id="r_a85ea9f61d8ef7c190ac41bdf5a7f166d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1ocean__script_1_1FixedTime.html">FixedTime</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#a85ea9f61d8ef7c190ac41bdf5a7f166d">fixedTime</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">SQInteger</a> <a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">SQInteger</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a>)</td></tr>
+<tr class="separator:a85ea9f61d8ef7c190ac41bdf5a7f166d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad23d23762c333240818be8885f83357c" id="r_ad23d23762c333240818be8885f83357c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">vector</a> (glm::dvec3 <a class="el" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:ad23d23762c333240818be8885f83357c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93e8688dbdadcb33cdd1246cd56a1093" id="r_a93e8688dbdadcb33cdd1246cd56a1093"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#a93e8688dbdadcb33cdd1246cd56a1093">sampleValue</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="structeve_1_1fluids_1_1OceanSurfaceSample.html">OceanSurfaceSample</a> &amp;sample)</td></tr>
+<tr class="separator:a93e8688dbdadcb33cdd1246cd56a1093"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a85ea9f61d8ef7c190ac41bdf5a7f166d" name="a85ea9f61d8ef7c190ac41bdf5a7f166d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85ea9f61d8ef7c190ac41bdf5a7f166d">&#9670;&#160;</a></span>fixedTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1fluids_1_1ocean__script_1_1FixedTime.html">FixedTime</a> &gt; eve::fluids::ocean_script::fixedTime </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">SQInteger</a>&#160;</td>
+          <td class="paramname"><em>tick</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">SQInteger</a>&#160;</td>
+          <td class="paramname"><em>rate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OceanBindingInternal_8h_source.html">OceanBindingInternal.h</a> 第 <a class="el" href="OceanBindingInternal_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OceanBindingInternal_8h_source.html#l00021">invalid()</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">rate</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00158">tick</a> , 以及 <a class="el" href="OceanBindingInternal_8h_source.html#l00033">vector()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00017">eve::fluids::exposeOceanInteractionTypes()</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00138">eve::fluids::exposeOceanRenderTypes()</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00085">eve::fluids::exposeOceanSprayTypes()</a> , 以及 <a class="el" href="OceanBindings_8cpp_source.html#l00009">eve::fluids::exposeOceanTypes()</a>.</p>
+
+</div>
+</div>
+<a id="a91cb495bb52a9eb357b27dc2829ea438" name="a91cb495bb52a9eb357b27dc2829ea438"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91cb495bb52a9eb357b27dc2829ea438">&#9670;&#160;</a></span>invalid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Status.html">Status</a> eve::fluids::ocean_script::invalid </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">char</a> *&#160;</td>
+          <td class="paramname"><em>message</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OceanBindingInternal_8h_source.html">OceanBindingInternal.h</a> 第 <a class="el" href="OceanBindingInternal_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Status_8cpp_source.html#l00028">eve::Status::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="GltfAnimation_8cpp_source.html#l00017">message</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidTools_8cpp_source.html#l00164">eve::fluids::VolumeFluid::addRandomVelocity()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00152">eve::fluids::VolumeFluid::applyDataColors()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00037">eve::fluids::VolumeFluid::applyMaterialChannels()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00295">eve::fluids::VolumeFluid::applyParticleDrag()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00158">eve::fluids::VolumeFluid::applyRandomColors()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00072">eve::fluids::VolumeFluid::applySolidColor()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00081">eve::fluids::VolumeFluid::applyVelocityColors()</a>, <a class="el" href="OceanHullMask_8cpp_source.html#l00013">eve::fluids::OceanHullMaskBuilder::build()</a>, <a class="el" href="OceanSeaTransition_8cpp_source.html#l00006">eve::fluids::OceanSeaTransitionBuilder::build()</a>, <a class="el" href="OceanSpectrum_8cpp_source.html#l00025">eve::fluids::OceanSpectrumBuilder::build()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00059">eve::fluids::VolumeFluid::configureParticleEvents()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00677">eve::fluids::VolumeFluid::copyInterpolatedPositions()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00683">eve::fluids::VolumeFluid::copyInterpolatedRenderData()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00723">eve::fluids::VolumeFluid::copyInterpolatedSurfaceRenderData()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00024">eve::fluids::VolumeFluid::emit()</a>, <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00017">eve::fluids::exposeOceanInteractionTypes()</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00138">eve::fluids::exposeOceanRenderTypes()</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00085">eve::fluids::exposeOceanSprayTypes()</a>, <a class="el" href="OceanBindingInternal_8h_source.html#l00027">fixedTime()</a>, <a class="el" href="OceanBoatWake_8cpp_source.html#l00008">eve::fluids::injectOceanBoatWake()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00781">eve::fluids::VolumeFluid::killParticle()</a>, <a class="el" href="MeshSdfField_8cpp_source.html#l00094">eve::fluids::meshSdfFromSdfField3DBlob()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00020">eve::fluids::VolumeFluid::paint()</a>, <a class="el" href="VolumeFluidContactTracker_8cpp_source.html#l00481">eve::fluids::VolumeFluidFoam::restore()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00642">eve::fluids::VolumeFluid::restore()</a>, <a class="el" href="MeshSdfField_8cpp_source.html#l00073">eve::fluids::sdfField3DBlobFromMeshSdf()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00247">eve::fluids::VolumeFluid::setActorCollisionFilter()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00234">eve::fluids::VolumeFluid::setActorFilterCategory()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00284">eve::fluids::VolumeFluid::setActorSelfCollisions()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00004">eve::fluids::VolumeFluid::setColliders()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00671">eve::fluids::VolumeFluid::setGravity()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00205">eve::fluids::VolumeFluid::setHeightFieldColliders()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00095">eve::fluids::VolumeFluid::setParticleExternalForces()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00082">eve::fluids::VolumeFluid::setParticleWinds()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00152">eve::fluids::VolumeFluid::setSdfColliders()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00004">eve::fluids::VolumeFluid::setSimplexes()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00132">eve::fluids::VolumeFluid::setStitches()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00183">eve::fluids::VolumeFluid::stepWithThermalContacts()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00177">eve::fluids::VolumeFluid::teleportActor()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00259">eve::fluids::VolumeFluid::updateActorMaterial()</a> , 以及 <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00242">eve::fluids::VolumeFluid::updateSdfColliderPoses()</a>.</p>
+
+</div>
+</div>
+<a id="a757dfadc9cc6392d30972043d7fadad6" name="a757dfadc9cc6392d30972043d7fadad6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a757dfadc9cc6392d30972043d7fadad6">&#9670;&#160;</a></span>ownedPointerResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">class</a> T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Table eve::fluids::ocean_script::ownedPointerResult </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::unique_ptr&lt; T &gt; &gt;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OceanBindingInternal_8h_source.html">OceanBindingInternal.h</a> 第 <a class="el" href="OceanBindingInternal_8h_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SquirrelBinding_8cpp_source.html#l00526">eve::script::projectStatusResult()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00015">status</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00038">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00017">eve::fluids::exposeOceanInteractionTypes()</a> , 以及 <a class="el" href="OceanBindingInternal_8h_source.html#l00016">ownedResult()</a>.</p>
+
+</div>
+</div>
+<a id="a43315d74ca0630edf7a6cf1d3fbaa51f" name="a43315d74ca0630edf7a6cf1d3fbaa51f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43315d74ca0630edf7a6cf1d3fbaa51f">&#9670;&#160;</a></span>ownedResult()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">class</a> T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">ssq::Table eve::fluids::ocean_script::ownedResult </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a>&#160;</td>
+          <td class="paramname"><em>vm</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; T &gt;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OceanBindingInternal_8h_source.html">OceanBindingInternal.h</a> 第 <a class="el" href="OceanBindingInternal_8h_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanBindingInternal_8h_source.html#l00009">ownedPointerResult()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00526">eve::script::projectStatusResult()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00038">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00138">eve::fluids::exposeOceanRenderTypes()</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00085">eve::fluids::exposeOceanSprayTypes()</a> , 以及 <a class="el" href="OceanBindings_8cpp_source.html#l00009">eve::fluids::exposeOceanTypes()</a>.</p>
+
+</div>
+</div>
+<a id="a93e8688dbdadcb33cdd1246cd56a1093" name="a93e8688dbdadcb33cdd1246cd56a1093"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93e8688dbdadcb33cdd1246cd56a1093">&#9670;&#160;</a></span>sampleValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">Value</a> eve::fluids::ocean_script::sampleValue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="structeve_1_1fluids_1_1OceanSurfaceSample.html">OceanSurfaceSample</a> &amp;&#160;</td>
+          <td class="paramname"><em>sample</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OceanBindingInternal_8h_source.html">OceanBindingInternal.h</a> 第 <a class="el" href="OceanBindingInternal_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanBindingInternal_8h_source.html#l00033">vector()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00444">eve::fluids::buildVolumeFluidSphereDistribution()</a>, <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00017">eve::fluids::exposeOceanInteractionTypes()</a> , 以及 <a class="el" href="OceanBindings_8cpp_source.html#l00009">eve::fluids::exposeOceanTypes()</a>.</p>
+
+</div>
+</div>
+<a id="ad23d23762c333240818be8885f83357c" name="ad23d23762c333240818be8885f83357c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad23d23762c333240818be8885f83357c">&#9670;&#160;</a></span>vector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">Value</a> eve::fluids::ocean_script::vector </td>
+          <td>(</td>
+          <td class="paramtype">glm::dvec3&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OceanBindingInternal_8h_source.html">OceanBindingInternal.h</a> 第 <a class="el" href="OceanBindingInternal_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidTools_8cpp_source.html#l00210">eve::fluids::VolumeFluid::actorMassProperties()</a>, <a class="el" href="SurfaceDropletSimulation_8cpp_source.html#l00030">eve::fluids::SurfaceDropletSimulation::addDroplet()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00164">eve::fluids::VolumeFluid::addRandomVelocity()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00828">eve::fluids::FluidSurfaceBinding::adjacentTriangle()</a>, <a class="el" href="VolumeFluidContactTracker_8cpp_source.html#l00309">eve::fluids::VolumeFluidDiffuse::advance()</a>, <a class="el" href="VolumeFluidContactTracker_8cpp_source.html#l00036">eve::fluids::VolumeFluidContactTracker::advance()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00246">eve::fluids::VolumeFluidEmitter::advance()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00308">eve::fluids::VolumeFluidJetEmitter::advance()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00282">eve::fluids::VolumeFluidEmitter::advanceBurst()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00319">eve::fluids::VolumeFluidJetEmitter::advanceMoving()</a>, <a class="el" href="OceanBoat_8cpp_source.html#l00054">eve::fluids::OceanBoat::apply()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00090">eve::fluids::VolumeFluid::applyActorGroupColors()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00152">eve::fluids::VolumeFluid::applyDataColors()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00037">eve::fluids::VolumeFluid::applyMaterialChannels()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00295">eve::fluids::VolumeFluid::applyParticleDrag()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00158">eve::fluids::VolumeFluid::applyRandomColors()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00081">eve::fluids::VolumeFluid::applyVelocityColors()</a>, <a class="el" href="VolumeFluidContactTracker_8cpp_source.html#l00107">eve::fluids::VolumeFluidCoupling::attach()</a>, <a class="el" href="VolumeFluidContactTracker_8cpp_source.html#l00121">eve::fluids::VolumeFluidCoupling::attachSdf()</a>, <a class="el" href="MeshSdfField_8cpp_source.html#l00060">eve::fluids::MeshSdfField::bounds()</a>, <a class="el" href="OceanGpuSpectrum_8cpp_source.html#l00079">eve::fluids::OceanGpuSpectrumBuilder::build()</a>, <a class="el" href="OceanHullMask_8cpp_source.html#l00013">eve::fluids::OceanHullMaskBuilder::build()</a>, <a class="el" href="OceanMesh_8cpp_source.html#l00006">eve::fluids::OceanMeshBuilder::build()</a>, <a class="el" href="OceanMeshFrame_8cpp_source.html#l00007">eve::fluids::OceanMeshFrameBuilder::build()</a>, <a class="el" href="OceanRenderer_8cpp_source.html#l00038">eve::fluids::OceanRendererBuilder::build()</a>, <a class="el" href="OceanSeaTransition_8cpp_source.html#l00006">eve::fluids::OceanSeaTransitionBuilder::build()</a>, <a class="el" href="OceanSeaTransition_8cpp_source.html#l00026">eve::fluids::OceanSeaTransitionFrameBuilder::build()</a>, <a class="el" href="OceanSpectrum_8cpp_source.html#l00025">eve::fluids::OceanSpectrumBuilder::build()</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00054">eve::fluids::OceanSpectrumFrameBuilder::build()</a>, <a class="el" href="OceanSpray_8cpp_source.html#l00040">eve::fluids::OceanSprayStepBuilder::build()</a>, <a class="el" href="OceanSprayMesh_8cpp_source.html#l00007">eve::fluids::OceanSprayMeshBuilder::build()</a>, <a class="el" href="OceanSprayRenderer_8cpp_source.html#l00035">eve::fluids::OceanSprayRendererBuilder::build()</a>, <a class="el" href="SurfaceWetnessField_8cpp_source.html#l00008">eve::fluids::SurfaceWetnessField::build()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00604">eve::fluids::FluidSurfaceBinding::build()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00349">eve::fluids::ShallowWaterField::buildSurfaceMesh()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00497">eve::fluids::buildVolumeFluidCubeDistribution()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00549">eve::fluids::buildVolumeFluidDiskDistribution()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00529">eve::fluids::buildVolumeFluidEdgeDistribution()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00633">eve::fluids::buildVolumeFluidImageDistribution()</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00149">eve::fluids::buildVolumeFluidMeshDistribution()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00444">eve::fluids::buildVolumeFluidSphereDistribution()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00579">eve::fluids::composeVolumeFluidEmitterShapes()</a>, <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00046">eve::fluids::FluidSurfaceRenderer::compositeConfiguredSceneRefraction()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00870">eve::fluids::FluidSurfaceRenderer::compositeConfiguredSurfaceBlend()</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00028">eve::fluids::FluidSurfaceRenderer::compositeDiffuse()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00520">eve::fluids::FluidSurfaceRenderer::compositeSceneRefraction()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00698">eve::fluids::FluidSurfaceRenderer::configureColors()</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00019">eve::fluids::FluidSurfaceRenderer::configureFoam()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00662">eve::fluids::FluidSurfaceRenderer::configureMaterial()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00134">eve::fluids::FluidSurfaceRenderer::configureProjection()</a>, <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00026">eve::fluids::FluidSurfaceRenderer::configureRefraction()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00587">eve::fluids::FluidSurfaceRenderer::configureRendererSettings()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00565">eve::fluids::FluidSurfaceRenderer::configureSurface()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00680">eve::fluids::FluidSurfaceRenderer::configureSurfaceBlurRadius()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00721">eve::fluids::FluidSurfaceRenderer::configureSurfaceDownsample()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00731">eve::fluids::FluidSurfaceRenderer::configureThicknessDownsample()</a>, <a class="el" href="OceanHullMask_8cpp_source.html#l00053">eve::fluids::OceanHullMaskFrame::contains()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00449">eve::fluids::ShallowWaterField::copyFieldToImage()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00530">eve::fluids::ShallowWaterField::copyNormalToImage()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00557">eve::fluids::VolumeFluid::copyParticleImpostors()</a>, <a class="el" href="VolumeFluidContactTracker_8cpp_source.html#l00365">eve::fluids::VolumeFluidDiffuse::copyRenderData()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00487">eve::fluids::ShallowWaterField::copyShadedAlbedoToImage()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00279">eve::fluids::FluidSurfaceRenderer::copyToTexture()</a>, <a class="el" href="OceanSpray_8cpp_source.html#l00030">eve::fluids::OceanSprayFrame::create()</a>, <a class="el" href="OceanSurface_8cpp_source.html#l00053">eve::fluids::OceanSurface::create()</a>, <a class="el" href="OceanWake_8cpp_source.html#l00030">eve::fluids::OceanWake::create()</a>, <a class="el" href="OceanBoat_8cpp_source.html#l00031">eve::fluids::OceanBoat::create()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00495">eve::fluids::VolumeFluid::debugParticleFrames()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00459">eve::fluids::VolumeFluid::debugParticleGrid()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00583">eve::fluids::VolumeFluid::debugSdfSlice()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00005">eve::fluids::decodeFluidRendererSettings()</a>, <a class="el" href="OceanSpectrumCodec_8cpp_source.html#l00029">eve::fluids::decodeOceanSpectrumSettings()</a>, <a class="el" href="OceanInteractionCodec_8cpp_source.html#l00016">eve::fluids::decodeOceanWakeSettings()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00481">eve::fluids::decodeVolumeFluid()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00257">eve::fluids::decodeVolumeFluidColliders()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00182">eve::fluids::decodeVolumeFluidColorGradient()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00097">eve::fluids::decodeVolumeFluidColors()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00032">eve::fluids::decodeVolumeFluidDiffuse()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00048">eve::fluids::decodeVolumeFluidDiffuseParticles()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00354">eve::fluids::decodeVolumeFluidEmission()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00219">eve::fluids::decodeVolumeFluidEmitterBlueprint3D()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00317">eve::fluids::decodeVolumeFluidEmitterCheckpoint()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00281">eve::fluids::decodeVolumeFluidEmitterState()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00108">eve::fluids::decodeVolumeFluidFieldPositions()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00018">eve::fluids::decodeVolumeFluidFoam()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00156">eve::fluids::decodeVolumeFluidHeightFieldColliders()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00207">eve::fluids::decodeVolumeFluidMaterial()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00269">eve::fluids::decodeVolumeFluidNozzlePose()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00296">eve::fluids::decodeVolumeFluidParticles()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00086">eve::fluids::decodeVolumeFluidQueries()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00145">eve::fluids::decodeVolumeFluidSdfColliders()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00134">eve::fluids::decodeVolumeFluidSdfPoses()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00064">eve::fluids::decodeVolumeFluidSimplexes()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00075">eve::fluids::decodeVolumeFluidStitches()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00194">eve::fluids::decodeVolumeFluidThermalRules()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00171">eve::fluids::decodeVolumeFluidViscosityColors()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00119">eve::fluids::decodeVolumeFluidWindZones()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00233">eve::fluids::decodeVolumeGranularEmitterBlueprint3D()</a>, <a class="el" href="SurfaceWetnessField_8cpp_source.html#l00032">eve::fluids::SurfaceWetnessField::deposit()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00315">eve::fluids::ShallowWaterField::depthAt()</a>, <a class="el" href="OceanInterpolationInternal_8h_source.html#l00008">eve::fluids::ocean_detail::derivatives()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00259">eve::fluids::ShallowWaterField::disturbAt()</a>, <a class="el" href="SurfaceDropletSimulation_8cpp_source.html#l00421">eve::fluids::SurfaceFluidSceneRenderer::draw()</a>, <a class="el" href="SurfaceDropletSimulation_8cpp_source.html#l00021">eve::fluids::SurfaceDropletSimulation::dropletRadius()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00224">eve::fluids::VolumeFluidEmitter::emitParticle()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00216">eve::fluids::emitVolumeFluidBurst()</a>, <a class="el" href="OceanInteractionCodec_8cpp_source.html#l00037">eve::fluids::encodeOceanHullSettings()</a>, <a class="el" href="OceanInteractionCodec_8cpp_source.html#l00006">eve::fluids::encodeOceanWakeSettings()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00244">eve::fluids::encodeVolumeFluidEmitterBlueprintApplication3D()</a>, <a class="el" href="VolumeFluidCodec_8cpp_source.html#l00307">eve::fluids::encodeVolumeFluidEmitterCheckpoint()</a>, <a class="el" href="SurfaceDropletSimulation_8cpp_source.html#l00241">eve::fluids::FluidSurfaceConstraintAdapter::evaluate()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00718">eve::fluids::FluidSurfaceBinding::evaluate()</a>, <a class="el" href="OceanSurface_8cpp_source.html#l00100">eve::fluids::evaluateOceanCellForce()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00145">eve::fluids::evaluateVolumeFluidEmitterBlueprint3D()</a>, <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00017">eve::fluids::exposeOceanInteractionTypes()</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00138">eve::fluids::exposeOceanRenderTypes()</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00085">eve::fluids::exposeOceanSprayTypes()</a>, <a class="el" href="OceanBindings_8cpp_source.html#l00009">eve::fluids::exposeOceanTypes()</a>, <a class="el" href="VolumeFluidFactoryBindings_8cpp_source.html#l00007">eve::fluids::exposeVolumeFluidFactory()</a>, <a class="el" href="VolumeFluidBindings_8cpp_source.html#l00004">eve::fluids::exposeVolumeFluidType()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00232">eve::fluids::ShallowWaterField::fillDepth()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00242">eve::fluids::ShallowWaterField::fillSurface()</a>, <a class="el" href="OceanBindingInternal_8h_source.html#l00027">fixedTime()</a>, <a class="el" href="FluidMath_8h_source.html#l00065">eve::fluids::fluidPoly6()</a>, <a class="el" href="FluidMath_8h_source.html#l00078">eve::fluids::fluidSpikyGrad()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00048">eve::fluids::FluidSurfaceRenderer::FluidSurfaceRenderer()</a>, <a class="el" href="OceanFourierInternal_8h_source.html#l00057">eve::fluids::ocean_detail::forward2D()</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00110">eve::fluids::OceanSpectrumFrame::geometry()</a>, <a class="el" href="OceanWaterView_8cpp_source.html#l00040">eve::fluids::OceanWaterView::geometry()</a>, <a class="el" href="Fluids_8cpp_source.html#l00425">eve::fluids::Fluids::getRendererCount()</a>, <a class="el" href="Fluids_8cpp_source.html#l00441">eve::fluids::Fluids::getShallowWaterCount()</a>, <a class="el" href="Fluids_8cpp_source.html#l00413">eve::fluids::Fluids::getSimulatorCount()</a>, <a class="el" href="OceanGpuRenderFrame_8cpp_source.html#l00013">eve::fluids::OceanRenderer::gpuFrameBuilder()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00308">eve::fluids::VolumeFluid::grabContactParticles()</a>, <a class="el" href="MeshSdfField_8cpp_source.html#l00045">eve::fluids::MeshSdfField::gradient()</a>, <a class="el" href="OceanWake_8cpp_source.html#l00046">eve::fluids::OceanWake::inject()</a>, <a class="el" href="OceanBoatWake_8cpp_source.html#l00008">eve::fluids::injectOceanBoatWake()</a>, <a class="el" href="OceanFourierInternal_8h_source.html#l00015">eve::fluids::ocean_detail::inverse1D()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00173">eve::fluids::MeshSdf::makeFromTriangles()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00156">eve::fluids::MeshSdf::makePlane()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00137">eve::fluids::MeshSdf::makeSphere()</a>, <a class="el" href="Fluids_8cpp_source.html#l00406">eve::fluids::Fluids::newSimulator()</a>, <a class="el" href="SurfaceDropletSimulation_8cpp_source.html#l00318">eve::fluids::ScreenSpaceSurfaceReconstructionAdapter::occlude()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00496">eve::fluids::FluidSurfaceRenderer::occludeWithSceneDepth()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00307">eve::fluids::VolumeFluid::overlapBox()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00020">eve::fluids::VolumeFluid::paint()</a>, <a class="el" href="VolumeFluidContactTracker_8cpp_source.html#l00363">eve::fluids::VolumeFluidDiffuse::particleCount()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00548">eve::fluids::VolumeFluid::particleImpostors()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00520">eve::fluids::VolumeFluid::particleInstances()</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00104">eve::fluids::OceanSpectrumFrame::position()</a>, <a class="el" href="OceanWaterView_8cpp_source.html#l00029">eve::fluids::OceanWaterView::position()</a>, <a class="el" href="OceanSurface_8cpp_source.html#l00073">eve::fluids::OceanSurface::position()</a>, <a class="el" href="OceanWake_8cpp_source.html#l00078">eve::fluids::OceanWake::prepareStep()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00159">eve::fluids::prepareVolumeFluidEmitterBlueprint3D()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00740">eve::fluids::FluidSurfaceBinding::project()</a>, <a class="el" href="OceanGpuRenderFrame_8cpp_source.html#l00017">eve::fluids::OceanGpuRenderFrameBuilder::publish()</a>, <a class="el" href="OceanHullMaskPublication_8cpp_source.html#l00010">eve::fluids::OceanHullMaskPublication::publish()</a>, <a class="el" href="OceanRenderer_8cpp_source.html#l00098">eve::fluids::OceanRenderer::publish()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00482">eve::fluids::VolumeFluid::queryBatch()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00418">eve::fluids::VolumeFluid::queryBox()</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00441">eve::fluids::detail::querySimplexes()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00370">eve::fluids::VolumeFluid::querySphere()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00324">eve::fluids::VolumeFluid::raycast()</a>, <a class="el" href="OceanWake_8cpp_source.html#l00191">eve::fluids::OceanWake::recenter()</a>, <a class="el" href="SurfaceDropletSimulation_8cpp_source.html#l00297">eve::fluids::ScreenSpaceSurfaceReconstructionAdapter::reconstruct()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00385">eve::fluids::VolumeFluid::releaseGrabbedParticles()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00123">eve::fluids::FluidSurfaceRenderer::render()</a>, <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00268">eve::fluids::FluidSurfaceRenderer::renderConfiguredVolume()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00634">eve::fluids::FluidSurfaceRenderer::rendererSettings()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00129">eve::fluids::FluidSurfaceRenderer::renderFrom()</a>, <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00260">eve::fluids::FluidSurfaceRenderer::renderGasVolume()</a>, <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00014">eve::fluids::FluidSurfaceRenderer::renderVolume()</a>, <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00016">eve::fluids::FluidSurfaceRenderer::renderVolumeColorOnly()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00295">eve::fluids::FluidSurfaceRenderer::renderVolumeColorToTexture()</a>, <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00018">eve::fluids::FluidSurfaceRenderer::renderVolumeInterpolated()</a>, <a class="el" href="VolumeFluidSurface_8cpp_source.html#l00264">eve::fluids::FluidSurfaceRenderer::renderVolumeWithoutSurface()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00734">eve::fluids::VolumeFluidEmitter::restore()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00745">eve::fluids::VolumeFluidJetEmitter::restore()</a>, <a class="el" href="VolumeFluidContactTracker_8cpp_source.html#l00481">eve::fluids::VolumeFluidFoam::restore()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00642">eve::fluids::VolumeFluid::restore()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00693">eve::fluids::restoreVolumeFluidEmitterCheckpoint()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00698">eve::fluids::restoreVolumeFluidEmitterCheckpoint()</a>, <a class="el" href="SurfaceWetnessField_8cpp_source.html#l00060">eve::fluids::SurfaceWetnessField::sample()</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00120">eve::fluids::OceanSpectrumFrame::sample()</a>, <a class="el" href="OceanWake_8cpp_source.html#l00217">eve::fluids::OceanWake::sample()</a>, <a class="el" href="OceanWaterView_8cpp_source.html#l00014">eve::fluids::OceanWaterView::sample()</a>, <a class="el" href="OceanSurface_8cpp_source.html#l00078">eve::fluids::OceanSurface::sample()</a>, <a class="el" href="OceanBindingInternal_8h_source.html#l00034">sampleValue()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00104">eve::fluids::MeshSdf::sampleWithGradient()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00247">eve::fluids::VolumeFluid::setActorCollisionFilter()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00234">eve::fluids::VolumeFluid::setActorFilterCategory()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00222">eve::fluids::ShallowWaterField::setBed()</a>, <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l00113">eve::fluids::FluidSurfaceRenderer::setCamera()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00199">eve::fluids::ShallowWaterField::setColliders()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00004">eve::fluids::VolumeFluid::setColliders()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00664">eve::fluids::FluidSurfaceBinding::setDeformedPositions()</a>, <a class="el" href="SurfaceDropletSimulation_8cpp_source.html#l00227">eve::fluids::FluidSurfaceConstraintAdapter::setDeformedPositions()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00205">eve::fluids::VolumeFluid::setHeightFieldColliders()</a>, <a class="el" href="VolumeFluidContactTracker_8cpp_source.html#l00140">eve::fluids::VolumeFluidCoupling::setImpulseLimits()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00152">eve::fluids::VolumeFluid::setSdfColliders()</a>, <a class="el" href="Fluids_8cpp_source.html#l00257">eve::fluids::FluidSimulator::setSdfSphere()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00004">eve::fluids::VolumeFluid::setSimplexes()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00731">eve::fluids::VolumeFluidEmitter::snapshot()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00742">eve::fluids::VolumeFluidJetEmitter::snapshot()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00293">eve::fluids::FluidSimulation::spawnDrop()</a>, <a class="el" href="SurfaceDropletSimulation_8cpp_source.html#l00183">eve::fluids::FluidSimulationAdapter::step()</a>, <a class="el" href="Fluids_8cpp_source.html#l00186">eve::fluids::FluidSimulator::step()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00691">eve::fluids::ShallowWaterField::step()</a>, <a class="el" href="SurfaceWetnessField_8cpp_source.html#l00041">eve::fluids::SurfaceWetnessField::step()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00323">eve::fluids::FluidSimulation::step()</a>, <a class="el" href="VolumeFluidContactTracker_8cpp_source.html#l00150">eve::fluids::VolumeFluidCoupling::step()</a>, <a class="el" href="OceanGpuSpectrum_8cpp_source.html#l00143">eve::fluids::OceanGpuFrameBuilder::submit()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00294">eve::fluids::ShallowWaterField::surfaceHeightAt()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00177">eve::fluids::VolumeFluid::teleportActor()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00678">eve::fluids::FluidSurfaceBinding::triangleCount()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00110">eve::fluids::VolumeFluid::unbindStaticParticles()</a>, <a class="el" href="SurfaceDropletSimulation_8cpp_source.html#l00353">eve::fluids::SurfaceFluidRenderData::update()</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00241">eve::fluids::VolumeFluidShadowCaster::update()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00259">eve::fluids::VolumeFluid::updateActorMaterial()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00356">eve::fluids::VolumeFluid::updateGrabbedParticles()</a>, <a class="el" href="VolumeFluidColliders_8cpp_source.html#l00242">eve::fluids::VolumeFluid::updateSdfColliderPoses()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00331">eve::fluids::ShallowWaterField::velocityAt()</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00764">eve::fluids::FluidSurfaceBinding::walkAcrossSurface()</a>, <a class="el" href="OceanInterpolationInternal_8h_source.html#l00004">eve::fluids::ocean_detail::weights()</a> , 以及 <a class="el" href="FluidSurfaceRenderer_8cpp_source.html#l01093">eve::fluids::FluidSurfaceRenderer::writePpm()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/building/PlacementInternal.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_82516b7859a22590e742ab13945dc7b3.html">building</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">PlacementInternal.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="PlacementInternal_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// Private geometry shared by placement translation units; not a module boundary.</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="PlacementSystem_8h.html">building/PlacementSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1building_1_1placement__detail.html">eve::building::placement_detail</a> {</div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="};">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">    7</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> {</div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="};">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point.html">    8</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point.html">Point</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point.html#a6201751145ee040b91644542eea68e29">    9</a></span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point.html#a6201751145ee040b91644542eea68e29">x</a> = 0.f;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point.html#a5da774fc1be0dcf7306efa034474ecec">   10</a></span>        <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point.html#a5da774fc1be0dcf7306efa034474ecec">y</a> = 0.f;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    };</div>
+</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a9515fdbba426794510387f3bed7f34fa">   12</a></span>    <span class="keywordtype">float</span>              <a class="code hl_variable" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a9515fdbba426794510387f3bed7f34fa">x</a>               = 0.f;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#acae4a838e1fabfe1cc38fec2919f893b">   13</a></span>    <span class="keywordtype">float</span>              <a class="code hl_variable" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#acae4a838e1fabfe1cc38fec2919f893b">y</a>               = 0.f;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a47ba9c70e725b53fbff4540819e37707">   14</a></span>    <span class="keywordtype">float</span>              <a class="code hl_variable" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a47ba9c70e725b53fbff4540819e37707">radius</a>          = 0.f;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a8f3b6f93f546eb533bf6d69c6820bf0c">   15</a></span>    <span class="keywordtype">float</span>              <a class="code hl_variable" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a8f3b6f93f546eb533bf6d69c6820bf0c">halfWidth</a>       = 0.f;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a71fa4397b96cf9f55064980b2142cb9a">   16</a></span>    <span class="keywordtype">float</span>              <a class="code hl_variable" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a71fa4397b96cf9f55064980b2142cb9a">halfHeight</a>      = 0.f;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a7a2ebaad17d949364c85908fb44e947c">   17</a></span>    <span class="keywordtype">float</span>              <a class="code hl_variable" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a7a2ebaad17d949364c85908fb44e947c">rotationRadians</a> = 0.f;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a8350d36b187941a968a758cf9d3eda01">   18</a></span>    std::vector&lt;Point&gt; <a class="code hl_variable" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a8350d36b187941a968a758cf9d3eda01">vertices</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a3f9f25d5ece0dd1e14764c87bca8c9f0">   20</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a3f9f25d5ece0dd1e14764c87bca8c9f0">isPolygon</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a8350d36b187941a968a758cf9d3eda01">vertices</a>.size() &gt;= 3; }</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>};</div>
+</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keywordtype">bool</span>          <a class="code hl_function" href="namespaceeve_1_1building_1_1placement__detail.html#ab3d7a6702cc61ff7826a212e966357e1">hasFreeEdgeOverlap</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a>&amp; world, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a>&amp; freeDefinition,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                                 <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a>&amp; footprint, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a>&amp; edgeDefinition, <a class="code hl_struct" href="structeve_1_1building_1_1EdgeAddress.html">EdgeAddress</a> <a class="code hl_variable" href="RoadBakeFacilityLinks_8cpp.html#adda0ba751e9c4d6c1129871ea6259f54">edge</a>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keywordtype">float</span>         <a class="code hl_function" href="namespaceeve_1_1building_1_1placement__detail.html#a66de9039d708ac4efe1748bd5bc03180">wrapDeg</a>(<span class="keywordtype">float</span> deg);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keywordtype">int</span>           <a class="code hl_function" href="namespaceeve_1_1building_1_1placement__detail.html#ad07f5459bffbe4a9b1d68127e5805f95">cardinalQuarter</a>(<span class="keywordtype">float</span> rotationDeg);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="keywordtype">float</span>         <a class="code hl_function" href="namespaceeve_1_1building_1_1placement__detail.html#ac195067104ff32a34e9d10b2714851b8">length3</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><a class="code hl_struct" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> <a class="code hl_function" href="namespaceeve_1_1building_1_1placement__detail.html#a93ec87ef6d0ccadf8e6db88ebd8d60fd">definitionFreeFootprint</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a>&amp; definition, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a>&amp; world, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                                      <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> rotationDeg);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keywordtype">void</span>          <a class="code hl_function" href="namespaceeve_1_1building_1_1placement__detail.html#ac76bafaf1073c7274553a295ad4cf6e2">applyDefinitionFreeFootprint</a>(<a class="code hl_struct" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a>&amp; definition,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                                           <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a>&amp; world);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><a class="code hl_struct" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a> <a class="code hl_function" href="namespaceeve_1_1building_1_1placement__detail.html#ac97523284f8d489fee53623fcb4bfbe3">placedFreeFootprint</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>std::vector&lt;FreeFootprint::Point&gt; <a class="code hl_function" href="namespaceeve_1_1building_1_1placement__detail.html#a973a8a60277cd9bbc9e8f12879cfce45">worldVertices</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a>&amp; footprint);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keywordtype">bool</span>                              <a class="code hl_function" href="namespaceeve_1_1building_1_1placement__detail.html#a44f2f8b7be12e079856814e92e26bad9">isPointInPolygon</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a>&amp; polygon, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keywordtype">bool</span>                              <a class="code hl_function" href="namespaceeve_1_1building_1_1placement__detail.html#af70db51794f5a071a825c2c5a7b4f5a4">hasFreeFootprintOverlap</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a>&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a>&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keywordtype">bool</span>                              <a class="code hl_function" href="namespaceeve_1_1building_1_1placement__detail.html#a030317e32bf98dc97be18e18482cf4c7">containsFreeFootprintPoint</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">FreeFootprint</a>&amp; footprint, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1building_1_1placement__detail.html#aeeb71f45ca0ac968bb7ce407ff898b3c">cross3</a>(<span class="keywordtype">float</span> ax, <span class="keywordtype">float</span> ay, <span class="keywordtype">float</span> az, <span class="keywordtype">float</span> bx, <span class="keywordtype">float</span> by, <span class="keywordtype">float</span> bz, <span class="keywordtype">float</span>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span>&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbd">   39</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbd">SurfaceFrameStatus</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbda66b28fcf83c9f24cd5b4d7bdc8f8ba0e">Normalized</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbda4bbb8f967da6d1a610596d7257179c2b">Invalid</a> };</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>[[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbd">SurfaceFrameStatus</a> <a class="code hl_function" href="namespaceeve_1_1building_1_1placement__detail.html#a6b7871422fa72bf83804a01ec3d9c53a">normalizeSurfaceFrame</a>(<a class="code hl_struct" href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html">PlacementSystem::PlacementHit</a>&amp; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}  <span class="comment">// namespace eve::building::placement_detail</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a234e391f8e3e00f064813b98fb8f3cdb"><div class="ttname"><a href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a></div><div class="ttdeci">MeleePoint3 b</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00041">MeleeHit.cpp:41</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a65cfd4d3d71b298048a6baf087fe6579"><div class="ttname"><a href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a></div><div class="ttdeci">MeleePoint3 a</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00040">MeleeHit.cpp:40</a></div></div>
+<div class="ttc" id="aPlacementSystem_8h_html"><div class="ttname"><a href="PlacementSystem_8h.html">PlacementSystem.h</a></div></div>
+<div class="ttc" id="aPrimitiveDrawList_8cpp_html_a60be6f7b3d0d908fcedf0842fd96c1f4"><div class="ttname"><a href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a></div><div class="ttdeci">bool hit</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveDrawList_8cpp_source.html#l00077">PrimitiveDrawList.cpp:77</a></div></div>
+<div class="ttc" id="aRoadBakeFacilityLinks_8cpp_html_adda0ba751e9c4d6c1129871ea6259f54"><div class="ttname"><a href="RoadBakeFacilityLinks_8cpp.html#adda0ba751e9c4d6c1129871ea6259f54">edge</a></div><div class="ttdeci">const RoadEdge * edge</div><div class="ttdef"><b>Definition</b> <a href="RoadBakeFacilityLinks_8cpp_source.html#l00013">RoadBakeFacilityLinks.cpp:13</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a641a6c4dd6318fe795c49915a3da8a9f"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a></div><div class="ttdeci">bool placed</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00148">TacticsPersistence.cpp:148</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></div><div class="ttdoc">格子型建筑放置世界（脚本可直接操作）。</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00035">PlacementWorld.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html">eve::building::placement_detail</a></div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00018">PlacementGeometry.cpp:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_a030317e32bf98dc97be18e18482cf4c7"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#a030317e32bf98dc97be18e18482cf4c7">eve::building::placement_detail::containsFreeFootprintPoint</a></div><div class="ttdeci">bool containsFreeFootprintPoint(const FreeFootprint &amp;footprint, float x, float y)</div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00203">PlacementGeometry.cpp:203</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_a44f2f8b7be12e079856814e92e26bad9"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#a44f2f8b7be12e079856814e92e26bad9">eve::building::placement_detail::isPointInPolygon</a></div><div class="ttdeci">bool isPointInPolygon(const FreeFootprint &amp;polygon, float x, float y)</div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00129">PlacementGeometry.cpp:129</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_a66de9039d708ac4efe1748bd5bc03180"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#a66de9039d708ac4efe1748bd5bc03180">eve::building::placement_detail::wrapDeg</a></div><div class="ttdeci">float wrapDeg(float deg)</div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00044">PlacementGeometry.cpp:44</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_a6b7871422fa72bf83804a01ec3d9c53a"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#a6b7871422fa72bf83804a01ec3d9c53a">eve::building::placement_detail::normalizeSurfaceFrame</a></div><div class="ttdeci">SurfaceFrameStatus normalizeSurfaceFrame(PlacementSystem::PlacementHit &amp;hit)</div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00216">PlacementGeometry.cpp:216</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_a93ec87ef6d0ccadf8e6db88ebd8d60fd"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#a93ec87ef6d0ccadf8e6db88ebd8d60fd">eve::building::placement_detail::definitionFreeFootprint</a></div><div class="ttdeci">FreeFootprint definitionFreeFootprint(const BuildingDefinition &amp;definition, const PlacementWorld &amp;world, float x, float y, float rotationDeg)</div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00060">PlacementGeometry.cpp:60</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_a973a8a60277cd9bbc9e8f12879cfce45"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#a973a8a60277cd9bbc9e8f12879cfce45">eve::building::placement_detail::worldVertices</a></div><div class="ttdeci">std::vector&lt; FreeFootprint::Point &gt; worldVertices(const FreeFootprint &amp;footprint)</div><div class="ttdoc">Transform footprint vertices. @cost Copies vertex count per overlap query.</div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00119">PlacementGeometry.cpp:119</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_ab3d7a6702cc61ff7826a212e966357e1"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#ab3d7a6702cc61ff7826a212e966357e1">eve::building::placement_detail::hasFreeEdgeOverlap</a></div><div class="ttdeci">bool hasFreeEdgeOverlap(const PlacementWorld &amp;world, const BuildingDefinition &amp;freeDefinition, const FreeFootprint &amp;footprint, const BuildingDefinition &amp;edgeDefinition, EdgeAddress edge)</div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00020">PlacementGeometry.cpp:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_ac195067104ff32a34e9d10b2714851b8"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#ac195067104ff32a34e9d10b2714851b8">eve::building::placement_detail::length3</a></div><div class="ttdeci">float length3(float x, float y, float z)</div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00057">PlacementGeometry.cpp:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_ac76bafaf1073c7274553a295ad4cf6e2"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#ac76bafaf1073c7274553a295ad4cf6e2">eve::building::placement_detail::applyDefinitionFreeFootprint</a></div><div class="ttdeci">void applyDefinitionFreeFootprint(PlacedBuilding &amp;placed, const BuildingDefinition &amp;definition, const PlacementWorld &amp;world)</div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00085">PlacementGeometry.cpp:85</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_ac97523284f8d489fee53623fcb4bfbe3"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#ac97523284f8d489fee53623fcb4bfbe3">eve::building::placement_detail::placedFreeFootprint</a></div><div class="ttdeci">FreeFootprint placedFreeFootprint(const PlacedBuilding &amp;placed)</div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00101">PlacementGeometry.cpp:101</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_ad07f5459bffbe4a9b1d68127e5805f95"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#ad07f5459bffbe4a9b1d68127e5805f95">eve::building::placement_detail::cardinalQuarter</a></div><div class="ttdeci">int cardinalQuarter(float rotationDeg)</div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00050">PlacementGeometry.cpp:50</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_ad717c9faee0ce84dbc82cc3f7d324fbd"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbd">eve::building::placement_detail::SurfaceFrameStatus</a></div><div class="ttdeci">SurfaceFrameStatus</div><div class="ttdef"><b>Definition</b> <a href="PlacementInternal_8h_source.html#l00039">PlacementInternal.h:39</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_ad717c9faee0ce84dbc82cc3f7d324fbda4bbb8f967da6d1a610596d7257179c2b"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbda4bbb8f967da6d1a610596d7257179c2b">eve::building::placement_detail::SurfaceFrameStatus::Invalid</a></div><div class="ttdeci">@ Invalid</div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_ad717c9faee0ce84dbc82cc3f7d324fbda66b28fcf83c9f24cd5b4d7bdc8f8ba0e"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#ad717c9faee0ce84dbc82cc3f7d324fbda66b28fcf83c9f24cd5b4d7bdc8f8ba0e">eve::building::placement_detail::SurfaceFrameStatus::Normalized</a></div><div class="ttdeci">@ Normalized</div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_aeeb71f45ca0ac968bb7ce407ff898b3c"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#aeeb71f45ca0ac968bb7ce407ff898b3c">eve::building::placement_detail::cross3</a></div><div class="ttdeci">void cross3(float ax, float ay, float az, float bx, float by, float bz, float &amp;x, float &amp;y, float &amp;z)</div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00210">PlacementGeometry.cpp:210</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1placement__detail_html_af70db51794f5a071a825c2c5a7b4f5a4"><div class="ttname"><a href="namespaceeve_1_1building_1_1placement__detail.html#af70db51794f5a071a825c2c5a7b4f5a4">eve::building::placement_detail::hasFreeFootprintOverlap</a></div><div class="ttdeci">bool hasFreeFootprintOverlap(const FreeFootprint &amp;a, const FreeFootprint &amp;b)</div><div class="ttdef"><b>Definition</b> <a href="PlacementGeometry_8cpp_source.html#l00145">PlacementGeometry.cpp:145</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingDefinition_html"><div class="ttname"><a href="structeve_1_1building_1_1BuildingDefinition.html">eve::building::BuildingDefinition</a></div><div class="ttdoc">建筑模板（进程级注册表中的定义）。</div><div class="ttdef"><b>Definition</b> <a href="BuildingTypes_8h_source.html#l00101">BuildingTypes.h:101</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1EdgeAddress_html"><div class="ttname"><a href="structeve_1_1building_1_1EdgeAddress.html">eve::building::EdgeAddress</a></div><div class="ttdoc">Canonical address of one grid edge.</div><div class="ttdef"><b>Definition</b> <a href="BuildingTypes_8h_source.html#l00030">BuildingTypes.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1PlacedBuilding_html"><div class="ttname"><a href="structeve_1_1building_1_1PlacedBuilding.html">eve::building::PlacedBuilding</a></div><div class="ttdoc">已放置的建筑实例。</div><div class="ttdef"><b>Definition</b> <a href="BuildingTypes_8h_source.html#l00189">BuildingTypes.h:189</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1PlacementSystem_1_1PlacementHit_html"><div class="ttname"><a href="structeve_1_1building_1_1PlacementSystem_1_1PlacementHit.html">eve::building::PlacementSystem::PlacementHit</a></div><div class="ttdoc">One sampled point and orthonormal frame on a placement surface.</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8h_source.html#l00041">PlacementSystem.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point_html"><div class="ttname"><a href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point.html">eve::building::placement_detail::FreeFootprint::Point</a></div><div class="ttdef"><b>Definition</b> <a href="PlacementInternal_8h_source.html#l00008">PlacementInternal.h:8</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point_html_a5da774fc1be0dcf7306efa034474ecec"><div class="ttname"><a href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point.html#a5da774fc1be0dcf7306efa034474ecec">eve::building::placement_detail::FreeFootprint::Point::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="PlacementInternal_8h_source.html#l00010">PlacementInternal.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point_html_a6201751145ee040b91644542eea68e29"><div class="ttname"><a href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint_1_1Point.html#a6201751145ee040b91644542eea68e29">eve::building::placement_detail::FreeFootprint::Point::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="PlacementInternal_8h_source.html#l00009">PlacementInternal.h:9</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1placement__detail_1_1FreeFootprint_html"><div class="ttname"><a href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html">eve::building::placement_detail::FreeFootprint</a></div><div class="ttdef"><b>Definition</b> <a href="PlacementInternal_8h_source.html#l00007">PlacementInternal.h:7</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1placement__detail_1_1FreeFootprint_html_a3f9f25d5ece0dd1e14764c87bca8c9f0"><div class="ttname"><a href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a3f9f25d5ece0dd1e14764c87bca8c9f0">eve::building::placement_detail::FreeFootprint::isPolygon</a></div><div class="ttdeci">bool isPolygon() const</div><div class="ttdef"><b>Definition</b> <a href="PlacementInternal_8h_source.html#l00020">PlacementInternal.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1placement__detail_1_1FreeFootprint_html_a47ba9c70e725b53fbff4540819e37707"><div class="ttname"><a href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a47ba9c70e725b53fbff4540819e37707">eve::building::placement_detail::FreeFootprint::radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementInternal_8h_source.html#l00014">PlacementInternal.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1placement__detail_1_1FreeFootprint_html_a71fa4397b96cf9f55064980b2142cb9a"><div class="ttname"><a href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a71fa4397b96cf9f55064980b2142cb9a">eve::building::placement_detail::FreeFootprint::halfHeight</a></div><div class="ttdeci">float halfHeight</div><div class="ttdef"><b>Definition</b> <a href="PlacementInternal_8h_source.html#l00016">PlacementInternal.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1placement__detail_1_1FreeFootprint_html_a7a2ebaad17d949364c85908fb44e947c"><div class="ttname"><a href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a7a2ebaad17d949364c85908fb44e947c">eve::building::placement_detail::FreeFootprint::rotationRadians</a></div><div class="ttdeci">float rotationRadians</div><div class="ttdef"><b>Definition</b> <a href="PlacementInternal_8h_source.html#l00017">PlacementInternal.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1placement__detail_1_1FreeFootprint_html_a8350d36b187941a968a758cf9d3eda01"><div class="ttname"><a href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a8350d36b187941a968a758cf9d3eda01">eve::building::placement_detail::FreeFootprint::vertices</a></div><div class="ttdeci">std::vector&lt; Point &gt; vertices</div><div class="ttdef"><b>Definition</b> <a href="PlacementInternal_8h_source.html#l00018">PlacementInternal.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1placement__detail_1_1FreeFootprint_html_a8f3b6f93f546eb533bf6d69c6820bf0c"><div class="ttname"><a href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a8f3b6f93f546eb533bf6d69c6820bf0c">eve::building::placement_detail::FreeFootprint::halfWidth</a></div><div class="ttdeci">float halfWidth</div><div class="ttdef"><b>Definition</b> <a href="PlacementInternal_8h_source.html#l00015">PlacementInternal.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1placement__detail_1_1FreeFootprint_html_a9515fdbba426794510387f3bed7f34fa"><div class="ttname"><a href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#a9515fdbba426794510387f3bed7f34fa">eve::building::placement_detail::FreeFootprint::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="PlacementInternal_8h_source.html#l00012">PlacementInternal.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1placement__detail_1_1FreeFootprint_html_acae4a838e1fabfe1cc38fec2919f893b"><div class="ttname"><a href="structeve_1_1building_1_1placement__detail_1_1FreeFootprint.html#acae4a838e1fabfe1cc38fec2919f893b">eve::building::placement_detail::FreeFootprint::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="PlacementInternal_8h_source.html#l00013">PlacementInternal.h:13</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

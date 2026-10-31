@@ -1,0 +1,339 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/crowd/CrowdSimulation.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_dcb6d51ed595f676e5530c21ce2add48.html">crowd</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CrowdSimulation.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CrowdSimulation_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// eve-hot-path</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="CrowdInternal_8h.html">crowd/CrowdInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1crowd.html">eve::crowd</a> {</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keywordtype">float</span> wrapPi(<span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>) {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> kTwoPi = 6.28318530717958647692f;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keywordflow">return</span> std::remainder(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, kTwoPi);</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>}</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="}">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5ccda3c9f416864c8167fe0a9248928f">   13</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5ccda3c9f416864c8167fe0a9248928f">Crowd::Impl::rebuildGrid</a>() {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    ++<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a4ec0a2627f449a54e562beffbb01f2e5">workReport</a>.<a class="code hl_variable" href="structeve_1_1crowd_1_1StepReport.html#a437a6a19673956880d4ebbeee1e1e2ac">gridBuilds</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> maxRadius = <a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae671e1f9f1942429985f2d15b341ae45">radii</a>.empty() ? 0.0 : double(*std::max_element(<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae671e1f9f1942429985f2d15b341ae45">radii</a>.begin(), <a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae671e1f9f1942429985f2d15b341ae45">radii</a>.end()));</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ad30c34b4b194bcd5d9dfc059fa9988b6">spatialIndex</a>.<a class="code hl_function" href="classeve_1_1crowd_1_1CrowdSpatialIndex.html#a0de029f4344ac1d2840efb526523770d">rebuild</a>(<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a09e8f2bb918a9f7f739e249953679389">xs</a>, <a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5c866caa66b7329ef940d71a862db6e8">ys</a>, <a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aa6b0a8557212104fe73c3fb20a162419">tieKeys</a>, std::max(2.0 * maxRadius, 1.0),</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                         <a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a92a84de1682baf809dadfd0e6a128d93">budgetActive</a> ? <a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a46ed099965c80b58d2da8adb9faca1a0">activeBudget</a>.<a class="code hl_variable" href="structeve_1_1crowd_1_1AdvanceBudget.html#a2c17fd3658385d8c188dceceb954ed6c">maxGridCells</a> : std::numeric_limits&lt;std::int64_t&gt;::max(),</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>                         <a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a4ec0a2627f449a54e562beffbb01f2e5">workReport</a>.<a class="code hl_variable" href="structeve_1_1crowd_1_1StepReport.html#a94f7ea88ec245d3c0856cfd377392dad">gridSortComparisons</a>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a4ec0a2627f449a54e562beffbb01f2e5">workReport</a>.<a class="code hl_variable" href="structeve_1_1crowd_1_1StepReport.html#a16ba096342a7ef25bf991e127a41ed61">gridCellsPeak</a> = std::max(<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a4ec0a2627f449a54e562beffbb01f2e5">workReport</a>.<a class="code hl_variable" href="structeve_1_1crowd_1_1StepReport.html#a16ba096342a7ef25bf991e127a41ed61">gridCellsPeak</a>, <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ad30c34b4b194bcd5d9dfc059fa9988b6">spatialIndex</a>.<a class="code hl_function" href="classeve_1_1crowd_1_1CrowdSpatialIndex.html#a5ed282efa745bfe34858d1d2db34707c">cellCount</a>()));</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a4ec0a2627f449a54e562beffbb01f2e5">workReport</a>.<a class="code hl_variable" href="structeve_1_1crowd_1_1StepReport.html#a77392d6df1f97f6dae1a53cbe22ee622">gridEntriesPeak</a> = std::max(<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a4ec0a2627f449a54e562beffbb01f2e5">workReport</a>.<a class="code hl_variable" href="structeve_1_1crowd_1_1StepReport.html#a77392d6df1f97f6dae1a53cbe22ee622">gridEntriesPeak</a>, <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae2ed910636eb3b605f7a0f54c291fa90">actions</a>.size()));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>}</div>
+</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a40dd1fbf41a876bc7ffdd4dcd1f19cf1">   23</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a40dd1fbf41a876bc7ffdd4dcd1f19cf1">Crowd::Impl::stepAgents</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> = int(<a class="code hl_variable" href="PlayHost_8cpp.html#af6fd42a42168a245b67c5cc7fa032925">actions</a>.size());</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (avoidance.enabled) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        avoidanceMaxSpeed  = <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> == 0 ? 0.f : *std::max_element(maxSpeeds.begin(), maxSpeeds.end());</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        avoidanceMaxRadius = <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a> == 0 ? 0.f : *std::max_element(radii.begin(), radii.end());</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    spendPreferredWork(std::int64_t(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>) * 5);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    nextVxs.resize(<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>));</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    nextVys.resize(<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>));</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    preferredVxs.resize(<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>));</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    preferredVys.resize(<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>));</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    arriveFactors.resize(<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>), 1.f);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    preparePreferredVelocities(<a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (avoidance.enabled) prepareAvoidanceNeighbors();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    dispatchWork(<span class="keywordtype">size_t</span>(<a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>), [&amp;](std::size_t <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a>, std::size_t last) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = <span class="keywordtype">int</span>(<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a>); i &lt; int(last); ++i) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="keywordflow">if</span> (interactions[<span class="keywordtype">size_t</span>(i)].holdPosition) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                nextVxs[size_t(i)] = nextVys[size_t(i)] = speeds[size_t(i)] = 0.f;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> desX = preferredVxs[size_t(i)], desY = preferredVys[size_t(i)];</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> maxSpeed = maxSpeeds[size_t(i)];</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> arriveK  = arriveFactors[size_t(i)];</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="comment">// 加速度限幅。</span></div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordtype">float</span>       avx      = vxs[size_t(i)];</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <span class="keywordtype">float</span>       avy      = vys[size_t(i)];</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="keywordtype">float</span>       ddx      = desX - avx;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <span class="keywordtype">float</span>       ddy      = desY - avy;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> ddl      = std::sqrt(ddx * ddx + ddy * ddy);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> maxDelta = std::max(maxAccels[<span class="keywordtype">size_t</span>(i)] * <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>, 0.f);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keywordflow">if</span> (ddl &gt; maxDelta &amp;&amp; ddl &gt; 1e-6f) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                ddx *= maxDelta / ddl;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                ddy *= maxDelta / ddl;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            avx += ddx;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            avy += ddy;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordflow">if</span> (avoidance.enabled) selectAvoidanceVelocity(<span class="keywordtype">size_t</span>(i), <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>, avx, avy);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <span class="comment">// 速度限幅。</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="keywordtype">float</span> sp = std::sqrt(avx * avx + avy * avy);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">if</span> (sp &gt; maxSpeed &amp;&amp; sp &gt; 1e-6f) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                avx *= maxSpeed / sp;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                avy *= maxSpeed / sp;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                sp = maxSpeed;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            nextVxs[size_t(i)] = avx;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            nextVys[size_t(i)] = avy;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            speeds[size_t(i)]  = sp;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="comment">// 接近目标时对速度做阻尼，快速消除目标点附近的来回振荡。</span></div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordflow">if</span> (arriveK &lt; 1.f) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> damp = 1.f - (1.f - arriveK) * std::min(1.f, <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a> * 4.f);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                nextVxs[size_t(i)] *= damp;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                nextVys[size_t(i)] *= damp;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                speeds[size_t(i)] *= damp;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="comment">// 转向：heading 以 turnRate·dt 为上限向速度方向收敛。</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> spAfter = speeds[size_t(i)];</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordflow">if</span> (spAfter &gt; 1e-4f) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> targetAng = std::atan2(nextVys[<span class="keywordtype">size_t</span>(i)], nextVxs[<span class="keywordtype">size_t</span>(i)]);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> delta     = wrapPi(targetAng - headings[<span class="keywordtype">size_t</span>(i)]);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> maxTurn   = std::max(turnRates[<span class="keywordtype">size_t</span>(i)] * <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>, 0.f);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                headings[size_t(i)] += std::clamp(delta, -maxTurn, maxTurn);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    });</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    vxs.swap(nextVxs);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    vys.swap(nextVys);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a>; ++i) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        xs[size_t(i)] += vxs[size_t(i)] * <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        ys[size_t(i)] += vys[size_t(i)] * <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>}</div>
+</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="foldopen" id="foldopen00099" data-start="{" data-end="}">
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno"><a class="line" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a7c400a63390c330db5ea62c2c61140aa">   99</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a7c400a63390c330db5ea62c2c61140aa">Crowd::Impl::resolveWalls</a>() {</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">if</span> (!field.valid()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>  = float(field.getWidth()) * field.getCellSize();</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> = float(field.getHeight()) * field.getCellSize();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; xs.size(); ++i) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> pass = 0; pass &lt; 4; ++pass) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> oldX = xs[i], oldY = ys[i];</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            field.resolvePenetration(xs[i], ys[i], radii[i]);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            <span class="keywordflow">if</span> (clampToField) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                <span class="comment">// Field origin is the lower cell corner, consistently with sampling.</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> rx = std::min(radii[i], <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> * 0.5f);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>                <span class="keyword">const</span> <span class="keywordtype">float</span> ry = std::min(radii[i], <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> * 0.5f);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>                xs[i]          = std::clamp(xs[i], field.getOriginX() + rx, field.getOriginX() + <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a> - rx);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                ys[i]          = std::clamp(ys[i], field.getOriginY() + ry, field.getOriginY() + <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> - ry);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a> = xs[i] - oldX, <a class="code hl_variable" href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a> = ys[i] - oldY;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> length2 = <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a> * <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a> + <a class="code hl_variable" href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a> * <a class="code hl_variable" href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            <span class="keywordflow">if</span> (length2 == 0.f) <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="comment">// Remove velocity into the constraint; retaining it causes permanent</span></div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="comment">// walking-in-place when a requested destination lies outside the field.</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keyword">const</span> <span class="keywordtype">float</span> inward = vxs[i] * <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a> + vys[i] * <a class="code hl_variable" href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            <span class="keywordflow">if</span> (inward &lt; 0.f) {</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                vxs[i] -= <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a> * inward / length2;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                vys[i] -= <a class="code hl_variable" href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a> * inward / length2;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                speeds[i] = std::hypot(vxs[i], vys[i]);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>}</div>
+</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}  <span class="comment">// namespace eve::crowd</span></div>
+<div class="ttc" id="aCrowdInternal_8h_html"><div class="ttname"><a href="CrowdInternal_8h.html">CrowdInternal.h</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_ae7aa396fa4f69446f8f2c53e187578d0"><div class="ttname"><a href="Grass_8cpp.html#ae7aa396fa4f69446f8f2c53e187578d0">n</a></div><div class="ttdeci">glm::vec3 n</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00063">Grass.cpp:63</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a9ebd1b92d5226e25efef9e2af5ca8a34"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a></div><div class="ttdeci">std::int32_t first</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00088">HexSphereTopology.cpp:88</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00014">ImageImporter.cpp:14</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00013">ImageImporter.cpp:13</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a65cfd4d3d71b298048a6baf087fe6579"><div class="ttname"><a href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a></div><div class="ttdeci">MeleePoint3 a</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00040">MeleeHit.cpp:40</a></div></div>
+<div class="ttc" id="aOceanSpectrumFrame_8cpp_html_a2641fce3670ebce2e79db7c95db36fea"><div class="ttname"><a href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a></div><div class="ttdeci">glm::dvec3 dx</div><div class="ttdef"><b>Definition</b> <a href="OceanSpectrumFrame_8cpp_source.html#l00025">OceanSpectrumFrame.cpp:25</a></div></div>
+<div class="ttc" id="aOceanSprayBindings_8cpp_html_a03e28be41881b703c836edbfe9b51b17"><div class="ttname"><a href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a></div><div class="ttdeci">double dt</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayBindings_8cpp_source.html#l00020">OceanSprayBindings.cpp:20</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_af6fd42a42168a245b67c5cc7fa032925"><div class="ttname"><a href="PlayHost_8cpp.html#af6fd42a42168a245b67c5cc7fa032925">actions</a></div><div class="ttdeci">std::vector&lt; ActionSpec &gt; actions</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00127">PlayHost.cpp:127</a></div></div>
+<div class="ttc" id="aShadow_8cpp_html_a8f461b6142ce8725218813abb23b06a3"><div class="ttname"><a href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a></div><div class="ttdeci">float dy</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8cpp_source.html#l00151">Shadow.cpp:151</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdSpatialIndex_html_a0de029f4344ac1d2840efb526523770d"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdSpatialIndex.html#a0de029f4344ac1d2840efb526523770d">eve::crowd::CrowdSpatialIndex::rebuild</a></div><div class="ttdeci">void rebuild(std::span&lt; const float &gt; xs, std::span&lt; const float &gt; ys, std::span&lt; const CrowdTieKey &gt; ties, double cellSize, std::int64_t maxCells, std::int64_t &amp;comparisons)</div><div class="ttdoc">Rebuild owning directories; failure is handled by the surrounding advance rollback....</div><div class="ttdef"><b>Definition</b> <a href="CrowdSpatialIndex_8cpp_source.html#l00015">CrowdSpatialIndex.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1CrowdSpatialIndex_html_a5ed282efa745bfe34858d1d2db34707c"><div class="ttname"><a href="classeve_1_1crowd_1_1CrowdSpatialIndex.html#a5ed282efa745bfe34858d1d2db34707c">eve::crowd::CrowdSpatialIndex::cellCount</a></div><div class="ttdeci">std::size_t cellCount() const noexcept</div><div class="ttdoc">Observe occupied cell count; constant time, owner thread.</div><div class="ttdef"><b>Definition</b> <a href="CrowdSpatialIndex_8h_source.html#l00064">CrowdSpatialIndex.h:64</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1crowd_html"><div class="ttname"><a href="namespaceeve_1_1crowd.html">eve::crowd</a></div><div class="ttdef"><b>Definition</b> <a href="Crowd_8cpp_source.html#l00014">Crowd.cpp:14</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1AdvanceBudget_html_a2c17fd3658385d8c188dceceb954ed6c"><div class="ttname"><a href="structeve_1_1crowd_1_1AdvanceBudget.html#a2c17fd3658385d8c188dceceb954ed6c">eve::crowd::AdvanceBudget::maxGridCells</a></div><div class="ttdeci">std::int64_t maxGridCells</div><div class="ttdoc">Occupied sparse cells, independent of empty world extent.</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00074">Crowd.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_a09e8f2bb918a9f7f739e249953679389"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a09e8f2bb918a9f7f739e249953679389">eve::crowd::Crowd::Impl::xs</a></div><div class="ttdeci">std::vector&lt; float &gt; xs</div><div class="ttdoc">SOA agent storage, indexed by compact slot id. @cost Linear in agent count; mutation keeps all owned ...</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00167">CrowdInternal.h:167</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_a40dd1fbf41a876bc7ffdd4dcd1f19cf1"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a40dd1fbf41a876bc7ffdd4dcd1f19cf1">eve::crowd::Crowd::Impl::stepAgents</a></div><div class="ttdeci">void stepAgents(float dt)</div><div class="ttdef"><b>Definition</b> <a href="CrowdSimulation_8cpp_source.html#l00023">CrowdSimulation.cpp:23</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_a46ed099965c80b58d2da8adb9faca1a0"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a46ed099965c80b58d2da8adb9faca1a0">eve::crowd::Crowd::Impl::activeBudget</a></div><div class="ttdeci">AdvanceBudget activeBudget</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00129">CrowdInternal.h:129</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_a4ec0a2627f449a54e562beffbb01f2e5"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a4ec0a2627f449a54e562beffbb01f2e5">eve::crowd::Crowd::Impl::workReport</a></div><div class="ttdeci">StepReport workReport</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00150">CrowdInternal.h:150</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_a5c866caa66b7329ef940d71a862db6e8"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5c866caa66b7329ef940d71a862db6e8">eve::crowd::Crowd::Impl::ys</a></div><div class="ttdeci">std::vector&lt; float &gt; ys</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00167">CrowdInternal.h:167</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_a5ccda3c9f416864c8167fe0a9248928f"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a5ccda3c9f416864c8167fe0a9248928f">eve::crowd::Crowd::Impl::rebuildGrid</a></div><div class="ttdeci">void rebuildGrid()</div><div class="ttdef"><b>Definition</b> <a href="CrowdSimulation_8cpp_source.html#l00013">CrowdSimulation.cpp:13</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_a7c400a63390c330db5ea62c2c61140aa"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a7c400a63390c330db5ea62c2c61140aa">eve::crowd::Crowd::Impl::resolveWalls</a></div><div class="ttdeci">void resolveWalls()</div><div class="ttdef"><b>Definition</b> <a href="CrowdSimulation_8cpp_source.html#l00099">CrowdSimulation.cpp:99</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_a92a84de1682baf809dadfd0e6a128d93"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#a92a84de1682baf809dadfd0e6a128d93">eve::crowd::Crowd::Impl::budgetActive</a></div><div class="ttdeci">bool budgetActive</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00130">CrowdInternal.h:130</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_aa6b0a8557212104fe73c3fb20a162419"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#aa6b0a8557212104fe73c3fb20a162419">eve::crowd::Crowd::Impl::tieKeys</a></div><div class="ttdeci">std::vector&lt; TieKey &gt; tieKeys</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00180">CrowdInternal.h:180</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_ad30c34b4b194bcd5d9dfc059fa9988b6"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ad30c34b4b194bcd5d9dfc059fa9988b6">eve::crowd::Crowd::Impl::spatialIndex</a></div><div class="ttdeci">CrowdSpatialIndex spatialIndex</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00185">CrowdInternal.h:185</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_ae2ed910636eb3b605f7a0f54c291fa90"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae2ed910636eb3b605f7a0f54c291fa90">eve::crowd::Crowd::Impl::actions</a></div><div class="ttdeci">std::vector&lt; int32_t &gt; actions</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00171">CrowdInternal.h:171</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1Crowd_1_1Impl_html_ae671e1f9f1942429985f2d15b341ae45"><div class="ttname"><a href="structeve_1_1crowd_1_1Crowd_1_1Impl.html#ae671e1f9f1942429985f2d15b341ae45">eve::crowd::Crowd::Impl::radii</a></div><div class="ttdeci">std::vector&lt; float &gt; radii</div><div class="ttdef"><b>Definition</b> <a href="CrowdInternal_8h_source.html#l00170">CrowdInternal.h:170</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1StepReport_html_a16ba096342a7ef25bf991e127a41ed61"><div class="ttname"><a href="structeve_1_1crowd_1_1StepReport.html#a16ba096342a7ef25bf991e127a41ed61">eve::crowd::StepReport::gridCellsPeak</a></div><div class="ttdeci">std::int64_t gridCellsPeak</div><div class="ttdoc">Largest occupied sparse-cell count during this advance.</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00104">Crowd.h:104</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1StepReport_html_a437a6a19673956880d4ebbeee1e1e2ac"><div class="ttname"><a href="structeve_1_1crowd_1_1StepReport.html#a437a6a19673956880d4ebbeee1e1e2ac">eve::crowd::StepReport::gridBuilds</a></div><div class="ttdeci">std::int64_t gridBuilds</div><div class="ttdoc">Broadphase rebuilds, including final residual inspection.</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00103">Crowd.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1StepReport_html_a77392d6df1f97f6dae1a53cbe22ee622"><div class="ttname"><a href="structeve_1_1crowd_1_1StepReport.html#a77392d6df1f97f6dae1a53cbe22ee622">eve::crowd::StepReport::gridEntriesPeak</a></div><div class="ttdeci">std::int64_t gridEntriesPeak</div><div class="ttdoc">Largest indexed agent membership count.</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00106">Crowd.h:106</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1StepReport_html_a94f7ea88ec245d3c0856cfd377392dad"><div class="ttname"><a href="structeve_1_1crowd_1_1StepReport.html#a94f7ea88ec245d3c0856cfd377392dad">eve::crowd::StepReport::gridSortComparisons</a></div><div class="ttdeci">std::int64_t gridSortComparisons</div><div class="ttdoc">Sorting comparisons across all broadphase rebuilds.</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00107">Crowd.h:107</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

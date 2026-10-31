@@ -1,0 +1,727 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::CaveGeneration类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html">CaveGeneration</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1CaveGeneration-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::CaveGeneration类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Staged limestone generator sharing the canonical mesh.cave algorithms.  
+ <a href="classeve_1_1procgen_1_1CaveGeneration.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CaveGeneration_8h_source.html">CaveGeneration.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aad8847590e99dbcd58c5929fc9ebad77" id="r_aad8847590e99dbcd58c5929fc9ebad77"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#aad8847590e99dbcd58c5929fc9ebad77">CaveGeneration</a> ()</td></tr>
+<tr class="memdesc:aad8847590e99dbcd58c5929fc9ebad77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty, inexpensive generation owner.  <br /></td></tr>
+<tr class="separator:aad8847590e99dbcd58c5929fc9ebad77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a253ccd834c01934529ba7b27407b246f" id="r_a253ccd834c01934529ba7b27407b246f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#a253ccd834c01934529ba7b27407b246f">~CaveGeneration</a> ()</td></tr>
+<tr class="memdesc:a253ccd834c01934529ba7b27407b246f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release owned intermediates without publication.  <br /></td></tr>
+<tr class="separator:a253ccd834c01934529ba7b27407b246f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fe418ac641686966c2179bdacc96e1e" id="r_a9fe418ac641686966c2179bdacc96e1e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#a9fe418ac641686966c2179bdacc96e1e">CaveGeneration</a> (const <a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html">CaveGeneration</a> &amp;)=delete</td></tr>
+<tr class="separator:a9fe418ac641686966c2179bdacc96e1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afaaac6c0cf004453ffd5632e6b363cb6" id="r_afaaac6c0cf004453ffd5632e6b363cb6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html">CaveGeneration</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#afaaac6c0cf004453ffd5632e6b363cb6">operator=</a> (const <a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html">CaveGeneration</a> &amp;)=delete</td></tr>
+<tr class="separator:afaaac6c0cf004453ffd5632e6b363cb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff7dce1caddbd14abe866d75f5081777" id="r_aff7dce1caddbd14abe866d75f5081777"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#aff7dce1caddbd14abe866d75f5081777">CaveGeneration</a> (<a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html">CaveGeneration</a> &amp;&amp;) noexcept</td></tr>
+<tr class="memdesc:aff7dce1caddbd14abe866d75f5081777"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer the generation owner.  <br /></td></tr>
+<tr class="separator:aff7dce1caddbd14abe866d75f5081777"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4afa673d4d3c0d9dc35513ffbb47a56f" id="r_a4afa673d4d3c0d9dc35513ffbb47a56f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html">CaveGeneration</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#a4afa673d4d3c0d9dc35513ffbb47a56f">operator=</a> (<a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html">CaveGeneration</a> &amp;&amp;) noexcept</td></tr>
+<tr class="memdesc:a4afa673d4d3c0d9dc35513ffbb47a56f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer the generation owner, releasing previous intermediates.  <br /></td></tr>
+<tr class="separator:a4afa673d4d3c0d9dc35513ffbb47a56f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abdc7e748dcb490a464d92b57ccc4219e" id="r_abdc7e748dcb490a464d92b57ccc4219e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#abdc7e748dcb490a464d92b57ccc4219e">configure</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:abdc7e748dcb490a464d92b57ccc4219e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy and validate configuration; success resets all derived stages.  <br /></td></tr>
+<tr class="separator:abdc7e748dcb490a464d92b57ccc4219e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b26286ef1bb4057db8ed322ea0838a7" id="r_a4b26286ef1bb4057db8ed322ea0838a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#a4b26286ef1bb4057db8ed322ea0838a7">buildSkeleton</a> ()</td></tr>
+<tr class="memdesc:a4b26286ef1bb4057db8ed322ea0838a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate the editable seeded cave skeleton from configured parameters. @cost Linear in skeleton candidates, much cheaper than volume sampling; run once per configuration.  <br /></td></tr>
+<tr class="separator:a4b26286ef1bb4057db8ed322ea0838a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd0a124cab942b7d146f09f52844b336" id="r_afd0a124cab942b7d146f09f52844b336"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#afd0a124cab942b7d146f09f52844b336">setChamber</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, float rx, float ry, float rz)</td></tr>
+<tr class="memdesc:afd0a124cab942b7d146f09f52844b336"><td class="mdescLeft">&#160;</td><td class="mdescRight">Edit one chamber in normalized [-1,1] coordinates before sampling; radii must be positive.  <br /></td></tr>
+<tr class="separator:afd0a124cab942b7d146f09f52844b336"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c063ff6d385f261a31a43797552e047" id="r_a1c063ff6d385f261a31a43797552e047"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#a1c063ff6d385f261a31a43797552e047">chamberCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a1c063ff6d385f261a31a43797552e047"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of chamber records in the current skeleton.  <br /></td></tr>
+<tr class="separator:a1c063ff6d385f261a31a43797552e047"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2a1604bc2be1dee2e12d4831e0491ee" id="r_ac2a1604bc2be1dee2e12d4831e0491ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#ac2a1604bc2be1dee2e12d4831e0491ee">sampleField</a> ()</td></tr>
+<tr class="memdesc:ac2a1604bc2be1dee2e12d4831e0491ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample the current skeleton and configured geological operators. @cost Volume samples times active geological features; amortize by editing the resulting field.  <br /></td></tr>
+<tr class="separator:ac2a1604bc2be1dee2e12d4831e0491ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66e7478c37b1e1626de718d46660c134" id="r_a66e7478c37b1e1626de718d46660c134"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#a66e7478c37b1e1626de718d46660c134">evolveSurface</a> (<a class="el" href="namespaceeve_1_1procgen.html#a7f0b3733da6fdca3ffcf9edc9f4f846a">CaveSurfaceOperation</a> <a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>)</td></tr>
+<tr class="memdesc:a66e7478c37b1e1626de718d46660c134"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one selected surface operator; repeated operators and caller-selected order are supported. @cost At least linear in volume samples; compose before extracting a mesh.  <br /></td></tr>
+<tr class="separator:a66e7478c37b1e1626de718d46660c134"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a088710f010f44d98e8caccab7607aec8" id="r_a088710f010f44d98e8caccab7607aec8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#a088710f010f44d98e8caccab7607aec8">deposit</a> ()</td></tr>
+<tr class="memdesc:a088710f010f44d98e8caccab7607aec8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Anchor secondary deposits on the current surface; disallows subsequent surface retreat. @cost Volume samples times deposit candidates; execute after all desired surface edits.  <br /></td></tr>
+<tr class="separator:a088710f010f44d98e8caccab7607aec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8967af89356ddfa95dd60435a146332" id="r_aa8967af89356ddfa95dd60435a146332"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1ScalarField3D.html">ScalarField3D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#aa8967af89356ddfa95dd60435a146332">field</a> () const</td></tr>
+<tr class="memdesc:aa8967af89356ddfa95dd60435a146332"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an independent field snapshot; no internal storage is exposed. @cost Linear in volume samples; batch edits in the returned snapshot before replacement.  <br /></td></tr>
+<tr class="separator:aa8967af89356ddfa95dd60435a146332"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88a0442472919f60ccdcbbcb4b802266" id="r_a88a0442472919f60ccdcbbcb4b802266"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#a88a0442472919f60ccdcbbcb4b802266">replaceField</a> (const <a class="el" href="classeve_1_1procgen_1_1ScalarField3D.html">ScalarField3D</a> &amp;<a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#aa8967af89356ddfa95dd60435a146332">field</a>)</td></tr>
+<tr class="memdesc:a88a0442472919f60ccdcbbcb4b802266"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace the field with a same-dimension snapshot before deposition; preserve stage diagnostics. @cost Linear in volume samples; batch edits before calling this boundary.  <br /></td></tr>
+<tr class="separator:a88a0442472919f60ccdcbbcb4b802266"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a685c7e176b88bb9486c584a58b749a77" id="r_a685c7e176b88bb9486c584a58b749a77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#a685c7e176b88bb9486c584a58b749a77">buildMesh</a> () const</td></tr>
+<tr class="memdesc:a685c7e176b88bb9486c584a58b749a77"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract an independent mesh from any sampled stage; omitted evolution/deposits stay omitted. @cost Volume extraction plus emitted triangles and refinement; reuse the returned mesh until inputs change.  <br /></td></tr>
+<tr class="separator:a685c7e176b88bb9486c584a58b749a77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f5444f2658c595e19245b44b650d217" id="r_a2f5444f2658c595e19245b44b650d217"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#abc1077e2a3f3a7df8578e492debaa211">CaveGenerationPhase</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html#a2f5444f2658c595e19245b44b650d217">phase</a> () const noexcept</td></tr>
+<tr class="memdesc:a2f5444f2658c595e19245b44b650d217"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current stage; moved-from owners report Empty and can be configured again.  <br /></td></tr>
+<tr class="separator:a2f5444f2658c595e19245b44b650d217"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Staged limestone generator sharing the canonical mesh.cave algorithms. </p>
+<dl class="section remark"><dt>备注</dt><dd>Owns parameters, skeleton and dense intermediate fields. No borrowed library, VM callback, graphics or ECS state survives a call. All failed operations preserve the prior stage. Stage values are transient; persist the script URI, configuration and seed and rebuild on reload. Within one build/compiler the legacy schedule is bit-exact; cross-platform floats have no bitwise promise. @thread Owner thread only; no callbacks, locks or reentrant execution. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CaveGeneration_8h_source.html">CaveGeneration.h</a> 第 <a class="el" href="CaveGeneration_8h_source.html#l00029">29</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aad8847590e99dbcd58c5929fc9ebad77" name="aad8847590e99dbcd58c5929fc9ebad77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad8847590e99dbcd58c5929fc9ebad77">&#9670;&#160;</a></span>CaveGeneration() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::CaveGeneration::CaveGeneration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an empty, inexpensive generation owner. </p>
+
+</div>
+</div>
+<a id="a253ccd834c01934529ba7b27407b246f" name="a253ccd834c01934529ba7b27407b246f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a253ccd834c01934529ba7b27407b246f">&#9670;&#160;</a></span>~CaveGeneration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::CaveGeneration::~CaveGeneration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Release owned intermediates without publication. </p>
+
+</div>
+</div>
+<a id="a9fe418ac641686966c2179bdacc96e1e" name="a9fe418ac641686966c2179bdacc96e1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fe418ac641686966c2179bdacc96e1e">&#9670;&#160;</a></span>CaveGeneration() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::CaveGeneration::CaveGeneration </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html">CaveGeneration</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aff7dce1caddbd14abe866d75f5081777" name="aff7dce1caddbd14abe866d75f5081777"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff7dce1caddbd14abe866d75f5081777">&#9670;&#160;</a></span>CaveGeneration() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::CaveGeneration::CaveGeneration </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html">CaveGeneration</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transfer the generation owner. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a685c7e176b88bb9486c584a58b749a77" name="a685c7e176b88bb9486c584a58b749a77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a685c7e176b88bb9486c584a58b749a77">&#9670;&#160;</a></span>buildMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt; eve::procgen::CaveGeneration::buildMesh </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extract an independent mesh from any sampled stage; omitted evolution/deposits stay omitted. @cost Volume extraction plus emitted triangles and refinement; reuse the returned mesh until inputs change. </p>
+
+<p class="definition">在文件 <a class="el" href="CaveGeneration_8cpp_source.html">CaveGeneration.cpp</a> 第 <a class="el" href="CaveGeneration_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#abc1077e2a3f3a7df8578e492debaa211a527c2c0917e322d05cca17100f409f40">eve::procgen::Deposited</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00026">mesh</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00025">phase()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00015">status</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a4b26286ef1bb4057db8ed322ea0838a7" name="a4b26286ef1bb4057db8ed322ea0838a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b26286ef1bb4057db8ed322ea0838a7">&#9670;&#160;</a></span>buildSkeleton()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::CaveGeneration::buildSkeleton </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generate the editable seeded cave skeleton from configured parameters. @cost Linear in skeleton candidates, much cheaper than volume sampling; run once per configuration. </p>
+
+<p class="definition">在文件 <a class="el" href="CaveGeneration_8cpp_source.html">CaveGeneration.cpp</a> 第 <a class="el" href="CaveGeneration_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#abc1077e2a3f3a7df8578e492debaa211a61aa63eb3ac1c3408640463ee5fe8aa3">eve::procgen::Configured</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00025">phase()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="namespaceeve_1_1procgen.html#abc1077e2a3f3a7df8578e492debaa211a6ab48f7ed56efc362f41853c5616bf75">eve::procgen::Skeleton</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a1c063ff6d385f261a31a43797552e047" name="a1c063ff6d385f261a31a43797552e047"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c063ff6d385f261a31a43797552e047">&#9670;&#160;</a></span>chamberCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::CaveGeneration::chamberCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of chamber records in the current skeleton. </p>
+
+<p class="definition">在文件 <a class="el" href="CaveGeneration_8cpp_source.html">CaveGeneration.cpp</a> 第 <a class="el" href="CaveGeneration_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CaveGeneration_8cpp_source.html#l00049">setChamber()</a>.</p>
+
+</div>
+</div>
+<a id="abdc7e748dcb490a464d92b57ccc4219e" name="abdc7e748dcb490a464d92b57ccc4219e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdc7e748dcb490a464d92b57ccc4219e">&#9670;&#160;</a></span>configure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::CaveGeneration::configure </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy and validate configuration; success resets all derived stages. </p>
+
+<p class="definition">在文件 <a class="el" href="CaveGeneration_8cpp_source.html">CaveGeneration.cpp</a> 第 <a class="el" href="CaveGeneration_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#abc1077e2a3f3a7df8578e492debaa211a61aa63eb3ac1c3408640463ee5fe8aa3">eve::procgen::Configured</a>, <a class="el" href="McpRecipeTools_8cpp_source.html#l00034">params</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CaveMesh_8cpp_source.html#l00005">eve::procgen::caveMeshGenerator()</a>.</p>
+
+</div>
+</div>
+<a id="a088710f010f44d98e8caccab7607aec8" name="a088710f010f44d98e8caccab7607aec8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a088710f010f44d98e8caccab7607aec8">&#9670;&#160;</a></span>deposit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::CaveGeneration::deposit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Anchor secondary deposits on the current surface; disallows subsequent surface retreat. @cost Volume samples times deposit candidates; execute after all desired surface edits. </p>
+
+<p class="definition">在文件 <a class="el" href="CaveGeneration_8cpp_source.html">CaveGeneration.cpp</a> 第 <a class="el" href="CaveGeneration_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#abc1077e2a3f3a7df8578e492debaa211a527c2c0917e322d05cca17100f409f40">eve::procgen::Deposited</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00025">phase()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a66e7478c37b1e1626de718d46660c134" name="a66e7478c37b1e1626de718d46660c134"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66e7478c37b1e1626de718d46660c134">&#9670;&#160;</a></span>evolveSurface()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::CaveGeneration::evolveSurface </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a7f0b3733da6fdca3ffcf9edc9f4f846a">CaveSurfaceOperation</a>&#160;</td>
+          <td class="paramname"><em>operation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply one selected surface operator; repeated operators and caller-selected order are supported. @cost At least linear in volume samples; compose before extracting a mesh. </p>
+
+<p class="definition">在文件 <a class="el" href="CaveGeneration_8cpp_source.html">CaveGeneration.cpp</a> 第 <a class="el" href="CaveGeneration_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#a7f0b3733da6fdca3ffcf9edc9f4f846aad6b59dee49d96bd8840b6f07257fc070">eve::procgen::Condensation</a>, <a class="el" href="namespaceeve_1_1procgen.html#a7f0b3733da6fdca3ffcf9edc9f4f846aa8bdf3c167e619ac571b1208d0e8343cb">eve::procgen::Curvature</a>, <a class="el" href="namespaceeve_1_1procgen.html#abc1077e2a3f3a7df8578e492debaa211afb61f3956c07d3b8ab2f574ab8aafc42">eve::procgen::Evolved</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00152">operation</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00025">phase()</a>, <a class="el" href="namespaceeve_1_1procgen.html#a7f0b3733da6fdca3ffcf9edc9f4f846aa899576b8fc276e830ac2d1b83281e84e">eve::procgen::ReactivePatches</a>, <a class="el" href="namespaceeve_1_1procgen.html#a7f0b3733da6fdca3ffcf9edc9f4f846aa44464f9dd2597bbd3b6b30527e456867">eve::procgen::Reactivity</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="aa8967af89356ddfa95dd60435a146332" name="aa8967af89356ddfa95dd60435a146332"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8967af89356ddfa95dd60435a146332">&#9670;&#160;</a></span>field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1ScalarField3D.html">ScalarField3D</a> &gt; eve::procgen::CaveGeneration::field </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an independent field snapshot; no internal storage is exposed. @cost Linear in volume samples; batch edits in the returned snapshot before replacement. </p>
+
+<p class="definition">在文件 <a class="el" href="CaveGeneration_8cpp_source.html">CaveGeneration.cpp</a> 第 <a class="el" href="CaveGeneration_8cpp_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScalarField3D_8cpp_source.html#l00026">eve::procgen::ScalarField3D::assign()</a>, <a class="el" href="namespaceeve_1_1procgen.html#abc1077e2a3f3a7df8578e492debaa211a527c2c0917e322d05cca17100f409f40">eve::procgen::Deposited</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00106">field()</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00025">phase()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00015">status</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CaveGeneration_8cpp_source.html#l00106">field()</a> , 以及 <a class="el" href="CaveGeneration_8cpp_source.html#l00115">replaceField()</a>.</p>
+
+</div>
+</div>
+<a id="a4afa673d4d3c0d9dc35513ffbb47a56f" name="a4afa673d4d3c0d9dc35513ffbb47a56f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4afa673d4d3c0d9dc35513ffbb47a56f">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html">CaveGeneration</a> &amp; eve::procgen::CaveGeneration::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html">CaveGeneration</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transfer the generation owner, releasing previous intermediates. </p>
+
+</div>
+</div>
+<a id="afaaac6c0cf004453ffd5632e6b363cb6" name="afaaac6c0cf004453ffd5632e6b363cb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afaaac6c0cf004453ffd5632e6b363cb6">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html">CaveGeneration</a> &amp; eve::procgen::CaveGeneration::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1CaveGeneration.html">CaveGeneration</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2f5444f2658c595e19245b44b650d217" name="a2f5444f2658c595e19245b44b650d217"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f5444f2658c595e19245b44b650d217">&#9670;&#160;</a></span>phase()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#abc1077e2a3f3a7df8578e492debaa211">CaveGenerationPhase</a> eve::procgen::CaveGeneration::phase </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current stage; moved-from owners report Empty and can be configured again. </p>
+
+<p class="definition">在文件 <a class="el" href="CaveGeneration_8cpp_source.html">CaveGeneration.cpp</a> 第 <a class="el" href="CaveGeneration_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1procgen.html#abc1077e2a3f3a7df8578e492debaa211ace2c8aed9c2fa0cfbed56cbda4d8bf07">eve::procgen::Empty</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CaveGeneration_8cpp_source.html#l00126">buildMesh()</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00037">buildSkeleton()</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00095">deposit()</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00081">evolveSurface()</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00106">field()</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00115">replaceField()</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00071">sampleField()</a> , 以及 <a class="el" href="CaveGeneration_8cpp_source.html#l00049">setChamber()</a>.</p>
+
+</div>
+</div>
+<a id="a88a0442472919f60ccdcbbcb4b802266" name="a88a0442472919f60ccdcbbcb4b802266"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88a0442472919f60ccdcbbcb4b802266">&#9670;&#160;</a></span>replaceField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::CaveGeneration::replaceField </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1ScalarField3D.html">ScalarField3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>field</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Replace the field with a same-dimension snapshot before deposition; preserve stage diagnostics. @cost Linear in volume samples; batch edits before calling this boundary. </p>
+
+<p class="definition">在文件 <a class="el" href="CaveGeneration_8cpp_source.html">CaveGeneration.cpp</a> 第 <a class="el" href="CaveGeneration_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00106">field()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00025">phase()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ac2a1604bc2be1dee2e12d4831e0491ee" name="ac2a1604bc2be1dee2e12d4831e0491ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2a1604bc2be1dee2e12d4831e0491ee">&#9670;&#160;</a></span>sampleField()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::CaveGeneration::sampleField </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sample the current skeleton and configured geological operators. @cost Volume samples times active geological features; amortize by editing the resulting field. </p>
+
+<p class="definition">在文件 <a class="el" href="CaveGeneration_8cpp_source.html">CaveGeneration.cpp</a> 第 <a class="el" href="CaveGeneration_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveGeneration_8cpp_source.html#l00025">phase()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="namespaceeve_1_1procgen.html#abc1077e2a3f3a7df8578e492debaa211a4c1d10948179163c80a7b8d23542074b">eve::procgen::Sampled</a>, <a class="el" href="namespaceeve_1_1procgen.html#abc1077e2a3f3a7df8578e492debaa211a6ab48f7ed56efc362f41853c5616bf75">eve::procgen::Skeleton</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="afd0a124cab942b7d146f09f52844b336" name="afd0a124cab942b7d146f09f52844b336"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd0a124cab942b7d146f09f52844b336">&#9670;&#160;</a></span>setChamber()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::procgen::CaveGeneration::setChamber </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>rz</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Edit one chamber in normalized [-1,1] coordinates before sampling; radii must be positive. </p>
+
+<p class="definition">在文件 <a class="el" href="CaveGeneration_8cpp_source.html">CaveGeneration.cpp</a> 第 <a class="el" href="CaveGeneration_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CaveGeneration_8cpp_source.html#l00047">chamberCount()</a>, <a class="el" href="CaveBreakdown_8cpp_source.html#l00041">eve::procgen::createCaveBreakdown()</a>, <a class="el" href="CaveObstacleScour_8cpp_source.html#l00042">eve::procgen::createCaveObstacleScourSites()</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="CaveGeneration_8cpp_source.html#l00025">phase()</a>, <a class="el" href="namespaceeve_1_1procgen.html#abc1077e2a3f3a7df8578e492debaa211a6ab48f7ed56efc362f41853c5616bf75">eve::procgen::Skeleton</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/algorithms/<a class="el" href="CaveGeneration_8h_source.html">CaveGeneration.h</a></li>
+<li>src/modules/procgen/algorithms/<a class="el" href="CaveGeneration_8cpp_source.html">CaveGeneration.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

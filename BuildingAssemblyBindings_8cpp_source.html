@@ -1,0 +1,218 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/building/BuildingAssemblyBindings.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_82516b7859a22590e742ab13945dc7b3.html">building</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">BuildingAssemblyBindings.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="BuildingAssemblyBindings_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="BuildingAssemblyProtocol_8h.html">building/BuildingAssemblyProtocol.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="PlacementWorld_8h.html">building/PlacementWorld.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelBinding_8h.html">common/SquirrelBinding.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1building.html">eve::building</a> {</div>
+<div class="foldopen" id="foldopen00005" data-start="{" data-end="}">
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno"><a class="line" href="namespaceeve_1_1building.html#a5e6b4e001a4ba45692638c031b5ba4ce">    5</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1building.html#a5e6b4e001a4ba45692638c031b5ba4ce">exposeHouseBindings</a>(ssq::Table&amp; table) {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = table.getHandle();</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    table.addFunc(<span class="stringliteral">&quot;buildingHouseRequest&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a>* world, <span class="keyword">const</span> ssq::Object&amp; <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>) {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>        <span class="keyword">auto</span> execute = [&amp;]() -&gt; <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;Value&gt;</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>            <span class="keywordflow">if</span> (!world)</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>                <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;Value&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;World is required&quot;</span>));</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>            <span class="keyword">auto</span> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> = <a class="code hl_function" href="namespaceeve_1_1script.html#ae6fb9fc56f0fc9e284edf3dbe1768c04">script::valueFromSquirrel</a>(<a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>);</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>            <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;Value&gt;::failure</a>(<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.status());</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>            <span class="keyword">auto</span> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a> = <a class="code hl_function" href="namespaceeve_1_1building.html#aa8c308b1a69e02ae38d764373134e65e">executeHouseRequest</a>(*world, <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.value());</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>            <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>            <span class="keyword">auto</span> projected = <a class="code hl_function" href="namespaceeve_1_1script.html#a8048db09566f9e101bdf4c7e0a4445f3">script::pushValue</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.value());</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>            <span class="keywordflow">if</span> (!projected.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;Value&gt;::failure</a>(projected.status());</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>            sq_pop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, 1);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>            <span class="keywordflow">return</span> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        };</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, execute(), [](<a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>) { <span class="keywordflow">return</span> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>; });</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    });</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}  <span class="comment">// namespace eve::building</span></div>
+<div class="ttc" id="aBuildingAssemblyProtocol_8h_html"><div class="ttname"><a href="BuildingAssemblyProtocol_8h.html">BuildingAssemblyProtocol.h</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00038">ECS.cpp:38</a></div></div>
+<div class="ttc" id="aGltfMaterials_8cpp_html_aea0a36efa06819e651a8cc3c0f4cd3ca"><div class="ttname"><a href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a></div><div class="ttdeci">const GltfImportRequest &amp; request</div><div class="ttdef"><b>Definition</b> <a href="GltfMaterials_8cpp_source.html#l00031">GltfMaterials.cpp:31</a></div></div>
+<div class="ttc" id="aMcpInputTools_8cpp_html_a1b012debbb0243926fff95a55e397b44"><div class="ttname"><a href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a></div><div class="ttdeci">Poco::JSON::Object::Ptr result</div><div class="ttdef"><b>Definition</b> <a href="McpInputTools_8cpp_source.html#l00053">McpInputTools.cpp:53</a></div></div>
+<div class="ttc" id="aPlacementWorld_8h_html"><div class="ttname"><a href="PlacementWorld_8h.html">PlacementWorld.h</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8h_html"><div class="ttname"><a href="SquirrelBinding_8h.html">SquirrelBinding.h</a></div><div class="ttdoc">The single Squirrel projection for common Result, Status and Value.</div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00021">Diagnostic.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1building_1_1PlacementWorld_html"><div class="ttname"><a href="classeve_1_1building_1_1PlacementWorld.html">eve::building::PlacementWorld</a></div><div class="ttdoc">格子型建筑放置世界（脚本可直接操作）。</div><div class="ttdef"><b>Definition</b> <a href="PlacementWorld_8h_source.html#l00035">PlacementWorld.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html"><div class="ttname"><a href="classeve_1_1json_1_1Value.html">eve::json::Value</a></div><div class="ttdoc">EVENGINE_API_FOUNDATION public API.</div><div class="ttdef"><b>Definition</b> <a href="Json_8h_source.html#l00039">Json.h:39</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_html"><div class="ttname"><a href="namespaceeve_1_1building.html">eve::building</a></div><div class="ttdoc">建筑放置模块入口：定义 / 放置世界 / 鬼影 / 变更事件的脚本绑定点。 设计文档：docs/dev/建筑放置系统设计.md</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00010">Building.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_html_a5e6b4e001a4ba45692638c031b5ba4ce"><div class="ttname"><a href="namespaceeve_1_1building.html#a5e6b4e001a4ba45692638c031b5ba4ce">eve::building::exposeHouseBindings</a></div><div class="ttdeci">void exposeHouseBindings(ssq::Table &amp;table)</div><div class="ttdef"><b>Definition</b> <a href="BuildingAssemblyBindings_8cpp_source.html#l00005">BuildingAssemblyBindings.cpp:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_html_aa8c308b1a69e02ae38d764373134e65e"><div class="ttname"><a href="namespaceeve_1_1building.html#aa8c308b1a69e02ae38d764373134e65e">eve::building::executeHouseRequest</a></div><div class="ttdeci">Result&lt; Value &gt; executeHouseRequest(PlacementWorld &amp;w, const Value &amp;request)</div><div class="ttdoc">Execute the version-1 house authoring protocol used by scripts and tools. @ownership Synchronously bo...</div><div class="ttdef"><b>Definition</b> <a href="BuildingAssemblyProtocol_8cpp_source.html#l00029">BuildingAssemblyProtocol.cpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a8048db09566f9e101bdf4c7e0a4445f3"><div class="ttname"><a href="namespaceeve_1_1script.html#a8048db09566f9e101bdf4c7e0a4445f3">eve::script::pushValue</a></div><div class="ttdeci">Result&lt; void &gt; pushValue(HSQUIRRELVM vm, const Value &amp;value, const SquirrelValueOptions &amp;options)</div><div class="ttdoc">Push a canonical Value into the active Squirrel VM.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00441">SquirrelBinding.cpp:441</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ac3b6f94120aaac0606b048042b94ec36"><div class="ttname"><a href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">eve::script::projectResult</a></div><div class="ttdeci">ssq::Table projectResult(HSQUIRRELVM vm, Result&lt; void &gt; &amp;&amp;result)</div><div class="ttdoc">Consume and project a void native Result using the common schema.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00542">SquirrelBinding.cpp:542</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ae6fb9fc56f0fc9e284edf3dbe1768c04"><div class="ttname"><a href="namespaceeve_1_1script.html#ae6fb9fc56f0fc9e284edf3dbe1768c04">eve::script::valueFromSquirrel</a></div><div class="ttdeci">Result&lt; Value &gt; valueFromSquirrel(HSQUIRRELVM vm, SQInteger index, const SquirrelValueOptions &amp;options)</div><div class="ttdoc">Convert one Squirrel value into the canonical owning Value tree.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00414">SquirrelBinding.cpp:414</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

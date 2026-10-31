@@ -1,0 +1,247 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/house/HouseGenerationState.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_07f95f13501f14f0c7283ec468b2538d.html">house</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">HouseGenerationState.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="HouseGenerator_8h_source.html">procgen/house/HouseGenerator.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="HouseLayout_8h_source.html">procgen/house/HouseLayout.h</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;functional&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;random&gt;</code><br />
+<code>#include &lt;tuple&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
+<code>#include &lt;unordered_set&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+</div>
+<p><a href="HouseGenerationState_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1housegen_1_1house__detail_1_1State.html">eve::housegen::house_detail::State</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1housegen" id="r_namespaceeve_1_1housegen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen.html">eve::housegen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1housegen_1_1house__detail" id="r_namespaceeve_1_1housegen_1_1house__detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html">eve::housegen::house_detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:af7a422a8c36ab243808b5f876835ef9b" id="r_af7a422a8c36ab243808b5f876835ef9b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structeve_1_1housegen_1_1HouseComponent.html">HouseComponent</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#af7a422a8c36ab243808b5f876835ef9b">eve::housegen::house_detail::pick</a> (const std::vector&lt; std::reference_wrapper&lt; const <a class="el" href="structeve_1_1housegen_1_1HouseComponent.html">HouseComponent</a> &gt; &gt; &amp;<a class="el" href="MapObjectContract_8cpp.html#afc61633d2882ae8efad1625ac43e9951">choices</a>, std::mt19937 &amp;rng)</td></tr>
+<tr class="memdesc:af7a422a8c36ab243808b5f876835ef9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow a weighted component from library-backed choices. @ownership Borrowed; the session's library owns the component. @nullable Yes when no compatible component exists. @lifetime Until the owning session library is replaced or destroyed; used only within one stage. @thread Session owner thread only; no callbacks.  <br /></td></tr>
+<tr class="separator:af7a422a8c36ab243808b5f876835ef9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8eaca0ae07b3d599d1711b95e4bd1f0" id="r_ae8eaca0ae07b3d599d1711b95e4bd1f0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#ae8eaca0ae07b3d599d1711b95e4bd1f0">eve::housegen::house_detail::has</a> (const std::vector&lt; std::reference_wrapper&lt; const <a class="el" href="structeve_1_1housegen_1_1HouseComponent.html">HouseComponent</a> &gt; &gt; &amp;<a class="el" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>)</td></tr>
+<tr class="separator:ae8eaca0ae07b3d599d1711b95e4bd1f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeae98d2910623d9b6975c856a9f996ec" id="r_aeae98d2910623d9b6975c856a9f996ec"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#aeae98d2910623d9b6975c856a9f996ec">eve::housegen::house_detail::isRotationAllowed</a> (const <a class="el" href="structeve_1_1housegen_1_1HouseComponent.html">HouseComponent</a> &amp;component, int <a class="el" href="LegacyAnimationImporter_8cpp.html#a5faf4c8191089dab5dd408537f699845">rotation</a>)</td></tr>
+<tr class="separator:aeae98d2910623d9b6975c856a9f996ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7dc395c1a93c809c1668e3c38d1a3db" id="r_af7dc395c1a93c809c1668e3c38d1a3db"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::reference_wrapper&lt; const <a class="el" href="structeve_1_1housegen_1_1HouseComponent.html">HouseComponent</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#af7dc395c1a93c809c1668e3c38d1a3db">eve::housegen::house_detail::facadeVariant</a> (const std::vector&lt; std::reference_wrapper&lt; const <a class="el" href="structeve_1_1housegen_1_1HouseComponent.html">HouseComponent</a> &gt; &gt; &amp;<a class="el" href="MapObjectContract_8cpp.html#afc61633d2882ae8efad1625ac43e9951">choices</a>, bool wantWindow)</td></tr>
+<tr class="memdesc:af7dc395c1a93c809c1668e3c38d1a3db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal facadeVariant stage helper. @cost Linear in component choices; amortized across one facade placement.  <br /></td></tr>
+<tr class="separator:af7dc395c1a93c809c1668e3c38d1a3db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4676e24f513b405509d737afa8758143" id="r_a4676e24f513b405509d737afa8758143"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#a4676e24f513b405509d737afa8758143">eve::housegen::house_detail::isOneOf</a> (const std::string &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>, std::initializer_list&lt; const char * &gt; <a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)</td></tr>
+<tr class="separator:a4676e24f513b405509d737afa8758143"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4da4b1e39bdbaa60caf5fc9d6b244dc9" id="r_a4da4b1e39bdbaa60caf5fc9d6b244dc9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1housegen.html#a236b15e687cc9690f67c2fc2edb66aa9">SocketDirection</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#a4da4b1e39bdbaa60caf5fc9d6b244dc9">eve::housegen::house_detail::directionFromName</a> (const std::string &amp;<a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>)</td></tr>
+<tr class="separator:a4da4b1e39bdbaa60caf5fc9d6b244dc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a05699396f369ab5993d5ab9335fcddf2" id="r_a05699396f369ab5993d5ab9335fcddf2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#a05699396f369ab5993d5ab9335fcddf2">eve::housegen::house_detail::directionName</a> (<a class="el" href="namespaceeve_1_1housegen.html#a236b15e687cc9690f67c2fc2edb66aa9">SocketDirection</a> <a class="el" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>)</td></tr>
+<tr class="separator:a05699396f369ab5993d5ab9335fcddf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5f9545f3fc3c4ec4bfb2609c178a414" id="r_aa5f9545f3fc3c4ec4bfb2609c178a414"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#aa5f9545f3fc3c4ec4bfb2609c178a414">eve::housegen::house_detail::directionRotation</a> (<a class="el" href="namespaceeve_1_1housegen.html#a236b15e687cc9690f67c2fc2edb66aa9">SocketDirection</a> <a class="el" href="RoadTraffic_8cpp.html#a4b9956599f8dd2747a3d305df5cfe8b6">direction</a>)</td></tr>
+<tr class="separator:aa5f9545f3fc3c4ec4bfb2609c178a414"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea10be7b1d3948252a9b9119ec1cc42f" id="r_aea10be7b1d3948252a9b9119ec1cc42f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#aea10be7b1d3948252a9b9119ec1cc42f">eve::housegen::house_detail::footprintMask</a> (const std::string &amp;<a class="el" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>, int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>, int inset)</td></tr>
+<tr class="memdesc:aea10be7b1d3948252a9b9119ec1cc42f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal footprintMask stage helper. @cost Linear in plot cells; reuse for one floor emission.  <br /></td></tr>
+<tr class="separator:aea10be7b1d3948252a9b9119ec1cc42f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3de1d94d864db39a27e5b98ecbfcf9f0" id="r_a3de1d94d864db39a27e5b98ecbfcf9f0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#a3de1d94d864db39a27e5b98ecbfcf9f0">eve::housegen::house_detail::active</a> (const std::vector&lt; uint8_t &gt; &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>, int <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, int <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</td></tr>
+<tr class="separator:a3de1d94d864db39a27e5b98ecbfcf9f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f86503df947812ea48ffe3f73506a20" id="r_a0f86503df947812ea48ffe3f73506a20"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#a0f86503df947812ea48ffe3f73506a20">eve::housegen::house_detail::polygonMask</a> (const std::vector&lt; <a class="el" href="structeve_1_1housegen_1_1HousePolygonPoint.html">HousePolygonPoint</a> &gt; &amp;poly, int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>, int inset)</td></tr>
+<tr class="memdesc:a0f86503df947812ea48ffe3f73506a20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rasterize an arbitrary closed polygon onto the cell grid (cell centers inside).  <br /></td></tr>
+<tr class="separator:a0f86503df947812ea48ffe3f73506a20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a95d17a42883b22dae6b22604edd931" id="r_a8a95d17a42883b22dae6b22604edd931"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::reference_wrapper&lt; const <a class="el" href="structeve_1_1housegen_1_1HouseComponent.html">HouseComponent</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#a8a95d17a42883b22dae6b22604edd931">eve::housegen::house_detail::compatibleOnFace</a> (const std::vector&lt; std::reference_wrapper&lt; const <a class="el" href="structeve_1_1housegen_1_1HouseComponent.html">HouseComponent</a> &gt; &gt; &amp;<a class="el" href="MapObjectContract_8cpp.html#afc61633d2882ae8efad1625ac43e9951">choices</a>, <a class="el" href="namespaceeve_1_1housegen.html#a236b15e687cc9690f67c2fc2edb66aa9">SocketDirection</a> face, int <a class="el" href="LegacyAnimationImporter_8cpp.html#a5faf4c8191089dab5dd408537f699845">rotation</a>)</td></tr>
+<tr class="memdesc:a8a95d17a42883b22dae6b22604edd931"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal compatibleOnFace stage helper. @cost Component choices times sockets; used for one facade placement.  <br /></td></tr>
+<tr class="separator:a8a95d17a42883b22dae6b22604edd931"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58866f566d70a9a161fdb64088b7f604" id="r_a58866f566d70a9a161fdb64088b7f604"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::pair&lt; int, int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#a58866f566d70a9a161fdb64088b7f604">eve::housegen::house_detail::findInteriorCell</a> (const std::vector&lt; uint8_t &gt; &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>)</td></tr>
+<tr class="memdesc:a58866f566d70a9a161fdb64088b7f604"><td class="mdescLeft">&#160;</td><td class="mdescRight">First active cell that is interior (all four orthogonal neighbours active).  <br /></td></tr>
+<tr class="separator:a58866f566d70a9a161fdb64088b7f604"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a200613d70abd1ac0582d03b039a13244" id="r_a200613d70abd1ac0582d03b039a13244"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#a200613d70abd1ac0582d03b039a13244">eve::housegen::house_detail::appendRoomRegions</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>, const std::vector&lt; uint8_t &gt; &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, const std::string &amp;roomType, int floorZ, std::vector&lt; <a class="el" href="structeve_1_1housegen_1_1HouseRoom.html">HouseRoom</a> &gt; &amp;rooms)</td></tr>
+<tr class="separator:a200613d70abd1ac0582d03b039a13244"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae55cac31b6445754116e45af265428b5" id="r_ae55cac31b6445754116e45af265428b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1housegen_1_1house__detail.html#ae55cac31b6445754116e45af265428b5">eve::housegen::house_detail::partitionFloor</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>, const std::vector&lt; uint8_t &gt; &amp;<a class="el" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>, const std::vector&lt; std::string &gt; &amp;roomTypes, std::mt19937 &amp;rng, const std::vector&lt; std::reference_wrapper&lt; const <a class="el" href="structeve_1_1housegen_1_1HouseComponent.html">HouseComponent</a> &gt; &gt; &amp;innerWall, const std::vector&lt; std::reference_wrapper&lt; const <a class="el" href="structeve_1_1housegen_1_1HouseComponent.html">HouseComponent</a> &gt; &gt; &amp;innerDoor, std::vector&lt; <a class="el" href="structeve_1_1housegen_1_1HouseInstance.html">HouseInstance</a> &gt; &amp;instances, std::vector&lt; <a class="el" href="structeve_1_1housegen_1_1HouseRoom.html">HouseRoom</a> &gt; &amp;rooms, int floorZ)</td></tr>
+<tr class="memdesc:ae55cac31b6445754116e45af265428b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Partition active cells into exact, rectangular rooms and emit mask-safe boundaries.  <br /></td></tr>
+<tr class="separator:ae55cac31b6445754116e45af265428b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

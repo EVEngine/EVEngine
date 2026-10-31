@@ -1,0 +1,339 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/animation/MontageCoordinator.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_d4f94f5abbcd2420c156bb9358054568.html">animation</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">MontageCoordinator.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="MontageCoordinator_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="MontagePlayer_8h.html">animation/MontagePlayer.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="RootMotionPolicy_8h.html">animation/RootMotionPolicy.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="UpperBodyOrientationCompensator_8h.html">animation/UpperBodyOrientationCompensator.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="RuntimeHandle_8h.html">common/RuntimeHandle.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1animation.html">eve::animation</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">class </span>AnimBoneMask;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a0c137e158818888fb36dea7ecca53a03">   23</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a0c137e158818888fb36dea7ecca53a03">MontageLayerRole</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a0c137e158818888fb36dea7ecca53a03a8045a0a6c688b0635e3caccc408a1446">Generic</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a0c137e158818888fb36dea7ecca53a03acd8f2d7dbae0cfb22a900898ab710894">UpperBody</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a0c137e158818888fb36dea7ecca53a03a1a951b8e89bf225233f5d3afe13196c0">FullBody</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a0c137e158818888fb36dea7ecca53a03a3f7b3d8ee7bf0d542bd50821c083888f">Additive</a> };</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a83bbc830e0bcd4f551b859eba720b734">   26</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a83bbc830e0bcd4f551b859eba720b734">MontageBoneMaskSource</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a83bbc830e0bcd4f551b859eba720b734a6adf97f83acf6453d4a6a4b1070f3754">None</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a83bbc830e0bcd4f551b859eba720b734a9268936dd2a254488e14c31eca05216e">ProceduralUpperBody</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a83bbc830e0bcd4f551b859eba720b734a90589c47f06eb971d548591f23c285af">Custom</a> };</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383e">   29</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383e">UpperBodyOrientationStatus</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383eaf5d49bc3243ac8419db1a2a0c448d1f3">Unconfigured</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383ea3cab03c00dbd11bc3569afa0748013f0">Inactive</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383ea733d43480c8589b1368e5def6b480415">Applied</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383eacbe2e9d45b8a40b26c938837f3972e18">BypassedCustomMask</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383eaa9ac6cd69d18bba42c0886af8fecac9e">BypassedFullBody</a> };</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1animation_1_1MontageHandleTag.html">   32</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1animation_1_1MontageHandleTag.html">MontageHandleTag</a> {};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="namespaceeve_1_1animation.html#ab3bc1962bb351220a8966cc647e1f67e">   34</a></span><span class="keyword">using </span><a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MontageHandle</a> = <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">RuntimeHandle&lt;MontageHandleTag&gt;</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="};">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MontageCoordinator.html">   43</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1animation_1_1MontageCoordinator.html">MontageCoordinator</a> {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1animation_1_1MontageCoordinator.html">MontageCoordinator</a>(<a class="code hl_class" href="classeve_1_1animation_1_1AnimSkeleton.html">AnimSkeleton</a>&amp; skeleton);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;MontageHandle&gt;</a> play(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, <a class="code hl_struct" href="structeve_1_1action_1_1ActionTimeline.html">action::ActionTimeline</a> timeline,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                             std::vector&lt;MontageClipAsset&gt;&amp;&amp; clips,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                             <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">action::ActionExecutionId</a> <a class="code hl_variable" href="AudioCapabilities_8cpp.html#a1e11c85f1aad307665738c1449cb9546">executionId</a>, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::reference_wrapper&lt;MontagePlayer&gt;</a>&gt; resolve(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MontageHandle</a> <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::reference_wrapper&lt;const MontagePlayer&gt;</a>&gt; resolve(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MontageHandle</a> <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;MontageAdvance&gt;</a> present(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MontageHandle</a> <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1action_1_1ActionAdvance.html">action::ActionAdvance</a>&amp; advance,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                                                 <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>);</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;MontageAdvance&gt;</a> present(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MontageHandle</a> <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, <a class="code hl_struct" href="structeve_1_1action_1_1ActionAdvance.html">action::ActionAdvance</a>&amp;&amp; advance,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                                 <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> advanceBlendOuts(<a class="code hl_class" href="classeve_1_1Duration.html">Duration</a> delta, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                                                <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MontageHandle</a> except = MontageHandle::invalid());</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;MontageAdvance&gt;</a> stop(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">MontageHandle</a> <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, <a class="code hl_class" href="classeve_1_1Duration.html">Duration</a> blendOut, <a class="code hl_class" href="classeve_1_1detail_1_1StrongUint64.html">SimulationTick</a> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setLayerBoneMask(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, std::vector&lt;float&gt; <a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#a633d91a1601098fad1287d3764b947f4">weights</a>);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setLayerBoneMask(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimBoneMask.html">AnimBoneMask</a>&amp; <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> clearLayerBoneMask(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;float&gt;</a>&gt; layerBoneMask(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setLayerProceduralUpperBodyMask(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimBoneMask.html">AnimBoneMask</a>&amp; <a class="code hl_variable" href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a>);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;MontageBoneMaskSource&gt;</a> layerBoneMaskSource(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setLayerRole(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a0c137e158818888fb36dea7ecca53a03">MontageLayerRole</a> role);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;MontageLayerRole&gt;</a> layerRole(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> configureUpperBodyOrientation(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1UpperBodyOrientationProfile.html">UpperBodyOrientationProfile</a>&amp; profile);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">void</span> clearUpperBodyOrientation() <span class="keyword">noexcept</span>;</div>
+<div class="foldopen" id="foldopen00117" data-start="{" data-end="}">
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classeve_1_1animation_1_1MontageCoordinator.html#a285a3e9ad99ede8200ca202403f85585">  117</a></span>    [[nodiscard]] <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383e">UpperBodyOrientationStatus</a> <a class="code hl_function" href="classeve_1_1animation_1_1MontageCoordinator.html#a285a3e9ad99ede8200ca202403f85585">upperBodyOrientationStatus</a>() const noexcept {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordflow">return</span> upperBodyOrientationStatus_;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    }</div>
+</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setLayerWeight(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#a99108733d00274978a4979dc072bd513">weight</a>);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;float&gt;</a> layerWeight(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setLayerAdditive(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, <span class="keywordtype">bool</span> additive);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;bool&gt;</a> layerAdditive(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setLayerRootMotionReceiver(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>,</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>                                                          <a class="code hl_class" href="classeve_1_1animation_1_1IMontageRootMotionReceiver.html">IMontageRootMotionReceiver</a>&amp; receiver);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> clearLayerRootMotionReceiver(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setLayerRootMotionPolicy(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1animation_1_1RootMotionPolicy.html">RootMotionPolicy</a>&amp; policy);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> clearLayerRootMotionPolicy(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::reference_wrapper&lt;AnimPose&gt;</a>&gt; <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::reference_wrapper&lt;AnimPose&gt;</a>&gt; compose(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1animation_1_1AnimPose.html">AnimPose</a>&amp; basePose);</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordtype">void</span> collectFinished() noexcept;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>private:</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    struct Slot {</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        std::unique_ptr&lt;MontagePlayer&gt; player;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <a class="code hl_typedef" href="classeve_1_1RuntimeHandle.html#a517ac93294efcf42a74f03dc723c6375">MontageHandle::generation_type</a> <a class="code hl_variable" href="ECS_8cpp.html#a53722de7c6c943c26ef6cd0e41ec958c">generation</a> = 1;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="keywordtype">bool</span>                           <a class="code hl_variable" href="ClimbingServices_8cpp.html#a7a4b77771014f8d8727fe84f51158bca">live</a>       = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keywordtype">bool</span>                           <a class="code hl_variable" href="ClimbingServices_8cpp.html#a7a610afa9ba24ee93c89fb822536d7de">retired</a>    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    };</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keyword">struct </span>Layer {</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        Slot                      <a class="code hl_variable" href="Shadow_8cpp.html#ad254e1f2c7b99b75f16388b16ac9fca6">slots</a>[2];</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        std::size_t               <a class="code hl_variable" href="AgentBindings_8cpp.html#a9fec294565128b5012cbe5fd8a566ac8">active</a> = 1;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        std::unique_ptr&lt;AnimPose&gt; <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        std::unique_ptr&lt;AnimPose&gt;   rawPose;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        std::unique_ptr&lt;AnimPose&gt;   blendScratch;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        std::vector&lt;float&gt;        boneMask;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        MontageBoneMaskSource     boneMaskSource     = MontageBoneMaskSource::None;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        MontageLayerRole          role               = MontageLayerRole::Generic;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <span class="keywordtype">float</span>                           <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#a99108733d00274978a4979dc072bd513">weight</a>             = 1.0f;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordtype">bool</span>                            additive           = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        IMontageRootMotionReceiver*     rootMotionReceiver = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        std::optional&lt;RootMotionPolicy&gt; rootMotionPolicy;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    };</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    [[nodiscard]] <span class="keyword">static</span> std::size_t handleIndex(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>, std::size_t <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a> * 2 + <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>;</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    }</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    [[nodiscard]] Slot* slotFor(MontageHandle <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    [[nodiscard]] <span class="keyword">const</span> Slot* slotFor(MontageHandle <a class="code hl_variable" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordtype">void</span>                      ensureLayer(std::size_t <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>);</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>    <span class="keywordtype">void</span>                      retireSlot(Slot&amp; <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    [[nodiscard]] <span class="keywordtype">double</span>      evaluateLayerPose(Layer&amp; <a class="code hl_variable" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    AnimSkeleton&amp;      skeleton_;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    std::vector&lt;Layer&gt; layers_;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    std::unique_ptr&lt;AnimPose&gt; composedPose_;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    UpperBodyOrientationCompensator upperBodyOrientation_;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <a class="code hl_enumeration" href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383e">UpperBodyOrientationStatus</a> upperBodyOrientationStatus_ = UpperBodyOrientationStatus::Unconfigured;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>};</div>
+</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>}  <span class="comment">// namespace eve::animation</span></div>
+<div class="ttc" id="aAgentBindings_8cpp_html_a9fec294565128b5012cbe5fd8a566ac8"><div class="ttname"><a href="AgentBindings_8cpp.html#a9fec294565128b5012cbe5fd8a566ac8">active</a></div><div class="ttdeci">bool &amp; active</div><div class="ttdef"><b>Definition</b> <a href="AgentBindings_8cpp_source.html#l00017">AgentBindings.cpp:17</a></div></div>
+<div class="ttc" id="aAudioCapabilities_8cpp_html_a1e11c85f1aad307665738c1449cb9546"><div class="ttname"><a href="AudioCapabilities_8cpp.html#a1e11c85f1aad307665738c1449cb9546">executionId</a></div><div class="ttdeci">eve::action::ActionExecutionId executionId</div><div class="ttdef"><b>Definition</b> <a href="AudioCapabilities_8cpp_source.html#l00385">AudioCapabilities.cpp:385</a></div></div>
+<div class="ttc" id="aAudioCapabilities_8cpp_html_ac8f9d11b63bfd0cfb294366658eb7e91"><div class="ttname"><a href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a></div><div class="ttdeci">eve::EntitySpatialPose pose</div><div class="ttdef"><b>Definition</b> <a href="AudioCapabilities_8cpp_source.html#l00379">AudioCapabilities.cpp:379</a></div></div>
+<div class="ttc" id="aBuildingFx_8cpp_html_ab77cc972f3ee899689ba053015472ccd"><div class="ttname"><a href="BuildingFx_8cpp.html#ab77cc972f3ee899689ba053015472ccd">mask</a></div><div class="ttdeci">int mask</div><div class="ttdef"><b>Definition</b> <a href="BuildingFx_8cpp_source.html#l00064">BuildingFx.cpp:64</a></div></div>
+<div class="ttc" id="aClimbingServices_8cpp_html_a7a4b77771014f8d8727fe84f51158bca"><div class="ttname"><a href="ClimbingServices_8cpp.html#a7a4b77771014f8d8727fe84f51158bca">live</a></div><div class="ttdeci">std::vector&lt; std::unique_ptr&lt; ScriptClimbingEventSink &gt; &gt; live</div><div class="ttdef"><b>Definition</b> <a href="ClimbingServices_8cpp_source.html#l00187">ClimbingServices.cpp:187</a></div></div>
+<div class="ttc" id="aClimbingServices_8cpp_html_a7a610afa9ba24ee93c89fb822536d7de"><div class="ttname"><a href="ClimbingServices_8cpp.html#a7a610afa9ba24ee93c89fb822536d7de">retired</a></div><div class="ttdeci">std::vector&lt; std::unique_ptr&lt; ScriptClimbingEventSink &gt; &gt; retired</div><div class="ttdef"><b>Definition</b> <a href="ClimbingServices_8cpp_source.html#l00188">ClimbingServices.cpp:188</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a53722de7c6c943c26ef6cd0e41ec958c"><div class="ttname"><a href="ECS_8cpp.html#a53722de7c6c943c26ef6cd0e41ec958c">generation</a></div><div class="ttdeci">Generation generation</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00040">ECS.cpp:40</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_afb52228b1e5307ee220679412a790429"><div class="ttname"><a href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a></div><div class="ttdeci">#define EVENGINE_API_WORLD</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00109">Export.h:109</a></div></div>
+<div class="ttc" id="aMontagePlayer_8h_html"><div class="ttname"><a href="MontagePlayer_8h.html">MontagePlayer.h</a></div><div class="ttdoc">Deterministic presentation-only action montage playback.</div></div>
+<div class="ttc" id="aPathfinder_8cpp_html_ac84a36ae433419b622c91ac3022cf1c9"><div class="ttname"><a href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a></div><div class="ttdeci">TileLayer * layer</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8cpp_source.html#l00147">Pathfinder.cpp:147</a></div></div>
+<div class="ttc" id="aPrimitivePath_8cpp_html_afb09dcd532f47a3a9fa9eed7d5a09e93"><div class="ttname"><a href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a></div><div class="ttdeci">PrimitiveHandle handle</div><div class="ttdef"><b>Definition</b> <a href="PrimitivePath_8cpp_source.html#l00489">PrimitivePath.cpp:489</a></div></div>
+<div class="ttc" id="aRPGBalance_8cpp_html_a32501e390712e71b63f6dbb1ef7ed23e"><div class="ttname"><a href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a></div><div class="ttdeci">std::string slot</div><div class="ttdef"><b>Definition</b> <a href="RPGBalance_8cpp_source.html#l00100">RPGBalance.cpp:100</a></div></div>
+<div class="ttc" id="aRootMotionPolicy_8h_html"><div class="ttname"><a href="RootMotionPolicy_8h.html">RootMotionPolicy.h</a></div></div>
+<div class="ttc" id="aRuntimeHandle_8h_html"><div class="ttname"><a href="RuntimeHandle_8h.html">RuntimeHandle.h</a></div><div class="ttdoc">Strong generation-qualified handles for non-ECS runtime registries.</div></div>
+<div class="ttc" id="aShadow_8cpp_html_ad254e1f2c7b99b75f16388b16ac9fca6"><div class="ttname"><a href="Shadow_8cpp.html#ad254e1f2c7b99b75f16388b16ac9fca6">slots</a></div><div class="ttdeci">LocalPageCacheEntry slots[ShadowConfig::kLocalSlots]</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8cpp_source.html#l00159">Shadow.cpp:159</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a9be293222289c40e0ca1ad953cb5a07e"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick</a></div><div class="ttdeci">SimulationTick tick</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00158">TacticsPersistence.cpp:158</a></div></div>
+<div class="ttc" id="aTerrainImageAdapter_8cpp_html_a633d91a1601098fad1287d3764b947f4"><div class="ttname"><a href="TerrainImageAdapter_8cpp.html#a633d91a1601098fad1287d3764b947f4">weights</a></div><div class="ttdeci">float weights[3]</div><div class="ttdef"><b>Definition</b> <a href="TerrainImageAdapter_8cpp_source.html#l00082">TerrainImageAdapter.cpp:82</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_a99108733d00274978a4979dc072bd513"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#a99108733d00274978a4979dc072bd513">weight</a></div><div class="ttdeci">double weight</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00934">UnityVegetationScene.cpp:934</a></div></div>
+<div class="ttc" id="aUpperBodyOrientationCompensator_8h_html"><div class="ttname"><a href="UpperBodyOrientationCompensator_8h.html">UpperBodyOrientationCompensator.h</a></div><div class="ttdoc">Root-relative upper-body orientation correction.</div></div>
+<div class="ttc" id="aclasseve_1_1Duration_html"><div class="ttname"><a href="classeve_1_1Duration.html">eve::Duration</a></div><div class="ttdoc">Signed, fixed-resolution simulation duration in nanoseconds.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00043">Time.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle</a></div><div class="ttdoc">Process-local slot identity tagged by the registry that owns it.</div><div class="ttdef"><b>Definition</b> <a href="RuntimeHandle_8h_source.html#l00116">RuntimeHandle.h:116</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html_a517ac93294efcf42a74f03dc723c6375"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html#a517ac93294efcf42a74f03dc723c6375">eve::RuntimeHandle::generation_type</a></div><div class="ttdeci">detail::HandleCoordinates::generation_type generation_type</div><div class="ttdoc">Unsigned owner-local generation type.</div><div class="ttdef"><b>Definition</b> <a href="RuntimeHandle_8h_source.html#l00121">RuntimeHandle.h:121</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimBoneMask_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimBoneMask.html">eve::animation::AnimBoneMask</a></div><div class="ttdoc">Per-bone weights used by override and additive animation layers.</div><div class="ttdef"><b>Definition</b> <a href="AnimLayerMixer_8h_source.html#l00020">AnimLayerMixer.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimPose_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimPose.html">eve::animation::AnimPose</a></div><div class="ttdoc">Evaluated local (and optional world) pose for an AnimSkeleton. Script type: AnimPose.</div><div class="ttdef"><b>Definition</b> <a href="AnimPose_8h_source.html#l00017">AnimPose.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1AnimSkeleton_html"><div class="ttname"><a href="classeve_1_1animation_1_1AnimSkeleton.html">eve::animation::AnimSkeleton</a></div><div class="ttdoc">3D bone hierarchy + bind-pose local TRS for skeletal animation. Independent of ik::Skeleton3D (FABRIK...</div><div class="ttdef"><b>Definition</b> <a href="AnimSkeleton_8h_source.html#l00016">AnimSkeleton.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1IMontageRootMotionReceiver_html"><div class="ttname"><a href="classeve_1_1animation_1_1IMontageRootMotionReceiver.html">eve::animation::IMontageRootMotionReceiver</a></div><div class="ttdoc">Optional receiver for filtered per-step root motion.</div><div class="ttdef"><b>Definition</b> <a href="MontagePlayer_8h_source.html#l00077">MontagePlayer.h:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MontageCoordinator_html"><div class="ttname"><a href="classeve_1_1animation_1_1MontageCoordinator.html">eve::animation::MontageCoordinator</a></div><div class="ttdoc">Owns a fixed two-slot ping-pong topology for every animation layer.</div><div class="ttdef"><b>Definition</b> <a href="MontageCoordinator_8h_source.html#l00043">MontageCoordinator.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1animation_1_1MontageCoordinator_html_a285a3e9ad99ede8200ca202403f85585"><div class="ttname"><a href="classeve_1_1animation_1_1MontageCoordinator.html#a285a3e9ad99ede8200ca202403f85585">eve::animation::MontageCoordinator::upperBodyOrientationStatus</a></div><div class="ttdeci">UpperBodyOrientationStatus upperBodyOrientationStatus() const noexcept</div><div class="ttdoc">Return the result of the most recent compose-time orientation policy evaluation.</div><div class="ttdef"><b>Definition</b> <a href="MontageCoordinator_8h_source.html#l00117">MontageCoordinator.h:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1detail_1_1StrongUint64_html"><div class="ttname"><a href="classeve_1_1detail_1_1StrongUint64.html">eve::detail::StrongUint64&lt; ActionExecutionIdTag &gt;</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html"><div class="ttname"><a href="namespaceeve_1_1animation.html">eve::animation</a></div><div class="ttdef"><b>Definition</b> <a href="Animation_8cpp_source.html#l00058">Animation.cpp:58</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a0c137e158818888fb36dea7ecca53a03"><div class="ttname"><a href="namespaceeve_1_1animation.html#a0c137e158818888fb36dea7ecca53a03">eve::animation::MontageLayerRole</a></div><div class="ttdeci">MontageLayerRole</div><div class="ttdoc">Semantic composition role used by upper-body orientation policy.</div><div class="ttdef"><b>Definition</b> <a href="MontageCoordinator_8h_source.html#l00023">MontageCoordinator.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a0c137e158818888fb36dea7ecca53a03a1a951b8e89bf225233f5d3afe13196c0"><div class="ttname"><a href="namespaceeve_1_1animation.html#a0c137e158818888fb36dea7ecca53a03a1a951b8e89bf225233f5d3afe13196c0">eve::animation::MontageLayerRole::FullBody</a></div><div class="ttdeci">@ FullBody</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a0c137e158818888fb36dea7ecca53a03a3f7b3d8ee7bf0d542bd50821c083888f"><div class="ttname"><a href="namespaceeve_1_1animation.html#a0c137e158818888fb36dea7ecca53a03a3f7b3d8ee7bf0d542bd50821c083888f">eve::animation::MontageLayerRole::Additive</a></div><div class="ttdeci">@ Additive</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a0c137e158818888fb36dea7ecca53a03a8045a0a6c688b0635e3caccc408a1446"><div class="ttname"><a href="namespaceeve_1_1animation.html#a0c137e158818888fb36dea7ecca53a03a8045a0a6c688b0635e3caccc408a1446">eve::animation::MontageLayerRole::Generic</a></div><div class="ttdeci">@ Generic</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a0c137e158818888fb36dea7ecca53a03acd8f2d7dbae0cfb22a900898ab710894"><div class="ttname"><a href="namespaceeve_1_1animation.html#a0c137e158818888fb36dea7ecca53a03acd8f2d7dbae0cfb22a900898ab710894">eve::animation::MontageLayerRole::UpperBody</a></div><div class="ttdeci">@ UpperBody</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a49a0ac6aab15f721e44cdf0c3e10383e"><div class="ttname"><a href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383e">eve::animation::UpperBodyOrientationStatus</a></div><div class="ttdeci">UpperBodyOrientationStatus</div><div class="ttdoc">Observable outcome of the most recent upper-body orientation evaluation.</div><div class="ttdef"><b>Definition</b> <a href="MontageCoordinator_8h_source.html#l00029">MontageCoordinator.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a49a0ac6aab15f721e44cdf0c3e10383ea3cab03c00dbd11bc3569afa0748013f0"><div class="ttname"><a href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383ea3cab03c00dbd11bc3569afa0748013f0">eve::animation::UpperBodyOrientationStatus::Inactive</a></div><div class="ttdeci">@ Inactive</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a49a0ac6aab15f721e44cdf0c3e10383ea733d43480c8589b1368e5def6b480415"><div class="ttname"><a href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383ea733d43480c8589b1368e5def6b480415">eve::animation::UpperBodyOrientationStatus::Applied</a></div><div class="ttdeci">@ Applied</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a49a0ac6aab15f721e44cdf0c3e10383eaa9ac6cd69d18bba42c0886af8fecac9e"><div class="ttname"><a href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383eaa9ac6cd69d18bba42c0886af8fecac9e">eve::animation::UpperBodyOrientationStatus::BypassedFullBody</a></div><div class="ttdeci">@ BypassedFullBody</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a49a0ac6aab15f721e44cdf0c3e10383eacbe2e9d45b8a40b26c938837f3972e18"><div class="ttname"><a href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383eacbe2e9d45b8a40b26c938837f3972e18">eve::animation::UpperBodyOrientationStatus::BypassedCustomMask</a></div><div class="ttdeci">@ BypassedCustomMask</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a49a0ac6aab15f721e44cdf0c3e10383eaf5d49bc3243ac8419db1a2a0c448d1f3"><div class="ttname"><a href="namespaceeve_1_1animation.html#a49a0ac6aab15f721e44cdf0c3e10383eaf5d49bc3243ac8419db1a2a0c448d1f3">eve::animation::UpperBodyOrientationStatus::Unconfigured</a></div><div class="ttdeci">@ Unconfigured</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a83bbc830e0bcd4f551b859eba720b734"><div class="ttname"><a href="namespaceeve_1_1animation.html#a83bbc830e0bcd4f551b859eba720b734">eve::animation::MontageBoneMaskSource</a></div><div class="ttdeci">MontageBoneMaskSource</div><div class="ttdoc">Origin of a layer mask; procedural upper-body masks permit orientation compensation.</div><div class="ttdef"><b>Definition</b> <a href="MontageCoordinator_8h_source.html#l00026">MontageCoordinator.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a83bbc830e0bcd4f551b859eba720b734a6adf97f83acf6453d4a6a4b1070f3754"><div class="ttname"><a href="namespaceeve_1_1animation.html#a83bbc830e0bcd4f551b859eba720b734a6adf97f83acf6453d4a6a4b1070f3754">eve::animation::MontageBoneMaskSource::None</a></div><div class="ttdeci">@ None</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a83bbc830e0bcd4f551b859eba720b734a90589c47f06eb971d548591f23c285af"><div class="ttname"><a href="namespaceeve_1_1animation.html#a83bbc830e0bcd4f551b859eba720b734a90589c47f06eb971d548591f23c285af">eve::animation::MontageBoneMaskSource::Custom</a></div><div class="ttdeci">@ Custom</div></div>
+<div class="ttc" id="anamespaceeve_1_1animation_html_a83bbc830e0bcd4f551b859eba720b734a9268936dd2a254488e14c31eca05216e"><div class="ttname"><a href="namespaceeve_1_1animation.html#a83bbc830e0bcd4f551b859eba720b734a9268936dd2a254488e14c31eca05216e">eve::animation::MontageBoneMaskSource::ProceduralUpperBody</a></div><div class="ttdeci">@ ProceduralUpperBody</div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionAdvance_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionAdvance.html">eve::action::ActionAdvance</a></div><div class="ttdoc">Result payload for one deterministic advance call.</div><div class="ttdef"><b>Definition</b> <a href="Action_8h_source.html#l00204">Action.h:204</a></div></div>
+<div class="ttc" id="astructeve_1_1action_1_1ActionTimeline_html"><div class="ttname"><a href="structeve_1_1action_1_1ActionTimeline.html">eve::action::ActionTimeline</a></div><div class="ttdoc">Canonical action timeline asset shared by runtime and editor.</div><div class="ttdef"><b>Definition</b> <a href="ActionTimeline_8h_source.html#l00192">ActionTimeline.h:192</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1MontageHandleTag_html"><div class="ttname"><a href="structeve_1_1animation_1_1MontageHandleTag.html">eve::animation::MontageHandleTag</a></div><div class="ttdoc">MontageHandleTag public API.</div><div class="ttdef"><b>Definition</b> <a href="MontageCoordinator_8h_source.html#l00032">MontageCoordinator.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1RootMotionPolicy_html"><div class="ttname"><a href="structeve_1_1animation_1_1RootMotionPolicy.html">eve::animation::RootMotionPolicy</a></div><div class="ttdoc">Policy applied after raw root-bone delta extraction. @ownership Value type; owned by AnimPlayer or th...</div><div class="ttdef"><b>Definition</b> <a href="RootMotionPolicy_8h_source.html#l00062">RootMotionPolicy.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1animation_1_1UpperBodyOrientationProfile_html"><div class="ttname"><a href="structeve_1_1animation_1_1UpperBodyOrientationProfile.html">eve::animation::UpperBodyOrientationProfile</a></div><div class="ttdoc">Stable bone-name profile used to prepare upper-body orientation compensation.</div><div class="ttdef"><b>Definition</b> <a href="UpperBodyOrientationCompensator_8h_source.html#l00016">UpperBodyOrientationCompensator.h:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

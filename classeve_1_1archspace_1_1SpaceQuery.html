@@ -1,0 +1,474 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::archspace::SpaceQuery类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1archspace.html">archspace</a></li><li class="navelem"><a class="el" href="classeve_1_1archspace_1_1SpaceQuery.html">SpaceQuery</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1archspace_1_1SpaceQuery-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::archspace::SpaceQuery类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Presentation-agnostic query facade over an <a class="el" href="classeve_1_1archspace_1_1ArchSpace.html" title="Runtime ArchSpace module entry used for profile wiring and script discovery.">ArchSpace</a> document.  
+ <a href="classeve_1_1archspace_1_1SpaceQuery.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ArchSpaceQuery_8h_source.html">ArchSpaceQuery.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:add44a49716c4d8cbf1713b9509dd348e" id="r_add44a49716c4d8cbf1713b9509dd348e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1SpaceQuery.html#add44a49716c4d8cbf1713b9509dd348e">SpaceQuery</a> (const <a class="el" href="classeve_1_1archspace_1_1Document.html">Document</a> &amp;document) noexcept</td></tr>
+<tr class="memdesc:add44a49716c4d8cbf1713b9509dd348e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind to an existing document. @ownership Non-owning borrow of <code>document</code>; caller retains ownership. @lifetime Must outlive every <a class="el" href="classeve_1_1archspace_1_1SpaceQuery.html" title="Presentation-agnostic query facade over an ArchSpace document.">SpaceQuery</a> call on this instance.  <br /></td></tr>
+<tr class="separator:add44a49716c4d8cbf1713b9509dd348e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a070fa9cb82b06b0c2a140a049a34a1cc" id="r_a070fa9cb82b06b0c2a140a049a34a1cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1archspace.html#af7b2f4e1edbfac1b8ad4f7f61d61571e">TopologyKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1SpaceQuery.html#a070fa9cb82b06b0c2a140a049a34a1cc">topology</a> () const noexcept</td></tr>
+<tr class="memdesc:a070fa9cb82b06b0c2a140a049a34a1cc"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1archspace_1_1Document.html" title="Authoritative ArchSpace document (Pascal-like node graph).">Document</a> topology dialect.  <br /></td></tr>
+<tr class="separator:a070fa9cb82b06b0c2a140a049a34a1cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ddcacd05b28c04d5a5a1cc98584b539" id="r_a2ddcacd05b28c04d5a5a1cc98584b539"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1SpaceQuery.html#a2ddcacd05b28c04d5a5a1cc98584b539">strata</a> () const</td></tr>
+<tr class="memdesc:a2ddcacd05b28c04d5a5a1cc98584b539"><td class="mdescLeft">&#160;</td><td class="mdescRight">Level (stratum) ids in document iteration order.  <br /></td></tr>
+<tr class="separator:a2ddcacd05b28c04d5a5a1cc98584b539"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84db6b306b047e427bbfaf2c9663de01" id="r_a84db6b306b047e427bbfaf2c9663de01"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1archspace_1_1SpaceRegion.html">SpaceRegion</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1SpaceQuery.html#a84db6b306b047e427bbfaf2c9663de01">regions</a> () const</td></tr>
+<tr class="memdesc:a84db6b306b047e427bbfaf2c9663de01"><td class="mdescLeft">&#160;</td><td class="mdescRight">All Zone regions as <a class="el" href="structeve_1_1archspace_1_1SpaceRegion.html" title="Read-only region view projected from Zone nodes.">SpaceRegion</a> snapshots.  <br /></td></tr>
+<tr class="separator:a84db6b306b047e427bbfaf2c9663de01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af78a638d0fc29fb5fb723f128546b1ec" id="r_af78a638d0fc29fb5fb723f128546b1ec"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1archspace_1_1SpaceRegion.html">SpaceRegion</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1SpaceQuery.html#af78a638d0fc29fb5fb723f128546b1ec">regionAt</a> (<a class="el" href="structeve_1_1archspace_1_1Vec2.html">Vec2</a> xz, const std::string &amp;levelId) const</td></tr>
+<tr class="memdesc:af78a638d0fc29fb5fb723f128546b1ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">First region whose polygon contains the XZ point on the given level.  <br /></td></tr>
+<tr class="separator:af78a638d0fc29fb5fb723f128546b1ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bfd771fc2b0f8c6b1cf35ab7c338c2e" id="r_a9bfd771fc2b0f8c6b1cf35ab7c338c2e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1archspace_1_1SpacePortal.html">SpacePortal</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1SpaceQuery.html#a9bfd771fc2b0f8c6b1cf35ab7c338c2e">portals</a> () const</td></tr>
+<tr class="memdesc:a9bfd771fc2b0f8c6b1cf35ab7c338c2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wall openings and level portals as <a class="el" href="structeve_1_1archspace_1_1SpacePortal.html" title="Read-only portal view from Opening or Portal nodes.">SpacePortal</a> snapshots.  <br /></td></tr>
+<tr class="separator:a9bfd771fc2b0f8c6b1cf35ab7c338c2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff1dcd570b43f5b36cde217eca8b613c" id="r_aff1dcd570b43f5b36cde217eca8b613c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1archspace_1_1SpacePortal.html">SpacePortal</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1SpaceQuery.html#aff1dcd570b43f5b36cde217eca8b613c">portalsFrom</a> (const std::string &amp;regionId) const</td></tr>
+<tr class="memdesc:aff1dcd570b43f5b36cde217eca8b613c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Portals that touch the given region id.  <br /></td></tr>
+<tr class="separator:aff1dcd570b43f5b36cde217eca8b613c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7da9e597d1de70c3773322876482f7de" id="r_a7da9e597d1de70c3773322876482f7de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1SpaceQuery.html#a7da9e597d1de70c3773322876482f7de">regionsConnected</a> (const std::string &amp;regionAId, const std::string &amp;regionBId) const</td></tr>
+<tr class="memdesc:a7da9e597d1de70c3773322876482f7de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether two regions share a portal path (undirected, same connected component).  <br /></td></tr>
+<tr class="separator:a7da9e597d1de70c3773322876482f7de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab09c555a52f791dbc8991c3741259584" id="r_ab09c555a52f791dbc8991c3741259584"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1archspace_1_1SpaceAnchor.html">SpaceAnchor</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1SpaceQuery.html#ab09c555a52f791dbc8991c3741259584">anchorsIn</a> (const std::string &amp;regionId) const</td></tr>
+<tr class="memdesc:ab09c555a52f791dbc8991c3741259584"><td class="mdescLeft">&#160;</td><td class="mdescRight">Item anchors whose position lies inside the region polygon (same level).  <br /></td></tr>
+<tr class="separator:ab09c555a52f791dbc8991c3741259584"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Presentation-agnostic query facade over an <a class="el" href="classeve_1_1archspace_1_1ArchSpace.html" title="Runtime ArchSpace module entry used for profile wiring and script discovery.">ArchSpace</a> document. </p>
+<p>@ownership Borrows the document; does not own or mutate it. @lifetime Valid while the borrowed document remains alive and is not mutated. @thread Owner thread only. @cost Building a <a class="el" href="classeve_1_1archspace_1_1SpaceQuery.html" title="Presentation-agnostic query facade over an ArchSpace document.">SpaceQuery</a> is O(nodes). Individual queries are O(regions) or BFS over the portal graph unless noted. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceQuery_8h_source.html">ArchSpaceQuery.h</a> 第 <a class="el" href="ArchSpaceQuery_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="add44a49716c4d8cbf1713b9509dd348e" name="add44a49716c4d8cbf1713b9509dd348e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add44a49716c4d8cbf1713b9509dd348e">&#9670;&#160;</a></span>SpaceQuery()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::archspace::SpaceQuery::SpaceQuery </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1archspace_1_1Document.html">Document</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Bind to an existing document. @ownership Non-owning borrow of <code>document</code>; caller retains ownership. @lifetime Must outlive every <a class="el" href="classeve_1_1archspace_1_1SpaceQuery.html" title="Presentation-agnostic query facade over an ArchSpace document.">SpaceQuery</a> call on this instance. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceQuery_8cpp_source.html">ArchSpaceQuery.cpp</a> 第 <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ab09c555a52f791dbc8991c3741259584" name="ab09c555a52f791dbc8991c3741259584"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab09c555a52f791dbc8991c3741259584">&#9670;&#160;</a></span>anchorsIn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1archspace_1_1SpaceAnchor.html">SpaceAnchor</a> &gt; eve::archspace::SpaceQuery::anchorsIn </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>regionId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Item anchors whose position lies inside the region polygon (same level). </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceQuery_8cpp_source.html">ArchSpaceQuery.cpp</a> 第 <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceTypes_8h_source.html#l00127">eve::archspace::SpaceAnchor::catalogId</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00091">eve::archspace::Document::find()</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00124">eve::archspace::SpaceAnchor::id</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa7d74f3b92b19da5e606d737d339a9679">eve::archspace::Item</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00125">eve::archspace::SpaceAnchor::levelId</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00126">eve::archspace::SpaceAnchor::name</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00015">node</a>, <a class="el" href="ArchSpaceDocument_8h_source.html#l00033">eve::archspace::Document::nodes()</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00128">eve::archspace::SpaceAnchor::position</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00045">region</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00051">eve::archspace::Vec2::x</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00129">eve::archspace::SpaceAnchor::yawDegrees</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38">eve::archspace::Zone</a>.</p>
+
+</div>
+</div>
+<a id="a9bfd771fc2b0f8c6b1cf35ab7c338c2e" name="a9bfd771fc2b0f8c6b1cf35ab7c338c2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bfd771fc2b0f8c6b1cf35ab7c338c2e">&#9670;&#160;</a></span>portals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1archspace_1_1SpacePortal.html">SpacePortal</a> &gt; eve::archspace::SpaceQuery::portals </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Wall openings and level portals as <a class="el" href="structeve_1_1archspace_1_1SpacePortal.html" title="Read-only portal view from Opening or Portal nodes.">SpacePortal</a> snapshots. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceQuery_8cpp_source.html">ArchSpaceQuery.cpp</a> 第 <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RoadTraffic_8cpp_source.html#l00015">node</a>, <a class="el" href="ArchSpaceDocument_8h_source.html#l00033">eve::archspace::Document::nodes()</a>, <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa9bd99a0beea48f10663fc4a7d7a33140">eve::archspace::Opening</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aa3e9b3ac6f082ec46a2d1d3f1f1647456">eve::archspace::Portal</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00162">portalsFrom()</a> , 以及 <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00171">regionsConnected()</a>.</p>
+
+</div>
+</div>
+<a id="aff1dcd570b43f5b36cde217eca8b613c" name="aff1dcd570b43f5b36cde217eca8b613c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff1dcd570b43f5b36cde217eca8b613c">&#9670;&#160;</a></span>portalsFrom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1archspace_1_1SpacePortal.html">SpacePortal</a> &gt; eve::archspace::SpaceQuery::portalsFrom </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>regionId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Portals that touch the given region id. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceQuery_8cpp_source.html">ArchSpaceQuery.cpp</a> 第 <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a> , 以及 <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00149">portals()</a>.</p>
+
+</div>
+</div>
+<a id="af78a638d0fc29fb5fb723f128546b1ec" name="af78a638d0fc29fb5fb723f128546b1ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af78a638d0fc29fb5fb723f128546b1ec">&#9670;&#160;</a></span>regionAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structeve_1_1archspace_1_1SpaceRegion.html">SpaceRegion</a> &gt; eve::archspace::SpaceQuery::regionAt </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace_1_1Vec2.html">Vec2</a>&#160;</td>
+          <td class="paramname"><em>xz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>levelId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>First region whose polygon contains the XZ point on the given level. </p>
+<dl class="section return"><dt>返回</dt><dd>Region snapshot, or nullopt when none match. @cost O(regions on level) point-in-polygon tests. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceQuery_8cpp_source.html">ArchSpaceQuery.cpp</a> 第 <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RoadTraffic_8cpp_source.html#l00015">node</a>, <a class="el" href="ArchSpaceDocument_8h_source.html#l00033">eve::archspace::Document::nodes()</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00051">eve::archspace::Vec2::x</a>, <a class="el" href="ArchSpaceTypes_8h_source.html#l00052">eve::archspace::Vec2::z</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38">eve::archspace::Zone</a>.</p>
+
+</div>
+</div>
+<a id="a84db6b306b047e427bbfaf2c9663de01" name="a84db6b306b047e427bbfaf2c9663de01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84db6b306b047e427bbfaf2c9663de01">&#9670;&#160;</a></span>regions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1archspace_1_1SpaceRegion.html">SpaceRegion</a> &gt; eve::archspace::SpaceQuery::regions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>All Zone regions as <a class="el" href="structeve_1_1archspace_1_1SpaceRegion.html" title="Read-only region view projected from Zone nodes.">SpaceRegion</a> snapshots. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceQuery_8cpp_source.html">ArchSpaceQuery.cpp</a> 第 <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RoadTraffic_8cpp_source.html#l00015">node</a>, <a class="el" href="ArchSpaceDocument_8h_source.html#l00033">eve::archspace::Document::nodes()</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a> , 以及 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aab3ff996fe5c77610359114835baf9b38">eve::archspace::Zone</a>.</p>
+
+</div>
+</div>
+<a id="a7da9e597d1de70c3773322876482f7de" name="a7da9e597d1de70c3773322876482f7de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7da9e597d1de70c3773322876482f7de">&#9670;&#160;</a></span>regionsConnected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt; eve::archspace::SpaceQuery::regionsConnected </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>regionAId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>regionBId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether two regions share a portal path (undirected, same connected component). </p>
+<dl class="section return"><dt>返回</dt><dd>Success with true/false; InvalidArgument when either id is empty or unknown. @cost BFS over portal adjacency. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceQuery_8cpp_source.html">ArchSpaceQuery.cpp</a> 第 <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ArchSpaceDocument_8cpp_source.html#l00091">eve::archspace::Document::find()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00149">portals()</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a2ddcacd05b28c04d5a5a1cc98584b539" name="a2ddcacd05b28c04d5a5a1cc98584b539"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ddcacd05b28c04d5a5a1cc98584b539">&#9670;&#160;</a></span>strata()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::archspace::SpaceQuery::strata </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Level (stratum) ids in document iteration order. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceQuery_8cpp_source.html">ArchSpaceQuery.cpp</a> 第 <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1archspace.html#acdc28c3bf777ecb60d9be6a3c834161aaa0db49ba470c1c9ae2128c3470339153">eve::archspace::Level</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00015">node</a>, <a class="el" href="ArchSpaceDocument_8h_source.html#l00033">eve::archspace::Document::nodes()</a> , 以及 <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>.</p>
+
+</div>
+</div>
+<a id="a070fa9cb82b06b0c2a140a049a34a1cc" name="a070fa9cb82b06b0c2a140a049a34a1cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a070fa9cb82b06b0c2a140a049a34a1cc">&#9670;&#160;</a></span>topology()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1archspace.html#af7b2f4e1edbfac1b8ad4f7f61d61571e">TopologyKind</a> eve::archspace::SpaceQuery::topology </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p><a class="el" href="classeve_1_1archspace_1_1Document.html" title="Authoritative ArchSpace document (Pascal-like node graph).">Document</a> topology dialect. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceQuery_8cpp_source.html">ArchSpaceQuery.cpp</a> 第 <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1archspace.html#af7b2f4e1edbfac1b8ad4f7f61d61571ea4e1698d93176b978070c3be7ea60fdec">eve::archspace::Architectural</a> , 以及 <a class="el" href="ArchSpaceDocument_8h_source.html#l00038">eve::archspace::Document::topology()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/archspace/<a class="el" href="ArchSpaceQuery_8h_source.html">ArchSpaceQuery.h</a></li>
+<li>src/modules/archspace/<a class="el" href="ArchSpaceQuery_8cpp_source.html">ArchSpaceQuery.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

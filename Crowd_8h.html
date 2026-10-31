@@ -1,0 +1,330 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/crowd/Crowd.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_dcb6d51ed595f676e5530c21ce2add48.html">crowd</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a>  </div>
+  <div class="headertitle"><div class="title">Crowd.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="Export_8h_source.html">common/Export.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="LifetimeWitness_8h_source.html">common/LifetimeWitness.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Module_8h_source.html">common/Module.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Time_8h_source.html">common/Time.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="CrowdField_8h_source.html">crowd/CrowdField.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="CrowdTypes_8h_source.html">crowd/CrowdTypes.h</a>&quot;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;optional&gt;</code><br />
+<code>#include &lt;span&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="Crowd_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentState.html">eve::crowd::AgentState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">单个单位的状态快照（脚本 getAgentState 返回值）。 action: 0=idle, 1=flow, 2=seek, 3=boids。  <a href="structeve_1_1crowd_1_1AgentState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1FlowVec.html">eve::crowd::FlowVec</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">流场采样结果（脚本 flowAtWorld / flowAtCell 返回值）。  <a href="structeve_1_1crowd_1_1FlowVec.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1FlowSample.html">eve::crowd::FlowSample</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning lease sample with explicit reachability.  <a href="structeve_1_1crowd_1_1FlowSample.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1FieldObservation.html">eve::crowd::FieldObservation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning navigation metadata; no arrays or pointers are borrowed.  <a href="structeve_1_1crowd_1_1FieldObservation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html">eve::crowd::AdvanceBudget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic operation budgets; exhaustion rejects the entire step before publication.  <a href="structeve_1_1crowd_1_1AdvanceBudget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1CrowdStep.html">eve::crowd::CrowdStep</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit owner step; positive duration consumes the next contiguous tick. Zero reconciles current tick.  <a href="structeve_1_1crowd_1_1CrowdStep.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html">eve::crowd::StepReport</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning observations of one completed advance; simulation-thread only.  <a href="structeve_1_1crowd_1_1StepReport.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AvoidanceSettings.html">eve::crowd::AvoidanceSettings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional bounded velocity sampling for RTS local avoidance.  <a href="structeve_1_1crowd_1_1AvoidanceSettings.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentInteraction.html">eve::crowd::AgentInteraction</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Independent local interaction policy, copied into <a class="el" href="classeve_1_1crowd_1_1Crowd.html" title="群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。">Crowd</a> storage.  <a href="structeve_1_1crowd_1_1AgentInteraction.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1InteractionPolicy.html">eve::crowd::InteractionPolicy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical independent predictive-steering and body-contact policy; both filters are symmetric.  <a href="structeve_1_1crowd_1_1InteractionPolicy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1SteeringIntent.html">eve::crowd::SteeringIntent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning local steering request; does not retain navigation or gameplay objects.  <a href="structeve_1_1crowd_1_1SteeringIntent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentUpdate.html">eve::crowd::AgentUpdate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned changes for one live agent. Absent fields keep their existing values.  <a href="structeve_1_1crowd_1_1AgentUpdate.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentUpdateBatch.html">eve::crowd::AgentUpdateBatch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Caller-built atomic update batch; duplicate agent references are rejected.  <a href="structeve_1_1crowd_1_1AgentUpdateBatch.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentRemovalBatch.html">eve::crowd::AgentRemovalBatch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned identities to remove atomically; duplicate and stale references are rejected.  <a href="structeve_1_1crowd_1_1AgentRemovalBatch.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentRelocation.html">eve::crowd::AgentRelocation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit relocation of one live agent; velocity resets while identity and intent remain.  <a href="structeve_1_1crowd_1_1AgentRelocation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentRelocationBatch.html">eve::crowd::AgentRelocationBatch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomic exact placement batch; rejects terrain/contact violations without pushing neighbors.  <a href="structeve_1_1crowd_1_1AgentRelocationBatch.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentBatchReceipt.html">eve::crowd::AgentBatchReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning receipt for a committed update or removal batch.  <a href="structeve_1_1crowd_1_1AgentBatchReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentFrameEntry.html">eve::crowd::AgentFrameEntry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning row for a reusable renderer-neutral output frame.  <a href="structeve_1_1crowd_1_1AgentFrameEntry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentFrame.html">eve::crowd::AgentFrame</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Caller-owned frame storage; no pointers into <a class="el" href="classeve_1_1crowd_1_1Crowd.html" title="群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。">Crowd</a> are retained.  <a href="structeve_1_1crowd_1_1AgentFrame.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1SpawnRequest.html">eve::crowd::SpawnRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One named agent to create; all fields are owned values.  <a href="structeve_1_1crowd_1_1SpawnRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1SpawnBatch.html">eve::crowd::SpawnBatch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Caller-built transaction; positive budgets bound search and relaxation. @cost Linear in requested agents plus bounded candidate/contact checks; callers amortize by batching spawns.  <a href="structeve_1_1crowd_1_1SpawnBatch.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1SpawnPlacement.html">eve::crowd::SpawnPlacement</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning placement result, independent of compact slots and subsequent removal.  <a href="structeve_1_1crowd_1_1SpawnPlacement.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1SpawnReceipt.html">eve::crowd::SpawnReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observations from a committed spawn transaction. @cost Linear in created placement count; returned by value once per spawn batch.  <a href="structeve_1_1crowd_1_1SpawnReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。  <a href="classeve_1_1crowd_1_1Crowd.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd_1_1SurfacePlan.html">eve::crowd::Crowd::SurfacePlan</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move-only prepared terrain/navigation publication.  <a href="classeve_1_1crowd_1_1Crowd_1_1SurfacePlan.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1Crowd_1_1FlowBuildProgress.html">eve::crowd::Crowd::FlowBuildProgress</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic work consumed by a navigation advancement.  <a href="structeve_1_1crowd_1_1Crowd_1_1FlowBuildProgress.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd_1_1FlowBuildPlan.html">eve::crowd::Crowd::FlowBuildPlan</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move-only navigation workstate; contains no borrowed provider pointers.  <a href="classeve_1_1crowd_1_1Crowd_1_1FlowBuildPlan.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd_1_1Snapshot.html">eve::crowd::Crowd::Snapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable in-process checkpoint; not a persistent or cross-process format.  <a href="classeve_1_1crowd_1_1Crowd_1_1Snapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd_1_1RestorePlan.html">eve::crowd::Crowd::RestorePlan</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepared restore workspace; owns allocations until commit or destruction.  <a href="classeve_1_1crowd_1_1Crowd_1_1RestorePlan.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd_1_1AgentUpdatePlan.html">eve::crowd::Crowd::AgentUpdatePlan</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move-only owning preparation token; contains values and owner identity, never a <a class="el" href="classeve_1_1crowd_1_1Crowd.html" title="群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。">Crowd</a> pointer. @ownership Holds immutable flow leases when present; provider-first destruction is safe. @lifetime Single successful commit; restore or stale references reject atomically. @thread Owner thread only. @reentrancy No callbacks. Not persistent or cross-process data.  <a href="classeve_1_1crowd_1_1Crowd_1_1AgentUpdatePlan.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1crowd" id="r_namespaceeve_1_1crowd"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html">eve::crowd</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:ab5e625d9d717c938ecad48fdd9e0098d" id="r_ab5e625d9d717c938ecad48fdd9e0098d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#ab5e625d9d717c938ecad48fdd9e0098d">eve::crowd::AgentCreateBatch</a> = <a class="el" href="structeve_1_1crowd_1_1SpawnBatch.html">SpawnBatch</a></td></tr>
+<tr class="memdesc:ab5e625d9d717c938ecad48fdd9e0098d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical creation batch; reuses the existing atomic placement policies and budgets.  <br /></td></tr>
+<tr class="separator:ab5e625d9d717c938ecad48fdd9e0098d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:ad48d153b55bdf5bf78a21f9bee3e9429" id="r_ad48d153b55bdf5bf78a21f9bee3e9429"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#ad48d153b55bdf5bf78a21f9bee3e9429">eve::crowd::FlowSampleState</a> { <a class="el" href="namespaceeve_1_1crowd.html#ad48d153b55bdf5bf78a21f9bee3e9429ae8f4d2326bcff302195325bc82960e16">eve::crowd::Reachable</a>
+, <a class="el" href="namespaceeve_1_1crowd.html#ad48d153b55bdf5bf78a21f9bee3e9429a4bed942140642650ca78039de000796a">eve::crowd::Unreachable</a>
+ }</td></tr>
+<tr class="memdesc:ad48d153b55bdf5bf78a21f9bee3e9429"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reachability is distinct from gameplay arrival.  <a href="namespaceeve_1_1crowd.html#ad48d153b55bdf5bf78a21f9bee3e9429">更多...</a><br /></td></tr>
+<tr class="separator:ad48d153b55bdf5bf78a21f9bee3e9429"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f66f887e9a0df0480550a93f2d2c760" id="r_a6f66f887e9a0df0480550a93f2d2c760"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760">eve::crowd::SolveQuality</a> : std::uint32_t { <a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760aae94f80b3ce82062a5dd7815daa04f9d">eve::crowd::Complete</a> = 0
+, <a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760a1ced70bd055572c74ac874b5fcb6478e">eve::crowd::PredictionTruncated</a> = 1
+, <a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760a331ae2da4050dec5e657cfe3e6d0207d">eve::crowd::ContactResidual</a> = 2
+, <a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760a4f51686969109f82d6b1acc1c25c1053">eve::crowd::WallResidual</a> = 4
+ }</td></tr>
+<tr class="memdesc:a6f66f887e9a0df0480550a93f2d2c760"><td class="mdescLeft">&#160;</td><td class="mdescRight">Independent quality flags; complete is zero, truncation/residuals may coexist.  <a href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760">更多...</a><br /></td></tr>
+<tr class="separator:a6f66f887e9a0df0480550a93f2d2c760"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af19c9d33498f8e95be1180d56f6a3bb1" id="r_af19c9d33498f8e95be1180d56f6a3bb1"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#af19c9d33498f8e95be1180d56f6a3bb1">eve::crowd::AgentAction</a> : std::int32_t { <a class="el" href="namespaceeve_1_1crowd.html#af19c9d33498f8e95be1180d56f6a3bb1ae599161956d626eda4cb0a5ffb85271c">eve::crowd::Idle</a> = 0
+, <a class="el" href="namespaceeve_1_1crowd.html#af19c9d33498f8e95be1180d56f6a3bb1af1a76f66cca677c6e628d9ca58a6c8fc">eve::crowd::Flow</a> = 1
+, <a class="el" href="namespaceeve_1_1crowd.html#af19c9d33498f8e95be1180d56f6a3bb1aed7ecb1dbb9be8c65f909819dac7aa54">eve::crowd::Seek</a> = 2
+, <a class="el" href="namespaceeve_1_1crowd.html#af19c9d33498f8e95be1180d56f6a3bb1af1a6108c4ad79cf92bc7f0fc3c953f38">eve::crowd::Boids</a> = 3
+ }</td></tr>
+<tr class="memdesc:af19c9d33498f8e95be1180d56f6a3bb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strong locomotion intent; numeric values retain compatibility action codes.  <a href="namespaceeve_1_1crowd.html#af19c9d33498f8e95be1180d56f6a3bb1">更多...</a><br /></td></tr>
+<tr class="separator:af19c9d33498f8e95be1180d56f6a3bb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ec6fcd02e9ca1f10c87dc2affa41de6" id="r_a8ec6fcd02e9ca1f10c87dc2affa41de6"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a8ec6fcd02e9ca1f10c87dc2affa41de6">eve::crowd::SpawnPolicy</a> { <a class="el" href="namespaceeve_1_1crowd.html#a8ec6fcd02e9ca1f10c87dc2affa41de6a1534d7ab1a66b9fa09cf7fb8b4ae7558">eve::crowd::RejectOverlap</a>
+, <a class="el" href="namespaceeve_1_1crowd.html#a8ec6fcd02e9ca1f10c87dc2affa41de6a73c7dc50778e21c99e7287cd96781689">eve::crowd::NearestFree</a>
+, <a class="el" href="namespaceeve_1_1crowd.html#a8ec6fcd02e9ca1f10c87dc2affa41de6a16388ac552d3f057b02a524955441483">eve::crowd::PushNeighbors</a>
+ }</td></tr>
+<tr class="memdesc:a8ec6fcd02e9ca1f10c87dc2affa41de6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Placement policy for an atomic spawn batch.  <a href="namespaceeve_1_1crowd.html#a8ec6fcd02e9ca1f10c87dc2affa41de6">更多...</a><br /></td></tr>
+<tr class="separator:a8ec6fcd02e9ca1f10c87dc2affa41de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

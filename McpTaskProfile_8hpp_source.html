@@ -1,0 +1,255 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/devtools/McpTaskProfile.hpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3a7b6b76fa35de02dad03b6cb9ae0de0.html">devtools</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">McpTaskProfile.hpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="McpTaskProfile_8hpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dev.html">eve::dev</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1McpProfileEscalate.html">   28</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dev_1_1McpProfileEscalate.html">McpProfileEscalate</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1McpProfileEscalate.html#a1e935428e107f58105c03acf9283ec29">   29</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a1e935428e107f58105c03acf9283ec29">to</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1McpProfileEscalate.html#a6132081ef88ac9c72ff6a37da24b70bb">   30</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a6132081ef88ac9c72ff6a37da24b70bb">reason</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1McpProfileEscalate.html#ae47070a7e9d178f96e8db47cbdbc4844">   31</a></span>    std::string <a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#ae47070a7e9d178f96e8db47cbdbc4844">errorCode</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>};</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1McpFilterStats.html">   35</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1dev_1_1McpFilterStats.html">McpFilterStats</a> {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1McpFilterStats.html#af939a8c733dc301afc118728e0738849">   36</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1dev_1_1McpFilterStats.html#af939a8c733dc301afc118728e0738849">toolCalls</a>         = 0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1McpFilterStats.html#a9b354c1bea4d0f1774ff12a3b18b4904">   37</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1dev_1_1McpFilterStats.html#a9b354c1bea4d0f1774ff12a3b18b4904">toolsFiltered</a>     = 0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1McpFilterStats.html#a9728b8c90e84f92aa4c9488e8b9e1e59">   38</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1dev_1_1McpFilterStats.html#a9728b8c90e84f92aa4c9488e8b9e1e59">escalateCount</a>     = 0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1dev_1_1McpFilterStats.html#af135048b21dbb822a1c656260ab97398">   39</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1dev_1_1McpFilterStats.html#af135048b21dbb822a1c656260ab97398">approxResultBytes</a> = 0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>};</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#a07ed5797d6c5c44896e42a6f75e4ceca">mcpResolveTaskProfile</a>(std::string_view taskKind, std::string_view profile,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                                                                 std::string* outProfile, std::string* outTaskKind,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                                                                 std::string* errorCode, std::string* errorMessage);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> std::vector&lt;std::string&gt; <a class="code hl_function" href="namespaceeve_1_1dev.html#a128b88ae0b6eb137507bb5324be38ec2">mcpProfileToolsetTags</a>(std::string_view profile);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> std::string <a class="code hl_function" href="namespaceeve_1_1dev.html#a43f7a7e0a343a93f9612d6a615f27034">mcpProfileToolsetEnv</a>(std::string_view profile);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#ac4cd94dc3a19bfdbe012ce8e0cb15410">mcpProfileAllowsTool</a>(std::string_view profile, std::string_view tool);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> std::optional&lt;McpProfileEscalate&gt; <a class="code hl_function" href="namespaceeve_1_1dev.html#aea2eabe60f82416680b63f0600dc1e20">mcpProfileEscalateHint</a>(std::string_view profile,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                                                                                               std::string_view tool);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#a5be86f37df15d0c3e6d0af31dd8d1bbe">mcpSetProcessProfile</a>(std::string_view profile);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> std::string <a class="code hl_function" href="namespaceeve_1_1dev.html#a0a3094e8912dfe99eb43655c9783df9e">mcpProcessProfile</a>();</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#af0e937dffd8de2ae820c51355d6263ab">mcpSetSessionProfile</a>(std::string_view profile);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> std::string <a class="code hl_function" href="namespaceeve_1_1dev.html#add6e50301fc69897a258b32f87a72291">mcpSessionProfile</a>();</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#ad478b89abbc7b7a3abfdf03c62174978">mcpFilterNoteCall</a>(<span class="keywordtype">bool</span> allowed, std::size_t resultBytes, <span class="keywordtype">bool</span> offeredEscalate);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_struct" href="structeve_1_1dev_1_1McpFilterStats.html">McpFilterStats</a> <a class="code hl_function" href="namespaceeve_1_1dev.html#a9adac47d34c2e059ee5000ce7a79628c">mcpFilterStats</a>();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#aa429888f02223274e3cbec5aecdcc36d">mcpFilterStatsResetForTest</a>();</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}  <span class="comment">// namespace eve::dev</span></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a704bb99555d8684cacf66248b5c3d70c"><div class="ttname"><a href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a></div><div class="ttdeci">#define EVENGINE_API_FOUNDATION</div><div class="ttdoc">每个链接组（link group）各自的导出宏。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00106">Export.h:106</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html"><div class="ttname"><a href="namespaceeve_1_1dev.html">eve::dev</a></div><div class="ttdef"><b>Definition</b> <a href="AgentDevelopmentMcp_8cpp_source.html#l00014">AgentDevelopmentMcp.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a07ed5797d6c5c44896e42a6f75e4ceca"><div class="ttname"><a href="namespaceeve_1_1dev.html#a07ed5797d6c5c44896e42a6f75e4ceca">eve::dev::mcpResolveTaskProfile</a></div><div class="ttdeci">bool mcpResolveTaskProfile(std::string_view taskKind, std::string_view profile, std::string *outProfile, std::string *outTaskKind, std::string *errorCode, std::string *errorMessage)</div><div class="ttdoc">Resolve taskKind + optional profile into a concrete profile id.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00080">McpTaskProfile.cpp:80</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a0a3094e8912dfe99eb43655c9783df9e"><div class="ttname"><a href="namespaceeve_1_1dev.html#a0a3094e8912dfe99eb43655c9783df9e">eve::dev::mcpProcessProfile</a></div><div class="ttdeci">std::string mcpProcessProfile()</div><div class="ttdoc">Current process-level profile; empty when unset.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00263">McpTaskProfile.cpp:263</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a128b88ae0b6eb137507bb5324be38ec2"><div class="ttname"><a href="namespaceeve_1_1dev.html#a128b88ae0b6eb137507bb5324be38ec2">eve::dev::mcpProfileToolsetTags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; mcpProfileToolsetTags(std::string_view profile)</div><div class="ttdoc">Tag list advertised for EVE_MCP_TOOLSET when only a named profile is chosen.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00123">McpTaskProfile.cpp:123</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a43f7a7e0a343a93f9612d6a615f27034"><div class="ttname"><a href="namespaceeve_1_1dev.html#a43f7a7e0a343a93f9612d6a615f27034">eve::dev::mcpProfileToolsetEnv</a></div><div class="ttdeci">std::string mcpProfileToolsetEnv(std::string_view profile)</div><div class="ttdoc">Comma-joined toolset tags for env forwarding (eve-mcp --profile=).</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00133">McpTaskProfile.cpp:133</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a5be86f37df15d0c3e6d0af31dd8d1bbe"><div class="ttname"><a href="namespaceeve_1_1dev.html#a5be86f37df15d0c3e6d0af31dd8d1bbe">eve::dev::mcpSetProcessProfile</a></div><div class="ttdeci">void mcpSetProcessProfile(std::string_view profile)</div><div class="ttdoc">Install or clear the process-level profile (EVE_MCP_PROFILE mirror for tests).</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00257">McpTaskProfile.cpp:257</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a9adac47d34c2e059ee5000ce7a79628c"><div class="ttname"><a href="namespaceeve_1_1dev.html#a9adac47d34c2e059ee5000ce7a79628c">eve::dev::mcpFilterStats</a></div><div class="ttdeci">McpFilterStats mcpFilterStats()</div><div class="ttdoc">Snapshot of proxy metrics since process start / last test reset.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00287">McpTaskProfile.cpp:287</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_aa429888f02223274e3cbec5aecdcc36d"><div class="ttname"><a href="namespaceeve_1_1dev.html#aa429888f02223274e3cbec5aecdcc36d">eve::dev::mcpFilterStatsResetForTest</a></div><div class="ttdeci">void mcpFilterStatsResetForTest()</div><div class="ttdoc">Test helper: zero proxy metrics.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00292">McpTaskProfile.cpp:292</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_ac4cd94dc3a19bfdbe012ce8e0cb15410"><div class="ttname"><a href="namespaceeve_1_1dev.html#ac4cd94dc3a19bfdbe012ce8e0cb15410">eve::dev::mcpProfileAllowsTool</a></div><div class="ttdeci">bool mcpProfileAllowsTool(std::string_view profile, std::string_view tool)</div><div class="ttdoc">Whether tool is allowed under a concrete named profile (empty = no profile gate).</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00143">McpTaskProfile.cpp:143</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_ad478b89abbc7b7a3abfdf03c62174978"><div class="ttname"><a href="namespaceeve_1_1dev.html#ad478b89abbc7b7a3abfdf03c62174978">eve::dev::mcpFilterNoteCall</a></div><div class="ttdeci">void mcpFilterNoteCall(bool allowed, std::size_t resultBytes, bool offeredEscalate)</div><div class="ttdoc">Record a tools/call attempt for proxy metrics.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00279">McpTaskProfile.cpp:279</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_add6e50301fc69897a258b32f87a72291"><div class="ttname"><a href="namespaceeve_1_1dev.html#add6e50301fc69897a258b32f87a72291">eve::dev::mcpSessionProfile</a></div><div class="ttdeci">std::string mcpSessionProfile()</div><div class="ttdoc">Current session-level profile; empty when no session overlay.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00274">McpTaskProfile.cpp:274</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_aea2eabe60f82416680b63f0600dc1e20"><div class="ttname"><a href="namespaceeve_1_1dev.html#aea2eabe60f82416680b63f0600dc1e20">eve::dev::mcpProfileEscalateHint</a></div><div class="ttdeci">std::optional&lt; McpProfileEscalate &gt; mcpProfileEscalateHint(std::string_view profile, std::string_view tool)</div><div class="ttdoc">Suggest an escalate edge when tool is denied by profile.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00206">McpTaskProfile.cpp:206</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_af0e937dffd8de2ae820c51355d6263ab"><div class="ttname"><a href="namespaceeve_1_1dev.html#af0e937dffd8de2ae820c51355d6263ab">eve::dev::mcpSetSessionProfile</a></div><div class="ttdeci">void mcpSetSessionProfile(std::string_view profile)</div><div class="ttdoc">Install or clear the session-level profile overlay.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00269">McpTaskProfile.cpp:269</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpFilterStats_html"><div class="ttname"><a href="structeve_1_1dev_1_1McpFilterStats.html">eve::dev::McpFilterStats</a></div><div class="ttdoc">Proxy counters for profile A/B comparisons (not billing truth).</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00035">McpTaskProfile.hpp:35</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpFilterStats_html_a9728b8c90e84f92aa4c9488e8b9e1e59"><div class="ttname"><a href="structeve_1_1dev_1_1McpFilterStats.html#a9728b8c90e84f92aa4c9488e8b9e1e59">eve::dev::McpFilterStats::escalateCount</a></div><div class="ttdeci">std::uint64_t escalateCount</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00038">McpTaskProfile.hpp:38</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpFilterStats_html_a9b354c1bea4d0f1774ff12a3b18b4904"><div class="ttname"><a href="structeve_1_1dev_1_1McpFilterStats.html#a9b354c1bea4d0f1774ff12a3b18b4904">eve::dev::McpFilterStats::toolsFiltered</a></div><div class="ttdeci">std::uint64_t toolsFiltered</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00037">McpTaskProfile.hpp:37</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpFilterStats_html_af135048b21dbb822a1c656260ab97398"><div class="ttname"><a href="structeve_1_1dev_1_1McpFilterStats.html#af135048b21dbb822a1c656260ab97398">eve::dev::McpFilterStats::approxResultBytes</a></div><div class="ttdeci">std::uint64_t approxResultBytes</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00039">McpTaskProfile.hpp:39</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpFilterStats_html_af939a8c733dc301afc118728e0738849"><div class="ttname"><a href="structeve_1_1dev_1_1McpFilterStats.html#af939a8c733dc301afc118728e0738849">eve::dev::McpFilterStats::toolCalls</a></div><div class="ttdeci">std::uint64_t toolCalls</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00036">McpTaskProfile.hpp:36</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpProfileEscalate_html"><div class="ttname"><a href="structeve_1_1dev_1_1McpProfileEscalate.html">eve::dev::McpProfileEscalate</a></div><div class="ttdoc">Suggested profile change when a call is rejected by the active profile.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00028">McpTaskProfile.hpp:28</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpProfileEscalate_html_a1e935428e107f58105c03acf9283ec29"><div class="ttname"><a href="structeve_1_1dev_1_1McpProfileEscalate.html#a1e935428e107f58105c03acf9283ec29">eve::dev::McpProfileEscalate::to</a></div><div class="ttdeci">std::string to</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00029">McpTaskProfile.hpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpProfileEscalate_html_a6132081ef88ac9c72ff6a37da24b70bb"><div class="ttname"><a href="structeve_1_1dev_1_1McpProfileEscalate.html#a6132081ef88ac9c72ff6a37da24b70bb">eve::dev::McpProfileEscalate::reason</a></div><div class="ttdeci">std::string reason</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00030">McpTaskProfile.hpp:30</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpProfileEscalate_html_ae47070a7e9d178f96e8db47cbdbc4844"><div class="ttname"><a href="structeve_1_1dev_1_1McpProfileEscalate.html#ae47070a7e9d178f96e8db47cbdbc4844">eve::dev::McpProfileEscalate::errorCode</a></div><div class="ttdeci">std::string errorCode</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00031">McpTaskProfile.hpp:31</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

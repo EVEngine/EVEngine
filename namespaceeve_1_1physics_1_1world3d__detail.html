@@ -1,0 +1,487 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::world3d_detail 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics_1_1world3d__detail.html">world3d_detail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::world3d_detail 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1world3d__detail_1_1ScopedQueryState3D.html">ScopedQueryState3D</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a13f9ac7b4b0fc86fb47a24ea71d06f6d" id="r_a13f9ac7b4b0fc86fb47a24ea71d06f6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1world3d__detail.html#a13f9ac7b4b0fc86fb47a24ea71d06f6d">bodyFromShape</a> (b3ShapeId <a class="el" href="VehicleTires3D_8cpp.html#a543fd6fe2dfd9d8c7434dc2653e55058">shapeId</a>)</td></tr>
+<tr class="memdesc:a13f9ac7b4b0fc86fb47a24ea71d06f6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a native Box3D user-data observer for an immediate internal call.  <br /></td></tr>
+<tr class="separator:a13f9ac7b4b0fc86fb47a24ea71d06f6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8444bb1f1402da8a3ce9bf29cdbe1d6c" id="r_a8444bb1f1402da8a3ce9bf29cdbe1d6c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1world3d__detail.html#a8444bb1f1402da8a3ce9bf29cdbe1d6c">shapeFromShape</a> (b3ShapeId <a class="el" href="VehicleTires3D_8cpp.html#a543fd6fe2dfd9d8c7434dc2653e55058">shapeId</a>)</td></tr>
+<tr class="memdesc:a8444bb1f1402da8a3ce9bf29cdbe1d6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a native Box3D user-data observer for an immediate internal call.  <br /></td></tr>
+<tr class="separator:a8444bb1f1402da8a3ce9bf29cdbe1d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a763cdeca50ac1bbf46da45e216b407" id="r_a8a763cdeca50ac1bbf46da45e216b407"><td class="memItemLeft" align="right" valign="top">b3Quat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1world3d__detail.html#a8a763cdeca50ac1bbf46da45e216b407">normalizedQueryQuat</a> (float <a class="el" href="PortableWorldSnapshot_8cpp.html#a98140a22cd03891977c8a250866529f8">qx</a>, float <a class="el" href="PortableWorldSnapshot_8cpp.html#a77559003eac11f329d36ea46935701ff">qy</a>, float <a class="el" href="PortableWorldSnapshot_8cpp.html#acaf3a0afe6f4380cb5168e1fe888cfcd">qz</a>, float <a class="el" href="PortableWorldSnapshot_8cpp.html#aa6a8fec8c4c87f4b62bd3d8ca1b76ec7">qw</a>, const char *<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>)</td></tr>
+<tr class="separator:a8a763cdeca50ac1bbf46da45e216b407"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3da4a03af94c685a41077edaab427e52" id="r_a3da4a03af94c685a41077edaab427e52"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1world3d__detail.html#a3da4a03af94c685a41077edaab427e52">makeBoxProxyPoints</a> (b3Vec3(&amp;<a class="el" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>)[8], float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, float <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, float <a class="el" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>, b3Quat <a class="el" href="GtsMeshSimplifier_8cpp.html#a0f8c585c1198bd8e07eba4b29cb3f745">q</a>, const char *<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>)</td></tr>
+<tr class="separator:a3da4a03af94c685a41077edaab427e52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0038a5f40ca003f48d6f6c554f0e6a7e" id="r_a0038a5f40ca003f48d6f6c554f0e6a7e"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a0038a5f40ca003f48d6f6c554f0e6a7e"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1world3d__detail.html#a0038a5f40ca003f48d6f6c554f0e6a7e">ownedQueryFailure</a> (<a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a> <a class="el" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, std::string <a class="el" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, std::string <a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>={})</td></tr>
+<tr class="separator:a0038a5f40ca003f48d6f6c554f0e6a7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d93336797c9481971ffae7d019b11da" id="r_a3d93336797c9481971ffae7d019b11da"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a3d93336797c9481971ffae7d019b11da"><td class="memTemplItemLeft" align="right" valign="top">T&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1world3d__detail.html#a3d93336797c9481971ffae7d019b11da">worldValue</a> (<a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; T &gt; <a class="el" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>)</td></tr>
+<tr class="separator:a3d93336797c9481971ffae7d019b11da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad936dfd4ae20bfc93d25a84cc5c6514d" id="r_ad936dfd4ae20bfc93d25a84cc5c6514d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1world3d__detail.html#ad936dfd4ae20bfc93d25a84cc5c6514d">worldValue</a> (<a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; <a class="el" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>)</td></tr>
+<tr class="separator:ad936dfd4ae20bfc93d25a84cc5c6514d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a13f9ac7b4b0fc86fb47a24ea71d06f6d" name="a13f9ac7b4b0fc86fb47a24ea71d06f6d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a13f9ac7b4b0fc86fb47a24ea71d06f6d">&#9670;&#160;</a></span>bodyFromShape()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> * eve::physics::world3d_detail::bodyFromShape </td>
+          <td>(</td>
+          <td class="paramtype">b3ShapeId&#160;</td>
+          <td class="paramname"><em>shapeId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolves a native Box3D user-data observer for an immediate internal call. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable <a class="el" href="classeve_1_1physics_1_1Body3D.html" title="Backend-neutral 3D rigid body in meter-space coordinates (+Y up by convention). Owned by a World3D; c...">Body3D</a> pointer; invalid native IDs yield null. @ownership The native user-data slot does not own the wrapper. @lifetime Valid only until wrapper invalidation or destruction; never retain across mutation. @thread Owning simulation thread only; invokes no callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Box3DWorldInternal_8h_source.html">Box3DWorldInternal.h</a> 第 <a class="el" href="Box3DWorldInternal_8h_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTires3D_8cpp_source.html#l00048">shapeId</a>.</p>
+
+</div>
+</div>
+<a id="a3da4a03af94c685a41077edaab427e52" name="a3da4a03af94c685a41077edaab427e52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3da4a03af94c685a41077edaab427e52">&#9670;&#160;</a></span>makeBoxProxyPoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::world3d_detail::makeBoxProxyPoints </td>
+          <td>(</td>
+          <td class="paramtype">b3Vec3(&amp;)&#160;</td>
+          <td class="paramname"><em>points</em>[8], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>depth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">b3Quat&#160;</td>
+          <td class="paramname"><em>q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>operation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Box3DWorldInternal_8h_source.html">Box3DWorldInternal.h</a> 第 <a class="el" href="Box3DWorldInternal_8h_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00034">depth</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00152">operation</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00304">point</a>, <a class="el" href="PrimitiveDrawList_8cpp_source.html#l00076">points</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a8a763cdeca50ac1bbf46da45e216b407" name="a8a763cdeca50ac1bbf46da45e216b407"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a763cdeca50ac1bbf46da45e216b407">&#9670;&#160;</a></span>normalizedQueryQuat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">b3Quat eve::physics::world3d_detail::normalizedQueryQuat </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>qx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>qy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>qz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>qw</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>operation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Box3DWorldInternal_8h_source.html">Box3DWorldInternal.h</a> 第 <a class="el" href="Box3DWorldInternal_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00152">operation</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00176">qw</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00176">qx</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00176">qy</a> , 以及 <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00176">qz</a>.</p>
+
+</div>
+</div>
+<a id="a0038a5f40ca003f48d6f6c554f0e6a7e" name="a0038a5f40ca003f48d6f6c554f0e6a7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0038a5f40ca003f48d6f6c554f0e6a7e">&#9670;&#160;</a></span>ownedQueryFailure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; T &gt; eve::physics::world3d_detail::ownedQueryFailure </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a>&#160;</td>
+          <td class="paramname"><em>code</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World3DInternal_8h_source.html">World3DInternal.h</a> 第 <a class="el" href="World3DInternal_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8444bb1f1402da8a3ce9bf29cdbe1d6c" name="a8444bb1f1402da8a3ce9bf29cdbe1d6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8444bb1f1402da8a3ce9bf29cdbe1d6c">&#9670;&#160;</a></span>shapeFromShape()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> * eve::physics::world3d_detail::shapeFromShape </td>
+          <td>(</td>
+          <td class="paramtype">b3ShapeId&#160;</td>
+          <td class="paramname"><em>shapeId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolves a native Box3D user-data observer for an immediate internal call. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed nullable <a class="el" href="classeve_1_1physics_1_1Shape3D.html" title="3D shape (box/sphere/capsule) attached to a Body3D with material settings. Created via Body3D::new*Sh...">Shape3D</a> pointer; invalid native IDs yield null. @ownership The native user-data slot does not own the wrapper. @lifetime Valid only until wrapper invalidation or destruction; never retain across mutation. @thread Owning simulation thread only; invokes no callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Box3DWorldInternal_8h_source.html">Box3DWorldInternal.h</a> 第 <a class="el" href="Box3DWorldInternal_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTires3D_8cpp_source.html#l00048">shapeId</a>.</p>
+
+</div>
+</div>
+<a id="a3d93336797c9481971ffae7d019b11da" name="a3d93336797c9481971ffae7d019b11da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d93336797c9481971ffae7d019b11da">&#9670;&#160;</a></span>worldValue() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">T eve::physics::world3d_detail::worldValue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; T &gt;&#160;</td>
+          <td class="paramname"><em>result</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World3DInternal_8h_source.html">World3DInternal.h</a> 第 <a class="el" href="World3DInternal_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="World3DQueries_8cpp_source.html#l00102">eve::physics::World3D::castBoxAll()</a>, <a class="el" href="World3DQueries_8cpp_source.html#l00090">eve::physics::World3D::castCapsuleAll()</a>, <a class="el" href="World3DQueries_8cpp_source.html#l00079">eve::physics::World3D::castSphereAll()</a>, <a class="el" href="World3DQueries_8cpp_source.html#l00108">eve::physics::World3D::closestPoint()</a>, <a class="el" href="World3D_8cpp_source.html#l00562">eve::physics::World3D::emitContactEvents()</a>, <a class="el" href="World3D_8cpp_source.html#l00156">eve::physics::World3D::explode()</a>, <a class="el" href="World3D_8cpp_source.html#l00220">eve::physics::World3D::getAwakeBodyCount()</a>, <a class="el" href="World3D_8cpp_source.html#l00209">eve::physics::World3D::getAwakeContactCount()</a>, <a class="el" href="World3D_8cpp_source.html#l00199">eve::physics::World3D::getBodyCount()</a>, <a class="el" href="World3D_8cpp_source.html#l00192">eve::physics::World3D::getBoundsMaxX()</a>, <a class="el" href="World3D_8cpp_source.html#l00194">eve::physics::World3D::getBoundsMaxY()</a>, <a class="el" href="World3D_8cpp_source.html#l00196">eve::physics::World3D::getBoundsMaxZ()</a>, <a class="el" href="World3D_8cpp_source.html#l00186">eve::physics::World3D::getBoundsMinX()</a>, <a class="el" href="World3D_8cpp_source.html#l00188">eve::physics::World3D::getBoundsMinY()</a>, <a class="el" href="World3D_8cpp_source.html#l00190">eve::physics::World3D::getBoundsMinZ()</a>, <a class="el" href="World3D_8cpp_source.html#l00203">eve::physics::World3D::getContactCount()</a>, <a class="el" href="World3D_8cpp_source.html#l00141">eve::physics::World3D::getContactRecycleDistance()</a>, <a class="el" href="World3D_8cpp_source.html#l00215">eve::physics::World3D::getDynamicTreeHeight()</a>, <a class="el" href="World3D_8cpp_source.html#l00321">eve::physics::World3D::getGravityX()</a>, <a class="el" href="World3D_8cpp_source.html#l00324">eve::physics::World3D::getGravityY()</a>, <a class="el" href="World3D_8cpp_source.html#l00327">eve::physics::World3D::getGravityZ()</a>, <a class="el" href="World3D_8cpp_source.html#l00333">eve::physics::World3D::getHitEventThreshold()</a>, <a class="el" href="World3D_8cpp_source.html#l00207">eve::physics::World3D::getIslandCount()</a>, <a class="el" href="World3D_8cpp_source.html#l00205">eve::physics::World3D::getJointCount()</a>, <a class="el" href="World3D_8cpp_source.html#l00147">eve::physics::World3D::getMaximumLinearSpeed()</a>, <a class="el" href="World3D_8cpp_source.html#l00217">eve::physics::World3D::getMemoryByteCount()</a>, <a class="el" href="World3D_8cpp_source.html#l00231">eve::physics::World3D::getProfileBulletsMs()</a>, <a class="el" href="World3D_8cpp_source.html#l00227">eve::physics::World3D::getProfileCollideMs()</a>, <a class="el" href="World3D_8cpp_source.html#l00225">eve::physics::World3D::getProfilePairsMs()</a>, <a class="el" href="World3D_8cpp_source.html#l00233">eve::physics::World3D::getProfileSensorsMs()</a>, <a class="el" href="World3D_8cpp_source.html#l00229">eve::physics::World3D::getProfileSolveMs()</a>, <a class="el" href="World3D_8cpp_source.html#l00223">eve::physics::World3D::getProfileStepMs()</a>, <a class="el" href="World3D_8cpp_source.html#l00211">eve::physics::World3D::getRecycledContactCount()</a>, <a class="el" href="World3D_8cpp_source.html#l00128">eve::physics::World3D::getRestitutionThreshold()</a>, <a class="el" href="World3D_8cpp_source.html#l00201">eve::physics::World3D::getShapeCount()</a>, <a class="el" href="World3D_8cpp_source.html#l00213">eve::physics::World3D::getStaticTreeHeight()</a>, <a class="el" href="World3D_8cpp_source.html#l00122">eve::physics::World3D::isContinuousCollisionEnabled()</a>, <a class="el" href="World3D_8cpp_source.html#l00153">eve::physics::World3D::isWarmStartingEnabled()</a>, <a class="el" href="World3DMover_8cpp_source.html#l00020">eve::physics::World3D::moveCapsule()</a>, <a class="el" href="World3D_8cpp_source.html#l00422">eve::physics::World3D::newBody()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00163">eve::physics::World3D::newDistanceJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00072">eve::physics::World3D::newFilterJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00049">eve::physics::World3D::newMotorJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00060">eve::physics::World3D::newParallelJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00190">eve::physics::World3D::newPrismaticJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00177">eve::physics::World3D::newRevoluteJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00203">eve::physics::World3D::newSphericalJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00037">eve::physics::World3D::newWeldJoint()</a>, <a class="el" href="World3DJoints_8cpp_source.html#l00216">eve::physics::World3D::newWheelJoint()</a>, <a class="el" href="World3DMover_8cpp_source.html#l00043">eve::physics::World3D::pointProbeFiltered()</a>, <a class="el" href="World3DQueries_8cpp_source.html#l00041">eve::physics::World3D::queryAABB()</a>, <a class="el" href="World3DQueries_8cpp_source.html#l00068">eve::physics::World3D::queryBox()</a>, <a class="el" href="World3DQueries_8cpp_source.html#l00057">eve::physics::World3D::queryCapsule()</a>, <a class="el" href="World3DQueries_8cpp_source.html#l00052">eve::physics::World3D::querySphere()</a>, <a class="el" href="World3DQueries_8cpp_source.html#l00036">eve::physics::World3D::rayCastAll()</a>, <a class="el" href="World3DQueries_8cpp_source.html#l00025">eve::physics::World3D::rayCastFiltered()</a>, <a class="el" href="World3D_8cpp_source.html#l00136">eve::physics::World3D::setContactRecycleDistance()</a>, <a class="el" href="World3D_8cpp_source.html#l00131">eve::physics::World3D::setContactTuning()</a>, <a class="el" href="World3D_8cpp_source.html#l00117">eve::physics::World3D::setContinuousCollisionEnabled()</a>, <a class="el" href="World3D_8cpp_source.html#l00318">eve::physics::World3D::setGravity()</a>, <a class="el" href="World3D_8cpp_source.html#l00330">eve::physics::World3D::setHitEventThreshold()</a>, <a class="el" href="World3D_8cpp_source.html#l00144">eve::physics::World3D::setMaximumLinearSpeed()</a>, <a class="el" href="World3DMover_8cpp_source.html#l00011">eve::physics::World3D::setMoverUp()</a>, <a class="el" href="World3D_8cpp_source.html#l00125">eve::physics::World3D::setRestitutionThreshold()</a>, <a class="el" href="World3D_8cpp_source.html#l00150">eve::physics::World3D::setWarmStartingEnabled()</a> , 以及 <a class="el" href="World3DQueries_8cpp_source.html#l00012">eve::physics::World3D::sphereCast()</a>.</p>
+
+</div>
+</div>
+<a id="ad936dfd4ae20bfc93d25a84cc5c6514d" name="ad936dfd4ae20bfc93d25a84cc5c6514d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad936dfd4ae20bfc93d25a84cc5c6514d">&#9670;&#160;</a></span>worldValue() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::world3d_detail::worldValue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td>
+          <td class="paramname"><em>result</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="World3DInternal_8h_source.html">World3DInternal.h</a> 第 <a class="el" href="World3DInternal_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

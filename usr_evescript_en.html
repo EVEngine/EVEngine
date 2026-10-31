@@ -1,0 +1,466 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: EveScript Tutorial</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">EveScript Tutorial</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>EveScript Tutorial</h1>
+<p><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/EVESCRIPT.md">中文</a> · <a class="el" href="usr_guide_en.html">User guide</a> · <a class="el" href="usr_modules_en.html">Module handbook</a></p>
+<p>This tutorial is maintained by hand; the Chinese documentation is authoritative.</p>
+<p>EveScript is EVEngine's game scripting language. It extends Squirrel with script modules, gradual types, null operators, named arguments, Inspector annotations, persistent hot-reload state, unit literals, pattern matching and <code>async</code> / <code>await</code>. It keeps Squirrel's VM, object model, closures, generators and dynamic values.</p>
+<p>All scripts use <code>.nut</code>. No language marker or feature switch is required: configuration, game files, imports, REPL and debugger code use the same syntax. Ordinary Squirrel remains supported.</p>
+<h2>1. Your first game</h2>
+<p>Create <code>config.nut</code>, <code>main.nut</code> and <code>scripts/movement.nut</code> in your game directory.</p>
+<p><code>config.nut</code>:</p>
+<div class="fragment"><div class="line">config &lt;- {</div>
+<div class="line">    width = 960</div>
+<div class="line">    height = 540</div>
+<div class="line">    title = &quot;EveScript Tutorial&quot;</div>
+<div class="line">    hotReload = true</div>
+<div class="line">    modules = [&quot;gfx&quot;, &quot;keyboard&quot;, &quot;timer&quot;]</div>
+<div class="line">    optionalModules = [&quot;audio&quot;]</div>
+<div class="line">}</div>
+</div><!-- fragment --><ul>
+<li>Required <code>modules</code> must exist; otherwise startup fails before <code>main.nut</code> executes.</li>
+<li>Once either module field is present, only listed slots and the required startup slots (<code>win</code>, <code>gfx</code>, <code>timer</code>, <code>platform_event</code>, <code>fs</code>, <code>hot</code>) are constructed. Unlisted slots return false from <code>has_module()</code>; use <code>ensure_module("audio")</code> when needed.</li>
+<li>Optional modules load when available. Check <code>has_module()</code> before using them.</li>
+<li>Names are script root slots: <code>gfx</code>, not the CMake name <code>graphics</code>.</li>
+<li>Both fields must be literal string arrays so tools can inspect them without executing configuration code.</li>
+<li>Projects omitting both fields keep the previous behavior of constructing all compiled modules.</li>
+<li>Native classes bind lazily on first access to names such as <code><a class="el" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">eve.Graphics</a></code>. The Squirrel <code>in</code> operator does not trigger binding. Do not test <code>"Graphics" in eve</code>; use <code>eve.moduleList</code>, <code>has_module()</code> or <code>ensure_module()</code>.</li>
+</ul>
+<p><code>scripts/movement.nut</code>:</p>
+<div class="fragment"><div class="line">export const PLAYER_SPEED = 180.0</div>
+<div class="line"> </div>
+<div class="line">export function wrap_x(x: float, width: float) -&gt; float {</div>
+<div class="line">    return x &gt; width ? -48.0 : x</div>
+<div class="line">}</div>
+</div><!-- fragment --><p><code>main.nut</code>:</p>
+<div class="fragment"><div class="line">import { PLAYER_SPEED, wrap_x } from &quot;./scripts/movement.nut&quot;</div>
+<div class="line"> </div>
+<div class="line">persist playerX: float = 100.0</div>
+<div class="line"> </div>
+<div class="line">eve_init &lt;- function() {</div>
+<div class="line">    gfx.setBackgroundColor(0.08, 0.10, 0.16, 1.0)</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">eve_update &lt;- function(dt: float) {</div>
+<div class="line">    playerX = wrap_x(playerX + PLAYER_SPEED * dt, config.width)</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">eve_render &lt;- function() {</div>
+<div class="line">    gfx.clear()</div>
+<div class="line">    gfx.drawSolidRect(playerX, 220.0, 48.0, 48.0, 0.3, 0.75, 1.0, 1.0)</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Run <code>eve run my-game</code>. After saving a changed script, <code>persist playerX</code> retains its value while functions and constants are replaced.</p>
+<p>The source repository also provides <code>python scripts/migrate_evescript.py --check</code> to preview migration and <code>--write</code> to apply it. It rewrites only provably equivalent root-state guards and <code>persist(name, initializer)</code> patterns; it does not guess how to rewrite dynamic root operations or <code>dofile()</code>.</p>
+<h2>2. Squirrel foundations</h2>
+<p>Source files use UTF-8. Keywords are case-sensitive. Use <code>//</code> and <code>/* ... */</code> comments. Semicolons remain valid; use them to separate multiple statements on one line. Prefer a consistent style relying on newlines and braces.</p>
+<p>Arithmetic, comparison, logical operators, ternary expressions, member access and assignment retain their Squirrel meanings. <code>import</code>, <code>export</code>, <code>async</code>, <code>await</code>, <code>persist</code> and <code>match</code> have special meanings in their syntax positions. <code>from</code> and <code>as</code> are contextual import keywords, so legacy identifiers can still use them elsewhere.</p>
+<div class="fragment"><div class="line">local lives = 3</div>
+<div class="line">local speed = 120.0</div>
+<div class="line">local spawn = { x = 20.0, y = 40.0 }</div>
+<div class="line">local enemies = [&quot;slime&quot;, &quot;bat&quot;]</div>
+<div class="line"> </div>
+<div class="line">gameState &lt;- { score = 0 } // Create a root-table slot.</div>
+<div class="line">gameState.score = 10       // Assign an existing slot.</div>
+</div><!-- fragment --><p><code>local</code> creates a lexically scoped variable. <code>&lt;-</code> creates a slot; <code>=</code> changes an existing slot. Prefer local/private state and explicit exports. Reserve root slots for lifecycle callbacks and other intentional shared entry points. Squirrel <code>const</code> is a compile-time constant, not a general runtime read-only variable.</p>
+<p>Functions support defaults and closures:</p>
+<div class="fragment"><div class="line">function clamp_health(value, maximum = 100) {</div>
+<div class="line">    return value &lt; 0 ? 0 : (value &gt; maximum ? maximum : value)</div>
+<div class="line">}</div>
+<div class="line">local multiplier = 2</div>
+<div class="line">local scale = function(value) { return value * multiplier }</div>
+</div><!-- fragment --><p>Tables, arrays and iteration:</p>
+<div class="fragment"><div class="line">local inventory = { potion = 2, key = 1 }</div>
+<div class="line">inventory.potion += 1</div>
+<div class="line">inventory[&quot;coin&quot;] &lt;- 20</div>
+<div class="line">foreach (name, count in inventory)</div>
+<div class="line">    print(name + &quot;: &quot; + count + &quot;\n&quot;)</div>
+<div class="line"> </div>
+<div class="line">local actors = [&quot;hero&quot;, &quot;merchant&quot;]</div>
+<div class="line">actors.append(&quot;guard&quot;)</div>
+<div class="line">foreach (index, actor in actors)</div>
+<div class="line">    print(index + &quot;: &quot; + actor + &quot;\n&quot;)</div>
+</div><!-- fragment --><p>Classes, inheritance and <code>this</code>:</p>
+<div class="fragment"><div class="line">class Actor {</div>
+<div class="line">    name = &quot;&quot;</div>
+<div class="line">    health = 100</div>
+<div class="line">    constructor(name) { this.name = name }</div>
+<div class="line">    function damage(amount) { health -= amount }</div>
+<div class="line">}</div>
+<div class="line">class Player extends Actor { coins = 0 }</div>
+<div class="line">local player = Player(&quot;Ada&quot;)</div>
+<div class="line">player.damage(10)</div>
+</div><!-- fragment --><p>Native objects use the same member-call syntax, but their callable methods come from script bindings, not every C++ public declaration.</p>
+<p><code>if</code>, <code>for</code>, <code>try</code> / <code>catch</code> and Squirrel generators still work:</p>
+<div class="fragment"><div class="line">try {</div>
+<div class="line">    load_save() // Your game&#39;s loader.</div>
+<div class="line">} catch (error) {</div>
+<div class="line">    print(&quot;load failed: &quot; + error + &quot;\n&quot;)</div>
+<div class="line">}</div>
+<div class="line">function dialogue_lines() {</div>
+<div class="line">    yield &quot;Hello&quot;</div>
+<div class="line">    yield &quot;Welcome to EVEngine&quot;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Use generators for sequences advanced by their caller. Use <code>async function</code> when waiting for promises, timers or main-thread events.</p>
+<h2>3. Script modules: import and export</h2>
+<p>New code should use explicit modules instead of sharing a root table through <code>dofile()</code>.</p>
+<div class="fragment"><div class="line">// scripts/ids.nut</div>
+<div class="line">local nextId = 1 // Private to this module.</div>
+<div class="line">export const DEFAULT_HEALTH = 100</div>
+<div class="line">export class ActorId {</div>
+<div class="line">    value = 0</div>
+<div class="line">    constructor(value) { this.value = value }</div>
+<div class="line">}</div>
+<div class="line">export function allocate_actor_id() { return ActorId(nextId++) }</div>
+</div><!-- fragment --><p><code>export</code> applies only to top-level <code>const</code>, <code>function</code> and <code>class</code> declarations. Private locals do not leak to importers.</p>
+<div class="fragment"><div class="line">import { ActorId, allocate_actor_id } from &quot;game:/scripts/ids.nut&quot;</div>
+<div class="line">import { allocate_actor_id as allocate_id } from &quot;./ids.nut&quot;</div>
+<div class="line">import * as ids from &quot;./ids.nut&quot;</div>
+</div><!-- fragment --><p>Module specifiers must be string literals:</p>
+<ul>
+<li><code>game:/...</code>: game-package scripts.</li>
+<li><code>engine:/...</code>: SDK standard scripts.</li>
+<li><code>plugin:&lt;id&gt;/...</code>: a plugin's exported scripts.</li>
+<li><code>./...</code> and <code>../...</code>: relative to the importing module, without escaping its root.</li>
+</ul>
+<p>A canonical URI is instantiated once per runtime generation. Cyclic imports are rejected; move shared definitions to a third module. URIs work across development directories, <code>.eve</code> archives, APKs, iOS bundles and Web preloaded filesystems. Dynamically assembled import paths are not supported.</p>
+<p><code>dofile(path)</code> remains available for legacy execution and intentional shared root-table side effects. It does not provide module privacy, explicit exports, single-instantiation caching or a static dependency graph.</p>
+<h2>4. Gradual types</h2>
+<p>Annotations are optional and erased before bytecode generation. Values remain ordinary Squirrel values.</p>
+<div class="fragment"><div class="line">local speed: float = 180.0</div>
+<div class="line">local name: string = &quot;Ada&quot;</div>
+<div class="line">local targets: Array&lt;string&gt; = []</div>
+<div class="line">local scores: Table&lt;string, int&gt; = {}</div>
+<div class="line"> </div>
+<div class="line">function damage(amount: int, critical: bool) -&gt; int {</div>
+<div class="line">    return critical ? amount * 2 : amount</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Primitive types are <code>null</code>, <code>bool</code>, <code>int</code>, <code>float</code>, <code>string</code> and <code>dynamic</code>. Use <code>Array&lt;T&gt;</code> and <code>Table&lt;K, V&gt;</code> for containers, and documented script class names for native types.</p>
+<p>Known literals and function calls are checked at compile time. Native calls use the SDK's Binding Contracts for parameter names, types and units. <code>dynamic</code> and uninferred legacy code can still fail at runtime. For example, assigning <code>"many"</code> to an <code>int</code>, or passing <code>1.5</code> to a known <code>int</code> parameter, is a compile error.</p>
+<h2>5. Nullable values</h2>
+<p><code>T?</code> permits <code>null</code>:</p>
+<div class="fragment"><div class="line">local target: Actor? = find_target()</div>
+<div class="line">target?.damage(10)</div>
+<div class="line">local label = target?.name ?? &quot;None&quot;</div>
+<div class="line">target ??= find_fallback_target()</div>
+<div class="line"> </div>
+<div class="line">local state = { checkpoint = null }</div>
+<div class="line">state.checkpoint ??= make_checkpoint()</div>
+</div><!-- fragment --><p>The helper functions above are supplied by your game. <code>?.</code> skips access/calls on null receivers; <code>??</code> evaluates its right side only when the left side is null; <code>??=</code> assigns only when null. Receivers and left operands are evaluated once. Non-nullable types cannot be assigned null. Validate dynamic legacy values at native/resource boundaries.</p>
+<h2>6. String choice types</h2>
+<p>Use string literal unions for mode and policy names:</p>
+<div class="fragment"><div class="line">local movement: &quot;idle&quot; | &quot;run&quot; | &quot;jump&quot; = &quot;idle&quot;</div>
+<div class="line">function set_surface(mode: &quot;opaque&quot; | &quot;mask&quot; | &quot;blend&quot;) {</div>
+<div class="line">    material.setSurfaceMode(mode)</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Completion, spelling checks, exhaustive matching and Inspector choices use the same values. Runtime values remain strings. Passing a known literal outside the union is a compile error. <code>material</code> here is an existing game resource, not a new language construct.</p>
+<h2>7. Named arguments</h2>
+<div class="fragment"><div class="line">local world = physics.newWorld(</div>
+<div class="line">    gravityY: 980.0,</div>
+<div class="line">    sleep: true,</div>
+<div class="line">    gravityX: 0.0</div>
+<div class="line">)</div>
+<div class="line">function blend(from: float, to: float, weight: float) -&gt; float {</div>
+<div class="line">    return from + (to - from) * weight</div>
+<div class="line">}</div>
+<div class="line">local value = blend(weight: 0.25, from: 0.0, to: 1.0)</div>
+</div><!-- fragment --><p>The compiler uses a known script signature or native Binding Contract to lower the call to positional arguments. No argument table or extra per-frame allocation is created. Unknown, duplicate or missing arguments are compile errors.</p>
+<p>Expressions are evaluated in their written order, even if parameter order differs. Dynamic native functions without a reliable contract require positional arguments. C++ default arguments do not automatically become script defaults; ambiguous methods also need positional calls.</p>
+<p>SDK contract generation reads actual <code>addFunc</code> bindings from the build's profile. It fails on unresolvable parameter names instead of inventing <code>arg0</code> names. The compiler, editor and runtime share the contracts. Literal checks apply at argument-expression boundaries; they do not misclassify numbers inside a valid compound expression such as <code>"count " + (count + 1)</code>.</p>
+<h2>8. Inspector annotations</h2>
+<p>Annotations are shorthand for Squirrel attribute metadata:</p>
+<div class="fragment"><div class="line">class CharacterData {</div>
+<div class="line">    @editor(&quot;slider&quot;, min: 0, max: 100, step: 1)</div>
+<div class="line">    @unit(&quot;hp&quot;)</div>
+<div class="line">    health: int = 100</div>
+<div class="line"> </div>
+<div class="line">    @editor(&quot;combo&quot;)</div>
+<div class="line">    job: &quot;warrior&quot; | &quot;mage&quot; | &quot;rogue&quot; = &quot;warrior&quot;</div>
+<div class="line"> </div>
+<div class="line">    @editor(&quot;text&quot;)</div>
+<div class="line">    displayName: string = &quot;Ada&quot;</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Inspector, reflection and MCP read the same metadata. String choice types supply combo options. Misspelled built-in annotations are compile errors. Plugin annotations must be registered first; unknown annotations are not silently ignored.</p>
+<h2>9. Persistent hot-reload variables</h2>
+<p>Ordinary variables have no retention guarantee across reloads. Declare persistent root state explicitly:</p>
+<div class="fragment"><div class="line">persist score: int = 0</div>
+<div class="line">persist session: Table&lt;string, dynamic&gt; = {}</div>
+<div class="line">persist world = create_world() // Only the first declaration runs the initializer.</div>
+</div><!-- fragment --><ul>
+<li><code>persist</code> is valid only at file root scope.</li>
+<li>Names must be unique in the root table.</li>
+<li>Ordinary variables need no <code>transient</code> marker.</li>
+<li>Prefer plain data; native handles that cannot be safely snapshotted belong to their modules' state providers.</li>
+<li>Migrate changed persistent layouts explicitly in <code>eve_reload()</code>.</li>
+</ul>
+<p>Legacy <code>score &lt;- persist("score", <a class="el" href="SchemaRegistry_8cpp.html#a2048e73eae4842e77700dd84f3aef92c">function()</a> { return 0 })</code> remains compatible. Prefer the declaration syntax in new code so variable and string names cannot diverge.</p>
+<h2>10. Unit literals</h2>
+<div class="fragment"><div class="line">local fade: seconds = 250ms   // 0.25</div>
+<div class="line">local turn: radians = 90deg   // pi / 2</div>
+<div class="line">local tileSize: pixels = 32px // 32.0</div>
+<div class="line">local height: meters = 1.8m   // 1.8</div>
+</div><!-- fragment --><table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Dimension   </th><th class="markdownTableHeadNone">Target types   </th><th class="markdownTableHeadNone">Suffix    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Time   </td><td class="markdownTableBodyNone"><code>seconds</code>, <code>milliseconds</code>   </td><td class="markdownTableBodyNone"><code>ms</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Angle   </td><td class="markdownTableBodyNone"><code>radians</code>, <code>degrees</code>   </td><td class="markdownTableBodyNone"><code>deg</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Pixels   </td><td class="markdownTableBodyNone"><code>pixels</code>   </td><td class="markdownTableBodyNone"><code>px</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Distance   </td><td class="markdownTableBodyNone"><code>meters</code>   </td><td class="markdownTableBodyNone"><code>m</code>   </td></tr>
+</table>
+<p>A known target type or native contract performs deterministic conversion. <code>camera.setYaw(90deg)</code> receives radians if its contract specifies radians; <code>asyncSleep(250ms)</code> receives milliseconds. Without a target, the literal uses its own base-unit value. Dimensions cannot be mixed. Units are compile-time checks/conversions; runtime values remain floats.</p>
+<h2>11. Pattern matching</h2>
+<p><code>match</code> is a statement, not a value-producing expression:</p>
+<div class="fragment"><div class="line">function update_animation(mode: &quot;idle&quot; | &quot;run&quot; | &quot;jump&quot;) {</div>
+<div class="line">    match mode {</div>
+<div class="line">        &quot;idle&quot; =&gt; animation.play(&quot;idle&quot;)</div>
+<div class="line">        &quot;run&quot; =&gt; animation.play(&quot;run&quot;)</div>
+<div class="line">        &quot;jump&quot; =&gt; animation.play(&quot;jump&quot;)</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>Branches accept a statement or a block. Cover every string-union choice or provide a final <code>else</code>. Dynamic values always need <code>else</code>, because coverage cannot be proven. <code>else</code> may occur once and must be last. The matched expression is evaluated once. To produce a value, assign an outer local or return from branches.</p>
+<h2>12. Async functions and await</h2>
+<p>EveScript async uses engine promises, timers, events and the main-thread pump:</p>
+<div class="fragment"><div class="line">async function intro_sequence() -&gt; string {</div>
+<div class="line">    await asyncSleep(250ms)</div>
+<div class="line">    ui.setText(&quot;message&quot;, &quot;Ready&quot;)</div>
+<div class="line">    local values = await Promise.all([</div>
+<div class="line">        load_profile_async(),</div>
+<div class="line">        load_inventory_async()</div>
+<div class="line">    ])</div>
+<div class="line">    return values[0].name</div>
+<div class="line">}</div>
+<div class="line">intro_sequence().then(</div>
+<div class="line">    function(name) { print(&quot;welcome &quot; + name + &quot;\n&quot;) },</div>
+<div class="line">    function(error) { print(&quot;intro failed: &quot; + error + &quot;\n&quot;) }</div>
+<div class="line">)</div>
+</div><!-- fragment --><p>The loaders are game-defined. Calling an async function immediately returns a Promise. <code>await</code> normalizes values through <code>Promise.resolve</code>. Continuations resume on the game thread. <code>try</code> / <code>catch</code> handles rejection; returning resolves the outer Promise, and uncaught exceptions reject it. <code>await</code> is valid only inside async functions.</p>
+<p>Loops, locals, <code>this</code> and exception state survive suspension. The engine calls <code>async_pump()</code> each frame; game code normally should not pump manually. Hot reload cancels pending continuations from the old generation. Save progress as plain data and restart long-lived work after reload.</p>
+<p>Async does not move the Squirrel VM onto workers. CPU-heavy tasks use supported thread-module operations and return through Channel/Event/Promise. Workers must not access VM, window, GPU or script objects.</p>
+<p>When an imported module changes, the runtime recompiles it and reverse dependencies and commits the group only after successful instantiation. A failure restores the previous modules and dependency graph. Legacy root scripts outside the module graph use soft reload.</p>
+<h2>13. Async, events and reactive streams</h2>
+<p>Choose by the task:</p>
+<ul>
+<li>One-time loads, delays and cutscenes: async functions.</li>
+<li>Discrete gameplay events with multiple listeners: event module.</li>
+<li>Continuous filtering/composition of input and state: Rx.</li>
+<li>Worker execution: thread plus Channel/Event, returning to the main thread.</li>
+</ul>
+<p>See the Chinese <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/event.md">event</a>, <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/rx.md">Rx</a> and <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/modules/thread.md">thread</a> guides. Do not turn every event stream into an indefinitely waiting async task.</p>
+<h2>14. Organize lifecycle and modules</h2>
+<p>Lifecycle callbacks remain engine-defined root slots:</p>
+<div class="fragment"><div class="line">eve_init &lt;- function() {}</div>
+<div class="line">eve_update &lt;- function(dt) {}</div>
+<div class="line">eve_render &lt;- function() {}</div>
+<div class="line">eve_reload &lt;- function() {}</div>
+<div class="line">eve_asset_reload &lt;- function(path) {}</div>
+<div class="line">eve_quit &lt;- function() {}</div>
+</div><!-- fragment --><p>Keep <code>main.nut</code> as orchestration: import systems, create top-level persistent state and wire callbacks. Put player, combat, HUD and world logic in their own modules.</p>
+<p>Export a small stable interface. Avoid non-repeatable top-level side effects; initialize explicitly. Keep dependencies acyclic. Persist durable data while leaving rebuildable caches temporary. Declare required modules in <code>config.modules</code>; optional features use both <code>optionalModules</code> and <code>has_module()</code>.</p>
+<div class="fragment"><div class="line">if (has_module(&quot;audio&quot;)) audio.stopAll()</div>
+</div><!-- fragment --><h2>15. Error handling and coding style</h2>
+<p>Use lowercase <code>snake_case.nut</code> filenames and <code>/</code> in module URIs. Use <code>snake_case</code> for locals/functions, <code>PascalCase</code> for classes and <code>UPPER_SNAKE_CASE</code> for exported constants. Prefer locals and explicit exports over root-table writes.</p>
+<p>Annotate public functions, engine boundaries and persistent state first. Use string unions for choices, named arguments for similar adjacent parameters, and unit literals for time/angles/distances.</p>
+<p>Catch recoverable resource errors; do not hide programming mistakes. Avoid large temporary arrays, dynamic imports and unnecessary fine-grained C++/Squirrel calls in per-frame paths. Async tasks must account for failure, exit and reload cancellation. See <a class="el" href="usr_conventions_en.html">API conventions</a> for Result handling.</p>
+<h2>16. Differences from ordinary Squirrel</h2>
+<p>EveScript adds private import/export modules, erased gradual types, nullable operators, string unions, named arguments, short attribute annotations, persistent declarations, units, exhaustive <code>match</code> and Promise-based async syntax.</p>
+<p>It retains <code>.nut</code>, the same VM and native bindings. It does not require types everywhere, introduce <code>let</code> / <code>var</code>, mark ordinary variables as transient, add an ECS DSL or create a second runtime. Events, Rx, promises and state bindings keep their separate roles.</p>
+<h2>17. Migrate an existing project</h2>
+<ol type="1">
+<li>Upgrade the SDK and run the existing game first. Ordinary classes, closures, generators, tables, arrays, attributes and <code>dofile()</code> remain supported.</li>
+<li>Declare required and optional project modules; listing either field stops unlisted modules from being constructed at startup.</li>
+<li>Replace shared file-level side effects with imports and exports.</li>
+<li>Add types to stable boundaries rather than every local at once.</li>
+<li>Replace repeated root guards with <code>persist</code>, null checks with null operators, ambiguous positional calls with named arguments, bare unit values with unit literals, and deeply nested sequential Promise chains with async functions.</li>
+</ol>
+<p>Keep the game runnable after each step and verify hot reload and packaging separately.</p>
+<h2>18. Tools, diagnostics and debugging</h2>
+<div class="fragment"><div class="line">eve language-server --root /path/to/my-game</div>
+<div class="line">eve run --debug --dap-port=4711 my-game</div>
+<div class="line">eve zip my-game</div>
+</div><!-- fragment --><p>The language server uses standard input/output for LSP; do not mix extra logs into that channel. The repository's <code>tools/vscode-eve-debug/</code> starts it for <code>.nut</code> files in VS Code/Cursor. Features include syntax/module diagnostics, binding completion and hover, signature help, outlines, cross-file definition/reference lookup, safe export/alias renaming, formatting, folding, semantic highlighting and incremental document updates.</p>
+<p>Source maps keep breakpoints, stacks and exceptions tied to your original <code>.nut</code> files rather than lowered state-machine code. Packaging validates the static module graph, rejects missing modules, cycles and escaping URIs, and writes a module manifest.</p>
+<p>Common diagnostics:</p>
+<ul>
+<li><code>await is only allowed inside async function</code>: make the function async or use a Promise chain.</li>
+<li><code>named arguments require a known function or Binding Contract</code>: use positional arguments or check your SDK contract.</li>
+<li><code>non-exhaustive match</code>: cover remaining choices or add a final <code>else</code>.</li>
+<li><code>outside the allowed choices</code>: use a documented string choice.</li>
+<li><code>persist is only allowed at root scope</code>: move it to module top level.</li>
+<li><code>required module is missing</code>: use a matching SDK/profile, or make the feature optional with a fallback.</li>
+<li>Import cycle: extract shared definitions into an acyclic dependency.</li>
+</ul>
+<h2>19. A complete game</h2>
+<p>Follow the <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/GAME_DEVELOPMENT.md">complete game development tutorial (Chinese)</a> and its runnable <a href="https://github.com/EVEngine/EVEngine/blob/dev/examples/game-tutorial/README.md">game-tutorial example (Chinese)</a>. The actual files cover config/import, rules, keyboard input, CPU image and GPU texture ownership, HUD actions, versioned saves, validated backups, restart, hot reload and archive delivery. Tests execute those files instead of maintaining another copied tutorial implementation.</p>
+<p>Current module compilation has a limitation: an exported function referring to another export by bare name can perform root lookup. Share implementation through a private local closure, then export wrappers, as scripts/rules.nut does. Do not assume another SDK version fixes this. Image has no default script slot: construct eve.Image() explicitly. Optional eve_reload is not pre-created by the loader, so create it with &lt;-. persist retains script state during reload, not disk state; device rebuilding also invalidates borrowed GPU caches.</p>
+<p>The Chinese language guide additionally explains table slot creation/deletion, shallow clone, array operations, closure ownership, and module state. See its <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/EVESCRIPT.md">Squirrel foundations</a>. Use the current SDK binding catalogue for exact parameter projections and Result handling. </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

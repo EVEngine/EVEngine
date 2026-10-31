@@ -1,0 +1,318 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/building/BuildingSnapshot.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_82516b7859a22590e742ab13945dc7b3.html">building</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">BuildingSnapshot.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="BuildingSnapshot_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="BuildingTypes_8h.html">building/BuildingTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1building.html">eve::building</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">struct </span>PlacedBuilding;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">struct </span>EdgeCurveGroup;</div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html">BuildingGarrisonMemberRecord</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html#a0407729aabcf3428fdab7d87db8132e0">   17</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html#a0407729aabcf3428fdab7d87db8132e0">id</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html#a001a524bd542370dd11f9b3d075f276b">   18</a></span>    std::string              <a class="code hl_variable" href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html#a001a524bd542370dd11f9b3d075f276b">type</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html#ad0c962aad6a1c3f913d5e5f7858d9fe7">   19</a></span>    std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html#ad0c962aad6a1c3f913d5e5f7858d9fe7">tags</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">   23</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ab1df5c0b780a7488c374f18c592e1527">   24</a></span>    <span class="keywordtype">int</span>         <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ab1df5c0b780a7488c374f18c592e1527">instanceId</a> = 0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a8f397987ced759758a077bf880a0d4b1">   25</a></span>    std::string <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a8f397987ced759758a077bf880a0d4b1">buildingId</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a06b6a289fb8793cfb0d885a19cc8632e">   27</a></span>    std::string <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a06b6a289fb8793cfb0d885a19cc8632e">placementKind</a> = <span class="stringliteral">&quot;cell&quot;</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a5e208929d7e08fd31904789f5245acb8">   29</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a5e208929d7e08fd31904789f5245acb8">edgeX</a> = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a5a488d76cdf586dbb4033750aa3a557a">   30</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a5a488d76cdf586dbb4033750aa3a557a">edgeY</a> = 0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7f8de333486a302b5d13bc99507f0fb3">   32</a></span>    std::string <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7f8de333486a302b5d13bc99507f0fb3">edgeAxis</a> = <span class="stringliteral">&quot;horizontal&quot;</span>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aec799c486d683bf092fb2a6b33251f1e">   34</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aec799c486d683bf092fb2a6b33251f1e">cornerX</a> = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7a0c98e7b31d838c268ef0332d52fa14">   35</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7a0c98e7b31d838c268ef0332d52fa14">cornerY</a> = 0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac45385a20a12baa1d977ee1a2d430e22">   37</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac45385a20a12baa1d977ee1a2d430e22">freeRadius</a> = 0.0;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aec6de9234d2cd9781a7440d44af965b6">   39</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aec6de9234d2cd9781a7440d44af965b6">freeHalfWidth</a> = 0.0;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7cde4eca8ba3d2b45718276fd78266c0">   41</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7cde4eca8ba3d2b45718276fd78266c0">freeHalfHeight</a> = 0.0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac2e103520813c2e7cc35c703d57b3ae3">   43</a></span>    std::vector&lt;double&gt; <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac2e103520813c2e7cc35c703d57b3ae3">freeFootprintVertices</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7f503203fd209ba7af2982bd7721ce8b">   44</a></span>    <span class="keywordtype">int</span>                 <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7f503203fd209ba7af2982bd7721ce8b">cellX</a> = 0;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ad5845ea1d0f82eba62d08353dedbdf89">   45</a></span>    <span class="keywordtype">int</span>                 <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ad5845ea1d0f82eba62d08353dedbdf89">cellY</a> = 0;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aa3054605459999ce1e9bb39df1b2ce8a">   47</a></span>    <span class="keywordtype">int</span>    <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aa3054605459999ce1e9bb39df1b2ce8a">level</a>     = 0;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a4b4a11965f445b7a48ebf5318313447a">   48</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a4b4a11965f445b7a48ebf5318313447a">worldX</a>    = 0.0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ae6ecb44cf8e4c5cb84644a2e1312e16c">   49</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ae6ecb44cf8e4c5cb84644a2e1312e16c">worldY</a>    = 0.0;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a97506607b9e13f88525be09cca502824">   50</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a97506607b9e13f88525be09cca502824">elevation</a> = 0.0;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a4fad5d2fc4312a81273bc886ba04904a">   52</a></span>    std::string <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a4fad5d2fc4312a81273bc886ba04904a">surfaceId</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a46f99eb386a8d25f1857148982a1a3a0">   54</a></span>    std::uint64_t <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a46f99eb386a8d25f1857148982a1a3a0">surfaceRevision</a> = 0;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a1f62df8627f9e27bfa2bb87464446bc5">   56</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a1f62df8627f9e27bfa2bb87464446bc5">surfaceNormalX</a> = 0.0;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a4397296194b8a8b44ea1a5628c2b6534">   57</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a4397296194b8a8b44ea1a5628c2b6534">surfaceNormalY</a> = 1.0;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac287f694ddfc6fc252b8a7e7ae3b07cd">   58</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac287f694ddfc6fc252b8a7e7ae3b07cd">surfaceNormalZ</a> = 0.0;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#acd5fc6796e00276afc22101fcdd309f5">   60</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#acd5fc6796e00276afc22101fcdd309f5">surfaceTangentX</a> = 1.0;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aec0944140117644ded3bc6112535964e">   61</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aec0944140117644ded3bc6112535964e">surfaceTangentY</a> = 0.0;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aa4f6d6abe750271e68c65152a597288f">   62</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aa4f6d6abe750271e68c65152a597288f">surfaceTangentZ</a> = 0.0;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a1898320d84740aed92aac06b5ef09d72">   64</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a1898320d84740aed92aac06b5ef09d72">surfaceSampleCount</a> = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a9a68207c9628f0d894d2313164138916">   66</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a9a68207c9628f0d894d2313164138916">surfaceMaxSlopeDegrees</a> = 0.0;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ae4e914d292981b4d2129db751ce15ba2">   68</a></span>    <span class="keywordtype">double</span>                                    <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ae4e914d292981b4d2129db751ce15ba2">surfaceHeightDelta</a> = 0.0;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ab59c8d9478247688b54adf4348981f68">   69</a></span>    <span class="keywordtype">double</span>                                    <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ab59c8d9478247688b54adf4348981f68">rotationDegrees</a>    = 0.0;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a015d196b2adb44e5b94f25f486addcc6">   70</a></span>    std::string                               <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a015d196b2adb44e5b94f25f486addcc6">channel</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a662883d83c813b9dc2d23ac1a2d786d7">   71</a></span>    std::map&lt;std::string, std::string&gt;        <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a662883d83c813b9dc2d23ac1a2d786d7">properties</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a2f1c4d96641cf06cd3736f51aa45379c">   72</a></span>    std::vector&lt;std::string&gt;                  <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a2f1c4d96641cf06cd3736f51aa45379c">tags</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#af627ff25f7f4ce360fc0fc8c06d40e39">   73</a></span>    std::vector&lt;BuildingGarrisonMemberRecord&gt; <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#af627ff25f7f4ce360fc0fc8c06d40e39">garrison</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac27a6c60c6b1156ec2ebc8fc8d302bc0">   74</a></span>    std::uint64_t                             <a class="code hl_variable" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac27a6c60c6b1156ec2ebc8fc8d302bc0">garrisonRevision</a> = 0;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>};</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span><span class="keyword">namespace </span>codec {</div>
+<div class="foldopen" id="foldopen00080" data-start="{" data-end="};">
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1codec_1_1EdgeCurvePayload.html">   80</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1building_1_1codec_1_1EdgeCurvePayload.html">EdgeCurvePayload</a> {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1codec_1_1EdgeCurvePayload.html#ab392110b166ed398d7dda688201ac33d">   81</a></span>    <a class="code hl_struct" href="structeve_1_1building_1_1EdgeCurveGroup.html">building::EdgeCurveGroup</a>              <a class="code hl_variable" href="structeve_1_1building_1_1codec_1_1EdgeCurvePayload.html#ab392110b166ed398d7dda688201ac33d">group</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1building_1_1codec_1_1EdgeCurvePayload.html#ac1a4f6ef8662f8a49c533baff20ab883">   82</a></span>    std::vector&lt;BuildingInstanceSnapshot&gt; <a class="code hl_variable" href="structeve_1_1building_1_1codec_1_1EdgeCurvePayload.html#ac1a4f6ef8662f8a49c533baff20ab883">instances</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>};</div>
+</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> <a class="code hl_function" href="namespaceeve_1_1building_1_1codec.html#abfe7b6b51d656e9d604e09a2eda5cf92">edgeCurveValue</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1EdgeCurveGroup.html">EdgeCurveGroup</a>&amp;                        <a class="code hl_variable" href="StandardAbilities_8cpp.html#a7b41888e3725e9b18cbb88bc14e557ff">group</a>,</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                                        <span class="keyword">const</span> std::vector&lt;BuildingInstanceSnapshot&gt;&amp; instances);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EdgeCurvePayload&gt;</a> <a class="code hl_function" href="namespaceeve_1_1building_1_1codec.html#a0d9a872b3af47aa2f9cbfc832bcb58b3">parseEdgeCurve</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a>&amp; <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a> <a class="code hl_function" href="namespaceeve_1_1building_1_1codec.html#af6b32de59ba1cba687170d0c3b8bde01">instanceValue</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a>&amp; instance);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;BuildingInstanceSnapshot&gt;</a> <a class="code hl_function" href="namespaceeve_1_1building_1_1codec.html#a4f7ccf089847883b8607758e3e734243">parseInstance</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a>&amp; <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;BuildingInstanceSnapshot&gt;</a>&gt; <a class="code hl_function" href="namespaceeve_1_1building_1_1codec.html#a464a7cf885de2a1146482e08516b6e9d">parseInstances</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1json_1_1Value.html">Value</a>&amp; <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_struct" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a> <a class="code hl_variable" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a>&amp; <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_struct" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a> runtime(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a>&amp; <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}  <span class="comment">// namespace codec</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}  <span class="comment">// namespace eve::building</span></div>
+<div class="ttc" id="aBuildingTypes_8h_html"><div class="ttname"><a href="BuildingTypes_8h.html">BuildingTypes.h</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_afb52228b1e5307ee220679412a790429"><div class="ttname"><a href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a></div><div class="ttdeci">#define EVENGINE_API_WORLD</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00109">Export.h:109</a></div></div>
+<div class="ttc" id="aMcpProjectIndexTools_8cpp_html_ad48627cd289655d382112b727e253919"><div class="ttname"><a href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a></div><div class="ttdeci">Snapshot snapshot</div><div class="ttdef"><b>Definition</b> <a href="McpProjectIndexTools_8cpp_source.html#l00018">McpProjectIndexTools.cpp:18</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aStandardAbilities_8cpp_html_a7b41888e3725e9b18cbb88bc14e557ff"><div class="ttname"><a href="StandardAbilities_8cpp.html#a7b41888e3725e9b18cbb88bc14e557ff">group</a></div><div class="ttdeci">AbilityActivationGroup group</div><div class="ttdef"><b>Definition</b> <a href="StandardAbilities_8cpp_source.html#l00024">StandardAbilities.cpp:24</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a641a6c4dd6318fe795c49915a3da8a9f"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a></div><div class="ttdeci">bool placed</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00148">TacticsPersistence.cpp:148</a></div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1json_1_1Value_html"><div class="ttname"><a href="classeve_1_1json_1_1Value.html">eve::json::Value</a></div><div class="ttdoc">EVENGINE_API_FOUNDATION public API.</div><div class="ttdef"><b>Definition</b> <a href="Json_8h_source.html#l00039">Json.h:39</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1codec_html_a0d9a872b3af47aa2f9cbfc832bcb58b3"><div class="ttname"><a href="namespaceeve_1_1building_1_1codec.html#a0d9a872b3af47aa2f9cbfc832bcb58b3">eve::building::codec::parseEdgeCurve</a></div><div class="ttdeci">Result&lt; EdgeCurvePayload &gt; parseEdgeCurve(const Value &amp;value)</div><div class="ttdoc">Decode one complete curve with structured failure and independent ownership.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8cpp_source.html#l00377">BuildingSnapshot.cpp:377</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1codec_html_a464a7cf885de2a1146482e08516b6e9d"><div class="ttname"><a href="namespaceeve_1_1building_1_1codec.html#a464a7cf885de2a1146482e08516b6e9d">eve::building::codec::parseInstances</a></div><div class="ttdeci">Result&lt; std::vector&lt; BuildingInstanceSnapshot &gt; &gt; parseInstances(const Value &amp;value)</div><div class="ttdoc">Decode a nonempty instance batch with unique identities; pure owning result.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8cpp_source.html#l00246">BuildingSnapshot.cpp:246</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1codec_html_a4f7ccf089847883b8607758e3e734243"><div class="ttname"><a href="namespaceeve_1_1building_1_1codec.html#a4f7ccf089847883b8607758e3e734243">eve::building::codec::parseInstance</a></div><div class="ttdeci">Result&lt; BuildingInstanceSnapshot &gt; parseInstance(const Value &amp;value)</div><div class="ttdoc">Decode legacy/current instance fields without mutating a world; owning result.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8cpp_source.html#l00103">BuildingSnapshot.cpp:103</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1codec_html_abfe7b6b51d656e9d604e09a2eda5cf92"><div class="ttname"><a href="namespaceeve_1_1building_1_1codec.html#abfe7b6b51d656e9d604e09a2eda5cf92">eve::building::codec::edgeCurveValue</a></div><div class="ttdeci">Value edgeCurveValue(const building::EdgeCurveGroup &amp;group, const std::vector&lt; BuildingInstanceSnapshot &gt; &amp;instances)</div><div class="ttdoc">Encode one complete curve group in linear time; no world mutation.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8cpp_source.html#l00352">BuildingSnapshot.cpp:352</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1codec_html_af6b32de59ba1cba687170d0c3b8bde01"><div class="ttname"><a href="namespaceeve_1_1building_1_1codec.html#af6b32de59ba1cba687170d0c3b8bde01">eve::building::codec::instanceValue</a></div><div class="ttdeci">Value instanceValue(const BuildingInstanceSnapshot &amp;instance)</div><div class="ttdoc">Encode a complete owning instance; pure, caller-thread, linear in instance metadata.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8cpp_source.html#l00052">BuildingSnapshot.cpp:52</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_html"><div class="ttname"><a href="namespaceeve_1_1building.html">eve::building</a></div><div class="ttdoc">建筑放置模块入口：定义 / 放置世界 / 鬼影 / 变更事件的脚本绑定点。 设计文档：docs/dev/建筑放置系统设计.md</div><div class="ttdef"><b>Definition</b> <a href="Building_8cpp_source.html#l00010">Building.cpp:10</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingGarrisonMemberRecord_html"><div class="ttname"><a href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html">eve::building::BuildingGarrisonMemberRecord</a></div><div class="ttdoc">Persistent garrison member copied through building editor undo.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00016">BuildingSnapshot.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingGarrisonMemberRecord_html_a001a524bd542370dd11f9b3d075f276b"><div class="ttname"><a href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html#a001a524bd542370dd11f9b3d075f276b">eve::building::BuildingGarrisonMemberRecord::type</a></div><div class="ttdeci">std::string type</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00018">BuildingSnapshot.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingGarrisonMemberRecord_html_a0407729aabcf3428fdab7d87db8132e0"><div class="ttname"><a href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html#a0407729aabcf3428fdab7d87db8132e0">eve::building::BuildingGarrisonMemberRecord::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00017">BuildingSnapshot.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingGarrisonMemberRecord_html_ad0c962aad6a1c3f913d5e5f7858d9fe7"><div class="ttname"><a href="structeve_1_1building_1_1BuildingGarrisonMemberRecord.html#ad0c962aad6a1c3f913d5e5f7858d9fe7">eve::building::BuildingGarrisonMemberRecord::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00019">BuildingSnapshot.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">eve::building::BuildingInstanceSnapshot</a></div><div class="ttdoc">Complete runtime-neutral placed-building snapshot.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00023">BuildingSnapshot.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a015d196b2adb44e5b94f25f486addcc6"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a015d196b2adb44e5b94f25f486addcc6">eve::building::BuildingInstanceSnapshot::channel</a></div><div class="ttdeci">std::string channel</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00070">BuildingSnapshot.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a06b6a289fb8793cfb0d885a19cc8632e"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a06b6a289fb8793cfb0d885a19cc8632e">eve::building::BuildingInstanceSnapshot::placementKind</a></div><div class="ttdeci">std::string placementKind</div><div class="ttdoc">Placement coordinate domain: cell, edge, corner, or free.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00027">BuildingSnapshot.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a1898320d84740aed92aac06b5ef09d72"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a1898320d84740aed92aac06b5ef09d72">eve::building::BuildingInstanceSnapshot::surfaceSampleCount</a></div><div class="ttdeci">int surfaceSampleCount</div><div class="ttdoc">Number of footprint surface samples represented by this snapshot.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00064">BuildingSnapshot.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a1f62df8627f9e27bfa2bb87464446bc5"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a1f62df8627f9e27bfa2bb87464446bc5">eve::building::BuildingInstanceSnapshot::surfaceNormalX</a></div><div class="ttdeci">double surfaceNormalX</div><div class="ttdoc">Captured unit surface normal.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00056">BuildingSnapshot.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a2f1c4d96641cf06cd3736f51aa45379c"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a2f1c4d96641cf06cd3736f51aa45379c">eve::building::BuildingInstanceSnapshot::tags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00072">BuildingSnapshot.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a4397296194b8a8b44ea1a5628c2b6534"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a4397296194b8a8b44ea1a5628c2b6534">eve::building::BuildingInstanceSnapshot::surfaceNormalY</a></div><div class="ttdeci">double surfaceNormalY</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00057">BuildingSnapshot.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a46f99eb386a8d25f1857148982a1a3a0"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a46f99eb386a8d25f1857148982a1a3a0">eve::building::BuildingInstanceSnapshot::surfaceRevision</a></div><div class="ttdeci">std::uint64_t surfaceRevision</div><div class="ttdoc">Surface provider revision captured at placement time.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00054">BuildingSnapshot.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a4b4a11965f445b7a48ebf5318313447a"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a4b4a11965f445b7a48ebf5318313447a">eve::building::BuildingInstanceSnapshot::worldX</a></div><div class="ttdeci">double worldX</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00048">BuildingSnapshot.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a4fad5d2fc4312a81273bc886ba04904a"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a4fad5d2fc4312a81273bc886ba04904a">eve::building::BuildingInstanceSnapshot::surfaceId</a></div><div class="ttdeci">std::string surfaceId</div><div class="ttdoc">Stable surface provider identity captured at placement time.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00052">BuildingSnapshot.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a5a488d76cdf586dbb4033750aa3a557a"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a5a488d76cdf586dbb4033750aa3a557a">eve::building::BuildingInstanceSnapshot::edgeY</a></div><div class="ttdeci">int edgeY</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00030">BuildingSnapshot.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a5e208929d7e08fd31904789f5245acb8"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a5e208929d7e08fd31904789f5245acb8">eve::building::BuildingInstanceSnapshot::edgeX</a></div><div class="ttdeci">int edgeX</div><div class="ttdoc">Canonical edge origin when placementKind is edge.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00029">BuildingSnapshot.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a662883d83c813b9dc2d23ac1a2d786d7"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a662883d83c813b9dc2d23ac1a2d786d7">eve::building::BuildingInstanceSnapshot::properties</a></div><div class="ttdeci">std::map&lt; std::string, std::string &gt; properties</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00071">BuildingSnapshot.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a7a0c98e7b31d838c268ef0332d52fa14"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7a0c98e7b31d838c268ef0332d52fa14">eve::building::BuildingInstanceSnapshot::cornerY</a></div><div class="ttdeci">int cornerY</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00035">BuildingSnapshot.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a7cde4eca8ba3d2b45718276fd78266c0"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7cde4eca8ba3d2b45718276fd78266c0">eve::building::BuildingInstanceSnapshot::freeHalfHeight</a></div><div class="ttdeci">double freeHalfHeight</div><div class="ttdoc">Committed free-domain OBB half height; zero denotes circular collision.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00041">BuildingSnapshot.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a7f503203fd209ba7af2982bd7721ce8b"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7f503203fd209ba7af2982bd7721ce8b">eve::building::BuildingInstanceSnapshot::cellX</a></div><div class="ttdeci">int cellX</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00044">BuildingSnapshot.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a7f8de333486a302b5d13bc99507f0fb3"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a7f8de333486a302b5d13bc99507f0fb3">eve::building::BuildingInstanceSnapshot::edgeAxis</a></div><div class="ttdeci">std::string edgeAxis</div><div class="ttdoc">Canonical edge axis: horizontal or vertical.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00032">BuildingSnapshot.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a8f397987ced759758a077bf880a0d4b1"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a8f397987ced759758a077bf880a0d4b1">eve::building::BuildingInstanceSnapshot::buildingId</a></div><div class="ttdeci">std::string buildingId</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00025">BuildingSnapshot.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a97506607b9e13f88525be09cca502824"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a97506607b9e13f88525be09cca502824">eve::building::BuildingInstanceSnapshot::elevation</a></div><div class="ttdeci">double elevation</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00050">BuildingSnapshot.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_a9a68207c9628f0d894d2313164138916"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#a9a68207c9628f0d894d2313164138916">eve::building::BuildingInstanceSnapshot::surfaceMaxSlopeDegrees</a></div><div class="ttdeci">double surfaceMaxSlopeDegrees</div><div class="ttdoc">Maximum sampled footprint slope in degrees.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00066">BuildingSnapshot.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_aa3054605459999ce1e9bb39df1b2ce8a"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aa3054605459999ce1e9bb39df1b2ce8a">eve::building::BuildingInstanceSnapshot::level</a></div><div class="ttdeci">int level</div><div class="ttdoc">Authoritative discrete floor coordinate.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00047">BuildingSnapshot.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_aa4f6d6abe750271e68c65152a597288f"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aa4f6d6abe750271e68c65152a597288f">eve::building::BuildingInstanceSnapshot::surfaceTangentZ</a></div><div class="ttdeci">double surfaceTangentZ</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00062">BuildingSnapshot.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_ab1df5c0b780a7488c374f18c592e1527"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ab1df5c0b780a7488c374f18c592e1527">eve::building::BuildingInstanceSnapshot::instanceId</a></div><div class="ttdeci">int instanceId</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00024">BuildingSnapshot.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_ab59c8d9478247688b54adf4348981f68"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ab59c8d9478247688b54adf4348981f68">eve::building::BuildingInstanceSnapshot::rotationDegrees</a></div><div class="ttdeci">double rotationDegrees</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00069">BuildingSnapshot.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_ac27a6c60c6b1156ec2ebc8fc8d302bc0"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac27a6c60c6b1156ec2ebc8fc8d302bc0">eve::building::BuildingInstanceSnapshot::garrisonRevision</a></div><div class="ttdeci">std::uint64_t garrisonRevision</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00074">BuildingSnapshot.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_ac287f694ddfc6fc252b8a7e7ae3b07cd"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac287f694ddfc6fc252b8a7e7ae3b07cd">eve::building::BuildingInstanceSnapshot::surfaceNormalZ</a></div><div class="ttdeci">double surfaceNormalZ</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00058">BuildingSnapshot.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_ac2e103520813c2e7cc35c703d57b3ae3"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac2e103520813c2e7cc35c703d57b3ae3">eve::building::BuildingInstanceSnapshot::freeFootprintVertices</a></div><div class="ttdeci">std::vector&lt; double &gt; freeFootprintVertices</div><div class="ttdoc">Committed convex local polygon as world-plane x/y pairs.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00043">BuildingSnapshot.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_ac45385a20a12baa1d977ee1a2d430e22"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ac45385a20a12baa1d977ee1a2d430e22">eve::building::BuildingInstanceSnapshot::freeRadius</a></div><div class="ttdeci">double freeRadius</div><div class="ttdoc">Committed free-domain collision radius in world-plane units.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00037">BuildingSnapshot.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_acd5fc6796e00276afc22101fcdd309f5"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#acd5fc6796e00276afc22101fcdd309f5">eve::building::BuildingInstanceSnapshot::surfaceTangentX</a></div><div class="ttdeci">double surfaceTangentX</div><div class="ttdoc">Captured unit surface tangent.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00060">BuildingSnapshot.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_ad5845ea1d0f82eba62d08353dedbdf89"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ad5845ea1d0f82eba62d08353dedbdf89">eve::building::BuildingInstanceSnapshot::cellY</a></div><div class="ttdeci">int cellY</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00045">BuildingSnapshot.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_ae4e914d292981b4d2129db751ce15ba2"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ae4e914d292981b4d2129db751ce15ba2">eve::building::BuildingInstanceSnapshot::surfaceHeightDelta</a></div><div class="ttdeci">double surfaceHeightDelta</div><div class="ttdoc">Sampled footprint height range.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00068">BuildingSnapshot.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_ae6ecb44cf8e4c5cb84644a2e1312e16c"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#ae6ecb44cf8e4c5cb84644a2e1312e16c">eve::building::BuildingInstanceSnapshot::worldY</a></div><div class="ttdeci">double worldY</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00049">BuildingSnapshot.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_aec0944140117644ded3bc6112535964e"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aec0944140117644ded3bc6112535964e">eve::building::BuildingInstanceSnapshot::surfaceTangentY</a></div><div class="ttdeci">double surfaceTangentY</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00061">BuildingSnapshot.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_aec6de9234d2cd9781a7440d44af965b6"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aec6de9234d2cd9781a7440d44af965b6">eve::building::BuildingInstanceSnapshot::freeHalfWidth</a></div><div class="ttdeci">double freeHalfWidth</div><div class="ttdoc">Committed free-domain OBB half width; zero denotes circular collision.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00039">BuildingSnapshot.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_aec799c486d683bf092fb2a6b33251f1e"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#aec799c486d683bf092fb2a6b33251f1e">eve::building::BuildingInstanceSnapshot::cornerX</a></div><div class="ttdeci">int cornerX</div><div class="ttdoc">Grid vertex address when placementKind is corner.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00034">BuildingSnapshot.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html_af627ff25f7f4ce360fc0fc8c06d40e39"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html#af627ff25f7f4ce360fc0fc8c06d40e39">eve::building::BuildingInstanceSnapshot::garrison</a></div><div class="ttdeci">std::vector&lt; BuildingGarrisonMemberRecord &gt; garrison</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00073">BuildingSnapshot.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1EdgeCurveGroup_html"><div class="ttname"><a href="structeve_1_1building_1_1EdgeCurveGroup.html">eve::building::EdgeCurveGroup</a></div><div class="ttdoc">World-owned authoritative description and membership of one committed edge curve.</div><div class="ttdef"><b>Definition</b> <a href="BuildingTypes_8h_source.html#l00081">BuildingTypes.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1PlacedBuilding_html"><div class="ttname"><a href="structeve_1_1building_1_1PlacedBuilding.html">eve::building::PlacedBuilding</a></div><div class="ttdoc">已放置的建筑实例。</div><div class="ttdef"><b>Definition</b> <a href="BuildingTypes_8h_source.html#l00189">BuildingTypes.h:189</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1codec_1_1EdgeCurvePayload_html"><div class="ttname"><a href="structeve_1_1building_1_1codec_1_1EdgeCurvePayload.html">eve::building::codec::EdgeCurvePayload</a></div><div class="ttdoc">Owning curve group and all exact members, shared by runtime and editor persistence.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00080">BuildingSnapshot.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1codec_1_1EdgeCurvePayload_html_ab392110b166ed398d7dda688201ac33d"><div class="ttname"><a href="structeve_1_1building_1_1codec_1_1EdgeCurvePayload.html#ab392110b166ed398d7dda688201ac33d">eve::building::codec::EdgeCurvePayload::group</a></div><div class="ttdeci">building::EdgeCurveGroup group</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00081">BuildingSnapshot.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1codec_1_1EdgeCurvePayload_html_ac1a4f6ef8662f8a49c533baff20ab883"><div class="ttname"><a href="structeve_1_1building_1_1codec_1_1EdgeCurvePayload.html#ac1a4f6ef8662f8a49c533baff20ab883">eve::building::codec::EdgeCurvePayload::instances</a></div><div class="ttdeci">std::vector&lt; BuildingInstanceSnapshot &gt; instances</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00082">BuildingSnapshot.h:82</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

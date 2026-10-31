@@ -1,0 +1,601 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::DamageNumbers类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html">DamageNumbers</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1DamageNumbers-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::DamageNumbers类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Bounded transient floating-number presentation owned by a game/view. @ownership Owns styles and all live popups; never owns gameplay, fonts or graphics. @thread Owner/render thread only. No callbacks, locks, wall clock or global RNG. @lifetime clear on scene teardown/reload. No persistent format or cross-frame object links. Equal requests and accumulated time give equal samples within 1e-4 pixel floating tolerance.  
+ <a href="classeve_1_1graphics_1_1DamageNumbers.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="DamageNumbers_8h_source.html">DamageNumbers.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1graphics_1_1DamageNumbers_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a39cf1a597fc4aa13a2370b6178291716" id="r_a39cf1a597fc4aa13a2370b6178291716"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#a39cf1a597fc4aa13a2370b6178291716">DamageNumbers</a> ()</td></tr>
+<tr class="memdesc:a39cf1a597fc4aa13a2370b6178291716"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a pool with four built-in styles and 256 reusable slots.  <br /></td></tr>
+<tr class="separator:a39cf1a597fc4aa13a2370b6178291716"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ccb89bdbc2c0e8cac7ecbc921e33869" id="r_a8ccb89bdbc2c0e8cac7ecbc921e33869"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#a8ccb89bdbc2c0e8cac7ecbc921e33869">~DamageNumbers</a> ()</td></tr>
+<tr class="separator:a8ccb89bdbc2c0e8cac7ecbc921e33869"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a7423275dddf63f98b12e4cd160ad51" id="r_a8a7423275dddf63f98b12e4cd160ad51"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#a8a7423275dddf63f98b12e4cd160ad51">DamageNumbers</a> (const <a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html">DamageNumbers</a> &amp;)=delete</td></tr>
+<tr class="separator:a8a7423275dddf63f98b12e4cd160ad51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6ccbb0f83032f7d6e655f3e82963428" id="r_af6ccbb0f83032f7d6e655f3e82963428"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html">DamageNumbers</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#af6ccbb0f83032f7d6e655f3e82963428">operator=</a> (const <a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html">DamageNumbers</a> &amp;)=delete</td></tr>
+<tr class="separator:af6ccbb0f83032f7d6e655f3e82963428"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85a5df9746ddb650d055ee9b3a2259f3" id="r_a85a5df9746ddb650d055ee9b3a2259f3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#a85a5df9746ddb650d055ee9b3a2259f3">setStyle</a> (<a class="el" href="namespaceeve_1_1graphics.html#a74929e0530138e9ed520ed7509d93417">DamageNumberKind</a> <a class="el" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>, const <a class="el" href="structeve_1_1graphics_1_1DamageNumberStyle.html">DamageNumberStyle</a> &amp;<a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#a1120ad36e089c08b5c4f0ab0e3784b4d">style</a>)</td></tr>
+<tr class="memdesc:a85a5df9746ddb650d055ee9b3a2259f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and replace one future-spawn style; existing entries keep their own copy.  <br /></td></tr>
+<tr class="separator:a85a5df9746ddb650d055ee9b3a2259f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1120ad36e089c08b5c4f0ab0e3784b4d" id="r_a1120ad36e089c08b5c4f0ab0e3784b4d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1DamageNumberStyle.html">DamageNumberStyle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#a1120ad36e089c08b5c4f0ab0e3784b4d">style</a> (<a class="el" href="namespaceeve_1_1graphics.html#a74929e0530138e9ed520ed7509d93417">DamageNumberKind</a> <a class="el" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>) const</td></tr>
+<tr class="memdesc:a1120ad36e089c08b5c4f0ab0e3784b4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning preset copy; invalid enum values fail.  <br /></td></tr>
+<tr class="separator:a1120ad36e089c08b5c4f0ab0e3784b4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6901db8ff79e3e6b3b3520a94d2a4959" id="r_a6901db8ff79e3e6b3b3520a94d2a4959"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1graphics.html#abbcd3d2775a7361f94c32f4c1f5682dd">DamageNumberAdmission</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#a6901db8ff79e3e6b3b3520a94d2a4959">spawn</a> (const <a class="el" href="structeve_1_1graphics_1_1DamageNumberRequest.html">DamageNumberRequest</a> &amp;<a class="el" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>)</td></tr>
+<tr class="memdesc:a6901db8ff79e3e6b3b3520a94d2a4959"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and admit one popup. Failure leaves pool and sequence unchanged.  <br /></td></tr>
+<tr class="separator:a6901db8ff79e3e6b3b3520a94d2a4959"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a808eb150dfc6732a27fc22e44382d468" id="r_a808eb150dfc6732a27fc22e44382d468"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#a808eb150dfc6732a27fc22e44382d468">update</a> (double seconds)</td></tr>
+<tr class="memdesc:a808eb150dfc6732a27fc22e44382d468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance injected seconds; nonfinite/negative dt fails without mutation.  <br /></td></tr>
+<tr class="separator:a808eb150dfc6732a27fc22e44382d468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff1511261599c5ead804985b56821ac7" id="r_aff1511261599c5ead804985b56821ac7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#aff1511261599c5ead804985b56821ac7">clear</a> ()</td></tr>
+<tr class="memdesc:aff1511261599c5ead804985b56821ac7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove every transient entry; deterministic spawn sequence restarts.  <br /></td></tr>
+<tr class="separator:aff1511261599c5ead804985b56821ac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a074497082c2a8122d2ce65fe71aecfba" id="r_a074497082c2a8122d2ce65fe71aecfba"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#a074497082c2a8122d2ce65fe71aecfba">count</a> () const</td></tr>
+<tr class="memdesc:a074497082c2a8122d2ce65fe71aecfba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return live popup count.  <br /></td></tr>
+<tr class="separator:a074497082c2a8122d2ce65fe71aecfba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba16768e84b91a841f5b51d6ae1b3ddb" id="r_aba16768e84b91a841f5b51d6ae1b3ddb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1DamageNumberSample.html">DamageNumberSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#aba16768e84b91a841f5b51d6ae1b3ddb">snapshot</a> () const</td></tr>
+<tr class="memdesc:aba16768e84b91a841f5b51d6ae1b3ddb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build an independent owning frame snapshot for observation. @cost Linear allocations/copies in live entries, unlike direct render; use only when an owning snapshot is needed.  <br /></td></tr>
+<tr class="separator:aba16768e84b91a841f5b51d6ae1b3ddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08d7f2e7e6d9b4343cb4991b94e2ce9e" id="r_a08d7f2e7e6d9b4343cb4991b94e2ce9e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#a08d7f2e7e6d9b4343cb4991b94e2ce9e">render</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> &amp;graphics, <a class="el" href="classeve_1_1graphics_1_1Font.html">Font</a> &amp;font) const</td></tr>
+<tr class="memdesc:a08d7f2e7e6d9b4343cb4991b94e2ce9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw live samples centered on x through backend-neutral text quads, with outline/shadow.  <br /></td></tr>
+<tr class="separator:a08d7f2e7e6d9b4343cb4991b94e2ce9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a42117860130ace47031a15904f371ff2" id="r_a42117860130ace47031a15904f371ff2"><td class="memItemLeft" align="right" valign="top">static constexpr std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html#a42117860130ace47031a15904f371ff2">capacity</a> ()</td></tr>
+<tr class="memdesc:a42117860130ace47031a15904f371ff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed maximum live popup budget; overflow replaces the oldest.  <br /></td></tr>
+<tr class="separator:a42117860130ace47031a15904f371ff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Bounded transient floating-number presentation owned by a game/view. @ownership Owns styles and all live popups; never owns gameplay, fonts or graphics. @thread Owner/render thread only. No callbacks, locks, wall clock or global RNG. @lifetime clear on scene teardown/reload. No persistent format or cross-frame object links. Equal requests and accumulated time give equal samples within 1e-4 pixel floating tolerance. </p>
+
+<p class="definition">在文件 <a class="el" href="DamageNumbers_8h_source.html">DamageNumbers.h</a> 第 <a class="el" href="DamageNumbers_8h_source.html#l00062">62</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a39cf1a597fc4aa13a2370b6178291716" name="a39cf1a597fc4aa13a2370b6178291716"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39cf1a597fc4aa13a2370b6178291716">&#9670;&#160;</a></span>DamageNumbers() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::DamageNumbers::DamageNumbers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct a pool with four built-in styles and 256 reusable slots. </p>
+
+<p class="definition">在文件 <a class="el" href="DamageNumbers_8cpp_source.html">DamageNumbers.cpp</a> 第 <a class="el" href="DamageNumbers_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DamageNumbers_8h_source.html#l00087">capacity()</a>.</p>
+
+</div>
+</div>
+<a id="a8ccb89bdbc2c0e8cac7ecbc921e33869" name="a8ccb89bdbc2c0e8cac7ecbc921e33869"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ccb89bdbc2c0e8cac7ecbc921e33869">&#9670;&#160;</a></span>~DamageNumbers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::DamageNumbers::~DamageNumbers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a8a7423275dddf63f98b12e4cd160ad51" name="a8a7423275dddf63f98b12e4cd160ad51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a7423275dddf63f98b12e4cd160ad51">&#9670;&#160;</a></span>DamageNumbers() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::graphics::DamageNumbers::DamageNumbers </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html">DamageNumbers</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a42117860130ace47031a15904f371ff2" name="a42117860130ace47031a15904f371ff2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42117860130ace47031a15904f371ff2">&#9670;&#160;</a></span>capacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static constexpr std::size_t eve::graphics::DamageNumbers::capacity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Fixed maximum live popup budget; overflow replaces the oldest. </p>
+
+<p class="definition">在文件 <a class="el" href="DamageNumbers_8h_source.html">DamageNumbers.h</a> 第 <a class="el" href="DamageNumbers_8h_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DamageNumbers_8cpp_source.html#l00038">DamageNumbers()</a> , 以及 <a class="el" href="DamageNumbers_8cpp_source.html#l00079">spawn()</a>.</p>
+
+</div>
+</div>
+<a id="aff1511261599c5ead804985b56821ac7" name="aff1511261599c5ead804985b56821ac7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff1511261599c5ead804985b56821ac7">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::DamageNumbers::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove every transient entry; deterministic spawn sequence restarts. </p>
+
+<p class="definition">在文件 <a class="el" href="DamageNumbers_8cpp_source.html">DamageNumbers.cpp</a> 第 <a class="el" href="DamageNumbers_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DamageNumbersBindings_8cpp_source.html#l00033">eve::graphics::exposeFontAndDamageNumberBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a074497082c2a8122d2ce65fe71aecfba" name="a074497082c2a8122d2ce65fe71aecfba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a074497082c2a8122d2ce65fe71aecfba">&#9670;&#160;</a></span>count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::graphics::DamageNumbers::count </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return live popup count. </p>
+
+<p class="definition">在文件 <a class="el" href="DamageNumbers_8cpp_source.html">DamageNumbers.cpp</a> 第 <a class="el" href="DamageNumbers_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DamageNumbersBindings_8cpp_source.html#l00033">eve::graphics::exposeFontAndDamageNumberBindings()</a> , 以及 <a class="el" href="DamageNumbers_8cpp_source.html#l00141">snapshot()</a>.</p>
+
+</div>
+</div>
+<a id="af6ccbb0f83032f7d6e655f3e82963428" name="af6ccbb0f83032f7d6e655f3e82963428"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6ccbb0f83032f7d6e655f3e82963428">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html">DamageNumbers</a> &amp; eve::graphics::DamageNumbers::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1graphics_1_1DamageNumbers.html">DamageNumbers</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a08d7f2e7e6d9b4343cb4991b94e2ce9e" name="a08d7f2e7e6d9b4343cb4991b94e2ce9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08d7f2e7e6d9b4343cb4991b94e2ce9e">&#9670;&#160;</a></span>render()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::graphics::DamageNumbers::render </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Font.html">Font</a> &amp;&#160;</td>
+          <td class="paramname"><em>font</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw live samples centered on x through backend-neutral text quads, with outline/shadow. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">graphics</td><td>Borrowed active frame renderer; must match font's creating renderer. </td></tr>
+    <tr><td class="paramname">font</td><td>Borrowed preloaded atlas containing digits and +-.!KMIS; alive through this call only. @thread Call in the owning render phase; references are not retained, no callbacks. @cost Up to six text passes per live popup; no disk loads, atlas creation or owning snapshot allocation. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="DamageNumbersRender_8cpp_source.html">DamageNumbersRender.cpp</a> 第 <a class="el" href="DamageNumbersRender_8cpp_source.html#l00007">7</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="graphics_2Font_8cpp_source.html#l00176">eve::graphics::Font::getWidth()</a>, <a class="el" href="SceneVisibilityProvider_8cpp_source.html#l00019">graphics</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="DamageNumbers_8cpp_source.html#l00124">eve::graphics::DamageNumbers::Impl::sample()</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>.</p>
+
+</div>
+</div>
+<a id="a85a5df9746ddb650d055ee9b3a2259f3" name="a85a5df9746ddb650d055ee9b3a2259f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85a5df9746ddb650d055ee9b3a2259f3">&#9670;&#160;</a></span>setStyle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::DamageNumbers::setStyle </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics.html#a74929e0530138e9ed520ed7509d93417">DamageNumberKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1DamageNumberStyle.html">DamageNumberStyle</a> &amp;&#160;</td>
+          <td class="paramname"><em>style</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and replace one future-spawn style; existing entries keep their own copy. </p>
+
+<p class="definition">在文件 <a class="el" href="DamageNumbers_8cpp_source.html">DamageNumbers.cpp</a> 第 <a class="el" href="DamageNumbers_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00011">kind</a>, <a class="el" href="DamageNumbers_8cpp_source.html#l00075">style()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DamageNumbersBindings_8cpp_source.html#l00033">eve::graphics::exposeFontAndDamageNumberBindings()</a>.</p>
+
+</div>
+</div>
+<a id="aba16768e84b91a841f5b51d6ae1b3ddb" name="aba16768e84b91a841f5b51d6ae1b3ddb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba16768e84b91a841f5b51d6ae1b3ddb">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1graphics_1_1DamageNumberSample.html">DamageNumberSample</a> &gt; eve::graphics::DamageNumbers::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Build an independent owning frame snapshot for observation. @cost Linear allocations/copies in live entries, unlike direct render; use only when an owning snapshot is needed. </p>
+
+<p class="definition">在文件 <a class="el" href="DamageNumbers_8cpp_source.html">DamageNumbers.cpp</a> 第 <a class="el" href="DamageNumbers_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DamageNumbers_8cpp_source.html#l00123">count()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="DamageNumbers_8cpp_source.html#l00124">eve::graphics::DamageNumbers::Impl::sample()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DamageNumbersBindings_8cpp_source.html#l00033">eve::graphics::exposeFontAndDamageNumberBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a6901db8ff79e3e6b3b3520a94d2a4959" name="a6901db8ff79e3e6b3b3520a94d2a4959"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6901db8ff79e3e6b3b3520a94d2a4959">&#9670;&#160;</a></span>spawn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1graphics.html#abbcd3d2775a7361f94c32f4c1f5682dd">DamageNumberAdmission</a> &gt; eve::graphics::DamageNumbers::spawn </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1DamageNumberRequest.html">DamageNumberRequest</a> &amp;&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and admit one popup. Failure leaves pool and sequence unchanged. </p>
+<dl class="section return"><dt>返回</dt><dd>Spawned, Merged (same nonempty group/kind within window and radius), or ReplacedOldest. Merging never extends lifetime, so a continuous damage stream cannot keep an entry forever. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="DamageNumbers_8cpp_source.html">DamageNumbers.cpp</a> 第 <a class="el" href="DamageNumbers_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DamageNumbers_8h_source.html#l00087">capacity()</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00025">dx</a>, <a class="el" href="Shadow_8cpp_source.html#l00151">dy</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00018">label</a>, <a class="el" href="namespaceeve_1_1graphics.html#abbcd3d2775a7361f94c32f4c1f5682dda63911b0b34ebf2a1fbc8f960d1d5cbcb">eve::graphics::Merged</a>, <a class="el" href="namespaceeve_1_1graphics.html#a74929e0530138e9ed520ed7509d93417ae7ddb7cd777b59610b220bcfa80bd95f">eve::graphics::Miss</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="namespaceeve_1_1graphics.html#abbcd3d2775a7361f94c32f4c1f5682dda83e360ae56033f7731c0ca47e9b345c5">eve::graphics::ReplacedOldest</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="namespaceeve_1_1graphics.html#abbcd3d2775a7361f94c32f4c1f5682ddac7359eeaca4b19723132339a8deade87">eve::graphics::Spawned</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00015">status</a>, <a class="el" href="DamageNumbers_8cpp_source.html#l00075">style()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ScriptStructure_8cpp_source.html#l00011">text</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DamageNumbersBindings_8cpp_source.html#l00033">eve::graphics::exposeFontAndDamageNumberBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a1120ad36e089c08b5c4f0ab0e3784b4d" name="a1120ad36e089c08b5c4f0ab0e3784b4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1120ad36e089c08b5c4f0ab0e3784b4d">&#9670;&#160;</a></span>style()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1graphics_1_1DamageNumberStyle.html">DamageNumberStyle</a> &gt; eve::graphics::DamageNumbers::style </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics.html#a74929e0530138e9ed520ed7509d93417">DamageNumberKind</a>&#160;</td>
+          <td class="paramname"><em>kind</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return an owning preset copy; invalid enum values fail. </p>
+
+<p class="definition">在文件 <a class="el" href="DamageNumbers_8cpp_source.html">DamageNumbers.cpp</a> 第 <a class="el" href="DamageNumbers_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00011">kind</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00015">status</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DamageNumbers_8cpp_source.html#l00062">setStyle()</a> , 以及 <a class="el" href="DamageNumbers_8cpp_source.html#l00079">spawn()</a>.</p>
+
+</div>
+</div>
+<a id="a808eb150dfc6732a27fc22e44382d468" name="a808eb150dfc6732a27fc22e44382d468"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a808eb150dfc6732a27fc22e44382d468">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::graphics::DamageNumbers::update </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance injected seconds; nonfinite/negative dt fails without mutation. </p>
+
+<p class="definition">在文件 <a class="el" href="DamageNumbers_8cpp_source.html">DamageNumbers.cpp</a> 第 <a class="el" href="DamageNumbers_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DamageNumbersBindings_8cpp_source.html#l00033">eve::graphics::exposeFontAndDamageNumberBindings()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="DamageNumbers_8h_source.html">DamageNumbers.h</a></li>
+<li>src/modules/graphics/<a class="el" href="DamageNumbers_8cpp_source.html">DamageNumbers.cpp</a></li>
+<li>src/modules/graphics/<a class="el" href="DamageNumbersRender_8cpp_source.html">DamageNumbersRender.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

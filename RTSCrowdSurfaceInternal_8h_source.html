@@ -1,0 +1,224 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rts/RTSCrowdSurfaceInternal.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b34b76c5127db2af25782628231a25c8.html">rts</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RTSCrowdSurfaceInternal.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RTSCrowdSurfaceInternal_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="CrowdTypes_8h.html">crowd/CrowdTypes.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Pathfinder_8h.html">map/Pathfinder.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="RTS_8h.html">rts/RTS.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1map.html">eve::map</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">class </span>NavigationGridSnapshot;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>}</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rts.html">eve::rts</a> {</div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="};">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html">   11</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html">RTS::CrowdSurfaceRuntime</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a82648780687b5b7e3ad511eb9f944a9c">   12</a></span>    <a class="code hl_struct" href="structeve_1_1rts_1_1CrowdSurfaceTracking.html">CrowdSurfaceTracking</a>          <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a82648780687b5b7e3ad511eb9f944a9c">settings</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a25239ecb100e47c0f0d165c97d4e10f3">   13</a></span>    <a class="code hl_class" href="classeve_1_1map_1_1Pathfinder.html">map::Pathfinder</a>*              <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a25239ecb100e47c0f0d165c97d4e10f3">source</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a356e8a2d23c0e31b85b72e1868102f66">   14</a></span>    <a class="code hl_struct" href="structeve_1_1map_1_1NavigationChangeStamp.html">map::NavigationChangeStamp</a>    <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a356e8a2d23c0e31b85b72e1868102f66">change</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a99f3a50d78e73ea40152cd56e2ae2bed">   15</a></span>    <a class="code hl_struct" href="structeve_1_1rts_1_1NavigationGrid.html">NavigationGrid</a>                <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a99f3a50d78e73ea40152cd56e2ae2bed">geometry</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#ae8e5a778863a1e743b7e167bde023104">   16</a></span>    <a class="code hl_struct" href="structeve_1_1crowd_1_1NavigationSurfaceStamp.html">crowd::NavigationSurfaceStamp</a> <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#ae8e5a778863a1e743b7e167bde023104">publication</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a576d73c23a0831ccf2708d6770a26b90">   17</a></span>    std::uint64_t                 <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a576d73c23a0831ccf2708d6770a26b90">captureRevision</a> = 0;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>};</div>
+</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rts_1_1NavigationGrid.html">NavigationGrid</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;crowd::NavigationSurfaceSnapshot&gt;</a> <a class="code hl_function" href="namespaceeve_1_1rts.html#a5c4d0d09bc93e3b5ed0a400b97329f44">projectCrowdSurface</a>(</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1map_1_1NavigationGridSnapshot.html">map::NavigationGridSnapshot</a>&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, <a class="code hl_struct" href="structeve_1_1crowd_1_1NavigationSurfaceStamp.html">crowd::NavigationSurfaceStamp</a> <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#ab9d19fcc0b6e8fc6fac3aba346526ceb">stamp</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rts_1_1NavigationGrid.html">NavigationGrid</a>&amp; geometry,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    std::int64_t maxChecks);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}  <span class="comment">// namespace eve::rts</span></div>
+<div class="ttc" id="aCrowdTypes_8h_html"><div class="ttname"><a href="CrowdTypes_8h.html">CrowdTypes.h</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aPathfinder_8h_html"><div class="ttname"><a href="Pathfinder_8h.html">Pathfinder.h</a></div></div>
+<div class="ttc" id="aRTS_8h_html"><div class="ttname"><a href="RTS_8h.html">RTS.h</a></div><div class="ttdoc">RTS module owner and phase-one composition profile entry point.</div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aa035d90db0e334b2f2f53e55a79e621f"><div class="ttname"><a href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a></div><div class="ttdeci">std::string_view source</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00020">ScriptStructure.cpp:20</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_ab9d19fcc0b6e8fc6fac3aba346526ceb"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#ab9d19fcc0b6e8fc6fac3aba346526ceb">stamp</a></div><div class="ttdeci">Heightmap stamp</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00117">TerrainGenerationSession.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1NavigationGridSnapshot_html"><div class="ttname"><a href="classeve_1_1map_1_1NavigationGridSnapshot.html">eve::map::NavigationGridSnapshot</a></div><div class="ttdoc">Immutable owning capture; independent of Pathfinder and TileLayer lifetimes.</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8h_source.html#l00027">Pathfinder.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Pathfinder_html"><div class="ttname"><a href="classeve_1_1map_1_1Pathfinder.html">eve::map::Pathfinder</a></div><div class="ttdoc">Pathfinding facade. Single-agent: A*. Group (same goal): Flow Field + follow. Grid/topology internals...</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8h_source.html#l00062">Pathfinder.h:62</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html"><div class="ttname"><a href="namespaceeve_1_1map.html">eve::map</a></div><div class="ttdoc">放置世界：格子占用（多通道）+ 地形语义 + 已放置建筑实例。 行为由 PlacementSystem 提供；本类暴露便于脚本绑定的薄封装方法。 坐标换算统一走 eve::grid（支持 rectang...</div><div class="ttdef"><b>Definition</b> <a href="ArchSpaceTileMapProjector_8h_source.html#l00010">ArchSpaceTileMapProjector.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html"><div class="ttname"><a href="namespaceeve_1_1rts.html">eve::rts</a></div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00029">RTS.cpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html_a5c4d0d09bc93e3b5ed0a400b97329f44"><div class="ttname"><a href="namespaceeve_1_1rts.html#a5c4d0d09bc93e3b5ed0a400b97329f44">eve::rts::projectCrowdSurface</a></div><div class="ttdeci">Result&lt; crowd::NavigationSurfaceSnapshot &gt; projectCrowdSurface(const map::NavigationGridSnapshot &amp;source, crowd::NavigationSurfaceStamp stamp, const NavigationGrid &amp;geometry, std::int64_t maxChecks)</div><div class="ttdoc">Upper-domain adapter; owns output and never retains map spans.</div><div class="ttdef"><b>Definition</b> <a href="RTSCrowdSurface_8cpp_source.html#l00007">RTSCrowdSurface.cpp:7</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1NavigationSurfaceStamp_html"><div class="ttname"><a href="structeve_1_1crowd_1_1NavigationSurfaceStamp.html">eve::crowd::NavigationSurfaceStamp</a></div><div class="ttdoc">Provenance of one immutable navigation projection.</div><div class="ttdef"><b>Definition</b> <a href="CrowdTypes_8h_source.html#l00033">CrowdTypes.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1map_1_1NavigationChangeStamp_html"><div class="ttname"><a href="structeve_1_1map_1_1NavigationChangeStamp.html">eve::map::NavigationChangeStamp</a></div><div class="ttdoc">Cheap invalidation hint, distinct from immutable capture content revisions. Includes bound-layer tile...</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8h_source.html#l00022">Pathfinder.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1CrowdSurfaceTracking_html"><div class="ttname"><a href="structeve_1_1rts_1_1CrowdSurfaceTracking.html">eve::rts::CrowdSurfaceTracking</a></div><div class="ttdoc">Runtime-owned map projection settings; configure once, rebuild only on source changes....</div><div class="ttdef"><b>Definition</b> <a href="RTS_8h_source.html#l00044">RTS.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1NavigationGrid_html"><div class="ttname"><a href="structeve_1_1rts_1_1NavigationGrid.html">eve::rts::NavigationGrid</a></div><div class="ttdoc">World/grid conversion used when an RTS composition consumes a canonical map Pathfinder.</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8h_source.html#l00265">RTSSystems.h:265</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime_html"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html">eve::rts::RTS::CrowdSurfaceRuntime</a></div><div class="ttdef"><b>Definition</b> <a href="RTSCrowdSurfaceInternal_8h_source.html#l00011">RTSCrowdSurfaceInternal.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime_html_a25239ecb100e47c0f0d165c97d4e10f3"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a25239ecb100e47c0f0d165c97d4e10f3">eve::rts::RTS::CrowdSurfaceRuntime::source</a></div><div class="ttdeci">map::Pathfinder * source</div><div class="ttdef"><b>Definition</b> <a href="RTSCrowdSurfaceInternal_8h_source.html#l00013">RTSCrowdSurfaceInternal.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime_html_a356e8a2d23c0e31b85b72e1868102f66"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a356e8a2d23c0e31b85b72e1868102f66">eve::rts::RTS::CrowdSurfaceRuntime::change</a></div><div class="ttdeci">map::NavigationChangeStamp change</div><div class="ttdef"><b>Definition</b> <a href="RTSCrowdSurfaceInternal_8h_source.html#l00014">RTSCrowdSurfaceInternal.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime_html_a576d73c23a0831ccf2708d6770a26b90"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a576d73c23a0831ccf2708d6770a26b90">eve::rts::RTS::CrowdSurfaceRuntime::captureRevision</a></div><div class="ttdeci">std::uint64_t captureRevision</div><div class="ttdef"><b>Definition</b> <a href="RTSCrowdSurfaceInternal_8h_source.html#l00017">RTSCrowdSurfaceInternal.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime_html_a82648780687b5b7e3ad511eb9f944a9c"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a82648780687b5b7e3ad511eb9f944a9c">eve::rts::RTS::CrowdSurfaceRuntime::settings</a></div><div class="ttdeci">CrowdSurfaceTracking settings</div><div class="ttdef"><b>Definition</b> <a href="RTSCrowdSurfaceInternal_8h_source.html#l00012">RTSCrowdSurfaceInternal.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime_html_a99f3a50d78e73ea40152cd56e2ae2bed"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#a99f3a50d78e73ea40152cd56e2ae2bed">eve::rts::RTS::CrowdSurfaceRuntime::geometry</a></div><div class="ttdeci">NavigationGrid geometry</div><div class="ttdef"><b>Definition</b> <a href="RTSCrowdSurfaceInternal_8h_source.html#l00015">RTSCrowdSurfaceInternal.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime_html_ae8e5a778863a1e743b7e167bde023104"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1CrowdSurfaceRuntime.html#ae8e5a778863a1e743b7e167bde023104">eve::rts::RTS::CrowdSurfaceRuntime::publication</a></div><div class="ttdeci">crowd::NavigationSurfaceStamp publication</div><div class="ttdef"><b>Definition</b> <a href="RTSCrowdSurfaceInternal_8h_source.html#l00016">RTSCrowdSurfaceInternal.h:16</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

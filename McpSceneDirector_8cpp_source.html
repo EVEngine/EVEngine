@@ -1,0 +1,366 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/devtools/McpSceneDirector.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3a7b6b76fa35de02dad03b6cb9ae0de0.html">devtools</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">McpSceneDirector.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="McpSceneDirector_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="McpSceneDirector_8hpp.html">devtools/McpSceneDirector.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="ScriptError_8h.html">common/ScriptError.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="McpDevBridge_8hpp.html">devtools/McpDevBridge.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="McpSquirrelJson_8hpp.html">devtools/McpSquirrelJson.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="scripts_8h.html">scripts.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;squirrel.h&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;atomic&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dev.html">eve::dev</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">constexpr</span> <span class="keyword">const</span> SQChar* kMcpSnippetSource       = _SC(<span class="stringliteral">&quot;memory://mcp/snippet&quot;</span>);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">constexpr</span> <span class="keyword">const</span> SQChar* kMcpSceneDirectorSource = _SC(<span class="stringliteral">&quot;memory://mcp/scene-director&quot;</span>);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>std::mutex       g_installMu;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>std::atomic_bool g_installPending{<span class="keyword">false</span>};</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>std::string snippetErrorText(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keywordtype">bool</span> compile, <span class="keyword">const</span> SQChar* <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_struct" href="structeve_1_1script_1_1ScriptErrorContext.html">eve::script::ScriptErrorContext</a> ctx =</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        compile ? <a class="code hl_function" href="namespaceeve_1_1script.html#a9836f31fb054ba9cc70249fe9c38bb57">eve::script::captureCompileError</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>) : <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_variable" href="PlayHost_8cpp.html#a0fad55270c47977e4ef96ad9671c5773">script</a>::<a class="code hl_function" href="namespaceeve_1_1script.html#a31996492b03e4190492e4f09ae4c5a72">takeLastScriptError</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (ctx.<a class="code hl_variable" href="structeve_1_1script_1_1ScriptErrorContext.html#acca716bf6593d96b14074d615c5f513e">source</a>.empty()) ctx.<a class="code hl_variable" href="structeve_1_1script_1_1ScriptErrorContext.html#acca716bf6593d96b14074d615c5f513e">source</a> = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">if</span> (ctx.<a class="code hl_variable" href="structeve_1_1script_1_1ScriptErrorContext.html#aa7fefab1abae64529a5d71eecee6a2b3">message</a>.empty()) ctx.<a class="code hl_variable" href="structeve_1_1script_1_1ScriptErrorContext.html#aa7fefab1abae64529a5d71eecee6a2b3">message</a> = compile ? <span class="stringliteral">&quot;compile failed&quot;</span> : <span class="stringliteral">&quot;runtime failed&quot;</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">if</span> (compile) ctx.<a class="code hl_variable" href="structeve_1_1script_1_1ScriptErrorContext.html#abeed8cc63a42fd0656beb2ce12745520">stack</a>.clear();</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    std::string report = std::string(<span class="stringliteral">&quot;type: &quot;</span>) + (compile ? <span class="stringliteral">&quot;compile_error&quot;</span> : <span class="stringliteral">&quot;runtime_error&quot;</span>) +</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                         <span class="stringliteral">&quot;\norigin: &quot;</span> + (<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a> == kMcpSnippetSource ? <span class="stringliteral">&quot;eve_run_script&quot;</span> : <span class="stringliteral">&quot;scene_director&quot;</span>) +</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>                         <span class="stringliteral">&quot;\nsource: &quot;</span> + ctx.<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a> + <span class="stringliteral">&quot;\nline: &quot;</span> + <a class="code hl_namespace" href="namespacestd.html">std</a>::to_string(ctx.<a class="code hl_variable" href="ScriptStructure_8cpp.html#a05ef0c4dbeec4fc8ccb225de9c26d896">line</a>) +</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                         <span class="stringliteral">&quot;\ncolumn: &quot;</span> + <a class="code hl_namespace" href="namespacestd.html">std</a>::to_string(ctx.<a class="code hl_variable" href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a>) +</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                         <span class="stringliteral">&quot;\nmessage: &quot;</span> + (compile ? ctx.<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a> : <a class="code hl_namespace" href="namespaceeve.html">eve</a>::<a class="code hl_variable" href="PlayHost_8cpp.html#a0fad55270c47977e4ef96ad9671c5773">script</a>::<a class="code hl_function" href="namespaceeve_1_1script.html#a229c41a233a3ca56cd751805789380bc">formatScriptError</a>(ctx));</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_function" href="namespaceeve_1_1dev.html#a99e5acef1624b054145d73bdd71ebcc0">mcpRecordSnippetError</a>(report);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">return</span> report;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keywordtype">bool</span> sceneDirectorPresent(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">const</span> std::string check = <span class="stringliteral">&quot;return (\&quot;scene_director\&quot; in getroottable()) ? (scene_director != null) : false;&quot;</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">const</span> std::string <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>   = <a class="code hl_function" href="namespaceeve_1_1dev.html#afcc8c502582a9ced3c3233a8d358f7ab">callSceneDirectorReturn</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, check, <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">return</span> !<a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.empty() &amp;&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.find(<span class="stringliteral">&quot;true&quot;</span>) != std::string::npos;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keywordtype">bool</span> installSceneDirectorNow(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::string* err) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* kit = <a class="code hl_variable" href="namespaceeve.html#a8ac75cda875b82d0f827f52e9dc7dd32">eve::scene_director_content</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">if</span> (!kit || !*kit) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">if</span> (err) *err = <span class="stringliteral">&quot;scene_director.nut not embedded (rebuild EVScripts)&quot;</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#a9ccaf547a2b03eeb338aab5cded70672">runMcpVmSnippet</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, kit, err);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a9ccaf547a2b03eeb338aab5cded70672">   54</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#a9ccaf547a2b03eeb338aab5cded70672">runMcpVmSnippet</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, std::string* err) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_function" href="namespaceeve_1_1script.html#a24edaee10f942b67162b8758115a9009">eve::script::clearLastScriptError</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">const</span> SQInteger <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a> = sq_gettop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="comment">// MCP snippets are transient input, not project scripts. Compile them</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="comment">// directly from memory so the unified project compiler cannot register a</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="comment">// file-shaped source that hot reload may later treat as user content.</span></div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">if</span> (SQ_FAILED(</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            sq_compilebuffer(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.c_str(), <span class="keyword">static_cast&lt;</span>SQInteger<span class="keyword">&gt;</span>(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.size()), kMcpSnippetSource, SQTrue))) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        sq_settop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">if</span> (err) *err = snippetErrorText(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">true</span>, kMcpSnippetSource);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    sq_pushroottable(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">if</span> (SQ_FAILED(sq_call(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, 1, SQFalse, SQTrue))) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        sq_settop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">if</span> (err) *err = snippetErrorText(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">false</span>, kMcpSnippetSource);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    sq_settop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>}</div>
+</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#afcc8c502582a9ced3c3233a8d358f7ab">   76</a></span>std::string <a class="code hl_function" href="namespaceeve_1_1dev.html#afcc8c502582a9ced3c3233a8d358f7ab">callSceneDirectorReturn</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> std::string&amp; snippet, std::string* err) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_function" href="namespaceeve_1_1script.html#a24edaee10f942b67162b8758115a9009">eve::script::clearLastScriptError</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">const</span> SQInteger <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a> = sq_gettop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordflow">if</span> (SQ_FAILED(sq_compilebuffer(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, snippet.c_str(), <span class="keyword">static_cast&lt;</span>SQInteger<span class="keyword">&gt;</span>(snippet.size()), kMcpSceneDirectorSource,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                                   SQTrue))) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        sq_settop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a>);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">if</span> (err) *err = snippetErrorText(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">true</span>, kMcpSceneDirectorSource);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    sq_pushroottable(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (SQ_FAILED(sq_call(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, 1, SQTrue, SQTrue))) {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        sq_settop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        std::string <a class="code hl_variable" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a> = snippetErrorText(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">false</span>, kMcpSceneDirectorSource);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">if</span> (err)</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            *err = <a class="code hl_variable" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a> == <span class="stringliteral">&quot;runtime failed&quot;</span> ? <span class="stringliteral">&quot;runtime failed (is the scene_director kit installed?)&quot;</span> : std::move(<a class="code hl_variable" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::string json = <a class="code hl_function" href="namespaceeve_1_1dev.html#ac691882ba23142d545be6e79f0e307cd">sqValueToJson</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, -1);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    sq_settop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">return</span> json;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}</div>
+</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="foldopen" id="foldopen00098" data-start="{" data-end="}">
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a001e1df1c29019630c89967491aa7a34">   98</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#a001e1df1c29019630c89967491aa7a34">ensureSceneDirectorInstalled</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::string* err) {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#a001e1df1c29019630c89967491aa7a34">ensureSceneDirectorInstalled</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, err, <span class="comment">/*allowHeavyWork=*/</span><span class="keyword">true</span>);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}</div>
+</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="foldopen" id="foldopen00102" data-start="{" data-end="}">
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a0e4a43b66427c81b7c8843e16b191c7b">  102</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#a001e1df1c29019630c89967491aa7a34">ensureSceneDirectorInstalled</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::string* err, <span class="keywordtype">bool</span> allowHeavyWork) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>) {</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keywordflow">if</span> (err) *err = <span class="stringliteral">&quot;no VM&quot;</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">if</span> (sceneDirectorPresent(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        g_installPending.store(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">if</span> (!allowHeavyWork) {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        g_installPending.store(<span class="keyword">true</span>);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">if</span> (err) *err = <span class="stringliteral">&quot;deferred-to-update&quot;</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    }</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    std::lock_guard lock(g_installMu);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">if</span> (sceneDirectorPresent(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        g_installPending.store(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span> <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a> = installSceneDirectorNow(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, err);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>) g_installPending.store(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}</div>
+</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="foldopen" id="foldopen00126" data-start="{" data-end="}">
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a487685ee6b31c6d6a9b265d4a7ff154d">  126</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#a487685ee6b31c6d6a9b265d4a7ff154d">flushPendingSceneDirectorInstall</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>) {</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordflow">if</span> (!g_installPending.load() || !<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    std::string err;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    (void)<a class="code hl_function" href="namespaceeve_1_1dev.html#a001e1df1c29019630c89967491aa7a34">ensureSceneDirectorInstalled</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, &amp;err, <span class="comment">/*allowHeavyWork=*/</span><span class="keyword">true</span>);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>}</div>
+</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a0b594695c3e47e99f8d6884b5ad68e46">  132</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#a0b594695c3e47e99f8d6884b5ad68e46">sceneDirectorInstallPending</a>() { <span class="keywordflow">return</span> g_installPending.load(); }</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="foldopen" id="foldopen00134" data-start="{" data-end="}">
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a99018c4a048473bd27df7abe61d87c33">  134</a></span>std::string <a class="code hl_function" href="namespaceeve_1_1dev.html#a99018c4a048473bd27df7abe61d87c33">sceneDirectorToolError</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> std::string&amp; err) {</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordflow">if</span> (err == <span class="stringliteral">&quot;deferred-to-update&quot;</span>) {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        <span class="keywordflow">return</span> std::string(<span class="stringliteral">&quot;{\&quot;ok\&quot;:false,\&quot;retryable\&quot;:true,\&quot;reason\&quot;:\&quot;deferred-to-update\&quot;,\&quot;tool\&quot;:\&quot;&quot;</span>) + <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> +</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>               <span class="stringliteral">&quot;\&quot;,\&quot;hint\&quot;:\&quot;scene_director install was queued for the next eve.dev.poll / eve_update; retry this &quot;</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>               <span class="stringliteral">&quot;tool\&quot;}&quot;</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;error: &quot;</span> + <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> + <span class="stringliteral">&quot;: &quot;</span> + (err.empty() ? <span class="stringliteral">&quot;unknown&quot;</span> : err);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>}</div>
+</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>}  <span class="comment">// namespace eve::dev</span></div>
+<div class="ttc" id="aConsolePanel_8hpp_html_a9118df9c000fff034a7b410b6de3443c"><div class="ttname"><a href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a></div><div class="ttdeci">struct SQVM * HSQUIRRELVM</div><div class="ttdef"><b>Definition</b> <a href="ConsolePanel_8hpp_source.html#l00012">ConsolePanel.hpp:12</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00038">ECS.cpp:38</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00154">ECS.cpp:154</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aMcpDevBridge_8hpp_html"><div class="ttname"><a href="McpDevBridge_8hpp.html">McpDevBridge.hpp</a></div></div>
+<div class="ttc" id="aMcpSceneDirector_8hpp_html"><div class="ttname"><a href="McpSceneDirector_8hpp.html">McpSceneDirector.hpp</a></div><div class="ttdoc">Shared helpers for MCP tools that drive the embedded scene_director kit.</div></div>
+<div class="ttc" id="aMcpSquirrelJson_8hpp_html"><div class="ttname"><a href="McpSquirrelJson_8hpp.html">McpSquirrelJson.hpp</a></div></div>
+<div class="ttc" id="aPlayHost_8cpp_html_a0fad55270c47977e4ef96ad9671c5773"><div class="ttname"><a href="PlayHost_8cpp.html#a0fad55270c47977e4ef96ad9671c5773">script</a></div><div class="ttdeci">std::string script</div><div class="ttdef"><b>Definition</b> <a href="PlayHost_8cpp_source.html#l00117">PlayHost.cpp:117</a></div></div>
+<div class="ttc" id="aScriptError_8h_html"><div class="ttname"><a href="ScriptError_8h.html">ScriptError.h</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a05ef0c4dbeec4fc8ccb225de9c26d896"><div class="ttname"><a href="ScriptStructure_8cpp.html#a05ef0c4dbeec4fc8ccb225de9c26d896">line</a></div><div class="ttdeci">unsigned line</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00012">ScriptStructure.cpp:12</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00011">ScriptStructure.cpp:11</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a4eeac3157ac481ce95fa8dd8e5e12a5f"><div class="ttname"><a href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a></div><div class="ttdeci">ScriptStructure out</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00023">ScriptStructure.cpp:23</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aa035d90db0e334b2f2f53e55a79e621f"><div class="ttname"><a href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a></div><div class="ttdeci">std::string_view source</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00020">ScriptStructure.cpp:20</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_ac5576b929fdb34318247315900441b69"><div class="ttname"><a href="ScriptStructure_8cpp.html#ac5576b929fdb34318247315900441b69">column</a></div><div class="ttdeci">unsigned column</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00012">ScriptStructure.cpp:12</a></div></div>
+<div class="ttc" id="aUdpLink_8cpp_html_a1d67bd6634a9002df97231d8c8dbc66c"><div class="ttname"><a href="UdpLink_8cpp.html#a1d67bd6634a9002df97231d8c8dbc66c">ok</a></div><div class="ttdeci">bool ok</div><div class="ttdef"><b>Definition</b> <a href="UdpLink_8cpp_source.html#l00059">UdpLink.cpp:59</a></div></div>
+<div class="ttc" id="adevtools_2Snapshot_8cpp_html_a8f53a853d53616e68dce5e5688ea3311"><div class="ttname"><a href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a></div><div class="ttdeci">SQInteger top</div><div class="ttdef"><b>Definition</b> <a href="devtools_2Snapshot_8cpp_source.html#l00115">Snapshot.cpp:115</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html"><div class="ttname"><a href="namespaceeve_1_1dev.html">eve::dev</a></div><div class="ttdef"><b>Definition</b> <a href="AgentDevelopmentMcp_8cpp_source.html#l00014">AgentDevelopmentMcp.cpp:14</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a001e1df1c29019630c89967491aa7a34"><div class="ttname"><a href="namespaceeve_1_1dev.html#a001e1df1c29019630c89967491aa7a34">eve::dev::ensureSceneDirectorInstalled</a></div><div class="ttdeci">bool ensureSceneDirectorInstalled(HSQUIRRELVM vm, std::string *err)</div><div class="ttdoc">Convenience overload: allow heavy install immediately (tests / explicit install tool).</div><div class="ttdef"><b>Definition</b> <a href="McpSceneDirector_8cpp_source.html#l00098">McpSceneDirector.cpp:98</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a0b594695c3e47e99f8d6884b5ad68e46"><div class="ttname"><a href="namespaceeve_1_1dev.html#a0b594695c3e47e99f8d6884b5ad68e46">eve::dev::sceneDirectorInstallPending</a></div><div class="ttdeci">bool sceneDirectorInstallPending()</div><div class="ttdoc">Whether a deferred install is waiting for the next poll.</div><div class="ttdef"><b>Definition</b> <a href="McpSceneDirector_8cpp_source.html#l00132">McpSceneDirector.cpp:132</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a487685ee6b31c6d6a9b265d4a7ff154d"><div class="ttname"><a href="namespaceeve_1_1dev.html#a487685ee6b31c6d6a9b265d4a7ff154d">eve::dev::flushPendingSceneDirectorInstall</a></div><div class="ttdeci">void flushPendingSceneDirectorInstall(HSQUIRRELVM vm)</div><div class="ttdoc">Run a deferred scene_director install on the game/MCP poll thread.</div><div class="ttdef"><b>Definition</b> <a href="McpSceneDirector_8cpp_source.html#l00126">McpSceneDirector.cpp:126</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a99018c4a048473bd27df7abe61d87c33"><div class="ttname"><a href="namespaceeve_1_1dev.html#a99018c4a048473bd27df7abe61d87c33">eve::dev::sceneDirectorToolError</a></div><div class="ttdeci">std::string sceneDirectorToolError(const std::string &amp;name, const std::string &amp;err)</div><div class="ttdoc">Format a scene-director tool failure.</div><div class="ttdef"><b>Definition</b> <a href="McpSceneDirector_8cpp_source.html#l00134">McpSceneDirector.cpp:134</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a99e5acef1624b054145d73bdd71ebcc0"><div class="ttname"><a href="namespaceeve_1_1dev.html#a99e5acef1624b054145d73bdd71ebcc0">eve::dev::mcpRecordSnippetError</a></div><div class="ttdeci">void mcpRecordSnippetError(std::string report)</div><div class="ttdoc">VM-thread-only owning diagnostic publication; clears stale slicing data.</div><div class="ttdef"><b>Definition</b> <a href="DevTool_8cpp_source.html#l00905">DevTool.cpp:905</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a9ccaf547a2b03eeb338aab5cded70672"><div class="ttname"><a href="namespaceeve_1_1dev.html#a9ccaf547a2b03eeb338aab5cded70672">eve::dev::runMcpVmSnippet</a></div><div class="ttdeci">bool runMcpVmSnippet(HSQUIRRELVM vm, const std::string &amp;source, std::string *err)</div><div class="ttdoc">Compile and run a transient MCP snippet (no return value). @thread Game-loop / MCP poll thread with a...</div><div class="ttdef"><b>Definition</b> <a href="McpSceneDirector_8cpp_source.html#l00054">McpSceneDirector.cpp:54</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_ac691882ba23142d545be6e79f0e307cd"><div class="ttname"><a href="namespaceeve_1_1dev.html#ac691882ba23142d545be6e79f0e307cd">eve::dev::sqValueToJson</a></div><div class="ttdeci">std::string sqValueToJson(HSQUIRRELVM vm, SQInteger idx, int depth=0)</div><div class="ttdoc">Forward declaration: the key serializer falls back to the value serializer.</div><div class="ttdef"><b>Definition</b> <a href="McpSquirrelJson_8hpp_source.html#l00053">McpSquirrelJson.hpp:53</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_afcc8c502582a9ced3c3233a8d358f7ab"><div class="ttname"><a href="namespaceeve_1_1dev.html#afcc8c502582a9ced3c3233a8d358f7ab">eve::dev::callSceneDirectorReturn</a></div><div class="ttdeci">std::string callSceneDirectorReturn(HSQUIRRELVM vm, const std::string &amp;snippet, std::string *err)</div><div class="ttdoc">Compile+run a snippet that returns a value; serialize it as JSON.</div><div class="ttdef"><b>Definition</b> <a href="McpSceneDirector_8cpp_source.html#l00076">McpSceneDirector.cpp:76</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a229c41a233a3ca56cd751805789380bc"><div class="ttname"><a href="namespaceeve_1_1script.html#a229c41a233a3ca56cd751805789380bc">eve::script::formatScriptError</a></div><div class="ttdeci">std::string formatScriptError(const ScriptErrorContext &amp;ctx)</div><div class="ttdoc">Formats a context into a human-readable multi-line report.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00200">ScriptError.cpp:200</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a24edaee10f942b67162b8758115a9009"><div class="ttname"><a href="namespaceeve_1_1script.html#a24edaee10f942b67162b8758115a9009">eve::script::clearLastScriptError</a></div><div class="ttdeci">void clearLastScriptError(HSQUIRRELVM vm)</div><div class="ttdoc">Drops any recorded error for a VM.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00237">ScriptError.cpp:237</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a31996492b03e4190492e4f09ae4c5a72"><div class="ttname"><a href="namespaceeve_1_1script.html#a31996492b03e4190492e4f09ae4c5a72">eve::script::takeLastScriptError</a></div><div class="ttdeci">ScriptErrorContext takeLastScriptError(HSQUIRRELVM vm)</div><div class="ttdoc">Consumes and clears the last recorded error for a VM.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00222">ScriptError.cpp:222</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a9836f31fb054ba9cc70249fe9c38bb57"><div class="ttname"><a href="namespaceeve_1_1script.html#a9836f31fb054ba9cc70249fe9c38bb57">eve::script::captureCompileError</a></div><div class="ttdeci">ScriptErrorContext captureCompileError(HSQUIRRELVM vm)</div><div class="ttdoc">Captures the last compilation error recorded by the VM.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8cpp_source.html#l00114">ScriptError.cpp:114</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a8ac75cda875b82d0f827f52e9dc7dd32"><div class="ttname"><a href="namespaceeve.html#a8ac75cda875b82d0f827f52e9dc7dd32">eve::scene_director_content</a></div><div class="ttdeci">const char * scene_director_content</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+<div class="ttc" id="ascripts_8h_html"><div class="ttname"><a href="scripts_8h.html">scripts.h</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptErrorContext_html"><div class="ttname"><a href="structeve_1_1script_1_1ScriptErrorContext.html">eve::script::ScriptErrorContext</a></div><div class="ttdoc">Structured snapshot of a script error: message, throw site and stack.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00046">ScriptError.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptErrorContext_html_aa7fefab1abae64529a5d71eecee6a2b3"><div class="ttname"><a href="structeve_1_1script_1_1ScriptErrorContext.html#aa7fefab1abae64529a5d71eecee6a2b3">eve::script::ScriptErrorContext::message</a></div><div class="ttdeci">std::string message</div><div class="ttdoc">Raw error value (&quot;kaboom&quot;, &quot;42&quot;, ...).</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00047">ScriptError.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptErrorContext_html_abeed8cc63a42fd0656beb2ce12745520"><div class="ttname"><a href="structeve_1_1script_1_1ScriptErrorContext.html#abeed8cc63a42fd0656beb2ce12745520">eve::script::ScriptErrorContext::stack</a></div><div class="ttdeci">std::vector&lt; ScriptFrame &gt; stack</div><div class="ttdoc">Call stack, innermost frame first.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00053">ScriptError.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1ScriptErrorContext_html_acca716bf6593d96b14074d615c5f513e"><div class="ttname"><a href="structeve_1_1script_1_1ScriptErrorContext.html#acca716bf6593d96b14074d615c5f513e">eve::script::ScriptErrorContext::source</a></div><div class="ttdeci">std::string source</div><div class="ttdoc">Source of the throwing frame.</div><div class="ttdef"><b>Definition</b> <a href="ScriptError_8h_source.html#l00048">ScriptError.h:48</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

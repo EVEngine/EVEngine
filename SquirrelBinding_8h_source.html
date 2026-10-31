@@ -1,0 +1,357 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/SquirrelBinding.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SquirrelBinding.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SquirrelBinding_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;squirrel.h&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1script.html">eve::script</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1SquirrelValueOptions.html">   36</a></span><span class="keyword">struct </span><a class="code hl_define" href="Export_8h.html#a23317abed4c738049e2163d13028dc3a">EVENGINE_API_FOUNDATION_INLINE</a> <a class="code hl_struct" href="structeve_1_1script_1_1SquirrelValueOptions.html">SquirrelValueOptions</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1SquirrelValueOptions.html#a9eacb6569e889dadf82d0daf3cec486b">   37</a></span>    std::size_t maxDepth    = 64;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1SquirrelValueOptions.html#a0ee9cd18696a31e1a395a51d14719a51">   38</a></span>    std::size_t maxElements = 100000;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1SquirrelValueOptions.html#abd817271c689c33a3c6af543945ff30c">   39</a></span>    std::string <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>      = <span class="stringliteral">&quot;squirrel.binding&quot;</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>};</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;Value&gt;</a> <a class="code hl_function" href="namespaceeve_1_1script.html#ae6fb9fc56f0fc9e284edf3dbe1768c04">valueFromSquirrel</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, SQInteger <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                                                                      <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1script_1_1SquirrelValueOptions.html">SquirrelValueOptions</a>&amp; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a> = {});</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;Value&gt;</a> <a class="code hl_function" href="namespaceeve_1_1script.html#ae6fb9fc56f0fc9e284edf3dbe1768c04">valueFromSquirrel</a>(<span class="keyword">const</span> ssq::Object&amp;          <span class="keywordtype">object</span>,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                                                                      <span class="keyword">const</span> SquirrelValueOptions&amp; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a> = {});</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> Result&lt;void&gt; <a class="code hl_function" href="namespaceeve_1_1script.html#a8048db09566f9e101bdf4c7e0a4445f3">pushValue</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> <a class="code hl_enumvalue" href="namespaceeve_1_1script.html#a4b5a79eb10066ab6a0f3be2752124275a689202409e48743b914713f96d93947c">Value</a>&amp; <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>,</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                                                             <span class="keyword">const</span> SquirrelValueOptions&amp; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a> = {});</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> ssq::Table <a class="code hl_function" href="namespaceeve_1_1script.html#a71e989ee47f298344e3dd32207068f2d">projectDiagnostic</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> Diagnostic&amp; diagnostic);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> ssq::Table <a class="code hl_function" href="namespaceeve_1_1script.html#a92d2ff989037521ea1cdaa9cd05b5150">projectStatus</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> Status&amp; <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="structeve_1_1script_1_1RootTable.html">   87</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1script_1_1RootTable.html">RootTable</a> {};</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="namespaceeve_1_1script.html#a9e62080a647450b751f49a9bedcdf65f">   88</a></span><span class="keyword">inline</span> <span class="keyword">constexpr</span> <a class="code hl_struct" href="structeve_1_1script_1_1RootTable.html">RootTable</a> <a class="code hl_variable" href="namespaceeve_1_1script.html#a9e62080a647450b751f49a9bedcdf65f">rootTable</a>{};</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Receiver&gt;</div>
+<div class="foldopen" id="foldopen00092" data-start="{" data-end="}">
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="namespaceeve_1_1script.html#add62d79bd1875a8a971bee91e538840d">   92</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1script.html#add62d79bd1875a8a971bee91e538840d">pushReceiver</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> Receiver&amp; receiver) {</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;std::decay_t&lt;Receiver&gt;, <a class="code hl_struct" href="structeve_1_1script_1_1RootTable.html">RootTable</a>&gt;) {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        sq_pushroottable(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <a class="code hl_function" href="namespacessq_1_1detail.html#a75a9c682ba6fe4ec2235cd3852459bb5">ssq::detail::pushValue</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, receiver);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    }</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>}</div>
+</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Arg&gt;</div>
+<div class="foldopen" id="foldopen00117" data-start="{" data-end="}">
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="namespaceeve_1_1script.html#ae996322dcb5ce47090fe1b32cf33cd91">  117</a></span><span class="keyword">decltype</span>(<span class="keyword">auto</span>) <a class="code hl_function" href="namespaceeve_1_1script.html#ae996322dcb5ce47090fe1b32cf33cd91">scriptArgument</a>(<span class="keyword">const</span> Arg&amp; arg) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keyword">using </span>Bare = std::remove_cv_t&lt;std::remove_reference_t&lt;Arg&gt;&gt;;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_array_v&lt;Bare&gt; || std::is_same_v&lt;Bare, char*&gt; || std::is_same_v&lt;Bare, const char*&gt;) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">return</span> std::string(arg);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keywordflow">return</span> (arg);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    }</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}</div>
+</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> std::string <a class="code hl_function" href="namespaceeve_1_1script.html#acef47be1a80d3f989e78896f38e50abe">reportScriptCallFailure</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* what);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <span class="keywordtype">int</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a2c159508230577e3be77a6ae0832eaf4">reportedScriptCallFailures</a>();</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a793a77752e22de9b062955801439d141">resetReportedScriptCallFailures</a>();</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> SQRESULT <a class="code hl_function" href="namespaceeve_1_1script.html#a39672be79b188e6fa54dc26ea3b6e345">compileAndRunChunk</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>);</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Receiver, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00212" data-start="{" data-end="}">
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno"><a class="line" href="namespaceeve_1_1script.html#a071a8dc9106b5e32deb0d1fe48c1d84c">  212</a></span>SQRESULT <a class="code hl_function" href="namespaceeve_1_1script.html#a071a8dc9106b5e32deb0d1fe48c1d84c">callFunction</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> HSQOBJECT&amp; <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>, <span class="keyword">const</span> Receiver&amp; receiver, Args&amp;&amp;... args) {</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keyword">const</span> SQInteger <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a> = sq_gettop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    sq_pushobject(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <a class="code hl_function" href="namespaceeve_1_1script.html#add62d79bd1875a8a971bee91e538840d">pushReceiver</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, receiver);</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    (<a class="code hl_function" href="namespacessq_1_1detail.html#a75a9c682ba6fe4ec2235cd3852459bb5">ssq::detail::pushValue</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_function" href="namespaceeve_1_1script.html#ae996322dcb5ce47090fe1b32cf33cd91">scriptArgument</a>(args)), ...);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="comment">// Everything above the callable: the receiver plus the arguments. The callable itself is not</span></div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="comment">// part of the count (sq_call takes the callee at -(params)-1).</span></div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keyword">const</span> SQInteger <a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a> = sq_gettop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>) - <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a> - 1;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="keyword">const</span> SQRESULT  <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a> = sq_call(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>, SQFalse, SQTrue);</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keywordflow">if</span> (SQ_FAILED(<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>)) <a class="code hl_function" href="namespaceeve_1_1script.html#acef47be1a80d3f989e78896f38e50abe">reportScriptCallFailure</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="stringliteral">&quot;callFunction&quot;</span>);</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    sq_settop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a>);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>}</div>
+</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Receiver, <span class="keyword">typename</span>... Args&gt;</div>
+<div class="foldopen" id="foldopen00240" data-start="{" data-end="}">
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno"><a class="line" href="namespaceeve_1_1script.html#a765b8125b74970ba9d56b00f738cdde0">  240</a></span>SQRESULT <a class="code hl_function" href="namespaceeve_1_1script.html#a765b8125b74970ba9d56b00f738cdde0">callFunctionResult</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> HSQOBJECT&amp; <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>, <span class="keyword">const</span> Receiver&amp; receiver, Args&amp;&amp;... args) {</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keyword">const</span> SQInteger <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a> = sq_gettop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    sq_pushobject(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a>);</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <a class="code hl_function" href="namespaceeve_1_1script.html#add62d79bd1875a8a971bee91e538840d">pushReceiver</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, receiver);</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    (<a class="code hl_function" href="namespacessq_1_1detail.html#a75a9c682ba6fe4ec2235cd3852459bb5">ssq::detail::pushValue</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_function" href="namespaceeve_1_1script.html#ae996322dcb5ce47090fe1b32cf33cd91">scriptArgument</a>(args)), ...);</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    <span class="comment">// Everything above the callable: the receiver plus the arguments. The callable itself is not</span></div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="comment">// part of the count (sq_call takes the callee at -(params)-1).</span></div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>    <span class="keyword">const</span> SQInteger <a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a> = sq_gettop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>) - <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a> - 1;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    <span class="keyword">const</span> SQRESULT  <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a> = sq_call(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>, SQTrue, SQTrue);</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    <span class="keywordflow">if</span> (SQ_FAILED(<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>)) {</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        <a class="code hl_function" href="namespaceeve_1_1script.html#acef47be1a80d3f989e78896f38e50abe">reportScriptCallFailure</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="stringliteral">&quot;callFunctionResult&quot;</span>);</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        sq_settop(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a>);</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    }</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>}</div>
+</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span> </div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> ssq::Table <a class="code hl_function" href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">projectStatusResult</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Status.html">Status</a>&amp; <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> ssq::Table <a class="code hl_function" href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">projectStatusResult</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Status.html">Status</a>&amp; <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>,</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>                                                                     <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">Value</a>&amp; <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>);</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> ssq::Table <a class="code hl_function" href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">projectStatusResult</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Status.html">Status</a>&amp; <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>,</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>                                                                     ssq::Object <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>);</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span> </div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a90f657069c689b2d52a1bf5c61a9a55f">markResultHasValue</a>(ssq::Table&amp; <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>);</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span> </div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span><span class="keyword">template</span> &lt;<span class="keyword">class</span> T, <span class="keyword">class</span> Projector&gt;</div>
+<div class="foldopen" id="foldopen00309" data-start="{" data-end="}">
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno"><a class="line" href="namespaceeve_1_1script.html#afa607a194053e67b98d4f511318ac112">  309</a></span>[[nodiscard]] ssq::Table <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">projectResult</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;T&gt;</a>&amp;&amp; <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>, Projector&amp;&amp; projector) {</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.status());</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span> </div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Status.html">Status</a> <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>  = <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.status();</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    T            <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a> = std::move(<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>).takeValue();</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>, std::invoke(std::forward&lt;Projector&gt;(projector), std::move(<a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>)));</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>}</div>
+</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span> </div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> ssq::Table <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">projectResult</a>(<a class="code hl_typedef" href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a>&amp;&amp; <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>);</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span> </div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a181b29647b0a4fb3cc0635aba8e052d3">ignoreResult</a>(<span class="keyword">const</span> ssq::Object&amp; <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>, <span class="keyword">const</span> std::string&amp; reason);</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span> </div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ae2072b9e619d0a8dc86450662157cf91">exposeResultBindings</a>(ssq::Table&amp; eveTable);</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span> </div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1script.html#acc6561e76e56e361fad9c662ec0669e1">exposeProviderBindings</a>(ssq::Table&amp; eveTable);</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span> </div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>}  <span class="comment">// namespace eve::script</span></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_aa50532026e25d28aec12f8f0f8b0ebf5"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a></div><div class="ttdeci">Value::Object payload</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00020">ActionTimelinePayloadEditor.cpp:20</a></div></div>
+<div class="ttc" id="aConsolePanel_8hpp_html_a9118df9c000fff034a7b410b6de3443c"><div class="ttname"><a href="ConsolePanel_8hpp.html#a9118df9c000fff034a7b410b6de3443c">HSQUIRRELVM</a></div><div class="ttdeci">struct SQVM * HSQUIRRELVM</div><div class="ttdef"><b>Definition</b> <a href="ConsolePanel_8hpp_source.html#l00012">ConsolePanel.hpp:12</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00038">ECS.cpp:38</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00154">ECS.cpp:154</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a23317abed4c738049e2163d13028dc3a"><div class="ttname"><a href="Export_8h.html#a23317abed4c738049e2163d13028dc3a">EVENGINE_API_FOUNDATION_INLINE</a></div><div class="ttdeci">#define EVENGINE_API_FOUNDATION_INLINE</div><div class="ttdoc">仅供&quot;只有内联成员&quot;的类型使用的组宏：拥有者 dllexport，消费方不导入。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00170">Export.h:170</a></div></div>
+<div class="ttc" id="aExport_8h_html_a704bb99555d8684cacf66248b5c3d70c"><div class="ttname"><a href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a></div><div class="ttdeci">#define EVENGINE_API_FOUNDATION</div><div class="ttdoc">每个链接组（link group）各自的导出宏。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00106">Export.h:106</a></div></div>
+<div class="ttc" id="aGraphicsTextureMips_8cpp_html_ae2ee633a7768658281259907a29fc401"><div class="ttname"><a href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a></div><div class="ttdeci">wgpu::PopErrorScopeStatus status</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTextureMips_8cpp_source.html#l00015">GraphicsTextureMips.cpp:15</a></div></div>
+<div class="ttc" id="aMcpInputTools_8cpp_html_a1b012debbb0243926fff95a55e397b44"><div class="ttname"><a href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a></div><div class="ttdeci">Poco::JSON::Object::Ptr result</div><div class="ttdef"><b>Definition</b> <a href="McpInputTools_8cpp_source.html#l00053">McpInputTools.cpp:53</a></div></div>
+<div class="ttc" id="aMcpRecipeTools_8cpp_html_adebd01bfaa3c95a7128a5a0abb545c0d"><div class="ttname"><a href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a></div><div class="ttdeci">std::vector&lt; RecipeParam &gt; params</div><div class="ttdef"><b>Definition</b> <a href="McpRecipeTools_8cpp_source.html#l00034">McpRecipeTools.cpp:34</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aa035d90db0e334b2f2f53e55a79e621f"><div class="ttname"><a href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a></div><div class="ttdeci">std::string_view source</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00020">ScriptStructure.cpp:20</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_abebf9d839cc4bbffbf6bb3cf6c4b1038"><div class="ttname"><a href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a></div><div class="ttdeci">const SquirrelValueOptions &amp; options</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00089">SquirrelBinding.cpp:89</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html"><div class="ttname"><a href="classeve_1_1Status.html">eve::Status</a></div><div class="ttdoc">Structured status and zero or more diagnostics for an operation.</div><div class="ttdef"><b>Definition</b> <a href="Status_8h_source.html#l00070">Status.h:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="adevtools_2Snapshot_8cpp_html_a8f53a853d53616e68dce5e5688ea3311"><div class="ttname"><a href="devtools_2Snapshot_8cpp.html#a8f53a853d53616e68dce5e5688ea3311">top</a></div><div class="ttdeci">SQInteger top</div><div class="ttdef"><b>Definition</b> <a href="devtools_2Snapshot_8cpp_source.html#l00115">Snapshot.cpp:115</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html"><div class="ttname"><a href="namespaceeve_1_1script.html">eve::script</a></div><div class="ttdef"><b>Definition</b> <a href="BindingContracts_8h_source.html#l00005">BindingContracts.h:5</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a071a8dc9106b5e32deb0d1fe48c1d84c"><div class="ttname"><a href="namespaceeve_1_1script.html#a071a8dc9106b5e32deb0d1fe48c1d84c">eve::script::callFunction</a></div><div class="ttdeci">SQRESULT callFunction(HSQUIRRELVM vm, const HSQOBJECT &amp;fn, const Receiver &amp;receiver, Args &amp;&amp;... args)</div><div class="ttdoc">Call a script function, deriving sq_call's parameter count from the pushes.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8h_source.html#l00212">SquirrelBinding.h:212</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a181b29647b0a4fb3cc0635aba8e052d3"><div class="ttname"><a href="namespaceeve_1_1script.html#a181b29647b0a4fb3cc0635aba8e052d3">eve::script::ignoreResult</a></div><div class="ttdeci">bool ignoreResult(const ssq::Object &amp;result, const std::string &amp;reason)</div><div class="ttdoc">Mark a projected Result table as intentionally ignored by script.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00547">SquirrelBinding.cpp:547</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a2c159508230577e3be77a6ae0832eaf4"><div class="ttname"><a href="namespaceeve_1_1script.html#a2c159508230577e3be77a6ae0832eaf4">eve::script::reportedScriptCallFailures</a></div><div class="ttdeci">int reportedScriptCallFailures()</div><div class="ttdoc">Count of engine-to-script call failures reported since the last reset.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00073">SquirrelBinding.cpp:73</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a39672be79b188e6fa54dc26ea3b6e345"><div class="ttname"><a href="namespaceeve_1_1script.html#a39672be79b188e6fa54dc26ea3b6e345">eve::script::compileAndRunChunk</a></div><div class="ttdeci">SQRESULT compileAndRunChunk(HSQUIRRELVM vm, const char *name, const char *source)</div><div class="ttdoc">Compile and run one embedded script chunk against the root table.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00057">SquirrelBinding.cpp:57</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a4b5a79eb10066ab6a0f3be2752124275a689202409e48743b914713f96d93947c"><div class="ttname"><a href="namespaceeve_1_1script.html#a4b5a79eb10066ab6a0f3be2752124275a689202409e48743b914713f96d93947c">eve::script::ObjectSemantic::Value</a></div><div class="ttdeci">@ Value</div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a71e989ee47f298344e3dd32207068f2d"><div class="ttname"><a href="namespaceeve_1_1script.html#a71e989ee47f298344e3dd32207068f2d">eve::script::projectDiagnostic</a></div><div class="ttdeci">ssq::Table projectDiagnostic(HSQUIRRELVM vm, const Diagnostic &amp;diagnostic)</div><div class="ttdoc">Project one Diagnostic using the common script table schema.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00458">SquirrelBinding.cpp:458</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a765b8125b74970ba9d56b00f738cdde0"><div class="ttname"><a href="namespaceeve_1_1script.html#a765b8125b74970ba9d56b00f738cdde0">eve::script::callFunctionResult</a></div><div class="ttdeci">SQRESULT callFunctionResult(HSQUIRRELVM vm, const HSQOBJECT &amp;fn, const Receiver &amp;receiver, Args &amp;&amp;... args)</div><div class="ttdoc">callFunction() that keeps the return value on top for the caller to read.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8h_source.html#l00240">SquirrelBinding.h:240</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a793a77752e22de9b062955801439d141"><div class="ttname"><a href="namespaceeve_1_1script.html#a793a77752e22de9b062955801439d141">eve::script::resetReportedScriptCallFailures</a></div><div class="ttdeci">void resetReportedScriptCallFailures()</div><div class="ttdoc">Clear the failure count and the deduplication memory (diagnostics and tests).</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00079">SquirrelBinding.cpp:79</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a8048db09566f9e101bdf4c7e0a4445f3"><div class="ttname"><a href="namespaceeve_1_1script.html#a8048db09566f9e101bdf4c7e0a4445f3">eve::script::pushValue</a></div><div class="ttdeci">Result&lt; void &gt; pushValue(HSQUIRRELVM vm, const Value &amp;value, const SquirrelValueOptions &amp;options)</div><div class="ttdoc">Push a canonical Value into the active Squirrel VM.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00441">SquirrelBinding.cpp:441</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a90f657069c689b2d52a1bf5c61a9a55f"><div class="ttname"><a href="namespaceeve_1_1script.html#a90f657069c689b2d52a1bf5c61a9a55f">eve::script::markResultHasValue</a></div><div class="ttdeci">void markResultHasValue(ssq::Table &amp;result)</div><div class="ttdoc">Declare that a projected table received a payload the caller attached itself.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00540">SquirrelBinding.cpp:540</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a92d2ff989037521ea1cdaa9cd05b5150"><div class="ttname"><a href="namespaceeve_1_1script.html#a92d2ff989037521ea1cdaa9cd05b5150">eve::script::projectStatus</a></div><div class="ttdeci">ssq::Table projectStatus(HSQUIRRELVM vm, const Status &amp;status)</div><div class="ttdoc">Project one Status using the common script table schema.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00522">SquirrelBinding.cpp:522</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a94bfd12a7e62327a32df4333b09d7a2a"><div class="ttname"><a href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">eve::script::projectStatusResult</a></div><div class="ttdeci">ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status &amp;status)</div><div class="ttdoc">Project a checked native status that carries no payload.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00526">SquirrelBinding.cpp:526</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a9e62080a647450b751f49a9bedcdf65f"><div class="ttname"><a href="namespaceeve_1_1script.html#a9e62080a647450b751f49a9bedcdf65f">eve::script::rootTable</a></div><div class="ttdeci">constexpr RootTable rootTable</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8h_source.html#l00088">SquirrelBinding.h:88</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ac3b6f94120aaac0606b048042b94ec36"><div class="ttname"><a href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">eve::script::projectResult</a></div><div class="ttdeci">ssq::Table projectResult(HSQUIRRELVM vm, Result&lt; void &gt; &amp;&amp;result)</div><div class="ttdoc">Consume and project a void native Result using the common schema.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00542">SquirrelBinding.cpp:542</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_acc6561e76e56e361fad9c662ec0669e1"><div class="ttname"><a href="namespaceeve_1_1script.html#acc6561e76e56e361fad9c662ec0669e1">eve::script::exposeProviderBindings</a></div><div class="ttdeci">void exposeProviderBindings(ssq::Table &amp;eveTable)</div><div class="ttdoc">Expose eve.provider: script-published providers and capability seams.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00608">SquirrelBinding.cpp:608</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_acef47be1a80d3f989e78896f38e50abe"><div class="ttname"><a href="namespaceeve_1_1script.html#acef47be1a80d3f989e78896f38e50abe">eve::script::reportScriptCallFailure</a></div><div class="ttdeci">std::string reportScriptCallFailure(HSQUIRRELVM vm, const char *what)</div><div class="ttdoc">Report a failed engine-to-script call, consuming the VM's script error.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00050">SquirrelBinding.cpp:50</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_add62d79bd1875a8a971bee91e538840d"><div class="ttname"><a href="namespaceeve_1_1script.html#add62d79bd1875a8a971bee91e538840d">eve::script::pushReceiver</a></div><div class="ttdeci">void pushReceiver(HSQUIRRELVM vm, const Receiver &amp;receiver)</div><div class="ttdoc">Push one callFunction() receiver (the root-table marker or a value).</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8h_source.html#l00092">SquirrelBinding.h:92</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ae2072b9e619d0a8dc86450662157cf91"><div class="ttname"><a href="namespaceeve_1_1script.html#ae2072b9e619d0a8dc86450662157cf91">eve::script::exposeResultBindings</a></div><div class="ttdeci">void exposeResultBindings(ssq::Table &amp;eveTable)</div><div class="ttdoc">Expose the common script helpers under eve.result.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00587">SquirrelBinding.cpp:587</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ae6fb9fc56f0fc9e284edf3dbe1768c04"><div class="ttname"><a href="namespaceeve_1_1script.html#ae6fb9fc56f0fc9e284edf3dbe1768c04">eve::script::valueFromSquirrel</a></div><div class="ttdeci">Result&lt; Value &gt; valueFromSquirrel(HSQUIRRELVM vm, SQInteger index, const SquirrelValueOptions &amp;options)</div><div class="ttdoc">Convert one Squirrel value into the canonical owning Value tree.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00414">SquirrelBinding.cpp:414</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ae996322dcb5ce47090fe1b32cf33cd91"><div class="ttname"><a href="namespaceeve_1_1script.html#ae996322dcb5ce47090fe1b32cf33cd91">eve::script::scriptArgument</a></div><div class="ttdeci">decltype(auto) scriptArgument(const Arg &amp;arg)</div><div class="ttdoc">Prepare one callFunction() argument, converting C strings to std::string.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8h_source.html#l00117">SquirrelBinding.h:117</a></div></div>
+<div class="ttc" id="anamespacessq_1_1detail_html_a75a9c682ba6fe4ec2235cd3852459bb5"><div class="ttname"><a href="namespacessq_1_1detail.html#a75a9c682ba6fe4ec2235cd3852459bb5">ssq::detail::pushValue</a></div><div class="ttdeci">void pushValue(HSQUIRRELVM vm, const eve::rx::Value &amp;v)</div><div class="ttdef"><b>Definition</b> <a href="Rx_8cpp_source.html#l00093">Rx.cpp:93</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a67ea4d4511559b976bed71a04fea2037"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a67ea4d4511559b976bed71a04fea2037">fn</a></div><div class="ttdeci">SettlementPipeline::Stage fn</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00032">Settlement.cpp:32</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1RootTable_html"><div class="ttname"><a href="structeve_1_1script_1_1RootTable.html">eve::script::RootTable</a></div><div class="ttdoc">Receiver marker for callFunction(): bind the VM's root table as this.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8h_source.html#l00087">SquirrelBinding.h:87</a></div></div>
+<div class="ttc" id="astructeve_1_1script_1_1SquirrelValueOptions_html"><div class="ttname"><a href="structeve_1_1script_1_1SquirrelValueOptions.html">eve::script::SquirrelValueOptions</a></div><div class="ttdoc">Limits and provenance used by the Squirrel ↔ Value adapter.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8h_source.html#l00036">SquirrelBinding.h:36</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

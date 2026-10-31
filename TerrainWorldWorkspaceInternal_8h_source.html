@@ -1,0 +1,332 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/heightmap/TerrainWorldWorkspaceInternal.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_b9c657a246498501ab092b57bd39800c.html">heightmap</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">TerrainWorldWorkspaceInternal.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="TerrainWorldWorkspaceInternal_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="PointSet_8h.html">procgen/PointSet.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Heightmap_8h.html">procgen/heightmap/Heightmap.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainDetailLayer_8h.html">procgen/heightmap/TerrainDetailLayer.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainMultiTile_8h.html">procgen/heightmap/TerrainMultiTile.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainSpawnPlan_8h.html">procgen/heightmap/TerrainSpawnPlan.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainSplatmap_8h.html">procgen/heightmap/TerrainSplatmap.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainWorldWorkspace_8h.html">procgen/heightmap/TerrainWorldWorkspace.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html">   10</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html">TerrainWorldWorkspace::Impl</a> {</div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="};">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html">   11</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html">Tile</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#afd80b0ed7565c4516ca432c42cbddadb">   12</a></span>        std::string        <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#afd80b0ed7565c4516ca432c42cbddadb">name</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a5b77a364f14749f783e34914b1378f5a">   13</a></span>        <a class="code hl_class" href="classeve_1_1procgen_1_1Heightmap.html">Heightmap</a>          <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a5b77a364f14749f783e34914b1378f5a">heights</a>, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ae41f1e5d3254384bc074c6b9d216c3b2">holes</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ac08f9670f130dfc54004ec21cf4b5ee8">   14</a></span>        <a class="code hl_class" href="classeve_1_1procgen_1_1TerrainSplatmap.html">TerrainSplatmap</a>    <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ac08f9670f130dfc54004ec21cf4b5ee8">splat</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a0f8217f3cb9da09b2da6a6d670c95cc3">   15</a></span>        <a class="code hl_class" href="classeve_1_1procgen_1_1TerrainDetailLayer.html">TerrainDetailLayer</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a0f8217f3cb9da09b2da6a6d670c95cc3">detail</a>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a2acdee599e9fa2255c08f74ab8e35a56">   16</a></span>        <a class="code hl_class" href="classeve_1_1procgen_1_1PointSet.html">PointSet</a>           <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ab4456ab80f9d46940f97d8ffa7b38a9b">trees</a>, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a2acdee599e9fa2255c08f74ab8e35a56">objects</a>, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#aa89ea1bc71328d57f3fea9aba8f4d2ad">probes</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ada4bffe6f0d82e0d5839aa6ed9e8e30a">   17</a></span>        <span class="keywordtype">double</span>             <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ada4bffe6f0d82e0d5839aa6ed9e8e30a">originX</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a2c252f45161a74a20ef1b811ba065912">originZ</a> = 0;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    };</div>
+</div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html">   19</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html">Snapshot</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#af1c59acfe2990068cdaa155160f872be">   20</a></span>        std::vector&lt;Heightmap&gt;          <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#af1c59acfe2990068cdaa155160f872be">heights</a>, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#ac6f740be5b29d7370d81e97fcb5295e0">holes</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#a0e8ad106dc23468ae60a7e20e005d4ce">   21</a></span>        std::vector&lt;TerrainSplatmap&gt;    <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#a0e8ad106dc23468ae60a7e20e005d4ce">splats</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#ab524b7fa5754d32994d613a5cbc004ba">   22</a></span>        std::vector&lt;TerrainDetailLayer&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#ab524b7fa5754d32994d613a5cbc004ba">details</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#a3e54ecd74159a99a5f0a813becc24d3a">   23</a></span>        std::vector&lt;PointSet&gt;           <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#a6de31729558a11f3adf3eb50a00ad1ec">trees</a>, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#a3e54ecd74159a99a5f0a813becc24d3a">objects</a>, <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#a8ce89078ef77d17314058a0d7d4ec2ac">probes</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#a275d764560a0876ce4313203261f359c">   24</a></span>        <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainMultiTileReport.html">TerrainMultiTileReport</a>          <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#a275d764560a0876ce4313203261f359c">report</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    };</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a25fde65ecbf3af5f40e5213db9fe936c">   26</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainWorldCreationSettings.html">TerrainWorldCreationSettings</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a25fde65ecbf3af5f40e5213db9fe936c">settings</a>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">   27</a></span>    std::vector&lt;Tile&gt;            <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a1c7e4bd2bd0eebc86afc21f40f6bcef4">   28</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainMultiTileReport.html">TerrainMultiTileReport</a>       <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a1c7e4bd2bd0eebc86afc21f40f6bcef4">last</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a245c3985919c6906323c786631189f3d">   29</a></span>    std::vector&lt;Snapshot&gt;        <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a245c3985919c6906323c786631189f3d">history</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a03ab31f90f94148cb75c07ab07b74302">   30</a></span>    <span class="keywordtype">int</span>                          <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a03ab31f90f94148cb75c07ab07b74302">cursor</a>    = 0;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a33bf3dfe7dc0df0c0f6b7e3a87310c7e">   31</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#aaf06bdface4d059b646ad8c7a244985a">TerrainWorldRunStatus</a>        <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a33bf3dfe7dc0df0c0f6b7e3a87310c7e">runStatus</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#aaf06bdface4d059b646ad8c7a244985aae599161956d626eda4cb0a5ffb85271c">TerrainWorldRunStatus::Idle</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#ac6f07ac1829a55a7f058d2ca89cbf42d">   32</a></span>    std::unique_ptr&lt;Impl&gt;        <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#ac6f07ac1829a55a7f058d2ca89cbf42d">runCandidate</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#ad242e55287bfd76ce6f8052230583f46">   33</a></span>    <a class="code hl_class" href="classeve_1_1procgen_1_1TerrainSpawnPlan.html">TerrainSpawnPlan</a>             <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#ad242e55287bfd76ce6f8052230583f46">runPlan</a>;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a23c14a8ee015f41bccc1acb1bb2c87aa">   34</a></span>    std::size_t                  <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a23c14a8ee015f41bccc1acb1bb2c87aa">runNext</a> = 0;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#ad6ae7406601f779392ffa0b6aaea0359">   35</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainMultiTileReport.html">TerrainMultiTileReport</a>       <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#ad6ae7406601f779392ffa0b6aaea0359">runReport</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a7b2df6c778ee067a5fb382ec82915e1d">   37</a></span>    <a class="code hl_function" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a7b2df6c778ee067a5fb382ec82915e1d">Impl</a>() = <span class="keywordflow">default</span>;</div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#ab1c9ed806b8de45bd3f0a1a2b279f8e3">   38</a></span>    <a class="code hl_function" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#ab1c9ed806b8de45bd3f0a1a2b279f8e3">Impl</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html">Impl</a>&amp; other) : <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a25fde65ecbf3af5f40e5213db9fe936c">settings</a>(other.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a25fde65ecbf3af5f40e5213db9fe936c">settings</a>), <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a1c7e4bd2bd0eebc86afc21f40f6bcef4">last</a>(other.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a1c7e4bd2bd0eebc86afc21f40f6bcef4">last</a>), <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a245c3985919c6906323c786631189f3d">history</a>(other.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a245c3985919c6906323c786631189f3d">history</a>), <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a03ab31f90f94148cb75c07ab07b74302">cursor</a>(other.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a03ab31f90f94148cb75c07ab07b74302">cursor</a>) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>.reserve(other.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>.size());</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a> : other.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html">Tile</a> tile;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            tile.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#afd80b0ed7565c4516ca432c42cbddadb">name</a>    = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.name;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            tile.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a5b77a364f14749f783e34914b1378f5a">heights</a> = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.heights;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            tile.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ae41f1e5d3254384bc074c6b9d216c3b2">holes</a>   = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.holes;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            tile.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ac08f9670f130dfc54004ec21cf4b5ee8">splat</a>   = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.splat;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            tile.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a0f8217f3cb9da09b2da6a6d670c95cc3">detail</a>  = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.detail;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            tile.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ab4456ab80f9d46940f97d8ffa7b38a9b">trees</a>   = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.trees;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            tile.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a2acdee599e9fa2255c08f74ab8e35a56">objects</a> = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.objects;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            tile.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#aa89ea1bc71328d57f3fea9aba8f4d2ad">probes</a>  = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.probes;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            tile.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ada4bffe6f0d82e0d5839aa6ed9e8e30a">originX</a> = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.originX;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            tile.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a2c252f45161a74a20ef1b811ba065912">originZ</a> = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.originZ;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>.push_back(std::move(tile));</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00055" data-start="{" data-end="}">
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a522c9fc0dd6f8e3f7312475665306971">   55</a></span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html">Snapshot</a> <a class="code hl_function" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a522c9fc0dd6f8e3f7312475665306971">snapshot</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html">Snapshot</a> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; tile : <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>) {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#af1c59acfe2990068cdaa155160f872be">heights</a>.push_back(tile.heights);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.holes.push_back(tile.holes);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.splats.push_back(tile.splat);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.details.push_back(tile.detail);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.trees.push_back(tile.trees);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.objects.push_back(tile.objects);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.probes.push_back(tile.probes);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.report = <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a1c7e4bd2bd0eebc86afc21f40f6bcef4">last</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#aa2a61bea705b6ec61f0579f62f9012fe">   69</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#aa2a61bea705b6ec61f0579f62f9012fe">restore</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html">Snapshot</a>&amp; <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>.size(); ++i) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>[i].heights = <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.heights[i];</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>[i].holes   = <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.holes[i];</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>[i].splat   = <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.splats[i];</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>[i].detail  = <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.details[i];</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>[i].trees   = <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.trees[i];</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>[i].objects = <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.objects[i];</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">tiles</a>[i].probes  = <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.probes[i];</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a1c7e4bd2bd0eebc86afc21f40f6bcef4">last</a> = <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.report;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#af78797b032c1c622beea6624d503e4eb">   81</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#af78797b032c1c622beea6624d503e4eb">record</a>() {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a245c3985919c6906323c786631189f3d">history</a>.resize(<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a03ab31f90f94148cb75c07ab07b74302">cursor</a> + 1));</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a245c3985919c6906323c786631189f3d">history</a>.push_back(<a class="code hl_function" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a522c9fc0dd6f8e3f7312475665306971">snapshot</a>());</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        ++<a class="code hl_variable" href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a03ab31f90f94148cb75c07ab07b74302">cursor</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
+</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>};</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aHeightmap_8h_html"><div class="ttname"><a href="Heightmap_8h.html">Heightmap.h</a></div></div>
+<div class="ttc" id="aMcpInputTools_8cpp_html_a1b012debbb0243926fff95a55e397b44"><div class="ttname"><a href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a></div><div class="ttdeci">Poco::JSON::Object::Ptr result</div><div class="ttdef"><b>Definition</b> <a href="McpInputTools_8cpp_source.html#l00053">McpInputTools.cpp:53</a></div></div>
+<div class="ttc" id="aPointSet_8h_html"><div class="ttname"><a href="PointSet_8h.html">PointSet.h</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aa035d90db0e334b2f2f53e55a79e621f"><div class="ttname"><a href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a></div><div class="ttdeci">std::string_view source</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00020">ScriptStructure.cpp:20</a></div></div>
+<div class="ttc" id="aTerrainDetailLayer_8h_html"><div class="ttname"><a href="TerrainDetailLayer_8h.html">TerrainDetailLayer.h</a></div></div>
+<div class="ttc" id="aTerrainMultiTile_8h_html"><div class="ttname"><a href="TerrainMultiTile_8h.html">TerrainMultiTile.h</a></div></div>
+<div class="ttc" id="aTerrainSpawnPlan_8h_html"><div class="ttname"><a href="TerrainSpawnPlan_8h.html">TerrainSpawnPlan.h</a></div></div>
+<div class="ttc" id="aTerrainSplatmap_8h_html"><div class="ttname"><a href="TerrainSplatmap_8h.html">TerrainSplatmap.h</a></div></div>
+<div class="ttc" id="aTerrainWorldWorkspace_8h_html"><div class="ttname"><a href="TerrainWorldWorkspace_8h.html">TerrainWorldWorkspace.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Heightmap_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Heightmap.html">eve::procgen::Heightmap</a></div><div class="ttdoc">In-memory terrain heightmap: a dense float grid (row-major, index = y * width + x) materialized from ...</div><div class="ttdef"><b>Definition</b> <a href="Heightmap_8h_source.html#l00021">Heightmap.h:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PointSet_html"><div class="ttname"><a href="classeve_1_1procgen_1_1PointSet.html">eve::procgen::PointSet</a></div><div class="ttdoc">Script-friendly collection of attributed 3D samples.</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8h_source.html#l00059">PointSet.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainDetailLayer_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainDetailLayer.html">eve::procgen::TerrainDetailLayer</a></div><div class="ttdoc">Owned integer terrain-detail layer, independent of graphics and resource registries....</div><div class="ttdef"><b>Definition</b> <a href="TerrainDetailLayer_8h_source.html#l00035">TerrainDetailLayer.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainSpawnPlan_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainSpawnPlan.html">eve::procgen::TerrainSpawnPlan</a></div><div class="ttdoc">Own an ordered mixed-domain Pcg-style spawn recipe. Rule IDs are stable and unique....</div><div class="ttdef"><b>Definition</b> <a href="TerrainSpawnPlan_8h_source.html#l00087">TerrainSpawnPlan.h:87</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1TerrainSplatmap_html"><div class="ttname"><a href="classeve_1_1procgen_1_1TerrainSplatmap.html">eve::procgen::TerrainSplatmap</a></div><div class="ttdoc">Owning normalized terrain texture-layer weights with atomic mutation. Layers share one finite width/h...</div><div class="ttdef"><b>Definition</b> <a href="TerrainSplatmap_8h_source.html#l00020">TerrainSplatmap.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00012">EvpackPointGraphLoader.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aaf06bdface4d059b646ad8c7a244985a"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aaf06bdface4d059b646ad8c7a244985a">eve::procgen::TerrainWorldRunStatus</a></div><div class="ttdeci">TerrainWorldRunStatus</div><div class="ttdoc">Observable lifecycle of a caller-driven staged world spawn.</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspace_8h_source.html#l00032">TerrainWorldWorkspace.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aaf06bdface4d059b646ad8c7a244985aae599161956d626eda4cb0a5ffb85271c"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aaf06bdface4d059b646ad8c7a244985aae599161956d626eda4cb0a5ffb85271c">eve::procgen::TerrainWorldRunStatus::Idle</a></div><div class="ttdeci">@ Idle</div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainMultiTileReport_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainMultiTileReport.html">eve::procgen::TerrainMultiTileReport</a></div><div class="ttdoc">Completed multi-tile stamp statistics and Pcg-compatible affected-pixel mappings.</div><div class="ttdef"><b>Definition</b> <a href="TerrainMultiTile_8h_source.html#l00055">TerrainMultiTile.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldCreationSettings_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldCreationSettings.html">eve::procgen::TerrainWorldCreationSettings</a></div><div class="ttdoc">Validated Pcg-style centered terrain-grid topology.</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspace_8h_source.html#l00035">TerrainWorldWorkspace.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html">eve::procgen::TerrainWorldWorkspace::Impl::Snapshot</a></div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00019">TerrainWorldWorkspaceInternal.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot_html_a0e8ad106dc23468ae60a7e20e005d4ce"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#a0e8ad106dc23468ae60a7e20e005d4ce">eve::procgen::TerrainWorldWorkspace::Impl::Snapshot::splats</a></div><div class="ttdeci">std::vector&lt; TerrainSplatmap &gt; splats</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00021">TerrainWorldWorkspaceInternal.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot_html_a275d764560a0876ce4313203261f359c"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#a275d764560a0876ce4313203261f359c">eve::procgen::TerrainWorldWorkspace::Impl::Snapshot::report</a></div><div class="ttdeci">TerrainMultiTileReport report</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00024">TerrainWorldWorkspaceInternal.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot_html_a3e54ecd74159a99a5f0a813becc24d3a"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#a3e54ecd74159a99a5f0a813becc24d3a">eve::procgen::TerrainWorldWorkspace::Impl::Snapshot::objects</a></div><div class="ttdeci">std::vector&lt; PointSet &gt; objects</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00023">TerrainWorldWorkspaceInternal.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot_html_a6de31729558a11f3adf3eb50a00ad1ec"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#a6de31729558a11f3adf3eb50a00ad1ec">eve::procgen::TerrainWorldWorkspace::Impl::Snapshot::trees</a></div><div class="ttdeci">std::vector&lt; PointSet &gt; trees</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00023">TerrainWorldWorkspaceInternal.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot_html_a8ce89078ef77d17314058a0d7d4ec2ac"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#a8ce89078ef77d17314058a0d7d4ec2ac">eve::procgen::TerrainWorldWorkspace::Impl::Snapshot::probes</a></div><div class="ttdeci">std::vector&lt; PointSet &gt; probes</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00023">TerrainWorldWorkspaceInternal.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot_html_ab524b7fa5754d32994d613a5cbc004ba"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#ab524b7fa5754d32994d613a5cbc004ba">eve::procgen::TerrainWorldWorkspace::Impl::Snapshot::details</a></div><div class="ttdeci">std::vector&lt; TerrainDetailLayer &gt; details</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00022">TerrainWorldWorkspaceInternal.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot_html_ac6f740be5b29d7370d81e97fcb5295e0"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#ac6f740be5b29d7370d81e97fcb5295e0">eve::procgen::TerrainWorldWorkspace::Impl::Snapshot::holes</a></div><div class="ttdeci">std::vector&lt; Heightmap &gt; holes</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00020">TerrainWorldWorkspaceInternal.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot_html_af1c59acfe2990068cdaa155160f872be"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Snapshot.html#af1c59acfe2990068cdaa155160f872be">eve::procgen::TerrainWorldWorkspace::Impl::Snapshot::heights</a></div><div class="ttdeci">std::vector&lt; Heightmap &gt; heights</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00020">TerrainWorldWorkspaceInternal.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html">eve::procgen::TerrainWorldWorkspace::Impl::Tile</a></div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00011">TerrainWorldWorkspaceInternal.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile_html_a0f8217f3cb9da09b2da6a6d670c95cc3"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a0f8217f3cb9da09b2da6a6d670c95cc3">eve::procgen::TerrainWorldWorkspace::Impl::Tile::detail</a></div><div class="ttdeci">TerrainDetailLayer detail</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00015">TerrainWorldWorkspaceInternal.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile_html_a2acdee599e9fa2255c08f74ab8e35a56"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a2acdee599e9fa2255c08f74ab8e35a56">eve::procgen::TerrainWorldWorkspace::Impl::Tile::objects</a></div><div class="ttdeci">PointSet objects</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00016">TerrainWorldWorkspaceInternal.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile_html_a2c252f45161a74a20ef1b811ba065912"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a2c252f45161a74a20ef1b811ba065912">eve::procgen::TerrainWorldWorkspace::Impl::Tile::originZ</a></div><div class="ttdeci">double originZ</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00017">TerrainWorldWorkspaceInternal.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile_html_a5b77a364f14749f783e34914b1378f5a"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#a5b77a364f14749f783e34914b1378f5a">eve::procgen::TerrainWorldWorkspace::Impl::Tile::heights</a></div><div class="ttdeci">Heightmap heights</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00013">TerrainWorldWorkspaceInternal.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile_html_aa89ea1bc71328d57f3fea9aba8f4d2ad"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#aa89ea1bc71328d57f3fea9aba8f4d2ad">eve::procgen::TerrainWorldWorkspace::Impl::Tile::probes</a></div><div class="ttdeci">PointSet probes</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00016">TerrainWorldWorkspaceInternal.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile_html_ab4456ab80f9d46940f97d8ffa7b38a9b"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ab4456ab80f9d46940f97d8ffa7b38a9b">eve::procgen::TerrainWorldWorkspace::Impl::Tile::trees</a></div><div class="ttdeci">PointSet trees</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00016">TerrainWorldWorkspaceInternal.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile_html_ac08f9670f130dfc54004ec21cf4b5ee8"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ac08f9670f130dfc54004ec21cf4b5ee8">eve::procgen::TerrainWorldWorkspace::Impl::Tile::splat</a></div><div class="ttdeci">TerrainSplatmap splat</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00014">TerrainWorldWorkspaceInternal.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile_html_ada4bffe6f0d82e0d5839aa6ed9e8e30a"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ada4bffe6f0d82e0d5839aa6ed9e8e30a">eve::procgen::TerrainWorldWorkspace::Impl::Tile::originX</a></div><div class="ttdeci">double originX</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00017">TerrainWorldWorkspaceInternal.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile_html_ae41f1e5d3254384bc074c6b9d216c3b2"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#ae41f1e5d3254384bc074c6b9d216c3b2">eve::procgen::TerrainWorldWorkspace::Impl::Tile::holes</a></div><div class="ttdeci">Heightmap holes</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00013">TerrainWorldWorkspaceInternal.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile_html_afd80b0ed7565c4516ca432c42cbddadb"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_1_1Tile.html#afd80b0ed7565c4516ca432c42cbddadb">eve::procgen::TerrainWorldWorkspace::Impl::Tile::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00012">TerrainWorldWorkspaceInternal.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html">eve::procgen::TerrainWorldWorkspace::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00010">TerrainWorldWorkspaceInternal.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_a03ab31f90f94148cb75c07ab07b74302"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a03ab31f90f94148cb75c07ab07b74302">eve::procgen::TerrainWorldWorkspace::Impl::cursor</a></div><div class="ttdeci">int cursor</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00030">TerrainWorldWorkspaceInternal.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_a1c7e4bd2bd0eebc86afc21f40f6bcef4"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a1c7e4bd2bd0eebc86afc21f40f6bcef4">eve::procgen::TerrainWorldWorkspace::Impl::last</a></div><div class="ttdeci">TerrainMultiTileReport last</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00028">TerrainWorldWorkspaceInternal.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_a23c14a8ee015f41bccc1acb1bb2c87aa"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a23c14a8ee015f41bccc1acb1bb2c87aa">eve::procgen::TerrainWorldWorkspace::Impl::runNext</a></div><div class="ttdeci">std::size_t runNext</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00034">TerrainWorldWorkspaceInternal.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_a245c3985919c6906323c786631189f3d"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a245c3985919c6906323c786631189f3d">eve::procgen::TerrainWorldWorkspace::Impl::history</a></div><div class="ttdeci">std::vector&lt; Snapshot &gt; history</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00029">TerrainWorldWorkspaceInternal.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_a25fde65ecbf3af5f40e5213db9fe936c"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a25fde65ecbf3af5f40e5213db9fe936c">eve::procgen::TerrainWorldWorkspace::Impl::settings</a></div><div class="ttdeci">TerrainWorldCreationSettings settings</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00026">TerrainWorldWorkspaceInternal.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_a33bf3dfe7dc0df0c0f6b7e3a87310c7e"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a33bf3dfe7dc0df0c0f6b7e3a87310c7e">eve::procgen::TerrainWorldWorkspace::Impl::runStatus</a></div><div class="ttdeci">TerrainWorldRunStatus runStatus</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00031">TerrainWorldWorkspaceInternal.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_a522c9fc0dd6f8e3f7312475665306971"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a522c9fc0dd6f8e3f7312475665306971">eve::procgen::TerrainWorldWorkspace::Impl::snapshot</a></div><div class="ttdeci">Snapshot snapshot() const</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00055">TerrainWorldWorkspaceInternal.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_a7b2df6c778ee067a5fb382ec82915e1d"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a7b2df6c778ee067a5fb382ec82915e1d">eve::procgen::TerrainWorldWorkspace::Impl::Impl</a></div><div class="ttdeci">Impl()=default</div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_a9606275213d4fb6fe493bf06a890d06d"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#a9606275213d4fb6fe493bf06a890d06d">eve::procgen::TerrainWorldWorkspace::Impl::tiles</a></div><div class="ttdeci">std::vector&lt; Tile &gt; tiles</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00027">TerrainWorldWorkspaceInternal.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_aa2a61bea705b6ec61f0579f62f9012fe"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#aa2a61bea705b6ec61f0579f62f9012fe">eve::procgen::TerrainWorldWorkspace::Impl::restore</a></div><div class="ttdeci">void restore(const Snapshot &amp;value)</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00069">TerrainWorldWorkspaceInternal.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_ab1c9ed806b8de45bd3f0a1a2b279f8e3"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#ab1c9ed806b8de45bd3f0a1a2b279f8e3">eve::procgen::TerrainWorldWorkspace::Impl::Impl</a></div><div class="ttdeci">Impl(const Impl &amp;other)</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00038">TerrainWorldWorkspaceInternal.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_ac6f07ac1829a55a7f058d2ca89cbf42d"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#ac6f07ac1829a55a7f058d2ca89cbf42d">eve::procgen::TerrainWorldWorkspace::Impl::runCandidate</a></div><div class="ttdeci">std::unique_ptr&lt; Impl &gt; runCandidate</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00032">TerrainWorldWorkspaceInternal.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_ad242e55287bfd76ce6f8052230583f46"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#ad242e55287bfd76ce6f8052230583f46">eve::procgen::TerrainWorldWorkspace::Impl::runPlan</a></div><div class="ttdeci">TerrainSpawnPlan runPlan</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00033">TerrainWorldWorkspaceInternal.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_ad6ae7406601f779392ffa0b6aaea0359"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#ad6ae7406601f779392ffa0b6aaea0359">eve::procgen::TerrainWorldWorkspace::Impl::runReport</a></div><div class="ttdeci">TerrainMultiTileReport runReport</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00035">TerrainWorldWorkspaceInternal.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl_html_af78797b032c1c622beea6624d503e4eb"><div class="ttname"><a href="structeve_1_1procgen_1_1TerrainWorldWorkspace_1_1Impl.html#af78797b032c1c622beea6624d503e4eb">eve::procgen::TerrainWorldWorkspace::Impl::record</a></div><div class="ttdeci">void record()</div><div class="ttdef"><b>Definition</b> <a href="TerrainWorldWorkspaceInternal_8h_source.html#l00081">TerrainWorldWorkspaceInternal.h:81</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

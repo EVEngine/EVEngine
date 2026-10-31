@@ -1,0 +1,481 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::building::assembly_detail 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building.html">building</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building_1_1assembly__detail.html">assembly_detail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::building::assembly_detail 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a6ded5e2ca953554040f4a4fd69a7d290" id="r_a6ded5e2ca953554040f4a4fd69a7d290"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1assembly__detail.html#a6ded5e2ca953554040f4a4fd69a7d290">definitionValue</a> (const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;<a class="el" href="PrototypeKit_8cpp.html#a3fbbd8a3959e76a2bc3455d3bade52dc">d</a>)</td></tr>
+<tr class="separator:a6ded5e2ca953554040f4a4fd69a7d290"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a322c6d04a7393be856db7391cb26d5b7" id="r_a322c6d04a7393be856db7391cb26d5b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1assembly__detail.html#a322c6d04a7393be856db7391cb26d5b7">definitionsFor</a> (const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;<a class="el" href="AnimClip_8cpp.html#a56eca241e2896b9f57a79589e76fd24b">w</a>)</td></tr>
+<tr class="separator:a322c6d04a7393be856db7391cb26d5b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8367ec960f8154961425843ce943dc6a" id="r_a8367ec960f8154961425843ce943dc6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1assembly__detail.html#a8367ec960f8154961425843ce943dc6a">checkDefinitions</a> (const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="separator:a8367ec960f8154961425843ce943dc6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47fe59bd1a3692495640a2c6500b1401" id="r_a47fe59bd1a3692495640a2c6500b1401"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1assembly__detail.html#a47fe59bd1a3692495640a2c6500b1401">nextEpoch</a> ()</td></tr>
+<tr class="separator:a47fe59bd1a3692495640a2c6500b1401"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2996fdbd212131d5b54b2b4f485b804" id="r_aa2996fdbd212131d5b54b2b4f485b804"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1assembly__detail.html#aa2996fdbd212131d5b54b2b4f485b804">checkGrid</a> (const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world)</td></tr>
+<tr class="separator:aa2996fdbd212131d5b54b2b4f485b804"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf336fe3f11a55207f22e828aa3e1026" id="r_abf336fe3f11a55207f22e828aa3e1026"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1assembly__detail.html#abf336fe3f11a55207f22e828aa3e1026">transformPart</a> (const <a class="el" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a> &amp;part, const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;world, <a class="el" href="structeve_1_1building_1_1AssemblyPose.html">AssemblyPose</a> <a class="el" href="McpArchitectureTools_8cpp.html#ad1b6861c9cfa34da8ef12c5bb1cf2114">from</a>, <a class="el" href="structeve_1_1building_1_1AssemblyPose.html">AssemblyPose</a> <a class="el" href="McpArchitectureTools_8cpp.html#a1a0f314681a0bdd1f642ba1855b31a0a">to</a>)</td></tr>
+<tr class="separator:abf336fe3f11a55207f22e828aa3e1026"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15412db29395d589d509bf8d44a086cd" id="r_a15412db29395d589d509bf8d44a086cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1assembly__detail.html#a15412db29395d589d509bf8d44a086cd">poseValue</a> (<a class="el" href="structeve_1_1building_1_1AssemblyPose.html">AssemblyPose</a> <a class="el" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>)</td></tr>
+<tr class="separator:a15412db29395d589d509bf8d44a086cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ad6c440a2cab42eb421e40f34fed243" id="r_a7ad6c440a2cab42eb421e40f34fed243"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1building_1_1AssemblyPose.html">AssemblyPose</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1assembly__detail.html#a7ad6c440a2cab42eb421e40f34fed243">parsePose</a> (const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;<a class="el" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>)</td></tr>
+<tr class="separator:a7ad6c440a2cab42eb421e40f34fed243"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a85f76fca493640c0b2bdd185e11f02" id="r_a7a85f76fca493640c0b2bdd185e11f02"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1assembly__detail.html#a7a85f76fca493640c0b2bdd185e11f02">removeMembership</a> (<a class="el" href="structeve_1_1building_1_1AssemblyState.html">AssemblyState</a> &amp;state, int <a class="el" href="UiPreview_8cpp.html#ae3fb3c00da2b2455218d2c66570e6a68">member</a>)</td></tr>
+<tr class="separator:a7a85f76fca493640c0b2bdd185e11f02"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b6580d6f6c5e5a69c287537ead6f106" id="r_a8b6580d6f6c5e5a69c287537ead6f106"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a8b6580d6f6c5e5a69c287537ead6f106"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1assembly__detail.html#a8b6580d6f6c5e5a69c287537ead6f106">fail</a> (std::string <a class="el" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="el" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>=<a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>)</td></tr>
+<tr class="separator:a8b6580d6f6c5e5a69c287537ead6f106"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a8367ec960f8154961425843ce943dc6a" name="a8367ec960f8154961425843ce943dc6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8367ec960f8154961425843ce943dc6a">&#9670;&#160;</a></span>checkDefinitions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::building::assembly_detail::checkDefinitions </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingAssemblyDefinitions_8cpp_source.html">BuildingAssemblyDefinitions.cpp</a> 第 <a class="el" href="BuildingAssemblyDefinitions_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="BuildingAssemblyDefinitions_8cpp_source.html#l00004">definitionValue()</a>, <a class="el" href="Building_8cpp_source.html#l00557">eve::building::BuildingRegistry::find()</a>, <a class="el" href="ECS_8cpp_source.html#l00155">key</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingAssembly_8cpp_source.html#l00236">eve::building::AssemblyService::commit()</a> , 以及 <a class="el" href="BuildingAssemblyPersistence_8cpp_source.html#l00095">eve::building::AssemblyService::decodeBlueprint()</a>.</p>
+
+</div>
+</div>
+<a id="aa2996fdbd212131d5b54b2b4f485b804" name="aa2996fdbd212131d5b54b2b4f485b804"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2996fdbd212131d5b54b2b4f485b804">&#9670;&#160;</a></span>checkGrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::building::assembly_detail::checkGrid </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html">BuildingAssemblyGeometry.cpp</a> 第 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="namespaceeve_1_1grid.html#a8020a5f93f7d9f56fd48eae980d3a55cace9291906a4c3b042650b70d7f3b152e">eve::grid::Rectangle</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingAssembly_8cpp_source.html#l00044">eve::building::AssemblyService::capture()</a> , 以及 <a class="el" href="BuildingAssemblyPersistence_8cpp_source.html#l00143">eve::building::AssemblyService::snapshotWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a322c6d04a7393be856db7391cb26d5b7" name="a322c6d04a7393be856db7391cb26d5b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a322c6d04a7393be856db7391cb26d5b7">&#9670;&#160;</a></span>definitionsFor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a> eve::building::assembly_detail::definitionsFor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;&#160;</td>
+          <td class="paramname"><em>w</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingAssemblyDefinitions_8cpp_source.html">BuildingAssemblyDefinitions.cpp</a> 第 <a class="el" href="BuildingAssemblyDefinitions_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="BuildingAssemblyDefinitions_8cpp_source.html#l00004">definitionValue()</a>, <a class="el" href="Building_8cpp_source.html#l00557">eve::building::BuildingRegistry::find()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">w</a>.</p>
+
+</div>
+</div>
+<a id="a6ded5e2ca953554040f4a4fd69a7d290" name="a6ded5e2ca953554040f4a4fd69a7d290"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ded5e2ca953554040f4a4fd69a7d290">&#9670;&#160;</a></span>definitionValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a> eve::building::assembly_detail::definitionValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1BuildingDefinition.html">BuildingDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>d</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingAssemblyDefinitions_8cpp_source.html">BuildingAssemblyDefinitions.cpp</a> 第 <a class="el" href="BuildingAssemblyDefinitions_8cpp_source.html#l00004">4</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00076">c</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="ECS_8cpp_source.html#l00155">key</a> , 以及 <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingAssembly_8cpp_source.html#l00044">eve::building::AssemblyService::capture()</a>, <a class="el" href="BuildingAssemblyDefinitions_8cpp_source.html#l00087">checkDefinitions()</a> , 以及 <a class="el" href="BuildingAssemblyDefinitions_8cpp_source.html#l00081">definitionsFor()</a>.</p>
+
+</div>
+</div>
+<a id="a8b6580d6f6c5e5a69c287537ead6f106" name="a8b6580d6f6c5e5a69c287537ead6f106"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b6580d6f6c5e5a69c287537ead6f106">&#9670;&#160;</a></span>fail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; T &gt; eve::building::assembly_detail::fail </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>message</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a>&#160;</td>
+          <td class="paramname"><em>code</em> = <code><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingAssemblyInternal_8h_source.html">BuildingAssemblyInternal.h</a> 第 <a class="el" href="BuildingAssemblyInternal_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfAnimation_8cpp_source.html#l00016">code</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="GltfAnimation_8cpp_source.html#l00017">message</a>.</p>
+
+</div>
+</div>
+<a id="a47fe59bd1a3692495640a2c6500b1401" name="a47fe59bd1a3692495640a2c6500b1401"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47fe59bd1a3692495640a2c6500b1401">&#9670;&#160;</a></span>nextEpoch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::building::assembly_detail::nextEpoch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html">BuildingAssemblyGeometry.cpp</a> 第 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OnnxGpgpu_8cpp_source.html#l00043">sequence</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingAssembly_8cpp_source.html#l00236">eve::building::AssemblyService::commit()</a> , 以及 <a class="el" href="PlacementWorld_8cpp_source.html#l00018">eve::building::PlacementWorld::PlacementWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a7ad6c440a2cab42eb421e40f34fed243" name="a7ad6c440a2cab42eb421e40f34fed243"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ad6c440a2cab42eb421e40f34fed243">&#9670;&#160;</a></span>parsePose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1building_1_1AssemblyPose.html">AssemblyPose</a> &gt; eve::building::assembly_detail::parsePose </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>v</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html">BuildingAssemblyGeometry.cpp</a> 第 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html#l00124">124</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00155">key</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html#l00124">parsePose()</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html#l00124">parsePose()</a>.</p>
+
+</div>
+</div>
+<a id="a15412db29395d589d509bf8d44a086cd" name="a15412db29395d589d509bf8d44a086cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15412db29395d589d509bf8d44a086cd">&#9670;&#160;</a></span>poseValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a> eve::building::assembly_detail::poseValue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1building_1_1AssemblyPose.html">AssemblyPose</a>&#160;</td>
+          <td class="paramname"><em>p</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html">BuildingAssemblyGeometry.cpp</a> 第 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a> , 以及 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html#l00120">poseValue()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html#l00120">poseValue()</a>.</p>
+
+</div>
+</div>
+<a id="a7a85f76fca493640c0b2bdd185e11f02" name="a7a85f76fca493640c0b2bdd185e11f02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7a85f76fca493640c0b2bdd185e11f02">&#9670;&#160;</a></span>removeMembership()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::building::assembly_detail::removeMembership </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1building_1_1AssemblyState.html">AssemblyState</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>member</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html">BuildingAssemblyGeometry.cpp</a> 第 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html#l00143">143</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html#l00143">removeMembership()</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html#l00143">removeMembership()</a>.</p>
+
+</div>
+</div>
+<a id="abf336fe3f11a55207f22e828aa3e1026" name="abf336fe3f11a55207f22e828aa3e1026"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf336fe3f11a55207f22e828aa3e1026">&#9670;&#160;</a></span>transformPart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a> &gt; eve::building::assembly_detail::transformPart </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a> &amp;&#160;</td>
+          <td class="paramname"><em>part</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1building_1_1PlacementWorld.html">PlacementWorld</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1building_1_1AssemblyPose.html">AssemblyPose</a>&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1building_1_1AssemblyPose.html">AssemblyPose</a>&#160;</td>
+          <td class="paramname"><em>to</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html">BuildingAssemblyGeometry.cpp</a> 第 <a class="el" href="BuildingAssemblyGeometry_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingTypes_8h_source.html#l00191">eve::building::PlacedBuilding::buildingId</a>, <a class="el" href="CardTypes_8cpp_source.html#l00035">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00036">cy</a>, <a class="el" href="BuildingTypes_8h_source.html#l00215">eve::building::PlacedBuilding::elevation</a>, <a class="el" href="Building_8cpp_source.html#l00557">eve::building::BuildingRegistry::find()</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00487">eve::building::PlacementSystem::foreachFootprintCell()</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00021">from</a>, <a class="el" href="BuildingTypes_8h_source.html#l00211">eve::building::PlacedBuilding::level</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00024">level</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00164">limit</a>, <a class="el" href="BuildingTypes_8h_source.html#l00208">eve::building::PlacedBuilding::originCellX</a>, <a class="el" href="BuildingTypes_8h_source.html#l00209">eve::building::PlacedBuilding::originCellY</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>, <a class="el" href="BuildingTypes_8h_source.html#l00193">eve::building::PlacedBuilding::placementKind</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00304">point</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a>, <a class="el" href="BuildingTypes_8h_source.html#l00231">eve::building::PlacedBuilding::rotationDeg</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00021">to</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="McpServer_8cpp_source.html#l00315">valid</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingAssembly_8cpp_source.html#l00044">eve::building::AssemblyService::capture()</a>, <a class="el" href="BuildingAssembly_8cpp_source.html#l00153">eve::building::AssemblyService::prepareMove()</a> , 以及 <a class="el" href="BuildingAssembly_8cpp_source.html#l00111">eve::building::AssemblyService::preparePlacement()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/backend/bake/collapse/CollapsePlayback.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_086dc6fd0a23062cea21f20b29df48da.html">backend</a></li><li class="navelem"><a class="el" href="dir_90ac479e93ff9c44af9d62e7b33960ca.html">bake</a></li><li class="navelem"><a class="el" href="dir_d436ff8551f266d46ea43ad2a3da6ab9.html">collapse</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CollapsePlayback.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CollapsePlayback_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// eve-hot-path</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="backend_2bake_2collapse_2CollapsePlayback_8h.html">physics/backend/bake/collapse/CollapsePlayback.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;new&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="RigidPoseTrack_8h.html">physics/backend/bake/RigidPoseTrack.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="backend_2bake_2collapse_2CollapseAnimationInternal_8h.html">physics/backend/bake/collapse/CollapseAnimationInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>CollapsePlayback::CollapsePlayback(std::shared_ptr&lt;const CollapseAnimation&gt; animation)</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    : animation_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(animation)) {}</div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapsePlayback.html#ad0ad2b3b0a040151d9cafc1f7f43e99e">   10</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;CollapsePlayback&gt;</a> CollapsePlayback::prepare(<a class="code hl_class" href="classeve_1_1physics_1_1CollapseAnimation.html">CollapseAnimation</a> animation) <span class="keyword">try</span> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordflow">if</span> (animation.<a class="code hl_function" href="classeve_1_1physics_1_1CollapseAnimation.html#a873301202a41afa866c2f8cbcb5d6db7">frameCount</a>() == 0)</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;CollapsePlayback&gt;::failure</a>(collapse_detail::invalid(<span class="stringliteral">&quot;cannot play an empty recording&quot;</span>));</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;CollapsePlayback&gt;::success</a>(</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        <a class="code hl_class" href="classeve_1_1physics_1_1CollapsePlayback.html">CollapsePlayback</a>(std::make_shared&lt;const CollapseAnimation&gt;(std::move(animation))));</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>} <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::bad_alloc&amp;) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;CollapsePlayback&gt;::failure</a>(</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        Diagnostic::error(DiagnosticCode::Failed, <span class="stringliteral">&quot;collapse playback allocation failed&quot;</span>, <span class="stringliteral">&quot;collapsePlayback&quot;</span>));</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
+</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapsePlayback.html#a643e61d6e4aca3708b4418ea6fb02b81">   19</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a>      CollapsePlayback::advance(<span class="keywordtype">double</span> seconds) { <span class="keywordflow">return</span> clock_.advance(seconds, animation_-&gt;duration()); }</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapsePlayback.html#ad0d0a50ee5390ce9c3b0d14ef74333eb">   20</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a>      CollapsePlayback::seek(<span class="keywordtype">double</span> seconds) { <span class="keywordflow">return</span> clock_.seek(seconds, animation_-&gt;duration()); }</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapsePlayback.html#a595ef3bdbb9ad4928a4d9e9914436521">   21</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a>      CollapsePlayback::setRate(<span class="keywordtype">double</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a>) { <span class="keywordflow">return</span> clock_.setRate(<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a>); }</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapsePlayback.html#adb6ff398e56116aa6cbdad786ec41eae">   22</a></span><span class="keywordtype">void</span>              CollapsePlayback::setPaused(<span class="keywordtype">bool</span> paused) <span class="keyword">noexcept</span> { clock_.setPaused(paused); }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapsePlayback.html#ad575b30503de24a304752014b4c115f9">   23</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a>      CollapsePlayback::setWrap(<a class="code hl_enumeration" href="namespaceeve_1_1physics.html#a6c799841e16f326682f57f030a17f8c6">CollapsePlaybackWrap</a> wrap) { <span class="keywordflow">return</span> clock_.setWrap(wrap); }</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapsePlayback.html#abd76f4a5591616c087fd2e18411b1b4d">   24</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a>      CollapsePlayback::setPlacement(<a class="code hl_struct" href="structeve_1_1physics_1_1BakeRigidPlacement.html">CollapsePlacement</a> <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#affe8e1c4588001671d53bc2e64d5ccef">placement</a>) { <span class="keywordflow">return</span> transform_.set(<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#affe8e1c4588001671d53bc2e64d5ccef">placement</a>); }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapsePlayback.html#ab1cda37b36b470e1a404b9c8ab1b50f2">   25</a></span><a class="code hl_struct" href="structeve_1_1physics_1_1BakeRigidPlacement.html">CollapsePlacement</a> CollapsePlayback::placement() const noexcept { <span class="keywordflow">return</span> transform_.placement(); }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapsePlayback.html#a1f6a9bc3cab03faa013b516b18359872">   26</a></span><span class="keywordtype">double</span>            CollapsePlayback::time() const noexcept { <span class="keywordflow">return</span> clock_.time(); }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapsePlayback.html#a58676549fcd23f5518df89cd05a5ef18">   27</a></span><span class="keywordtype">double</span>            CollapsePlayback::rate() const noexcept { <span class="keywordflow">return</span> clock_.rate(); }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapsePlayback.html#a140791bf1460c40f332490b8b0bdd0f0">   28</a></span><span class="keywordtype">bool</span>              CollapsePlayback::paused() const noexcept { <span class="keywordflow">return</span> clock_.paused(); }</div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapsePlayback.html#add59b2204324e8e55705ecfe01f63d13">   29</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;BonePresentation&gt;</a> CollapsePlayback::sample(<span class="keywordtype">int</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">auto</span> sampled = animation_-&gt;sample(<span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(clock_.time()), <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (!sampled) <span class="keywordflow">return</span> sampled;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a> = sampled.value();</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">auto</span> transformed =</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        transform_.apply({<a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.worldX, <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.worldY, <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.worldZ, <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.rotX, <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.rotY, <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.rotZ, <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.rotW});</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">if</span> (!transformed) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;BonePresentation&gt;::failure</a>(transformed.status());</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a> = transformed.value();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.worldX       = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>.x;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.worldY       = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>.y;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.worldZ       = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>.z;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.rotX         = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>.qx;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.rotY         = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>.qy;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.rotZ         = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>.qz;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>.rotW         = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>.qw;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;BonePresentation&gt;::success</a>(<a class="code hl_variable" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>}</div>
+</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1CollapsePlayback.html#acd700781c5bb7f3ede7dd208bc6c028e">   47</a></span>std::shared_ptr&lt;const CollapseAnimation&gt; CollapsePlayback::animation() const noexcept { <span class="keywordflow">return</span> animation_; }</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aAudioCapabilities_8cpp_html_ac8f9d11b63bfd0cfb294366658eb7e91"><div class="ttname"><a href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a></div><div class="ttdeci">eve::EntitySpatialPose pose</div><div class="ttdef"><b>Definition</b> <a href="AudioCapabilities_8cpp_source.html#l00379">AudioCapabilities.cpp:379</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a0b872fb569a8d6ca3c6e55e3d7182e57"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a0b872fb569a8d6ca3c6e55e3d7182e57">rate</a></div><div class="ttdeci">float rate</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00033">LegacyAnimationImporter.cpp:33</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_aa998c8d51ac188304eb2c6ae8549c6d2"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a></div><div class="ttdeci">std::uint32_t bone</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00024">LegacyAnimationImporter.cpp:24</a></div></div>
+<div class="ttc" id="aOceanRenderBindings_8cpp_html_affe8e1c4588001671d53bc2e64d5ccef"><div class="ttname"><a href="OceanRenderBindings_8cpp.html#affe8e1c4588001671d53bc2e64d5ccef">placement</a></div><div class="ttdeci">Placement placement</div><div class="ttdef"><b>Definition</b> <a href="OceanRenderBindings_8cpp_source.html#l00042">OceanRenderBindings.cpp:42</a></div></div>
+<div class="ttc" id="aRigidPoseTrack_8h_html"><div class="ttname"><a href="RigidPoseTrack_8h.html">RigidPoseTrack.h</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a641a6c4dd6318fe795c49915a3da8a9f"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a></div><div class="ttdeci">bool placed</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00148">TacticsPersistence.cpp:148</a></div></div>
+<div class="ttc" id="abackend_2bake_2collapse_2CollapseAnimationInternal_8h_html"><div class="ttname"><a href="backend_2bake_2collapse_2CollapseAnimationInternal_8h.html">CollapseAnimationInternal.h</a></div></div>
+<div class="ttc" id="abackend_2bake_2collapse_2CollapsePlayback_8h_html"><div class="ttname"><a href="backend_2bake_2collapse_2CollapsePlayback_8h.html">CollapsePlayback.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1CollapseAnimation_html"><div class="ttname"><a href="classeve_1_1physics_1_1CollapseAnimation.html">eve::physics::CollapseAnimation</a></div><div class="ttdoc">Owning, solver-independent baked rigid-fragment animation within Physics. @ownership Owns all samples...</div><div class="ttdef"><b>Definition</b> <a href="backend_2bake_2collapse_2CollapseAnimation_8h_source.html#l00027">CollapseAnimation.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1CollapseAnimation_html_a873301202a41afa866c2f8cbcb5d6db7"><div class="ttname"><a href="classeve_1_1physics_1_1CollapseAnimation.html#a873301202a41afa866c2f8cbcb5d6db7">eve::physics::CollapseAnimation::frameCount</a></div><div class="ttdeci">int frameCount() const noexcept</div><div class="ttdoc">Number of recorded frames.</div><div class="ttdef"><b>Definition</b> <a href="CollapseAnimation_8cpp_source.html#l00079">CollapseAnimation.cpp:79</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1CollapsePlayback_html"><div class="ttname"><a href="classeve_1_1physics_1_1CollapsePlayback.html">eve::physics::CollapsePlayback</a></div><div class="ttdoc">Independent clock over a frozen, shared collapse animation. @ownership Owns a shared immutable snapsh...</div><div class="ttdef"><b>Definition</b> <a href="backend_2bake_2collapse_2CollapsePlayback_8h_source.html#l00020">CollapsePlayback.h:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00036">Climbing.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a6c799841e16f326682f57f030a17f8c6"><div class="ttname"><a href="namespaceeve_1_1physics.html#a6c799841e16f326682f57f030a17f8c6">eve::physics::BakePlaybackWrap</a></div><div class="ttdeci">BakePlaybackWrap</div><div class="ttdoc">Endpoint policy: advances clamp or wrap; explicit seeks always clamp inclusively.</div><div class="ttdef"><b>Definition</b> <a href="BakePlaybackClock_8h_source.html#l00006">BakePlaybackClock.h:6</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1BakeRigidPlacement_html"><div class="ttname"><a href="structeve_1_1physics_1_1BakeRigidPlacement.html">eve::physics::BakeRigidPlacement</a></div><div class="ttdoc">Rotation about the baked origin followed by translation, in the track's explicit units; no scaling.</div><div class="ttdef"><b>Definition</b> <a href="BakeRigidTransform_8h_source.html#l00007">BakeRigidTransform.h:7</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

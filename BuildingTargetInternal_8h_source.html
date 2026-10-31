@@ -1,0 +1,234 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/building/editing/BuildingTargetInternal.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_82516b7859a22590e742ab13945dc7b3.html">building</a></li><li class="navelem"><a class="el" href="dir_bf03e0a839914263fbe0245394009782.html">editing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">BuildingTargetInternal.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="BuildingTargetInternal_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="BuildingSnapshot_8h.html">building/BuildingSnapshot.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="BuildingTarget_8h.html">building/editing/BuildingTarget.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditingProperty_8h.html">editing/EditingProperty.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1building__editing_1_1target__detail.html">eve::building_editing::target_detail</a> {</div>
+<div class="foldopen" id="foldopen00006" data-start="{" data-end="}">
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="namespaceeve_1_1building__editing_1_1target__detail.html#a16c01e755094929abae87f15fb4639cf">    6</a></span><span class="keyword">inline</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> <a class="code hl_function" href="namespaceeve_1_1building__editing_1_1target__detail.html#a16c01e755094929abae87f15fb4639cf">instanceValue</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a>&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>) {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#abd78b0f066704b15c7f9b41d157531ab">editing::toEditingValue</a>(<a class="code hl_function" href="namespaceeve_1_1building_1_1codec.html#af6b32de59ba1cba687170d0c3b8bde01">building::codec::instanceValue</a>(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>));</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="namespaceeve_1_1building__editing_1_1target__detail.html#a6e45da2776491d7baab3fd6850ce7c06">    9</a></span><span class="keyword">inline</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a> <a class="code hl_function" href="namespaceeve_1_1building__editing_1_1target__detail.html#a6e45da2776491d7baab3fd6850ce7c06">edgeCurveValue</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1EdgeCurveGroup.html">building::EdgeCurveGroup</a>&amp; <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, <span class="keyword">const</span> std::vector&lt;BuildingInstanceSnapshot&gt;&amp; <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>) {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#abd78b0f066704b15c7f9b41d157531ab">editing::toEditingValue</a>(<a class="code hl_function" href="namespaceeve_1_1building_1_1codec.html#abfe7b6b51d656e9d604e09a2eda5cf92">building::codec::edgeCurveValue</a>(<a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, <a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>));</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="}">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="namespaceeve_1_1building__editing_1_1target__detail.html#a3e4e9b39723c52e5b4c081ec6ca06471">   12</a></span><span class="keyword">inline</span> <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1building__editing_1_1target__detail.html#a3e4e9b39723c52e5b4c081ec6ca06471">parseInstance</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1building_1_1codec.html#a4f7ccf089847883b8607758e3e734243">building::codec::parseInstance</a>(<a class="code hl_function" href="namespaceeve_1_1editing.html#a25142660dcb6b4317cf40f6431bc1ae2">editing::toPresentationValue</a>(<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>));</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="namespaceeve_1_1building__editing_1_1target__detail.html#af4c1d29c836b91c3aa7af4ff7a4aecde">   15</a></span><span class="keyword">inline</span> <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1building__editing_1_1target__detail.html#af4c1d29c836b91c3aa7af4ff7a4aecde">parseInstances</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1building_1_1codec.html#a464a7cf885de2a1146482e08516b6e9d">building::codec::parseInstances</a>(<a class="code hl_function" href="namespaceeve_1_1editing.html#a25142660dcb6b4317cf40f6431bc1ae2">editing::toPresentationValue</a>(<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>));</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="namespaceeve_1_1building__editing_1_1target__detail.html#adcadba33edd03f51fad46c16670f7ff0">   18</a></span><span class="keyword">inline</span> <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1building__editing_1_1target__detail.html#adcadba33edd03f51fad46c16670f7ff0">parseEdgeCurve</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1building_1_1codec.html#a0d9a872b3af47aa2f9cbfc832bcb58b3">building::codec::parseEdgeCurve</a>(<a class="code hl_function" href="namespaceeve_1_1editing.html#a25142660dcb6b4317cf40f6431bc1ae2">editing::toPresentationValue</a>(<a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>));</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><a class="code hl_struct" href="structeve_1_1editing_1_1DomainOperation.html">DomainOperation</a> <a class="code hl_function" href="namespaceeve_1_1building__editing_1_1target__detail.html#a61dd03aca2ec6641964bedeebf25292a">instanceOperation</a>(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, std::string <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>, std::string inverseType,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>                                  <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a>&amp; <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a>&amp; inverse);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}  <span class="comment">// namespace eve::building_editing::target_detail</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a16c9300acaea4db7696fb24b3802bfa5"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00151">ActionNotifyRegistry.cpp:151</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_aa50532026e25d28aec12f8f0f8b0ebf5"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#aa50532026e25d28aec12f8f0f8b0ebf5">payload</a></div><div class="ttdeci">Value::Object payload</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00020">ActionTimelinePayloadEditor.cpp:20</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">ActionTimelinePayloadEditor.cpp:16</a></div></div>
+<div class="ttc" id="aBuildingSnapshot_8h_html"><div class="ttname"><a href="BuildingSnapshot_8h.html">BuildingSnapshot.h</a></div></div>
+<div class="ttc" id="aBuildingTarget_8h_html"><div class="ttname"><a href="BuildingTarget_8h.html">BuildingTarget.h</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aEditingProperty_8h_html"><div class="ttname"><a href="EditingProperty_8h.html">EditingProperty.h</a></div></div>
+<div class="ttc" id="aGpuGraph_8cpp_html_aaae841ffb46b13fecc7328d10de4a9f6"><div class="ttname"><a href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a></div><div class="ttdeci">tensor::Graph g</div><div class="ttdef"><b>Definition</b> <a href="GpuGraph_8cpp_source.html#l00007">GpuGraph.cpp:7</a></div></div>
+<div class="ttc" id="aHexRiverMesh_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="HexRiverMesh_8cpp_source.html#l00019">HexRiverMesh.cpp:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00023">EditingValue.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1codec_html_a0d9a872b3af47aa2f9cbfc832bcb58b3"><div class="ttname"><a href="namespaceeve_1_1building_1_1codec.html#a0d9a872b3af47aa2f9cbfc832bcb58b3">eve::building::codec::parseEdgeCurve</a></div><div class="ttdeci">Result&lt; EdgeCurvePayload &gt; parseEdgeCurve(const Value &amp;value)</div><div class="ttdoc">Decode one complete curve with structured failure and independent ownership.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8cpp_source.html#l00377">BuildingSnapshot.cpp:377</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1codec_html_a464a7cf885de2a1146482e08516b6e9d"><div class="ttname"><a href="namespaceeve_1_1building_1_1codec.html#a464a7cf885de2a1146482e08516b6e9d">eve::building::codec::parseInstances</a></div><div class="ttdeci">Result&lt; std::vector&lt; BuildingInstanceSnapshot &gt; &gt; parseInstances(const Value &amp;value)</div><div class="ttdoc">Decode a nonempty instance batch with unique identities; pure owning result.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8cpp_source.html#l00246">BuildingSnapshot.cpp:246</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1codec_html_a4f7ccf089847883b8607758e3e734243"><div class="ttname"><a href="namespaceeve_1_1building_1_1codec.html#a4f7ccf089847883b8607758e3e734243">eve::building::codec::parseInstance</a></div><div class="ttdeci">Result&lt; BuildingInstanceSnapshot &gt; parseInstance(const Value &amp;value)</div><div class="ttdoc">Decode legacy/current instance fields without mutating a world; owning result.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8cpp_source.html#l00103">BuildingSnapshot.cpp:103</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1codec_html_abfe7b6b51d656e9d604e09a2eda5cf92"><div class="ttname"><a href="namespaceeve_1_1building_1_1codec.html#abfe7b6b51d656e9d604e09a2eda5cf92">eve::building::codec::edgeCurveValue</a></div><div class="ttdeci">Value edgeCurveValue(const building::EdgeCurveGroup &amp;group, const std::vector&lt; BuildingInstanceSnapshot &gt; &amp;instances)</div><div class="ttdoc">Encode one complete curve group in linear time; no world mutation.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8cpp_source.html#l00352">BuildingSnapshot.cpp:352</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building_1_1codec_html_af6b32de59ba1cba687170d0c3b8bde01"><div class="ttname"><a href="namespaceeve_1_1building_1_1codec.html#af6b32de59ba1cba687170d0c3b8bde01">eve::building::codec::instanceValue</a></div><div class="ttdeci">Value instanceValue(const BuildingInstanceSnapshot &amp;instance)</div><div class="ttdoc">Encode a complete owning instance; pure, caller-thread, linear in instance metadata.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8cpp_source.html#l00052">BuildingSnapshot.cpp:52</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building__editing_1_1target__detail_html"><div class="ttname"><a href="namespaceeve_1_1building__editing_1_1target__detail.html">eve::building_editing::target_detail</a></div><div class="ttdef"><b>Definition</b> <a href="BuildingTarget_8cpp_source.html#l00017">BuildingTarget.cpp:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building__editing_1_1target__detail_html_a16c01e755094929abae87f15fb4639cf"><div class="ttname"><a href="namespaceeve_1_1building__editing_1_1target__detail.html#a16c01e755094929abae87f15fb4639cf">eve::building_editing::target_detail::instanceValue</a></div><div class="ttdeci">EditorValue instanceValue(const BuildingInstanceSnapshot &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="BuildingTargetInternal_8h_source.html#l00006">BuildingTargetInternal.h:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building__editing_1_1target__detail_html_a3e4e9b39723c52e5b4c081ec6ca06471"><div class="ttname"><a href="namespaceeve_1_1building__editing_1_1target__detail.html#a3e4e9b39723c52e5b4c081ec6ca06471">eve::building_editing::target_detail::parseInstance</a></div><div class="ttdeci">auto parseInstance(const EditorValue &amp;v)</div><div class="ttdef"><b>Definition</b> <a href="BuildingTargetInternal_8h_source.html#l00012">BuildingTargetInternal.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building__editing_1_1target__detail_html_a61dd03aca2ec6641964bedeebf25292a"><div class="ttname"><a href="namespaceeve_1_1building__editing_1_1target__detail.html#a61dd03aca2ec6641964bedeebf25292a">eve::building_editing::target_detail::instanceOperation</a></div><div class="ttdeci">DomainOperation instanceOperation(const std::string &amp;target, std::string type, std::string inverseType, const BuildingInstanceSnapshot &amp;payload, const BuildingInstanceSnapshot &amp;inverse)</div><div class="ttdef"><b>Definition</b> <a href="BuildingTarget_8cpp_source.html#l00019">BuildingTarget.cpp:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building__editing_1_1target__detail_html_a6e45da2776491d7baab3fd6850ce7c06"><div class="ttname"><a href="namespaceeve_1_1building__editing_1_1target__detail.html#a6e45da2776491d7baab3fd6850ce7c06">eve::building_editing::target_detail::edgeCurveValue</a></div><div class="ttdeci">EditorValue edgeCurveValue(const building::EdgeCurveGroup &amp;g, const std::vector&lt; BuildingInstanceSnapshot &gt; &amp;p)</div><div class="ttdef"><b>Definition</b> <a href="BuildingTargetInternal_8h_source.html#l00009">BuildingTargetInternal.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building__editing_1_1target__detail_html_adcadba33edd03f51fad46c16670f7ff0"><div class="ttname"><a href="namespaceeve_1_1building__editing_1_1target__detail.html#adcadba33edd03f51fad46c16670f7ff0">eve::building_editing::target_detail::parseEdgeCurve</a></div><div class="ttdeci">auto parseEdgeCurve(const EditorValue &amp;v)</div><div class="ttdef"><b>Definition</b> <a href="BuildingTargetInternal_8h_source.html#l00018">BuildingTargetInternal.h:18</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1building__editing_1_1target__detail_html_af4c1d29c836b91c3aa7af4ff7a4aecde"><div class="ttname"><a href="namespaceeve_1_1building__editing_1_1target__detail.html#af4c1d29c836b91c3aa7af4ff7a4aecde">eve::building_editing::target_detail::parseInstances</a></div><div class="ttdeci">auto parseInstances(const EditorValue &amp;v)</div><div class="ttdef"><b>Definition</b> <a href="BuildingTargetInternal_8h_source.html#l00015">BuildingTargetInternal.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a25142660dcb6b4317cf40f6431bc1ae2"><div class="ttname"><a href="namespaceeve_1_1editing.html#a25142660dcb6b4317cf40f6431bc1ae2">eve::editing::toPresentationValue</a></div><div class="ttdeci">eve::Value toPresentationValue(const Value &amp;value)</div><div class="ttdoc">To presentation value.</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8cpp_source.html#l00098">EditingProperty.cpp:98</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_abd78b0f066704b15c7f9b41d157531ab"><div class="ttname"><a href="namespaceeve_1_1editing.html#abd78b0f066704b15c7f9b41d157531ab">eve::editing::toEditingValue</a></div><div class="ttdeci">Value toEditingValue(const eve::Value &amp;value)</div><div class="ttdoc">To editing value.</div><div class="ttdef"><b>Definition</b> <a href="EditingProperty_8cpp_source.html#l00120">EditingProperty.cpp:120</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1BuildingInstanceSnapshot_html"><div class="ttname"><a href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">eve::building::BuildingInstanceSnapshot</a></div><div class="ttdoc">Complete runtime-neutral placed-building snapshot.</div><div class="ttdef"><b>Definition</b> <a href="BuildingSnapshot_8h_source.html#l00023">BuildingSnapshot.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1building_1_1EdgeCurveGroup_html"><div class="ttname"><a href="structeve_1_1building_1_1EdgeCurveGroup.html">eve::building::EdgeCurveGroup</a></div><div class="ttdoc">World-owned authoritative description and membership of one committed edge curve.</div><div class="ttdef"><b>Definition</b> <a href="BuildingTypes_8h_source.html#l00081">BuildingTypes.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1DomainOperation_html"><div class="ttname"><a href="structeve_1_1editing_1_1DomainOperation.html">eve::editing::DomainOperation</a></div><div class="ttdoc">DomainOperation public API.</div><div class="ttdef"><b>Definition</b> <a href="EditingProtocol_8h_source.html#l00044">EditingProtocol.h:44</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

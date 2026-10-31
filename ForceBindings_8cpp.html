@@ -1,0 +1,1048 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/forces/ForceBindings.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_daf7637ad362fe37d47eb08328f01a55.html">forces</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">ForceBindings.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="ForceBindings_8h_source.html">physics/forces/ForceBindings.h</a>&quot;</code><br />
+<code>#include &lt;charconv&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</code><br />
+<code>#include &quot;<a class="el" href="SquirrelBinding_8h_source.html">common/SquirrelBinding.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SquirrelOwnership_8h_source.html">common/SquirrelOwnership.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Body_8h_source.html">physics/Body.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Body3D_8h_source.html">physics/Body3D.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="World_8h_source.html">physics/World.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="World3D_8h_source.html">physics/World3D.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="BuoyancyGeometry_8h_source.html">physics/forces/BuoyancyGeometry.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="FieldSet_8h_source.html">physics/forces/FieldSet.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="ForceModels_8h_source.html">physics/forces/ForceModels.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="WingAssembly_8h_source.html">physics/forces/WingAssembly.h</a>&quot;</code><br />
+</div>
+<p><a href="ForceBindings_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1physics" id="r_namespaceeve_1_1physics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html">eve::physics</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1physics"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional physics backend for vehicle mobility and body attach. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a6a550b0d71f01d0fa9645c70bcebfbac" id="r_a6a550b0d71f01d0fa9645c70bcebfbac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html#a6a550b0d71f01d0fa9645c70bcebfbac">eve::physics::exposeForceBindings</a> (ssq::Table &amp;table)</td></tr>
+<tr class="memdesc:a6a550b0d71f01d0fa9645c70bcebfbac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register force model value classes and Result-projected functions. @ownership Table is borrowed for registration only; VM owns registered classes. @thread VM owner thread only; does not invoke user callbacks.  <br /></td></tr>
+<tr class="separator:a6a550b0d71f01d0fa9645c70bcebfbac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">变量说明</h2>
+<a id="acf4defa2dc4813175fe724b9bc469a8a" name="acf4defa2dc4813175fe724b9bc469a8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf4defa2dc4813175fe724b9bc469a8a">&#9670;&#160;</a></span>acceleration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ScriptForceVector acceleration = {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00046">46</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluidTools_8cpp_source.html#l00295">eve::fluids::VolumeFluid::applyParticleDrag()</a> , 以及 <a class="el" href="CrowdAvoidance_8cpp_source.html#l00125">eve::crowd::Crowd::Impl::selectAvoidanceVelocity()</a>.</p>
+
+</div>
+</div>
+<a id="a57ceb7560c8ec3ed7436f39904bdea2d" name="a57ceb7560c8ec3ed7436f39904bdea2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57ceb7560c8ec3ed7436f39904bdea2d">&#9670;&#160;</a></span>angles</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; angles</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00256">256</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Fov_8cpp_source.html#l00771">eve::map::Fov::Impl::computeRectangle()</a>, <a class="el" href="VrmMotion_8cpp_source.html#l00032">eve::avatar::VrmRuntime::gaze()</a> , 以及 <a class="el" href="UrbanCrossField_8cpp_source.html#l00640">eve::procgen::urban::shapeIrregularity()</a>.</p>
+
+</div>
+</div>
+<a id="a0e53d4fb37d3f70341a0ed171bbc8364" name="a0e53d4fb37d3f70341a0ed171bbc8364"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e53d4fb37d3f70341a0ed171bbc8364">&#9670;&#160;</a></span>angularVelocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float angularVelocity = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00114">114</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VolumeFluid_8cpp_source.html#l00183">eve::fluids::VolumeFluid::stepWithThermalContacts()</a>.</p>
+
+</div>
+</div>
+<a id="a97ab43f6fd28920a42d987c8fec4afec" name="a97ab43f6fd28920a42d987c8fec4afec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97ab43f6fd28920a42d987c8fec4afec">&#9670;&#160;</a></span>area</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float area = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5c2c11f6d7929bafc3926f68dd5c00f3" name="a5c2c11f6d7929bafc3926f68dd5c00f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c2c11f6d7929bafc3926f68dd5c00f3">&#9670;&#160;</a></span>aspectRatio</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float aspectRatio = 6</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Layout_8cpp_source.html#l00277">eve::ui::gridArrange()</a>.</p>
+
+</div>
+</div>
+<a id="a270f4ddc0d4bb4704d543dd6597175bd" name="a270f4ddc0d4bb4704d543dd6597175bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a270f4ddc0d4bb4704d543dd6597175bd">&#9670;&#160;</a></span>baseDrag</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float baseDrag = 0.02<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00085">85</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a64826dc50074bea77c5837260b53c26e" name="a64826dc50074bea77c5837260b53c26e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64826dc50074bea77c5837260b53c26e">&#9670;&#160;</a></span>brakeTorque</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float brakeTorque = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9159937db111ffd013ec40ad1f67dd1a" name="a9159937db111ffd013ec40ad1f67dd1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9159937db111ffd013ec40ad1f67dd1a">&#9670;&#160;</a></span>center</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ScriptForceVector center = {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a846767210ba733f0099ee87ee9fe0837" name="a846767210ba733f0099ee87ee9fe0837"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a846767210ba733f0099ee87ee9fe0837">&#9670;&#160;</a></span>chord</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ScriptForceVector chord = {1, 0, 0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArrowGenerator_8cpp_source.html#l00451">eve::procgen::ArrowGenerator::buildMeshResult()</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00232">eve::procgen::urban::generateSplitCandidates()</a>, <a class="el" href="SplineCircularArc_8cpp_source.html#l00023">eve::procgen::detail::makeCircularArcXZ()</a>, <a class="el" href="RoadParameterSampling_8cpp_source.html#l00019">eve::procgen::road::detail::sampleRoadParametricFrames()</a> , 以及 <a class="el" href="SplineCircularArc_8cpp_source.html#l00009">eve::procgen::detail::scaleCircularTangentToChord()</a>.</p>
+
+</div>
+</div>
+<a id="a3d52b7d850f6927c71b0db19f1e823fa" name="a3d52b7d850f6927c71b0db19f1e823fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d52b7d850f6927c71b0db19f1e823fa">&#9670;&#160;</a></span>corneringStiffness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float corneringStiffness = 10000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af5d1a3cc4fffecd94d9cb9eb0096b071" name="af5d1a3cc4fffecd94d9cb9eb0096b071"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5d1a3cc4fffecd94d9cb9eb0096b071">&#9670;&#160;</a></span>density</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float density = 1.225<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Biome_8cpp_source.html#l00031">eve::procgen::BiomeRules::addLayer()</a>, <a class="el" href="FogDensityField_8cpp_source.html#l00551">eve::graphics::fog::FogProfile::ambientRadiance()</a>, <a class="el" href="CaveNormals_8cpp_source.html#l00050">eve::procgen::applyCaveSurfaceNormals()</a>, <a class="el" href="WaterUnderwaterEffects_8cpp_source.html#l00222">eve::graphics::applyWaterUnderwaterFog()</a>, <a class="el" href="OceanSpectrum_8cpp_source.html#l00025">eve::fluids::OceanSpectrumBuilder::build()</a>, <a class="el" href="CaveBoundary_8cpp_source.html#l00027">eve::procgen::closeCaveDensityBoundary()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00016">eve::physics::jolt::cook()</a>, <a class="el" href="CanonicalMeshEncode_8cpp_source.html#l00121">eve::asset::cookCanonicalPcgGraph()</a>, <a class="el" href="JoltBody_8cpp_source.html#l00029">eve::physics::jolt::BodyBackend::createShape()</a>, <a class="el" href="CaveSupport_8cpp_source.html#l00010">eve::procgen::detachUnsupportedCaveFragments()</a>, <a class="el" href="CaveCondensation_8cpp_source.html#l00025">eve::procgen::erodeCaveByCondensation()</a>, <a class="el" href="OceanSurface_8cpp_source.html#l00100">eve::fluids::evaluateOceanCellForce()</a>, <a class="el" href="CaveReactivePatchiness_8cpp_source.html#l00084">eve::procgen::evolveCaveSurfaceByCorrelatedReactivity()</a>, <a class="el" href="CaveSurfaceEvolution_8cpp_source.html#l00092">eve::procgen::evolveCaveSurfaceByCurvature()</a>, <a class="el" href="CaveSurfaceEvolution_8cpp_source.html#l00087">eve::procgen::evolveCaveSurfaceByCurvature()</a>, <a class="el" href="CaveSurfaceReactivity_8cpp_source.html#l00040">eve::procgen::evolveCaveSurfaceByReactivity()</a>, <a class="el" href="CaveSurfaceEvolution_8cpp_source.html#l00017">eve::procgen::evolveSurface()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00408">eve::biome_editor::exposeBiomeRulesEditorScriptBindings()</a>, <a class="el" href="FogDensityField_8cpp_source.html#l00540">eve::graphics::fog::FogProfile::extinctionAt()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00342">eve::procgen::fillDensityField()</a>, <a class="el" href="CaveDepositAnchoring_8cpp_source.html#l00030">eve::procgen::findCaveVerticalSpan()</a>, <a class="el" href="FractureRecipe_8cpp_source.html#l00250">eve::physics::FractureRecipe::fromValue()</a>, <a class="el" href="SkyProceduralAsset_8cpp_source.html#l00064">eve::graphics::SkyWispsAsset::generate()</a>, <a class="el" href="BushMesh_8cpp_source.html#l00174">eve::procgen::generateBushMesh()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00439">eve::procgen::generateMarchingCubesMesh()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00487">eve::procgen::generateTreeMesh()</a>, <a class="el" href="FogDensityField_8cpp_source.html#l00243">eve::graphics::fog::FogFroxelBridge::inject()</a>, <a class="el" href="CollapseDust_8cpp_source.html#l00284">eve::physics::CollapseDust::injectFog()</a>, <a class="el" href="FogRayMarch_8cpp_source.html#l00084">eve::graphics::fog::FogRayMarch::integrate()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00336">eve::biome_editor::BiomeRulesEditor::layerDensity()</a>, <a class="el" href="EvpackInstanceSetLoader_8cpp_source.html#l00030">eve::asset_procgen::EvpackInstanceSetLoader::load()</a>, <a class="el" href="SkyWispsAsset_8cpp_source.html#l00071">eve::graphics::SkyWispsAsset::load()</a>, <a class="el" href="Box3DShape_8cpp_source.html#l00317">eve::physics::box3d::makeShape()</a>, <a class="el" href="MarchingCubes_8cpp_source.html#l00250">eve::procgen::marchingCubes()</a>, <a class="el" href="Body3D_8cpp_source.html#l00440">eve::physics::Body3D::newBoxShape()</a>, <a class="el" href="Body3D_8cpp_source.html#l00454">eve::physics::Body3D::newCapsuleShape()</a>, <a class="el" href="Body_8cpp_source.html#l00258">eve::physics::Body::newCircleFixture()</a>, <a class="el" href="Body3D_8cpp_source.html#l00461">eve::physics::Body3D::newConvexHullShape()</a>, <a class="el" href="Body_8cpp_source.html#l00278">eve::physics::Body::newPolygonFixture()</a>, <a class="el" href="Body_8cpp_source.html#l00230">eve::physics::Body::newRectangleFixture()</a>, <a class="el" href="Body_8cpp_source.html#l00235">eve::physics::Body::newRectangleFixtureAt()</a>, <a class="el" href="Body3D_8cpp_source.html#l00448">eve::physics::Body3D::newSphereShape()</a>, <a class="el" href="UnrealImporter_8cpp_source.html#l00132">eve::asset_import::prepareUnrealM4Import()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00601">eve::physics::snapshot_detail::prepareWorld3D()</a>, <a class="el" href="CaveFieldSampling_8cpp_source.html#l00041">eve::procgen::projectToCaveDensitySurface()</a>, <a class="el" href="CaveGeometry_8cpp_source.html#l00123">eve::procgen::cave_detail::projectToDensitySurface()</a>, <a class="el" href="CaveDepositAnchoring_8cpp_source.html#l00086">eve::procgen::projectToFinalCaveSurface()</a>, <a class="el" href="BiomeEditingCommands_8cpp_source.html#l00094">eve::biome_editing::registerEditingCommands()</a>, <a class="el" href="CollapseDust_8cpp_source.html#l00397">eve::physics::CollapseDust::requestFog()</a>, <a class="el" href="CaveFieldSampling_8cpp_source.html#l00057">eve::procgen::resampleCaveDensity()</a>, <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00066">eve::physics::snapshot_detail::restoreFixtureMaterial()</a>, <a class="el" href="Shape3DContactSnapshot_8cpp_source.html#l00067">eve::physics::WorldSnapshotAccess::restoreShapeContact()</a>, <a class="el" href="CaveFieldSampling_8cpp_source.html#l00009">eve::procgen::sampleCaveDensity()</a>, <a class="el" href="CaveFieldSampling_8cpp_source.html#l00027">eve::procgen::sampleCaveDensityGradient()</a>, <a class="el" href="FogDensityField_8cpp_source.html#l00542">eve::graphics::fog::FogProfile::scatteringAt()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00490">eve::graphics::Volumetric::setCloudDensity()</a>, <a class="el" href="Volumetric_8cpp_source.html#l00447">eve::graphics::Volumetric::setDensity()</a>, <a class="el" href="Fixture_8cpp_source.html#l00064">eve::physics::Fixture::setDensity()</a>, <a class="el" href="Shape3D_8cpp_source.html#l00604">eve::physics::Shape3D::setDensity()</a>, <a class="el" href="PointSet_8cpp_source.html#l00274">eve::procgen::PointSet::setDensity()</a>, <a class="el" href="FogDensityField_8cpp_source.html#l00079">eve::graphics::fog::FogDensityField::setDensity()</a>, <a class="el" href="MacFluidGrid_8cpp_source.html#l00094">eve::graphics::fog::MacFluidGrid::setDensity()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00182">eve::biome_editor::BiomeRulesEditor::setLayerDensity()</a>, <a class="el" href="Fluid2D_8cpp_source.html#l00038">eve::physics::Fluid2D::setRestDensity()</a> , 以及 <a class="el" href="CollapseDust_8cpp_source.html#l00528">eve::physics::CollapseDust::updateFog()</a>.</p>
+
+</div>
+</div>
+<a id="a7d006cca3befb00fc5ce34df90b9ac1c" name="a7d006cca3befb00fc5ce34df90b9ac1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d006cca3befb00fc5ce34df90b9ac1c">&#9670;&#160;</a></span>displacedVolume</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float displacedVolume = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="OceanBoatWake_8cpp_source.html#l00008">eve::fluids::injectOceanBoatWake()</a>.</p>
+
+</div>
+</div>
+<a id="a2412c6ecabb0572624f851fc740668ab" name="a2412c6ecabb0572624f851fc740668ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2412c6ecabb0572624f851fc740668ab">&#9670;&#160;</a></span>driveTorque</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float driveTorque = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a03ce41066e40c01fc2d2060d806be054" name="a03ce41066e40c01fc2d2060d806be054"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03ce41066e40c01fc2d2060d806be054">&#9670;&#160;</a></span>edgeWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float edgeWidth = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acf238e74d0c543a870c5d107bcc0a610" name="acf238e74d0c543a870c5d107bcc0a610"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf238e74d0c543a870c5d107bcc0a610">&#9670;&#160;</a></span>efficiency</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float efficiency = 0.8<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProductionPersistence_8cpp_source.html#l00268">eve::production::WorkQueue::restore()</a>.</p>
+
+</div>
+</div>
+<a id="aaa0ad0af32ae51c1bfb2cb44cbc1b4e7" name="aaa0ad0af32ae51c1bfb2cb44cbc1b4e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa0ad0af32ae51c1bfb2cb44cbc1b4e7">&#9670;&#160;</a></span>fields</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;FieldDefinition&gt; fields</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a45f9cddd505798240f8bddabda0dde1c" name="a45f9cddd505798240f8bddabda0dde1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45f9cddd505798240f8bddabda0dde1c">&#9670;&#160;</a></span>fluidDensity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float fluidDensity = 1000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a40ecbc8b7ca5e862e72af44b3860969a" name="a40ecbc8b7ca5e862e72af44b3860969a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40ecbc8b7ca5e862e72af44b3860969a">&#9670;&#160;</a></span>force</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ScriptForceVector force = {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a585bd15db005143bac988d78710e4e93" name="a585bd15db005143bac988d78710e4e93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a585bd15db005143bac988d78710e4e93">&#9670;&#160;</a></span>friction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float friction = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltBody_8cpp_source.html#l00029">eve::physics::jolt::BodyBackend::createShape()</a>, <a class="el" href="FractureRecipe_8cpp_source.html#l00250">eve::physics::FractureRecipe::fromValue()</a>, <a class="el" href="Shape3D_8cpp_source.html#l00381">eve::physics::Shape3D::getTriangleMeshMaterialFriction()</a>, <a class="el" href="Box3DShape_8cpp_source.html#l00317">eve::physics::box3d::makeShape()</a>, <a class="el" href="Body3D_8cpp_source.html#l00440">eve::physics::Body3D::newBoxShape()</a>, <a class="el" href="Body3D_8cpp_source.html#l00454">eve::physics::Body3D::newCapsuleShape()</a>, <a class="el" href="Body_8cpp_source.html#l00307">eve::physics::Body::newChainFixture()</a>, <a class="el" href="Body_8cpp_source.html#l00258">eve::physics::Body::newCircleFixture()</a>, <a class="el" href="Body3D_8cpp_source.html#l00461">eve::physics::Body3D::newConvexHullShape()</a>, <a class="el" href="Body_8cpp_source.html#l00278">eve::physics::Body::newPolygonFixture()</a>, <a class="el" href="Body_8cpp_source.html#l00230">eve::physics::Body::newRectangleFixture()</a>, <a class="el" href="Body_8cpp_source.html#l00235">eve::physics::Body::newRectangleFixtureAt()</a>, <a class="el" href="Body3D_8cpp_source.html#l00448">eve::physics::Body3D::newSphereShape()</a>, <a class="el" href="PlanarMaterialSnapshot_8cpp_source.html#l00066">eve::physics::snapshot_detail::restoreFixtureMaterial()</a>, <a class="el" href="Cloth3D_8cpp_source.html#l00470">eve::physics::Cloth3D::setCollisionMaterial()</a>, <a class="el" href="LayeredClothGPU_8cpp_source.html#l00237">eve::physics::LayeredClothGPU::setContact()</a>, <a class="el" href="Fixture_8cpp_source.html#l00050">eve::physics::Fixture::setFriction()</a>, <a class="el" href="Shape3D_8cpp_source.html#l00497">eve::physics::Shape3D::setFriction()</a> , 以及 <a class="el" href="Shape3D_8cpp_source.html#l00350">eve::physics::Shape3D::setTriangleMeshMaterial()</a>.</p>
+
+</div>
+</div>
+<a id="a46334d4c03afc8e933d56dcb279f9c9c" name="a46334d4c03afc8e933d56dcb279f9c9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46334d4c03afc8e933d56dcb279f9c9c">&#9670;&#160;</a></span>gravity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ScriptForceVector gravity = {0, -9.81<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, 0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleGraphRuntime_8cpp_source.html#l00035">eve::particles_editing::ParticleGraphRuntimeBuilder::apply()</a>, <a class="el" href="CaveSurfaceReactivity_8cpp_source.html#l00218">eve::procgen::caveWetnessField()</a>, <a class="el" href="OceanSurface_8cpp_source.html#l00100">eve::fluids::evaluateOceanCellForce()</a>, <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00408">eve::animation::exposePhysicalBalancePoseBindings()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03094">eve::rts::RTSProjectileSystem::launch()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00089">eve::physics::snapshot_detail::parseBody2D()</a> , 以及 <a class="el" href="VolumeFluid_8cpp_source.html#l00671">eve::fluids::VolumeFluid::setGravity()</a>.</p>
+
+</div>
+</div>
+<a id="a613d47a3a56b7d3bc3b778e237a014fa" name="a613d47a3a56b7d3bc3b778e237a014fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a613d47a3a56b7d3bc3b778e237a014fa">&#9670;&#160;</a></span>halfExtents</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ScriptForceVector halfExtents = {1, 1, 1}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a17ca74f051befb55deca87ccc0e5cbdd" name="a17ca74f051befb55deca87ccc0e5cbdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17ca74f051befb55deca87ccc0e5cbdd">&#9670;&#160;</a></span>inertia</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float inertia = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00071">eve::animation::DynamicBoneSolver::addChain()</a>, <a class="el" href="DynamicBoneSolver_8cpp_source.html#l00079">eve::animation::DynamicBoneSolver::addChainByName()</a>, <a class="el" href="Aerodynamics_8cpp_source.html#l00017">eve::physics::ForceModels::angularDamping2D()</a>, <a class="el" href="Aerodynamics_8cpp_source.html#l00025">eve::physics::ForceModels::angularDamping3D()</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00352">eve::physics::exposeForceBindings()</a>, <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00408">eve::animation::exposePhysicalBalancePoseBindings()</a>, <a class="el" href="Shape3DContactSnapshot_8cpp_source.html#l00168">eve::physics::WorldSnapshotAccess::finishShapeMass()</a>, <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00178">eve::animation::PhysicalBalancePose::setInertia()</a>, <a class="el" href="PhysicalBalancePose_8cpp_source.html#l00185">eve::animation::PhysicalBalancePose::setRecoilInertia()</a>, <a class="el" href="Animation_8cpp_source.html#l00404">eve::animation::Animation::setupHairChain()</a>, <a class="el" href="PetalSolver_8cpp_source.html#l00018">eve::gpuagents::PetalSolver::step()</a>, <a class="el" href="VolumeFluid_8cpp_source.html#l00183">eve::fluids::VolumeFluid::stepWithThermalContacts()</a> , 以及 <a class="el" href="VehicleTires2D_8cpp_source.html#l00022">eve::vehicle::tire_detail::submit2D()</a>.</p>
+
+</div>
+</div>
+<a id="aca87c2bbc26e697653e2d8461c76a361" name="aca87c2bbc26e697653e2d8461c76a361"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca87c2bbc26e697653e2d8461c76a361">&#9670;&#160;</a></span>kind</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string kind = &quot;sphere&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4298a1e66d99b6ac5723e22315fa6b2a" name="a4298a1e66d99b6ac5723e22315fa6b2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4298a1e66d99b6ac5723e22315fa6b2a">&#9670;&#160;</a></span>kineticCoefficient</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float kineticCoefficient = 0.7<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa7b4353ebb4ac139cbfda5fc7f708d9a" name="aa7b4353ebb4ac139cbfda5fc7f708d9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7b4353ebb4ac139cbfda5fc7f708d9a">&#9670;&#160;</a></span>lateralInverseMass</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float lateralInverseMass = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4bff7f6cfdbf47d908eeb3b4c60db937" name="a4bff7f6cfdbf47d908eeb3b4c60db937"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bff7f6cfdbf47d908eeb3b4c60db937">&#9670;&#160;</a></span>lateralVelocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float lateralVelocity = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a03d05bb7ccb4ac419db5f8eb7dbdb667" name="a03d05bb7ccb4ac419db5f8eb7dbdb667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03d05bb7ccb4ac419db5f8eb7dbdb667">&#9670;&#160;</a></span>liftSlope</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float liftSlope = 6.2831853<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa7d568a84fe0f3179836f663743d6be2" name="aa7d568a84fe0f3179836f663743d6be2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7d568a84fe0f3179836f663743d6be2">&#9670;&#160;</a></span>linear</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float linear = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Coupling3D_8cpp_source.html#l00027">eve::physics::coupling_detail::Row::add()</a>, <a class="el" href="ClimbingExecution_8cpp_source.html#l00013">eve::climbing::ClimbingRuntime::advance()</a>, <a class="el" href="VolumeFluidEmitter_8cpp_source.html#l00319">eve::fluids::VolumeFluidJetEmitter::advanceMoving()</a>, <a class="el" href="GtsTerrainLodRuntime_8cpp_source.html#l01422">eve::procgen::bakeGtsTerrainVertexColorsInto()</a>, <a class="el" href="CanonicalImageCook_8cpp_source.html#l00163">eve::asset::cookCanonicalImageRgba8()</a>, <a class="el" href="VolumeFluidTools_8cpp_source.html#l00459">eve::fluids::VolumeFluid::debugParticleGrid()</a>, <a class="el" href="JoltExplosion_8cpp_source.html#l00039">eve::physics::jolt::WorldBackend::explode()</a>, <a class="el" href="VolumeFluidBindings_8cpp_source.html#l00004">eve::fluids::exposeVolumeFluidType()</a>, <a class="el" href="GraphicsMesh_8cpp_source.html#l00160">eve::graphics::vulkan::Graphics::newMeshFromAssimp()</a>, <a class="el" href="WorldSnapshotCodec_8cpp_source.html#l00089">eve::physics::snapshot_detail::parseBody2D()</a>, <a class="el" href="VolumeFluidContactTracker_8cpp_source.html#l00150">eve::fluids::VolumeFluidCoupling::step()</a>, <a class="el" href="TerrainMultiTile_8cpp_source.html#l00258">eve::procgen::stitchTerrainHeightmaps()</a> , 以及 <a class="el" href="VehicleTires3D_8cpp_source.html#l00111">eve::vehicle::tire_detail::submit3D()</a>.</p>
+
+</div>
+</div>
+<a id="a6619f50fac207c8eb52c6e71fdea541a" name="a6619f50fac207c8eb52c6e71fdea541a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6619f50fac207c8eb52c6e71fdea541a">&#9670;&#160;</a></span>longitudinalInverseMass</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float longitudinalInverseMass = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7e81f363ad5936aeb017e87ec41f171c" name="a7e81f363ad5936aeb017e87ec41f171c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e81f363ad5936aeb017e87ec41f171c">&#9670;&#160;</a></span>longitudinalStiffness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float longitudinalStiffness = 10000</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a53d20fa3d5ba2094f894a6e8510a875d" name="a53d20fa3d5ba2094f894a6e8510a875d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53d20fa3d5ba2094f894a6e8510a875d">&#9670;&#160;</a></span>longitudinalVelocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float longitudinalVelocity = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a75acfe5b3bb67a256ce3ad91cbac056e" name="a75acfe5b3bb67a256ce3ad91cbac056e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75acfe5b3bb67a256ce3ad91cbac056e">&#9670;&#160;</a></span>maxAcceleration</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float maxAcceleration = std::numeric_limits&lt;float&gt;<a class="el" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">::max</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Steering_8cpp_source.html#l00185">eve::math::steering::avoid()</a>, <a class="el" href="Steering_8cpp_source.html#l00189">eve::math::steering::avoid()</a>, <a class="el" href="Steering_8cpp_source.html#l00169">eve::math::steering::separation()</a>, <a class="el" href="Steering_8cpp_source.html#l00173">eve::math::steering::separation()</a>, <a class="el" href="Math_8cpp_source.html#l00281">eve::math::Math::steeringAvoid2()</a>, <a class="el" href="Math_8cpp_source.html#l00291">eve::math::Math::steeringAvoid3()</a>, <a class="el" href="Math_8cpp_source.html#l00254">eve::math::Math::steeringSeparation2()</a> , 以及 <a class="el" href="Math_8cpp_source.html#l00262">eve::math::Math::steeringSeparation3()</a>.</p>
+
+</div>
+</div>
+<a id="aa7358a01ee953c0be77848d8a10e7800" name="aa7358a01ee953c0be77848d8a10e7800"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7358a01ee953c0be77848d8a10e7800">&#9670;&#160;</a></span>maxForce</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float maxForce = std::numeric_limits&lt;float&gt;<a class="el" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">::max</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Joint3D_8cpp_source.html#l00133">eve::physics::Joint3D::setDistanceMotor()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00121">eve::physics::jolt::JointBackend::setDistanceMotor()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00212">eve::physics::Joint3D::setMotorLinearSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00559">eve::physics::jolt::JointBackend::setMotorLinearSpring()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00209">eve::physics::Joint3D::setMotorVelocityLimits()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00543">eve::physics::jolt::JointBackend::setMotorVelocityLimits()</a>, <a class="el" href="Joint3D_8cpp_source.html#l00155">eve::physics::Joint3D::setPrismaticMotor()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00229">eve::physics::jolt::JointBackend::setPrismaticMotor()</a> , 以及 <a class="el" href="JoltDistanceConstraint_8cpp_source.html#l00108">eve::physics::jolt::DistanceConstraint::SolveVelocityConstraint()</a>.</p>
+
+</div>
+</div>
+<a id="a8b8827a9679ba373bf154c708b9b4ebd" name="a8b8827a9679ba373bf154c708b9b4ebd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b8827a9679ba373bf154c708b9b4ebd">&#9670;&#160;</a></span>minimumSlipSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float minimumSlipSpeed = 0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c7c3b2711ff3ef19544da1f5b296d02" name="a2c7c3b2711ff3ef19544da1f5b296d02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c7c3b2711ff3ef19544da1f5b296d02">&#9670;&#160;</a></span>normal</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ScriptForceVector normal = {0, 1, 0}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2b1e6b02154b4763571e0012d0160d38" name="a2b1e6b02154b4763571e0012d0160d38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b1e6b02154b4763571e0012d0160d38">&#9670;&#160;</a></span>normalLoad</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float normalLoad = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5b54f49bd3fd03eee682575ba830cf99" name="a5b54f49bd3fd03eee682575ba830cf99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b54f49bd3fd03eee682575ba830cf99">&#9670;&#160;</a></span>quadratic</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float quadratic = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5050a760c11da521cd4aee6336f6529f" name="a5050a760c11da521cd4aee6336f6529f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5050a760c11da521cd4aee6336f6529f">&#9670;&#160;</a></span>radius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float radius = -1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="affe9b455631dfc00c1efb482584335f6" name="affe9b455631dfc00c1efb482584335f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affe9b455631dfc00c1efb482584335f6">&#9670;&#160;</a></span>region</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ScriptFieldRegion region = {}</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceQuery_8cpp_source.html#l00209">eve::archspace::SpaceQuery::anchorsIn()</a>, <a class="el" href="VulkanRayTracing_8cpp_source.html#l00753">eve::graphics::raytracing::VulkanRayTracing::applyReflections()</a>, <a class="el" href="ArchSpaceProjector_8cpp_source.html#l00061">eve::archspace::bakeGridProjection()</a>, <a class="el" href="UI_8cpp_source.html#l00580">eve::ui::UI::beginDockArea()</a>, <a class="el" href="vulkan_2GraphicsVisibility_8cpp_source.html#l00010">eve::graphics::vulkan::Graphics::captureVisibilityPixels()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l01400">eve::pixelworld::PixelWorld::chunkDiagnostics()</a>, <a class="el" href="PixelWorldControl_8cpp_source.html#l00141">eve::pixelworld::PixelWorldControlService::chunkDiagnostics()</a>, <a class="el" href="AnimationClipEditor_8cpp_source.html#l00155">eve::animation_editor::AnimationClipEditor::configureWorkspace()</a>, <a class="el" href="AudioSourceEditor_8cpp_source.html#l00203">eve::audio_editor::AudioSourceEditor::configureWorkspace()</a>, <a class="el" href="AvatarDocumentEditor_8cpp_source.html#l00076">eve::avatar_editor::AvatarDocumentEditor::configureWorkspace()</a>, <a class="el" href="MaterialEditor_8cpp_source.html#l00028">eve::material_editor::MaterialEditor::configureWorkspace()</a>, <a class="el" href="BiomeRulesEditor_8cpp_source.html#l00074">eve::biome_editor::BiomeRulesEditor::configureWorkspace()</a>, <a class="el" href="MeshModifierEditor_8cpp_source.html#l00016">eve::procgen_editor::MeshModifierEditor::configureWorkspace()</a>, <a class="el" href="ProcgenScriptEditor_8cpp_source.html#l00031">eve::procgen_editor::ProcgenScriptEditor::configureWorkspace()</a>, <a class="el" href="UiEditorModule_8cpp_source.html#l00054">eve::ui_editor::UiThemeEditor::configureWorkspace()</a>, <a class="el" href="VoxelCatalogEditor_8cpp_source.html#l00073">eve::voxel_editor::VoxelCatalogEditor::configureWorkspace()</a>, <a class="el" href="ActionTimelineEditor_8cpp_source.html#l00340">eve::editor::ActionTimelineEditor::configureWorkspace()</a>, <a class="el" href="PixelWorldGenerationCodec_8cpp_source.html#l00142">eve::pixelworld::decodePixelWorldGenerationRequestJson()</a>, <a class="el" href="Widget_8cpp_source.html#l00780">eve::ui::dockArea()</a>, <a class="el" href="PixelWorldGenerationCodec_8cpp_source.html#l00108">eve::pixelworld::encodePixelWorldGenerationRequestJson()</a>, <a class="el" href="BuildLayerStack_8cpp_source.html#l00150">eve::procgen::BuildLayerStack::executeRegion()</a>, <a class="el" href="WorkspaceLayoutShellBindings_8cpp_source.html#l00053">eve::ui_editor::exposeWorkspaceLayoutShellBindings()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00618">eve::pixelworld::PixelWorld::extractUnsupportedFragments()</a>, <a class="el" href="SceneLocalRegion_8cpp_source.html#l00004">eve::SceneLocalRegion::fromValue()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00590">eve::editor::EditorDock::getRegionH()</a>, <a class="el" href="EditorVolumeTarget_8cpp_source.html#l00304">eve::editor::EditorWorkspace::getRegionH()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00536">eve::editor::EditorDock::getRegionSize()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00585">eve::editor::EditorDock::getRegionW()</a>, <a class="el" href="EditorVolumeTarget_8cpp_source.html#l00303">eve::editor::EditorWorkspace::getRegionW()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00575">eve::editor::EditorDock::getRegionX()</a>, <a class="el" href="EditorVolumeTarget_8cpp_source.html#l00301">eve::editor::EditorWorkspace::getRegionX()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00580">eve::editor::EditorDock::getRegionY()</a>, <a class="el" href="EditorVolumeTarget_8cpp_source.html#l00302">eve::editor::EditorWorkspace::getRegionY()</a>, <a class="el" href="EditableTarget_8h_source.html#l00192">eve::editing::EditableTargetState::markDirty()</a>, <a class="el" href="SceneVisibility_8cpp_source.html#l00152">eve::graphics::SceneVisibilityQuery::measure()</a>, <a class="el" href="EditorVolumeTarget_8cpp_source.html#l00173">eve::editor::EditorWorkspace::movePanel()</a>, <a class="el" href="EditorVolumeTarget_8cpp_source.html#l00168">eve::editor::EditorWorkspace::movePanel()</a>, <a class="el" href="WorkspaceLayoutShell_8cpp_source.html#l00065">eve::ui_editor::WorkspaceLayoutShell::panelsInRegion()</a>, <a class="el" href="SceneRelations_8cpp_source.html#l00009">eve::scene_editing::parseSceneRelations()</a>, <a class="el" href="SceneVisibility_8cpp_source.html#l00079">eve::graphics::SceneVisibilityQuery::prepare()</a>, <a class="el" href="UvPaintRegion_8cpp_source.html#l00021">eve::image::prepareUvPaintRegionResult()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l00461">eve::graphics::vulkan::Graphics::readDecalLayerToImageData()</a>, <a class="el" href="EditorVolumeTarget_8cpp_source.html#l00112">eve::editor::EditorWorkspace::registerPanel()</a>, <a class="el" href="Graphics2D_8cpp_source.html#l00296">eve::graphics::vulkan::Graphics::renderEntityIdMask()</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00076">eve::graphics::vulkan::Graphics::replaceMeshShaderResources()</a>, <a class="el" href="BrushKernel_8cpp_source.html#l00038">eve::editor::CircleBrushKernel::sample()</a>, <a class="el" href="BrushKernel_8cpp_source.html#l00054">eve::editor::BoxBrushKernel::sample()</a>, <a class="el" href="EditableTarget_8h_source.html#l00183">eve::editing::EditableTargetState::setDirtyRegion()</a>, <a class="el" href="EditorAssetDatabase_8cpp_source.html#l00528">eve::editor::EditorDock::setRegionSize()</a>, <a class="el" href="EditorVolumeTarget_8cpp_source.html#l00294">eve::editor::EditorWorkspace::setRegionSize()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l01363">eve::pixelworld::PixelWorld::snapshotChunksInRegion()</a>, <a class="el" href="IncrementalBuild_8cpp_source.html#l00160">eve::procgen::IncrementalBuildExecutor::update()</a>, <a class="el" href="GraphicsTexture_8cpp_source.html#l00880">eve::graphics::vulkan::Graphics::updateTextureRegions()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l02191">eve::graphics::webgpu::Graphics::updateTextureRegions()</a>, <a class="el" href="EditableTarget_8h_source.html#l00175">eve::editing::EditableTargetState::widenDirty()</a>, <a class="el" href="EditorVolumeTarget_8cpp_source.html#l00092">eve::editor::workspaceRegionName()</a> , 以及 <a class="el" href="EditingVolume_8cpp_source.html#l00026">eve::editing::EditVolume::xzRegion()</a>.</p>
+
+</div>
+</div>
+<a id="a11698f5f3fec4a657207d7ec6e9b979a" name="a11698f5f3fec4a657207d7ec6e9b979a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11698f5f3fec4a657207d7ec6e9b979a">&#9670;&#160;</a></span>rollingResistance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float rollingResistance = 0.015<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Shape3D_8cpp_source.html#l00393">eve::physics::Shape3D::getTriangleMeshMaterialRollingResistance()</a> , 以及 <a class="el" href="Shape3D_8cpp_source.html#l00350">eve::physics::Shape3D::setTriangleMeshMaterial()</a>.</p>
+
+</div>
+</div>
+<a id="a241c915f9de80324ec2f6838aa98f9e3" name="a241c915f9de80324ec2f6838aa98f9e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a241c915f9de80324ec2f6838aa98f9e3">&#9670;&#160;</a></span>softening</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float softening = 0.1<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abe32cb185397968dc64fdb477b933e28" name="abe32cb185397968dc64fdb477b933e28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe32cb185397968dc64fdb477b933e28">&#9670;&#160;</a></span>stallAngle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float stallAngle = 0.2617994<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ef3ded5217562e4a949dfcae9b7ad11" name="a1ef3ded5217562e4a949dfcae9b7ad11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ef3ded5217562e4a949dfcae9b7ad11">&#9670;&#160;</a></span>staticCoefficient</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float staticCoefficient = 0.9<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c1c8f9331368f38bfc3eaee260b59a6" name="a2c1c8f9331368f38bfc3eaee260b59a6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c1c8f9331368f38bfc3eaee260b59a6">&#9670;&#160;</a></span>strength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float strength = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ParticleEmitter_8cpp_source.html#l01106">eve::particles::ParticleEmitter::addForceField()</a>, <a class="el" href="ShallowWaterField_8cpp_source.html#l00289">eve::fluids::ShallowWaterField::addImpulse()</a>, <a class="el" href="TerrainPolygonMask_8cpp_source.html#l00026">eve::procgen::TerrainPolygonMask::addNode()</a>, <a class="el" href="VegetationWind_8cpp_source.html#l00048">eve::graphics::advanceVegetationWind()</a>, <a class="el" href="HeightmapTargetModule_8cpp_source.html#l00030">eve::heightmap_target::HeightmapTargetModule::applyBrush()</a>, <a class="el" href="MeshDeformationSession_8cpp_source.html#l00224">eve::procgen::MeshDeformationSession::applyBrushGpuResult()</a>, <a class="el" href="MeshDeformationSession_8cpp_source.html#l00152">eve::procgen::MeshDeformationSession::applyBrushResult()</a>, <a class="el" href="ParticleConfig_8cpp_source.html#l00117">eve::particles::applyConfigDocument()</a>, <a class="el" href="HeightmapTarget_8cpp_source.html#l00036">eve::procgen_editing::applyHeightmapBrush()</a>, <a class="el" href="TerrainEffect_8cpp_source.html#l00026">eve::procgen::applyTerrainContrast()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00320">eve::procgen::applyTerrainObjectsMultiTile()</a>, <a class="el" href="TerrainProbePlacement_8cpp_source.html#l00102">eve::procgen::applyTerrainProbesMultiTile()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00277">eve::procgen::applyTerrainStrength()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00250">eve::procgen::applyTerrainTreesMultiTile()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00457">eve::procgen::bakeGtsDetailSurface()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00393">eve::procgen::bakeGtsGeologicalSurface()</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00575">eve::procgen::bakeGtsWeatherPbr()</a>, <a class="el" href="ProceduralDecal_8cpp_source.html#l00437">eve::decal::bakeProceduralDecal()</a>, <a class="el" href="TerrainStamp_8cpp_source.html#l00017">eve::procgen::blendTerrainMask()</a>, <a class="el" href="Shadow_8cpp_source.html#l00083">eve::graphics::buildDirectionalCSM()</a>, <a class="el" href="CaveBoundary_8cpp_source.html#l00027">eve::procgen::closeCaveDensityBoundary()</a>, <a class="el" href="GraphicsFoliage_8cpp_source.html#l00012">eve::graphics::Graphics::configureFoliageWind()</a>, <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00317">eve::procgen::TerrainGenerationSession::contrast()</a>, <a class="el" href="CaveBreakdown_8cpp_source.html#l00041">eve::procgen::createCaveBreakdown()</a>, <a class="el" href="CaveSediment_8cpp_source.html#l00066">eve::procgen::createCaveSediment()</a>, <a class="el" href="FieldBrushTool_8cpp_source.html#l00011">eve::editor::PaintIntFieldOperation::createCommand()</a>, <a class="el" href="FieldBrushTool_8cpp_source.html#l00023">eve::editor::AddScalarFieldOperation::createCommand()</a>, <a class="el" href="VegetationNormal_8cpp_source.html#l00005">eve::graphics::decodeVegetationNormal()</a>, <a class="el" href="CaveSupport_8cpp_source.html#l00010">eve::procgen::detachUnsupportedCaveFragments()</a>, <a class="el" href="EffectContainer_8cpp_source.html#l00391">eve::effects::EffectContainer::dispel()</a>, <a class="el" href="Water_8cpp_source.html#l00434">eve::graphics::Water::drawWithPlanarReflection()</a>, <a class="el" href="CaveCondensation_8cpp_source.html#l00025">eve::procgen::erodeCaveByCondensation()</a>, <a class="el" href="Procgen_8cpp_source.html#l01525">eve::procgen::Procgen::erodeTerrainThermal()</a>, <a class="el" href="CaveReactivePatchiness_8cpp_source.html#l00084">eve::procgen::evolveCaveSurfaceByCorrelatedReactivity()</a>, <a class="el" href="CaveSurfaceEvolution_8cpp_source.html#l00092">eve::procgen::evolveCaveSurfaceByCurvature()</a>, <a class="el" href="CaveSurfaceEvolution_8cpp_source.html#l00087">eve::procgen::evolveCaveSurfaceByCurvature()</a>, <a class="el" href="CaveSurfaceReactivity_8cpp_source.html#l00040">eve::procgen::evolveCaveSurfaceByReactivity()</a>, <a class="el" href="CaveSurfaceEvolution_8cpp_source.html#l00017">eve::procgen::evolveSurface()</a>, <a class="el" href="JoltExplosion_8cpp_source.html#l00039">eve::physics::jolt::WorldBackend::explode()</a>, <a class="el" href="PixelWorld_8cpp_source.html#l00605">eve::pixelworld::PixelWorld::explode()</a>, <a class="el" href="TerrainObjectPlacement_8cpp_source.html#l00111">eve::procgen::exportTerrainObjectPoints()</a>, <a class="el" href="TerrainProbePlacement_8cpp_source.html#l00037">eve::procgen::exportTerrainProbePoints()</a>, <a class="el" href="TerrainTreePlacement_8cpp_source.html#l00061">eve::procgen::exportTerrainTreePoints()</a>, <a class="el" href="GrassWind_8cpp_source.html#l00076">eve::graphics::exposeGrassWindBindings()</a>, <a class="el" href="MotionScriptBindings_8cpp_source.html#l00661">eve::animation::exposeMotionScriptBindings()</a>, <a class="el" href="Procgen_8cpp_source.html#l00957">eve::procgen::Procgen::generateNormalImageHandle()</a>, <a class="el" href="TerrainMask_8cpp_source.html#l00230">eve::procgen::generateTerrainErosionMask()</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00148">eve::procgen::heightToNormalImage()</a>, <a class="el" href="VegetationWind_8cpp_source.html#l00032">eve::graphics::initializeVegetationWind()</a>, <a class="el" href="Cloth_8cpp_source.html#l00226">eve::physics::Cloth::interactAt()</a>, <a class="el" href="ClothGPU_8cpp_source.html#l00493">eve::physics::ClothGPU::interactAt()</a>, <a class="el" href="Fluid2D_8cpp_source.html#l00089">eve::physics::Fluid2D::interactAt()</a>, <a class="el" href="Cloth3D_8cpp_source.html#l00555">eve::physics::Cloth3D::interactAt()</a>, <a class="el" href="SoftBody3D_8cpp_source.html#l00213">eve::physics::SoftBody3D::interactAt()</a>, <a class="el" href="EvpackInstanceSetLoader_8cpp_source.html#l00030">eve::asset_procgen::EvpackInstanceSetLoader::load()</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l01193">eve::asset_import::prepareUnityVegetationMaterial()</a>, <a class="el" href="Animation_8cpp_source.html#l00495">eve::animation::Animation::punch()</a>, <a class="el" href="Animation_8cpp_source.html#l00503">eve::animation::Animation::punchVec2()</a>, <a class="el" href="Animation_8cpp_source.html#l00511">eve::animation::Animation::punchVec3()</a>, <a class="el" href="TerrainSurface_8cpp_source.html#l00838">eve::procgen::removeTerrainTerraces()</a>, <a class="el" href="CaveBiogenicCorrosion_8cpp_source.html#l00026">eve::procgen::sampleCaveBiogenicCorrosion()</a>, <a class="el" href="CaveFacets_8cpp_source.html#l00026">eve::procgen::sampleCaveCondensationFacets()</a>, <a class="el" href="CaveDifferentialErosion_8cpp_source.html#l00026">eve::procgen::sampleCaveDifferentialVeinErosion()</a>, <a class="el" href="EverydayPatterns_8cpp_source.html#l00046">eve::procgen::detail::sampleEveryday()</a>, <a class="el" href="Graphics3D_8cpp_source.html#l01148">eve::graphics::vulkan::Graphics::setCloudShadows()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l03589">eve::graphics::webgpu::Graphics::setCloudShadows()</a>, <a class="el" href="Material_8cpp_source.html#l00229">eve::graphics::Material::setFoliageTranslucency()</a>, <a class="el" href="Material_8cpp_source.html#l00248">eve::graphics::Material::setFoliageWind()</a>, <a class="el" href="Graphics3D_8cpp_source.html#l01086">eve::graphics::vulkan::Graphics::setMesh3DTexCellBomb()</a>, <a class="el" href="webgpu_2Graphics_8cpp_source.html#l03574">eve::graphics::webgpu::Graphics::setMesh3DTexCellBomb()</a>, <a class="el" href="ParticleEmitter_8cpp_source.html#l00938">eve::particles::ParticleEmitter::setNoise()</a>, <a class="el" href="Water_8cpp_source.html#l00383">eve::graphics::Water::setScreenSpaceReflection()</a>, <a class="el" href="MapFog_8cpp_source.html#l00352">eve::graphics::MapFog::setSelectStrength()</a>, <a class="el" href="GroomAsset_8cpp_source.html#l00364">eve::graphics::hair::GroomInstance::setSelfShadow()</a>, <a class="el" href="MapFog_8cpp_source.html#l00346">eve::graphics::MapFog::setShadow()</a>, <a class="el" href="Light_8cpp_source.html#l00216">eve::graphics::Light3D::setShadowStrength()</a>, <a class="el" href="FieldBrushTool_8h_source.html#l00069">eve::editor::FieldBrushTool::setStrength()</a>, <a class="el" href="Material_8cpp_source.html#l00135">eve::graphics::Material::setTexCellBomb()</a>, <a class="el" href="Renderable3D_8cpp_source.html#l00146">eve::graphics::Renderable3D::setTexCellBomb()</a>, <a class="el" href="Pad_8cpp_source.html#l00253">eve::joystick::sdl::Pad::setVibration()</a>, <a class="el" href="Animation_8cpp_source.html#l00499">eve::animation::Animation::shake()</a>, <a class="el" href="Animation_8cpp_source.html#l00507">eve::animation::Animation::shakeVec2()</a>, <a class="el" href="Animation_8cpp_source.html#l00515">eve::animation::Animation::shakeVec3()</a>, <a class="el" href="ParallaxMap_8h_source.html#l00083">eve::graphics::silPomHorizonTrim()</a> , 以及 <a class="el" href="RTSSystems_8cpp_source.html#l01285">eve::rts::CaptureSystem::step()</a>.</p>
+
+</div>
+</div>
+<a id="aa09594c59363994ed447192fa2d1c43f" name="aa09594c59363994ed447192fa2d1c43f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa09594c59363994ed447192fa2d1c43f">&#9670;&#160;</a></span>surfaces</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;WingSurface&gt; surfaces</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00253">253</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WingAssembly_8cpp_source.html#l00078">eve::physics::WingAssembly::build()</a>.</p>
+
+</div>
+</div>
+<a id="a76784f58666ff01eaacea421395b430d" name="a76784f58666ff01eaacea421395b430d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76784f58666ff01eaacea421395b430d">&#9670;&#160;</a></span>targets</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;FieldTarget&gt; targets</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Social_8cpp_source.html#l00283">eve::social::SocialGraph::assign()</a>, <a class="el" href="ProcgenPointSetApi_8cpp_source.html#l00250">eve::procgen::Procgen::copyPointsHandle()</a>, <a class="el" href="PointSet_8cpp_source.html#l00930">eve::procgen::copyPointsToTargets()</a>, <a class="el" href="Gpgpu_8cpp_source.html#l00204">eve::gpgpu::Gpgpu::deform()</a>, <a class="el" href="RTSFormation_8cpp_source.html#l00124">eve::rts::CommandFanOutSystem::fanOut()</a>, <a class="el" href="GridGraphAlgorithms_8cpp_source.html#l00304">eve::procgen::gridgraph::findPath()</a>, <a class="el" href="OffscreenPreview_8cpp_source.html#l00035">eve::graphics_editing::GraphicsOffscreenPreviewService::GraphicsOffscreenPreviewService()</a>, <a class="el" href="TacticsAction_8cpp_source.html#l00126">eve::tactics::TacticsActionExecutor::prepare()</a>, <a class="el" href="SceneVisibility_8cpp_source.html#l00079">eve::graphics::SceneVisibilityQuery::prepare()</a>, <a class="el" href="FieldSet_8cpp_source.html#l00073">eve::physics::FieldSet::prepare()</a>, <a class="el" href="FieldSet_8cpp_source.html#l00076">eve::physics::FieldSet::prepare()</a>, <a class="el" href="SceneEditorSession_8cpp_source.html#l00534">eve::scene_editor::SceneEditorSession::prepareRelationVisibility()</a>, <a class="el" href="Social_8cpp_source.html#l00385">eve::social::SocialGraph::removeEntity()</a>, <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html#l00082">eve::rts::CrowdFlowNavigation::request()</a>, <a class="el" href="RTSSnapshot_8cpp_source.html#l00851">eve::rts::RTS::restoreState()</a>, <a class="el" href="SceneRegions_8cpp_source.html#l00019">eve::scene_editing::sceneVisibilityTargets()</a>, <a class="el" href="CombatEnemyAI_8h_source.html#l00064">eve::combat::CombatEnemyIntentSource::setTargetRuntime()</a>, <a class="el" href="CombatLoop_8h_source.html#l00066">eve::combat::CombatLoopRuntime::setTargets()</a>, <a class="el" href="RTSCrowdFlowNavigation_8cpp_source.html#l00218">eve::rts::CrowdFlowNavigation::steer()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l01137">eve::rts::WorkforceAssignmentSystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l00907">eve::rts::AISystem::step()</a>, <a class="el" href="RTSSystems_8cpp_source.html#l03331">eve::rts::CombatFireSystem::step()</a>, <a class="el" href="AvatarInstance_8cpp_source.html#l00856">eve::avatar::AvatarInstance::transitionExpression()</a>, <a class="el" href="ProjectileRuntime_8cpp_source.html#l00121">eve::weapon::ProjectileRuntime::update()</a>, <a class="el" href="CombatCarrier_8cpp_source.html#l00590">eve::weapon::CombatCarrierRuntime::update()</a> , 以及 <a class="el" href="CombatCarrier_8cpp_source.html#l00597">eve::weapon::CombatCarrierRuntime::updateWithMotion()</a>.</p>
+
+</div>
+</div>
+<a id="ad0da36b2558901e21e7a30f6c227a45e" name="ad0da36b2558901e21e7a30f6c227a45e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0da36b2558901e21e7a30f6c227a45e">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float x = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa4f0d3eebc3c443f9be81bf48561a217" name="aa4f0d3eebc3c443f9be81bf48561a217"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4f0d3eebc3c443f9be81bf48561a217">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float y = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af73583b1e980b0aa03f9884812e9fd4d" name="af73583b1e980b0aa03f9884812e9fd4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af73583b1e980b0aa03f9884812e9fd4d">&#9670;&#160;</a></span>z</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float z = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac516bd90837658ec83ff71603949a5b4" name="ac516bd90837658ec83ff71603949a5b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac516bd90837658ec83ff71603949a5b4">&#9670;&#160;</a></span>zeroLiftAngle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float zeroLiftAngle = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ForceBindings_8cpp_source.html">ForceBindings.cpp</a> 第 <a class="el" href="ForceBindings_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

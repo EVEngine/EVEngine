@@ -1,0 +1,600 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::BakeRecipe类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1BakeRecipe.html">BakeRecipe</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1BakeRecipe-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::BakeRecipe类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Bounded provenance builder for explicit-coordinate baked recordings. @ownership Owns names and content digests; never retains source bytes or world pointers. @thread Owner-thread mutation; const encoding is reentrant without concurrent mutation. No callbacks or IO. Schemas EVECREC1 (metres) and EVEBREC1 (planar pixels) fix units, field order and length framing. Unknown versions/fields are rejected. Producers must supply algorithm/backend revisions, all source dependencies, parameters, the actual fixed timestep and sampling stride, and every named RNG seed. These describe admission, not cross-backend determinism.  
+ <a href="classeve_1_1physics_1_1BakeRecipe.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="BakeRecipe_8h_source.html">BakeRecipe.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:acfdefa06339b7fa0427708ebd29f6289" id="r_acfdefa06339b7fa0427708ebd29f6289"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1BakeRecipe.html#acfdefa06339b7fa0427708ebd29f6289">setCoordinates</a> (<a class="el" href="namespaceeve_1_1physics.html#afecb58b12555cea134d89342f3b7a18b">BakeCoordinates</a> <a class="el" href="classeve_1_1physics_1_1BakeRecipe.html#aac37379701e6c706b89429463c19cbf9">coordinates</a>)</td></tr>
+<tr class="memdesc:acfdefa06339b7fa0427708ebd29f6289"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select the producer coordinate contract; unknown values fail without changing the recipe.  <br /></td></tr>
+<tr class="separator:acfdefa06339b7fa0427708ebd29f6289"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac37379701e6c706b89429463c19cbf9" id="r_aac37379701e6c706b89429463c19cbf9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics.html#afecb58b12555cea134d89342f3b7a18b">BakeCoordinates</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1BakeRecipe.html#aac37379701e6c706b89429463c19cbf9">coordinates</a> () const noexcept</td></tr>
+<tr class="memdesc:aac37379701e6c706b89429463c19cbf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current coordinate contract, defaulting to the original metre convention.  <br /></td></tr>
+<tr class="separator:aac37379701e6c706b89429463c19cbf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab12db605bba95bc282be27d8b693688d" id="r_ab12db605bba95bc282be27d8b693688d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1BakeRecipe.html#ab12db605bba95bc282be27d8b693688d">setProducer</a> (std::string_view <a class="el" href="AudioSourcePreview_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>)</td></tr>
+<tr class="memdesc:ab12db605bba95bc282be27d8b693688d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set an explicit algorithm/build revision token; invalid input leaves the builder unchanged.  <br /></td></tr>
+<tr class="separator:ab12db605bba95bc282be27d8b693688d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1217d8fb736d99f9eb044746a8f18ff" id="r_aa1217d8fb736d99f9eb044746a8f18ff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1BakeRecipe.html#aa1217d8fb736d99f9eb044746a8f18ff">setBackend</a> (std::string_view <a class="el" href="AudioSourcePreview_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>)</td></tr>
+<tr class="memdesc:aa1217d8fb736d99f9eb044746a8f18ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the explicit backend and its revision; never infer it from the player platform.  <br /></td></tr>
+<tr class="separator:aa1217d8fb736d99f9eb044746a8f18ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0550e479ed0da955aa054ed28d2a07fc" id="r_a0550e479ed0da955aa054ed28d2a07fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1BakeRecipe.html#a0550e479ed0da955aa054ed28d2a07fc">setTiming</a> (float stepSeconds, std::uint32_t sampleStride)</td></tr>
+<tr class="memdesc:a0550e479ed0da955aa054ed28d2a07fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the actual finite positive simulation step in seconds and positive ticks per captured sample.  <br /></td></tr>
+<tr class="separator:a0550e479ed0da955aa054ed28d2a07fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10832994b4c345a8850cbf5a112bd627" id="r_a10832994b4c345a8850cbf5a112bd627"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1BakeRecipe.html#a10832994b4c345a8850cbf5a112bd627">setParameters</a> (std::string_view <a class="el" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>)</td></tr>
+<tr class="memdesc:a10832994b4c345a8850cbf5a112bd627"><td class="mdescLeft">&#160;</td><td class="mdescRight">Digest complete parameter bytes, including defaults resolved by the producer. @cost Linear in bytes; do once before baking, not during capture or playback.  <br /></td></tr>
+<tr class="separator:a10832994b4c345a8850cbf5a112bd627"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa29be7ef5dfd81fd2c555dca09ee48cb" id="r_aa29be7ef5dfd81fd2c555dca09ee48cb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1BakeRecipe.html#aa29be7ef5dfd81fd2c555dca09ee48cb">setSource</a> (std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, std::string_view <a class="el" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>)</td></tr>
+<tr class="memdesc:aa29be7ef5dfd81fd2c555dca09ee48cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert or replace a named dependency digest; names are stable logical IDs, not absolute paths. @cost Linear in source bytes; do once per dependency admission, not per frame.  <br /></td></tr>
+<tr class="separator:aa29be7ef5dfd81fd2c555dca09ee48cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabb9f53af77a6bf9015db072fa38280d" id="r_aabb9f53af77a6bf9015db072fa38280d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1BakeRecipe.html#aabb9f53af77a6bf9015db072fa38280d">setRandomStream</a> (std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, std::uint64_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>)</td></tr>
+<tr class="memdesc:aabb9f53af77a6bf9015db072fa38280d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert or replace one of at most 64 named RNG seeds. Empty stream sets explicitly mean no RNG.  <br /></td></tr>
+<tr class="separator:aabb9f53af77a6bf9015db072fa38280d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25103f062a0977eeb66a7e49e45133e6" id="r_a25103f062a0977eeb66a7e49e45133e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1BakeRecipe.html#a25103f062a0977eeb66a7e49e45133e6">encode</a> () const</td></tr>
+<tr class="memdesc:a25103f062a0977eeb66a7e49e45133e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode complete provenance canonically, sorting dependency and RNG names. @cost Linear in bounded metadata; encode once per admission, never per frame.  <br /></td></tr>
+<tr class="separator:a25103f062a0977eeb66a7e49e45133e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af39c3f103e8f05b421c93495ef258f27" id="r_af39c3f103e8f05b421c93495ef258f27"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1BakeRecipe.html#af39c3f103e8f05b421c93495ef258f27">validateSampleTime</a> (std::uint32_t <a class="el" href="OceanRenderBindings_8cpp.html#ae29508736a722b546230738c4e54294d">frame</a>, float seconds) const</td></tr>
+<tr class="memdesc:af39c3f103e8f05b421c93495ef258f27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate a sample against the declared fixed-step/stride grid.  <br /></td></tr>
+<tr class="separator:af39c3f103e8f05b421c93495ef258f27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08e596ca8d7609d7083fb80ca6c70f10" id="r_a08e596ca8d7609d7083fb80ca6c70f10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1BakeRecipe.html#a08e596ca8d7609d7083fb80ca6c70f10">key</a> () const</td></tr>
+<tr class="memdesc:a08e596ca8d7609d7083fb80ca6c70f10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the noncryptographic cache key of the complete canonical recipe. @cost Linear in bounded metadata, once per admission. Not a security/authentication digest.  <br /></td></tr>
+<tr class="separator:a08e596ca8d7609d7083fb80ca6c70f10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:abda64ceb9546d526f0674e9edb38b4d8" id="r_abda64ceb9546d526f0674e9edb38b4d8"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1physics_1_1BakeRecipe.html">BakeRecipe</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1BakeRecipe.html#abda64ceb9546d526f0674e9edb38b4d8">decode</a> (std::string_view <a class="el" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>)</td></tr>
+<tr class="memdesc:abda64ceb9546d526f0674e9edb38b4d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a bounded canonical recipe record, rejecting duplicate names and trailing bytes. @cost Linear in metadata, once per asset load.  <br /></td></tr>
+<tr class="separator:abda64ceb9546d526f0674e9edb38b4d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Bounded provenance builder for explicit-coordinate baked recordings. @ownership Owns names and content digests; never retains source bytes or world pointers. @thread Owner-thread mutation; const encoding is reentrant without concurrent mutation. No callbacks or IO. Schemas EVECREC1 (metres) and EVEBREC1 (planar pixels) fix units, field order and length framing. Unknown versions/fields are rejected. Producers must supply algorithm/backend revisions, all source dependencies, parameters, the actual fixed timestep and sampling stride, and every named RNG seed. These describe admission, not cross-backend determinism. </p>
+
+<p class="definition">在文件 <a class="el" href="BakeRecipe_8h_source.html">BakeRecipe.h</a> 第 <a class="el" href="BakeRecipe_8h_source.html#l00021">21</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aac37379701e6c706b89429463c19cbf9" name="aac37379701e6c706b89429463c19cbf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac37379701e6c706b89429463c19cbf9">&#9670;&#160;</a></span>coordinates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics.html#afecb58b12555cea134d89342f3b7a18b">BakeCoordinates</a> eve::physics::BakeRecipe::coordinates </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current coordinate contract, defaulting to the original metre convention. </p>
+
+<p class="definition">在文件 <a class="el" href="BakeRecipe_8cpp_source.html">BakeRecipe.cpp</a> 第 <a class="el" href="BakeRecipe_8cpp_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BakeRecipe_8cpp_source.html#l00129">decode()</a>, <a class="el" href="BakeRecipe_8cpp_source.html#l00063">setCoordinates()</a> , 以及 <a class="el" href="DeformTrack_8cpp_source.html#l00021">eve::physics::bake_detail::validateDeformFrame()</a>.</p>
+
+</div>
+</div>
+<a id="abda64ceb9546d526f0674e9edb38b4d8" name="abda64ceb9546d526f0674e9edb38b4d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abda64ceb9546d526f0674e9edb38b4d8">&#9670;&#160;</a></span>decode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1physics_1_1BakeRecipe.html">BakeRecipe</a> &gt; eve::physics::BakeRecipe::decode </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>bytes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse a bounded canonical recipe record, rejecting duplicate names and trailing bytes. @cost Linear in metadata, once per asset load. </p>
+<dl class="section return"><dt>返回</dt><dd>Complete owning recipe; failures publish no partial state. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="BakeRecipe_8cpp_source.html">BakeRecipe.cpp</a> 第 <a class="el" href="BakeRecipe_8cpp_source.html#l00129">129</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRuntimeTools_8cpp_source.html#l00157">bytes</a>, <a class="el" href="BakeRecipe_8cpp_source.html#l00069">coordinates()</a>, <a class="el" href="SettlementRules_8cpp_source.html#l00725">digest</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="BakeRecipe_8cpp_source.html#l00181">key()</a>, <a class="el" href="namespaceeve_1_1physics.html#afecb58b12555cea134d89342f3b7a18bacf587316ac90867170e192bc060a79b6">eve::physics::MetresRightHandedYUp</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="namespaceeve_1_1physics.html#afecb58b12555cea134d89342f3b7a18ba036581ecc53f69750179dce6b67df081">eve::physics::PlanarPixels</a>, <a class="el" href="ParticleBakeRecording_8cpp_source.html#l00029">recipe</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00021">sources</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00039">token</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CollapseAnimation_8cpp_source.html#l00155">eve::physics::CollapseAnimation::load()</a>, <a class="el" href="DeformTrackFile_8cpp_source.html#l00061">eve::physics::DeformTrack::load()</a>, <a class="el" href="ParticleTrackFile_8cpp_source.html#l00059">eve::physics::ParticleTrack::load()</a> , 以及 <a class="el" href="RigidPoseTrackFile_8cpp_source.html#l00062">eve::physics::RigidPoseTrack::load()</a>.</p>
+
+</div>
+</div>
+<a id="a25103f062a0977eeb66a7e49e45133e6" name="a25103f062a0977eeb66a7e49e45133e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25103f062a0977eeb66a7e49e45133e6">&#9670;&#160;</a></span>encode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::physics::BakeRecipe::encode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode complete provenance canonically, sorting dependency and RNG names. @cost Linear in bounded metadata; encode once per admission, never per frame. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning canonical schema bytes, or failure for incomplete metadata. Empty parameter bytes are valid. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="BakeRecipe_8cpp_source.html">BakeRecipe.cpp</a> 第 <a class="el" href="BakeRecipe_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SettlementRules_8cpp_source.html#l00725">digest</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="BakeRecipe_8cpp_source.html#l00181">key()</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>, <a class="el" href="namespaceeve_1_1physics.html#afecb58b12555cea134d89342f3b7a18ba036581ecc53f69750179dce6b67df081">eve::physics::PlanarPixels</a>, <a class="el" href="PointSet_8cpp_source.html#l00811">seed</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00039">token</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BakeRecipe_8cpp_source.html#l00181">key()</a>, <a class="el" href="DeformTrackFile_8cpp_source.html#l00124">eve::physics::DeformTrack::loadForRecipe()</a>, <a class="el" href="ParticleTrackFile_8cpp_source.html#l00133">eve::physics::ParticleTrack::loadForRecipe()</a>, <a class="el" href="RigidPoseTrackFile_8cpp_source.html#l00152">eve::physics::RigidPoseTrack::loadForRecipe()</a> , 以及 <a class="el" href="CollapseAnimation_8cpp_source.html#l00058">eve::physics::CollapseAnimation::loadForRecipe()</a>.</p>
+
+</div>
+</div>
+<a id="a08e596ca8d7609d7083fb80ca6c70f10" name="a08e596ca8d7609d7083fb80ca6c70f10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08e596ca8d7609d7083fb80ca6c70f10">&#9670;&#160;</a></span>key()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::string &gt; eve::physics::BakeRecipe::key </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the noncryptographic cache key of the complete canonical recipe. @cost Linear in bounded metadata, once per admission. Not a security/authentication digest. </p>
+
+<p class="definition">在文件 <a class="el" href="BakeRecipe_8cpp_source.html">BakeRecipe.cpp</a> 第 <a class="el" href="BakeRecipe_8cpp_source.html#l00181">181</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BakedAssetFile_8cpp_source.html#l00014">eve::physics::bakedAssetContentKey()</a>, <a class="el" href="McpRuntimeTools_8cpp_source.html#l00157">bytes</a>, <a class="el" href="BakeRecipe_8cpp_source.html#l00104">encode()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BakeRecipe_8cpp_source.html#l00129">decode()</a>, <a class="el" href="BakeRecipe_8cpp_source.html#l00104">encode()</a>, <a class="el" href="CollapseBakeRecipeBindings_8cpp_source.html#l00008">eve::physics::exposeCollapseBakeRecipe()</a> , 以及 <a class="el" href="BakeRecipe_8cpp_source.html#l00091">setSource()</a>.</p>
+
+</div>
+</div>
+<a id="aa1217d8fb736d99f9eb044746a8f18ff" name="aa1217d8fb736d99f9eb044746a8f18ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1217d8fb736d99f9eb044746a8f18ff">&#9670;&#160;</a></span>setBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::BakeRecipe::setBackend </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>revision</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the explicit backend and its revision; never infer it from the player platform. </p>
+
+<p class="definition">在文件 <a class="el" href="BakeRecipe_8cpp_source.html">BakeRecipe.cpp</a> 第 <a class="el" href="BakeRecipe_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AudioSourcePreview_8cpp_source.html#l00027">revision</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00039">token</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CollapseBakeRecipeBindings_8cpp_source.html#l00008">eve::physics::exposeCollapseBakeRecipe()</a>.</p>
+
+</div>
+</div>
+<a id="acfdefa06339b7fa0427708ebd29f6289" name="acfdefa06339b7fa0427708ebd29f6289"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfdefa06339b7fa0427708ebd29f6289">&#9670;&#160;</a></span>setCoordinates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::BakeRecipe::setCoordinates </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics.html#afecb58b12555cea134d89342f3b7a18b">BakeCoordinates</a>&#160;</td>
+          <td class="paramname"><em>coordinates</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select the producer coordinate contract; unknown values fail without changing the recipe. </p>
+
+<p class="definition">在文件 <a class="el" href="BakeRecipe_8cpp_source.html">BakeRecipe.cpp</a> 第 <a class="el" href="BakeRecipe_8cpp_source.html#l00063">63</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BakeRecipe_8cpp_source.html#l00069">coordinates()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1physics.html#afecb58b12555cea134d89342f3b7a18bacf587316ac90867170e192bc060a79b6">eve::physics::MetresRightHandedYUp</a>, <a class="el" href="namespaceeve_1_1physics.html#afecb58b12555cea134d89342f3b7a18ba036581ecc53f69750179dce6b67df081">eve::physics::PlanarPixels</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a10832994b4c345a8850cbf5a112bd627" name="a10832994b4c345a8850cbf5a112bd627"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a10832994b4c345a8850cbf5a112bd627">&#9670;&#160;</a></span>setParameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::BakeRecipe::setParameters </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>bytes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Digest complete parameter bytes, including defaults resolved by the producer. @cost Linear in bytes; do once before baking, not during capture or playback. </p>
+
+<p class="definition">在文件 <a class="el" href="BakeRecipe_8cpp_source.html">BakeRecipe.cpp</a> 第 <a class="el" href="BakeRecipe_8cpp_source.html#l00087">87</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BakedAssetFile_8cpp_source.html#l00014">eve::physics::bakedAssetContentKey()</a>, <a class="el" href="McpRuntimeTools_8cpp_source.html#l00157">bytes</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CollapseBakeRecipeBindings_8cpp_source.html#l00008">eve::physics::exposeCollapseBakeRecipe()</a>.</p>
+
+</div>
+</div>
+<a id="ab12db605bba95bc282be27d8b693688d" name="ab12db605bba95bc282be27d8b693688d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab12db605bba95bc282be27d8b693688d">&#9670;&#160;</a></span>setProducer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::BakeRecipe::setProducer </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>revision</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set an explicit algorithm/build revision token; invalid input leaves the builder unchanged. </p>
+
+<p class="definition">在文件 <a class="el" href="BakeRecipe_8cpp_source.html">BakeRecipe.cpp</a> 第 <a class="el" href="BakeRecipe_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AudioSourcePreview_8cpp_source.html#l00027">revision</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00039">token</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CollapseBakeRecipeBindings_8cpp_source.html#l00008">eve::physics::exposeCollapseBakeRecipe()</a>.</p>
+
+</div>
+</div>
+<a id="aabb9f53af77a6bf9015db072fa38280d" name="aabb9f53af77a6bf9015db072fa38280d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabb9f53af77a6bf9015db072fa38280d">&#9670;&#160;</a></span>setRandomStream()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::BakeRecipe::setRandomStream </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>seed</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Insert or replace one of at most 64 named RNG seeds. Empty stream sets explicitly mean no RNG. </p>
+
+<p class="definition">在文件 <a class="el" href="BakeRecipe_8cpp_source.html">BakeRecipe.cpp</a> 第 <a class="el" href="BakeRecipe_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="PointSet_8cpp_source.html#l00811">seed</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00039">token</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CollapseBakeRecipeBindings_8cpp_source.html#l00008">eve::physics::exposeCollapseBakeRecipe()</a>.</p>
+
+</div>
+</div>
+<a id="aa29be7ef5dfd81fd2c555dca09ee48cb" name="aa29be7ef5dfd81fd2c555dca09ee48cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa29be7ef5dfd81fd2c555dca09ee48cb">&#9670;&#160;</a></span>setSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::BakeRecipe::setSource </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>bytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Insert or replace a named dependency digest; names are stable logical IDs, not absolute paths. @cost Linear in source bytes; do once per dependency admission, not per frame. </p>
+<dl class="section return"><dt>返回</dt><dd>Failure preserves prior entries. Up to 64 sources and 256 bytes per token. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="BakeRecipe_8cpp_source.html">BakeRecipe.cpp</a> 第 <a class="el" href="BakeRecipe_8cpp_source.html#l00091">91</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BakedAssetFile_8cpp_source.html#l00014">eve::physics::bakedAssetContentKey()</a>, <a class="el" href="McpRuntimeTools_8cpp_source.html#l00157">bytes</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="BakeRecipe_8cpp_source.html#l00181">key()</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00039">token</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CollapseBakeRecipeBindings_8cpp_source.html#l00008">eve::physics::exposeCollapseBakeRecipe()</a>.</p>
+
+</div>
+</div>
+<a id="a0550e479ed0da955aa054ed28d2a07fc" name="a0550e479ed0da955aa054ed28d2a07fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0550e479ed0da955aa054ed28d2a07fc">&#9670;&#160;</a></span>setTiming()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::BakeRecipe::setTiming </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>stepSeconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>sampleStride</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the actual finite positive simulation step in seconds and positive ticks per captured sample. </p>
+
+<p class="definition">在文件 <a class="el" href="BakeRecipe_8cpp_source.html">BakeRecipe.cpp</a> 第 <a class="el" href="BakeRecipe_8cpp_source.html#l00080">80</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CollapseBakeRecipeBindings_8cpp_source.html#l00008">eve::physics::exposeCollapseBakeRecipe()</a>.</p>
+
+</div>
+</div>
+<a id="af39c3f103e8f05b421c93495ef258f27" name="af39c3f103e8f05b421c93495ef258f27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af39c3f103e8f05b421c93495ef258f27">&#9670;&#160;</a></span>validateSampleTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::BakeRecipe::validateSampleTime </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate a sample against the declared fixed-step/stride grid. </p>
+<dl class="section return"><dt>返回</dt><dd>Failure for nonfinite, unrepresentable or off-grid timestamps. Four float epsilons relative to <a class="el" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">max(expected time, step)</a>, capped at a quarter sample interval, tolerate producer multiplication order; frame zero must be exactly zero. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="BakeRecipe_8cpp_source.html">BakeRecipe.cpp</a> 第 <a class="el" href="BakeRecipe_8cpp_source.html#l00170">170</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00041">frame</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="DeformTrack_8cpp_source.html#l00021">eve::physics::bake_detail::validateDeformFrame()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/backend/bake/<a class="el" href="BakeRecipe_8h_source.html">BakeRecipe.h</a></li>
+<li>src/modules/physics/backend/bake/<a class="el" href="BakeRecipe_8cpp_source.html">BakeRecipe.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

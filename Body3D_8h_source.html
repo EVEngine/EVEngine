@@ -1,0 +1,413 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/Body3D.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Body3D.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Body3D_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="OwnedQuery3D_8h.html">physics/OwnedQuery3D.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="PhysicsHandles_8h.html">physics/PhysicsHandles.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="BodyBackend3D_8h.html">physics/backend/BodyBackend3D.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics_1_1box3d.html">   17</a></span><span class="keyword">namespace </span>box3d {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">WorldBackend</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}</div>
+</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span>box3d {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">struct </span>Access;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">class </span>World3D;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">class </span>Shape3D;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="};">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Body3D.html">   31</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">Body3D</a>(<a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a> *world, std::unique_ptr&lt;IBodyBackend3D&gt; <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a8a859b3f7bdbafcb676507135a59a90a">backend</a>, <span class="keywordtype">int</span> <span class="keywordtype">id</span>, <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">PhysicsBodyHandle</a> runtimeHandle);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">~Body3D</a>();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Body3D.html#a8ebd9a14a779668533b2417674ab8f31">   38</a></span>    <a class="code hl_function" href="classeve_1_1physics_1_1Body3D.html#a8ebd9a14a779668533b2417674ab8f31">Body3D</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> &amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Body3D.html#a06d78f70387f2d1545efe1aff3324f0a">   39</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> &amp;<a class="code hl_function" href="classeve_1_1physics_1_1Body3D.html#a06d78f70387f2d1545efe1aff3324f0a">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">Body3D</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Body3D.html#a99824ae26a3b5171071e090169d048a6">   42</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1Body3D.html#a99824ae26a3b5171071e090169d048a6">getId</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> id_; }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordtype">void</span>  setPosition(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">float</span> getX() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">float</span> getY() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">float</span> getZ() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">void</span>  setRotation(<span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a98140a22cd03891977c8a250866529f8">qx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a77559003eac11f329d36ea46935701ff">qy</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#acaf3a0afe6f4380cb5168e1fe888cfcd">qz</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#aa6a8fec8c4c87f4b62bd3d8ca1b76ec7">qw</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordtype">float</span> getRotX() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordtype">float</span> getRotY() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordtype">float</span> getRotZ() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">float</span> getRotW() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordtype">void</span>  setLinearVelocity(<span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a81574a53ca33ab2f60f6481c61e3da21">vx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a56ab444d63dfde57a24271cbe3097fdb">vy</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a2dc1a0fcac235a430dd8c493502e09e1">vz</a>);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordtype">float</span> getLinearVelocityX() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordtype">float</span> getLinearVelocityY() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">float</span> getLinearVelocityZ() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordtype">float</span> getMass() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">void</span>  setAngularVelocity(<span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a3cc50c2a8b1ca44e2cd5c4ed748c610a">wz</a>);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">float</span> getAngularVelocityX() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordtype">float</span> getAngularVelocityY() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordtype">float</span> getAngularVelocityZ() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    std::vector&lt;float&gt; localToWorldPoint(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PhysicsVector3D&gt;</a> localToWorldPointOwned(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    std::vector&lt;float&gt; worldToLocalPoint(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PhysicsVector3D&gt;</a> worldToLocalPointOwned(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    std::vector&lt;float&gt; localToWorldVector(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PhysicsVector3D&gt;</a> localToWorldVectorOwned(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    std::vector&lt;float&gt; worldToLocalVector(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    std::vector&lt;float&gt; getLocalPointVelocity(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;PhysicsVector3D&gt;</a> getLocalPointVelocityOwned(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    std::vector&lt;float&gt; getWorldPointVelocity(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordtype">void</span> applyForce(<span class="keywordtype">float</span> fx, <span class="keywordtype">float</span> fy, <span class="keywordtype">float</span> fz);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">void</span> applyForceAt(<span class="keywordtype">float</span> fx, <span class="keywordtype">float</span> fy, <span class="keywordtype">float</span> fz, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">void</span> applyTorque(<span class="keywordtype">float</span> tx, <span class="keywordtype">float</span> ty, <span class="keywordtype">float</span> tz);</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordtype">void</span> applyLinearImpulse(<span class="keywordtype">float</span> ix, <span class="keywordtype">float</span> iy, <span class="keywordtype">float</span> iz);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">void</span> applyLinearImpulseAt(<span class="keywordtype">float</span> ix, <span class="keywordtype">float</span> iy, <span class="keywordtype">float</span> iz, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordtype">void</span> applyAngularImpulse(<span class="keywordtype">float</span> ix, <span class="keywordtype">float</span> iy, <span class="keywordtype">float</span> iz);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordtype">void</span> applyLocalForce(<span class="keywordtype">float</span> fx, <span class="keywordtype">float</span> fy, <span class="keywordtype">float</span> fz, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordtype">void</span> applyLocalForceToCenter(<span class="keywordtype">float</span> fx, <span class="keywordtype">float</span> fy, <span class="keywordtype">float</span> fz);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordtype">void</span> applyLocalTorque(<span class="keywordtype">float</span> tx, <span class="keywordtype">float</span> ty, <span class="keywordtype">float</span> tz);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordtype">void</span> applyLocalLinearImpulse(<span class="keywordtype">float</span> ix, <span class="keywordtype">float</span> iy, <span class="keywordtype">float</span> iz, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordtype">void</span> applyLocalLinearImpulseToCenter(<span class="keywordtype">float</span> ix, <span class="keywordtype">float</span> iy, <span class="keywordtype">float</span> iz);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordtype">void</span> applyLocalAngularImpulse(<span class="keywordtype">float</span> ix, <span class="keywordtype">float</span> iy, <span class="keywordtype">float</span> iz);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">void</span> setTargetTransform(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a98140a22cd03891977c8a250866529f8">qx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a77559003eac11f329d36ea46935701ff">qy</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#acaf3a0afe6f4380cb5168e1fe888cfcd">qz</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#aa6a8fec8c4c87f4b62bd3d8ca1b76ec7">qw</a>,</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                            <span class="keywordtype">float</span> timeStep);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordtype">void</span>  setLinearDamping(<span class="keywordtype">float</span> damping);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <span class="keywordtype">float</span> getLinearDamping() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <span class="keywordtype">void</span>  setAngularDamping(<span class="keywordtype">float</span> damping);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordtype">float</span> getAngularDamping() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordtype">void</span>  setGravityScale(<span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordtype">float</span> getGravityScale() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordtype">void</span> setSleepEnabled(<span class="keywordtype">bool</span> <a class="code hl_variable" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordtype">bool</span> isSleepEnabled() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordtype">void</span>  setSleepThreshold(<span class="keywordtype">float</span> threshold);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keywordtype">float</span> getSleepThreshold() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordtype">void</span> setMotionLocks(<span class="keywordtype">bool</span> linearX, <span class="keywordtype">bool</span> linearY, <span class="keywordtype">bool</span> linearZ, <span class="keywordtype">bool</span> angularX, <span class="keywordtype">bool</span> angularY,</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                        <span class="keywordtype">bool</span> angularZ);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordtype">bool</span> isLinearXLocked() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordtype">bool</span> isLinearYLocked() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordtype">bool</span> isLinearZLocked() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keywordtype">bool</span> isAngularXLocked() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordtype">bool</span> isAngularYLocked() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordtype">bool</span> isAngularZLocked() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordtype">void</span> setMassProperties(<span class="keywordtype">float</span> mass, <span class="keywordtype">float</span> centerX, <span class="keywordtype">float</span> centerY, <span class="keywordtype">float</span> centerZ,</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                           <span class="keywordtype">float</span> inertiaXX, <span class="keywordtype">float</span> inertiaYY, <span class="keywordtype">float</span> inertiaZZ,</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                           <span class="keywordtype">float</span> inertiaXY = 0.f, <span class="keywordtype">float</span> inertiaXZ = 0.f,</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                           <span class="keywordtype">float</span> inertiaYZ = 0.f);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordtype">void</span> resetMassProperties();</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keywordtype">float</span> getInertiaXX() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    <span class="keywordtype">float</span> getInertiaYY() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordtype">float</span> getInertiaZZ() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keywordtype">float</span> getInertiaXY() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    <span class="keywordtype">float</span> getInertiaXZ() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keywordtype">float</span> getInertiaYZ() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordtype">float</span> getLocalCenterX() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keywordtype">float</span> getLocalCenterY() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keywordtype">float</span> getLocalCenterZ() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keywordtype">float</span> getWorldCenterX() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keywordtype">float</span> getWorldCenterY() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keywordtype">float</span> getWorldCenterZ() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keywordtype">void</span>        setType(<span class="keyword">const</span> std::string &amp;bodyType);</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    std::string getType() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <span class="keywordtype">void</span> setFixedRotation(<span class="keywordtype">bool</span> fixed);</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <span class="keywordtype">bool</span> isFixedRotation() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    <span class="keywordtype">void</span> setActive(<span class="keywordtype">bool</span> <a class="code hl_variable" href="AgentBindings_8cpp.html#a9fec294565128b5012cbe5fd8a566ac8">active</a>);</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keywordtype">bool</span> isActive() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span> </div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="keywordtype">void</span> setBullet(<span class="keywordtype">bool</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#aea9c97c1578ff87a5a81aae47a10e7e5">bullet</a>);</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <span class="keywordtype">bool</span> isBullet() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keywordtype">void</span> setAwake(<span class="keywordtype">bool</span> <a class="code hl_variable" href="Coupling3DStep_8cpp.html#a7f1637b89298b9f11b8230ca06b72d90">awake</a>);</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="keywordtype">bool</span> isAwake() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> *newBoxShape(<span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a> = 1.f,</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>                         <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#a585bd15db005143bac988d78710e4e93">friction</a> = 0.2f, <span class="keywordtype">float</span> <a class="code hl_variable" href="SpellFragmentCompiler_8cpp.html#a72a46b81dede0dfa3663da21d29d7933">restitution</a> = 0.f);</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> *newSphereShape(<span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a> = 1.f, <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#a585bd15db005143bac988d78710e4e93">friction</a> = 0.2f,</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                            <span class="keywordtype">float</span> <a class="code hl_variable" href="SpellFragmentCompiler_8cpp.html#a72a46b81dede0dfa3663da21d29d7933">restitution</a> = 0.f);</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> *newCapsuleShape(<span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a> = 1.f,</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>                             <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#a585bd15db005143bac988d78710e4e93">friction</a> = 0.2f, <span class="keywordtype">float</span> <a class="code hl_variable" href="SpellFragmentCompiler_8cpp.html#a72a46b81dede0dfa3663da21d29d7933">restitution</a> = 0.f);</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> *newConvexHullShape(<span class="keyword">const</span> std::vector&lt;float&gt; &amp;<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>, <span class="keywordtype">int</span> maxVertices = 64,</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                                <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a> = 1.f, <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#a585bd15db005143bac988d78710e4e93">friction</a> = 0.2f,</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                                <span class="keywordtype">float</span> <a class="code hl_variable" href="SpellFragmentCompiler_8cpp.html#a72a46b81dede0dfa3663da21d29d7933">restitution</a> = 0.f);</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> *newTriangleMeshShape(<span class="keyword">const</span> std::vector&lt;float&gt; &amp;<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>,</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>                                  <span class="keyword">const</span> std::vector&lt;int32_t&gt; &amp;<a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>,</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>                                  <span class="keywordtype">bool</span> weldVertices = <span class="keyword">true</span>, <span class="keywordtype">float</span> weldTolerance = 0.001f,</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>                                  <span class="keywordtype">bool</span> identifyEdges = <span class="keyword">true</span>, <span class="keywordtype">bool</span> useMedianSplit = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> *newHeightFieldShape(<span class="keywordtype">int</span> countX, <span class="keywordtype">int</span> countZ, <span class="keywordtype">float</span> cellSizeX, <span class="keywordtype">float</span> cellSizeZ,</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>                                 <span class="keyword">const</span> std::vector&lt;float&gt; &amp;heights, <span class="keywordtype">float</span> globalMin,</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>                                 <span class="keywordtype">float</span> globalMax, <span class="keywordtype">bool</span> clockwiseWinding = <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span> </div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    <span class="keywordtype">void</span> <a class="code hl_variable" href="JobSystemThreadPool_8cpp.html#aceb701de009133aff176d2653f4d0da4">destroy</a>();</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span> </div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Body3D.html#a5a55c4877383e82dc1679eeedbfbbc72">  345</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a>  *<a class="code hl_function" href="classeve_1_1physics_1_1Body3D.html#a5a55c4877383e82dc1679eeedbfbbc72">getWorld</a>() { <span class="keywordflow">return</span> world_; }</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Body3D.html#a14648da00362a5dfc78098ce9d131035">  354</a></span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a> *<a class="code hl_function" href="classeve_1_1physics_1_1Body3D.html#a14648da00362a5dfc78098ce9d131035">getWorld</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> world_; }</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    <span class="keywordtype">bool</span>      isValid() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span> </div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Body3D.html#affa3f3be39f2285946647250c79e42d4">  362</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">PhysicsBodyHandle</a> <a class="code hl_function" href="classeve_1_1physics_1_1Body3D.html#affa3f3be39f2285946647250c79e42d4">runtimeHandle</a>() const noexcept { <span class="keywordflow">return</span> runtimeHandle_; }</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span> </div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>    <span class="keywordtype">void</span> invalidate();</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span> </div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Body3D.html#aa4989d33ad98b5762853e24f4110e792">  368</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">box3d::WorldBackend</a>;</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Body3D.html#a1d1452e38e70ad6373bb7582aca66cef">  369</a></span>    <span class="keyword">friend</span> <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1box3d_1_1Access.html">box3d::Access</a>;</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Body3D.html#aa7e72c22d80a8f76f40c38d1ba760dad">  370</a></span>    <span class="keyword">friend</span> <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1WorldSnapshotAccess.html">WorldSnapshotAccess</a>;</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Body3D.html#ae868a4ae5e469aacbec5ac6bfb2845b0">  371</a></span>    <span class="keyword">friend</span> <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1PortableWorldSnapshotAccess.html">PortableWorldSnapshotAccess</a>;</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Body3D.html#a8e149544dc4d48fbdfe8b8a6efc1fb9b">  372</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a>;</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1Body3D.html#af7eeeccfebb7c89989403596fb771afd">  373</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a>;</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span> </div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>    <a class="code hl_class" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> *createShape(<a class="code hl_struct" href="structeve_1_1physics_1_1ShapeGeometry3D.html">ShapeGeometry3D</a> geometry, <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#a585bd15db005143bac988d78710e4e93">friction</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="SpellFragmentCompiler_8cpp.html#a72a46b81dede0dfa3663da21d29d7933">restitution</a>);</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a> *world_  = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>    std::unique_ptr&lt;IBodyBackend3D&gt; backend_{};</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>    <span class="keywordtype">int</span>      id_ = 0;</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">PhysicsBodyHandle</a> runtimeHandle_ = PhysicsBodyHandle::invalid();</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>};</div>
+</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span> </div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aAgentBindings_8cpp_html_a9fec294565128b5012cbe5fd8a566ac8"><div class="ttname"><a href="AgentBindings_8cpp.html#a9fec294565128b5012cbe5fd8a566ac8">active</a></div><div class="ttdeci">bool &amp; active</div><div class="ttdef"><b>Definition</b> <a href="AgentBindings_8cpp_source.html#l00017">AgentBindings.cpp:17</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aBodyBackend3D_8h_html"><div class="ttname"><a href="BodyBackend3D_8h.html">BodyBackend3D.h</a></div></div>
+<div class="ttc" id="aCoupling3DStep_8cpp_html_a7f1637b89298b9f11b8230ca06b72d90"><div class="ttname"><a href="Coupling3DStep_8cpp.html#a7f1637b89298b9f11b8230ca06b72d90">awake</a></div><div class="ttdeci">bool awake</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DStep_8cpp_source.html#l00027">Coupling3DStep.cpp:27</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_afb52228b1e5307ee220679412a790429"><div class="ttname"><a href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a></div><div class="ttdeci">#define EVENGINE_API_WORLD</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00109">Export.h:109</a></div></div>
+<div class="ttc" id="aForceBindings_8cpp_html_a585bd15db005143bac988d78710e4e93"><div class="ttname"><a href="ForceBindings_8cpp.html#a585bd15db005143bac988d78710e4e93">friction</a></div><div class="ttdeci">float friction</div><div class="ttdef"><b>Definition</b> <a href="ForceBindings_8cpp_source.html#l00101">ForceBindings.cpp:101</a></div></div>
+<div class="ttc" id="aForceBindings_8cpp_html_af5d1a3cc4fffecd94d9cb9eb0096b071"><div class="ttname"><a href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a></div><div class="ttdeci">float density</div><div class="ttdef"><b>Definition</b> <a href="ForceBindings_8cpp_source.html#l00080">ForceBindings.cpp:80</a></div></div>
+<div class="ttc" id="aHeightmapMesh_8cpp_html_a1c05ae841a0f4a10fbccd8a5438951a8"><div class="ttname"><a href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="HeightmapMesh_8cpp_source.html#l00019">HeightmapMesh.cpp:19</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00014">ImageImporter.cpp:14</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00013">ImageImporter.cpp:13</a></div></div>
+<div class="ttc" id="aJobSystemThreadPool_8cpp_html_aceb701de009133aff176d2653f4d0da4"><div class="ttname"><a href="JobSystemThreadPool_8cpp.html#aceb701de009133aff176d2653f4d0da4">destroy</a></div><div class="ttdeci">void(* destroy)(void *)</div><div class="ttdef"><b>Definition</b> <a href="JobSystemThreadPool_8cpp_source.html#l00091">JobSystemThreadPool.cpp:91</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a97ae8bb7c8cb75233b0a0c268f0ae619"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00018">LegacyAnimationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a3f67c53b80389c5f53961936edba04c9"><div class="ttname"><a href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a></div><div class="ttdeci">double radius</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00042">MeleeHit.cpp:42</a></div></div>
+<div class="ttc" id="aOceanRenderBindings_8cpp_html_a8a859b3f7bdbafcb676507135a59a90a"><div class="ttname"><a href="OceanRenderBindings_8cpp.html#a8a859b3f7bdbafcb676507135a59a90a">backend</a></div><div class="ttdeci">OceanRenderBackend backend</div><div class="ttdef"><b>Definition</b> <a href="OceanRenderBindings_8cpp_source.html#l00027">OceanRenderBindings.cpp:27</a></div></div>
+<div class="ttc" id="aOwnedQuery3D_8h_html"><div class="ttname"><a href="OwnedQuery3D_8h.html">OwnedQuery3D.h</a></div><div class="ttdoc">Owning, generation-qualified results for cross-module 3D physics queries.</div></div>
+<div class="ttc" id="aPhysicsHandles_8h_html"><div class="ttname"><a href="PhysicsHandles_8h.html">PhysicsHandles.h</a></div><div class="ttdoc">Process-local, generation-qualified handles owned by the physics domain.</div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_a2dc1a0fcac235a430dd8c493502e09e1"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#a2dc1a0fcac235a430dd8c493502e09e1">vz</a></div><div class="ttdeci">float vz</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00177">PortableWorldSnapshot.cpp:177</a></div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_a3cc50c2a8b1ca44e2cd5c4ed748c610a"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#a3cc50c2a8b1ca44e2cd5c4ed748c610a">wz</a></div><div class="ttdeci">float wz</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00178">PortableWorldSnapshot.cpp:178</a></div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_a40083d5d71ff675499a8d392ff75f401"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a></div><div class="ttdeci">float wx</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00178">PortableWorldSnapshot.cpp:178</a></div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_a56ab444d63dfde57a24271cbe3097fdb"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#a56ab444d63dfde57a24271cbe3097fdb">vy</a></div><div class="ttdeci">float vy</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00167">PortableWorldSnapshot.cpp:167</a></div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_a77559003eac11f329d36ea46935701ff"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#a77559003eac11f329d36ea46935701ff">qy</a></div><div class="ttdeci">float qy</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00176">PortableWorldSnapshot.cpp:176</a></div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_a81574a53ca33ab2f60f6481c61e3da21"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#a81574a53ca33ab2f60f6481c61e3da21">vx</a></div><div class="ttdeci">float vx</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00167">PortableWorldSnapshot.cpp:167</a></div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_a98140a22cd03891977c8a250866529f8"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#a98140a22cd03891977c8a250866529f8">qx</a></div><div class="ttdeci">float qx</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00176">PortableWorldSnapshot.cpp:176</a></div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_aa6a8fec8c4c87f4b62bd3d8ca1b76ec7"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#aa6a8fec8c4c87f4b62bd3d8ca1b76ec7">qw</a></div><div class="ttdeci">float qw</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00176">PortableWorldSnapshot.cpp:176</a></div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_acaf3a0afe6f4380cb5168e1fe888cfcd"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#acaf3a0afe6f4380cb5168e1fe888cfcd">qz</a></div><div class="ttdeci">float qz</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00176">PortableWorldSnapshot.cpp:176</a></div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_ae05e525eb10e278f769ff1bc049eec10"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a></div><div class="ttdeci">float wy</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00178">PortableWorldSnapshot.cpp:178</a></div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_aea9c97c1578ff87a5a81aae47a10e7e5"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#aea9c97c1578ff87a5a81aae47a10e7e5">bullet</a></div><div class="ttdeci">bool bullet</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00168">PortableWorldSnapshot.cpp:168</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSpellFragmentCompiler_8cpp_html_a72a46b81dede0dfa3663da21d29d7933"><div class="ttname"><a href="SpellFragmentCompiler_8cpp.html#a72a46b81dede0dfa3663da21d29d7933">restitution</a></div><div class="ttdeci">double restitution</div><div class="ttdef"><b>Definition</b> <a href="SpellFragmentCompiler_8cpp_source.html#l00071">SpellFragmentCompiler.cpp:71</a></div></div>
+<div class="ttc" id="aTerrainImageAdapter_8cpp_html_af8c7bdaa05bbdddb5978b43f213555ef"><div class="ttname"><a href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a></div><div class="ttdeci">std::array&lt; double, 2 &gt; vertices[3]</div><div class="ttdef"><b>Definition</b> <a href="TerrainImageAdapter_8cpp_source.html#l00082">TerrainImageAdapter.cpp:82</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a3f756ed587723434bfe4adef4d8f3bfd"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a></div><div class="ttdeci">std::uint32_t depth</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00034">UnityVegetationPreset.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt; PhysicsBodyHandleTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Body3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1Body3D.html">eve::physics::Body3D</a></div><div class="ttdoc">Backend-neutral 3D rigid body in meter-space coordinates (+Y up by convention). Owned by a World3D; c...</div><div class="ttdef"><b>Definition</b> <a href="Body3D_8h_source.html#l00031">Body3D.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Body3D_html_a06d78f70387f2d1545efe1aff3324f0a"><div class="ttname"><a href="classeve_1_1physics_1_1Body3D.html#a06d78f70387f2d1545efe1aff3324f0a">eve::physics::Body3D::operator=</a></div><div class="ttdeci">Body3D &amp; operator=(const Body3D &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Body3D_html_a14648da00362a5dfc78098ce9d131035"><div class="ttname"><a href="classeve_1_1physics_1_1Body3D.html#a14648da00362a5dfc78098ce9d131035">eve::physics::Body3D::getWorld</a></div><div class="ttdeci">const World3D * getWorld() const</div><div class="ttdoc">Returns the owning world as a read-only borrowed pointer.</div><div class="ttdef"><b>Definition</b> <a href="Body3D_8h_source.html#l00354">Body3D.h:354</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Body3D_html_a5a55c4877383e82dc1679eeedbfbbc72"><div class="ttname"><a href="classeve_1_1physics_1_1Body3D.html#a5a55c4877383e82dc1679eeedbfbbc72">eve::physics::Body3D::getWorld</a></div><div class="ttdeci">World3D * getWorld()</div><div class="ttdoc">Returns the owning world, or null after invalidation.</div><div class="ttdef"><b>Definition</b> <a href="Body3D_8h_source.html#l00345">Body3D.h:345</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Body3D_html_a8ebd9a14a779668533b2417674ab8f31"><div class="ttname"><a href="classeve_1_1physics_1_1Body3D.html#a8ebd9a14a779668533b2417674ab8f31">eve::physics::Body3D::Body3D</a></div><div class="ttdeci">Body3D(const Body3D &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Body3D_html_a99824ae26a3b5171071e090169d048a6"><div class="ttname"><a href="classeve_1_1physics_1_1Body3D.html#a99824ae26a3b5171071e090169d048a6">eve::physics::Body3D::getId</a></div><div class="ttdeci">int getId() const</div><div class="ttdoc">Stable id used by collision events.</div><div class="ttdef"><b>Definition</b> <a href="Body3D_8h_source.html#l00042">Body3D.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Body3D_html_affa3f3be39f2285946647250c79e42d4"><div class="ttname"><a href="classeve_1_1physics_1_1Body3D.html#affa3f3be39f2285946647250c79e42d4">eve::physics::Body3D::runtimeHandle</a></div><div class="ttdeci">PhysicsBodyHandle runtimeHandle() const noexcept</div><div class="ttdoc">Returns the process-local solver handle used by PhysicsLink.</div><div class="ttdef"><b>Definition</b> <a href="Body3D_8h_source.html#l00362">Body3D.h:362</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Shape3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1Shape3D.html">eve::physics::Shape3D</a></div><div class="ttdoc">3D shape (box/sphere/capsule) attached to a Body3D with material settings. Created via Body3D::new*Sh...</div><div class="ttdef"><b>Definition</b> <a href="Shape3D_8h_source.html#l00034">Shape3D.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html">eve::physics::World3D</a></div><div class="ttdoc">Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00047">World3D.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1box3d_1_1WorldBackend_html"><div class="ttname"><a href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></div><div class="ttdef"><b>Definition</b> <a href="Box3DWorld_8h_source.html#l00007">Box3DWorld.h:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00036">Climbing.h:36</a></div></div>
+<div class="ttc" id="arpg_2Settlement_8cpp_html_a8740ba80e30dd75e71d09fa1dcf04f3d"><div class="ttname"><a href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="rpg_2Settlement_8cpp_source.html#l00031">Settlement.cpp:31</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PortableWorldSnapshotAccess_html"><div class="ttname"><a href="structeve_1_1physics_1_1PortableWorldSnapshotAccess.html">eve::physics::PortableWorldSnapshotAccess</a></div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00031">PortableWorldSnapshot.cpp:31</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1ShapeGeometry3D_html"><div class="ttname"><a href="structeve_1_1physics_1_1ShapeGeometry3D.html">eve::physics::ShapeGeometry3D</a></div><div class="ttdoc">Owning, backend-independent shape source; metres, local quaternion XYZW.</div><div class="ttdef"><b>Definition</b> <a href="ShapeBackend3D_8h_source.html#l00013">ShapeBackend3D.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1WorldSnapshotAccess_html"><div class="ttname"><a href="structeve_1_1physics_1_1WorldSnapshotAccess.html">eve::physics::WorldSnapshotAccess</a></div><div class="ttdef"><b>Definition</b> <a href="WorldSnapshotAccess_8h_source.html#l00031">WorldSnapshotAccess.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1box3d_1_1Access_html"><div class="ttname"><a href="structeve_1_1physics_1_1box3d_1_1Access.html">eve::physics::box3d::Access</a></div><div class="ttdoc">Private bridge used exclusively by Box3D composition and native query code.</div><div class="ttdef"><b>Definition</b> <a href="Box3DBody_8h_source.html#l00015">Box3DBody.h:15</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

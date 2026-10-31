@@ -1,0 +1,604 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::CollapsePlayback类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html">CollapsePlayback</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1CollapsePlayback-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::CollapsePlayback类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Independent clock over a frozen, shared collapse animation. @ownership Owns a shared immutable snapshot. Copies share samples but copy clock state. @lifetime No world, renderer or caller-owned pointers are retained. @thread Each instance requires exclusive access during mutation; separate copies may run concurrently. No callbacks, IO, wall clock or physical simulation occur during playback.  
+ <a href="classeve_1_1physics_1_1CollapsePlayback.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="backend_2bake_2collapse_2CollapsePlayback_8h_source.html">CollapsePlayback.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a643e61d6e4aca3708b4418ea6fb02b81" id="r_a643e61d6e4aca3708b4418ea6fb02b81"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#a643e61d6e4aca3708b4418ea6fb02b81">advance</a> (double elapsedSeconds)</td></tr>
+<tr class="memdesc:a643e61d6e4aca3708b4418ea6fb02b81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance by injected nonnegative elapsed seconds. Failures preserve time.  <br /></td></tr>
+<tr class="separator:a643e61d6e4aca3708b4418ea6fb02b81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0d0a50ee5390ce9c3b0d14ef74333eb" id="r_ad0d0a50ee5390ce9c3b0d14ef74333eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#ad0d0a50ee5390ce9c3b0d14ef74333eb">seek</a> (double seconds)</td></tr>
+<tr class="memdesc:ad0d0a50ee5390ce9c3b0d14ef74333eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seek to finite seconds, clamped to both inclusive endpoints; ignores pause and rate.  <br /></td></tr>
+<tr class="separator:ad0d0a50ee5390ce9c3b0d14ef74333eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a595ef3bdbb9ad4928a4d9e9914436521" id="r_a595ef3bdbb9ad4928a4d9e9914436521"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#a595ef3bdbb9ad4928a4d9e9914436521">setRate</a> (double <a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#a58676549fcd23f5518df89cd05a5ef18">rate</a>)</td></tr>
+<tr class="memdesc:a595ef3bdbb9ad4928a4d9e9914436521"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set finite signed speed; zero freezes, negative reverses. Failure preserves rate.  <br /></td></tr>
+<tr class="separator:a595ef3bdbb9ad4928a4d9e9914436521"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb6ff398e56116aa6cbdad786ec41eae" id="r_adb6ff398e56116aa6cbdad786ec41eae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#adb6ff398e56116aa6cbdad786ec41eae">setPaused</a> (bool <a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#a140791bf1460c40f332490b8b0bdd0f0">paused</a>) noexcept</td></tr>
+<tr class="memdesc:adb6ff398e56116aa6cbdad786ec41eae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pause or resume without modifying time.  <br /></td></tr>
+<tr class="separator:adb6ff398e56116aa6cbdad786ec41eae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad575b30503de24a304752014b4c115f9" id="r_ad575b30503de24a304752014b4c115f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#ad575b30503de24a304752014b4c115f9">setWrap</a> (<a class="el" href="namespaceeve_1_1physics.html#a6c799841e16f326682f57f030a17f8c6">CollapsePlaybackWrap</a> wrap)</td></tr>
+<tr class="memdesc:ad575b30503de24a304752014b4c115f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set endpoint behavior, rejecting invalid enum values without mutation.  <br /></td></tr>
+<tr class="separator:ad575b30503de24a304752014b4c115f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abd76f4a5591616c087fd2e18411b1b4d" id="r_abd76f4a5591616c087fd2e18411b1b4d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#abd76f4a5591616c087fd2e18411b1b4d">setPlacement</a> (<a class="el" href="namespaceeve_1_1physics.html#a96dc2145a1c9f89aecee87a212a7e75c">CollapsePlacement</a> <a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#ab1cda37b36b470e1a404b9c8ab1b50f2">placement</a>)</td></tr>
+<tr class="memdesc:abd76f4a5591616c087fd2e18411b1b4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set finite rigid placement with a nonzero quaternion. Invalid input preserves placement.  <br /></td></tr>
+<tr class="separator:abd76f4a5591616c087fd2e18411b1b4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1cda37b36b470e1a404b9c8ab1b50f2" id="r_ab1cda37b36b470e1a404b9c8ab1b50f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1physics.html#a96dc2145a1c9f89aecee87a212a7e75c">CollapsePlacement</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#ab1cda37b36b470e1a404b9c8ab1b50f2">placement</a> () const noexcept</td></tr>
+<tr class="memdesc:ab1cda37b36b470e1a404b9c8ab1b50f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current normalized rigid placement, returned by value.  <br /></td></tr>
+<tr class="separator:ab1cda37b36b470e1a404b9c8ab1b50f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f6a9bc3cab03faa013b516b18359872" id="r_a1f6a9bc3cab03faa013b516b18359872"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#a1f6a9bc3cab03faa013b516b18359872">time</a> () const noexcept</td></tr>
+<tr class="memdesc:a1f6a9bc3cab03faa013b516b18359872"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current time in seconds.  <br /></td></tr>
+<tr class="separator:a1f6a9bc3cab03faa013b516b18359872"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58676549fcd23f5518df89cd05a5ef18" id="r_a58676549fcd23f5518df89cd05a5ef18"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#a58676549fcd23f5518df89cd05a5ef18">rate</a> () const noexcept</td></tr>
+<tr class="memdesc:a58676549fcd23f5518df89cd05a5ef18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signed playback speed.  <br /></td></tr>
+<tr class="separator:a58676549fcd23f5518df89cd05a5ef18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a140791bf1460c40f332490b8b0bdd0f0" id="r_a140791bf1460c40f332490b8b0bdd0f0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#a140791bf1460c40f332490b8b0bdd0f0">paused</a> () const noexcept</td></tr>
+<tr class="memdesc:a140791bf1460c40f332490b8b0bdd0f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether the clock is paused.  <br /></td></tr>
+<tr class="separator:a140791bf1460c40f332490b8b0bdd0f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add59b2204324e8e55705ecfe01f63d13" id="r_add59b2204324e8e55705ecfe01f63d13"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1BonePresentation.html">BonePresentation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#add59b2204324e8e55705ecfe01f63d13">sample</a> (int <a class="el" href="LegacyAnimationImporter_8cpp.html#aa998c8d51ac188304eb2c6ae8549c6d2">bone</a>) const</td></tr>
+<tr class="memdesc:add59b2204324e8e55705ecfe01f63d13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample at current time using the clip's interpolation and discrete-state contract.  <br /></td></tr>
+<tr class="separator:add59b2204324e8e55705ecfe01f63d13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd700781c5bb7f3ede7dd208bc6c028e" id="r_acd700781c5bb7f3ede7dd208bc6c028e"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classeve_1_1physics_1_1CollapseAnimation.html">CollapseAnimation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#acd700781c5bb7f3ede7dd208bc6c028e">animation</a> () const noexcept</td></tr>
+<tr class="memdesc:acd700781c5bb7f3ede7dd208bc6c028e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shared immutable clip; returned ownership survives this player's destruction.  <br /></td></tr>
+<tr class="separator:acd700781c5bb7f3ede7dd208bc6c028e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:ad0ad2b3b0a040151d9cafc1f7f43e99e" id="r_ad0ad2b3b0a040151d9cafc1f7f43e99e"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html">CollapsePlayback</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#ad0ad2b3b0a040151d9cafc1f7f43e99e">prepare</a> (<a class="el" href="classeve_1_1physics_1_1CollapseAnimation.html">CollapseAnimation</a> <a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html#acd700781c5bb7f3ede7dd208bc6c028e">animation</a>)</td></tr>
+<tr class="memdesc:ad0ad2b3b0a040151d9cafc1f7f43e99e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Freeze an owning clip, rejecting empty recordings.  <br /></td></tr>
+<tr class="separator:ad0ad2b3b0a040151d9cafc1f7f43e99e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Independent clock over a frozen, shared collapse animation. @ownership Owns a shared immutable snapshot. Copies share samples but copy clock state. @lifetime No world, renderer or caller-owned pointers are retained. @thread Each instance requires exclusive access during mutation; separate copies may run concurrently. No callbacks, IO, wall clock or physical simulation occur during playback. </p>
+
+<p class="definition">在文件 <a class="el" href="backend_2bake_2collapse_2CollapsePlayback_8h_source.html">CollapsePlayback.h</a> 第 <a class="el" href="backend_2bake_2collapse_2CollapsePlayback_8h_source.html#l00020">20</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a643e61d6e4aca3708b4418ea6fb02b81" name="a643e61d6e4aca3708b4418ea6fb02b81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a643e61d6e4aca3708b4418ea6fb02b81">&#9670;&#160;</a></span>advance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::CollapsePlayback::advance </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>elapsedSeconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance by injected nonnegative elapsed seconds. Failures preserve time. </p>
+<dl class="section return"><dt>返回</dt><dd>Failure for nonfinite/negative elapsed time or arithmetic overflow, even while paused. Loop advancement uses [0,duration); zero-duration clips remain at zero. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a> 第 <a class="el" href="CollapsePlayback_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acd700781c5bb7f3ede7dd208bc6c028e" name="acd700781c5bb7f3ede7dd208bc6c028e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd700781c5bb7f3ede7dd208bc6c028e">&#9670;&#160;</a></span>animation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt; const <a class="el" href="classeve_1_1physics_1_1CollapseAnimation.html">CollapseAnimation</a> &gt; eve::physics::CollapsePlayback::animation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Shared immutable clip; returned ownership survives this player's destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a> 第 <a class="el" href="CollapsePlayback_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FractureRenderer_8cpp_source.html#l00191">eve::physics::GeometryCollectionRenderer::preparePlayback()</a> , 以及 <a class="el" href="FractureRenderer_8cpp_source.html#l00211">eve::physics::GeometryCollectionRenderer::submitPlayback()</a>.</p>
+
+</div>
+</div>
+<a id="a140791bf1460c40f332490b8b0bdd0f0" name="a140791bf1460c40f332490b8b0bdd0f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a140791bf1460c40f332490b8b0bdd0f0">&#9670;&#160;</a></span>paused()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::CollapsePlayback::paused </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether the clock is paused. </p>
+
+<p class="definition">在文件 <a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a> 第 <a class="el" href="CollapsePlayback_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab1cda37b36b470e1a404b9c8ab1b50f2" name="ab1cda37b36b470e1a404b9c8ab1b50f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1cda37b36b470e1a404b9c8ab1b50f2">&#9670;&#160;</a></span>placement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1physics.html#a96dc2145a1c9f89aecee87a212a7e75c">CollapsePlacement</a> eve::physics::CollapsePlayback::placement </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current normalized rigid placement, returned by value. </p>
+
+<p class="definition">在文件 <a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a> 第 <a class="el" href="CollapsePlayback_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad0ad2b3b0a040151d9cafc1f7f43e99e" name="ad0ad2b3b0a040151d9cafc1f7f43e99e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0ad2b3b0a040151d9cafc1f7f43e99e">&#9670;&#160;</a></span>prepare()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1physics_1_1CollapsePlayback.html">CollapsePlayback</a> &gt; eve::physics::CollapsePlayback::prepare </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1CollapseAnimation.html">CollapseAnimation</a>&#160;</td>
+          <td class="paramname"><em>animation</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Freeze an owning clip, rejecting empty recordings. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">animation</td><td><a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> snapshot; move an existing clip to avoid copying its samples. @cost Copying an lvalue is linear in recorded samples; prepare once and copy players cheaply. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Player at zero seconds, running at rate one, with clamped endpoints, or an internal allocation failure diagnostic. Existing players are unchanged; a moved input is consumed even on failure. </dd></dl>
+<dl class="exception"><dt>异常</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::bad_alloc</td><td>If copying the by-value argument or allocating the failure diagnostic fails. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a> 第 <a class="el" href="CollapsePlayback_8cpp_source.html#l00010">10</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CollapseAnimation_8cpp_source.html#l00079">eve::physics::CollapseAnimation::frameCount()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CollapseAnimationBindings_8cpp_source.html#l00020">eve::physics::exposeCollapseAnimation()</a>.</p>
+
+</div>
+</div>
+<a id="a58676549fcd23f5518df89cd05a5ef18" name="a58676549fcd23f5518df89cd05a5ef18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58676549fcd23f5518df89cd05a5ef18">&#9670;&#160;</a></span>rate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::physics::CollapsePlayback::rate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Signed playback speed. </p>
+
+<p class="definition">在文件 <a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a> 第 <a class="el" href="CollapsePlayback_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="add59b2204324e8e55705ecfe01f63d13" name="add59b2204324e8e55705ecfe01f63d13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add59b2204324e8e55705ecfe01f63d13">&#9670;&#160;</a></span>sample()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1BonePresentation.html">BonePresentation</a> &gt; eve::physics::CollapsePlayback::sample </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bone</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sample at current time using the clip's interpolation and discrete-state contract. </p>
+
+<p class="definition">在文件 <a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a> 第 <a class="el" href="CollapsePlayback_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00024">bone</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00148">placed</a> , 以及 <a class="el" href="AudioCapabilities_8cpp_source.html#l00379">pose</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="FractureRenderer_8cpp_source.html#l00211">eve::physics::GeometryCollectionRenderer::submitPlayback()</a>.</p>
+
+</div>
+</div>
+<a id="ad0d0a50ee5390ce9c3b0d14ef74333eb" name="ad0d0a50ee5390ce9c3b0d14ef74333eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0d0a50ee5390ce9c3b0d14ef74333eb">&#9670;&#160;</a></span>seek()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::CollapsePlayback::seek </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Seek to finite seconds, clamped to both inclusive endpoints; ignores pause and rate. </p>
+
+<p class="definition">在文件 <a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a> 第 <a class="el" href="CollapsePlayback_8cpp_source.html#l00020">20</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adb6ff398e56116aa6cbdad786ec41eae" name="adb6ff398e56116aa6cbdad786ec41eae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb6ff398e56116aa6cbdad786ec41eae">&#9670;&#160;</a></span>setPaused()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::CollapsePlayback::setPaused </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>paused</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pause or resume without modifying time. </p>
+
+<p class="definition">在文件 <a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a> 第 <a class="el" href="CollapsePlayback_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abd76f4a5591616c087fd2e18411b1b4d" name="abd76f4a5591616c087fd2e18411b1b4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abd76f4a5591616c087fd2e18411b1b4d">&#9670;&#160;</a></span>setPlacement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::CollapsePlayback::setPlacement </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics.html#a96dc2145a1c9f89aecee87a212a7e75c">CollapsePlacement</a>&#160;</td>
+          <td class="paramname"><em>placement</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set finite rigid placement with a nonzero quaternion. Invalid input preserves placement. </p>
+<dl class="section return"><dt>返回</dt><dd>Checked admission status; coordinates that overflow after placement fail during sampling. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a> 第 <a class="el" href="CollapsePlayback_8cpp_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00042">placement</a>.</p>
+
+</div>
+</div>
+<a id="a595ef3bdbb9ad4928a4d9e9914436521" name="a595ef3bdbb9ad4928a4d9e9914436521"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a595ef3bdbb9ad4928a4d9e9914436521">&#9670;&#160;</a></span>setRate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::CollapsePlayback::setRate </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>rate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set finite signed speed; zero freezes, negative reverses. Failure preserves rate. </p>
+
+<p class="definition">在文件 <a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a> 第 <a class="el" href="CollapsePlayback_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">rate</a>.</p>
+
+</div>
+</div>
+<a id="ad575b30503de24a304752014b4c115f9" name="ad575b30503de24a304752014b4c115f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad575b30503de24a304752014b4c115f9">&#9670;&#160;</a></span>setWrap()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::CollapsePlayback::setWrap </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1physics.html#a6c799841e16f326682f57f030a17f8c6">CollapsePlaybackWrap</a>&#160;</td>
+          <td class="paramname"><em>wrap</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set endpoint behavior, rejecting invalid enum values without mutation. </p>
+
+<p class="definition">在文件 <a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a> 第 <a class="el" href="CollapsePlayback_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1f6a9bc3cab03faa013b516b18359872" name="a1f6a9bc3cab03faa013b516b18359872"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f6a9bc3cab03faa013b516b18359872">&#9670;&#160;</a></span>time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::physics::CollapsePlayback::time </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current time in seconds. </p>
+
+<p class="definition">在文件 <a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a> 第 <a class="el" href="CollapsePlayback_8cpp_source.html#l00026">26</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/backend/bake/collapse/<a class="el" href="backend_2bake_2collapse_2CollapsePlayback_8h_source.html">CollapsePlayback.h</a></li>
+<li>src/modules/physics/backend/bake/collapse/<a class="el" href="CollapsePlayback_8cpp_source.html">CollapsePlayback.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

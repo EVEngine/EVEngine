@@ -1,0 +1,327 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/ProcgenOwnership.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ProcgenOwnership.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ProcgenOwnership_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Procgen_8h.html">procgen/Procgen.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Biome_8h.html">procgen/Biome.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="GeneratedArtifact_8h.html">procgen/GeneratedArtifact.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Grid2D_8h.html">procgen/Grid2D.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="GridGraph_8h.html">procgen/GridGraph.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="MeshBuild_8h.html">procgen/MeshBuild.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="MeshGraph_8h.html">procgen/MeshGraph.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="OutputSpec_8h.html">procgen/OutputSpec.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="Palette_8h.html">procgen/Palette.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="Params_8h.html">procgen/Params.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &quot;<a class="code" href="PointGraph_8h.html">procgen/PointGraph.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="PointSet_8h.html">procgen/PointSet.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="ProcgenSystem_8h.html">procgen/ProcgenSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="RuntimeGeneration_8h.html">procgen/RuntimeGeneration.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="ShapeGrammar_8h.html">procgen/ShapeGrammar.h</a>&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="SpatialData_8h.html">procgen/SpatialData.h</a>&quot;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;<a class="code" href="LSystem_8h.html">procgen/algorithms/LSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;<a class="code" href="Heightmap_8h.html">procgen/heightmap/Heightmap.h</a>&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="TerrainSampler_8h.html">procgen/heightmap/TerrainSampler.h</a>&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="DynamicMeshUvPaintSession_8h.html">procgen/mesh/DynamicMeshUvPaintSession.h</a>&quot;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &quot;<a class="code" href="MeshDeformationSession_8h.html">procgen/mesh/MeshDeformationSession.h</a>&quot;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &quot;<a class="code" href="mesh_2MeshModifierGraph_8h.html">procgen/mesh/MeshModifierGraph.h</a>&quot;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &quot;<a class="code" href="SplinePath_8h.html">procgen/spline/SplinePath.h</a>&quot;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &quot;<a class="code" href="CloudField_8h.html">procgen/texture/CloudField.h</a>&quot;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &quot;<a class="code" href="CloudShadow_8h.html">procgen/texture/CloudShadow.h</a>&quot;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &quot;<a class="code" href="PbrMaterial_8h.html">procgen/texture/PbrMaterial.h</a>&quot;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &quot;<a class="code" href="RuntimeRegistry_8h.html">common/RuntimeRegistry.h</a>&quot;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &quot;<a class="code" href="ImageData_8h.html">image/ImageData.h</a>&quot;</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="foldopen" id="foldopen00042" data-start="{" data-end="};">
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html">   42</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html">Procgen::OwnershipState</a> {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a9800f229d25f1c8374f7f55ca018546b">   43</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;OutputSpec, ProcgenOutputHandleTag&gt;</a>             <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a9800f229d25f1c8374f7f55ca018546b">outputs</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aff4b3714b3837961c3de1cef37dc4900">   44</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;PointSet, ProcgenPointSetHandleTag&gt;</a>             <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aff4b3714b3837961c3de1cef37dc4900">points</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a54863144d7ecb7c71cf975739623d744">   45</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;TerrainSampler, ProcgenTerrainSamplerHandleTag&gt;</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a54863144d7ecb7c71cf975739623d744">samplers</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a9ae8d363d7e0b1e45b3ddf983c33faf8">   46</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;Heightmap, ProcgenHeightmapHandleTag&gt;</a>           <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a9ae8d363d7e0b1e45b3ddf983c33faf8">heightmaps</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6e7f399126ce39685296b7a26ac59728">   47</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;CloudField, ProcgenCloudFieldHandleTag&gt;</a>         <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6e7f399126ce39685296b7a26ac59728">clouds</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad0c98e8b2f0140e6c639f6b505e09c2b">   48</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;CloudShadow, ProcgenCloudShadowHandleTag&gt;</a>       <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad0c98e8b2f0140e6c639f6b505e09c2b">shadows</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad72f3e00899b10dbc41c33b8e805b64d">   49</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;PbrTextureSet, ProcgenPbrMaterialHandleTag&gt;</a>     <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad72f3e00899b10dbc41c33b8e805b64d">pbr</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a327e64468d732792703a04d5238fa82b">   50</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;MeshBuild, ProcgenMeshBuildHandleTag&gt;</a>           <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a327e64468d732792703a04d5238fa82b">meshes</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a36cedf11bcf723d5285d601fc9be290f">   51</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;image::ImageData, ProcgenImageHandleTag&gt;</a>        <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a36cedf11bcf723d5285d601fc9be290f">images</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aa7409e3618dcdec2d51bafe7e458eb27">   52</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;image::ImageData, ProcgenNormalImageHandleTag&gt;</a>  <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aa7409e3618dcdec2d51bafe7e458eb27">normalImages</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#adc174bd9adb1bf8c085fedf3bf6176b2">   54</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;Params, ProcgenParamsHandleTag&gt;</a>                       <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#adc174bd9adb1bf8c085fedf3bf6176b2">params</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a575b6aeab957cf7a03734b792ace203f">   55</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;Grid2D, ProcgenGridHandleTag&gt;</a>                         <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a575b6aeab957cf7a03734b792ace203f">grids</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad6983572e4b7a72163287c9c7509dd5f">   56</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;ProcgenContext, ProcgenContextHandleTag&gt;</a>              <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad6983572e4b7a72163287c9c7509dd5f">contexts</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aab047765fb36575e3b18da5a78bcd356">   57</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;SpatialData, ProcgenSpatialDataHandleTag&gt;</a>             <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aab047765fb36575e3b18da5a78bcd356">spatialData</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a56b69a48f1017a0983993cd58413bb0f">   58</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;RuntimeGeneration, ProcgenRuntimeGenerationHandleTag&gt;</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a56b69a48f1017a0983993cd58413bb0f">runtimeGenerations</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ab504da901290269e534e790c813624b5">   59</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;PointGraph, ProcgenPointGraphHandleTag&gt;</a>               <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ab504da901290269e534e790c813624b5">pointGraphs</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ab3757c4bdfb432df8009c8e475923049">   60</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;MeshModifierGraph, ProcgenMeshModifierGraphHandleTag&gt;</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ab3757c4bdfb432df8009c8e475923049">meshModifierGraphs</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;MeshDeformationSession, ProcgenMeshDeformationSessionHandleTag&gt;</a></div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aac314563bd53006e1dd62c23255db96a">   62</a></span>        <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aac314563bd53006e1dd62c23255db96a">meshDeformationSessions</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;DynamicMeshUvPaintSession, ProcgenDynamicMeshUvPaintSessionHandleTag&gt;</a></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6f3f37535909642fa9c99178587dde47">   64</a></span>                                                                                   <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6f3f37535909642fa9c99178587dde47">dynamicMeshUvPaintSessions</a>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a9ff829f3596da3a0902f2af84677e373">   65</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;SplinePath, ProcgenSplinePathHandleTag&gt;</a>     <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a9ff829f3596da3a0902f2af84677e373">splinePaths</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aa338fdae81c93870e764085e2e7a70ca">   66</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;GridGraph, ProcgenGridGraphHandleTag&gt;</a>       <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aa338fdae81c93870e764085e2e7a70ca">gridGraphs</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a8cc9af33e443682976aed264a545faf6">   67</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;MeshGraph, ProcgenMeshGraphHandleTag&gt;</a>       <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a8cc9af33e443682976aed264a545faf6">meshGraphs</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a16e0a95a6c3bef04e97f17bed859f930">   68</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;BiomeRules, ProcgenBiomeRulesHandleTag&gt;</a>     <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a16e0a95a6c3bef04e97f17bed859f930">biomeRules</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad1411f14580d88c2843d71c2ce15004f">   69</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;ShapeGrammar, ProcgenShapeGrammarHandleTag&gt;</a> <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad1411f14580d88c2843d71c2ce15004f">shapeGrammars</a>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a529765f3c0e74ba4b36129fbc2ee1b53">   70</a></span>    <a class="code hl_class" href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry&lt;LSystem, ProcgenLSystemHandleTag&gt;</a>           <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a529765f3c0e74ba4b36129fbc2ee1b53">lsystems</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6ac1752a6a5b51155e27e720e0563977">   72</a></span>    <a class="code hl_class" href="classeve_1_1procgen_1_1PaletteTable.html">PaletteTable</a>                                           <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6ac1752a6a5b51155e27e720e0563977">palettes</a>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a1e2823cae374f388d2fa5066b9ee89cc">   73</a></span>    std::unordered_map&lt;std::string, ProcgenSystemSnapshot&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a1e2823cae374f388d2fa5066b9ee89cc">systems</a>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6fac13566257432e666443faf6bc563c">   74</a></span>    std::unordered_map&lt;std::string, ProcgenSystemSnapshot&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6fac13566257432e666443faf6bc563c">previousSystems</a>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ac5bade29f602c60366a7cdc516325367">   75</a></span>    <a class="code hl_class" href="classeve_1_1procgen_1_1ArtifactStore.html">ArtifactStore</a>                                          <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ac5bade29f602c60366a7cdc516325367">artifactStore</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a4aefeabcfb792ab57925eb0e45fd0416">   76</a></span>    std::uint64_t                                          <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a4aefeabcfb792ab57925eb0e45fd0416">nextArtifactSequence</a> = 1;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a3feea65d9378ee662552f13933c1bb9a">   78</a></span>    <span class="keyword">mutable</span> std::string              <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a3feea65d9378ee662552f13933c1bb9a">compatMessage</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a4d715256f42d0baa85e492d7aa6db399">   79</a></span>    <span class="keyword">mutable</span> std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a4d715256f42d0baa85e492d7aa6db399">algorithmIdsCache</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a7572474854dd41915f8af3a3a56352ff">   80</a></span>    <span class="keyword">mutable</span> std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a7572474854dd41915f8af3a3a56352ff">textureRecipeIdsCache</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a3ffba2f2620b25f6693d2217ed5a0260">   81</a></span>    <span class="keyword">mutable</span> std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a3ffba2f2620b25f6693d2217ed5a0260">pbrRecipeIdsCache</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a5d28e29f261d94a29a6ad06cabbb89f1">   82</a></span>    <span class="keyword">mutable</span> std::vector&lt;std::string&gt; <a class="code hl_variable" href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a5d28e29f261d94a29a6ad06cabbb89f1">meshRecipeIdsCache</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>};</div>
+</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aBiome_8h_html"><div class="ttname"><a href="Biome_8h.html">Biome.h</a></div></div>
+<div class="ttc" id="aCloudField_8h_html"><div class="ttname"><a href="CloudField_8h.html">CloudField.h</a></div></div>
+<div class="ttc" id="aCloudShadow_8h_html"><div class="ttname"><a href="CloudShadow_8h.html">CloudShadow.h</a></div></div>
+<div class="ttc" id="aDynamicMeshUvPaintSession_8h_html"><div class="ttname"><a href="DynamicMeshUvPaintSession_8h.html">DynamicMeshUvPaintSession.h</a></div></div>
+<div class="ttc" id="aGeneratedArtifact_8h_html"><div class="ttname"><a href="GeneratedArtifact_8h.html">GeneratedArtifact.h</a></div><div class="ttdoc">Owning, backend-neutral products published by procedural generation.</div></div>
+<div class="ttc" id="aGrid2D_8h_html"><div class="ttname"><a href="Grid2D_8h.html">Grid2D.h</a></div></div>
+<div class="ttc" id="aGridGraph_8h_html"><div class="ttname"><a href="GridGraph_8h.html">GridGraph.h</a></div></div>
+<div class="ttc" id="aHeightmap_8h_html"><div class="ttname"><a href="Heightmap_8h.html">Heightmap.h</a></div></div>
+<div class="ttc" id="aImageData_8h_html"><div class="ttname"><a href="ImageData_8h.html">ImageData.h</a></div></div>
+<div class="ttc" id="aLSystem_8h_html"><div class="ttname"><a href="LSystem_8h.html">LSystem.h</a></div></div>
+<div class="ttc" id="aMeshBuild_8h_html"><div class="ttname"><a href="MeshBuild_8h.html">MeshBuild.h</a></div></div>
+<div class="ttc" id="aMeshDeformationSession_8h_html"><div class="ttname"><a href="MeshDeformationSession_8h.html">MeshDeformationSession.h</a></div></div>
+<div class="ttc" id="aMeshGraph_8h_html"><div class="ttname"><a href="MeshGraph_8h.html">MeshGraph.h</a></div></div>
+<div class="ttc" id="aOutputSpec_8h_html"><div class="ttname"><a href="OutputSpec_8h.html">OutputSpec.h</a></div></div>
+<div class="ttc" id="aPalette_8h_html"><div class="ttname"><a href="Palette_8h.html">Palette.h</a></div></div>
+<div class="ttc" id="aParams_8h_html"><div class="ttname"><a href="Params_8h.html">Params.h</a></div></div>
+<div class="ttc" id="aPbrMaterial_8h_html"><div class="ttname"><a href="PbrMaterial_8h.html">PbrMaterial.h</a></div></div>
+<div class="ttc" id="aPointGraph_8h_html"><div class="ttname"><a href="PointGraph_8h.html">PointGraph.h</a></div></div>
+<div class="ttc" id="aPointSet_8h_html"><div class="ttname"><a href="PointSet_8h.html">PointSet.h</a></div></div>
+<div class="ttc" id="aProcgenSystem_8h_html"><div class="ttname"><a href="ProcgenSystem_8h.html">ProcgenSystem.h</a></div></div>
+<div class="ttc" id="aProcgen_8h_html"><div class="ttname"><a href="Procgen_8h.html">Procgen.h</a></div></div>
+<div class="ttc" id="aRuntimeGeneration_8h_html"><div class="ttname"><a href="RuntimeGeneration_8h.html">RuntimeGeneration.h</a></div></div>
+<div class="ttc" id="aRuntimeRegistry_8h_html"><div class="ttname"><a href="RuntimeRegistry_8h.html">RuntimeRegistry.h</a></div><div class="ttdoc">Tag-free slot registry: handles, borrows, unique ownership and keep-alive pins.</div></div>
+<div class="ttc" id="aShapeGrammar_8h_html"><div class="ttname"><a href="ShapeGrammar_8h.html">ShapeGrammar.h</a></div></div>
+<div class="ttc" id="aSpatialData_8h_html"><div class="ttname"><a href="SpatialData_8h.html">SpatialData.h</a></div></div>
+<div class="ttc" id="aSplinePath_8h_html"><div class="ttname"><a href="SplinePath_8h.html">SplinePath.h</a></div></div>
+<div class="ttc" id="aTerrainSampler_8h_html"><div class="ttname"><a href="TerrainSampler_8h.html">TerrainSampler.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1ArtifactStore_html"><div class="ttname"><a href="classeve_1_1procgen_1_1ArtifactStore.html">eve::procgen::ArtifactStore</a></div><div class="ttdoc">In-memory owner and publisher for generated artifacts.</div><div class="ttdef"><b>Definition</b> <a href="GeneratedArtifact_8h_source.html#l00229">GeneratedArtifact.h:229</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1PaletteTable_html"><div class="ttname"><a href="classeve_1_1procgen_1_1PaletteTable.html">eve::procgen::PaletteTable</a></div><div class="ttdoc">Named palette: semantic name -&gt; tile GID. Unmapped semantics become GID 0.</div><div class="ttdef"><b>Definition</b> <a href="Palette_8h_source.html#l00016">Palette.h:16</a></div></div>
+<div class="ttc" id="aclasseve_1_1script_1_1RuntimeObjectRegistry_html"><div class="ttname"><a href="classeve_1_1script_1_1RuntimeObjectRegistry.html">eve::script::RuntimeObjectRegistry</a></div><div class="ttdoc">Slot/generation registry whose objects are exclusively unique-owned.</div><div class="ttdef"><b>Definition</b> <a href="RuntimeRegistry_8h_source.html#l00292">RuntimeRegistry.h:292</a></div></div>
+<div class="ttc" id="amesh_2MeshModifierGraph_8h_html"><div class="ttname"><a href="mesh_2MeshModifierGraph_8h.html">MeshModifierGraph.h</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00012">EvpackPointGraphLoader.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html">eve::procgen::Procgen::OwnershipState</a></div><div class="ttdoc">Module-owned registries and mutable caches behind the Procgen facade.</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00042">ProcgenOwnership.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a16e0a95a6c3bef04e97f17bed859f930"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a16e0a95a6c3bef04e97f17bed859f930">eve::procgen::Procgen::OwnershipState::biomeRules</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; BiomeRules, ProcgenBiomeRulesHandleTag &gt; biomeRules</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00068">ProcgenOwnership.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a1e2823cae374f388d2fa5066b9ee89cc"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a1e2823cae374f388d2fa5066b9ee89cc">eve::procgen::Procgen::OwnershipState::systems</a></div><div class="ttdeci">std::unordered_map&lt; std::string, ProcgenSystemSnapshot &gt; systems</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00073">ProcgenOwnership.h:73</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a327e64468d732792703a04d5238fa82b"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a327e64468d732792703a04d5238fa82b">eve::procgen::Procgen::OwnershipState::meshes</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; MeshBuild, ProcgenMeshBuildHandleTag &gt; meshes</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00050">ProcgenOwnership.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a36cedf11bcf723d5285d601fc9be290f"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a36cedf11bcf723d5285d601fc9be290f">eve::procgen::Procgen::OwnershipState::images</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; image::ImageData, ProcgenImageHandleTag &gt; images</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00051">ProcgenOwnership.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a3feea65d9378ee662552f13933c1bb9a"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a3feea65d9378ee662552f13933c1bb9a">eve::procgen::Procgen::OwnershipState::compatMessage</a></div><div class="ttdeci">std::string compatMessage</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00078">ProcgenOwnership.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a3ffba2f2620b25f6693d2217ed5a0260"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a3ffba2f2620b25f6693d2217ed5a0260">eve::procgen::Procgen::OwnershipState::pbrRecipeIdsCache</a></div><div class="ttdeci">std::vector&lt; std::string &gt; pbrRecipeIdsCache</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00081">ProcgenOwnership.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a4aefeabcfb792ab57925eb0e45fd0416"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a4aefeabcfb792ab57925eb0e45fd0416">eve::procgen::Procgen::OwnershipState::nextArtifactSequence</a></div><div class="ttdeci">std::uint64_t nextArtifactSequence</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00076">ProcgenOwnership.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a4d715256f42d0baa85e492d7aa6db399"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a4d715256f42d0baa85e492d7aa6db399">eve::procgen::Procgen::OwnershipState::algorithmIdsCache</a></div><div class="ttdeci">std::vector&lt; std::string &gt; algorithmIdsCache</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00079">ProcgenOwnership.h:79</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a529765f3c0e74ba4b36129fbc2ee1b53"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a529765f3c0e74ba4b36129fbc2ee1b53">eve::procgen::Procgen::OwnershipState::lsystems</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; LSystem, ProcgenLSystemHandleTag &gt; lsystems</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00070">ProcgenOwnership.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a54863144d7ecb7c71cf975739623d744"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a54863144d7ecb7c71cf975739623d744">eve::procgen::Procgen::OwnershipState::samplers</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; TerrainSampler, ProcgenTerrainSamplerHandleTag &gt; samplers</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00045">ProcgenOwnership.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a56b69a48f1017a0983993cd58413bb0f"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a56b69a48f1017a0983993cd58413bb0f">eve::procgen::Procgen::OwnershipState::runtimeGenerations</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; RuntimeGeneration, ProcgenRuntimeGenerationHandleTag &gt; runtimeGenerations</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00058">ProcgenOwnership.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a575b6aeab957cf7a03734b792ace203f"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a575b6aeab957cf7a03734b792ace203f">eve::procgen::Procgen::OwnershipState::grids</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; Grid2D, ProcgenGridHandleTag &gt; grids</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00055">ProcgenOwnership.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a5d28e29f261d94a29a6ad06cabbb89f1"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a5d28e29f261d94a29a6ad06cabbb89f1">eve::procgen::Procgen::OwnershipState::meshRecipeIdsCache</a></div><div class="ttdeci">std::vector&lt; std::string &gt; meshRecipeIdsCache</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00082">ProcgenOwnership.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a6ac1752a6a5b51155e27e720e0563977"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6ac1752a6a5b51155e27e720e0563977">eve::procgen::Procgen::OwnershipState::palettes</a></div><div class="ttdeci">PaletteTable palettes</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00072">ProcgenOwnership.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a6e7f399126ce39685296b7a26ac59728"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6e7f399126ce39685296b7a26ac59728">eve::procgen::Procgen::OwnershipState::clouds</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; CloudField, ProcgenCloudFieldHandleTag &gt; clouds</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00047">ProcgenOwnership.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a6f3f37535909642fa9c99178587dde47"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6f3f37535909642fa9c99178587dde47">eve::procgen::Procgen::OwnershipState::dynamicMeshUvPaintSessions</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; DynamicMeshUvPaintSession, ProcgenDynamicMeshUvPaintSessionHandleTag &gt; dynamicMeshUvPaintSessions</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00064">ProcgenOwnership.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a6fac13566257432e666443faf6bc563c"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a6fac13566257432e666443faf6bc563c">eve::procgen::Procgen::OwnershipState::previousSystems</a></div><div class="ttdeci">std::unordered_map&lt; std::string, ProcgenSystemSnapshot &gt; previousSystems</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00074">ProcgenOwnership.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a7572474854dd41915f8af3a3a56352ff"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a7572474854dd41915f8af3a3a56352ff">eve::procgen::Procgen::OwnershipState::textureRecipeIdsCache</a></div><div class="ttdeci">std::vector&lt; std::string &gt; textureRecipeIdsCache</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00080">ProcgenOwnership.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a8cc9af33e443682976aed264a545faf6"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a8cc9af33e443682976aed264a545faf6">eve::procgen::Procgen::OwnershipState::meshGraphs</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; MeshGraph, ProcgenMeshGraphHandleTag &gt; meshGraphs</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00067">ProcgenOwnership.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a9800f229d25f1c8374f7f55ca018546b"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a9800f229d25f1c8374f7f55ca018546b">eve::procgen::Procgen::OwnershipState::outputs</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; OutputSpec, ProcgenOutputHandleTag &gt; outputs</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00043">ProcgenOwnership.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a9ae8d363d7e0b1e45b3ddf983c33faf8"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a9ae8d363d7e0b1e45b3ddf983c33faf8">eve::procgen::Procgen::OwnershipState::heightmaps</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; Heightmap, ProcgenHeightmapHandleTag &gt; heightmaps</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00046">ProcgenOwnership.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_a9ff829f3596da3a0902f2af84677e373"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#a9ff829f3596da3a0902f2af84677e373">eve::procgen::Procgen::OwnershipState::splinePaths</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; SplinePath, ProcgenSplinePathHandleTag &gt; splinePaths</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00065">ProcgenOwnership.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_aa338fdae81c93870e764085e2e7a70ca"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aa338fdae81c93870e764085e2e7a70ca">eve::procgen::Procgen::OwnershipState::gridGraphs</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; GridGraph, ProcgenGridGraphHandleTag &gt; gridGraphs</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00066">ProcgenOwnership.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_aa7409e3618dcdec2d51bafe7e458eb27"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aa7409e3618dcdec2d51bafe7e458eb27">eve::procgen::Procgen::OwnershipState::normalImages</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; image::ImageData, ProcgenNormalImageHandleTag &gt; normalImages</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00052">ProcgenOwnership.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_aab047765fb36575e3b18da5a78bcd356"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aab047765fb36575e3b18da5a78bcd356">eve::procgen::Procgen::OwnershipState::spatialData</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; SpatialData, ProcgenSpatialDataHandleTag &gt; spatialData</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00057">ProcgenOwnership.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_aac314563bd53006e1dd62c23255db96a"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aac314563bd53006e1dd62c23255db96a">eve::procgen::Procgen::OwnershipState::meshDeformationSessions</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; MeshDeformationSession, ProcgenMeshDeformationSessionHandleTag &gt; meshDeformationSessions</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00062">ProcgenOwnership.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_ab3757c4bdfb432df8009c8e475923049"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ab3757c4bdfb432df8009c8e475923049">eve::procgen::Procgen::OwnershipState::meshModifierGraphs</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; MeshModifierGraph, ProcgenMeshModifierGraphHandleTag &gt; meshModifierGraphs</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00060">ProcgenOwnership.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_ab504da901290269e534e790c813624b5"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ab504da901290269e534e790c813624b5">eve::procgen::Procgen::OwnershipState::pointGraphs</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; PointGraph, ProcgenPointGraphHandleTag &gt; pointGraphs</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00059">ProcgenOwnership.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_ac5bade29f602c60366a7cdc516325367"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ac5bade29f602c60366a7cdc516325367">eve::procgen::Procgen::OwnershipState::artifactStore</a></div><div class="ttdeci">ArtifactStore artifactStore</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00075">ProcgenOwnership.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_ad0c98e8b2f0140e6c639f6b505e09c2b"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad0c98e8b2f0140e6c639f6b505e09c2b">eve::procgen::Procgen::OwnershipState::shadows</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; CloudShadow, ProcgenCloudShadowHandleTag &gt; shadows</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00048">ProcgenOwnership.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_ad1411f14580d88c2843d71c2ce15004f"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad1411f14580d88c2843d71c2ce15004f">eve::procgen::Procgen::OwnershipState::shapeGrammars</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; ShapeGrammar, ProcgenShapeGrammarHandleTag &gt; shapeGrammars</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00069">ProcgenOwnership.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_ad6983572e4b7a72163287c9c7509dd5f"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad6983572e4b7a72163287c9c7509dd5f">eve::procgen::Procgen::OwnershipState::contexts</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; ProcgenContext, ProcgenContextHandleTag &gt; contexts</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00056">ProcgenOwnership.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_ad72f3e00899b10dbc41c33b8e805b64d"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#ad72f3e00899b10dbc41c33b8e805b64d">eve::procgen::Procgen::OwnershipState::pbr</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; PbrTextureSet, ProcgenPbrMaterialHandleTag &gt; pbr</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00049">ProcgenOwnership.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_adc174bd9adb1bf8c085fedf3bf6176b2"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#adc174bd9adb1bf8c085fedf3bf6176b2">eve::procgen::Procgen::OwnershipState::params</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; Params, ProcgenParamsHandleTag &gt; params</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00054">ProcgenOwnership.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Procgen_1_1OwnershipState_html_aff4b3714b3837961c3de1cef37dc4900"><div class="ttname"><a href="structeve_1_1procgen_1_1Procgen_1_1OwnershipState.html#aff4b3714b3837961c3de1cef37dc4900">eve::procgen::Procgen::OwnershipState::points</a></div><div class="ttdeci">eve::script::RuntimeObjectRegistry&lt; PointSet, ProcgenPointSetHandleTag &gt; points</div><div class="ttdef"><b>Definition</b> <a href="ProcgenOwnership_8h_source.html#l00044">ProcgenOwnership.h:44</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

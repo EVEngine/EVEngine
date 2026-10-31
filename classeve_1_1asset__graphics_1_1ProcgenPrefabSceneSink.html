@@ -1,0 +1,1082 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::asset_graphics::ProcgenPrefabSceneSink类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1asset__graphics.html">asset_graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html">ProcgenPrefabSceneSink</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::asset_graphics::ProcgenPrefabSceneSink类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Scene-sink decorator projecting exact-build procedural prefab bindings into owned ECS renderers. @ownership Scene remains the author of batch metadata; cached snapshots are renderer projections guarded by its revision. @lifetime Graphics, underlying Scene sink, ECS table and admitted prefab factories outlive this object and release. @thread Graphics/Scene/ECS owner thread, outside iteration; synchronous, non-reentrant, no locks.  
+ <a href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ProcgenPrefabSceneSink_8h_source.html">ProcgenPrefabSceneSink.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::asset_graphics::ProcgenPrefabSceneSink 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.png" usemap="#eve::asset_5Fgraphics::ProcgenPrefabSceneSink_map" alt=""/>
+  <map id="eve::asset_5Fgraphics::ProcgenPrefabSceneSink_map" name="eve::asset_5Fgraphics::ProcgenPrefabSceneSink_map">
+<area href="classeve_1_1IProcgenSceneSink.html" title="Optional scene consumer for procedural instance batches." alt="eve::IProcgenSceneSink" shape="rect" coords="0,0,276,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abbfc59baa36192a2c039695d767eadf3" id="r_abbfc59baa36192a2c039695d767eadf3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#abbfc59baa36192a2c039695d767eadf3">ProcgenPrefabSceneSink</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;graphics, <a class="el" href="classeve_1_1IProcgenSceneSink.html">IProcgenSceneSink</a> &amp;scene)</td></tr>
+<tr class="memdesc:abbfc59baa36192a2c039695d767eadf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind borrowed rendering and Scene owners; does not install a global capability or publish anything.  <br /></td></tr>
+<tr class="separator:abbfc59baa36192a2c039695d767eadf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad10af6466c2ef4bb757fd6b6759be9af" id="r_ad10af6466c2ef4bb757fd6b6759be9af"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#ad10af6466c2ef4bb757fd6b6759be9af">~ProcgenPrefabSceneSink</a> () override</td></tr>
+<tr class="memdesc:ad10af6466c2ef4bb757fd6b6759be9af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempt checked release before teardown and report failures; explicit release permits retry.  <br /></td></tr>
+<tr class="separator:ad10af6466c2ef4bb757fd6b6759be9af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84bbef55b3321f83f8fe5aad58e66e83" id="r_a84bbef55b3321f83f8fe5aad58e66e83"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#a84bbef55b3321f83f8fe5aad58e66e83">ProcgenPrefabSceneSink</a> (const <a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html">ProcgenPrefabSceneSink</a> &amp;)=delete</td></tr>
+<tr class="separator:a84bbef55b3321f83f8fe5aad58e66e83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec7e8048bfe44cb77a10edab860e4868" id="r_aec7e8048bfe44cb77a10edab860e4868"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html">ProcgenPrefabSceneSink</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#aec7e8048bfe44cb77a10edab860e4868">operator=</a> (const <a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html">ProcgenPrefabSceneSink</a> &amp;)=delete</td></tr>
+<tr class="separator:aec7e8048bfe44cb77a10edab860e4868"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03f33bebbd61d5b93e4e61b99a0998da" id="r_a03f33bebbd61d5b93e4e61b99a0998da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#a03f33bebbd61d5b93e4e61b99a0998da">admit</a> (std::shared_ptr&lt; <a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html">EvpackStaticPrefab</a> &gt; <a class="el" href="AssetCommand_8cpp.html#a458dddd8dadbb8b518f2203c4e5d1fb4">prefab</a>)</td></tr>
+<tr class="memdesc:a03f33bebbd61d5b93e4e61b99a0998da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Admit and pin one immutable asset/build version; historical versions remain available for undo/restore.  <br /></td></tr>
+<tr class="separator:a03f33bebbd61d5b93e4e61b99a0998da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a00df9389c3444b612504d0ec59119100" id="r_a00df9389c3444b612504d0ec59119100"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#a00df9389c3444b612504d0ec59119100">collectRetired</a> ()</td></tr>
+<tr class="memdesc:a00df9389c3444b612504d0ec59119100"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release retired, already hidden renderers without changing committed batches.  <br /></td></tr>
+<tr class="separator:a00df9389c3444b612504d0ec59119100"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3862f7ed9784002a0fbae5ff992b0b1f" id="r_a3862f7ed9784002a0fbae5ff992b0b1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#a3862f7ed9784002a0fbae5ff992b0b1f">release</a> ()</td></tr>
+<tr class="memdesc:a3862f7ed9784002a0fbae5ff992b0b1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove all owned batches through Scene coordination, collect resources and close the decorator.  <br /></td></tr>
+<tr class="separator:a3862f7ed9784002a0fbae5ff992b0b1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65bb4ed0d9281299ba08f99672ff3c2c" id="r_a65bb4ed0d9281299ba08f99672ff3c2c"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#a65bb4ed0d9281299ba08f99672ff3c2c">rendererCount</a> (const std::string &amp;batchId) const noexcept</td></tr>
+<tr class="memdesc:a65bb4ed0d9281299ba08f99672ff3c2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of active renderer parts in a batch; metadata-only anchors contribute zero.  <br /></td></tr>
+<tr class="separator:a65bb4ed0d9281299ba08f99672ff3c2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a132ca83edf21028a40fe4ab417d47917" id="r_a132ca83edf21028a40fe4ab417d47917"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#a132ca83edf21028a40fe4ab417d47917">pendingRetirements</a> () const noexcept</td></tr>
+<tr class="memdesc:a132ca83edf21028a40fe4ab417d47917"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of retired batch resource sets awaiting collectRetired, bounded to 64.  <br /></td></tr>
+<tr class="separator:a132ca83edf21028a40fe4ab417d47917"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab71140a1a9546405d39f62b65880f339" id="r_ab71140a1a9546405d39f62b65880f339"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#ab71140a1a9546405d39f62b65880f339">applyBatch</a> (const std::string &amp;, const std::vector&lt; <a class="el" href="structeve_1_1ProcgenInstanceDesc.html">ProcgenInstanceDesc</a> &gt; &amp;) override</td></tr>
+<tr class="memdesc:ab71140a1a9546405d39f62b65880f339"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility projection assigning absent PointIds by stable instance id before canonical replacement. @cost Same full-batch staging as replaceBatch, amortized per explicit publication.  <br /></td></tr>
+<tr class="separator:ab71140a1a9546405d39f62b65880f339"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61d339aea0be87bba8da2d8a0ce0e43e" id="r_a61d339aea0be87bba8da2d8a0ce0e43e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#a61d339aea0be87bba8da2d8a0ce0e43e">replaceBatch</a> (const std::string &amp;, uint64_t, const std::vector&lt; <a class="el" href="structeve_1_1ProcgenInstanceDesc.html">ProcgenInstanceDesc</a> &gt; &amp;) override</td></tr>
+<tr class="memdesc:a61d339aea0be87bba8da2d8a0ce0e43e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace a batch with a complete stable-identity snapshot at an explicit revision.    <br /></td></tr>
+<tr class="separator:a61d339aea0be87bba8da2d8a0ce0e43e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b987934f5705f40f2dbdacf9ec24704" id="r_a1b987934f5705f40f2dbdacf9ec24704"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#a1b987934f5705f40f2dbdacf9ec24704">replaceBatches</a> (const std::vector&lt; <a class="el" href="structeve_1_1ProcgenBatchSnapshot.html">ProcgenBatchSnapshot</a> &gt; &amp;) override</td></tr>
+<tr class="memdesc:a1b987934f5705f40f2dbdacf9ec24704"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replace several batches from complete snapshots.    <br /></td></tr>
+<tr class="separator:a1b987934f5705f40f2dbdacf9ec24704"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6249439a216d18e07f893372848b629" id="r_af6249439a216d18e07f893372848b629"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#af6249439a216d18e07f893372848b629">replaceBatchesCoordinated</a> (const std::vector&lt; <a class="el" href="structeve_1_1ProcgenBatchSnapshot.html">ProcgenBatchSnapshot</a> &gt; &amp;, const std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;()&gt; &amp;) override</td></tr>
+<tr class="memdesc:af6249439a216d18e07f893372848b629"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replace complete batches while committing one prepared external resource owner.    <br /></td></tr>
+<tr class="separator:af6249439a216d18e07f893372848b629"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2b73de041b5c4c02e3be1190b477d25" id="r_ae2b73de041b5c4c02e3be1190b477d25"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#ae2b73de041b5c4c02e3be1190b477d25">removeBatch</a> (const std::string &amp;) override</td></tr>
+<tr class="memdesc:ae2b73de041b5c4c02e3be1190b477d25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compatibility wrapper over checked coordinated removal. @cost Same Scene staging and renderer retirement as removeBatches, once per explicit removal.  <br /></td></tr>
+<tr class="separator:ae2b73de041b5c4c02e3be1190b477d25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b8679e71fb21a399db84a23560a9627" id="r_a3b8679e71fb21a399db84a23560a9627"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#a3b8679e71fb21a399db84a23560a9627">removeBatches</a> (const std::vector&lt; std::string &gt; &amp;) override</td></tr>
+<tr class="memdesc:a3b8679e71fb21a399db84a23560a9627"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically remove several published batches.    <br /></td></tr>
+<tr class="separator:a3b8679e71fb21a399db84a23560a9627"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa774e179e6879b3c81854acb919389d9" id="r_aa774e179e6879b3c81854acb919389d9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#aa774e179e6879b3c81854acb919389d9">removeBatchesCoordinated</a> (const std::vector&lt; std::string &gt; &amp;, const std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;()&gt; &amp;) override</td></tr>
+<tr class="memdesc:aa774e179e6879b3c81854acb919389d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove several batches while coordinating one external authoritative commit.    <br /></td></tr>
+<tr class="separator:aa774e179e6879b3c81854acb919389d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a093252c27808a11216d4dbfc19c5f765" id="r_a093252c27808a11216d4dbfc19c5f765"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#a093252c27808a11216d4dbfc19c5f765">applyDelta</a> (const std::string &amp;, const <a class="el" href="structeve_1_1ProcgenInstanceDelta.html">ProcgenInstanceDelta</a> &amp;) override</td></tr>
+<tr class="memdesc:a093252c27808a11216d4dbfc19c5f765"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply one prevalidated identity delta atomically to an existing batch.    <br /></td></tr>
+<tr class="separator:a093252c27808a11216d4dbfc19c5f765"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af32695a4197d455ed1a9ef17bcaf51e6" id="r_af32695a4197d455ed1a9ef17bcaf51e6"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#af32695a4197d455ed1a9ef17bcaf51e6">batchRevision</a> (const std::string &amp;) const override</td></tr>
+<tr class="memdesc:af32695a4197d455ed1a9ef17bcaf51e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current committed revision of a batch, or zero when it is absent.    <br /></td></tr>
+<tr class="separator:af32695a4197d455ed1a9ef17bcaf51e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa109b5e1074f51cfa36ed2584abdf862" id="r_aa109b5e1074f51cfa36ed2584abdf862"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#aa109b5e1074f51cfa36ed2584abdf862">instanceCount</a> (const std::string &amp;) const override</td></tr>
+<tr class="memdesc:aa109b5e1074f51cfa36ed2584abdf862"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of currently published instances in a batch.    <br /></td></tr>
+<tr class="separator:aa109b5e1074f51cfa36ed2584abdf862"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8ec30d5dd7f139d17ab0749b6070e4d" id="r_af8ec30d5dd7f139d17ab0749b6070e4d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#af8ec30d5dd7f139d17ab0749b6070e4d">lastCreatedCount</a> (const std::string &amp;) const override</td></tr>
+<tr class="memdesc:af8ec30d5dd7f139d17ab0749b6070e4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instances newly created by the batch's latest successful apply.    <br /></td></tr>
+<tr class="separator:af8ec30d5dd7f139d17ab0749b6070e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af43be12b8156477c99826d8cb480e2ad" id="r_af43be12b8156477c99826d8cb480e2ad"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#af43be12b8156477c99826d8cb480e2ad">lastReusedCount</a> (const std::string &amp;) const override</td></tr>
+<tr class="memdesc:af43be12b8156477c99826d8cb480e2ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable-id instances reused by the batch's latest successful apply.    <br /></td></tr>
+<tr class="separator:af43be12b8156477c99826d8cb480e2ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fe44cb775eb8cff8b6c6e9d765f60b2" id="r_a7fe44cb775eb8cff8b6c6e9d765f60b2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html#a7fe44cb775eb8cff8b6c6e9d765f60b2">lastRemovedCount</a> (const std::string &amp;) const override</td></tr>
+<tr class="memdesc:a7fe44cb775eb8cff8b6c6e9d765f60b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instances removed by the batch's latest successful apply or removal.    <br /></td></tr>
+<tr class="separator:a7fe44cb775eb8cff8b6c6e9d765f60b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1IProcgenSceneSink"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1IProcgenSceneSink')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1IProcgenSceneSink.html">eve::IProcgenSceneSink</a></td></tr>
+<tr class="memitem:a552cc671b06892308378d49c935457ab inherit pub_methods_classeve_1_1IProcgenSceneSink" id="r_a552cc671b06892308378d49c935457ab"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IProcgenSceneSink.html#a552cc671b06892308378d49c935457ab">~IProcgenSceneSink</a> ()=default</td></tr>
+<tr class="memdesc:a552cc671b06892308378d49c935457ab inherit pub_methods_classeve_1_1IProcgenSceneSink"><td class="mdescLeft">&#160;</td><td class="mdescRight">I procgen scene sink.  <br /></td></tr>
+<tr class="separator:a552cc671b06892308378d49c935457ab inherit pub_methods_classeve_1_1IProcgenSceneSink"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+额外继承的成员函数</h2></td></tr>
+<tr class="inherit_header pub_static_attribs_classeve_1_1IProcgenSceneSink"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classeve_1_1IProcgenSceneSink')"><img src="closed.png" alt="-"/>&#160;静态 Public 属性 继承自 <a class="el" href="classeve_1_1IProcgenSceneSink.html">eve::IProcgenSceneSink</a></td></tr>
+<tr class="memitem:a79ee7b1eedc170f1bf02481dd7c504fe inherit pub_static_attribs_classeve_1_1IProcgenSceneSink" id="r_a79ee7b1eedc170f1bf02481dd7c504fe"><td class="memItemLeft" align="right" valign="top">static constexpr const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1IProcgenSceneSink.html#a79ee7b1eedc170f1bf02481dd7c504fe">capabilityName</a> = &quot;IProcgenSceneSink&quot;</td></tr>
+<tr class="separator:a79ee7b1eedc170f1bf02481dd7c504fe inherit pub_static_attribs_classeve_1_1IProcgenSceneSink"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Scene-sink decorator projecting exact-build procedural prefab bindings into owned ECS renderers. @ownership Scene remains the author of batch metadata; cached snapshots are renderer projections guarded by its revision. @lifetime Graphics, underlying Scene sink, ECS table and admitted prefab factories outlive this object and release. @thread Graphics/Scene/ECS owner thread, outside iteration; synchronous, non-reentrant, no locks. </p>
+<dl class="section remark"><dt>备注</dt><dd>Composition owns capability registration/unregistration and makes this the sole batch writer while installed. Unbound asset labels remain metadata anchors. No implicit IO, prefab lookup by label, Scene links or simulation System. Admitted mesh/image leases must belong to the bound Graphics device/context; cross-context variant admission is unsupported. Capacity bounds: 4096 admitted asset/build versions, 64 active/retired transaction batches, and 65536 peak instances/renderer parts across active, retired and prepared snapshots. Collect retired resources between large publications. Each delta collection is bounded to 65536 entries before staging. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8h_source.html">ProcgenPrefabSceneSink.h</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="abbfc59baa36192a2c039695d767eadf3" name="abbfc59baa36192a2c039695d767eadf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abbfc59baa36192a2c039695d767eadf3">&#9670;&#160;</a></span>ProcgenPrefabSceneSink() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::asset_graphics::ProcgenPrefabSceneSink::ProcgenPrefabSceneSink </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1IProcgenSceneSink.html">IProcgenSceneSink</a> &amp;&#160;</td>
+          <td class="paramname"><em>scene</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bind borrowed rendering and Scene owners; does not install a global capability or publish anything. </p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00172">172</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneVisibilityProvider_8cpp_source.html#l00019">graphics</a> , 以及 <a class="el" href="PrimitivePath_8cpp_source.html#l00488">scene</a>.</p>
+
+</div>
+</div>
+<a id="ad10af6466c2ef4bb757fd6b6759be9af" name="ad10af6466c2ef4bb757fd6b6759be9af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad10af6466c2ef4bb757fd6b6759be9af">&#9670;&#160;</a></span>~ProcgenPrefabSceneSink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::asset_graphics::ProcgenPrefabSceneSink::~ProcgenPrefabSceneSink </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Attempt checked release before teardown and report failures; explicit release permits retry. </p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00304">release()</a> , 以及 <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>.</p>
+
+</div>
+</div>
+<a id="a84bbef55b3321f83f8fe5aad58e66e83" name="a84bbef55b3321f83f8fe5aad58e66e83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84bbef55b3321f83f8fe5aad58e66e83">&#9670;&#160;</a></span>ProcgenPrefabSceneSink() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::asset_graphics::ProcgenPrefabSceneSink::ProcgenPrefabSceneSink </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html">ProcgenPrefabSceneSink</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a03f33bebbd61d5b93e4e61b99a0998da" name="a03f33bebbd61d5b93e4e61b99a0998da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03f33bebbd61d5b93e4e61b99a0998da">&#9670;&#160;</a></span>admit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::asset_graphics::ProcgenPrefabSceneSink::admit </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeve_1_1asset__graphics_1_1EvpackStaticPrefab.html">EvpackStaticPrefab</a> &gt;&#160;</td>
+          <td class="paramname"><em>prefab</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Admit and pin one immutable asset/build version; historical versions remain available for undo/restore. </p>
+<dl class="section return"><dt>返回</dt><dd>Success or null/released/duplicate-version/budget failure, without replacing existing versions. @cost Logarithmic insertion plus a fixed pin allocation, at most 4096 versions after explicit loading; no IO/upload. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ECS_8cpp_source.html#l00155">key</a>, <a class="el" href="EvpackStaticPrefab_8cpp_source.html#l00133">eve::asset_graphics::EvpackStaticPrefab::pinResources()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00171">prefab</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ab71140a1a9546405d39f62b65880f339" name="ab71140a1a9546405d39f62b65880f339"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab71140a1a9546405d39f62b65880f339">&#9670;&#160;</a></span>applyBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::asset_graphics::ProcgenPrefabSceneSink::applyBatch </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1ProcgenInstanceDesc.html">ProcgenInstanceDesc</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>instances</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compatibility projection assigning absent PointIds by stable instance id before canonical replacement. @cost Same full-batch staging as replaceBatch, amortized per explicit publication. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IProcgenSceneSink.html#a8bd852920b8786c1d6f79b269fa84248">eve::IProcgenSceneSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00218">218</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00328">batchRevision()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00018">previous</a>, <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00212">replaceBatch()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>, <a class="el" href="McpProjectIndexTools_8cpp_source.html#l00019">used</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="a093252c27808a11216d4dbfc19c5f765" name="a093252c27808a11216d4dbfc19c5f765"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a093252c27808a11216d4dbfc19c5f765">&#9670;&#160;</a></span>applyDelta()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt; eve::asset_graphics::ProcgenPrefabSceneSink::applyDelta </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1ProcgenInstanceDelta.html">ProcgenInstanceDelta</a> &amp;&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Apply one prevalidated identity delta atomically to an existing batch.   </p>
+<dl class="section return"><dt>返回</dt><dd>The committed target revision, or a structured stale/validation/provider failure. @thread Called synchronously on the scene-owning thread; implementations must not retain references. @reentrant Not reentrant for the same batch.   @cost Identity staging plus full affected-batch renderer preparation, amortized per explicit delta. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Scene identities persist; this adapter currently recreates affected ECS renderer entities. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1IProcgenSceneSink.html#a00f0b8179c604728f6aae9ee85a15817">eve::IProcgenSceneSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenSceneSink_8h_source.html#l00052">eve::ProcgenInstanceDelta::added</a>, <a class="el" href="ProcgenSceneSink_8cpp_source.html#l00006">eve::buildProcgenInstanceDeltaSnapshot()</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00031">count</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="ProcgenSceneSink_8h_source.html#l00057">eve::ProcgenInstanceDelta::removed</a>, <a class="el" href="ProcgenSceneSink_8h_source.html#l00055">eve::ProcgenInstanceDelta::removedPointIds</a>, <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00212">replaceBatch()</a>, <a class="el" href="AudioSourcePreview_8cpp_source.html#l00027">revision</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>, <a class="el" href="ProcgenSceneSink_8h_source.html#l00061">eve::ProcgenInstanceDelta::targetOrder</a>, <a class="el" href="ProcgenSceneSink_8h_source.html#l00059">eve::ProcgenInstanceDelta::targetPointOrder</a>, <a class="el" href="ProcgenSceneSink_8h_source.html#l00051">eve::ProcgenInstanceDelta::targetRevision</a> , 以及 <a class="el" href="ProcgenSceneSink_8h_source.html#l00053">eve::ProcgenInstanceDelta::updated</a>.</p>
+
+</div>
+</div>
+<a id="af32695a4197d455ed1a9ef17bcaf51e6" name="af32695a4197d455ed1a9ef17bcaf51e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af32695a4197d455ed1a9ef17bcaf51e6">&#9670;&#160;</a></span>batchRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t eve::asset_graphics::ProcgenPrefabSceneSink::batchRevision </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current committed revision of a batch, or zero when it is absent.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IProcgenSceneSink.html#a67291b5d562dfd95a2ee8ce6ec559be1">eve::IProcgenSceneSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00328">328</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00218">applyBatch()</a>.</p>
+
+</div>
+</div>
+<a id="a00df9389c3444b612504d0ec59119100" name="a00df9389c3444b612504d0ec59119100"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00df9389c3444b612504d0ec59119100">&#9670;&#160;</a></span>collectRetired()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::asset_graphics::ProcgenPrefabSceneSink::collectRetired </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Release retired, already hidden renderers without changing committed batches. </p>
+<dl class="section return"><dt>返回</dt><dd>Success or cleanup failure retaining resources for retry. @cost Linear in retired renderer parts, amortized after explicit publication; no Scene callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00292">292</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00015">node</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00304">release()</a>.</p>
+
+</div>
+</div>
+<a id="aa109b5e1074f51cfa36ed2584abdf862" name="aa109b5e1074f51cfa36ed2584abdf862"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa109b5e1074f51cfa36ed2584abdf862">&#9670;&#160;</a></span>instanceCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::asset_graphics::ProcgenPrefabSceneSink::instanceCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of currently published instances in a batch.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IProcgenSceneSink.html#aa458d77664305b78814f573048e29fcc">eve::IProcgenSceneSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00329">329</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af8ec30d5dd7f139d17ab0749b6070e4d" name="af8ec30d5dd7f139d17ab0749b6070e4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8ec30d5dd7f139d17ab0749b6070e4d">&#9670;&#160;</a></span>lastCreatedCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::asset_graphics::ProcgenPrefabSceneSink::lastCreatedCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Instances newly created by the batch's latest successful apply.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IProcgenSceneSink.html#aab2e8998af2bc0db269dca61974f71e4">eve::IProcgenSceneSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00330">330</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7fe44cb775eb8cff8b6c6e9d765f60b2" name="a7fe44cb775eb8cff8b6c6e9d765f60b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fe44cb775eb8cff8b6c6e9d765f60b2">&#9670;&#160;</a></span>lastRemovedCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::asset_graphics::ProcgenPrefabSceneSink::lastRemovedCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Instances removed by the batch's latest successful apply or removal.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IProcgenSceneSink.html#a27371d0c1ce3563f1b6a2d60e896dfc5">eve::IProcgenSceneSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00332">332</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af43be12b8156477c99826d8cb480e2ad" name="af43be12b8156477c99826d8cb480e2ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af43be12b8156477c99826d8cb480e2ad">&#9670;&#160;</a></span>lastReusedCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::asset_graphics::ProcgenPrefabSceneSink::lastReusedCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable-id instances reused by the batch's latest successful apply.   </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IProcgenSceneSink.html#a3f44da4aeb1193d3b720ea376b3b00ef">eve::IProcgenSceneSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00331">331</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aec7e8048bfe44cb77a10edab860e4868" name="aec7e8048bfe44cb77a10edab860e4868"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec7e8048bfe44cb77a10edab860e4868">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html">ProcgenPrefabSceneSink</a> &amp; eve::asset_graphics::ProcgenPrefabSceneSink::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1asset__graphics_1_1ProcgenPrefabSceneSink.html">ProcgenPrefabSceneSink</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a132ca83edf21028a40fe4ab417d47917" name="a132ca83edf21028a40fe4ab417d47917"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a132ca83edf21028a40fe4ab417d47917">&#9670;&#160;</a></span>pendingRetirements()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::asset_graphics::ProcgenPrefabSceneSink::pendingRetirements </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of retired batch resource sets awaiting collectRetired, bounded to 64. </p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00327">327</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3862f7ed9784002a0fbae5ff992b0b1f" name="a3862f7ed9784002a0fbae5ff992b0b1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3862f7ed9784002a0fbae5ff992b0b1f">&#9670;&#160;</a></span>release()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::asset_graphics::ProcgenPrefabSceneSink::release </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove all owned batches through Scene coordination, collect resources and close the decorator. </p>
+<dl class="section return"><dt>返回</dt><dd>Success or checked publication/cleanup failure; retry before owner teardown. @cost Linear in owned and retired parts plus Scene staging, once per owner teardown; no IO. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00304">304</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00292">collectRetired()</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00109">ids</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00285">removeBatches()</a>, <a class="el" href="SceneCapabilities_8cpp_source.html#l00671">removed</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00174">~ProcgenPrefabSceneSink()</a>.</p>
+
+</div>
+</div>
+<a id="ae2b73de041b5c4c02e3be1190b477d25" name="ae2b73de041b5c4c02e3be1190b477d25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2b73de041b5c4c02e3be1190b477d25">&#9670;&#160;</a></span>removeBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::asset_graphics::ProcgenPrefabSceneSink::removeBatch </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compatibility wrapper over checked coordinated removal. @cost Same Scene staging and renderer retirement as removeBatches, once per explicit removal. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1IProcgenSceneSink.html#ae0bd1aec72939712ce376c95b345bfe8">eve::IProcgenSceneSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00288">288</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00275">eve::Result&lt; T &gt;::ok()</a>, <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00285">removeBatches()</a> , 以及 <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>.</p>
+
+</div>
+</div>
+<a id="a3b8679e71fb21a399db84a23560a9627" name="a3b8679e71fb21a399db84a23560a9627"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b8679e71fb21a399db84a23560a9627">&#9670;&#160;</a></span>removeBatches()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt; eve::asset_graphics::ProcgenPrefabSceneSink::removeBatches </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ids</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically remove several published batches.   </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">batchIds</td><td>Non-empty unique identities of existing batches. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Number of removed batches, or a structured failure with no batch changed. @thread Called synchronously on the scene-owning thread; implementations must not retain references. @reentrant Not reentrant. Callbacks run only after every batch is no longer visible or queryable.   @cost Linear in affected renderer parts plus Scene cache staging per explicit removal; cleanup is deferred. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1IProcgenSceneSink.html#a294f1f7725dfe46b7ab35b7f1f698033">eve::IProcgenSceneSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00285">285</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00109">ids</a>, <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00262">removeBatchesCoordinated()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00304">release()</a> , 以及 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00288">removeBatch()</a>.</p>
+
+</div>
+</div>
+<a id="aa774e179e6879b3c81854acb919389d9" name="aa774e179e6879b3c81854acb919389d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa774e179e6879b3c81854acb919389d9">&#9670;&#160;</a></span>removeBatchesCoordinated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt; eve::asset_graphics::ProcgenPrefabSceneSink::removeBatchesCoordinated </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>ids</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;()&gt; &amp;&#160;</td>
+          <td class="paramname"><em>owner</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Remove several batches while coordinating one external authoritative commit.   </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">batchIds</td><td>Non-empty unique identities of existing batches. </td></tr>
+    <tr><td class="paramname">commitPreparedOwner</td><td>Called after Scene preparation and before Scene state becomes visible. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Number of removed batches, or a structured failure with neither owner changed. Post-commit notification exceptions return Applied with warning diagnostics; they do not undo publication. @thread Called synchronously on the scene-owning thread; references are not retained. @reentrant The commit callback must not reenter Scene and must leave its owner unchanged on failure.   @cost Scene cache staging and affected renderer retirement per explicit removal; the owner is pre-prepared. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1IProcgenSceneSink.html#ad42faa623cfc19073faa2830161072e2">eve::IProcgenSceneSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00262">262</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00019">busy</a>, <a class="el" href="Coupling3DStep_8cpp_source.html#l00032">committed</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00109">ids</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00022">owner</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="AudioSourcePreview_8cpp_source.html#l00027">revision</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00061">eve::asset_graphics::ProcgenPrefabSceneSink::Impl::visibility()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00285">removeBatches()</a>.</p>
+
+</div>
+</div>
+<a id="a65bb4ed0d9281299ba08f99672ff3c2c" name="a65bb4ed0d9281299ba08f99672ff3c2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65bb4ed0d9281299ba08f99672ff3c2c">&#9670;&#160;</a></span>rendererCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t eve::asset_graphics::ProcgenPrefabSceneSink::rendererCount </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>batchId</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Number of active renderer parts in a batch; metadata-only anchors contribute zero. </p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00323">323</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>.</p>
+
+</div>
+</div>
+<a id="a61d339aea0be87bba8da2d8a0ce0e43e" name="a61d339aea0be87bba8da2d8a0ce0e43e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61d339aea0be87bba8da2d8a0ce0e43e">&#9670;&#160;</a></span>replaceBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt; eve::asset_graphics::ProcgenPrefabSceneSink::replaceBatch </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>revision</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1ProcgenInstanceDesc.html">ProcgenInstanceDesc</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>instances</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically replace a batch with a complete stable-identity snapshot at an explicit revision.   </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">batchId</td><td>Non-empty batch identity. </td></tr>
+    <tr><td class="paramname">targetRevision</td><td>Non-zero revision newer than the currently committed batch revision. </td></tr>
+    <tr><td class="paramname">instances</td><td>Complete ordered target snapshot; every instance must have a unique non-zero source PointId. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>The committed target revision, or a structured stale/validation/provider failure. @thread Called synchronously on the scene-owning thread; implementations must not retain references. @reentrant Not reentrant for the same batch.   @cost Linear in prepared renderer parts plus Scene staging, with allocations once per explicit publication. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1IProcgenSceneSink.html#ac97667b30506624b7d9a8c37b7283dc7">eve::IProcgenSceneSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpArchitectureTools_8cpp_source.html#l00018">id</a>, <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00209">replaceBatches()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="AudioSourcePreview_8cpp_source.html#l00027">revision</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00218">applyBatch()</a> , 以及 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00243">applyDelta()</a>.</p>
+
+</div>
+</div>
+<a id="a1b987934f5705f40f2dbdacf9ec24704" name="a1b987934f5705f40f2dbdacf9ec24704"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1b987934f5705f40f2dbdacf9ec24704">&#9670;&#160;</a></span>replaceBatches()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt; eve::asset_graphics::ProcgenPrefabSceneSink::replaceBatches </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1ProcgenBatchSnapshot.html">ProcgenBatchSnapshot</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>snapshots</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically replace several batches from complete snapshots.   </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">snapshots</td><td>Non-empty transaction whose batch ids are unique. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Number of committed batches, or a structured failure with no batch changed. @thread Called synchronously on the scene-owning thread; implementations must not retain references. @reentrant Not reentrant. No scene callback may observe a partially committed transaction.   @cost Full staging of every affected batch and the Scene cache, amortized per explicit publication. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1IProcgenSceneSink.html#ae2e0bfb0db5104c6fec19fe3757dc7e4">eve::IProcgenSceneSink</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00209">209</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00191">replaceBatchesCoordinated()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00212">replaceBatch()</a>.</p>
+
+</div>
+</div>
+<a id="af6249439a216d18e07f893372848b629" name="af6249439a216d18e07f893372848b629"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6249439a216d18e07f893372848b629">&#9670;&#160;</a></span>replaceBatchesCoordinated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; uint64_t &gt; eve::asset_graphics::ProcgenPrefabSceneSink::replaceBatchesCoordinated </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1ProcgenBatchSnapshot.html">ProcgenBatchSnapshot</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>snapshots</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;()&gt; &amp;&#160;</td>
+          <td class="paramname"><em>owner</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replace complete batches while committing one prepared external resource owner.   </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">snapshots</td><td>Non-empty unique batch snapshots with newer non-zero revisions. </td></tr>
+    <tr><td class="paramname">commitPreparedOwner</td><td>Synchronous commit after Scene preparation, before any Scene publication or events. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Committed batch count, or failure with prior Scene batches unchanged. Unsupported providers do not call commit. Post-commit notification exceptions return Applied with warning diagnostics, preserving the committed outcome. @thread Scene-owner thread, outside ECS iteration; references are call-scoped, no locks. @reentrant Commit must not access or mutate Scene, invoke scripts, or reenter the sink; failure leaves its owner unchanged. @cost Linear in target instances and the committed Scene cache; staging allocations amortized per explicit publication.   @cost Full renderer/Scene staging per explicit publication; the external owner must already be prepared. </dd></dl>
+
+<p>重载 <a class="el" href="classeve_1_1IProcgenSceneSink.html#a0a374fb5d13d7a0983b6e76f1cfbf152">eve::IProcgenSceneSink</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a> 第 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00191">191</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00019">busy</a>, <a class="el" href="Coupling3DStep_8cpp_source.html#l00032">committed</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00022">owner</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00315">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html#l00209">replaceBatches()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/asset/graphics/<a class="el" href="ProcgenPrefabSceneSink_8h_source.html">ProcgenPrefabSceneSink.h</a></li>
+<li>src/modules/asset/graphics/<a class="el" href="ProcgenPrefabSceneSink_8cpp_source.html">ProcgenPrefabSceneSink.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

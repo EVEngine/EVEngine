@@ -1,0 +1,254 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/weapon/WorldHitProbe.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_3549d6d40925778ea7fe373869498ee4.html">weapon</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WorldHitProbe.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WorldHitProbe_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// eve-hot-path</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="WorldHitProbe_8h.html">weapon/WorldHitProbe.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;exception&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Diagnostic_8h.html">common/Diagnostic.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1weapon.html">eve::weapon</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WorldHitProbe.html#aa659adca814300610383716f7c77c475">    9</a></span><a class="code hl_function" href="classeve_1_1weapon_1_1WorldHitProbe.html#aa659adca814300610383716f7c77c475">WorldHitProbe::WorldHitProbe</a>(std::unique_ptr&lt;IWorldSphereSweep&gt; sweep) : sweep_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(sweep)) {}</div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WorldHitProbe.html#a5801a8e40e706e96c9ba28ff3a472982">   10</a></span><a class="code hl_function" href="classeve_1_1weapon_1_1WorldHitProbe.html#aa659adca814300610383716f7c77c475">WorldHitProbe::WorldHitProbe</a>(std::unique_ptr&lt;IWorldSphereSweep&gt; sweep, std::unique_ptr&lt;IWorldHitTargetMapper&gt; mapper)</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    : sweep_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(sweep)), mapper_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(mapper)) {}</div>
+</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="}">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="classeve_1_1weapon_1_1WorldHitProbe.html#ad5a84c8aef4d3c7ce86813ab0b7b72cf">   13</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;ICarrierHitProbe::Contact&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1weapon_1_1WorldHitProbe.html#ad5a84c8aef4d3c7ce86813ab0b7b72cf">WorldHitProbe::query</a>(<a class="code hl_struct" href="structeve_1_1weapon_1_1CarrierHandle.html">CarrierHandle</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1CarrierMotion.html">CarrierMotion</a>&amp; <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#af2753995bbdcb48d470f2b1361196e6b">previous</a>,</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>                                                                    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1weapon_1_1CarrierMotion.html">CarrierMotion</a>&amp; <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keyword">using </span>Output = <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::vector&lt;Contact&gt;</a>&gt;;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">if</span> (!sweep_)</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">return</span> Output::failure(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">DiagnosticCode::Unsupported</a>, <span class="stringliteral">&quot;No world sweep session&quot;</span>, <span class="stringliteral">&quot;worldSweep&quot;</span>));</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keyword">auto</span> hits = sweep_-&gt;query(<a class="code hl_variable" href="OceanSprayBindings_8cpp.html#af2753995bbdcb48d470f2b1361196e6b">previous</a>.position.x, <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#af2753995bbdcb48d470f2b1361196e6b">previous</a>.position.y, <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#af2753995bbdcb48d470f2b1361196e6b">previous</a>.position.z, <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.position.x,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>                              <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.position.y, <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a>.position.z);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">if</span> (!hits) <span class="keywordflow">return</span> Output::failure(hits.status());</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    std::vector&lt;Contact&gt; contacts;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    contacts.reserve(hits.value().size());</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a> : hits.value()) {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <a class="code hl_struct" href="structeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact.html">Contact</a> <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a3459849ab29ad684658dbcd0cf8c5d5a">contact</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a3459849ab29ad684658dbcd0cf8c5d5a">contact</a>.<a class="code hl_variable" href="structeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact.html#abb01bd64227e3a0a33f51b70bdf94aa8">point</a>        = {<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.<a class="code hl_variable" href="structeve_1_1weapon_1_1ProjectilePoint.html#a57e83073921f8fc7cd1d55e896efa399">x</a>, <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.y, <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.z};</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a3459849ab29ad684658dbcd0cf8c5d5a">contact</a>.<a class="code hl_variable" href="structeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact.html#a9d9f2fa441a242b8996c24377afa0953">normal</a>       = {<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.nx, <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.ny, <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.nz};</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a3459849ab29ad684658dbcd0cf8c5d5a">contact</a>.<a class="code hl_variable" href="structeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact.html#af6ba18572f4bf5335ad0ad68b5e8a38f">fraction</a>     = <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>.fraction;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a3459849ab29ad684658dbcd0cf8c5d5a">contact</a>.<a class="code hl_variable" href="structeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact.html#a449d8b563a4545c97f65648d18640e4f">worldContact</a> = <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">if</span> (mapper_) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                <span class="keyword">auto</span> mapped = mapper_-&gt;target(<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                <span class="keywordflow">if</span> (!mapped) <span class="keywordflow">return</span> Output::failure(mapped.status());</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                <span class="keywordflow">if</span> (mapped.value()) {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                    <span class="keywordflow">if</span> (mapped.value()-&gt;id == 0 || mapped.value()-&gt;generation == 0)</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                        <span class="keywordflow">return</span> Output::failure(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                            <span class="stringliteral">&quot;Mapped target requires a non-null generation-qualified entity&quot;</span>, <span class="stringliteral">&quot;target&quot;</span>));</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                    <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a3459849ab29ad684658dbcd0cf8c5d5a">contact</a>.<a class="code hl_variable" href="structeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact.html#a22ff1d2dcfc951216308dbd4cac011eb">target</a> = *mapped.value();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                <span class="keywordflow">return</span> Output::failure(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what(), <span class="stringliteral">&quot;targetMapper&quot;</span>));</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                <span class="keywordflow">return</span> Output::failure(</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                    <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <span class="stringliteral">&quot;World target mapper threw&quot;</span>, <span class="stringliteral">&quot;targetMapper&quot;</span>));</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        contacts.push_back(std::move(<a class="code hl_variable" href="VehicleTires3D_8cpp.html#a3459849ab29ad684658dbcd0cf8c5d5a">contact</a>));</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">return</span> Output::success(std::move(contacts));</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
+</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}  <span class="comment">// namespace eve::weapon</span></div>
+<div class="ttc" id="aDiagnostic_8h_html"><div class="ttname"><a href="Diagnostic_8h.html">Diagnostic.h</a></div><div class="ttdoc">Stable, structured diagnostics shared by engine modules.</div></div>
+<div class="ttc" id="aOceanSprayBindings_8cpp_html_af2753995bbdcb48d470f2b1361196e6b"><div class="ttname"><a href="OceanSprayBindings_8cpp.html#af2753995bbdcb48d470f2b1361196e6b">previous</a></div><div class="ttdeci">std::shared_ptr&lt; const OceanSprayFrame &gt; previous</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayBindings_8cpp_source.html#l00018">OceanSprayBindings.cpp:18</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00074">Package.cpp:74</a></div></div>
+<div class="ttc" id="aPrimitiveDrawList_8cpp_html_a60be6f7b3d0d908fcedf0842fd96c1f4"><div class="ttname"><a href="PrimitiveDrawList_8cpp.html#a60be6f7b3d0d908fcedf0842fd96c1f4">hit</a></div><div class="ttdeci">bool hit</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveDrawList_8cpp_source.html#l00077">PrimitiveDrawList.cpp:77</a></div></div>
+<div class="ttc" id="aSettlementModule_8cpp_html_ae36027a2ebe1db7af7b94bb1f5ebb1fc"><div class="ttname"><a href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a></div><div class="ttdeci">double current</div><div class="ttdef"><b>Definition</b> <a href="SettlementModule_8cpp_source.html#l00035">SettlementModule.cpp:35</a></div></div>
+<div class="ttc" id="aVehicleTires3D_8cpp_html_a3459849ab29ad684658dbcd0cf8c5d5a"><div class="ttname"><a href="VehicleTires3D_8cpp.html#a3459849ab29ad684658dbcd0cf8c5d5a">contact</a></div><div class="ttdeci">Contact contact</div><div class="ttdef"><b>Definition</b> <a href="VehicleTires3D_8cpp_source.html#l00053">VehicleTires3D.cpp:53</a></div></div>
+<div class="ttc" id="aWorldHitProbe_8h_html"><div class="ttname"><a href="WorldHitProbe_8h.html">WorldHitProbe.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00021">Diagnostic.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WorldHitProbe_html_aa659adca814300610383716f7c77c475"><div class="ttname"><a href="classeve_1_1weapon_1_1WorldHitProbe.html#aa659adca814300610383716f7c77c475">eve::weapon::WorldHitProbe::WorldHitProbe</a></div><div class="ttdeci">WorldHitProbe(std::unique_ptr&lt; IWorldSphereSweep &gt; sweep)</div><div class="ttdoc">Take ownership of an optional query session; no entity mapping is installed.</div><div class="ttdef"><b>Definition</b> <a href="WorldHitProbe_8cpp_source.html#l00009">WorldHitProbe.cpp:9</a></div></div>
+<div class="ttc" id="aclasseve_1_1weapon_1_1WorldHitProbe_html_ad5a84c8aef4d3c7ce86813ab0b7b72cf"><div class="ttname"><a href="classeve_1_1weapon_1_1WorldHitProbe.html#ad5a84c8aef4d3c7ce86813ab0b7b72cf">eve::weapon::WorldHitProbe::query</a></div><div class="ttdeci">Result&lt; std::vector&lt; Contact &gt; &gt; query(CarrierHandle handle, const CarrierMotion &amp;previous, const CarrierMotion &amp;current) const override</div><div class="ttdoc">Project physical contacts without applying damage or forces. @cost One sweep per proposed segment plu...</div><div class="ttdef"><b>Definition</b> <a href="WorldHitProbe_8cpp_source.html#l00013">WorldHitProbe.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1weapon_html"><div class="ttname"><a href="namespaceeve_1_1weapon.html">eve::weapon</a></div><div class="ttdoc">载具模块入口（eve.Vehicle）：定义注册 / 实体工厂 / RTS 命令 / 帧调度。 设计文档：docs/dev/通用载具系统设计.md</div><div class="ttdef"><b>Definition</b> <a href="RTSArchetype_8h_source.html#l00010">RTSArchetype.h:10</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a></div><div class="ttdeci">@ Unsupported</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1CarrierHandle_html"><div class="ttname"><a href="structeve_1_1weapon_1_1CarrierHandle.html">eve::weapon::CarrierHandle</a></div><div class="ttdoc">Generation-qualified reference to one pooled carrier slot.</div><div class="ttdef"><b>Definition</b> <a href="CombatCarrier_8h_source.html#l00166">CombatCarrier.h:166</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1CarrierMotion_html"><div class="ttname"><a href="structeve_1_1weapon_1_1CarrierMotion.html">eve::weapon::CarrierMotion</a></div><div class="ttdoc">Live motion snapshot for one carrier.</div><div class="ttdef"><b>Definition</b> <a href="CombatCarrier_8h_source.html#l00201">CombatCarrier.h:201</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact_html"><div class="ttname"><a href="structeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact.html">eve::weapon::ICarrierHitProbe::Contact</a></div><div class="ttdoc">Owning contact reported between previous and current motion.</div><div class="ttdef"><b>Definition</b> <a href="CombatCarrier_8h_source.html#l00313">CombatCarrier.h:313</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact_html_a22ff1d2dcfc951216308dbd4cac011eb"><div class="ttname"><a href="structeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact.html#a22ff1d2dcfc951216308dbd4cac011eb">eve::weapon::ICarrierHitProbe::Contact::target</a></div><div class="ttdeci">ecs::EntityHandle target</div><div class="ttdef"><b>Definition</b> <a href="CombatCarrier_8h_source.html#l00314">CombatCarrier.h:314</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact_html_a449d8b563a4545c97f65648d18640e4f"><div class="ttname"><a href="structeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact.html#a449d8b563a4545c97f65648d18640e4f">eve::weapon::ICarrierHitProbe::Contact::worldContact</a></div><div class="ttdeci">std::optional&lt; eve::WorldSphereContact &gt; worldContact</div><div class="ttdoc">Optional physics provenance; target stays empty unless a gameplay adapter maps it.</div><div class="ttdef"><b>Definition</b> <a href="CombatCarrier_8h_source.html#l00323">CombatCarrier.h:323</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact_html_a9d9f2fa441a242b8996c24377afa0953"><div class="ttname"><a href="structeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact.html#a9d9f2fa441a242b8996c24377afa0953">eve::weapon::ICarrierHitProbe::Contact::normal</a></div><div class="ttdeci">ProjectileVector normal</div><div class="ttdef"><b>Definition</b> <a href="CombatCarrier_8h_source.html#l00316">CombatCarrier.h:316</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact_html_abb01bd64227e3a0a33f51b70bdf94aa8"><div class="ttname"><a href="structeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact.html#abb01bd64227e3a0a33f51b70bdf94aa8">eve::weapon::ICarrierHitProbe::Contact::point</a></div><div class="ttdeci">ProjectilePoint point</div><div class="ttdef"><b>Definition</b> <a href="CombatCarrier_8h_source.html#l00315">CombatCarrier.h:315</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact_html_af6ba18572f4bf5335ad0ad68b5e8a38f"><div class="ttname"><a href="structeve_1_1weapon_1_1ICarrierHitProbe_1_1Contact.html#af6ba18572f4bf5335ad0ad68b5e8a38f">eve::weapon::ICarrierHitProbe::Contact::fraction</a></div><div class="ttdeci">std::optional&lt; double &gt; fraction</div><div class="ttdoc">Canonical normalized impact time in [0,1] along this swept segment. Legacy probes may omit it: compat...</div><div class="ttdef"><b>Definition</b> <a href="CombatCarrier_8h_source.html#l00321">CombatCarrier.h:321</a></div></div>
+<div class="ttc" id="astructeve_1_1weapon_1_1ProjectilePoint_html_a57e83073921f8fc7cd1d55e896efa399"><div class="ttname"><a href="structeve_1_1weapon_1_1ProjectilePoint.html#a57e83073921f8fc7cd1d55e896efa399">eve::weapon::ProjectilePoint::x</a></div><div class="ttdeci">double x</div><div class="ttdef"><b>Definition</b> <a href="ProjectileRuntime_8h_source.html#l00023">ProjectileRuntime.h:23</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

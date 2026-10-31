@@ -1,0 +1,312 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/road/BridgeGenerator.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_eae28a20e025a9c7686e9c0b6d57b77b.html">road</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">BridgeGenerator.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="MeshBuild_8h_source.html">procgen/MeshBuild.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Params_8h_source.html">procgen/Params.h</a>&quot;</code><br />
+<code>#include &lt;string_view&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+</div>
+<p><a href="BridgeGenerator_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1BridgePoint.html">eve::procgen::road::BridgePoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned world-space position in metres, Y-up.  <a href="structeve_1_1procgen_1_1road_1_1BridgePoint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1BridgeParameters.html">eve::procgen::road::BridgeParameters</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned bounded authoring parameters; all dimensions are metres, counts are deterministic.  <a href="structeve_1_1procgen_1_1road_1_1BridgeParameters.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1BridgeMember.html">eve::procgen::road::BridgeMember</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One owned editable structural member; width/height are transverse to its longitudinal axis. Round sections use width as diameter. No external object references are retained.  <a href="structeve_1_1procgen_1_1road_1_1BridgeMember.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1BridgePlan.html">eve::procgen::road::BridgePlan</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transient owning member plan; edit members to customize logic before baking. Not a persistent format.  <a href="structeve_1_1procgen_1_1road_1_1BridgePlan.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen_1_1road" id="r_namespaceeve_1_1procgen_1_1road"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html">eve::procgen::road</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:af64370599c00e3f42df540bd3d0c4e82" id="r_af64370599c00e3f42df540bd3d0c4e82"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82">eve::procgen::road::BridgeKind</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82adc6e84a67852dd96c1ba57da273b26ac">eve::procgen::road::Beam</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82a07605c26b7bd2e8b30a21a990c4cab00">eve::procgen::road::Slab</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82aefd717440ab790091beef4a125935a73">eve::procgen::road::Arch</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82a6457d063c8fb0c3f40bf779a9e0e8b3b">eve::procgen::road::TiedArch</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82a1374271aebbcb7dd6695dd93077e4861">eve::procgen::road::ThroughTruss</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82a9a570f63f721dfb12f04b3e8d881bd49">eve::procgen::road::DeckTruss</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82a1f205a9ffac00495763ad141f04a8e71">eve::procgen::road::Suspension</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82a6d2caf75d461e7605c66e617df31872d">eve::procgen::road::CableStayed</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82a768dae8f2ff72cb54c4c08197258103e">eve::procgen::road::Cantilever</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82ad9c83ecb007eabf4c1077ca0f36d06e4">eve::procgen::road::Trestle</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:af64370599c00e3f42df540bd3d0c4e82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Visual bridge topology presets; geometry generation performs no structural load analysis.  <a href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82">更多...</a><br /></td></tr>
+<tr class="separator:af64370599c00e3f42df540bd3d0c4e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c6bd3aafe2e2e6bfc7ea11171c73764" id="r_a0c6bd3aafe2e2e6bfc7ea11171c73764"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#a0c6bd3aafe2e2e6bfc7ea11171c73764">eve::procgen::road::BridgeSection</a> { <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a0c6bd3aafe2e2e6bfc7ea11171c73764a3cfce651e667ab85486dd42a8185f98a">eve::procgen::road::Box</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a0c6bd3aafe2e2e6bfc7ea11171c73764ab7f41fc1412ad2ee75e9b2635d3b9d5c">eve::procgen::road::Round</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a0c6bd3aafe2e2e6bfc7ea11171c73764a4ca8b47601e7a843e23d0139a8a4ff61">eve::procgen::road::IBeam</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a0c6bd3aafe2e2e6bfc7ea11171c73764a9d02e587d111ba17d34fca8bd28a22a1">eve::procgen::road::TaperedBox</a>
+ }</td></tr>
+<tr class="memdesc:a0c6bd3aafe2e2e6bfc7ea11171c73764"><td class="mdescLeft">&#160;</td><td class="mdescRight">Section construction shared by all bridge topologies.  <a href="namespaceeve_1_1procgen_1_1road.html#a0c6bd3aafe2e2e6bfc7ea11171c73764">更多...</a><br /></td></tr>
+<tr class="separator:a0c6bd3aafe2e2e6bfc7ea11171c73764"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a116d4f19501a65c89d5d31df8b4ee949" id="r_a116d4f19501a65c89d5d31df8b4ee949"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#a116d4f19501a65c89d5d31df8b4ee949">eve::procgen::road::BridgeMaterial</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#a116d4f19501a65c89d5d31df8b4ee949ac02221ae67f642f240ee3e57161e433a">eve::procgen::road::Concrete</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a116d4f19501a65c89d5d31df8b4ee949a9debfa34dd38a1d71f4391e684b12f94">eve::procgen::road::Limestone</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a116d4f19501a65c89d5d31df8b4ee949a8a695a2928f643dc8ac87e6a99db86fb">eve::procgen::road::PaintedSteel</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a116d4f19501a65c89d5d31df8b4ee949a2702bc195a1f5172c40c5d4b04d734e9">eve::procgen::road::GalvanizedSteel</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#a116d4f19501a65c89d5d31df8b4ee949a85f1e3104e2386965fea73075149abd2">eve::procgen::road::Timber</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a116d4f19501a65c89d5d31df8b4ee949a69cdd2c7900c5a4732b4bb63bea57f6c">eve::procgen::road::Asphalt</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a116d4f19501a65c89d5d31df8b4ee949a02b5a90fed5f6f6b592342db2aaaf0f4">eve::procgen::road::WhitePaint</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a116d4f19501a65c89d5d31df8b4ee949a221f7a778197b259af55239f48606ea8">eve::procgen::road::YellowPaint</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a116d4f19501a65c89d5d31df8b4ee949"><td class="mdescLeft">&#160;</td><td class="mdescRight">Orthogonal surface classification carried by each generated member.  <a href="namespaceeve_1_1procgen_1_1road.html#a116d4f19501a65c89d5d31df8b4ee949">更多...</a><br /></td></tr>
+<tr class="separator:a116d4f19501a65c89d5d31df8b4ee949"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c645cf0e1a4d096a43908248dae2396" id="r_a4c645cf0e1a4d096a43908248dae2396"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#a4c645cf0e1a4d096a43908248dae2396">eve::procgen::road::BridgeRailing</a> { <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a4c645cf0e1a4d096a43908248dae2396aeaa57a9b4248ce3968e718895e1c2f04">eve::procgen::road::Metal</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a4c645cf0e1a4d096a43908248dae2396ac02221ae67f642f240ee3e57161e433a">eve::procgen::road::Concrete</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a4c645cf0e1a4d096a43908248dae2396aaa47777dc638b9a23ba7265627910b14">eve::procgen::road::Masonry</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a4c645cf0e1a4d096a43908248dae2396a85f1e3104e2386965fea73075149abd2">eve::procgen::road::Timber</a>
+ }</td></tr>
+<tr class="memdesc:a4c645cf0e1a4d096a43908248dae2396"><td class="mdescLeft">&#160;</td><td class="mdescRight">Editable edge protection rule; presets select the reference's construction.  <a href="namespaceeve_1_1procgen_1_1road.html#a4c645cf0e1a4d096a43908248dae2396">更多...</a><br /></td></tr>
+<tr class="separator:a4c645cf0e1a4d096a43908248dae2396"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec68c362e63ec9d84124af40bd9ed6c4" id="r_aec68c362e63ec9d84124af40bd9ed6c4"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4">eve::procgen::road::BridgePart</a> { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4a2b487b0f260da950751013344a2e4cdc">eve::procgen::road::Deck</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4aaa0d528ba11ea1485d466dfe1ea40819">eve::procgen::road::Surface</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4a0c7692ba6f3b8b7d2796bd916154b597">eve::procgen::road::Pier</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4aec39d6caa5f3429cea9dbc0517668ff0">eve::procgen::road::Abutment</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4ab1863053d31387fb320f86c72f7967f1">eve::procgen::road::Girder</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4aefd717440ab790091beef4a125935a73">eve::procgen::road::Arch</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4a2907a7475df8aab572e5d07d77e24bcf">eve::procgen::road::Truss</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4a8f8b35b2b5f50b489f1e528f89bdd6e4">eve::procgen::road::Tower</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4a09d6acc298f7319fa2d9ab309b9bbd4f">eve::procgen::road::Cable</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4ac1da7972c31170634883cf25e105db38">eve::procgen::road::Hanger</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4a4fc44ec0fe833dde806bce9bf32a5aa2">eve::procgen::road::Railing</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4a2d9d6219cb93df7115866b7c5f7e5a00">eve::procgen::road::Marking</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4ab5f9744b59c20ff3bcb2629857f149fb">eve::procgen::road::Footing</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4a88d53497f4a92958c67c73a9f2f52df3">eve::procgen::road::Cap</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4ac68f4e6506520a1ae5f89c48dc2fcca1">eve::procgen::road::Sidewalk</a>
+, <a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4ac2cc7082a89c1ad6631a2f66af5f00c0">eve::procgen::road::Connection</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4aa34285645af2703a9501db6fc881e5df">eve::procgen::road::Anchor</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:aec68c362e63ec9d84124af40bd9ed6c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Semantic mesh groups, independent of graphics materials.  <a href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4">更多...</a><br /></td></tr>
+<tr class="separator:aec68c362e63ec9d84124af40bd9ed6c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aec80301109b1241d2261a26db64d9c14" id="r_aec80301109b1241d2261a26db64d9c14"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec80301109b1241d2261a26db64d9c14">eve::procgen::road::bridgeKindName</a> (<a class="el" href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82">BridgeKind</a> <a class="el" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>) noexcept</td></tr>
+<tr class="memdesc:aec80301109b1241d2261a26db64d9c14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static protocol name, or an empty view for an unknown enum; process-lifetime storage, thread-safe.  <br /></td></tr>
+<tr class="separator:aec80301109b1241d2261a26db64d9c14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae411c3c3a3c93be5439ffca3b1493fb4" id="r_ae411c3c3a3c93be5439ffca3b1493fb4"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#ae411c3c3a3c93be5439ffca3b1493fb4">eve::procgen::road::bridgePartName</a> (<a class="el" href="namespaceeve_1_1procgen_1_1road.html#aec68c362e63ec9d84124af40bd9ed6c4">BridgePart</a> part) noexcept</td></tr>
+<tr class="memdesc:ae411c3c3a3c93be5439ffca3b1493fb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static semantic name, or an empty view for an unknown enum; process-lifetime storage, thread-safe.  <br /></td></tr>
+<tr class="separator:ae411c3c3a3c93be5439ffca3b1493fb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3915f34cf6a5adc371b9f6d59a4d8a6" id="r_ae3915f34cf6a5adc371b9f6d59a4d8a6"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#ae3915f34cf6a5adc371b9f6d59a4d8a6">eve::procgen::road::bridgeMaterialName</a> (<a class="el" href="namespaceeve_1_1procgen_1_1road.html#a116d4f19501a65c89d5d31df8b4ee949">BridgeMaterial</a> <a class="el" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>) noexcept</td></tr>
+<tr class="memdesc:ae3915f34cf6a5adc371b9f6d59a4d8a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Static surface name, or an empty view for an unknown enum; process-lifetime storage, thread-safe.  <br /></td></tr>
+<tr class="separator:ae3915f34cf6a5adc371b9f6d59a4d8a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7164d3a699e8ae532666377b2599c5d1" id="r_a7164d3a699e8ae532666377b2599c5d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1BridgeParameters.html">BridgeParameters</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#a7164d3a699e8ae532666377b2599c5d1">eve::procgen::road::bridgePreset</a> (<a class="el" href="namespaceeve_1_1procgen_1_1road.html#af64370599c00e3f42df540bd3d0c4e82">BridgeKind</a> <a class="el" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>)</td></tr>
+<tr class="memdesc:a7164d3a699e8ae532666377b2599c5d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return an owning reference-aligned preset; unsupported kinds fail without side effects.  <br /></td></tr>
+<tr class="separator:a7164d3a699e8ae532666377b2599c5d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a511df68419413dce2b1d22f338d0f624" id="r_a511df68419413dce2b1d22f338d0f624"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1BridgePlan.html">BridgePlan</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#a511df68419413dce2b1d22f338d0f624">eve::procgen::road::planBridge</a> (const <a class="el" href="structeve_1_1procgen_1_1road_1_1BridgeParameters.html">BridgeParameters</a> &amp;<a class="el" href="RPGBalance_8cpp.html#a8bea6ef0aa30f8b0540ac515a0ffaf3a">parameters</a>)</td></tr>
+<tr class="memdesc:a511df68419413dce2b1d22f338d0f624"><td class="mdescLeft">&#160;</td><td class="mdescRight">Plan the selected topology without renderer or terrain providers.  <br /></td></tr>
+<tr class="separator:a511df68419413dce2b1d22f338d0f624"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e7169dac6b0131dd0c4d231c4506868" id="r_a7e7169dac6b0131dd0c4d231c4506868"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#a7e7169dac6b0131dd0c4d231c4506868">eve::procgen::road::bakeBridge</a> (const <a class="el" href="structeve_1_1procgen_1_1road_1_1BridgePlan.html">BridgePlan</a> &amp;plan)</td></tr>
+<tr class="memdesc:a7e7169dac6b0131dd0c4d231c4506868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake a validated member plan into independent CPU geometry; upload separately.  <br /></td></tr>
+<tr class="separator:a7e7169dac6b0131dd0c4d231c4506868"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba9920711c6303db500b1ac9677bd1a5" id="r_aba9920711c6303db500b1ac9677bd1a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1BridgeParameters.html">BridgeParameters</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#aba9920711c6303db500b1ac9677bd1a5">eve::procgen::road::bridgeParametersFromParams</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:aba9920711c6303db500b1ac9677bd1a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode recipe parameters into an owning typed authoring value.  <br /></td></tr>
+<tr class="separator:aba9920711c6303db500b1ac9677bd1a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76581dd472fd0748339cdceba1eb825b" id="r_a76581dd472fd0748339cdceba1eb825b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1road.html#a76581dd472fd0748339cdceba1eb825b">eve::procgen::road::applyBridgeRecipeDefaults</a> (<a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:a76581dd472fd0748339cdceba1eb825b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically fill absent recipe parameters from the selected bridge preset.  <br /></td></tr>
+<tr class="separator:a76581dd472fd0748339cdceba1eb825b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

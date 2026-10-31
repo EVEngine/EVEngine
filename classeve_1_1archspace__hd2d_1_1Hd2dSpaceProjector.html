@@ -1,0 +1,799 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::archspace_hd2d::Hd2dSpaceProjector类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1archspace__hd2d.html">archspace_hd2d</a></li><li class="navelem"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html">Hd2dSpaceProjector</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::archspace_hd2d::Hd2dSpaceProjector类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Projects an ArchSpace level onto a TileLayer and HD-2D TileMap3D bake path.  
+ <a href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ArchSpaceHd2dProjector_8h_source.html">ArchSpaceHd2dProjector.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::archspace_hd2d::Hd2dSpaceProjector 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.png" usemap="#eve::archspace_5Fhd2d::Hd2dSpaceProjector_map" alt=""/>
+  <map id="eve::archspace_5Fhd2d::Hd2dSpaceProjector_map" name="eve::archspace_5Fhd2d::Hd2dSpaceProjector_map">
+<area href="classeve_1_1archspace_1_1IArchSpaceProjector.html" title="Presentation adapter contract for ArchSpace documents." alt="eve::archspace::IArchSpaceProjector" shape="rect" coords="0,0,258,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a44803a526eb561c52e70a85f64e10761" id="r_a44803a526eb561c52e70a85f64e10761"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#a44803a526eb561c52e70a85f64e10761">Hd2dSpaceProjector</a> ()=default</td></tr>
+<tr class="separator:a44803a526eb561c52e70a85f64e10761"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88bedc7a7432c38850bf34138fed7904" id="r_a88bedc7a7432c38850bf34138fed7904"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#a88bedc7a7432c38850bf34138fed7904">Hd2dSpaceProjector</a> (const <a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html">Hd2dSpaceProjector</a> &amp;)=delete</td></tr>
+<tr class="separator:a88bedc7a7432c38850bf34138fed7904"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9cb84a67f04a7d57a0602c73d1627281" id="r_a9cb84a67f04a7d57a0602c73d1627281"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html">Hd2dSpaceProjector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#a9cb84a67f04a7d57a0602c73d1627281">operator=</a> (const <a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html">Hd2dSpaceProjector</a> &amp;)=delete</td></tr>
+<tr class="separator:a9cb84a67f04a7d57a0602c73d1627281"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa749b8b8b23a6dd05a3cb4bd0af72a95" id="r_aa749b8b8b23a6dd05a3cb4bd0af72a95"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#aa749b8b8b23a6dd05a3cb4bd0af72a95">~Hd2dSpaceProjector</a> () override=default</td></tr>
+<tr class="separator:aa749b8b8b23a6dd05a3cb4bd0af72a95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4587eb3780b32240027904bf86e337b5" id="r_a4587eb3780b32240027904bf86e337b5"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#a4587eb3780b32240027904bf86e337b5">kind</a> () const noexcept override</td></tr>
+<tr class="memdesc:a4587eb3780b32240027904bf86e337b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable projector kind. @ownership Non-owning pointer to a static string literal; do not free. @lifetime Valid for the process lifetime.  <br /></td></tr>
+<tr class="separator:a4587eb3780b32240027904bf86e337b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a540b1ac61e566de8d5a3b6150c656e2e" id="r_a540b1ac61e566de8d5a3b6150c656e2e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#a540b1ac61e566de8d5a3b6150c656e2e">setLevelId</a> (std::string levelId)</td></tr>
+<tr class="memdesc:a540b1ac61e566de8d5a3b6150c656e2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Level id to rasterize on sync (required, non-empty).  <br /></td></tr>
+<tr class="separator:a540b1ac61e566de8d5a3b6150c656e2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acab479134dcaf183a0a904f2eed905cb" id="r_acab479134dcaf183a0a904f2eed905cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#acab479134dcaf183a0a904f2eed905cb">setCellSize</a> (float cellSize)</td></tr>
+<tr class="memdesc:acab479134dcaf183a0a904f2eed905cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Metres per cell / tile edge (must be finite and &gt; 0).  <br /></td></tr>
+<tr class="separator:acab479134dcaf183a0a904f2eed905cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7bbab2ba9ef17bcfbc4d4ed37327643" id="r_ac7bbab2ba9ef17bcfbc4d4ed37327643"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#ac7bbab2ba9ef17bcfbc4d4ed37327643">setPalette</a> (<a class="el" href="structeve_1_1archspace__map_1_1ArchSpaceTilePalette.html">archspace_map::ArchSpaceTilePalette</a> <a class="el" href="FloorTextures_8cpp.html#ac92a942e4a459af30d01ef0fc9c7f2ec">palette</a>)</td></tr>
+<tr class="memdesc:ac7bbab2ba9ef17bcfbc4d4ed37327643"><td class="mdescLeft">&#160;</td><td class="mdescRight">GID mapping forwarded to the tile projector.  <br /></td></tr>
+<tr class="separator:ac7bbab2ba9ef17bcfbc4d4ed37327643"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf58e895393a240d22918fa761e9471e" id="r_aaf58e895393a240d22918fa761e9471e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#aaf58e895393a240d22918fa761e9471e">setSideDepth</a> (float <a class="el" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>)</td></tr>
+<tr class="memdesc:aaf58e895393a240d22918fa761e9471e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Downward side-wall depth for TileMap3D extrusion (world units).  <br /></td></tr>
+<tr class="separator:aaf58e895393a240d22918fa761e9471e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c2b9df51fc622db40a85856e63c592e" id="r_a3c2b9df51fc622db40a85856e63c592e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#a3c2b9df51fc622db40a85856e63c592e">setHeightScale</a> (float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)</td></tr>
+<tr class="memdesc:a3c2b9df51fc622db40a85856e63c592e"><td class="mdescLeft">&#160;</td><td class="mdescRight">World units per unit of tile "height" metadata.  <br /></td></tr>
+<tr class="separator:a3c2b9df51fc622db40a85856e63c592e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0469337b42cf5c55d51edd913705a09" id="r_ae0469337b42cf5c55d51edd913705a09"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#ae0469337b42cf5c55d51edd913705a09">setLayer</a> (<a class="el" href="classeve_1_1map_1_1TileLayer.html">map::TileLayer</a> *<a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>)</td></tr>
+<tr class="memdesc:ae0469337b42cf5c55d51edd913705a09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow an existing TileLayer; projector will not delete it. @ownership Non-owning; caller retains ownership and must outlive sync.  <br /></td></tr>
+<tr class="separator:ae0469337b42cf5c55d51edd913705a09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48f8724942630e156552a13d6d637b1f" id="r_a48f8724942630e156552a13d6d637b1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#a48f8724942630e156552a13d6d637b1f">sync</a> (const <a class="el" href="classeve_1_1archspace_1_1Document.html">archspace::Document</a> &amp;document, std::uint64_t <a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#af5b1235dccc1bde5e3276e129e274689">revision</a>) override</td></tr>
+<tr class="memdesc:a48f8724942630e156552a13d6d637b1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebuild derived presentation from <code>document</code> at <code>revision</code>.  <br /></td></tr>
+<tr class="separator:a48f8724942630e156552a13d6d637b1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2f16580ec2959dfda1c183cdd843c83" id="r_ac2f16580ec2959dfda1c183cdd843c83"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#ac2f16580ec2959dfda1c183cdd843c83">clear</a> () override</td></tr>
+<tr class="memdesc:ac2f16580ec2959dfda1c183cdd843c83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop derived presentation state.  <br /></td></tr>
+<tr class="separator:ac2f16580ec2959dfda1c183cdd843c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e8763026a49b3205b9e23fe474726ad" id="r_a6e8763026a49b3205b9e23fe474726ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1archspace__map_1_1TileMapProjector.html">archspace_map::TileMapProjector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#a6e8763026a49b3205b9e23fe474726ad">tiles</a> () noexcept</td></tr>
+<tr class="memdesc:a6e8763026a49b3205b9e23fe474726ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Underlying tile projector (grid + TileLayer). @ownership Borrowed from this projector; do not free. @lifetime Until this projector is destroyed.  <br /></td></tr>
+<tr class="separator:a6e8763026a49b3205b9e23fe474726ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa242acc677983e7cbd6d75e9e618fb8" id="r_afa242acc677983e7cbd6d75e9e618fb8"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1archspace__map_1_1TileMapProjector.html">archspace_map::TileMapProjector</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#afa242acc677983e7cbd6d75e9e618fb8">tiles</a> () const noexcept</td></tr>
+<tr class="separator:afa242acc677983e7cbd6d75e9e618fb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6386943cfdf3c9a1f025ad898b5701a" id="r_ab6386943cfdf3c9a1f025ad898b5701a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#ab6386943cfdf3c9a1f025ad898b5701a">buildMesh</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:ab6386943cfdf3c9a1f025ad898b5701a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extrude the last synced TileLayer into a Graphics-owned mesh.  <br /></td></tr>
+<tr class="separator:ab6386943cfdf3c9a1f025ad898b5701a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33b0879b6def6fc514443ca36ef9749a" id="r_a33b0879b6def6fc514443ca36ef9749a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#a33b0879b6def6fc514443ca36ef9749a">buildRenderable</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *gfx)</td></tr>
+<tr class="memdesc:a33b0879b6def6fc514443ca36ef9749a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extrude into a scene-ready Renderable3D (ECS-registered). @cost Full terrain mesh bake + renderable wrap; amortize per revision.  <br /></td></tr>
+<tr class="separator:a33b0879b6def6fc514443ca36ef9749a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2da4834445afe4ee8eb05796ec5aa39" id="r_ae2da4834445afe4ee8eb05796ec5aa39"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#ae2da4834445afe4ee8eb05796ec5aa39">lastTileCount</a> () const noexcept</td></tr>
+<tr class="memdesc:ae2da4834445afe4ee8eb05796ec5aa39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tile count from the last successful buildMesh/buildRenderable; 0 otherwise.  <br /></td></tr>
+<tr class="separator:ae2da4834445afe4ee8eb05796ec5aa39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5b1235dccc1bde5e3276e129e274689" id="r_af5b1235dccc1bde5e3276e129e274689"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#af5b1235dccc1bde5e3276e129e274689">revision</a> () const noexcept</td></tr>
+<tr class="memdesc:af5b1235dccc1bde5e3276e129e274689"><td class="mdescLeft">&#160;</td><td class="mdescRight">Revision last successfully synced.  <br /></td></tr>
+<tr class="separator:af5b1235dccc1bde5e3276e129e274689"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1archspace_1_1IArchSpaceProjector"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1archspace_1_1IArchSpaceProjector')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html">eve::archspace::IArchSpaceProjector</a></td></tr>
+<tr class="memitem:abdcf16026005a7163e19a47faf8cce1c inherit pub_methods_classeve_1_1archspace_1_1IArchSpaceProjector" id="r_abdcf16026005a7163e19a47faf8cce1c"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html#abdcf16026005a7163e19a47faf8cce1c">~IArchSpaceProjector</a> ()=default</td></tr>
+<tr class="memdesc:abdcf16026005a7163e19a47faf8cce1c inherit pub_methods_classeve_1_1archspace_1_1IArchSpaceProjector"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases <a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html" title="Presentation adapter contract for ArchSpace documents.">IArchSpaceProjector</a> resources.  <br /></td></tr>
+<tr class="separator:abdcf16026005a7163e19a47faf8cce1c inherit pub_methods_classeve_1_1archspace_1_1IArchSpaceProjector"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43508dcd550324ab2a6e95a3e5e56efd inherit pub_methods_classeve_1_1archspace_1_1IArchSpaceProjector" id="r_a43508dcd550324ab2a6e95a3e5e56efd"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html#a43508dcd550324ab2a6e95a3e5e56efd">pickNode</a> (<a class="el" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a>, <a class="el" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a>) const</td></tr>
+<tr class="memdesc:a43508dcd550324ab2a6e95a3e5e56efd inherit pub_methods_classeve_1_1archspace_1_1IArchSpaceProjector"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pick a document node under a world-space ray when supported.  <br /></td></tr>
+<tr class="separator:a43508dcd550324ab2a6e95a3e5e56efd inherit pub_methods_classeve_1_1archspace_1_1IArchSpaceProjector"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Projects an ArchSpace level onto a TileLayer and HD-2D TileMap3D bake path. </p>
+<p>Sync rebuilds the shared grid → TileLayer via TileMapProjector. Mesh upload is deferred: call buildMesh / buildRenderable when a Graphics host is available. Unit tests can assert TileLayer GIDs without opening a GPU window.</p>
+<p>@ownership Owns its TileMapProjector (and thus an owned TileLayer unless setLayer was used on <a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#a6e8763026a49b3205b9e23fe474726ad" title="Underlying tile projector (grid + TileLayer). @ownership Borrowed from this projector; do not free....">tiles()</a>). TileMap3D is value-owned configuration only. @thread Owner thread only. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8h_source.html">ArchSpaceHd2dProjector.h</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8h_source.html#l00030">30</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a44803a526eb561c52e70a85f64e10761" name="a44803a526eb561c52e70a85f64e10761"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44803a526eb561c52e70a85f64e10761">&#9670;&#160;</a></span>Hd2dSpaceProjector() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::archspace_hd2d::Hd2dSpaceProjector::Hd2dSpaceProjector </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a88bedc7a7432c38850bf34138fed7904" name="a88bedc7a7432c38850bf34138fed7904"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88bedc7a7432c38850bf34138fed7904">&#9670;&#160;</a></span>Hd2dSpaceProjector() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::archspace_hd2d::Hd2dSpaceProjector::Hd2dSpaceProjector </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html">Hd2dSpaceProjector</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa749b8b8b23a6dd05a3cb4bd0af72a95" name="aa749b8b8b23a6dd05a3cb4bd0af72a95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa749b8b8b23a6dd05a3cb4bd0af72a95">&#9670;&#160;</a></span>~Hd2dSpaceProjector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::archspace_hd2d::Hd2dSpaceProjector::~Hd2dSpaceProjector </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ab6386943cfdf3c9a1f025ad898b5701a" name="ab6386943cfdf3c9a1f025ad898b5701a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6386943cfdf3c9a1f025ad898b5701a">&#9670;&#160;</a></span>buildMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a> * &gt; eve::archspace_hd2d::Hd2dSpaceProjector::buildMesh </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extrude the last synced TileLayer into a Graphics-owned mesh. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">gfx</td><td>Active Graphics; must outlive the returned mesh. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Mesh on success; Failed when no layer has been synced or build fails. @cost Full terrain mesh bake; amortize per document revision / host upload. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html">ArchSpaceHd2dProjector.cpp</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="TileMap3D_8cpp_source.html#l00082">eve::hd2d::TileMap3D::buildMesh()</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Hd2d_8h_source.html#l00092">eve::hd2d::TileMap3D::getTileCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ArchSpaceTileMapProjector_8h_source.html#l00072">eve::archspace_map::TileMapProjector::layer()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00147">layer</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00026">mesh</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a33b0879b6def6fc514443ca36ef9749a" name="a33b0879b6def6fc514443ca36ef9749a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33b0879b6def6fc514443ca36ef9749a">&#9670;&#160;</a></span>buildRenderable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1graphics_1_1Renderable3D.html">graphics::Renderable3D</a> * &gt; eve::archspace_hd2d::Hd2dSpaceProjector::buildRenderable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> *&#160;</td>
+          <td class="paramname"><em>gfx</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Extrude into a scene-ready Renderable3D (ECS-registered). @cost Full terrain mesh bake + renderable wrap; amortize per revision. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html">ArchSpaceHd2dProjector.cpp</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="TileMap3D_8cpp_source.html#l00184">eve::hd2d::TileMap3D::buildRenderable()</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Hd2d_8h_source.html#l00092">eve::hd2d::TileMap3D::getTileCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ArchSpaceTileMapProjector_8h_source.html#l00072">eve::archspace_map::TileMapProjector::layer()</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00147">layer</a>, <a class="el" href="Status_8cpp_source.html#l00019">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ac2f16580ec2959dfda1c183cdd843c83" name="ac2f16580ec2959dfda1c183cdd843c83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2f16580ec2959dfda1c183cdd843c83">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::archspace_hd2d::Hd2dSpaceProjector::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Drop derived presentation state. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html#a283feb06bca6454c643e480a809e3327">eve::archspace::IArchSpaceProjector</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html">ArchSpaceHd2dProjector.cpp</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceTileMapProjector_8cpp_source.html#l00119">eve::archspace_map::TileMapProjector::clear()</a>.</p>
+
+</div>
+</div>
+<a id="a4587eb3780b32240027904bf86e337b5" name="a4587eb3780b32240027904bf86e337b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4587eb3780b32240027904bf86e337b5">&#9670;&#160;</a></span>kind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * eve::archspace_hd2d::Hd2dSpaceProjector::kind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable projector kind. @ownership Non-owning pointer to a static string literal; do not free. @lifetime Valid for the process lifetime. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html#a01a2f5da2c0c3d1b00690ef8e15af8c8">eve::archspace::IArchSpaceProjector</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8h_source.html">ArchSpaceHd2dProjector.h</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae2da4834445afe4ee8eb05796ec5aa39" name="ae2da4834445afe4ee8eb05796ec5aa39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2da4834445afe4ee8eb05796ec5aa39">&#9670;&#160;</a></span>lastTileCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::archspace_hd2d::Hd2dSpaceProjector::lastTileCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Tile count from the last successful buildMesh/buildRenderable; 0 otherwise. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8h_source.html">ArchSpaceHd2dProjector.h</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8h_source.html#l00087">87</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9cb84a67f04a7d57a0602c73d1627281" name="a9cb84a67f04a7d57a0602c73d1627281"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9cb84a67f04a7d57a0602c73d1627281">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html">Hd2dSpaceProjector</a> &amp; eve::archspace_hd2d::Hd2dSpaceProjector::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html">Hd2dSpaceProjector</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af5b1235dccc1bde5e3276e129e274689" name="af5b1235dccc1bde5e3276e129e274689"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5b1235dccc1bde5e3276e129e274689">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::archspace_hd2d::Hd2dSpaceProjector::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Revision last successfully synced. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8h_source.html">ArchSpaceHd2dProjector.h</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8h_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html#l00021">sync()</a>.</p>
+
+</div>
+</div>
+<a id="acab479134dcaf183a0a904f2eed905cb" name="acab479134dcaf183a0a904f2eed905cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acab479134dcaf183a0a904f2eed905cb">&#9670;&#160;</a></span>setCellSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::archspace_hd2d::Hd2dSpaceProjector::setCellSize </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Metres per cell / tile edge (must be finite and &gt; 0). </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html">ArchSpaceHd2dProjector.cpp</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceTileMapProjector_8cpp_source.html#l00033">eve::archspace_map::TileMapProjector::setCellSize()</a>.</p>
+
+</div>
+</div>
+<a id="a3c2b9df51fc622db40a85856e63c592e" name="a3c2b9df51fc622db40a85856e63c592e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c2b9df51fc622db40a85856e63c592e">&#9670;&#160;</a></span>setHeightScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::archspace_hd2d::Hd2dSpaceProjector::setHeightScale </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>World units per unit of tile "height" metadata. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html">ArchSpaceHd2dProjector.cpp</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a> , 以及 <a class="el" href="TileMap3D_8cpp_source.html#l00064">eve::hd2d::TileMap3D::setHeightScale()</a>.</p>
+
+</div>
+</div>
+<a id="ae0469337b42cf5c55d51edd913705a09" name="ae0469337b42cf5c55d51edd913705a09"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0469337b42cf5c55d51edd913705a09">&#9670;&#160;</a></span>setLayer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::archspace_hd2d::Hd2dSpaceProjector::setLayer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1map_1_1TileLayer.html">map::TileLayer</a> *&#160;</td>
+          <td class="paramname"><em>layer</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrow an existing TileLayer; projector will not delete it. @ownership Non-owning; caller retains ownership and must outlive sync. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html">ArchSpaceHd2dProjector.cpp</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00147">layer</a> , 以及 <a class="el" href="ArchSpaceTileMapProjector_8cpp_source.html#l00046">eve::archspace_map::TileMapProjector::setLayer()</a>.</p>
+
+</div>
+</div>
+<a id="a540b1ac61e566de8d5a3b6150c656e2e" name="a540b1ac61e566de8d5a3b6150c656e2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a540b1ac61e566de8d5a3b6150c656e2e">&#9670;&#160;</a></span>setLevelId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::archspace_hd2d::Hd2dSpaceProjector::setLevelId </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>levelId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Level id to rasterize on sync (required, non-empty). </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html">ArchSpaceHd2dProjector.cpp</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceTileMapProjector_8cpp_source.html#l00031">eve::archspace_map::TileMapProjector::setLevelId()</a>.</p>
+
+</div>
+</div>
+<a id="ac7bbab2ba9ef17bcfbc4d4ed37327643" name="ac7bbab2ba9ef17bcfbc4d4ed37327643"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac7bbab2ba9ef17bcfbc4d4ed37327643">&#9670;&#160;</a></span>setPalette()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::archspace_hd2d::Hd2dSpaceProjector::setPalette </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace__map_1_1ArchSpaceTilePalette.html">archspace_map::ArchSpaceTilePalette</a>&#160;</td>
+          <td class="paramname"><em>palette</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>GID mapping forwarded to the tile projector. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html">ArchSpaceHd2dProjector.cpp</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="FloorTextures_8cpp_source.html#l00239">palette</a> , 以及 <a class="el" href="ArchSpaceTileMapProjector_8cpp_source.html#l00044">eve::archspace_map::TileMapProjector::setPalette()</a>.</p>
+
+</div>
+</div>
+<a id="aaf58e895393a240d22918fa761e9471e" name="aaf58e895393a240d22918fa761e9471e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf58e895393a240d22918fa761e9471e">&#9670;&#160;</a></span>setSideDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::archspace_hd2d::Hd2dSpaceProjector::setSideDepth </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>depth</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Downward side-wall depth for TileMap3D extrusion (world units). </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html">ArchSpaceHd2dProjector.cpp</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00034">depth</a> , 以及 <a class="el" href="TileMap3D_8cpp_source.html#l00059">eve::hd2d::TileMap3D::setSideDepth()</a>.</p>
+
+</div>
+</div>
+<a id="a48f8724942630e156552a13d6d637b1f" name="a48f8724942630e156552a13d6d637b1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48f8724942630e156552a13d6d637b1f">&#9670;&#160;</a></span>sync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::archspace_hd2d::Hd2dSpaceProjector::sync </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1archspace_1_1Document.html">archspace::Document</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>revision</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Rebuild derived presentation from <code>document</code> at <code>revision</code>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">document</td><td>Borrowed authority; must outlive the call. </td></tr>
+    <tr><td class="paramname">revision</td><td>Caller-owned monotonic revision token for cache skipping. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on success; Rejected when inputs are invalid. @cost Full rebuild of presentation state; amortize per document revision. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html#a9738314760073a6b6289b89d66d5bb3e">eve::archspace::IArchSpaceProjector</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html">ArchSpaceHd2dProjector.cpp</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ArchSpaceHd2dProjector_8h_source.html#l00090">revision()</a>, <a class="el" href="ArchSpaceTileMapProjector_8cpp_source.html#l00035">eve::archspace_map::TileMapProjector::setOrientation()</a> , 以及 <a class="el" href="ArchSpaceTileMapProjector_8cpp_source.html#l00078">eve::archspace_map::TileMapProjector::sync()</a>.</p>
+
+</div>
+</div>
+<a id="afa242acc677983e7cbd6d75e9e618fb8" name="afa242acc677983e7cbd6d75e9e618fb8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa242acc677983e7cbd6d75e9e618fb8">&#9670;&#160;</a></span>tiles() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1archspace__map_1_1TileMapProjector.html">archspace_map::TileMapProjector</a> &amp; eve::archspace_hd2d::Hd2dSpaceProjector::tiles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8h_source.html">ArchSpaceHd2dProjector.h</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6e8763026a49b3205b9e23fe474726ad" name="a6e8763026a49b3205b9e23fe474726ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e8763026a49b3205b9e23fe474726ad">&#9670;&#160;</a></span>tiles() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1archspace__map_1_1TileMapProjector.html">archspace_map::TileMapProjector</a> &amp; eve::archspace_hd2d::Hd2dSpaceProjector::tiles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Underlying tile projector (grid + TileLayer). @ownership Borrowed from this projector; do not free. @lifetime Until this projector is destroyed. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceHd2dProjector_8h_source.html">ArchSpaceHd2dProjector.h</a> 第 <a class="el" href="ArchSpaceHd2dProjector_8h_source.html#l00069">69</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/archspace/hd2d/<a class="el" href="ArchSpaceHd2dProjector_8h_source.html">ArchSpaceHd2dProjector.h</a></li>
+<li>src/modules/archspace/hd2d/<a class="el" href="ArchSpaceHd2dProjector_8cpp_source.html">ArchSpaceHd2dProjector.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

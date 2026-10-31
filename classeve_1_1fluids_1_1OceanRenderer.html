@@ -1,0 +1,516 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::fluids::OceanRenderer类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1fluids.html">fluids</a></li><li class="navelem"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html">OceanRenderer</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1fluids_1_1OceanRenderer-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::fluids::OceanRenderer类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Graphics projection of an ocean; never owns or advances simulation state. Render-thread only, non-reentrant, no callbacks. Graphics owns GPU resources; a weak lifetime token makes provider-first destruction safe. Destroying this object first releases its resources. Do not retain frame builders across this renderer or water-owner mutation/destruction.  
+ <a href="classeve_1_1fluids_1_1OceanRenderer.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="OceanRenderer_8h_source.html">OceanRenderer.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1fluids_1_1OceanRenderer_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ae027c3633713a09eb10949bd04cded79" id="r_ae027c3633713a09eb10949bd04cded79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html#ae027c3633713a09eb10949bd04cded79">~OceanRenderer</a> ()</td></tr>
+<tr class="separator:ae027c3633713a09eb10949bd04cded79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56d669c53b62f516a2c207c082a7e869" id="r_a56d669c53b62f516a2c207c082a7e869"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html#a56d669c53b62f516a2c207c082a7e869">OceanRenderer</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html">OceanRenderer</a> &amp;)=<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">delete</a></td></tr>
+<tr class="separator:a56d669c53b62f516a2c207c082a7e869"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa00aa75a866db85af83ae7904e739c7c" id="r_aa00aa75a866db85af83ae7904e739c7c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html">OceanRenderer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html#aa00aa75a866db85af83ae7904e739c7c">operator=</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html">OceanRenderer</a> &amp;)=<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">delete</a></td></tr>
+<tr class="separator:aa00aa75a866db85af83ae7904e739c7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96b6933a1db4b9dcd48b4f3acafa1467" id="r_a96b6933a1db4b9dcd48b4f3acafa1467"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1fluids_1_1OceanMeshFrameBuilder.html">OceanMeshFrameBuilder</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html#a96b6933a1db4b9dcd48b4f3acafa1467">frameBuilder</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1OceanWaterView.html">OceanWaterView</a> &amp;<a class="el" href="OceanSprayBindings_8cpp.html#a3f21f5c1341d26ce06612af232be6091">water</a>) <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a></td></tr>
+<tr class="memdesc:a96b6933a1db4b9dcd48b4f3acafa1467"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare a cheap borrowed CPU projection builder; set center/origin before building.  <br /></td></tr>
+<tr class="separator:a96b6933a1db4b9dcd48b4f3acafa1467"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75687a37632e62441aa32a1293e2cb1f" id="r_a75687a37632e62441aa32a1293e2cb1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1fluids_1_1OceanGpuRenderFrameBuilder.html">OceanGpuRenderFrameBuilder</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html#a75687a37632e62441aa32a1293e2cb1f">gpuFrameBuilder</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1OceanGpuSpectrum.html">OceanGpuSpectrum</a> &amp;<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">spectrum</a>, <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1OceanGpuFrameToken.html">OceanGpuFrameToken</a> &amp;<a class="el" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>)</td></tr>
+<tr class="memdesc:a75687a37632e62441aa32a1293e2cb1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare a borrowed GPU publication; owners must remain alive and unchanged through <a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html#af913d71f4dde0444d0b8c76c4265c6dd" title="Publish a prepared owning vertex frame; input is borrowed only for this call.">publish()</a>.  <br /></td></tr>
+<tr class="separator:a75687a37632e62441aa32a1293e2cb1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af913d71f4dde0444d0b8c76c4265c6dd" id="r_af913d71f4dde0444d0b8c76c4265c6dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html#af913d71f4dde0444d0b8c76c4265c6dd">publish</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="structeve_1_1fluids_1_1OceanMeshFrame.html">OceanMeshFrame</a> &amp;<a class="el" href="OceanRenderBindings_8cpp.html#ae29508736a722b546230738c4e54294d">frame</a>)</td></tr>
+<tr class="memdesc:af913d71f4dde0444d0b8c76c4265c6dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Publish a prepared owning vertex frame; input is borrowed only for this call.  <br /></td></tr>
+<tr class="separator:af913d71f4dde0444d0b8c76c4265c6dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a02eb34ae4a4d5a821f0087d1a70bcbe9" id="r_a02eb34ae4a4d5a821f0087d1a70bcbe9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1fluids_1_1OceanHullMaskPublication.html">OceanHullMaskPublication</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html#a02eb34ae4a4d5a821f0087d1a70bcbe9">hullMaskBuilder</a> (<a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1OceanHullMaskFrame.html">OceanHullMaskFrame</a> &amp;<a class="el" href="OceanRenderBindings_8cpp.html#ae29508736a722b546230738c4e54294d">frame</a>)</td></tr>
+<tr class="memdesc:a02eb34ae4a4d5a821f0087d1a70bcbe9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow a mask frame for synchronous upload; keep frame and renderer alive until publish returns.  <br /></td></tr>
+<tr class="separator:a02eb34ae4a4d5a821f0087d1a70bcbe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9b4ea6ac04114967920cd5a4b1494e9" id="r_aa9b4ea6ac04114967920cd5a4b1494e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html#aa9b4ea6ac04114967920cd5a4b1494e9">draw</a> ()</td></tr>
+<tr class="memdesc:aa9b4ea6ac04114967920cd5a4b1494e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw the published frame in the current 3D pass; camera/scene must use its render origin.  <br /></td></tr>
+<tr class="separator:aa9b4ea6ac04114967920cd5a4b1494e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:a29917854495d481c5c844e686518f10e" id="r_a29917854495d481c5c844e686518f10e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">class</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html#a29917854495d481c5c844e686518f10e">OceanHullMaskPublication</a></td></tr>
+<tr class="separator:a29917854495d481c5c844e686518f10e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06d0042e6e0e7a76ca1accc0504cff70" id="r_a06d0042e6e0e7a76ca1accc0504cff70"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">class</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html#a06d0042e6e0e7a76ca1accc0504cff70">OceanRendererBuilder</a></td></tr>
+<tr class="separator:a06d0042e6e0e7a76ca1accc0504cff70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ec846838f6c71cde7b1cab51155bb16" id="r_a8ec846838f6c71cde7b1cab51155bb16"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">class</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html#a8ec846838f6c71cde7b1cab51155bb16">OceanGpuRenderFrameBuilder</a></td></tr>
+<tr class="separator:a8ec846838f6c71cde7b1cab51155bb16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Graphics projection of an ocean; never owns or advances simulation state. Render-thread only, non-reentrant, no callbacks. Graphics owns GPU resources; a weak lifetime token makes provider-first destruction safe. Destroying this object first releases its resources. Do not retain frame builders across this renderer or water-owner mutation/destruction. </p>
+
+<p class="definition">在文件 <a class="el" href="OceanRenderer_8h_source.html">OceanRenderer.h</a> 第 <a class="el" href="OceanRenderer_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ae027c3633713a09eb10949bd04cded79" name="ae027c3633713a09eb10949bd04cded79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae027c3633713a09eb10949bd04cded79">&#9670;&#160;</a></span>~OceanRenderer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::OceanRenderer::~OceanRenderer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a56d669c53b62f516a2c207c082a7e869" name="a56d669c53b62f516a2c207c082a7e869"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56d669c53b62f516a2c207c082a7e869">&#9670;&#160;</a></span>OceanRenderer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::fluids::OceanRenderer::OceanRenderer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html">OceanRenderer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa9b4ea6ac04114967920cd5a4b1494e9" name="aa9b4ea6ac04114967920cd5a4b1494e9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9b4ea6ac04114967920cd5a4b1494e9">&#9670;&#160;</a></span>draw()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt; eve::fluids::OceanRenderer::draw </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw the published frame in the current 3D pass; camera/scene must use its render origin. </p>
+<dl class="section return"><dt>返回</dt><dd>Success, StaleHandle, or Conflict when no frame has been published. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="OceanRenderer_8cpp_source.html">OceanRenderer.cpp</a> 第 <a class="el" href="OceanRenderer_8cpp_source.html#l00125">125</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve_1_1fluids.html#a39393b1ef7125d5f027690410ad3a37fa20bde67903fa8e8940064fdc00150a62">eve::fluids::GpuResident</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a96b6933a1db4b9dcd48b4f3acafa1467" name="a96b6933a1db4b9dcd48b4f3acafa1467"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96b6933a1db4b9dcd48b4f3acafa1467">&#9670;&#160;</a></span>frameBuilder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1fluids_1_1OceanMeshFrameBuilder.html">OceanMeshFrameBuilder</a> eve::fluids::OceanRenderer::frameBuilder </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1OceanWaterView.html">OceanWaterView</a> &amp;&#160;</td>
+          <td class="paramname"><em>water</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prepare a cheap borrowed CPU projection builder; set center/origin before building. </p>
+
+<p class="definition">在文件 <a class="el" href="OceanRenderer_8cpp_source.html">OceanRenderer.cpp</a> 第 <a class="el" href="OceanRenderer_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanSprayBindings_8cpp_source.html#l00019">water</a>.</p>
+
+</div>
+</div>
+<a id="a75687a37632e62441aa32a1293e2cb1f" name="a75687a37632e62441aa32a1293e2cb1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75687a37632e62441aa32a1293e2cb1f">&#9670;&#160;</a></span>gpuFrameBuilder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1fluids_1_1OceanGpuRenderFrameBuilder.html">OceanGpuRenderFrameBuilder</a> eve::fluids::OceanRenderer::gpuFrameBuilder </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1OceanGpuSpectrum.html">OceanGpuSpectrum</a> &amp;&#160;</td>
+          <td class="paramname"><em>spectrum</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1OceanGpuFrameToken.html">OceanGpuFrameToken</a> &amp;&#160;</td>
+          <td class="paramname"><em>token</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prepare a borrowed GPU publication; owners must remain alive and unchanged through <a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html#af913d71f4dde0444d0b8c76c4265c6dd" title="Publish a prepared owning vertex frame; input is borrowed only for this call.">publish()</a>. </p>
+
+<p class="definition">在文件 <a class="el" href="OceanGpuRenderFrame_8cpp_source.html">OceanGpuRenderFrame.cpp</a> 第 <a class="el" href="OceanGpuRenderFrame_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00039">token</a> , 以及 <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a>.</p>
+
+</div>
+</div>
+<a id="a02eb34ae4a4d5a821f0087d1a70bcbe9" name="a02eb34ae4a4d5a821f0087d1a70bcbe9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a02eb34ae4a4d5a821f0087d1a70bcbe9">&#9670;&#160;</a></span>hullMaskBuilder()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1fluids_1_1OceanHullMaskPublication.html">OceanHullMaskPublication</a> eve::fluids::OceanRenderer::hullMaskBuilder </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1OceanHullMaskFrame.html">OceanHullMaskFrame</a> &amp;&#160;</td>
+          <td class="paramname"><em>frame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrow a mask frame for synchronous upload; keep frame and renderer alive until publish returns. </p>
+
+<p class="definition">在文件 <a class="el" href="OceanHullMaskPublication_8cpp_source.html">OceanHullMaskPublication.cpp</a> 第 <a class="el" href="OceanHullMaskPublication_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00041">frame</a>.</p>
+
+</div>
+</div>
+<a id="aa00aa75a866db85af83ae7904e739c7c" name="aa00aa75a866db85af83ae7904e739c7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa00aa75a866db85af83ae7904e739c7c">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html">OceanRenderer</a> &amp; eve::fluids::OceanRenderer::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="classeve_1_1fluids_1_1OceanRenderer.html">OceanRenderer</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af913d71f4dde0444d0b8c76c4265c6dd" name="af913d71f4dde0444d0b8c76c4265c6dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af913d71f4dde0444d0b8c76c4265c6dd">&#9670;&#160;</a></span>publish()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">void</a> &gt; eve::fluids::OceanRenderer::publish </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">const</a> <a class="el" href="structeve_1_1fluids_1_1OceanMeshFrame.html">OceanMeshFrame</a> &amp;&#160;</td>
+          <td class="paramname"><em>frame</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Publish a prepared owning vertex frame; input is borrowed only for this call. </p>
+<dl class="section return"><dt>返回</dt><dd>Success, StaleHandle, or validation/upload diagnostic; invalid input preserves the old frame. @cost Linear vertex upload with backend synchronization; once per render frame on the CPU reference path. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="OceanRenderer_8cpp_source.html">OceanRenderer.cpp</a> 第 <a class="el" href="OceanRenderer_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00031">count</a>, <a class="el" href="namespaceeve_1_1fluids.html#a39393b1ef7125d5f027690410ad3a37fa20a77305016fa7e2fbf45185cd0934ec">eve::fluids::CpuReference</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00637">finite</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00041">frame</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">length</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00162">normal</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a> , 以及 <a class="el" href="OceanBindingInternal_8h_source.html#l00033">eve::fluids::ocean_script::vector()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="a8ec846838f6c71cde7b1cab51155bb16" name="a8ec846838f6c71cde7b1cab51155bb16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ec846838f6c71cde7b1cab51155bb16">&#9670;&#160;</a></span>OceanGpuRenderFrameBuilder</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">friend</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">class</a> <a class="el" href="classeve_1_1fluids_1_1OceanGpuRenderFrameBuilder.html">OceanGpuRenderFrameBuilder</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OceanRenderer_8h_source.html">OceanRenderer.h</a> 第 <a class="el" href="OceanRenderer_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a29917854495d481c5c844e686518f10e" name="a29917854495d481c5c844e686518f10e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29917854495d481c5c844e686518f10e">&#9670;&#160;</a></span>OceanHullMaskPublication</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">friend</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">class</a> <a class="el" href="classeve_1_1fluids_1_1OceanHullMaskPublication.html">OceanHullMaskPublication</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OceanRenderer_8h_source.html">OceanRenderer.h</a> 第 <a class="el" href="OceanRenderer_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a06d0042e6e0e7a76ca1accc0504cff70" name="a06d0042e6e0e7a76ca1accc0504cff70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a06d0042e6e0e7a76ca1accc0504cff70">&#9670;&#160;</a></span>OceanRendererBuilder</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">friend</a> <a class="el" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">class</a> <a class="el" href="classeve_1_1fluids_1_1OceanRendererBuilder.html">OceanRendererBuilder</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="OceanRenderer_8h_source.html">OceanRenderer.h</a> 第 <a class="el" href="OceanRenderer_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/fluids/<a class="el" href="OceanRenderer_8h_source.html">OceanRenderer.h</a></li>
+<li>src/modules/fluids/<a class="el" href="OceanGpuRenderFrame_8cpp_source.html">OceanGpuRenderFrame.cpp</a></li>
+<li>src/modules/fluids/<a class="el" href="OceanHullMaskPublication_8cpp_source.html">OceanHullMaskPublication.cpp</a></li>
+<li>src/modules/fluids/<a class="el" href="OceanRenderer_8cpp_source.html">OceanRenderer.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

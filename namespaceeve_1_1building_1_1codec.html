@@ -1,0 +1,523 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::building::codec 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building.html">building</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1building_1_1codec.html">codec</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::building::codec 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1building_1_1codec_1_1EdgeCurvePayload.html">EdgeCurvePayload</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning curve group and all exact members, shared by runtime and editor persistence.  <a href="structeve_1_1building_1_1codec_1_1EdgeCurvePayload.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a6983ccb82e52ce08662dc7421f8e84b6" id="r_a6983ccb82e52ce08662dc7421f8e84b6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1codec.html#a6983ccb82e52ce08662dc7421f8e84b6">stringArray</a> (const std::vector&lt; std::string &gt; &amp;<a class="el" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>)</td></tr>
+<tr class="separator:a6983ccb82e52ce08662dc7421f8e84b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a768e449563b24e06db666e1f3c7d0a8a" id="r_a768e449563b24e06db666e1f3c7d0a8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1codec.html#a768e449563b24e06db666e1f3c7d0a8a">numberArray</a> (const std::vector&lt; double &gt; &amp;<a class="el" href="ProjectIndexAutomatic_8cpp.html#a6c4a6d51eafaf91a7fcb4b346264fd92">values</a>)</td></tr>
+<tr class="separator:a768e449563b24e06db666e1f3c7d0a8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad945e98c0df88b779d460090a18eb30b" id="r_ad945e98c0df88b779d460090a18eb30b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1codec.html#ad945e98c0df88b779d460090a18eb30b">parseStringArray</a> (const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>, bool &amp;<a class="el" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>)</td></tr>
+<tr class="separator:ad945e98c0df88b779d460090a18eb30b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6b32de59ba1cba687170d0c3b8bde01" id="r_af6b32de59ba1cba687170d0c3b8bde01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1codec.html#af6b32de59ba1cba687170d0c3b8bde01">instanceValue</a> (const <a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a> &amp;instance)</td></tr>
+<tr class="memdesc:af6b32de59ba1cba687170d0c3b8bde01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode a complete owning instance; pure, caller-thread, linear in instance metadata.  <br /></td></tr>
+<tr class="separator:af6b32de59ba1cba687170d0c3b8bde01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d6346f40cc6c7227323c741a6837ada" id="r_a2d6346f40cc6c7227323c741a6837ada"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1codec.html#a2d6346f40cc6c7227323c741a6837ada">field</a> (const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>, const char *<a class="el" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>)</td></tr>
+<tr class="memdesc:a2d6346f40cc6c7227323c741a6837ada"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrow an optional object field.  <br /></td></tr>
+<tr class="separator:a2d6346f40cc6c7227323c741a6837ada"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f7ccf089847883b8607758e3e734243" id="r_a4f7ccf089847883b8607758e3e734243"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1codec.html#a4f7ccf089847883b8607758e3e734243">parseInstance</a> (const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="memdesc:a4f7ccf089847883b8607758e3e734243"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode legacy/current instance fields without mutating a world; owning result.  <br /></td></tr>
+<tr class="separator:a4f7ccf089847883b8607758e3e734243"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a464a7cf885de2a1146482e08516b6e9d" id="r_a464a7cf885de2a1146482e08516b6e9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1codec.html#a464a7cf885de2a1146482e08516b6e9d">parseInstances</a> (const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="memdesc:a464a7cf885de2a1146482e08516b6e9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a nonempty instance batch with unique identities; pure owning result.  <br /></td></tr>
+<tr class="separator:a464a7cf885de2a1146482e08516b6e9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af60da42b02d8f7b29a7380664fb7a41c" id="r_af60da42b02d8f7b29a7380664fb7a41c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1codec.html#af60da42b02d8f7b29a7380664fb7a41c">snapshot</a> (const <a class="el" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a> &amp;<a class="el" href="TacticsPersistence_8cpp.html#a641a6c4dd6318fe795c49915a3da8a9f">placed</a>)</td></tr>
+<tr class="memdesc:af60da42b02d8f7b29a7380664fb7a41c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy a runtime instance into its canonical owning persistence record.  <br /></td></tr>
+<tr class="separator:af60da42b02d8f7b29a7380664fb7a41c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae173bc42fcd5a5421dbf56baa399db6c" id="r_ae173bc42fcd5a5421dbf56baa399db6c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1building_1_1PlacedBuilding.html">building::PlacedBuilding</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1codec.html#ae173bc42fcd5a5421dbf56baa399db6c">runtime</a> (const <a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="memdesc:ae173bc42fcd5a5421dbf56baa399db6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a previously validated snapshot into an owning runtime candidate.  <br /></td></tr>
+<tr class="separator:ae173bc42fcd5a5421dbf56baa399db6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfe7b6b51d656e9d604e09a2eda5cf92" id="r_abfe7b6b51d656e9d604e09a2eda5cf92"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1codec.html#abfe7b6b51d656e9d604e09a2eda5cf92">edgeCurveValue</a> (const <a class="el" href="structeve_1_1building_1_1EdgeCurveGroup.html">EdgeCurveGroup</a> &amp;<a class="el" href="StandardAbilities_8cpp.html#a7b41888e3725e9b18cbb88bc14e557ff">group</a>, const std::vector&lt; <a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a> &gt; &amp;instances)</td></tr>
+<tr class="memdesc:abfe7b6b51d656e9d604e09a2eda5cf92"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode one complete curve group in linear time; no world mutation.  <br /></td></tr>
+<tr class="separator:abfe7b6b51d656e9d604e09a2eda5cf92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d9a872b3af47aa2f9cbfc832bcb58b3" id="r_a0d9a872b3af47aa2f9cbfc832bcb58b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1building_1_1codec_1_1EdgeCurvePayload.html">EdgeCurvePayload</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1building_1_1codec.html#a0d9a872b3af47aa2f9cbfc832bcb58b3">parseEdgeCurve</a> (const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="memdesc:a0d9a872b3af47aa2f9cbfc832bcb58b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode one complete curve with structured failure and independent ownership.  <br /></td></tr>
+<tr class="separator:a0d9a872b3af47aa2f9cbfc832bcb58b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="abfe7b6b51d656e9d604e09a2eda5cf92" name="abfe7b6b51d656e9d604e09a2eda5cf92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfe7b6b51d656e9d604e09a2eda5cf92">&#9670;&#160;</a></span>edgeCurveValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> eve::building::codec::edgeCurveValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1EdgeCurveGroup.html">building::EdgeCurveGroup</a> &amp;&#160;</td>
+          <td class="paramname"><em>group</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>instances</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode one complete curve group in linear time; no world mutation. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8cpp_source.html">BuildingSnapshot.cpp</a> 第 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00352">352</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00352">edgeCurveValue()</a>, <a class="el" href="StandardAbilities_8cpp_source.html#l00024">group</a>, <a class="el" href="BuildingSnapshot_8cpp_source.html#l00052">instanceValue()</a>, <a class="el" href="BuildingSnapshot_8cpp_source.html#l00028">numberArray()</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00304">point</a> , 以及 <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTargetInternal_8h_source.html#l00009">eve::building_editing::target_detail::edgeCurveValue()</a> , 以及 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00352">edgeCurveValue()</a>.</p>
+
+</div>
+</div>
+<a id="a2d6346f40cc6c7227323c741a6837ada" name="a2d6346f40cc6c7227323c741a6837ada"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d6346f40cc6c7227323c741a6837ada">&#9670;&#160;</a></span>field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> * eve::building::codec::field </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Borrow an optional object field. </p>
+<dl class="section return"><dt>返回</dt><dd>Borrowed pointer owned by value, or null. @lifetime Valid until value is mutated or destroyed; never retained by codecs. @thread Caller thread; no callbacks or mutation. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8cpp_source.html">BuildingSnapshot.cpp</a> 第 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00096">96</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00096">field()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="ECS_8cpp_source.html#l00155">key</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00096">field()</a>, <a class="el" href="BuildingSnapshot_8cpp_source.html#l00377">parseEdgeCurve()</a> , 以及 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00103">parseInstance()</a>.</p>
+
+</div>
+</div>
+<a id="af6b32de59ba1cba687170d0c3b8bde01" name="af6b32de59ba1cba687170d0c3b8bde01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6b32de59ba1cba687170d0c3b8bde01">&#9670;&#160;</a></span>instanceValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> eve::building::codec::instanceValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>instance</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode a complete owning instance; pure, caller-thread, linear in instance metadata. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8cpp_source.html">BuildingSnapshot.cpp</a> 第 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingSnapshot_8h_source.html#l00073">eve::building::BuildingInstanceSnapshot::garrison</a>, <a class="el" href="ECS_8cpp_source.html#l00155">key</a>, <a class="el" href="UiPreview_8cpp_source.html#l00186">member</a>, <a class="el" href="BuildingSnapshot_8h_source.html#l00071">eve::building::BuildingInstanceSnapshot::properties</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00074">properties</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00352">edgeCurveValue()</a> , 以及 <a class="el" href="BuildingTargetInternal_8h_source.html#l00006">eve::building_editing::target_detail::instanceValue()</a>.</p>
+
+</div>
+</div>
+<a id="a768e449563b24e06db666e1f3c7d0a8a" name="a768e449563b24e06db666e1f3c7d0a8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a768e449563b24e06db666e1f3c7d0a8a">&#9670;&#160;</a></span>numberArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a> eve::building::codec::numberArray </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>values</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8cpp_source.html">BuildingSnapshot.cpp</a> 第 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a> , 以及 <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00352">edgeCurveValue()</a>.</p>
+
+</div>
+</div>
+<a id="a0d9a872b3af47aa2f9cbfc832bcb58b3" name="a0d9a872b3af47aa2f9cbfc832bcb58b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d9a872b3af47aa2f9cbfc832bcb58b3">&#9670;&#160;</a></span>parseEdgeCurve()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1building_1_1codec_1_1EdgeCurvePayload.html">EdgeCurvePayload</a> &gt; eve::building::codec::parseEdgeCurve </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode one complete curve with structured failure and independent ownership. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8cpp_source.html">BuildingSnapshot.cpp</a> 第 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00377">377</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00096">field()</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00041">frame</a>, <a class="el" href="Value_8h_source.html#l00209">eve::Value::getIf()</a>, <a class="el" href="BuildingSnapshot_8h_source.html#l00081">eve::building::codec::EdgeCurvePayload::group</a>, <a class="el" href="BuildingTypes_8h_source.html#l00082">eve::building::EdgeCurveGroup::id</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00024">level</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00332">number</a>, <a class="el" href="BuildingSnapshot_8cpp_source.html#l00377">parseEdgeCurve()</a>, <a class="el" href="BuildingSnapshot_8cpp_source.html#l00246">parseInstances()</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00304">point</a>, <a class="el" href="ScriptLinks_8cpp_source.html#l00075">provider</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="AudioSourcePreview_8cpp_source.html#l00027">revision</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00011">text</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTargetInternal_8h_source.html#l00018">eve::building_editing::target_detail::parseEdgeCurve()</a> , 以及 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00377">parseEdgeCurve()</a>.</p>
+
+</div>
+</div>
+<a id="a4f7ccf089847883b8607758e3e734243" name="a4f7ccf089847883b8607758e3e734243"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f7ccf089847883b8607758e3e734243">&#9670;&#160;</a></span>parseInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a> &gt; eve::building::codec::parseInstance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode legacy/current instance fields without mutating a world; owning result. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8cpp_source.html">BuildingSnapshot.cpp</a> 第 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00103">103</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SquirrelBinding_8cpp_source.html#l00031">count</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00030">elevation</a>, <a class="el" href="BuildingSnapshot_8cpp_source.html#l00096">field()</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00018">id</a>, <a class="el" href="BuildingSnapshot_8h_source.html#l00024">eve::building::BuildingInstanceSnapshot::instanceId</a>, <a class="el" href="ECS_8cpp_source.html#l00155">key</a>, <a class="el" href="ModuleAssembly_8cpp_source.html#l00024">level</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00332">number</a>, <a class="el" href="Joint3DParameters_8cpp_source.html#l00025">numbers</a>, <a class="el" href="BuildingSnapshot_8cpp_source.html#l00103">parseInstance()</a>, <a class="el" href="BuildingSnapshot_8cpp_source.html#l00034">parseStringArray()</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00074">properties</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00017">rotation</a>, <a class="el" href="SettlementRules_8cpp_source.html#l00514">string</a>, <a class="el" href="McpToolFilter_8cpp_source.html#l00048">tags</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00011">text</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">type</a>, <a class="el" href="McpServer_8cpp_source.html#l00315">valid</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a> , 以及 <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00082">vertices</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingTargetInternal_8h_source.html#l00012">eve::building_editing::target_detail::parseInstance()</a>, <a class="el" href="BuildingSnapshot_8cpp_source.html#l00103">parseInstance()</a> , 以及 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00246">parseInstances()</a>.</p>
+
+</div>
+</div>
+<a id="a464a7cf885de2a1146482e08516b6e9d" name="a464a7cf885de2a1146482e08516b6e9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a464a7cf885de2a1146482e08516b6e9d">&#9670;&#160;</a></span>parseInstances()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; <a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a> &gt; &gt; eve::building::codec::parseInstances </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode a nonempty instance batch with unique identities; pure owning result. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8cpp_source.html">BuildingSnapshot.cpp</a> 第 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00246">246</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00109">ids</a>, <a class="el" href="BuildingSnapshot_8cpp_source.html#l00103">parseInstance()</a>, <a class="el" href="BuildingSnapshot_8cpp_source.html#l00246">parseInstances()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a> , 以及 <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00377">parseEdgeCurve()</a>, <a class="el" href="BuildingTargetInternal_8h_source.html#l00015">eve::building_editing::target_detail::parseInstances()</a> , 以及 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00246">parseInstances()</a>.</p>
+
+</div>
+</div>
+<a id="ad945e98c0df88b779d460090a18eb30b" name="ad945e98c0df88b779d460090a18eb30b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad945e98c0df88b779d460090a18eb30b">&#9670;&#160;</a></span>parseStringArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; eve::building::codec::parseStringArray </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1json_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>valid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8cpp_source.html">BuildingSnapshot.cpp</a> 第 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00011">text</a>, <a class="el" href="McpServer_8cpp_source.html#l00315">valid</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a> , 以及 <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00103">parseInstance()</a>.</p>
+
+</div>
+</div>
+<a id="ae173bc42fcd5a5421dbf56baa399db6c" name="ae173bc42fcd5a5421dbf56baa399db6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae173bc42fcd5a5421dbf56baa399db6c">&#9670;&#160;</a></span>runtime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="structeve_1_1building_1_1PlacedBuilding.html">PlacedBuilding</a> eve::building::codec::runtime </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode a previously validated snapshot into an owning runtime candidate. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8cpp_source.html">BuildingSnapshot.cpp</a> 第 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00311">311</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingTypes_8h_source.html#l00190">eve::building::PlacedBuilding::instanceId</a>, <a class="el" href="UiPreview_8cpp_source.html#l00186">member</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="af60da42b02d8f7b29a7380664fb7a41c" name="af60da42b02d8f7b29a7380664fb7a41c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af60da42b02d8f7b29a7380664fb7a41c">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="structeve_1_1building_1_1BuildingInstanceSnapshot.html">BuildingInstanceSnapshot</a> eve::building::codec::snapshot </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1building_1_1PlacedBuilding.html">building::PlacedBuilding</a> &amp;&#160;</td>
+          <td class="paramname"><em>placed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy a runtime instance into its canonical owning persistence record. </p>
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8cpp_source.html">BuildingSnapshot.cpp</a> 第 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00270">270</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BuildingSnapshot_8h_source.html#l00024">eve::building::BuildingInstanceSnapshot::instanceId</a>, <a class="el" href="UiPreview_8cpp_source.html#l00186">member</a>, <a class="el" href="TacticsPersistence_8cpp_source.html#l00148">placed</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a> , 以及 <a class="el" href="McpProjectIndexTools_8cpp_source.html#l00018">snapshot</a>.</p>
+
+</div>
+</div>
+<a id="a6983ccb82e52ce08662dc7421f8e84b6" name="a6983ccb82e52ce08662dc7421f8e84b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6983ccb82e52ce08662dc7421f8e84b6">&#9670;&#160;</a></span>stringArray()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1json_1_1Value.html">Value</a> eve::building::codec::stringArray </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
+          <td class="paramname"><em>values</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="BuildingSnapshot_8cpp_source.html">BuildingSnapshot.cpp</a> 第 <a class="el" href="BuildingSnapshot_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a> , 以及 <a class="el" href="ProjectIndexAutomatic_8cpp_source.html#l00016">values</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

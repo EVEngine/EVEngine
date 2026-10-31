@@ -1,0 +1,728 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::scene_editor::ScriptComponentPayloadProvider类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1scene__editor.html">scene_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html">ScriptComponentPayloadProvider</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-types">Public 类型</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::scene_editor::ScriptComponentPayloadProvider类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>脚本组件（<code>eve.component</code> 登记过的）在场景 inspector 里的属性与写回通道。  
+ <a href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ScriptComponentPayloadProvider_8h_source.html">ScriptComponentPayloadProvider.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::scene_editor::ScriptComponentPayloadProvider 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.png" usemap="#eve::scene_5Feditor::ScriptComponentPayloadProvider_map" alt=""/>
+  <map id="eve::scene_5Feditor::ScriptComponentPayloadProvider_map" name="eve::scene_5Feditor::ScriptComponentPayloadProvider_map">
+<area href="classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider.html" title="Module-owned adapter for one scene component payload type." alt="eve::scene_editing::ISceneComponentPayloadProvider" shape="rect" coords="0,56,320,80"/>
+<area href="classeve_1_1editing_1_1IPropertyProvider.html" title="UI-independent property access for an immutable selection snapshot." alt="eve::editing::IPropertyProvider" shape="rect" coords="0,0,320,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public 类型</h2></td></tr>
+<tr class="memitem:a4de32e3dcb0ceacc22accfedd857ad06" id="r_a4de32e3dcb0ceacc22accfedd857ad06"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#a4de32e3dcb0ceacc22accfedd857ad06">HostResolver</a> = std::function&lt; std::string(const <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">scene_editing::TargetId</a> &amp;)&gt;</td></tr>
+<tr class="memdesc:a4de32e3dcb0ceacc22accfedd857ad06"><td class="mdescLeft">&#160;</td><td class="mdescRight">编辑器目标 id → 场景**宿主名**。  <br /></td></tr>
+<tr class="separator:a4de32e3dcb0ceacc22accfedd857ad06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad939a308ad49432d2e4ac4da29f77d27" id="r_ad939a308ad49432d2e4ac4da29f77d27"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#ad939a308ad49432d2e4ac4da29f77d27">ScriptComponentPayloadProvider</a> (<a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#a4de32e3dcb0ceacc22accfedd857ad06">HostResolver</a> resolver={})</td></tr>
+<tr class="memdesc:ad939a308ad49432d2e4ac4da29f77d27"><td class="mdescLeft">&#160;</td><td class="mdescRight">构造。  <br /></td></tr>
+<tr class="separator:ad939a308ad49432d2e4ac4da29f77d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4887b0d8c0519109c64ccbd532b5b8e" id="r_ab4887b0d8c0519109c64ccbd532b5b8e"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#ab4887b0d8c0519109c64ccbd532b5b8e">componentType</a> () const override</td></tr>
+<tr class="memdesc:ab4887b0d8c0519109c64ccbd532b5b8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable component type handled by this provider.  <br /></td></tr>
+<tr class="separator:ab4887b0d8c0519109c64ccbd532b5b8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a999ae4c84465b0432c468705e777aec0" id="r_a999ae4c84465b0432c468705e777aec0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1scene__editing_1_1SceneComponentPayloadRef.html">scene_editing::SceneComponentPayloadRef</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#a999ae4c84465b0432c468705e777aec0">components</a> (const <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">scene_editing::TargetId</a> &amp;scene, const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">scene_editing::ObjectId</a> &amp;<a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>) const override</td></tr>
+<tr class="memdesc:a999ae4c84465b0432c468705e777aec0"><td class="mdescLeft">&#160;</td><td class="mdescRight">节点上每个脚本实体实例的**已登记**组件各一条；未登记组件不出现（§9.62.1）。  <br /></td></tr>
+<tr class="separator:a999ae4c84465b0432c468705e777aec0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7909bf2efd67c1fc0cd38d7911ff2163" id="r_a7909bf2efd67c1fc0cd38d7911ff2163"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">scene_editing::IDomainOperationTarget</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#a7909bf2efd67c1fc0cd38d7911ff2163">payloadOperationTarget</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">scene_editing::SelectionSnapshot</a> &amp;selection) const override</td></tr>
+<tr class="memdesc:a7909bf2efd67c1fc0cd38d7911ff2163"><td class="mdescLeft">&#160;</td><td class="mdescRight">选中组件的域操作目标（写回的唯一入口）。  <br /></td></tr>
+<tr class="separator:a7909bf2efd67c1fc0cd38d7911ff2163"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a438f7cb8587f787bed5e16cf5fcce6b0" id="r_a438f7cb8587f787bed5e16cf5fcce6b0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespaceeve_1_1scene__editing.html#a0e70faff6ed3f81bcf6cb96d45244bf0">scene_editing::EditorDiagnostic</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#a438f7cb8587f787bed5e16cf5fcce6b0">validateComponent</a> (const <a class="el" href="structeve_1_1scene__editing_1_1SceneComponentPayloadRef.html">scene_editing::SceneComponentPayloadRef</a> &amp;component) const override</td></tr>
+<tr class="memdesc:a438f7cb8587f787bed5e16cf5fcce6b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">引用还在不在：组件名+版本还登记着、且实例上仍挂着它。  <br /></td></tr>
+<tr class="separator:a438f7cb8587f787bed5e16cf5fcce6b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a207841f52a4ea15892c97cd2a7557d39" id="r_a207841f52a4ea15892c97cd2a7557d39"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#a207841f52a4ea15892c97cd2a7557d39">currentRevision</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">scene_editing::SelectionSnapshot</a> &amp;selection) const override</td></tr>
+<tr class="memdesc:a207841f52a4ea15892c97cd2a7557d39"><td class="mdescLeft">&#160;</td><td class="mdescRight">引擎侧存储的写版本号（任何一次写都会让它变），供 inspector 判断要不要刷新。  <br /></td></tr>
+<tr class="separator:a207841f52a4ea15892c97cd2a7557d39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64fd21ad421cf365a13a073c8bae6666" id="r_a64fd21ad421cf365a13a073c8bae6666"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1PropertySchema.html">scene_editing::PropertySchema</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#a64fd21ad421cf365a13a073c8bae6666">schema</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">scene_editing::SelectionSnapshot</a> &amp;selection) const override</td></tr>
+<tr class="memdesc:a64fd21ad421cf365a13a073c8bae6666"><td class="mdescLeft">&#160;</td><td class="mdescRight">选中组件的字段表：类型与默认值来自声明 schema，当前值只在声明值为空时兜底。  <br /></td></tr>
+<tr class="separator:a64fd21ad421cf365a13a073c8bae6666"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac00cbb2072bf8a7011150ce44fbadf63" id="r_ac00cbb2072bf8a7011150ce44fbadf63"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1editing_1_1PropertyReadResult.html">scene_editing::PropertyReadResult</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#ac00cbb2072bf8a7011150ce44fbadf63">read</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">scene_editing::SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">scene_editing::PropertyPath</a> &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const override</td></tr>
+<tr class="memdesc:ac00cbb2072bf8a7011150ce44fbadf63"><td class="mdescLeft">&#160;</td><td class="mdescRight">读一个字段：值来自引擎侧存储，不是脚本实例的槽位。  <br /></td></tr>
+<tr class="separator:ac00cbb2072bf8a7011150ce44fbadf63"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44bc3f404a2467d8f6a0fb14053d1f37" id="r_a44bc3f404a2467d8f6a0fb14053d1f37"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">scene_editing::DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#a44bc3f404a2467d8f6a0fb14053d1f37">makeSet</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">scene_editing::SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">scene_editing::PropertyPath</a> &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>, const <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">scene_editing::EditorValue</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>, <a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">scene_editing::PropertySetMode</a> mode) const override</td></tr>
+<tr class="memdesc:a44bc3f404a2467d8f6a0fb14053d1f37"><td class="mdescLeft">&#160;</td><td class="mdescRight">计划一次字段写入（<code>Reset</code> 模式转给 <code>makeReset</code>）。  <br /></td></tr>
+<tr class="separator:a44bc3f404a2467d8f6a0fb14053d1f37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a76ffe6b493dfda8aec95ec6e6d608b" id="r_a6a76ffe6b493dfda8aec95ec6e6d608b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1editing_1_1DomainOperation.html">scene_editing::DomainOperation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#a6a76ffe6b493dfda8aec95ec6e6d608b">makeReset</a> (const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">scene_editing::SelectionSnapshot</a> &amp;selection, const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">scene_editing::PropertyPath</a> &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const override</td></tr>
+<tr class="memdesc:a6a76ffe6b493dfda8aec95ec6e6d608b"><td class="mdescLeft">&#160;</td><td class="mdescRight">计划一次"恢复声明默认值"；默认值来自注册表的声明 schema，不是当前值。  <br /></td></tr>
+<tr class="separator:a6a76ffe6b493dfda8aec95ec6e6d608b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider.html">eve::scene_editing::ISceneComponentPayloadProvider</a></td></tr>
+<tr class="memitem:aac20c43d102a90db60a422996a970ee0 inherit pub_methods_classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider" id="r_aac20c43d102a90db60a422996a970ee0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider.html#aac20c43d102a90db60a422996a970ee0">~ISceneComponentPayloadProvider</a> () override=default</td></tr>
+<tr class="memdesc:aac20c43d102a90db60a422996a970ee0 inherit pub_methods_classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases <a class="el" href="classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider.html" title="Module-owned adapter for one scene component payload type.">ISceneComponentPayloadProvider</a> resources.  <br /></td></tr>
+<tr class="separator:aac20c43d102a90db60a422996a970ee0 inherit pub_methods_classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_a1a2687f093acd0ca7f4f93af7ff93090"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a1a2687f093acd0ca7f4f93af7ff93090">~IPropertyProvider</a> ()=default</td></tr>
+<tr class="memdesc:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html" title="UI-independent property access for an immutable selection snapshot.">IPropertyProvider</a> resources.  <br /></td></tr>
+<tr class="separator:a1a2687f093acd0ca7f4f93af7ff93090 inherit pub_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a756e449638d99151945a101f743aad0e" id="r_a756e449638d99151945a101f743aad0e"><td class="memItemLeft" align="right" valign="top">static const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#a756e449638d99151945a101f743aad0e">payloadType</a> ()</td></tr>
+<tr class="memdesc:a756e449638d99151945a101f743aad0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">稳定组件类型槽：所有脚本组件共用。  <br /></td></tr>
+<tr class="separator:a756e449638d99151945a101f743aad0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classeve_1_1editing_1_1IPropertyProvider')"><img src="closed.png" alt="-"/>&#160;静态 Public 成员函数 继承自 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html">eve::editing::IPropertyProvider</a></td></tr>
+<tr class="memitem:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider" id="r_aa07e163a9dafdd187f5e74a2208192e5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="namespaceeve_1_1editing.html#a80e450b5eb4cf0da7c013972cc572568">CapabilityId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aa07e163a9dafdd187f5e74a2208192e5">editingCapabilityId</a> ()</td></tr>
+<tr class="memdesc:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable capability identity for generic property editing.  <br /></td></tr>
+<tr class="separator:aa07e163a9dafdd187f5e74a2208192e5 inherit pub_static_methods_classeve_1_1editing_1_1IPropertyProvider"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>脚本组件（<code>eve.component</code> 登记过的）在场景 inspector 里的属性与写回通道。 </p>
+<p>一个提供方服务**所有**脚本组件：<code><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#ab4887b0d8c0519109c64ccbd532b5b8e" title="Stable component type handled by this provider.">componentType()</a></code> 是固定槽 <code>"eve.script-component"</code>，具体是哪个 组件由 <code>SceneComponentPayloadRef::component</code> 里的稳定 id <code>"&lt;节点&gt;|&lt;组件名&gt;@&lt;版本&gt;"</code> 决定。这样编辑器里 所有脚本定义出来的组件集中在一类下，而它们的名字与版本（热重载不变的那两个身份）仍然逐条可见； 换成"每个组件类型一个提供方"就需要随脚本登记/热重载动态增删提供方，代价与收益不成比例。</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">对象 id   </th><th class="markdownTableHeadNone">含义    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>SceneComponentPayloadRef::target</code>   </td><td class="markdownTableBodyNone">场景**宿主名**（<code>TargetId</code> 就是宿主名）    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>SceneComponentPayloadRef::object</code>   </td><td class="markdownTableBodyNone">节点 id    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>SceneComponentPayloadRef::component</code>   </td><td class="markdownTableBodyNone">稳定组件 id：<code>"&lt;节点 id&gt;\|&lt;组件名&gt;@&lt;版本&gt;"</code>   </td></tr>
+</table>
+<dl class="section remark"><dt>备注</dt><dd>写走 <code>IDomainOperationTarget</code> + staging（<code><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentOperationTarget.html" title="脚本组件字段的域操作目标：往引擎侧存储写字段的**唯一**通路。">ScriptComponentOperationTarget</a></code>）：编辑器 的事务/撤销契约要求"能克隆出候选、能原子发布候选"，所以字段写回不能是一条直通的 setter。 字段值落在引擎侧存储里，脚本侧下一次读就看见新值——不需要再通知脚本。 </dd>
+<dd>
+字段的**类型**与**默认值**取自注册表里那份声明 schema（<code>scriptComponentDeclaredSchema</code>）， 不从当前值猜：否则脚本某次写入换个类型，inspector 的字段类型就会跟着漂。由此**可写 = 脚本里给了非 null 的默认值**——那才是类型与默认值的来源；声明成 <code>null</code> 的字段与登记已丢的 组件只读，但当前值照样显示（"有组件但没类型"看得见，而不是被静默藏掉）。 </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8h_source.html">ScriptComponentPayloadProvider.h</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8h_source.html#l00109">109</a> 行定义.</p>
+</div><h2 class="groupheader">成员类型定义说明</h2>
+<a id="a4de32e3dcb0ceacc22accfedd857ad06" name="a4de32e3dcb0ceacc22accfedd857ad06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4de32e3dcb0ceacc22accfedd857ad06">&#9670;&#160;</a></span>HostResolver</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#a4de32e3dcb0ceacc22accfedd857ad06">eve::scene_editor::ScriptComponentPayloadProvider::HostResolver</a> =  std::function&lt;std::string(const <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">scene_editing::TargetId</a>&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>编辑器目标 id → 场景**宿主名**。 </p>
+<p>自动化创建的编辑器目标 id 是**调用方选的**（<code>eve_editor_target_create</code> 的 <code>target</code> 字段），不 等于宿主名；宿主名是创建那个目标时才知道的事实（<code>scene-host</code> 目标的 <code>host</code> 请求字段）。 所以这条映射由创建目标的模块注入（<code><a class="el" href="classeve_1_1scene__editor_1_1SceneEditorModule.html" title="Composition adapter that contributes scene editing commands and automation targets.">SceneEditorModule</a></code>），提供方不猜。 </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8h_source.html">ScriptComponentPayloadProvider.h</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8h_source.html#l00118">118</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ad939a308ad49432d2e4ac4da29f77d27" name="ad939a308ad49432d2e4ac4da29f77d27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad939a308ad49432d2e4ac4da29f77d27">&#9670;&#160;</a></span>ScriptComponentPayloadProvider()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::scene_editor::ScriptComponentPayloadProvider::ScriptComponentPayloadProvider </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1scene__editor_1_1ScriptComponentPayloadProvider.html#a4de32e3dcb0ceacc22accfedd857ad06">HostResolver</a>&#160;</td>
+          <td class="paramname"><em>resolver</em> = <code>{}</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>构造。 </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">resolver</td><td>目标 id → 宿主名；**空**表示"目标 id 本身就是宿主名"（测试与简单嵌入用）。 @ownership 回调归调用方所有，必须在提供方存活期间保持可调用（不捕获即将销毁的对象）。 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00234">234</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a999ae4c84465b0432c468705e777aec0" name="a999ae4c84465b0432c468705e777aec0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a999ae4c84465b0432c468705e777aec0">&#9670;&#160;</a></span>components()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; SceneComponentPayloadRef &gt; eve::scene_editor::ScriptComponentPayloadProvider::components </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a2b0f525a0b733bb08ccf8109b114213b">scene_editing::TargetId</a> &amp;&#160;</td>
+          <td class="paramname"><em>scene</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a2d916283d8333abd61ff13f34344f5d6">scene_editing::ObjectId</a> &amp;&#160;</td>
+          <td class="paramname"><em>object</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>节点上每个脚本实体实例的**已登记**组件各一条；未登记组件不出现（§9.62.1）。 </p>
+<dl class="section return"><dt>返回</dt><dd>每次调用返回一个**拥有**的 vector：调用方持有结果，提供方不保留指针。 @cost 与节点上挂着的脚本实例×其已登记组件数成正比，每次调用一次 vector 分配；编辑器只在 选中/刷新 inspector 时调用，不在逐帧路径上。 </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider.html#ae94339adf9816f35a74309758a43da83">eve::scene_editing::ISceneComponentPayloadProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00247">247</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UIAutomationCapabilities_8cpp_source.html#l00240">host</a>, <a class="el" href="TileConfig_8cpp_source.html#l00784">object</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>, <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00229">payloadType()</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00488">scene</a>, <a class="el" href="Scene_8cpp_source.html#l01003">eve::scene::Scene::scriptComponentStatesAt()</a>, <a class="el" href="ScriptComponentStore_8cpp_source.html#l00133">eve::scriptComponentStoreRevision()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="SceneComponentPayload_8h_source.html#l00019">eve::scene_editing::SceneComponentPayloadRef::target</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="ab4887b0d8c0519109c64ccbd532b5b8e" name="ab4887b0d8c0519109c64ccbd532b5b8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4887b0d8c0519109c64ccbd532b5b8e">&#9670;&#160;</a></span>componentType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::scene_editor::ScriptComponentPayloadProvider::componentType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable component type handled by this provider. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider.html#a68f0107d90471af29388931318df889c">eve::scene_editing::ISceneComponentPayloadProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00245">245</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00229">payloadType()</a>.</p>
+
+</div>
+</div>
+<a id="a207841f52a4ea15892c97cd2a7557d39" name="a207841f52a4ea15892c97cd2a7557d39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a207841f52a4ea15892c97cd2a7557d39">&#9670;&#160;</a></span>currentRevision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="namespaceeve.html#acbdd173177eb4f86203c023106f67a84">eve::Revision</a> &gt; eve::scene_editor::ScriptComponentPayloadProvider::currentRevision </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">scene_editing::SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>引擎侧存储的写版本号（任何一次写都会让它变），供 inspector 判断要不要刷新。 </p>
+
+<p>重载 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a5aa963e389bf3586ffa808670142c379">eve::editing::IPropertyProvider</a> .</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00307">307</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptComponentStore_8cpp_source.html#l00133">eve::scriptComponentStoreRevision()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a6a76ffe6b493dfda8aec95ec6e6d608b" name="a6a76ffe6b493dfda8aec95ec6e6d608b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a76ffe6b493dfda8aec95ec6e6d608b">&#9670;&#160;</a></span>makeReset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; DomainOperation &gt; eve::scene_editor::ScriptComponentPayloadProvider::makeReset </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">scene_editing::SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">scene_editing::PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>计划一次"恢复声明默认值"；默认值来自注册表的声明 schema，不是当前值。 </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a6175bdd491af083643d6cac008e99851">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00430">430</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00171">descriptor</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00111">path</a>, <a class="el" href="RoadPresetDocument_8cpp_source.html#l00328">resolved</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00405">makeSet()</a>.</p>
+
+</div>
+</div>
+<a id="a44bc3f404a2467d8f6a0fb14053d1f37" name="a44bc3f404a2467d8f6a0fb14053d1f37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44bc3f404a2467d8f6a0fb14053d1f37">&#9670;&#160;</a></span>makeSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; DomainOperation &gt; eve::scene_editor::ScriptComponentPayloadProvider::makeSet </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">scene_editing::SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">scene_editing::PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespaceeve_1_1editing.html#a69c9bf05ec03afaf2b389ee7df89f13e">scene_editing::EditorValue</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editing.html#a642f65bf61b271dc4b599f4069b93060">scene_editing::PropertySetMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>计划一次字段写入（<code>Reset</code> 模式转给 <code>makeReset</code>）。 </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a37fd27faadd63ce4dd990ff525b10cc5">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00405">405</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00171">descriptor</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="EditingProperty_8cpp_source.html#l00009">eve::editing::PropertySchema::find()</a>, <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00430">makeReset()</a>, <a class="el" href="PlayHost_8cpp_source.html#l00111">path</a>, <a class="el" href="RoadPresetDocument_8cpp_source.html#l00328">resolved</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="a7909bf2efd67c1fc0cd38d7911ff2163" name="a7909bf2efd67c1fc0cd38d7911ff2163"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7909bf2efd67c1fc0cd38d7911ff2163">&#9670;&#160;</a></span>payloadOperationTarget()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1editing_1_1IDomainOperationTarget.html">scene_editing::IDomainOperationTarget</a> * &gt; eve::scene_editor::ScriptComponentPayloadProvider::payloadOperationTarget </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">scene_editing::SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>选中组件的域操作目标（写回的唯一入口）。 </p>
+<dl class="section return"><dt>返回</dt><dd>借用指针，指向本提供方持有的那一个操作目标；它已按本次选中项绑定好身份。 @lifetime 与提供方同寿；但绑定内容会被下一次调用改写，所以过期的指针只会被**拒绝** （载荷身份对不上），不会写错组件。 </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider.html#a989f5ffcecdd016480acdbc3dc75413d">eve::scene_editing::ISceneComponentPayloadProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00268">268</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00121">eve::scene_editor::ScriptComponentOperationTarget::bind()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="RoadPresetDocument_8cpp_source.html#l00328">resolved</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>.</p>
+
+</div>
+</div>
+<a id="a756e449638d99151945a101f743aad0e" name="a756e449638d99151945a101f743aad0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a756e449638d99151945a101f743aad0e">&#9670;&#160;</a></span>payloadType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string &amp; eve::scene_editor::ScriptComponentPayloadProvider::payloadType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>稳定组件类型槽：所有脚本组件共用。 </p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">type</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00247">components()</a>, <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00245">componentType()</a>, <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00355">schema()</a> , 以及 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00278">validateComponent()</a>.</p>
+
+</div>
+</div>
+<a id="ac00cbb2072bf8a7011150ce44fbadf63" name="ac00cbb2072bf8a7011150ce44fbadf63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac00cbb2072bf8a7011150ce44fbadf63">&#9670;&#160;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">PropertyReadResult eve::scene_editor::ScriptComponentPayloadProvider::read </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">scene_editing::SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1editing_1_1PropertyPath.html">scene_editing::PropertyPath</a> &amp;&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>读一个字段：值来自引擎侧存储，不是脚本实例的槽位。 </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#a416f8e8d2ee0880822430acea12f55d8">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="PlayHost_8cpp_source.html#l00111">path</a>, <a class="el" href="RoadPresetDocument_8cpp_source.html#l00328">resolved</a> , 以及 <a class="el" href="EditingProperty_8cpp_source.html#l00120">eve::editing::toEditingValue()</a>.</p>
+
+</div>
+</div>
+<a id="a64fd21ad421cf365a13a073c8bae6666" name="a64fd21ad421cf365a13a073c8bae6666"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64fd21ad421cf365a13a073c8bae6666">&#9670;&#160;</a></span>schema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">PropertySchema eve::scene_editor::ScriptComponentPayloadProvider::schema </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1editing_1_1SelectionSnapshot.html">scene_editing::SelectionSnapshot</a> &amp;&#160;</td>
+          <td class="paramname"><em>selection</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>选中组件的字段表：类型与默认值来自声明 schema，当前值只在声明值为空时兜底。 </p>
+
+<p>实现了 <a class="el" href="classeve_1_1editing_1_1IPropertyProvider.html#aad2055c613e332305f14ecfd7c3ece44">eve::editing::IPropertyProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00355">355</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>, <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00229">payloadType()</a>, <a class="el" href="RoadPresetDocument_8cpp_source.html#l00328">resolved</a> , 以及 <a class="el" href="EditingProperty_8h_source.html#l00118">eve::editing::PropertySchema::typeId</a>.</p>
+
+</div>
+</div>
+<a id="a438f7cb8587f787bed5e16cf5fcce6b0" name="a438f7cb8587f787bed5e16cf5fcce6b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a438f7cb8587f787bed5e16cf5fcce6b0">&#9670;&#160;</a></span>validateComponent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="namespaceeve_1_1scene__editing.html#a0e70faff6ed3f81bcf6cb96d45244bf0">scene_editing::EditorDiagnostic</a> &gt; eve::scene_editor::ScriptComponentPayloadProvider::validateComponent </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1scene__editing_1_1SceneComponentPayloadRef.html">scene_editing::SceneComponentPayloadRef</a> &amp;&#160;</td>
+          <td class="paramname"><em>component</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>引用还在不在：组件名+版本还登记着、且实例上仍挂着它。 </p>
+<dl class="section return"><dt>返回</dt><dd>每次调用返回一个**拥有**的 vector：每条诊断说明一项为何失效（空 vector = 有效）。 @cost 与 1 + 该组件的祖先链长度 成正比（登记表一次哈希查找 + 实例槽位比对），每次调用 一次 vector 分配；只在保存/校验路径上调用。 </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1scene__editing_1_1ISceneComponentPayloadProvider.html#a2e693e7f8c95c8e5c684facb1de9527e">eve::scene_editing::ISceneComponentPayloadProvider</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a> 第 <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00278">278</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="DnutCompiler_8cpp_source.html#l00026">nodeId</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html#l00229">payloadType()</a>, <a class="el" href="EditingResult_8cpp_source.html#l00020">eve::editing::ruleDiagnostic()</a>, <a class="el" href="Scene_8cpp_source.html#l01003">eve::scene::Scene::scriptComponentStatesAt()</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00035">version</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/scene/editor/<a class="el" href="ScriptComponentPayloadProvider_8h_source.html">ScriptComponentPayloadProvider.h</a></li>
+<li>src/modules/scene/editor/<a class="el" href="ScriptComponentPayloadProvider_8cpp_source.html">ScriptComponentPayloadProvider.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

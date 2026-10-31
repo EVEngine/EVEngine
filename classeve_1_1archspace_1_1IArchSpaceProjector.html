@@ -1,0 +1,399 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::archspace::IArchSpaceProjector类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1archspace.html">archspace</a></li><li class="navelem"><a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html">IArchSpaceProjector</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1archspace_1_1IArchSpaceProjector-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::archspace::IArchSpaceProjector类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Presentation adapter contract for <a class="el" href="classeve_1_1archspace_1_1ArchSpace.html" title="Runtime ArchSpace module entry used for profile wiring and script discovery.">ArchSpace</a> documents.  
+ <a href="classeve_1_1archspace_1_1IArchSpaceProjector.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ArchSpaceProjector_8h_source.html">ArchSpaceProjector.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::archspace::IArchSpaceProjector 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1archspace_1_1IArchSpaceProjector.png" usemap="#eve::archspace::IArchSpaceProjector_map" alt=""/>
+  <map id="eve::archspace::IArchSpaceProjector_map" name="eve::archspace::IArchSpaceProjector_map">
+<area href="classeve_1_1archspace_1_1MeshSceneProjector.html" title="Mesh bake projector for 3D / scene hosts." alt="eve::archspace::MeshSceneProjector" shape="rect" coords="0,56,258,80"/>
+<area href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html" title="Projects an ArchSpace level onto a TileLayer and HD-2D TileMap3D bake path." alt="eve::archspace_hd2d::Hd2dSpaceProjector" shape="rect" coords="268,56,526,80"/>
+<area href="classeve_1_1archspace__map_1_1TileMapProjector.html" title="Projects an ArchSpace level onto a map::TileLayer (orthogonal or isometric)." alt="eve::archspace_map::TileMapProjector" shape="rect" coords="536,56,794,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:abdcf16026005a7163e19a47faf8cce1c" id="r_abdcf16026005a7163e19a47faf8cce1c"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html#abdcf16026005a7163e19a47faf8cce1c">~IArchSpaceProjector</a> ()=default</td></tr>
+<tr class="memdesc:abdcf16026005a7163e19a47faf8cce1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases <a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html" title="Presentation adapter contract for ArchSpace documents.">IArchSpaceProjector</a> resources.  <br /></td></tr>
+<tr class="separator:abdcf16026005a7163e19a47faf8cce1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01a2f5da2c0c3d1b00690ef8e15af8c8" id="r_a01a2f5da2c0c3d1b00690ef8e15af8c8"><td class="memItemLeft" align="right" valign="top">virtual const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html#a01a2f5da2c0c3d1b00690ef8e15af8c8">kind</a> () const noexcept=0</td></tr>
+<tr class="memdesc:a01a2f5da2c0c3d1b00690ef8e15af8c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable projector kind wire name. @ownership Non-owning pointer to a static string literal; do not free. @lifetime Valid for the process lifetime.  <br /></td></tr>
+<tr class="separator:a01a2f5da2c0c3d1b00690ef8e15af8c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9738314760073a6b6289b89d66d5bb3e" id="r_a9738314760073a6b6289b89d66d5bb3e"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html#a9738314760073a6b6289b89d66d5bb3e">sync</a> (const <a class="el" href="classeve_1_1archspace_1_1Document.html">Document</a> &amp;document, std::uint64_t <a class="el" href="AudioSourcePreview_8cpp.html#a55dd0dc755bde1067aa82a718ea2288c">revision</a>)=0</td></tr>
+<tr class="memdesc:a9738314760073a6b6289b89d66d5bb3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rebuild derived presentation from <code>document</code> at <code>revision</code>.  <br /></td></tr>
+<tr class="separator:a9738314760073a6b6289b89d66d5bb3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a283feb06bca6454c643e480a809e3327" id="r_a283feb06bca6454c643e480a809e3327"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html#a283feb06bca6454c643e480a809e3327">clear</a> ()=0</td></tr>
+<tr class="memdesc:a283feb06bca6454c643e480a809e3327"><td class="mdescLeft">&#160;</td><td class="mdescRight">Drop derived presentation state.  <br /></td></tr>
+<tr class="separator:a283feb06bca6454c643e480a809e3327"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43508dcd550324ab2a6e95a3e5e56efd" id="r_a43508dcd550324ab2a6e95a3e5e56efd"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html#a43508dcd550324ab2a6e95a3e5e56efd">pickNode</a> (<a class="el" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a>, <a class="el" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a>) const</td></tr>
+<tr class="memdesc:a43508dcd550324ab2a6e95a3e5e56efd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pick a document node under a world-space ray when supported.  <br /></td></tr>
+<tr class="separator:a43508dcd550324ab2a6e95a3e5e56efd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Presentation adapter contract for <a class="el" href="classeve_1_1archspace_1_1ArchSpace.html" title="Runtime ArchSpace module entry used for profile wiring and script discovery.">ArchSpace</a> documents. </p>
+<p>Implementations must treat the document as read-only authority and rebuild derived state on sync. Missing optional backends are expressed by not registering a projector, not by silent no-ops inside gameplay code.</p>
+<p>@thread Owner thread only. @reentrancy Must not invoke unknown callbacks while holding projector locks. </p>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceProjector_8h_source.html">ArchSpaceProjector.h</a> 第 <a class="el" href="ArchSpaceProjector_8h_source.html#l00046">46</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="abdcf16026005a7163e19a47faf8cce1c" name="abdcf16026005a7163e19a47faf8cce1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abdcf16026005a7163e19a47faf8cce1c">&#9670;&#160;</a></span>~IArchSpaceProjector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::archspace::IArchSpaceProjector::~IArchSpaceProjector </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Releases <a class="el" href="classeve_1_1archspace_1_1IArchSpaceProjector.html" title="Presentation adapter contract for ArchSpace documents.">IArchSpaceProjector</a> resources. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a283feb06bca6454c643e480a809e3327" name="a283feb06bca6454c643e480a809e3327"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a283feb06bca6454c643e480a809e3327">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::archspace::IArchSpaceProjector::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Drop derived presentation state. </p>
+
+<p>在 <a class="el" href="classeve_1_1archspace_1_1MeshSceneProjector.html#aa949671ea5f2bdfb7173cbbfc0d34e70">eve::archspace::MeshSceneProjector</a>, <a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#ac2f16580ec2959dfda1c183cdd843c83">eve::archspace_hd2d::Hd2dSpaceProjector</a> , 以及 <a class="el" href="classeve_1_1archspace__map_1_1TileMapProjector.html#ac3c1801830b0b165f09567d1065e517d">eve::archspace_map::TileMapProjector</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a01a2f5da2c0c3d1b00690ef8e15af8c8" name="a01a2f5da2c0c3d1b00690ef8e15af8c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01a2f5da2c0c3d1b00690ef8e15af8c8">&#9670;&#160;</a></span>kind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const char * eve::archspace::IArchSpaceProjector::kind </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable projector kind wire name. @ownership Non-owning pointer to a static string literal; do not free. @lifetime Valid for the process lifetime. </p>
+
+<p>在 <a class="el" href="classeve_1_1archspace_1_1MeshSceneProjector.html#af6f5349a27c96f86f2a2452e671b9670">eve::archspace::MeshSceneProjector</a>, <a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#a4587eb3780b32240027904bf86e337b5">eve::archspace_hd2d::Hd2dSpaceProjector</a> , 以及 <a class="el" href="classeve_1_1archspace__map_1_1TileMapProjector.html#ae9ade69cfe4e19257e7226f09a2a738d">eve::archspace_map::TileMapProjector</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a43508dcd550324ab2a6e95a3e5e56efd" name="a43508dcd550324ab2a6e95a3e5e56efd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43508dcd550324ab2a6e95a3e5e56efd">&#9670;&#160;</a></span>pickNode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::string &gt; eve::archspace::IArchSpaceProjector::pickNode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1archspace_1_1Vec3.html">Vec3</a>&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Pick a document node under a world-space ray when supported. </p>
+<dl class="section return"><dt>返回</dt><dd><a class="el" href="structeve_1_1archspace_1_1Node.html" title="One authored architectural node. Only fields for the active kind are meaningful.">Node</a> id on hit; NotFound when nothing is hit; Unsupported when picking is unavailable. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="ArchSpaceProjector_8h_source.html">ArchSpaceProjector.h</a> 第 <a class="el" href="ArchSpaceProjector_8h_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>.</p>
+
+</div>
+</div>
+<a id="a9738314760073a6b6289b89d66d5bb3e" name="a9738314760073a6b6289b89d66d5bb3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9738314760073a6b6289b89d66d5bb3e">&#9670;&#160;</a></span>sync()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::archspace::IArchSpaceProjector::sync </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1archspace_1_1Document.html">Document</a> &amp;&#160;</td>
+          <td class="paramname"><em>document</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>revision</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Rebuild derived presentation from <code>document</code> at <code>revision</code>. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">document</td><td>Borrowed authority; must outlive the call. </td></tr>
+    <tr><td class="paramname">revision</td><td>Caller-owned monotonic revision token for cache skipping. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Applied on success; Rejected when inputs are invalid. @cost Full rebuild of presentation state; amortize per document revision. </dd></dl>
+
+<p>在 <a class="el" href="classeve_1_1archspace__hd2d_1_1Hd2dSpaceProjector.html#a48f8724942630e156552a13d6d637b1f">eve::archspace_hd2d::Hd2dSpaceProjector</a>, <a class="el" href="classeve_1_1archspace__map_1_1TileMapProjector.html#a08ecc45d975f88f88a61800547638dcf">eve::archspace_map::TileMapProjector</a> , 以及 <a class="el" href="classeve_1_1archspace_1_1MeshSceneProjector.html#a4c22651e9fd3ec5d305b13453d55c8e3">eve::archspace::MeshSceneProjector</a> 内被实现.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/archspace/<a class="el" href="ArchSpaceProjector_8h_source.html">ArchSpaceProjector.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/box3d/Box3DShapeCook.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_8b5fdba4ba033967019b68d0fa10dceb.html">box3d</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Box3DShapeCook.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Box3DShapeCook_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Box3DShapeCook_8h.html">physics/box3d/Box3DShapeCook.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Exception_8h.html">common/Exception.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics_1_1box3d.html">eve::physics::box3d</a> {</div>
+<div class="foldopen" id="foldopen00005" data-start="{" data-end="}">
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics_1_1box3d.html#aea382d98b96475990c78a7a97f2422e3">    5</a></span>b3HullData* <a class="code hl_function" href="namespaceeve_1_1physics_1_1box3d.html#aea382d98b96475990c78a7a97f2422e3">createCheckedHull</a>(<span class="keyword">const</span> std::vector&lt;float&gt;&amp; <a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>, <span class="keywordtype">int</span> maxVertices, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>) {</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>.size() &lt; 12 || <a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>.size() % 3 != 0)</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: vertices must contain at least four packed XYZ points&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>.size() / 3 &gt; 100000) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: source point count must be &lt;= 100000&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keywordflow">if</span> (maxVertices &lt; 4 || maxVertices &gt; 254) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: maxVertices must be in [4, 254]&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    std::vector&lt;b3Vec3&gt; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.reserve(<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>.size() / 3);</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>.size(); i += 3) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>[i]) || !std::isfinite(<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>[i + 1]) || !std::isfinite(<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>[i + 2]))</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>            <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: all vertex components must be finite&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.push_back({<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>[i], <a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>[i + 1], <a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>[i + 2]});</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    }</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    b3HullData* hull = b3CreateHull(<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.data(), <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.size()), maxVertices);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">if</span> (!hull) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: points do not form a valid three-dimensional convex hull&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">return</span> hull;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}</div>
+</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics_1_1box3d.html#a4d48d8f54bf181720948d23dc98f5791">   22</a></span>b3MeshData* <a class="code hl_function" href="namespaceeve_1_1physics_1_1box3d.html#a4d48d8f54bf181720948d23dc98f5791">createCheckedMesh</a>(<span class="keyword">const</span> std::vector&lt;float&gt;&amp; <a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>, <span class="keyword">const</span> std::vector&lt;int32_t&gt;&amp; <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                              <span class="keywordtype">bool</span> weldVertices, <span class="keywordtype">float</span> weldTolerance, <span class="keywordtype">bool</span> identifyEdges, <span class="keywordtype">bool</span> useMedianSplit,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                              b3Transform transform, <span class="keyword">const</span> std::vector&lt;uint8_t&gt;* materialIndices,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                              <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>) {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>.size() &lt; 9 || <a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>.size() % 3 != 0)</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: vertices must contain at least three packed XYZ points&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>.size() &lt; 3 || <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>.size() % 3 != 0)</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: indices must contain complete triangles&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>.size() / 3 &gt; 1000000 || <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>.size() / 3 &gt; 2000000)</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: mesh exceeds 1000000 vertices or 2000000 triangles&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">if</span> (!std::isfinite(weldTolerance) || weldTolerance &lt; 0.f)</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: weldTolerance must be finite and &gt;= 0&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    std::vector&lt;b3Vec3&gt; <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.reserve(<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>.size() / 3);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>.size(); i += 3) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>[i]) || !std::isfinite(<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>[i + 1]) || !std::isfinite(<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>[i + 2]))</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: all vertex components must be finite&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keyword">const</span> b3Vec3 <a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>{<a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>[i], <a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>[i + 1], <a class="code hl_variable" href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a>[i + 2]};</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.push_back(transform.p + b3RotateVector(transform.q, <a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>));</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">for</span> (int32_t <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> : <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>) {</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> &lt; 0 || <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) &gt;= <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.size())</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: triangle index is outside the vertex array&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    }</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    std::vector&lt;int32_t&gt; mutableIndices = <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    b3MeshDef            def{};</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    def.vertices = <a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.data();</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    def.indices  = mutableIndices.data();</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    def.materialIndices =</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        materialIndices &amp;&amp; !materialIndices-&gt;empty() ? <span class="keyword">const_cast&lt;</span>uint8_t*<span class="keyword">&gt;</span>(materialIndices-&gt;data()) : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    def.vertexCount    = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a>.size());</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    def.triangleCount  = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>.size() / 3);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    def.weldVertices   = weldVertices;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    def.weldTolerance  = weldTolerance;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    def.identifyEdges  = identifyEdges;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    def.useMedianSplit = useMedianSplit;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    b3MeshData* <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a55139a87ffac9b4f63e8c424b9d090b1">mesh</a>   = b3CreateMesh(&amp;def, <span class="keyword">nullptr</span>, 0);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a55139a87ffac9b4f63e8c424b9d090b1">mesh</a> || <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a55139a87ffac9b4f63e8c424b9d090b1">mesh</a>-&gt;triangleCount != def.triangleCount) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a55139a87ffac9b4f63e8c424b9d090b1">mesh</a>) b3DestroyMesh(<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a55139a87ffac9b4f63e8c424b9d090b1">mesh</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: mesh contains degenerate or zero-area triangles&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a55139a87ffac9b4f63e8c424b9d090b1">mesh</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
+</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="foldopen" id="foldopen00066" data-start="{" data-end="}">
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics_1_1box3d.html#a93452d9999c90c968b5734ce8d1a6f27">   66</a></span>b3HeightFieldData* <a class="code hl_function" href="namespaceeve_1_1physics_1_1box3d.html#a93452d9999c90c968b5734ce8d1a6f27">createCheckedHeightField</a>(<span class="keywordtype">int</span> countX, <span class="keywordtype">int</span> countZ, <span class="keywordtype">float</span> cellSizeX, <span class="keywordtype">float</span> cellSizeZ,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                            <span class="keyword">const</span> std::vector&lt;float&gt;&amp; heights, <span class="keywordtype">float</span> globalMin, <span class="keywordtype">float</span> globalMax,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                            <span class="keywordtype">bool</span> clockwiseWinding, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>) {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">if</span> (countX &lt; 2 || countZ &lt; 2) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: countX and countZ must be &gt;= 2&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> sampleCount = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(countX) * <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(countZ);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">if</span> (sampleCount &gt; 16000000) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: sample count must be &lt;= 16000000&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">if</span> (heights.size() != sampleCount) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: heights size must equal countX*  countZ&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">if</span> (!(cellSizeX &gt; 0.f) || !(cellSizeZ &gt; 0.f) || !std::isfinite(cellSizeX) || !std::isfinite(cellSizeZ))</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: cell sizes must be finite and &gt; 0&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">if</span> (!std::isfinite(globalMin) || !std::isfinite(globalMax) || globalMin &gt; globalMax)</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: global height range must be finite and ordered&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">for</span> (<span class="keywordtype">float</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a> : heights) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>) || height &lt; globalMin || height &gt; globalMax)</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;%s: every height must be finite and inside global range&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    std::vector&lt;float&gt; mutableHeights = heights;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    b3HeightFieldDef   def{};</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    def.heights             = mutableHeights.data();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    def.scale               = {cellSizeX, 1.f, cellSizeZ};</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    def.countX              = countX;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    def.countZ              = countZ;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    def.globalMinimumHeight = globalMin;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    def.globalMaximumHeight = globalMax;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    def.clockwiseWinding    = clockwiseWinding;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">return</span> b3CreateHeightField(&amp;def);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>}</div>
+</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}  <span class="comment">// namespace eve::physics::box3d</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a1d8330996490721964918f24590a398b"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a></div><div class="ttdeci">ActionParameterOperation operation</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00152">ActionNotifyRegistry.cpp:152</a></div></div>
+<div class="ttc" id="aBox3DShapeCook_8h_html"><div class="ttname"><a href="Box3DShapeCook_8h.html">Box3DShapeCook.h</a></div></div>
+<div class="ttc" id="aException_8h_html"><div class="ttname"><a href="Exception_8h.html">Exception.h</a></div></div>
+<div class="ttc" id="aHeightmapMesh_8cpp_html_a1c05ae841a0f4a10fbccd8a5438951a8"><div class="ttname"><a href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="HeightmapMesh_8cpp_source.html#l00019">HeightmapMesh.cpp:19</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00014">ImageImporter.cpp:14</a></div></div>
+<div class="ttc" id="aOceanRenderBindings_8cpp_html_a55139a87ffac9b4f63e8c424b9d090b1"><div class="ttname"><a href="OceanRenderBindings_8cpp.html#a55139a87ffac9b4f63e8c424b9d090b1">mesh</a></div><div class="ttdeci">OceanMeshSettings mesh</div><div class="ttdef"><b>Definition</b> <a href="OceanRenderBindings_8cpp_source.html#l00026">OceanRenderBindings.cpp:26</a></div></div>
+<div class="ttc" id="aPrimitiveDrawList_8cpp_html_a294aae2204c93b7ba3628b25f45967cd"><div class="ttname"><a href="PrimitiveDrawList_8cpp.html#a294aae2204c93b7ba3628b25f45967cd">points</a></div><div class="ttdeci">std::shared_ptr&lt; const std::vector&lt; glm::vec2 &gt; &gt; points</div><div class="ttdef"><b>Definition</b> <a href="PrimitiveDrawList_8cpp_source.html#l00076">PrimitiveDrawList.cpp:76</a></div></div>
+<div class="ttc" id="aTerrainImageAdapter_8cpp_html_af8c7bdaa05bbdddb5978b43f213555ef"><div class="ttname"><a href="TerrainImageAdapter_8cpp.html#af8c7bdaa05bbdddb5978b43f213555ef">vertices</a></div><div class="ttdeci">std::array&lt; double, 2 &gt; vertices[3]</div><div class="ttdef"><b>Definition</b> <a href="TerrainImageAdapter_8cpp_source.html#l00082">TerrainImageAdapter.cpp:82</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aVolumeFluidFoamSurface_8cpp_html_ac41ee5e90dfa1dead2adafcda2f01a08"><div class="ttname"><a href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a></div><div class="ttdeci">glm::vec3 point</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoamSurface_8cpp_source.html#l00304">VolumeFluidFoamSurface.cpp:304</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdoc">EVENGINE_API_FOUNDATION public API.</div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1box3d_html"><div class="ttname"><a href="namespaceeve_1_1physics_1_1box3d.html">eve::physics::box3d</a></div><div class="ttdef"><b>Definition</b> <a href="Body3D_8h_source.html#l00017">Body3D.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1box3d_html_a4d48d8f54bf181720948d23dc98f5791"><div class="ttname"><a href="namespaceeve_1_1physics_1_1box3d.html#a4d48d8f54bf181720948d23dc98f5791">eve::physics::box3d::createCheckedMesh</a></div><div class="ttdeci">b3MeshData * createCheckedMesh(const std::vector&lt; float &gt; &amp;vertices, const std::vector&lt; int32_t &gt; &amp;indices, bool weldVertices, float weldTolerance, bool identifyEdges, bool useMedianSplit, b3Transform transform, const std::vector&lt; uint8_t &gt; *materialIndices, const char *operation)</div><div class="ttdoc">Validates and cooks native geometry; throws on invalid input. @ownership Transfers native allocation ...</div><div class="ttdef"><b>Definition</b> <a href="Box3DShapeCook_8cpp_source.html#l00022">Box3DShapeCook.cpp:22</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1box3d_html_a93452d9999c90c968b5734ce8d1a6f27"><div class="ttname"><a href="namespaceeve_1_1physics_1_1box3d.html#a93452d9999c90c968b5734ce8d1a6f27">eve::physics::box3d::createCheckedHeightField</a></div><div class="ttdeci">b3HeightFieldData * createCheckedHeightField(int countX, int countZ, float cellSizeX, float cellSizeZ, const std::vector&lt; float &gt; &amp;heights, float globalMin, float globalMax, bool clockwiseWinding, const char *operation)</div><div class="ttdoc">Validates and cooks native geometry; throws on invalid input. @ownership Transfers native allocation ...</div><div class="ttdef"><b>Definition</b> <a href="Box3DShapeCook_8cpp_source.html#l00066">Box3DShapeCook.cpp:66</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1box3d_html_aea382d98b96475990c78a7a97f2422e3"><div class="ttname"><a href="namespaceeve_1_1physics_1_1box3d.html#aea382d98b96475990c78a7a97f2422e3">eve::physics::box3d::createCheckedHull</a></div><div class="ttdeci">b3HullData * createCheckedHull(const std::vector&lt; float &gt; &amp;vertices, int maxVertices, const char *operation)</div><div class="ttdoc">Validates and cooks native geometry; throws on invalid input. @ownership Transfers native allocation ...</div><div class="ttdef"><b>Definition</b> <a href="Box3DShapeCook_8cpp_source.html#l00005">Box3DShapeCook.cpp:5</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

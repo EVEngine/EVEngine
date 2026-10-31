@@ -1,0 +1,311 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/editor/EditorMcpProjector.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_e757ab49281cc378b004f53da2c03174.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EditorMcpProjector.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EditorMcpProjector_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="EditorMcpProjector_8h.html">editor/EditorMcpProjector.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Capability_8h.html">common/Capability.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="EditorPackage_8h.html">editing/EditorPackage.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="EditorAutomationTargetFactory_8h.html">editor/EditorAutomationTargetFactory.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="modules_2editor_2EditorHost_8h.html">editor/EditorHost.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;set&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1editor.html">eve::editor</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="}">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="namespaceeve_1_1editor.html#a0e0962a53e1665f56ee2b6acccef5623">   13</a></span><a class="code hl_class" href="classeve_1_1editor_1_1EditorMcpProjector.html">EditorMcpProjector</a>&amp; <a class="code hl_function" href="namespaceeve_1_1editor.html#a0e0962a53e1665f56ee2b6acccef5623">editorMcpProjector</a>() {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1editor_1_1EditorMcpProjector.html">EditorMcpProjector</a> projector;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">return</span> projector;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}</div>
+</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorMcpProjector.html#a51f8b6dbacf596761d5b784d3e180a73">   18</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorMcpProjector.html#a51f8b6dbacf596761d5b784d3e180a73">EditorMcpProjector::attach</a>(<a class="code hl_class" href="classeve_1_1editor_1_1EditorHost.html">EditorHost</a>* <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>, <a class="code hl_enumeration" href="namespaceeve_1_1editor.html#ac87cd1c17fa9417b7fd4dae527a1e548">EditorMcpExportMode</a> mode) {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1editor_1_1EditorMcpProjector.html#aa9b9e880616eba068dfdf8353d04b742">mode</a> != <a class="code hl_enumvalue" href="namespaceeve_1_1editor.html#ac87cd1c17fa9417b7fd4dae527a1e548ac441ee50c88f6e5e3a7c69fc69dad8b8">EditorMcpExportMode::Commands</a>)</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">return</span> eve::editing::failed&lt;void&gt;(EditorStatus::Unsupported, <a class="code hl_typedef" href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">RuleId</a>(<span class="stringliteral">&quot;editor.mcp.mode&quot;</span>),</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                                          <span class="stringliteral">&quot;Only MCP export mode Commands (A) is supported&quot;</span>);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    host_ = <a class="code hl_function" href="classeve_1_1editor_1_1EditorMcpProjector.html#a1e597f6b05da53f27e3ff3dbc24471bc">host</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    mode_ = <a class="code hl_function" href="classeve_1_1editor_1_1EditorMcpProjector.html#aa9b9e880616eba068dfdf8353d04b742">mode</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;void&gt;();</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>}</div>
+</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorMcpProjector.html#a0c8c0eb7f7c02456188b2afc2cf8b49d">   27</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1editor_1_1EditorMcpProjector.html#a0c8c0eb7f7c02456188b2afc2cf8b49d">EditorMcpProjector::detach</a>() { host_ = <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="foldopen" id="foldopen00029" data-start="{" data-end="}">
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorMcpProjector.html#a235a746797cfdad3cf2acb6522c51f1c">   29</a></span>std::unordered_set&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1editor_1_1EditorMcpProjector.html#a235a746797cfdad3cf2acb6522c51f1c">EditorMcpProjector::mountedOwners</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    std::unordered_set&lt;std::string&gt; owners;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (!host_) <span class="keywordflow">return</span> owners;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a> : host_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#a32cc32120ed0ea8c86925cf6eb51b715">mountedOwnerNames</a>()) owners.insert(<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a>);</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">return</span> owners;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>}</div>
+</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="}">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorMcpProjector.html#a911da808a28a3d1b4015cd0188518f7e">   36</a></span>std::unordered_set&lt;std::string&gt; <a class="code hl_function" href="classeve_1_1editor_1_1EditorMcpProjector.html#a911da808a28a3d1b4015cd0188518f7e">EditorMcpProjector::mountedTargetTypes</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    std::unordered_set&lt;std::string&gt; types;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">if</span> (!host_) <span class="keywordflow">return</span> types;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a> : host_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#a59eb545e579c77c33f6579f7cb7342f5">mountedTargetTypeNames</a>()) types.insert(<a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">return</span> types;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="}">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1editor_1_1EditorMcpProjector.html#a0564d6aa2ba5194121b98f39ab7eca35">   43</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;EditorValue&gt;</a> <a class="code hl_function" href="classeve_1_1editor_1_1EditorMcpProjector.html#a0564d6aa2ba5194121b98f39ab7eca35">EditorMcpProjector::auditCompleteness</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">EditorValue::Array</a> incomplete;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    eve::cap::forEach&lt;editing::IEditorPackageProvider&gt;([&amp;](<a class="code hl_class" href="classeve_1_1editing_1_1IEditorPackageProvider.html">editing::IEditorPackageProvider</a>* <a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1EditorPackage.html">editing::EditorPackage</a>&amp; <span class="keyword">package </span>= provider-&gt;package();</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">if</span> (!package.incomplete) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a> item;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        item[<span class="stringliteral">&quot;owner&quot;</span>]  = package.ownerModule;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        item[<span class="stringliteral">&quot;reason&quot;</span>] = <span class="stringliteral">&quot;package.incomplete&quot;</span>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        incomplete.emplace_back(std::move(item));</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    });</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    std::set&lt;std::string&gt; packagedTypes;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    eve::cap::forEach&lt;editing::IEditorPackageProvider&gt;([&amp;](<a class="code hl_class" href="classeve_1_1editing_1_1IEditorPackageProvider.html">editing::IEditorPackageProvider</a>* <a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>) {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1EditorPackage.html">editing::EditorPackage</a>&amp; <span class="keyword">package </span>= provider-&gt;package();</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordflow">if</span> (package.incomplete) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editing_1_1EditorTargetTypeSpec.html">editing::EditorTargetTypeSpec</a>&amp; <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a> : package.targetTypes) packagedTypes.insert(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>.type);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    });</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">EditorValue::Array</a> orphans;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    eve::cap::forEach&lt;IEditorAutomationTargetFactory&gt;([&amp;](<a class="code hl_class" href="classeve_1_1editor_1_1IEditorAutomationTargetFactory.html">IEditorAutomationTargetFactory</a>* factory) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">if</span> (!factory) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> std::string_view <a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a> : factory-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1IEditorAutomationTargetFactory.html#a6f26e9a2d345912114edd0964256098a">types</a>()) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">if</span> (packagedTypes.contains(std::string(<a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>))) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            orphans.emplace_back(std::string(<a class="code hl_variable" href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a>));</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    });</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    std::sort(orphans.begin(), orphans.end(), [](<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a4aec083086e51d216483397c15f1518c">left</a>, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editing_1_1Value.html">EditorValue</a>&amp; <a class="code hl_variable" href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a>) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        const auto* leftString  = left.getIf&lt;std::string&gt;();</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        const auto* rightString = right.getIf&lt;std::string&gt;();</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        return (leftString ? *leftString : std::string{}) &lt; (rightString ? *rightString : std::string{});</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    });</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <a class="code hl_typedef" href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">EditorValue::Object</a> report;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    report[<span class="stringliteral">&quot;incompletePackages&quot;</span>] = std::move(incomplete);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    report[<span class="stringliteral">&quot;orphanFactoryTypes&quot;</span>] = std::move(orphans);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    report[<span class="stringliteral">&quot;mode&quot;</span>]               = <span class="stringliteral">&quot;commands&quot;</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    report[<span class="stringliteral">&quot;attached&quot;</span>]           = <a class="code hl_function" href="classeve_1_1editor_1_1EditorMcpProjector.html#a96170dab7739d8942b37b380bb45761b">isAttached</a>();</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (host_) report[<span class="stringliteral">&quot;hostId&quot;</span>] = host_-&gt;<a class="code hl_function" href="classeve_1_1editor_1_1EditorHost.html#a33f0dc0427ccad6e05df2992065f6409">workspace</a>().<a class="code hl_function" href="classeve_1_1editor_1_1EditorWorkspace.html#aca24a21d5a6842150bcd2e1a091c9b23">getId</a>();</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span> eve::editing::applied&lt;EditorValue&gt;(<a class="code hl_typedef" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a>(std::move(report)));</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>}  <span class="comment">// namespace eve::editor</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a16c9300acaea4db7696fb24b3802bfa5"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00151">ActionNotifyRegistry.cpp:151</a></div></div>
+<div class="ttc" id="aActionTimelinePayloadEditor_8cpp_html_acc84214b4748705f4d18dd8d143e70be"><div class="ttname"><a href="ActionTimelinePayloadEditor_8cpp.html#acc84214b4748705f4d18dd8d143e70be">type</a></div><div class="ttdeci">LogicalId type</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">ActionTimelinePayloadEditor.cpp:16</a></div></div>
+<div class="ttc" id="aCapability_8h_html"><div class="ttname"><a href="Capability_8h.html">Capability.h</a></div></div>
+<div class="ttc" id="aEditorAutomationTargetFactory_8h_html"><div class="ttname"><a href="EditorAutomationTargetFactory_8h.html">EditorAutomationTargetFactory.h</a></div></div>
+<div class="ttc" id="aEditorMcpProjector_8h_html"><div class="ttname"><a href="EditorMcpProjector_8h.html">EditorMcpProjector.h</a></div></div>
+<div class="ttc" id="aEditorPackage_8h_html"><div class="ttname"><a href="EditorPackage_8h.html">EditorPackage.h</a></div></div>
+<div class="ttc" id="aHexSphereMesh_8cpp_html_a4aec083086e51d216483397c15f1518c"><div class="ttname"><a href="HexSphereMesh_8cpp.html#a4aec083086e51d216483397c15f1518c">left</a></div><div class="ttdeci">HexVec3 left</div><div class="ttdef"><b>Definition</b> <a href="HexSphereMesh_8cpp_source.html#l00219">HexSphereMesh.cpp:219</a></div></div>
+<div class="ttc" id="aHexSphereMesh_8cpp_html_a693f5ccb2102b8c2a7eb23cbb1e337bc"><div class="ttname"><a href="HexSphereMesh_8cpp.html#a693f5ccb2102b8c2a7eb23cbb1e337bc">right</a></div><div class="ttdeci">HexVec3 right</div><div class="ttdef"><b>Definition</b> <a href="HexSphereMesh_8cpp_source.html#l00220">HexSphereMesh.cpp:220</a></div></div>
+<div class="ttc" id="aOceanRenderBindings_8cpp_html_a1c82e23b3363a0cded2d2bdf7abfb5c8"><div class="ttname"><a href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a></div><div class="ttdeci">std::shared_ptr&lt; OceanGpuSpectrum &gt; owner</div><div class="ttdef"><b>Definition</b> <a href="OceanRenderBindings_8cpp_source.html#l00022">OceanRenderBindings.cpp:22</a></div></div>
+<div class="ttc" id="aScriptLinks_8cpp_html_a5d842a6f5624813bbf240ce6655aa1af"><div class="ttname"><a href="ScriptLinks_8cpp.html#a5d842a6f5624813bbf240ce6655aa1af">provider</a></div><div class="ttdeci">ScriptProviderHandle provider</div><div class="ttdef"><b>Definition</b> <a href="ScriptLinks_8cpp_source.html#l00075">ScriptLinks.cpp:75</a></div></div>
+<div class="ttc" id="aUIAutomationCapabilities_8cpp_html_a746317fdab8614a8048746f94bdacdab"><div class="ttname"><a href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a></div><div class="ttdeci">UIHostHandle host</div><div class="ttdef"><b>Definition</b> <a href="UIAutomationCapabilities_8cpp_source.html#l00240">UIAutomationCapabilities.cpp:240</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1IEditorPackageProvider_html"><div class="ttname"><a href="classeve_1_1editing_1_1IEditorPackageProvider.html">eve::editing::IEditorPackageProvider</a></div><div class="ttdoc">Capability-discovered package advertisement from a domain editor module.</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8h_source.html#l00064">EditorPackage.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html">eve::editing::Value</a></div><div class="ttdoc">Deterministic owning value tree shared by authoring hosts.</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00023">EditingValue.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a3c88bc09ffc0ed051db4007328a54971"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a3c88bc09ffc0ed051db4007328a54971">eve::editing::Value::Array</a></div><div class="ttdeci">std::vector&lt; Value &gt; Array</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00025">EditingValue.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1editing_1_1Value_html_a71ec87a639bfcbcc701be7a93446a558"><div class="ttname"><a href="classeve_1_1editing_1_1Value.html#a71ec87a639bfcbcc701be7a93446a558">eve::editing::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="EditingValue_8h_source.html#l00026">EditingValue.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html">eve::editor::EditorHost</a></div><div class="ttdoc">Composition runtime that discovers EditorPackage providers and installs them.</div><div class="ttdef"><b>Definition</b> <a href="modules_2editor_2EditorHost_8h_source.html#l00053">EditorHost.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_a32cc32120ed0ea8c86925cf6eb51b715"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#a32cc32120ed0ea8c86925cf6eb51b715">eve::editor::EditorHost::mountedOwnerNames</a></div><div class="ttdeci">std::vector&lt; std::string &gt; mountedOwnerNames() const</div><div class="ttdoc">Mounted package owner names. @cost Linear in mounted package count; returns an owning vector copy.</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00101">EditorHost.cpp:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_a33f0dc0427ccad6e05df2992065f6409"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#a33f0dc0427ccad6e05df2992065f6409">eve::editor::EditorHost::workspace</a></div><div class="ttdeci">EditorWorkspace &amp; workspace()</div><div class="ttdoc">Workspace receiving merged panels.</div><div class="ttdef"><b>Definition</b> <a href="modules_2editor_2EditorHost_8h_source.html#l00089">EditorHost.h:89</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorHost_html_a59eb545e579c77c33f6579f7cb7342f5"><div class="ttname"><a href="classeve_1_1editor_1_1EditorHost.html#a59eb545e579c77c33f6579f7cb7342f5">eve::editor::EditorHost::mountedTargetTypeNames</a></div><div class="ttdeci">std::vector&lt; std::string &gt; mountedTargetTypeNames() const</div><div class="ttdoc">Target types contributed by mounted packages. @cost Linear in mounted target types; returns a sorted ...</div><div class="ttdef"><b>Definition</b> <a href="editor_2EditorHost_8cpp_source.html#l00109">EditorHost.cpp:109</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorMcpProjector_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorMcpProjector.html">eve::editor::EditorMcpProjector</a></div><div class="ttdoc">Host-scoped MCP projection over IEditorAutomation discovery.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8h_source.html#l00027">EditorMcpProjector.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorMcpProjector_html_a0564d6aa2ba5194121b98f39ab7eca35"><div class="ttname"><a href="classeve_1_1editor_1_1EditorMcpProjector.html#a0564d6aa2ba5194121b98f39ab7eca35">eve::editor::EditorMcpProjector::auditCompleteness</a></div><div class="ttdeci">Result&lt; EditorValue &gt; auditCompleteness() const</div><div class="ttdoc">Audit incomplete packages and orphan automation factories.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8cpp_source.html#l00043">EditorMcpProjector.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorMcpProjector_html_a0c8c0eb7f7c02456188b2afc2cf8b49d"><div class="ttname"><a href="classeve_1_1editor_1_1EditorMcpProjector.html#a0c8c0eb7f7c02456188b2afc2cf8b49d">eve::editor::EditorMcpProjector::detach</a></div><div class="ttdeci">void detach()</div><div class="ttdoc">Clear the active attachment.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8cpp_source.html#l00027">EditorMcpProjector.cpp:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorMcpProjector_html_a1e597f6b05da53f27e3ff3dbc24471bc"><div class="ttname"><a href="classeve_1_1editor_1_1EditorMcpProjector.html#a1e597f6b05da53f27e3ff3dbc24471bc">eve::editor::EditorMcpProjector::host</a></div><div class="ttdeci">EditorHost * host() const</div><div class="ttdoc">Borrowed attached host, or null.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8h_source.html#l00042">EditorMcpProjector.h:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorMcpProjector_html_a235a746797cfdad3cf2acb6522c51f1c"><div class="ttname"><a href="classeve_1_1editor_1_1EditorMcpProjector.html#a235a746797cfdad3cf2acb6522c51f1c">eve::editor::EditorMcpProjector::mountedOwners</a></div><div class="ttdeci">std::unordered_set&lt; std::string &gt; mountedOwners() const</div><div class="ttdoc">Mounted owner allowlist, empty when detached (no filter). @cost Linear in mounted package count; retu...</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8cpp_source.html#l00029">EditorMcpProjector.cpp:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorMcpProjector_html_a51f8b6dbacf596761d5b784d3e180a73"><div class="ttname"><a href="classeve_1_1editor_1_1EditorMcpProjector.html#a51f8b6dbacf596761d5b784d3e180a73">eve::editor::EditorMcpProjector::attach</a></div><div class="ttdeci">Result&lt; void &gt; attach(EditorHost *host, EditorMcpExportMode mode=EditorMcpExportMode::Commands)</div><div class="ttdoc">Attach a borrowed host as the active MCP projection scope.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8cpp_source.html#l00018">EditorMcpProjector.cpp:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorMcpProjector_html_a911da808a28a3d1b4015cd0188518f7e"><div class="ttname"><a href="classeve_1_1editor_1_1EditorMcpProjector.html#a911da808a28a3d1b4015cd0188518f7e">eve::editor::EditorMcpProjector::mountedTargetTypes</a></div><div class="ttdeci">std::unordered_set&lt; std::string &gt; mountedTargetTypes() const</div><div class="ttdoc">Mounted target type allowlist, empty when detached (no filter). @cost Linear in mounted target types;...</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8cpp_source.html#l00036">EditorMcpProjector.cpp:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorMcpProjector_html_a96170dab7739d8942b37b380bb45761b"><div class="ttname"><a href="classeve_1_1editor_1_1EditorMcpProjector.html#a96170dab7739d8942b37b380bb45761b">eve::editor::EditorMcpProjector::isAttached</a></div><div class="ttdeci">bool isAttached() const</div><div class="ttdoc">True when a host is attached.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8h_source.html#l00048">EditorMcpProjector.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorMcpProjector_html_aa9b9e880616eba068dfdf8353d04b742"><div class="ttname"><a href="classeve_1_1editor_1_1EditorMcpProjector.html#aa9b9e880616eba068dfdf8353d04b742">eve::editor::EditorMcpProjector::mode</a></div><div class="ttdeci">EditorMcpExportMode mode() const</div><div class="ttdoc">Active export mode.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8h_source.html#l00045">EditorMcpProjector.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorWorkspace_html_aca24a21d5a6842150bcd2e1a091c9b23"><div class="ttname"><a href="classeve_1_1editor_1_1EditorWorkspace.html#aca24a21d5a6842150bcd2e1a091c9b23">eve::editor::EditorWorkspace::getId</a></div><div class="ttdeci">const std::string &amp; getId() const</div><div class="ttdoc">Stable project-defined workspace id.</div><div class="ttdef"><b>Definition</b> <a href="EditorWorkspace_8h_source.html#l00049">EditorWorkspace.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorAutomationTargetFactory_html"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorAutomationTargetFactory.html">eve::editor::IEditorAutomationTargetFactory</a></div><div class="ttdoc">Multi-provider extension point for domain-specific automation target creation.</div><div class="ttdef"><b>Definition</b> <a href="EditorAutomationTargetFactory_8h_source.html#l00022">EditorAutomationTargetFactory.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1IEditorAutomationTargetFactory_html_a6f26e9a2d345912114edd0964256098a"><div class="ttname"><a href="classeve_1_1editor_1_1IEditorAutomationTargetFactory.html#a6f26e9a2d345912114edd0964256098a">eve::editor::IEditorAutomationTargetFactory::types</a></div><div class="ttdeci">virtual std::vector&lt; std::string_view &gt; types() const =0</div><div class="ttdoc">Stable target type names this factory accepts.</div></div>
+<div class="ttc" id="amodules_2editor_2EditorHost_8h_html"><div class="ttname"><a href="modules_2editor_2EditorHost_8h.html">EditorHost.h</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html"><div class="ttname"><a href="namespaceeve_1_1editor.html">eve::editor</a></div><div class="ttdef"><b>Definition</b> <a href="ActionPreviewController_8cpp_source.html#l00006">ActionPreviewController.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a0e0962a53e1665f56ee2b6acccef5623"><div class="ttname"><a href="namespaceeve_1_1editor.html#a0e0962a53e1665f56ee2b6acccef5623">eve::editor::editorMcpProjector</a></div><div class="ttdeci">EditorMcpProjector &amp; editorMcpProjector()</div><div class="ttdoc">Process-wide projector used by EditorAutomationProvider and eve.mcp.attachEditor.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8cpp_source.html#l00013">EditorMcpProjector.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a171c3d5c5551198b7c835a25378f6dbd"><div class="ttname"><a href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">eve::editor::EditorValue</a></div><div class="ttdeci">eve::editing::Value EditorValue</div><div class="ttdoc">Compatibility alias for the UI-independent authoring value tree.</div><div class="ttdef"><b>Definition</b> <a href="EditorValue_8h_source.html#l00008">EditorValue.h:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_a6683873993ae84ab3ab178edae377c88"><div class="ttname"><a href="namespaceeve_1_1editor.html#a6683873993ae84ab3ab178edae377c88">eve::editor::RuleId</a></div><div class="ttdeci">eve::editing::RuleId RuleId</div><div class="ttdef"><b>Definition</b> <a href="EditorIds_8h_source.html#l00032">EditorIds.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ac87cd1c17fa9417b7fd4dae527a1e548"><div class="ttname"><a href="namespaceeve_1_1editor.html#ac87cd1c17fa9417b7fd4dae527a1e548">eve::editor::EditorMcpExportMode</a></div><div class="ttdeci">EditorMcpExportMode</div><div class="ttdoc">MCP export mode for an attached EditorHost.</div><div class="ttdef"><b>Definition</b> <a href="EditorMcpProjector_8h_source.html#l00017">EditorMcpProjector.h:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editor_html_ac87cd1c17fa9417b7fd4dae527a1e548ac441ee50c88f6e5e3a7c69fc69dad8b8"><div class="ttname"><a href="namespaceeve_1_1editor.html#ac87cd1c17fa9417b7fd4dae527a1e548ac441ee50c88f6e5e3a7c69fc69dad8b8">eve::editor::EditorMcpExportMode::Commands</a></div><div class="ttdeci">@ Commands</div><div class="ttdoc">Mode A: keep eve_editor_* with schema enrichment (default).</div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditorPackage_html"><div class="ttname"><a href="structeve_1_1editing_1_1EditorPackage.html">eve::editing::EditorPackage</a></div><div class="ttdoc">Single domain-editor deliverable for Host discover/autoMount.</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8h_source.html#l00046">EditorPackage.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1editing_1_1EditorTargetTypeSpec_html"><div class="ttname"><a href="structeve_1_1editing_1_1EditorTargetTypeSpec.html">eve::editing::EditorTargetTypeSpec</a></div><div class="ttdoc">Target type advertised for automation create, with optional createSchema.</div><div class="ttdef"><b>Definition</b> <a href="EditorPackage_8h_source.html#l00026">EditorPackage.h:26</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

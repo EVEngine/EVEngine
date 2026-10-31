@@ -1,0 +1,242 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/editor/WorkspaceLayoutShell.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li><li class="navelem"><a class="el" href="dir_27fada5921f85114067943c99b088edf.html">editor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">WorkspaceLayoutShell.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="WorkspaceLayoutShell_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="EditorWorkspace_8h.html">editor/EditorWorkspace.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Widget_8h.html">ui/Widget.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui__editor.html">eve::ui_editor</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html">   17</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html">WorkspaceShellOptions</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#aad79fea6b028df9d4e9419c55ad1e861">   19</a></span>    <a class="code hl_struct" href="structeve_1_1ui_1_1WidgetDesc.html">ui::WidgetDesc</a> <a class="code hl_variable" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#aad79fea6b028df9d4e9419c55ad1e861">toolbar</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a7d1b3b9b951e1bfd7096eec7005c3bfd">   21</a></span>    <a class="code hl_struct" href="structeve_1_1ui_1_1WidgetDesc.html">ui::WidgetDesc</a> <a class="code hl_variable" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a7d1b3b9b951e1bfd7096eec7005c3bfd">statusBar</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a4bc81db09621d9ebfd53aae31e7e5d33">   23</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a4bc81db09621d9ebfd53aae31e7e5d33">leftRatio</a> = 0.22f;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#adec825de02f77348613982b335fb4565">   25</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#adec825de02f77348613982b335fb4565">rightRatio</a> = 0.28f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a19b2e95709538e18200d46b1f6633bb1">   27</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a19b2e95709538e18200d46b1f6633bb1">bottomRatio</a> = 0.28f;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a11d8a211ad7a2c2e52f4ef34519a5833">   29</a></span>    std::string <a class="code hl_variable" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a11d8a211ad7a2c2e52f4ef34519a5833">windowId</a> = <span class="stringliteral">&quot;root&quot;</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a9f1d1803e639e7031582ef11bf826771">   31</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a9f1d1803e639e7031582ef11bf826771">tabStackRegions</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>};</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00048" data-start="{" data-end="};">
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="classeve_1_1ui__editor_1_1WorkspaceLayoutShell.html">   48</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a817e176557c9bf2fd750d6c9fabd7d18">EVENGINE_API_EDITORS</a> <a class="code hl_class" href="classeve_1_1ui__editor_1_1WorkspaceLayoutShell.html">WorkspaceLayoutShell</a> {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="classeve_1_1ui__editor_1_1WorkspaceLayoutShell.html#ad36a27e858e05fded125ade89652b6cd">   55</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1ui__editor_1_1WorkspaceLayoutShell.html#ad36a27e858e05fded125ade89652b6cd">ContentBuilder</a> =</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        std::function&lt;std::vector&lt;ui::WidgetDesc&gt;(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">editor::WorkspacePanelDescriptor</a> &amp;panel)&gt;;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1ui_1_1WidgetDesc.html">ui::WidgetDesc</a> buildWindow(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;workspace,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                                    <a class="code hl_typedef" href="classeve_1_1ui__editor_1_1WorkspaceLayoutShell.html#ad36a27e858e05fded125ade89652b6cd">ContentBuilder</a> content = {},</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                                    <a class="code hl_struct" href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html">WorkspaceShellOptions</a> <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a> = {});</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_struct" href="structeve_1_1ui_1_1WidgetDesc.html">ui::WidgetDesc</a> buildDockBody(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1editor_1_1EditorWorkspace.html">editor::EditorWorkspace</a> &amp;workspace,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                                                      ContentBuilder content = {},</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                                                      WorkspaceShellOptions <a class="code hl_variable" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a> = {});</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    [[nodiscard]] <span class="keyword">static</span> std::vector&lt;editor::WorkspacePanelDescriptor&gt; panelsInRegion(</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <span class="keyword">const</span> editor::EditorWorkspace &amp;workspace, std::string_view <a class="code hl_variable" href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a>);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>};</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}  <span class="comment">// namespace eve::ui_editor</span></div>
+<div class="ttc" id="aEditorWorkspace_8h_html"><div class="ttname"><a href="EditorWorkspace_8h.html">EditorWorkspace.h</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a817e176557c9bf2fd750d6c9fabd7d18"><div class="ttname"><a href="Export_8h.html#a817e176557c9bf2fd750d6c9fabd7d18">EVENGINE_API_EDITORS</a></div><div class="ttdeci">#define EVENGINE_API_EDITORS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00112">Export.h:112</a></div></div>
+<div class="ttc" id="aForceBindings_8cpp_html_affe9b455631dfc00c1efb482584335f6"><div class="ttname"><a href="ForceBindings_8cpp.html#affe9b455631dfc00c1efb482584335f6">region</a></div><div class="ttdeci">ScriptFieldRegion region</div><div class="ttdef"><b>Definition</b> <a href="ForceBindings_8cpp_source.html#l00045">ForceBindings.cpp:45</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_abebf9d839cc4bbffbf6bb3cf6c4b1038"><div class="ttname"><a href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a></div><div class="ttdeci">const SquirrelValueOptions &amp; options</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00089">SquirrelBinding.cpp:89</a></div></div>
+<div class="ttc" id="aWidget_8h_html"><div class="ttname"><a href="Widget_8h.html">Widget.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1editor_1_1EditorWorkspace_html"><div class="ttname"><a href="classeve_1_1editor_1_1EditorWorkspace.html">eve::editor::EditorWorkspace</a></div><div class="ttdoc">Composition model shared by project-specific developer and runtime editors.</div><div class="ttdef"><b>Definition</b> <a href="EditorWorkspace_8h_source.html#l00043">EditorWorkspace.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editor_1_1WorkspaceLayoutShell_html"><div class="ttname"><a href="classeve_1_1ui__editor_1_1WorkspaceLayoutShell.html">eve::ui_editor::WorkspaceLayoutShell</a></div><div class="ttdoc">Builds a fixed, non-draggable editor chrome from an EditorWorkspace.</div><div class="ttdef"><b>Definition</b> <a href="WorkspaceLayoutShell_8h_source.html#l00048">WorkspaceLayoutShell.h:48</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui__editor_1_1WorkspaceLayoutShell_html_ad36a27e858e05fded125ade89652b6cd"><div class="ttname"><a href="classeve_1_1ui__editor_1_1WorkspaceLayoutShell.html#ad36a27e858e05fded125ade89652b6cd">eve::ui_editor::WorkspaceLayoutShell::ContentBuilder</a></div><div class="ttdeci">std::function&lt; std::vector&lt; ui::WidgetDesc &gt;(const editor::WorkspacePanelDescriptor &amp;panel)&gt; ContentBuilder</div><div class="ttdoc">Build panel body content for one workspace descriptor.</div><div class="ttdef"><b>Definition</b> <a href="WorkspaceLayoutShell_8h_source.html#l00055">WorkspaceLayoutShell.h:56</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui__editor_html"><div class="ttname"><a href="namespaceeve_1_1ui__editor.html">eve::ui_editor</a></div><div class="ttdef"><b>Definition</b> <a href="UiEditorModule_8cpp_source.html#l00017">UiEditorModule.cpp:17</a></div></div>
+<div class="ttc" id="astructeve_1_1editor_1_1WorkspacePanelDescriptor_html"><div class="ttname"><a href="structeve_1_1editor_1_1WorkspacePanelDescriptor.html">eve::editor::WorkspacePanelDescriptor</a></div><div class="ttdoc">UI-neutral description of one composable editor panel.</div><div class="ttdef"><b>Definition</b> <a href="EditorWorkspace_8h_source.html#l00023">EditorWorkspace.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1WidgetDesc_html"><div class="ttname"><a href="structeve_1_1ui_1_1WidgetDesc.html">eve::ui::WidgetDesc</a></div><div class="ttdoc">Declarative widget description (build once / on dirty → flatten into UIHost::Tree).</div><div class="ttdef"><b>Definition</b> <a href="Widget_8h_source.html#l00015">Widget.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editor_1_1WorkspaceShellOptions_html"><div class="ttname"><a href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html">eve::ui_editor::WorkspaceShellOptions</a></div><div class="ttdoc">Options that control the fixed IDE chrome produced by WorkspaceLayoutShell.</div><div class="ttdef"><b>Definition</b> <a href="WorkspaceLayoutShell_8h_source.html#l00017">WorkspaceLayoutShell.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editor_1_1WorkspaceShellOptions_html_a11d8a211ad7a2c2e52f4ef34519a5833"><div class="ttname"><a href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a11d8a211ad7a2c2e52f4ef34519a5833">eve::ui_editor::WorkspaceShellOptions::windowId</a></div><div class="ttdeci">std::string windowId</div><div class="ttdoc">Host window id used by UIHost / ImGui persistence.</div><div class="ttdef"><b>Definition</b> <a href="WorkspaceLayoutShell_8h_source.html#l00029">WorkspaceLayoutShell.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editor_1_1WorkspaceShellOptions_html_a19b2e95709538e18200d46b1f6633bb1"><div class="ttname"><a href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a19b2e95709538e18200d46b1f6633bb1">eve::ui_editor::WorkspaceShellOptions::bottomRatio</a></div><div class="ttdeci">float bottomRatio</div><div class="ttdoc">Bottom pane fraction of the vertical split.</div><div class="ttdef"><b>Definition</b> <a href="WorkspaceLayoutShell_8h_source.html#l00027">WorkspaceLayoutShell.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editor_1_1WorkspaceShellOptions_html_a4bc81db09621d9ebfd53aae31e7e5d33"><div class="ttname"><a href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a4bc81db09621d9ebfd53aae31e7e5d33">eve::ui_editor::WorkspaceShellOptions::leftRatio</a></div><div class="ttdeci">float leftRatio</div><div class="ttdoc">Left pane fraction of the horizontal split (clamped to [0.1, 0.9]).</div><div class="ttdef"><b>Definition</b> <a href="WorkspaceLayoutShell_8h_source.html#l00023">WorkspaceLayoutShell.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editor_1_1WorkspaceShellOptions_html_a7d1b3b9b951e1bfd7096eec7005c3bfd"><div class="ttname"><a href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a7d1b3b9b951e1bfd7096eec7005c3bfd">eve::ui_editor::WorkspaceShellOptions::statusBar</a></div><div class="ttdeci">ui::WidgetDesc statusBar</div><div class="ttdoc">Optional status-bar widgets placed below the dock body.</div><div class="ttdef"><b>Definition</b> <a href="WorkspaceLayoutShell_8h_source.html#l00021">WorkspaceLayoutShell.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editor_1_1WorkspaceShellOptions_html_a9f1d1803e639e7031582ef11bf826771"><div class="ttname"><a href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#a9f1d1803e639e7031582ef11bf826771">eve::ui_editor::WorkspaceShellOptions::tabStackRegions</a></div><div class="ttdeci">bool tabStackRegions</div><div class="ttdoc">When true, multiple panels in one region become a TabContainer.</div><div class="ttdef"><b>Definition</b> <a href="WorkspaceLayoutShell_8h_source.html#l00031">WorkspaceLayoutShell.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editor_1_1WorkspaceShellOptions_html_aad79fea6b028df9d4e9419c55ad1e861"><div class="ttname"><a href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#aad79fea6b028df9d4e9419c55ad1e861">eve::ui_editor::WorkspaceShellOptions::toolbar</a></div><div class="ttdeci">ui::WidgetDesc toolbar</div><div class="ttdoc">Optional toolbar widgets placed above the dock body.</div><div class="ttdef"><b>Definition</b> <a href="WorkspaceLayoutShell_8h_source.html#l00019">WorkspaceLayoutShell.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1ui__editor_1_1WorkspaceShellOptions_html_adec825de02f77348613982b335fb4565"><div class="ttname"><a href="structeve_1_1ui__editor_1_1WorkspaceShellOptions.html#adec825de02f77348613982b335fb4565">eve::ui_editor::WorkspaceShellOptions::rightRatio</a></div><div class="ttdeci">float rightRatio</div><div class="ttdoc">Right pane fraction of the remaining horizontal split.</div><div class="ttdef"><b>Definition</b> <a href="WorkspaceLayoutShell_8h_source.html#l00025">WorkspaceLayoutShell.h:25</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

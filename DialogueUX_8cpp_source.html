@@ -1,0 +1,550 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/dialogue/DialogueUX.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_9d7eb5392a4fb7dccc4284e89fdc9c92.html">dialogue</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">DialogueUX.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="DialogueUX_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="DialogueUX_8h.html">dialogue/DialogueUX.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;cctype&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cstdlib&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;sstream&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Source_8h.html">audio/Source.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="DialogueVoice_8h.html">dialogue/DialogueVoice.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// DialogueUX.cpp</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dialogue.html">eve::dialogue</a> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dialogue.html#aac1919b80f9c69db641effca83d50225">   13</a></span><a class="code hl_define" href="Module_8h.html#a91ade12cb7684447c2302317e2203fc4">Module_IMPL</a>(<a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueUX.html">DialogueUX</a>, <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueUX.html">DialogueUX</a>());</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#a4d65ef88492a1d778199fba848b3aebb">   15</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a4d65ef88492a1d778199fba848b3aebb">DialogueUX::record</a>(<span class="keyword">const</span> std::string&amp; lineId, <span class="keyword">const</span> std::string&amp; speaker, <span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>) {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    history_.push_back({lineId, speaker, <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#aeee3dbc77c6c21e8529e956416f71348">plainText</a>(<a class="code hl_variable" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>)});</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">if</span> (!lineId.empty()) readLines_.insert(lineId);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
+</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#a3ff482b1f5459a987b85fbdac09e0624">   20</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a3ff482b1f5459a987b85fbdac09e0624">DialogueUX::clearHistory</a>() { history_.clear(); }</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#aaa775208ffe9c64247952210852f6ea7">   22</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#aaa775208ffe9c64247952210852f6ea7">DialogueUX::getHistoryCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(history_.size()); }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">const</span> DialogueUX::HistoryEntry* DialogueUX::historyAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> &gt;= 0 &amp;&amp; <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) &lt; history_.size() ? &amp;history_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)] : nullptr;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="}">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#a9f79166813e5c7876a3f3c52fde96058">   28</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a9f79166813e5c7876a3f3c52fde96058">DialogueUX::getHistoryLineId</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* entry = historyAt(<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">return</span> entry ? entry-&gt;lineId : std::string{};</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
+</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#aee00128482294230d997012e8d893813">   33</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#aee00128482294230d997012e8d893813">DialogueUX::getHistorySpeaker</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* entry = historyAt(<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">return</span> entry ? entry-&gt;speaker : std::string{};</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#a3768ec264375b922ffd82c1d10521735">   38</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a3768ec264375b922ffd82c1d10521735">DialogueUX::getHistoryText</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* entry = historyAt(<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">return</span> entry ? entry-&gt;text : std::string{};</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="keywordtype">bool</span> isControlTag(<span class="keyword">const</span> std::string&amp; <a class="code hl_variable" href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a>) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span>      equal = <a class="code hl_variable" href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a>.find(<span class="charliteral">&#39;=&#39;</span>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">const</span> std::string <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>  = <a class="code hl_variable" href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a>.substr(0, equal);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> == <span class="stringliteral">&quot;pause&quot;</span> || <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> == <span class="stringliteral">&quot;speed&quot;</span> || <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> == <span class="stringliteral">&quot;color&quot;</span> || <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> == <span class="stringliteral">&quot;/color&quot;</span> || <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> == <span class="stringliteral">&quot;shake&quot;</span> ||</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>           <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> == <span class="stringliteral">&quot;/shake&quot;</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="foldopen" id="foldopen00054" data-start="{" data-end="}">
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#aeee3dbc77c6c21e8529e956416f71348">   54</a></span>std::string <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#aeee3dbc77c6c21e8529e956416f71348">DialogueUX::plainText</a>(<span class="keyword">const</span> std::string&amp; richText)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    std::string <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.reserve(richText.size());</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; richText.size();) {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">if</span> (richText[i] == <span class="charliteral">&#39;[&#39;</span>) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keyword">const</span> <span class="keywordtype">size_t</span> close = richText.find(<span class="charliteral">&#39;]&#39;</span>, i + 1);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordflow">if</span> (close != std::string::npos &amp;&amp; isControlTag(richText.substr(i + 1, close - i - 1))) {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                i = close + 1;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.push_back(richText[i++]);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="}">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#a3f2478db16d2011f2175731ae2da1995">   70</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a3f2478db16d2011f2175731ae2da1995">DialogueUX::getTextActionCount</a>(<span class="keyword">const</span> std::string&amp; richText)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> = 0;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; richText.size();) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">if</span> (richText[i] == <span class="charliteral">&#39;[&#39;</span>) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keyword">const</span> <span class="keywordtype">size_t</span> close = richText.find(<span class="charliteral">&#39;]&#39;</span>, i + 1);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keywordflow">if</span> (close != std::string::npos) {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                <span class="keywordflow">if</span> (isControlTag(richText.substr(i + 1, close - i - 1))) ++<a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                i = close + 1;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        }</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        ++i;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#a924651125042e588cb201f6e6d7b53d1">   86</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a924651125042e588cb201f6e6d7b53d1">DialogueUX::setAutoDelay</a>(<span class="keywordtype">float</span> seconds) { autoDelay_ = seconds &lt; 0.f ? 0.f : seconds; }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="foldopen" id="foldopen00088" data-start="{" data-end="}">
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#ab545ff94a669f0006f2c6b3bd6bf41e0">   88</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#ab545ff94a669f0006f2c6b3bd6bf41e0">DialogueUX::updateAuto</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>, <span class="keywordtype">bool</span> voicePlaying) {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">if</span> (!autoMode_ || voicePlaying) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    autoElapsed_ += <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a> &gt; 0.f ? <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a> : 0.f;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordflow">if</span> (autoElapsed_ &lt; autoDelay_) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    autoElapsed_ = 0.f;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="foldopen" id="foldopen00096" data-start="{" data-end="}">
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#a995c2b3890d202e727763ca1e1d84532">   96</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a995c2b3890d202e727763ca1e1d84532">DialogueUX::setSkipMode</a>(<span class="keyword">const</span> std::string&amp; mode) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">if</span> (mode != <span class="stringliteral">&quot;off&quot;</span> &amp;&amp; mode != <span class="stringliteral">&quot;read&quot;</span> &amp;&amp; mode != <span class="stringliteral">&quot;all&quot;</span>) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    skipMode_ = mode;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>}</div>
+</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="foldopen" id="foldopen00102" data-start="{" data-end="}">
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#ae29ff46c707e29e3aa882ca2fc80b0a7">  102</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#ae29ff46c707e29e3aa882ca2fc80b0a7">DialogueUX::markRead</a>(<span class="keyword">const</span> std::string&amp; lineId) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">if</span> (!lineId.empty()) readLines_.insert(lineId);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>}</div>
+</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="foldopen" id="foldopen00106" data-start="{" data-end="}">
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#a7fe13ac98959355033bb893bb68aa043">  106</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a7fe13ac98959355033bb893bb68aa043">DialogueUX::isRead</a>(<span class="keyword">const</span> std::string&amp; lineId)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">return</span> !lineId.empty() &amp;&amp; readLines_.find(lineId) != readLines_.end();</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>}</div>
+</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="foldopen" id="foldopen00110" data-start="{" data-end="}">
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueUX.html#a6f04d5f236b67b527252330218be24c7">  110</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a6f04d5f236b67b527252330218be24c7">DialogueUX::shouldSkip</a>(<span class="keyword">const</span> std::string&amp; lineId)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">return</span> skipMode_ == <span class="stringliteral">&quot;all&quot;</span> || (skipMode_ == <span class="stringliteral">&quot;read&quot;</span> &amp;&amp; <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a7fe13ac98959355033bb893bb68aa043">isRead</a>(lineId));</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}</div>
+</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="keywordtype">void</span> DialogueUX::expose(ssq::Table&amp; table) {</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a> = table.addClass(<a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, DialogueUX::create, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    expose(<a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>}</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="keywordtype">void</span> DialogueUX::expose(ssq::Class&amp; <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>) {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getName&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">DialogueUX::getName</a>);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;record&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a4d65ef88492a1d778199fba848b3aebb">DialogueUX::record</a>);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;clearHistory&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a3ff482b1f5459a987b85fbdac09e0624">DialogueUX::clearHistory</a>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getHistoryCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#aaa775208ffe9c64247952210852f6ea7">DialogueUX::getHistoryCount</a>);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getHistoryLineId&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a9f79166813e5c7876a3f3c52fde96058">DialogueUX::getHistoryLineId</a>);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getHistorySpeaker&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#aee00128482294230d997012e8d893813">DialogueUX::getHistorySpeaker</a>);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getHistoryText&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a3768ec264375b922ffd82c1d10521735">DialogueUX::getHistoryText</a>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;plainText&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#aeee3dbc77c6c21e8529e956416f71348">DialogueUX::plainText</a>);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getTextActionCount&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a3f2478db16d2011f2175731ae2da1995">DialogueUX::getTextActionCount</a>);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;setAutoMode&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a31976c5792dadfef47b06e6f2038c7d3">DialogueUX::setAutoMode</a>);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;isAutoMode&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a07c1a22424525d8316b32a9d6174240e">DialogueUX::isAutoMode</a>);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;setAutoDelay&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a924651125042e588cb201f6e6d7b53d1">DialogueUX::setAutoDelay</a>);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getAutoDelay&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a7b02fbccaf5370c0fe60079f1d2e3afe">DialogueUX::getAutoDelay</a>);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;updateAuto&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#ab545ff94a669f0006f2c6b3bd6bf41e0">DialogueUX::updateAuto</a>);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;resetAutoTimer&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a5415b3e76f806fdf59687631cb04d203">DialogueUX::resetAutoTimer</a>);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;setSkipMode&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a995c2b3890d202e727763ca1e1d84532">DialogueUX::setSkipMode</a>);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getSkipMode&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#ad4d74ea6c81315a6410e2b4f6935caaf">DialogueUX::getSkipMode</a>);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;markRead&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#ae29ff46c707e29e3aa882ca2fc80b0a7">DialogueUX::markRead</a>);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;isRead&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a7fe13ac98959355033bb893bb68aa043">DialogueUX::isRead</a>);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;shouldSkip&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueUX.html#a6f04d5f236b67b527252330218be24c7">DialogueUX::shouldSkip</a>);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>}</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>}  <span class="comment">// namespace eve::dialogue</span></div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span><span class="comment">// DialogueVoice.cpp</span></div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dialogue.html">eve::dialogue</a> {</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dialogue.html#a5bc0ca0d5268672cf251b21a1df4b12e">  147</a></span><a class="code hl_define" href="Module_8h.html#a91ade12cb7684447c2302317e2203fc4">Module_IMPL</a>(<a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueVoice.html">DialogueVoice</a>, <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1dialogue_1_1DialogueVoice.html">DialogueVoice</a>());</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#a1608623f7b9ff04be63792889ef1c285">  149</a></span><a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a1608623f7b9ff04be63792889ef1c285">DialogueVoice::~DialogueVoice</a>() { <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#afd685d10b40afcb15315d796477ee9b7">stop</a>(); }</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>std::string DialogueVoice::key(<span class="keyword">const</span> std::string&amp; lineId, <span class="keyword">const</span> std::string&amp; locale) { <span class="keywordflow">return</span> lineId + <span class="stringliteral">&quot;\n&quot;</span> + locale; }</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="foldopen" id="foldopen00153" data-start="{" data-end="}">
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#afca429ac5907b43a4aff2bdfef4dfb45">  153</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#afca429ac5907b43a4aff2bdfef4dfb45">DialogueVoice::registerClip</a>(<span class="keyword">const</span> std::string&amp; lineId, <span class="keyword">const</span> std::string&amp; locale, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>,</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>                                 <span class="keyword">const</span> std::string&amp; envelope) {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keywordflow">if</span> (lineId.empty() || <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a> &lt; 0.f) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    Clip&amp; <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>    = clips_[<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>(lineId, locale)];</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>.lineId   = lineId;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>.locale   = locale;</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>.duration = <a class="code hl_variable" href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a>;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>.envelope.clear();</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    std::istringstream <a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>(envelope);</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    std::string        item;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">while</span> (std::getline(<a class="code hl_variable" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, item, <span class="charliteral">&#39;,&#39;</span>)) {</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keywordtype">char</span>*       <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca05b1afbbe1c83cf087b49df03c441a">end</a>   = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> = std::strtof(item.c_str(), &amp;<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca05b1afbbe1c83cf087b49df03c441a">end</a>);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca05b1afbbe1c83cf087b49df03c441a">end</a> == item.c_str()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>.envelope.push_back(std::clamp(<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>, 0.f, 1.f));</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>}</div>
+</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="foldopen" id="foldopen00172" data-start="{" data-end="}">
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#a5498f13b20a370e54959766a2876121c">  172</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a5498f13b20a370e54959766a2876121c">DialogueVoice::bindSource</a>(<span class="keyword">const</span> std::string&amp; lineId, <span class="keyword">const</span> std::string&amp; locale, <a class="code hl_class" href="classeve_1_1audio_1_1Source.html">audio::Source</a>* <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>) {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a> || lineId.empty()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    Clip&amp; <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>    = clips_[<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>(lineId, locale)];</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>.lineId   = lineId;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>.locale   = locale;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>.source   = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>    <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>.duration = <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>-&gt;getDuration());</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>}</div>
+</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>DialogueVoice::Clip* DialogueVoice::resolve(<span class="keyword">const</span> std::string&amp; lineId, <span class="keyword">const</span> std::string&amp; locale) {</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keyword">const</span> <span class="keyword">auto</span> exact = clips_.find(<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>(lineId, locale));</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keywordflow">if</span> (exact != clips_.end()) <span class="keywordflow">return</span> &amp;exact-&gt;second;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    <span class="keyword">const</span> <span class="keyword">auto</span> fallback = clips_.find(<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>(lineId, <span class="stringliteral">&quot;&quot;</span>));</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordflow">return</span> fallback == clips_.end() ? nullptr : &amp;fallback-&gt;second;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>}</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span><span class="keyword">const</span> DialogueVoice::Clip* DialogueVoice::resolve(<span class="keyword">const</span> std::string&amp; lineId, <span class="keyword">const</span> std::string&amp; locale)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordflow">return</span> <span class="keyword">const_cast&lt;</span>DialogueVoice*<span class="keyword">&gt;</span>(<span class="keyword">this</span>)-&gt;resolve(lineId, locale);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>}</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
+<div class="foldopen" id="foldopen00193" data-start="{" data-end="}">
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#aca9c777863b31b14f2b9279397687d9e">  193</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#aca9c777863b31b14f2b9279397687d9e">DialogueVoice::hasClip</a>(<span class="keyword">const</span> std::string&amp; lineId, <span class="keyword">const</span> std::string&amp; locale)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keywordflow">return</span> resolve(lineId, locale) != <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>}</div>
+</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="foldopen" id="foldopen00197" data-start="{" data-end="}">
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#aaaa85dd3da499f54be58d29f74c88647">  197</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#aaaa85dd3da499f54be58d29f74c88647">DialogueVoice::clear</a>() {</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#afd685d10b40afcb15315d796477ee9b7">stop</a>();</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    clips_.clear();</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>}</div>
+</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="foldopen" id="foldopen00202" data-start="{" data-end="}">
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#ae4e19615727f496adcbfccf3febfe578">  202</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#ae4e19615727f496adcbfccf3febfe578">DialogueVoice::play</a>(<span class="keyword">const</span> std::string&amp; lineId, <span class="keyword">const</span> std::string&amp; locale) {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#afd685d10b40afcb15315d796477ee9b7">stop</a>();</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    current_ = resolve(lineId, locale);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keywordflow">if</span> (!current_) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    currentLineId_    = lineId;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    elapsed_          = 0.f;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    simulatedPlaying_ = current_-&gt;source == <span class="keyword">nullptr</span> &amp;&amp; current_-&gt;duration &gt; 0.f;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keywordflow">if</span> (current_-&gt;source) current_-&gt;source-&gt;play();</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>}</div>
+</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="foldopen" id="foldopen00213" data-start="{" data-end="}">
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#afd685d10b40afcb15315d796477ee9b7">  213</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#afd685d10b40afcb15315d796477ee9b7">DialogueVoice::stop</a>() {</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keywordflow">if</span> (current_ &amp;&amp; current_-&gt;source) current_-&gt;source-&gt;stop();</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    current_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    currentLineId_.clear();</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    elapsed_          = 0.f;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    simulatedPlaying_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>}</div>
+</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span> </div>
+<div class="foldopen" id="foldopen00221" data-start="{" data-end="}">
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#a5a91b915710e386d3e78fe2bccf8b524">  221</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a5a91b915710e386d3e78fe2bccf8b524">DialogueVoice::update</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>) {</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    <span class="keywordflow">if</span> (!current_ || current_-&gt;source) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>    elapsed_ += std::max(<a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>, 0.f);</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keywordflow">if</span> (elapsed_ &gt;= current_-&gt;duration) simulatedPlaying_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>}</div>
+</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
+<div class="foldopen" id="foldopen00227" data-start="{" data-end="}">
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#ad334d26aad7544fc31f603b2ba2e1935">  227</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#ad334d26aad7544fc31f603b2ba2e1935">DialogueVoice::isPlaying</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keywordflow">return</span> current_ &amp;&amp; (current_-&gt;source ? current_-&gt;source-&gt;isPlaying() : simulatedPlaying_);</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>}</div>
+</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
+<div class="foldopen" id="foldopen00231" data-start="{" data-end="}">
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#a02d11e8ad712dbbf92cc159a21d7c2f4">  231</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a02d11e8ad712dbbf92cc159a21d7c2f4">DialogueVoice::getTime</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keywordflow">return</span> current_ &amp;&amp; current_-&gt;source ? <span class="keyword">static_cast&lt;</span><span class="keywordtype">float</span><span class="keyword">&gt;</span>(current_-&gt;source-&gt;tell()) : elapsed_;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>}</div>
+</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#afded2d832bb91bfdb8e6e63217626024">  235</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#afded2d832bb91bfdb8e6e63217626024">DialogueVoice::getDuration</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> current_ ? current_-&gt;duration : 0.f; }</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span> </div>
+<div class="foldopen" id="foldopen00237" data-start="{" data-end="}">
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#a43184136625fa26ae17a769b3dea4e61">  237</a></span><span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a43184136625fa26ae17a769b3dea4e61">DialogueVoice::getAmplitude</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    <span class="keywordflow">if</span> (!current_ || current_-&gt;envelope.empty()) <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> = std::min(<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a02d11e8ad712dbbf92cc159a21d7c2f4">getTime</a>() * envelopeRate_), current_-&gt;envelope.size() - 1);</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keywordflow">return</span> current_-&gt;envelope[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>];</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>}</div>
+</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#a58435252c51a4acc206f21630e3ab4f6">  243</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a58435252c51a4acc206f21630e3ab4f6">DialogueVoice::shouldAutoAdvance</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> current_ &amp;&amp; !<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#ad334d26aad7544fc31f603b2ba2e1935">isPlaying</a>() &amp;&amp; <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a02d11e8ad712dbbf92cc159a21d7c2f4">getTime</a>() &gt;= current_-&gt;duration; }</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
+<div class="foldopen" id="foldopen00245" data-start="{" data-end="}">
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno"><a class="line" href="classeve_1_1dialogue_1_1DialogueVoice.html#a2fc5ffedd5614f138d35d404d0f234c2">  245</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a2fc5ffedd5614f138d35d404d0f234c2">DialogueVoice::setEnvelopeRate</a>(<span class="keywordtype">float</span> samplesPerSecond) {</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    envelopeRate_ = samplesPerSecond &gt; 0.f ? samplesPerSecond : 1.f;</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>}</div>
+</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span> </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span><span class="keywordtype">void</span> DialogueVoice::expose(ssq::Table&amp; table) {</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a> = table.addClass(<a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>, DialogueVoice::create, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    expose(<a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>);</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>}</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span><span class="keywordtype">void</span> DialogueVoice::expose(ssq::Class&amp; <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>) {</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getName&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">DialogueVoice::getName</a>);</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;registerClip&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#afca429ac5907b43a4aff2bdfef4dfb45">DialogueVoice::registerClip</a>);</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;bindSource&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a5498f13b20a370e54959766a2876121c">DialogueVoice::bindSource</a>);</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;hasClip&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#aca9c777863b31b14f2b9279397687d9e">DialogueVoice::hasClip</a>);</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;clear&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#aaaa85dd3da499f54be58d29f74c88647">DialogueVoice::clear</a>);</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;play&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#ae4e19615727f496adcbfccf3febfe578">DialogueVoice::play</a>);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;stop&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#afd685d10b40afcb15315d796477ee9b7">DialogueVoice::stop</a>);</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;update&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a5a91b915710e386d3e78fe2bccf8b524">DialogueVoice::update</a>);</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;isPlaying&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#ad334d26aad7544fc31f603b2ba2e1935">DialogueVoice::isPlaying</a>);</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getTime&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a02d11e8ad712dbbf92cc159a21d7c2f4">DialogueVoice::getTime</a>);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getDuration&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#afded2d832bb91bfdb8e6e63217626024">DialogueVoice::getDuration</a>);</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getAmplitude&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a43184136625fa26ae17a769b3dea4e61">DialogueVoice::getAmplitude</a>);</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;shouldAutoAdvance&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a58435252c51a4acc206f21630e3ab4f6">DialogueVoice::shouldAutoAdvance</a>);</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getCurrentLineId&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a808fdbf7ef65accc541cc8871d60ae10">DialogueVoice::getCurrentLineId</a>);</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;setEnvelopeRate&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a2fc5ffedd5614f138d35d404d0f234c2">DialogueVoice::setEnvelopeRate</a>);</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;getEnvelopeRate&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1dialogue_1_1DialogueVoice.html#a1deeb66f9fbf7ca27afefccdf263ea17">DialogueVoice::getEnvelopeRate</a>);</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>}</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span> </div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>}  <span class="comment">// namespace eve::dialogue</span></div>
+<div class="ttc" id="aAnimCurveLibrary_8cpp_html_a66625d8d6c0894b4828b43f826a09b8f"><div class="ttname"><a href="AnimCurveLibrary_8cpp.html#a66625d8d6c0894b4828b43f826a09b8f">duration</a></div><div class="ttdeci">float duration</div><div class="ttdef"><b>Definition</b> <a href="AnimCurveLibrary_8cpp_source.html#l00018">AnimCurveLibrary.cpp:18</a></div></div>
+<div class="ttc" id="aDialogueUX_8h_html"><div class="ttname"><a href="DialogueUX_8h.html">DialogueUX.h</a></div></div>
+<div class="ttc" id="aDialogueVoice_8h_html"><div class="ttname"><a href="DialogueVoice_8h.html">DialogueVoice.h</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a091d9c8332bbc20675859af3713a8283"><div class="ttname"><a href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a></div><div class="ttdeci">HSQOBJECT cls</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00039">ECS.cpp:39</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a1f53a56adfc8a8f39c5e553c97a7b2ff"><div class="ttname"><a href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a></div><div class="ttdeci">SQObjectPtr key</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00155">ECS.cpp:155</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00154">ECS.cpp:154</a></div></div>
+<div class="ttc" id="aEvpack_8cpp_html_ad36f085e46e88a0658882f9013d9ed04"><div class="ttname"><a href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a></div><div class="ttdeci">EvpackChunkInput input</div><div class="ttdef"><b>Definition</b> <a href="Evpack_8cpp_source.html#l00170">Evpack.cpp:170</a></div></div>
+<div class="ttc" id="aGraphicsVirtualGeometry_8cpp_html_a30a948bc4ba3defbec563e070a66fbc6"><div class="ttname"><a href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a></div><div class="ttdeci">glm::vec4 clip</div><div class="ttdef"><b>Definition</b> <a href="GraphicsVirtualGeometry_8cpp_source.html#l00045">GraphicsVirtualGeometry.cpp:45</a></div></div>
+<div class="ttc" id="aModuleAssembly_8cpp_html_afdc4d55537832536f73f894f88509864"><div class="ttname"><a href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a></div><div class="ttdeci">const std::string * tag</div><div class="ttdef"><b>Definition</b> <a href="ModuleAssembly_8cpp_source.html#l00085">ModuleAssembly.cpp:85</a></div></div>
+<div class="ttc" id="aModule_8h_html_a91ade12cb7684447c2302317e2203fc4"><div class="ttname"><a href="Module_8h.html#a91ade12cb7684447c2302317e2203fc4">Module_IMPL</a></div><div class="ttdeci">#define Module_IMPL(ModuleName, newExpr)</div><div class="ttdef"><b>Definition</b> <a href="Module_8h_source.html#l00027">Module.h:27</a></div></div>
+<div class="ttc" id="aOceanSprayBindings_8cpp_html_a03e28be41881b703c836edbfe9b51b17"><div class="ttname"><a href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a></div><div class="ttdeci">double dt</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayBindings_8cpp_source.html#l00020">OceanSprayBindings.cpp:20</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00011">ScriptStructure.cpp:11</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a4eeac3157ac481ce95fa8dd8e5e12a5f"><div class="ttname"><a href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a></div><div class="ttdeci">ScriptStructure out</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00023">ScriptStructure.cpp:23</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aa035d90db0e334b2f2f53e55a79e621f"><div class="ttname"><a href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a></div><div class="ttdeci">std::string_view source</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00020">ScriptStructure.cpp:20</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aca05b1afbbe1c83cf087b49df03c441a"><div class="ttname"><a href="ScriptStructure_8cpp.html#aca05b1afbbe1c83cf087b49df03c441a">end</a></div><div class="ttdeci">size_t end</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00013">ScriptStructure.cpp:13</a></div></div>
+<div class="ttc" id="aSource_8h_html"><div class="ttname"><a href="Source_8h.html">Source.h</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_ad43c3812e6d13e0518d9f8b8f463ffcf"><div class="ttname"><a href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a></div><div class="ttdeci">int count</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00031">SquirrelBinding.cpp:31</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aclasseve_1_1Module_html_ae00d561f21eef86f21d032b53ca84da0"><div class="ttname"><a href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">eve::Module::getName</a></div><div class="ttdeci">virtual std::string getName() const =0</div><div class="ttdoc">Returns the name.</div></div>
+<div class="ttc" id="aclasseve_1_1audio_1_1Source_html"><div class="ttname"><a href="classeve_1_1audio_1_1Source.html">eve::audio::Source</a></div><div class="ttdoc">A playable audio source (static buffer or streaming decoder). Not thread-safe for playback control ex...</div><div class="ttdef"><b>Definition</b> <a href="Source_8h_source.html#l00030">Source.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html">eve::dialogue::DialogueUX</a></div><div class="ttdoc">Presentation state shared by default and custom dialogue UIs.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8h_source.html#l00014">DialogueUX.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_a07c1a22424525d8316b32a9d6174240e"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#a07c1a22424525d8316b32a9d6174240e">eve::dialogue::DialogueUX::isAutoMode</a></div><div class="ttdeci">bool isAutoMode() const</div><div class="ttdoc">True when auto mode.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8h_source.html#l00039">DialogueUX.h:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_a31976c5792dadfef47b06e6f2038c7d3"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#a31976c5792dadfef47b06e6f2038c7d3">eve::dialogue::DialogueUX::setAutoMode</a></div><div class="ttdeci">void setAutoMode(bool enabled)</div><div class="ttdoc">Sets the auto mode.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8h_source.html#l00037">DialogueUX.h:37</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_a3768ec264375b922ffd82c1d10521735"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#a3768ec264375b922ffd82c1d10521735">eve::dialogue::DialogueUX::getHistoryText</a></div><div class="ttdeci">std::string getHistoryText(int index) const</div><div class="ttdoc">Returns the history text.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00038">DialogueUX.cpp:38</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_a3f2478db16d2011f2175731ae2da1995"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#a3f2478db16d2011f2175731ae2da1995">eve::dialogue::DialogueUX::getTextActionCount</a></div><div class="ttdeci">int getTextActionCount(const std::string &amp;richText) const</div><div class="ttdoc">Number of pause/speed/style actions in rich text.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00070">DialogueUX.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_a3ff482b1f5459a987b85fbdac09e0624"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#a3ff482b1f5459a987b85fbdac09e0624">eve::dialogue::DialogueUX::clearHistory</a></div><div class="ttdeci">void clearHistory()</div><div class="ttdoc">Clears history.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00020">DialogueUX.cpp:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_a4d65ef88492a1d778199fba848b3aebb"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#a4d65ef88492a1d778199fba848b3aebb">eve::dialogue::DialogueUX::record</a></div><div class="ttdeci">void record(const std::string &amp;lineId, const std::string &amp;speaker, const std::string &amp;text)</div><div class="ttdoc">Record a completed line in the player-visible backlog.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00015">DialogueUX.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_a5415b3e76f806fdf59687631cb04d203"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#a5415b3e76f806fdf59687631cb04d203">eve::dialogue::DialogueUX::resetAutoTimer</a></div><div class="ttdeci">void resetAutoTimer()</div><div class="ttdoc">Resets auto timer.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8h_source.html#l00047">DialogueUX.h:47</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_a6f04d5f236b67b527252330218be24c7"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#a6f04d5f236b67b527252330218be24c7">eve::dialogue::DialogueUX::shouldSkip</a></div><div class="ttdeci">bool shouldSkip(const std::string &amp;lineId) const</div><div class="ttdoc">Should skip.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00110">DialogueUX.cpp:110</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_a7b02fbccaf5370c0fe60079f1d2e3afe"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#a7b02fbccaf5370c0fe60079f1d2e3afe">eve::dialogue::DialogueUX::getAutoDelay</a></div><div class="ttdeci">float getAutoDelay() const</div><div class="ttdoc">Returns the auto delay.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8h_source.html#l00043">DialogueUX.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_a7fe13ac98959355033bb893bb68aa043"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#a7fe13ac98959355033bb893bb68aa043">eve::dialogue::DialogueUX::isRead</a></div><div class="ttdeci">bool isRead(const std::string &amp;lineId) const</div><div class="ttdoc">True when read.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00106">DialogueUX.cpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_a924651125042e588cb201f6e6d7b53d1"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#a924651125042e588cb201f6e6d7b53d1">eve::dialogue::DialogueUX::setAutoDelay</a></div><div class="ttdeci">void setAutoDelay(float seconds)</div><div class="ttdoc">Sets the auto delay.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00086">DialogueUX.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_a995c2b3890d202e727763ca1e1d84532"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#a995c2b3890d202e727763ca1e1d84532">eve::dialogue::DialogueUX::setSkipMode</a></div><div class="ttdeci">bool setSkipMode(const std::string &amp;mode)</div><div class="ttdoc">Set skip mode: off, read, or all.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00096">DialogueUX.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_a9f79166813e5c7876a3f3c52fde96058"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#a9f79166813e5c7876a3f3c52fde96058">eve::dialogue::DialogueUX::getHistoryLineId</a></div><div class="ttdeci">std::string getHistoryLineId(int index) const</div><div class="ttdoc">Returns the history line id.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00028">DialogueUX.cpp:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_aaa775208ffe9c64247952210852f6ea7"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#aaa775208ffe9c64247952210852f6ea7">eve::dialogue::DialogueUX::getHistoryCount</a></div><div class="ttdeci">int getHistoryCount() const</div><div class="ttdoc">Returns the history count.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00022">DialogueUX.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_ab545ff94a669f0006f2c6b3bd6bf41e0"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#ab545ff94a669f0006f2c6b3bd6bf41e0">eve::dialogue::DialogueUX::updateAuto</a></div><div class="ttdeci">bool updateAuto(float dt, bool voicePlaying)</div><div class="ttdoc">Advance the auto timer; voice playback holds the timer.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00088">DialogueUX.cpp:88</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_ad4d74ea6c81315a6410e2b4f6935caaf"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#ad4d74ea6c81315a6410e2b4f6935caaf">eve::dialogue::DialogueUX::getSkipMode</a></div><div class="ttdeci">std::string getSkipMode() const</div><div class="ttdoc">Returns the skip mode.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8h_source.html#l00052">DialogueUX.h:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_ae29ff46c707e29e3aa882ca2fc80b0a7"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#ae29ff46c707e29e3aa882ca2fc80b0a7">eve::dialogue::DialogueUX::markRead</a></div><div class="ttdeci">void markRead(const std::string &amp;lineId)</div><div class="ttdoc">Mark read.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00102">DialogueUX.cpp:102</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_aee00128482294230d997012e8d893813"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#aee00128482294230d997012e8d893813">eve::dialogue::DialogueUX::getHistorySpeaker</a></div><div class="ttdeci">std::string getHistorySpeaker(int index) const</div><div class="ttdoc">Returns the history speaker.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00033">DialogueUX.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueUX_html_aeee3dbc77c6c21e8529e956416f71348"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueUX.html#aeee3dbc77c6c21e8529e956416f71348">eve::dialogue::DialogueUX::plainText</a></div><div class="ttdeci">std::string plainText(const std::string &amp;richText) const</div><div class="ttdoc">Strip supported control tags for plain UI widgets.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00054">DialogueUX.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html">eve::dialogue::DialogueVoice</a></div><div class="ttdoc">Localized voice assets, duration-based advance, and amplitude lip sync.</div><div class="ttdef"><b>Definition</b> <a href="DialogueVoice_8h_source.html#l00018">DialogueVoice.h:18</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_a02d11e8ad712dbbf92cc159a21d7c2f4"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#a02d11e8ad712dbbf92cc159a21d7c2f4">eve::dialogue::DialogueVoice::getTime</a></div><div class="ttdeci">float getTime() const</div><div class="ttdoc">Returns the time.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00231">DialogueUX.cpp:231</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_a1608623f7b9ff04be63792889ef1c285"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#a1608623f7b9ff04be63792889ef1c285">eve::dialogue::DialogueVoice::~DialogueVoice</a></div><div class="ttdeci">~DialogueVoice() override</div><div class="ttdoc">Dialogue voice.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00149">DialogueUX.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_a1deeb66f9fbf7ca27afefccdf263ea17"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#a1deeb66f9fbf7ca27afefccdf263ea17">eve::dialogue::DialogueVoice::getEnvelopeRate</a></div><div class="ttdeci">float getEnvelopeRate() const</div><div class="ttdoc">Returns the envelope rate.</div><div class="ttdef"><b>Definition</b> <a href="DialogueVoice_8h_source.html#l00055">DialogueVoice.h:55</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_a2fc5ffedd5614f138d35d404d0f234c2"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#a2fc5ffedd5614f138d35d404d0f234c2">eve::dialogue::DialogueVoice::setEnvelopeRate</a></div><div class="ttdeci">void setEnvelopeRate(float samplesPerSecond)</div><div class="ttdoc">Sets the envelope rate.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00245">DialogueUX.cpp:245</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_a43184136625fa26ae17a769b3dea4e61"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#a43184136625fa26ae17a769b3dea4e61">eve::dialogue::DialogueVoice::getAmplitude</a></div><div class="ttdeci">float getAmplitude() const</div><div class="ttdoc">Returns the amplitude.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00237">DialogueUX.cpp:237</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_a5498f13b20a370e54959766a2876121c"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#a5498f13b20a370e54959766a2876121c">eve::dialogue::DialogueVoice::bindSource</a></div><div class="ttdeci">bool bindSource(const std::string &amp;lineId, const std::string &amp;locale, audio::Source *source)</div><div class="ttdoc">Bind a playable Audio Source; the caller retains source ownership.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00172">DialogueUX.cpp:172</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_a58435252c51a4acc206f21630e3ab4f6"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#a58435252c51a4acc206f21630e3ab4f6">eve::dialogue::DialogueVoice::shouldAutoAdvance</a></div><div class="ttdeci">bool shouldAutoAdvance() const</div><div class="ttdoc">Should auto advance.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00243">DialogueUX.cpp:243</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_a5a91b915710e386d3e78fe2bccf8b524"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#a5a91b915710e386d3e78fe2bccf8b524">eve::dialogue::DialogueVoice::update</a></div><div class="ttdeci">void update(float dt)</div><div class="ttdoc">Updates .</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00221">DialogueUX.cpp:221</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_a808fdbf7ef65accc541cc8871d60ae10"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#a808fdbf7ef65accc541cc8871d60ae10">eve::dialogue::DialogueVoice::getCurrentLineId</a></div><div class="ttdeci">std::string getCurrentLineId() const</div><div class="ttdoc">Returns the current line id.</div><div class="ttdef"><b>Definition</b> <a href="DialogueVoice_8h_source.html#l00051">DialogueVoice.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_aaaa85dd3da499f54be58d29f74c88647"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#aaaa85dd3da499f54be58d29f74c88647">eve::dialogue::DialogueVoice::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdoc">Clears .</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00197">DialogueUX.cpp:197</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_aca9c777863b31b14f2b9279397687d9e"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#aca9c777863b31b14f2b9279397687d9e">eve::dialogue::DialogueVoice::hasClip</a></div><div class="ttdeci">bool hasClip(const std::string &amp;lineId, const std::string &amp;locale) const</div><div class="ttdoc">True when clip.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00193">DialogueUX.cpp:193</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_ad334d26aad7544fc31f603b2ba2e1935"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#ad334d26aad7544fc31f603b2ba2e1935">eve::dialogue::DialogueVoice::isPlaying</a></div><div class="ttdeci">bool isPlaying() const</div><div class="ttdoc">True when playing.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00227">DialogueUX.cpp:227</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_ae4e19615727f496adcbfccf3febfe578"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#ae4e19615727f496adcbfccf3febfe578">eve::dialogue::DialogueVoice::play</a></div><div class="ttdeci">bool play(const std::string &amp;lineId, const std::string &amp;locale)</div><div class="ttdoc">Play.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00202">DialogueUX.cpp:202</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_afca429ac5907b43a4aff2bdfef4dfb45"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#afca429ac5907b43a4aff2bdfef4dfb45">eve::dialogue::DialogueVoice::registerClip</a></div><div class="ttdeci">bool registerClip(const std::string &amp;lineId, const std::string &amp;locale, float duration, const std::string &amp;envelope)</div><div class="ttdoc">Register clip metadata; envelope is comma-separated 0..1 amplitudes.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00153">DialogueUX.cpp:153</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_afd685d10b40afcb15315d796477ee9b7"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#afd685d10b40afcb15315d796477ee9b7">eve::dialogue::DialogueVoice::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdoc">Stops .</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00213">DialogueUX.cpp:213</a></div></div>
+<div class="ttc" id="aclasseve_1_1dialogue_1_1DialogueVoice_html_afded2d832bb91bfdb8e6e63217626024"><div class="ttname"><a href="classeve_1_1dialogue_1_1DialogueVoice.html#afded2d832bb91bfdb8e6e63217626024">eve::dialogue::DialogueVoice::getDuration</a></div><div class="ttdeci">float getDuration() const</div><div class="ttdoc">Returns the duration.</div><div class="ttdef"><b>Definition</b> <a href="DialogueUX_8cpp_source.html#l00235">DialogueUX.cpp:235</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dialogue_html"><div class="ttname"><a href="namespaceeve_1_1dialogue.html">eve::dialogue</a></div><div class="ttdef"><b>Definition</b> <a href="ConversationAuthoring_8cpp_source.html#l00012">ConversationAuthoring.cpp:12</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

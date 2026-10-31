@@ -1,0 +1,447 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 程序化生成模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">程序化生成模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>程序化生成模块</h1>
+<p><b>脚本入口：</b> <code>eve.Procgen()</code></p>
+<p>按算法名和 Params 生成网格、地图层、图像、法线图或 GPU 纹理。</p>
+<h2>Result 投影约定</h2>
+<p>PointGraph 的 <code>executeResult</code>、<code>validateResult</code> 以及 RuntimeGeneration 的 <code>nextGenerationJob</code>、<code>completeGenerationJob</code>、<code>failGenerationJob</code>、<code>nextCleanupRequest</code>、 <code>completeCleanupRequest</code> 已使用结构化 Result。领取成功但暂无任务时 <code>value == null</code>，不代表失败。 旧图执行和调度方法只作为兼容投影保留；具体错误码、所有权和迁移窗口见 PointSet 管线。</p>
+<p>Procgen 的创建、生成、输出和事务提交 API 都返回统一的 Squirrel Result 表： <code>{ ok, code, hasValue, status, diagnostics, value }</code>。调用方必须先读取 <code>ok</code>；只有 <code>ok == true</code> 时才读取 <code>value</code>。失败信息使用 <code>status.summary</code> 或结构化 <code>diagnostics</code>，不再通过空值和全局错误字符串拼接错误协议。Graphics 上传属于 C++ render bridge 的 borrowed 边界，不是 Squirrel 的第二套生成入口。</p>
+<p>这里的 <code>newParams</code>、<code>generate</code>、<code>buildMesh</code> 等是当前 canonical Squirrel 方法名； Procgen 不提供 <code>lastError()</code>、<code>*Owned</code> 或 <code>*Checked</code> 的兼容命名。Result 的 <code>value</code> 可以是由 generation handle 支持的 owned proxy，释放和 stale 检查遵循该 proxy 的 公共方法。</p>
+<h2>脚本生成器宿主</h2>
+<p>项目脚本可以把参数 schema 与 <code>generate(params, ctx)</code> 封装成生成器 table，再交给 <code>runScriptGenerator(generator, params, systemName, seed)</code> 同步执行。宿主在当前 Squirrel VM 的 owning thread 上创建临时事务 context；成功后原子提交并返回 system、seed、revision 及 output 名称，脚本抛错、标记 context 失败或遗留未闭合 trace 时返回结构化失败并保留上一 次成功快照。同一 system 不允许递归重入。宿主不会保存 generator closure、VM 栈或 Params； context proxy 只在本次调用中有效，返回后其 handle 会变为 stale。</p>
+<div class="fragment"><div class="line">local forest = {</div>
+<div class="line">    generate = function(params, ctx) {</div>
+<div class="line">        local points = procgen.sampleGrid(16, 12, 8.0, ctx.seedFor(&quot;trees&quot;), 0.2).value;</div>
+<div class="line">        if (!ctx.publish(&quot;trees&quot;, points)) throw ctx.getError();</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line">local run = procgen.runScriptGenerator(forest, params, &quot;forest&quot;, params.getSeed());</div>
+<div class="line">if (!run.ok) throw run.status.summary;</div>
+</div><!-- fragment --><p>生成器文件仍由项目通过 <code>dofile</code>/模块加载器载入；宿主负责的是校验 <code>generate</code> 入口、事务、 结构化错误和提交生命周期，不把任意 Squirrel closure 注册为后台线程或 PointGraph operation。 </p><h2>UE PCG 对标范围</h2>
+<p>本模块对标的是 UE PCG 的核心工作流，而不是复制 UE 类型或资产格式：统一 Spatial Data、 带属性 Point Data、可缓存 Point Graph/子图、分区与 Hierarchical Generation、多 Generation Source、视锥与时间预算、Biome Rules、Shape Grammar，以及到 Scene 的可撤销实例批次均有 对应实现。编辑器侧使用通用 <code>GraphDocument</code> 的 <code>procgen.point</code> domain，编译为版本化运行时 PointGraph 定义。</p>
+<p>PointGraph 一等节点已覆盖 UE 基础节点库中的 Mesh/Spline Sampler、规则网格与 Poisson 蓝噪声采样（<code>grid.sample</code> / <code>poisson.sample</code>）、Landscape/Texture Sampler （<code>landscape.sample</code> / <code>texture.sample</code>）、点集布尔 （Union/Intersection/Difference）、Bounds Modifier、Normal→Density、Static Mesh 权重 Spawner，以及 Disable/Inspect。Landscape/Spline/Actor 源仍通过外部绑定注入；详见 PointSet 管线。</p>
+<p>当前执行器是确定性的 CPU 实现；没有照搬 UE 的 GPU PCG Compute Graph。Scene sink 发布 稳定节点与资产 tag，具体模型加载/渲染仍由项目的 scene/graphics 资产系统消费。PointGraph 保持无环数据流，迭代算法应封装为一个 operation 或子图，而不是创建反馈边。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">local gen = eve.Procgen();</div>
+<div class="line">local paramsResult = gen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local p = paramsResult.value;</div>
+<div class="line">p.setSeed(42); p.setSize(64, 40);</div>
+<div class="line">local gridResult = gen.generate(&quot;dungeon.bsp&quot;, p);</div>
+<div class="line">if (!gridResult.ok) throw gridResult.status.summary;</div>
+<div class="line">local grid = gridResult.value;</div>
+</div><!-- fragment --><p>Hexmap 地形不走 <code>generate</code> / <code>Grid2D</code>。<code>hex.terrain</code> 与 <code>hex.sphere</code> 只提供 Params schema（给 <code>applyAlgorithmDefaults</code> 用）；真正的出口是 <code>generateHexTerrain</code> / <code>generateHexSphere</code>，返回 hexmap 可 <code>applyTerrain</code> / <code>applySphereTerrain</code> 的 bake 对象。<code>generate("hex.terrain", …)</code> 会失败并指向这两个入口。<code>width</code>/<code>height</code> 必须是 hexmap 的 5×5 分块整数倍。</p>
+<div class="fragment"><div class="line">local p = procgen.newParams().value;</div>
+<div class="line">p.setSeed(st.seed);</div>
+<div class="line">p.setSize(hexmap.cellCountX(), hexmap.cellCountZ());</div>
+<div class="line">procgen.applyAlgorithmDefaults(&quot;hex.terrain&quot;, p);</div>
+<div class="line">p.setInt(&quot;landPercentage&quot;, 50);</div>
+<div class="line">local baked = procgen.generateHexTerrain(p);</div>
+<div class="line">if (!baked.ok) throw baked.status.summary;</div>
+<div class="line">local applied = hexmap.applyTerrain(gfx, baked.value);</div>
+<div class="line">if (!applied.ok) throw applied.status.summary;</div>
+</div><!-- fragment --><p>球面拓扑由 <code>hexmap.newSphere</code> 先建好，bake 必须匹配同一 <code>subdivision</code>：</p>
+<div class="fragment"><div class="line">hexmap.newSphere(gfx, subdivision, radius, seed);</div>
+<div class="line">local p = procgen.newParams().value;</div>
+<div class="line">p.setSeed(seed);</div>
+<div class="line">procgen.applyAlgorithmDefaults(&quot;hex.sphere&quot;, p);</div>
+<div class="line">p.setInt(&quot;subdivision&quot;, subdivision);</div>
+<div class="line">p.setFloat(&quot;radius&quot;, radius);</div>
+<div class="line">local baked = procgen.generateHexSphere(p);</div>
+<div class="line">hexmap.applySphereTerrain(gfx, baked.value);</div>
+</div><!-- fragment --><p><code>Grid2D</code> 的资产对象接口用于把生成布局与任意项目资产包解耦： <code>addAssetObject(name, role, asset, x, y, width, height, rotation, flags)</code> 添加带语义角色、 资产标识、占地、旋转和标志位的对象；读取时使用 <code>getObjectAsset(index)</code>、 <code>getObjectRotation(index)</code> 与 <code>getObjectFlags(index)</code>。资产标识只是调用方配置的字符串， 具体 prefab、模型或精灵由渲染适配器解析。</p>
+<h3>受检 artifact API</h3>
+<p>跨存档、跨进程或需要发布到可选后端时，使用 <code>buildArtifact()</code> 与 <code>publishArtifact()</code>。两个方法都返回公共 Result 投影表；脚本必须检查 <code>result.ok</code>，或用 <code>eve.result.ignore(result, "明确原因")</code> 记录有意忽略。artifact 身份必须是非 nil 的规范 UUID 文本，发布选项依次为 scene、graphics、physics、map：</p>
+<div class="fragment"><div class="line">local artifactResult = gen.buildArtifact(&quot;mesh.castle&quot;, p,</div>
+<div class="line">                                         &quot;11111111-1111-4111-8111-111111111111&quot;);</div>
+<div class="line">if (!artifactResult.ok) throw artifactResult.status.summary;</div>
+<div class="line">local artifact = artifactResult.value;</div>
+<div class="line">local receiptResult = gen.publishArtifact(&quot;mesh.castle&quot;, p,</div>
+<div class="line">    &quot;11111111-1111-4111-8111-111111111111&quot;, false, true, false, false);</div>
+<div class="line">if (!receiptResult.ok) throw receiptResult.status.summary;</div>
+<div class="line">local receipt = receiptResult.value;</div>
+</div><!-- fragment --><p>所有可能失败的 Procgen 创建、生成、上传、输出和提交操作都返回同一套 Result 投影；成功后才读取 <code>value</code>，失败时使用 <code>status.summary</code> 或 <code>diagnostics</code>。 不要用空值与另一个错误字符串拼接成错误协议。</p>
+<h2>参数 schema 与动态编辑 UI</h2>
+<p>每个内置 Grid 生成器在注册执行函数时同时注册 UI 无关的参数 schema。项目不需要在 编辑器脚本里重复维护字段类型、默认值、范围或 choice 列表；开发者工具、游戏内建造器 和自动化都枚举同一份元数据，再选择自己的呈现方式：</p>
+<div class="fragment"><div class="line">local algorithm = &quot;cave.cellular&quot;;</div>
+<div class="line">local paramsResult = gen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local params = paramsResult.value;</div>
+<div class="line">local defaultsResult = gen.applyAlgorithmDefaults(algorithm, params);</div>
+<div class="line">if (!defaultsResult.ok) throw defaultsResult.status.summary;</div>
+<div class="line"> </div>
+<div class="line">for (local i = 0; i &lt; gen.getAlgorithmParamCount(algorithm); ++i) {</div>
+<div class="line">    local key = gen.getAlgorithmParamKey(algorithm, i);</div>
+<div class="line">    local label = gen.getAlgorithmParamLabel(algorithm, i);</div>
+<div class="line">    local kind = gen.getAlgorithmParamKind(algorithm, i); // int|float|bool|string|choice</div>
+<div class="line">    local defaultText = gen.getAlgorithmParamDefault(algorithm, i);</div>
+<div class="line">    local advanced = gen.isAlgorithmParamAdvanced(algorithm, i);</div>
+<div class="line">    if (gen.algorithmParamHasMinimum(algorithm, i)) {</div>
+<div class="line">        local minValue = gen.getAlgorithmParamMinimum(algorithm, i);</div>
+<div class="line">        local maxValue = gen.getAlgorithmParamMaximum(algorithm, i);</div>
+<div class="line">        local step = gen.getAlgorithmParamStep(algorithm, i);</div>
+<div class="line">        // 用项目自己的 MVVM/UI 组件生成 slider 或 number field。</div>
+<div class="line">    }</div>
+<div class="line">    for (local c = 0; c &lt; gen.getAlgorithmParamChoiceCount(algorithm, i); ++c)</div>
+<div class="line">        print(gen.getAlgorithmParamChoice(algorithm, i, c) + &quot;\n&quot;);</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>算法级信息由 <code>getAlgorithmDisplayName</code>、<code>getAlgorithmCategory</code>、 <code>getAlgorithmCount</code>、<code>getAlgorithmId</code> 和 <code>hasAlgorithm</code> 提供；字段还可读取 <code>getAlgorithmParamLabel</code>、<code>getAlgorithmParamDescription</code>、 <code>getAlgorithmParamCategory</code>、<code>algorithmParamHasMaximum</code>。<code>Params.setInt</code> / <code>getInt</code> 也统一识别 <code>seed</code>、<code>width</code>、<code>height</code>，所以反射生成的控件不需要为这三个 公共字段编写旁路逻辑。<code>examples/composable-editor</code> 在项目脚本中把 schema 映射为 普通 <code>ui.slider</code> / <code>ui.checkbox</code> / <code>ui.combo</code>，C++ 没有固定 Procgen 面板。</p>
+<p><code>getAlgorithmSchema</code> 返回通用 <code>ProcgenRecipeSchema</code>。同一个对象模型也由 <code>getTextureRecipeSchema</code>、<code>getPbrRecipeSchema</code> 和 <code>getMeshRecipeSchema</code> 返回，因此项目只需要一个字段组件： <code>getId</code>、<code>getDisplayName</code>、<code>getCategory</code>、<code>getParamCount</code>、<code>getParamKey</code>、 <code>getParamLabel</code>、<code>getParamDescription</code>、<code>getParamCategory</code>、<code>getParamKind</code>、 <code>getParamDefault</code>、<code>paramHasMinimum</code>、<code>paramHasMaximum</code>、<code>getParamMinimum</code>、 <code>getParamMaximum</code>、<code>getParamStep</code>、<code>isParamAdvanced</code>、<code>getParamChoiceCount</code> 和 <code>getParamChoice</code>。<code>applyTextureRecipeDefaults</code> / <code>applyPbrRecipeDefaults</code> / <code>applyMeshRecipeDefaults</code> 把缺失值写入 <code>Params</code>，已有的项目覆盖值保持不变。</p>
+<p><code>generateTexture(recipeId, params, graphics)</code> 直接把纹理配方生成的临时 <code>ImageData</code> 上传到传入的 <code>Graphics</code>，返回统一 Result。成功时 <code>value</code> 是由该 <code>Graphics</code> 资源系统拥有的 borrowed <code>Texture</code>；调用方不得销毁它，也不得跨 Graphics 关闭、资源重建或后端切换保存引用。参数、Graphics 或生成结果无效时， 调用方必须检查失败 Result。</p>
+<h2>内置原型建造套件（纯程序化）</h2>
+<p>模型分类和视觉语言参考 <a href="https://rgsdev.itch.io/free-3d-modular-low-poly-assets-for-prototyping-by-rgsdev">RGSDev Free 3D Modular Low Poly Assets</a>，纹理方向参考 <a href="https://kenney-assets.itch.io/prototype-textures">Kenney Prototype Textures</a>。实现只生成新的顶点、索引和 RGBA8 像素数据，不复制、打包或运行时加载参考资源中的模型与图片文件。</p>
+<p><code>prototype.*</code> 提供 75 个基础 3D 原型模块，覆盖方块、锥体、圆柱、门窗、墙角、 楼梯、坡道、围栏、栏杆、柱子、梯子、地面、机关和标记物。它们不是内置 FBX， 也不会从项目目录读取模型；每次生成都由 CPU 几何函数直接写入 <code>MeshBuild</code>。 所有网格使用 Y-up、XZ 居中占地、Y=0 落地的统一原点，避免导入资源中常见的 偏移和旋转修正。</p>
+<div class="fragment"><div class="line">local paramsResult = gen.newParams();</div>
+<div class="line">if (!paramsResult.ok) throw paramsResult.status.summary;</div>
+<div class="line">local p = paramsResult.value;</div>
+<div class="line">local defaultsResult = gen.applyMeshRecipeDefaults(&quot;prototype.stairs-corner&quot;, p);</div>
+<div class="line">if (!defaultsResult.ok) throw defaultsResult.status.summary;</div>
+<div class="line">p.setFloat(&quot;width&quot;, 4.0);</div>
+<div class="line">p.setFloat(&quot;height&quot;, 2.0);</div>
+<div class="line">p.setFloat(&quot;depth&quot;, 4.0);</div>
+<div class="line">p.setFloat(&quot;thickness&quot;, 0.16);</div>
+<div class="line">p.setInt(&quot;steps&quot;, 8);</div>
+<div class="line">local meshResult = gen.buildMesh(&quot;prototype.stairs-corner&quot;, p);</div>
+<div class="line">if (!meshResult.ok) throw meshResult.status.summary;</div>
+<div class="line">local mesh = meshResult.value;</div>
+</div><!-- fragment --><p>通用参数为 <code>scale</code>、<code>width</code>、<code>height</code>、<code>depth</code>、<code>thickness</code>、<code>detail</code>、 <code>steps</code> 和 <code>uvScale</code>（每世界单位的纹理重复次数）。<code>detail</code> 控制圆柱、球体和圆环等的 径向细分，<code>steps</code> 控制楼梯和梯级数量； 每个 recipe 的尺寸默认值来自同一份 <code>RecipeDescriptor</code>。C++ 可用 <code>prototypePieceDescriptors()</code> 枚举，或调用 <code>generatePrototypePiece()</code> 获得带结构化 诊断的 owning <code>MeshBuild</code>。</p>
+<p><code>tex.prototype.*</code> 提供 13 种原型图案：标注/象限/细分/面板网格、两种斜线网格、 两种棋盘格、弱网格、楼梯/门洞/窗洞尺寸引导和十字定位点。每种图案通过 <code>palette</code> 参数选择 <code>dark</code>、<code>light</code>、<code>purple</code>、<code>orange</code>、<code>green</code>、<code>red</code>，因此同一套 13 个函数可产生 78 个标准组合；<code>custom</code> 还允许自定义背景与线色。纹理像素由 CPU 直接绘制，不嵌入 PNG/SVG。</p>
+<div class="fragment"><div class="line">local textureParamsResult = gen.newParams();</div>
+<div class="line">if (!textureParamsResult.ok) throw textureParamsResult.status.summary;</div>
+<div class="line">local tp = textureParamsResult.value;</div>
+<div class="line">tp.setSize(1024, 1024);</div>
+<div class="line">tp.setString(&quot;palette&quot;, &quot;orange&quot;);</div>
+<div class="line">tp.setInt(&quot;cellSize&quot;, 128);</div>
+<div class="line">tp.setInt(&quot;lineWidth&quot;, 2);</div>
+<div class="line">tp.setFloat(&quot;minorAlpha&quot;, 0.10);</div>
+<div class="line">tp.setFloat(&quot;majorAlpha&quot;, 0.45);</div>
+<div class="line">local textureResult = gen.generateTexture(&quot;tex.prototype.diagonal-grid&quot;, tp, gfx);</div>
+<div class="line">if (!textureResult.ok) throw textureResult.status.summary;</div>
+<div class="line">local texture = textureResult.value;</div>
+</div><!-- fragment --><p>纹理参数还包括 <code>guideSteps</code>、<code>backgroundR/G/B</code> 与 <code>lineR/G/B</code>。C++ 可用 <code>prototypeTextureDescriptors()</code> 枚举，并以 <code>generatePrototypeTexture()</code> 生成 owning RGBA8 <code>ImageData</code>。相同参数逐字节确定；生成结果应按参数 build key 缓存，不能每帧重建。</p>
+<h2>程序化地板纹理（木地板 / 瓷砖）</h2>
+<p><code>tex.floor.wood</code> 与 <code>tex.floor.tile</code> 用参数排列组合生成可平铺地板 albedo，无需外部图片。 对应的完整 PBR 配方为 <code>pbr.floor.wood</code> / <code>pbr.floor.tile</code>，一次烘焙产出 albedo / normal / roughness / metallic / height / AO（位移场与 albedo 像素对齐）。 示例见 <code>examples/procedural-textures</code>（Material 绑定 albedo+normal+height，scalar roughness/metallic）。</p>
+<p>木地板 <code>layout</code> 支持 <code>planks</code> / <code>staggered</code> / <code>herringbone</code> / <code>chevron</code> / <code>parquet</code> / <code>basket</code> / <code>diagonal</code> / <code>ladder</code> / <code>finger</code> / <code>versailles</code>；<code>tone</code> 支持 <code>oak</code> / <code>walnut</code> / <code>pine</code> / <code>cherry</code> / <code>ebony</code> / <code>ash</code> / <code>maple</code> / <code>teak</code>。 其余常用旋钮：<code>rows</code>、<code>cols</code>、<code>gap</code>、<code>grain</code>、<code>warp</code>、<code>wear</code>、<code>stain</code>、<code>bevel</code>。 PBR 额外旋钮：<code>roughnessLow</code>、<code>roughnessHigh</code>、<code>metallic</code>、<code>normalStrength</code>、<code>aoStrength</code>、 <code>heightStrength</code>（沟槽偏粗糙，板面偏光滑）。</p>
+<p>瓷砖 <code>pattern</code> 支持 <code>square</code> / <code>checker</code> / <code>diamond</code> / <code>hex</code> / <code>subway</code> / <code>brick</code> / <code>stack</code> / <code>mosaic</code> / <code>basket</code> / <code>herringbone</code> / <code>octagon</code> / <code>fishscale</code> / <code>scallop</code> / <code>pinwheel</code> / <code>windmill</code> / <code>star</code> / <code>moroccan</code> / <code>cobble</code> / <code>arabesque</code> / <code>terrazzo</code>； <code>palette</code> 支持 <code>ceramic</code> / <code>terracotta</code> / <code>slate</code> / <code>porcelain</code> / <code>marble</code> / <code>black</code> / <code>mosaic</code> / <code>subway</code> / <code>encaustic</code> / <code>jade</code> / <code>cobalt</code>。其余常用旋钮：<code>tilesX</code>、 <code>tilesY</code>、<code>grout</code>、<code>bevel</code>、<code>glaze</code>、<code>wear</code>、<code>speckles</code>、<code>motif</code>。釉面越高，板面粗糙度越低。</p>
+<div class="fragment"><div class="line">local textureParamsResult = gen.newParams();</div>
+<div class="line">if (!textureParamsResult.ok) throw textureParamsResult.status.summary;</div>
+<div class="line">local tp = textureParamsResult.value;</div>
+<div class="line">tp.setSize(256, 256);</div>
+<div class="line">tp.setString(&quot;layout&quot;, &quot;herringbone&quot;);</div>
+<div class="line">tp.setString(&quot;tone&quot;, &quot;walnut&quot;);</div>
+<div class="line">tp.setInt(&quot;rows&quot;, 8);</div>
+<div class="line">tp.setInt(&quot;cols&quot;, 8);</div>
+<div class="line">tp.setFloat(&quot;gap&quot;, 0.035);</div>
+<div class="line">local textureResult = gen.generateTexture(&quot;tex.floor.wood&quot;, tp, gfx);</div>
+<div class="line">if (!textureResult.ok) throw textureResult.status.summary;</div>
+<div class="line"> </div>
+<div class="line">local pbrResult = gen.generatePbrMaterial(&quot;pbr.floor.wood&quot;, tp);</div>
+<div class="line">if (!pbrResult.ok) throw pbrResult.status.summary;</div>
+<div class="line">local maps = pbrResult.value;</div>
+<div class="line">local albedo = maps.getAlbedo();</div>
+<div class="line">local normal = maps.getNormal();</div>
+<div class="line">local height = maps.getHeight();</div>
+<div class="line">local roughness = maps.getRoughness();</div>
+<div class="line">local metallic = maps.getMetallic();</div>
+<div class="line">local ao = maps.getAo();</div>
+<div class="line">maps.destroy();</div>
+</div><!-- fragment --><p>C++ 可用 <code>generateWoodFloorTexture()</code> / <code>generateTileFloorTexture()</code> 获得 albedo，以及 <code>generateWoodFloorPbr()</code> / <code>generateTileFloorPbr()</code> 获得完整 <code>PbrTextureSet</code>；注册入口为 <code>registerFloorTextureRecipes()</code> 与 <code>registerFloorPbrRecipes()</code>。</p>
+<h2>程序化钢缆 / 铁链 / 麻绳</h2>
+<p><code>mesh.cable</code> / <code>mesh.chain</code> / <code>mesh.rope</code> 沿 +X 生成可拼接线性构件；配套纹理与完整 PBR 配方为 <code>tex.cable.steel</code> / <code>pbr.cable.steel</code>、<code>tex.chain.iron</code> / <code>pbr.chain.iron</code>、 <code>tex.rope.hemp</code> / <code>pbr.rope.hemp</code>。示例见 <code>examples/cable-chain-rope</code>。</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">网格   </th><th class="markdownTableHeadNone">材质   </th><th class="markdownTableHeadNone">形态    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>mesh.cable</code>   </td><td class="markdownTableBodyNone">钢缆编织 albedo + PBR   </td><td class="markdownTableBodyNone">多股螺旋管（默认 6 股）    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>mesh.chain</code>   </td><td class="markdownTableBodyNone">铸铁/锈蚀金属   </td><td class="markdownTableBodyNone">交替椭圆环互扣    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>mesh.rope</code>   </td><td class="markdownTableBodyNone">麻纤维编织   </td><td class="markdownTableBodyNone">三股螺旋（股径更大、略鼓）   </td></tr>
+</table>
+<p>网格共享参数：<code>segments</code>、<code>segLength</code>、<code>radius</code>、<code>thickness</code>、<code>strands</code>、<code>twists</code>、 <code>lengthSegs</code>、<code>radialSegs</code>、<code>majorSegs</code>、<code>minorSegs</code>、<code>scale</code>、<code>uvRepeat</code>。 <code>twists</code> 取整数时，每股螺旋在单元接缝处相位闭合，可无缝拼接。</p>
+<p>纹理常用旋钮：<code>strands</code>、<code>twist</code>、<code>gap</code>、<code>wear</code>、<code>contrast</code>；钢缆另有 <code>polish</code>， 铁链有 <code>rust</code>，麻绳有 <code>fiber</code>。PBR 额外旋钮与地板配方相同（<code>roughnessLow</code> / <code>roughnessHigh</code> / <code>metallic</code> / <code>normalStrength</code> / <code>aoStrength</code> / <code>heightStrength</code>）。</p>
+<div class="fragment"><div class="line">local pResult = gen.newParams();</div>
+<div class="line">if (!pResult.ok) throw pResult.status.summary;</div>
+<div class="line">local p = pResult.value;</div>
+<div class="line">p.setInt(&quot;segments&quot;, 8);</div>
+<div class="line">p.setFloat(&quot;segLength&quot;, 1.0);</div>
+<div class="line">p.setFloat(&quot;radius&quot;, 0.08);</div>
+<div class="line">p.setFloat(&quot;thickness&quot;, 0.022);</div>
+<div class="line">p.setInt(&quot;strands&quot;, 6);</div>
+<div class="line">p.setInt(&quot;twists&quot;, 1);</div>
+<div class="line">local meshResult = gen.buildMesh(&quot;mesh.cable&quot;, p);</div>
+<div class="line">if (!meshResult.ok) throw meshResult.status.summary;</div>
+<div class="line"> </div>
+<div class="line">local tpResult = gen.newParams();</div>
+<div class="line">if (!tpResult.ok) throw tpResult.status.summary;</div>
+<div class="line">local tp = tpResult.value;</div>
+<div class="line">tp.setSize(256, 256);</div>
+<div class="line">tp.setInt(&quot;strands&quot;, 6);</div>
+<div class="line">tp.setFloat(&quot;twist&quot;, 3.0);</div>
+<div class="line">local pbrResult = gen.generatePbrMaterial(&quot;pbr.cable.steel&quot;, tp);</div>
+<div class="line">if (!pbrResult.ok) throw pbrResult.status.summary;</div>
+</div><!-- fragment --><p>C++ 入口：<code>generateCableChainRope()</code> / <code>registerCableChainRopeRecipes()</code>，以及 <code>generateSteelCableTexture()</code> / <code>generateIronChainTexture()</code> / <code>generateHempRopeTexture()</code> 与对应 <code>*Pbr</code> / <code>registerCableTextureRecipes()</code> / <code>registerCablePbrRecipes()</code>。</p>
+<h3>Params 的类型与尺寸语义</h3>
+<p><code>Params</code> 的算法私有值由 owning 的 <code>Value::Object</code> 保存。<code>setInt</code>、<code>setFloat</code>、 <code>setBool</code>、<code>setString</code> 分别保留整数、浮点数、布尔值和字符串类型；getter 不会把 字符串解析成数字/布尔，也不会把数字 stringify 成字符串。<code>getInt</code> 支持范围内的 整数、有限整数浮点数和 <code>bool -&gt; 0/1</code>；<code>getFloat</code> 支持可表示的整数/浮点数和 <code>bool -&gt; 0/1</code>；<code>getBool</code> 只接受布尔值或精确数值 <code>0/1</code>；不匹配时返回默认值。</p>
+<p><code>seed</code>、<code>width</code>、<code>height</code> 的 <code>setSeed</code>/<code>setSize</code> 和 <code>setInt</code> 路径属于独立的生成 维度域。浮点、布尔或字符串 setter 使用同名 key 时属于算法私有域，不会修改 <code>getSeed</code>/<code>getWidth</code>/<code>getHeight</code>。<code>canonicalString()</code> 稳定排序并带类型标签， 因此同一组参数在不同插入顺序下相同，而 <code>1</code>、<code>1.0</code>、<code>true</code>、<code>"1"</code> 不会碰撞。</p>
+<div class="fragment"><div class="line">local recipe = &quot;pbr.rock&quot;;</div>
+<div class="line">local valuesResult = gen.newParams();</div>
+<div class="line">if (!valuesResult.ok) throw valuesResult.status.summary;</div>
+<div class="line">local values = valuesResult.value;</div>
+<div class="line">values.setSize(128, 128);</div>
+<div class="line">local defaultsResult = gen.applyPbrRecipeDefaults(recipe, values);</div>
+<div class="line">if (!defaultsResult.ok) throw defaultsResult.status.summary;</div>
+<div class="line">local schemaResult = gen.getPbrRecipeSchema(recipe);</div>
+<div class="line">if (!schemaResult.ok) throw schemaResult.status.summary;</div>
+<div class="line">local schema = schemaResult.value;</div>
+<div class="line">for (local i = 0; i &lt; schema.getParamCount(); ++i)</div>
+<div class="line">    buildProjectField(schema, values, i);</div>
+<div class="line">local mapsResult = gen.generatePbrMaterial(recipe, values);</div>
+<div class="line">if (!mapsResult.ok) throw mapsResult.status.summary;</div>
+<div class="line">local maps = mapsResult.value;</div>
+<div class="line">local albedo = maps.getAlbedo();</div>
+<div class="line">local normal = maps.getNormal();</div>
+<div class="line">local roughness = maps.getRoughness();</div>
+<div class="line">local metallic = maps.getMetallic();</div>
+<div class="line">local height = maps.getHeight();</div>
+<div class="line">local ao = maps.getAo();</div>
+<div class="line">maps.destroy();</div>
+</div><!-- fragment --><p>日常材质专用生成器与参数见 日常材质生成。 <code>ProcgenPbrMaterial.getTransmission()</code> 和 <code>getIor()</code> 分别返回透射率和折射率。</p>
+<p>当前 <code>Material</code> 可直接使用 albedo、normal、height 纹理以及 scalar roughness / metallic。 roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材质还没有对应纹理槽。</p>
+<h2>对象关系与调用时机</h2>
+<p><code>Params</code> 描述 seed、尺寸和算法参数；<code>Grid2D</code> 是结果；<code>OutputSpec</code> 决定写入 TileLayer、Image 或 Texture；<code>Procgen</code> 按注册算法名执行。</p>
+<h2>PointSet 管线</h2>
+<p>空间运算、分区、发布、图资产、GPU compute、hot reload、增量重建与 cell 同步 API 见 PointSet 管线。</p>
+<h2>目标导向指南</h2>
+<p>按目标组织的生成配方（地牢、地形、六边形星球、城区、溶洞、树木、线性结构等）见 目标导向指南。</p>
+<p>Geometry Stroke、Mesh Modifier Graph 与融合执行见 网格修改与融合。</p>
+<h2>常见问题</h2>
+<ul>
+<li>未保存 seed，无法复现玩家问题。</li>
+<li>Output palette 缺少算法输出的 tile key。</li>
+<li>在每帧 update 生成大地图或纹理。</li>
+<li>在每帧重新生成树木网格；应缓存 <code>Mesh</code>，仅在 seed 或参数变化时重建。</li>
+</ul>
+<h2>运行时质量与延迟任务</h2>
+<p><code>eve.PcgFrameRateManager()</code> 提供可回放的帧率采样和地形质量档策略。调用 <code>configure(targetFrameRate, checkInterval, minQuality, maxQuality, currentQuality)</code> 原子配置状态机； 调用方每帧注入 <code>dt</code> 与 <code>timeScale</code> 给 <code>update()</code>，因此它不依赖 OS 墙钟。随后可读取 <code>getFps()</code>、<code>getQuality()</code>、<code>getQualityChanged()</code> 和 <code>getPreset()</code>。手动选择使用 <code>selectManualQuality(level)</code>，自动模式使用 <code>setAutomatic(enabled)</code> / <code>getAutomatic()</code>。 返回的 <code>PcgTerrainQualityPreset</code> 提供 <code>treeDistance</code>、<code>treeBillboardDistance</code>、 <code>treeCrossFadeLength</code>、<code>treeMaximumFullLodCount</code>、<code>detailObjectDistance</code>、 <code>detailObjectDensity</code>、<code>heightmapPixelError</code>、<code>heightmapMaximumLod</code> 和 <code>basemapDistance</code>。</p>
+<p><code>eve.PcgTaskQueue()</code> 提供 callback-free 的延迟任务状态机。<code>add(waitSeconds)</code> 加入任务并返回 稳定 ID；<code><a class="el" href="TacticsPersistence_8cpp.html#a9be293222289c40e0ca1ad953cb5a07e">tick(deltaSeconds)</a></code> 只把到期任务发布为 Ready，调用方通过 <code>getReadyTaskId()</code> 取得 ID、在队列外执行任务，再调用 <code>resolveReady(finished)</code>。未完成任务留待下一轮，完成任务被移除； <code>cancelAll()</code> 清空队列，<code>getQueueSize()</code> 与 <code>getStatus()</code> 提供状态。队列不保存回调或脚本对象， 显式 dt 使调度可回放，非法时间不会改变队列。</p>
+<p>这两个 PCG 策略类型由 <code>procgen</code> 模块绑定，不属于 <code>os</code>。</p>
+<h2>L-system 文法生成</h2>
+<p>通用随机括号 L-system 引擎(<code>procgen.newLSystem()</code>)。给定 axiom 与产生式(可带权重随机),迭代若干次后用 3D 海龟解释:绘制 <code>/</code> 折返、<code>[ ]</code> 入/弹栈产生分支,枝条粗细随深度衰减。固定 seed 结果完全可复现。除 <code>mesh.lsystem</code> 网格配方外,<code><a class="el" href="Agent_8cpp.html#ae975eceec8a4bdcc279a02759aada6b7">trace()</a></code> 可把枝段作为样条控制点输出(道路、二维布局)。</p>
+<div class="fragment"><div class="line">local ls = procgen.newLSystem().value;</div>
+<div class="line">ls.setAxiom(&quot;F&quot;);</div>
+<div class="line">ls.addRule(&#39;F&#39;, &quot;F[+F]F[-F]F&quot;);          // 确定性产生式</div>
+<div class="line">// ls.addRules(&#39;A&#39;, [&quot;F[+A]A&quot;, &quot;FA&quot;], [2.0, 1.0]);  // 加权随机产生式</div>
+<div class="line">ls.setIterations(4); ls.setAngle(26.0); ls.setSeed(42);</div>
+<div class="line">local road = procgen.newPointSet().value; ls.trace(road);   // 枝段 → 控制点</div>
+</div><!-- fragment --><p><code>mesh.lsystem</code> 配方内置 <code>tree</code> / <code>fern</code> / <code>plant</code> / <code>weed</code> 预置,输出锥形枝干与叶片卡。</p>
+<h2>蓝噪声撒点</h2>
+<p><code>procgen.poissonDisk(width, depth, radius, seed, maxPoints)</code> 在 XZ 平面做 Bridson 蓝色噪声撒点(任意两点间距 ≥ radius,确定性),适合均匀散布草丛、石头等。</p>
+<div class="fragment"><div class="line">local scatter = procgen.poissonDisk(100, 100, 2.5, 99, 500);  // 最多 500 点</div>
+</div><!-- fragment --><h2>绑定与行为说明</h2>
+<ul>
+<li>地形层与网格查询：<code>getBaseVertexCount()</code>、<code>getFlowDirection()</code>、<code>getFlowVectorX()</code>、<code>getFlowVectorY()</code>、<code>getGeometricError()</code>、<code>getLodStep()</code>、<code>getOriginX()</code>、<code>getOriginY()</code>、<code>getSplatHeight()</code>、<code>getSplatWidth()</code>、<code>getStreamOrder()</code>、<code>selectTerrainLod()</code>。</li>
+<li>L-system 引擎(<code>ProcgenLSystem</code>)：<code>addRule()</code>、<code>addRules()</code>、<code>clearRules()</code>、<code>derive()</code>、<code>getIterations()</code>、<code>getSeed()</code>、<code>setAngle()</code>、<code>setAxiom()</code>、<code>setBranchRadius()</code>、<code>setBranchRadiusFalloff()</code>、<code>setInitialHeading()</code>、<code>setIterations()</code>、<code>setLeafSize()</code>、<code>setLeafSymbols()</code>、<code>setStep()</code>、<code>setTropism()</code>；蓝噪声撒点：<code>poissonDisk()</code>。这些创建与转换入口返回统一 Result，其 <code>value</code> 是带所有权的代理。</li>
+<li>Handle 生命周期：<code>ownership()</code>、<code>ownerEpoch()</code>、<code>isStale()</code>、<code>release()</code>；这些接口用于检查资源所属模块、拒绝过期引用并显式释放模块持有对象。</li>
+<li>UE PCG 扩展：<code>clearCache()</code>、<code>clearGenerationSources()</code>、<code>clearParameterOverride()</code>、<code>continueGenerationRefresh()</code>、<code>disconnect()</code>、<code>exposeParameter()</code>、<code>getActiveCellCount()</code>、<code>getAssetCount()</code>、<code>getAssetName()</code>、<code>getCacheHitCount()</code>、<code>getCellRevision()</code>、<code>getCommittedRefreshRevision()</code>、<code>getCompiledSegmentCount()</code>、<code>getComputeBufferReuseCount()</code>、<code>getComputeDispatchCount()</code>、<code>getComputeFallbackReason()</code>、<code>getComputeMinimumPoints()</code>、<code>getComputePeakBufferBytes()</code>、<code>getComputePolicy()</code>、<code>getComputeReadbackCount()</code>、<code>getComputeUploadCount()</code>、<code>getDirectionWeight()</code>、<code>getExclusionCount()</code>、<code>getExecutionCount()</code>、<code>getExecutionNodeBudget()</code>、<code>getExecutionPlanBuildCount()</code>、<code>getFailedCellCount()</code>、<code>getFrameTimeBudget()</code>、<code>getFrustumBehindRadius()</code>、<code>getFrustumHalfAngle()</code>、<code>getGeneratingCount()</code>、<code>getGenerationSourceCount()</code>、<code>getGenerationSourceId()</code>、<code>getInputNode()</code>、<code>getLastFusedTransformCount()</code>、<code>getLayerCount()</code>、<code>getLayerDensity()</code>、<code>getLayerName()</code>、<code>getLayerPriority()</code>、<code>getLevelCellSize()</code>、<code>getLevelCleanupRadius()</code>、<code>getLevelCount()</code>、<code>getLevelGenerationRadius()</code>、<code>getMaxActiveCells()</code>、<code>getMaxGenerating()</code>、<code>getMaxGenerationRetries()</code>、<code>getMaxY()</code>、<code>getMetricBackend()</code>、<code>getMetricCount()</code>、<code>getMetricMilliseconds()</code>、<code>getMetricNodeId()</code>、<code>getMetricOutputCount()</code>、<code>getMinY()</code>、<code>getModuleCount()</code>、<code>getModuleSymbol()</code>、<code>getNodeCount()</code>、<code>getNodeId()</code>、<code>getNodeOperation()</code>、<code>getOperationInputCount()</code>、<code>getOperationParamCount()</code>、<code>getOperationParamDefault()</code>、<code>getOperationParamKey()</code>、<code>getOperationParamKind()</code>、<code>getParameterCount()</code>、<code>getParameterFloat()</code>、<code>getParameterInt()</code>、<code>getParameterKind()</code>、<code>getParameterName()</code>、<code>getParameterString()</code>、<code>getPendingCleanupCount()</code>、<code>getPendingGenerateCount()</code>、<code>getRefreshWorkBudget()</code>、<code>getRevision()</code>、<code>getTicket()</code>、<code>getVariantAsset()</code>、<code>getVariantCount()</code>、<code>getVariantLength()</code>、<code>hasCell()</code>、<code>hasLayer()</code>、<code>hasModule()</code>、<code>hasNode()</code>、<code>hasParameterOverride()</code>、<code>intersectSpatial()</code>、<code>isFrustumCullingEnabled()</code>、<code>isMetricCacheHit()</code>、<code>isRefreshPending()</code>、<code>pointData()</code>、<code>refreshGenerationSources()</code>、<code>removeLayer()</code>、<code>removeModule()</code>、<code>removeNode()</code>、<code>requestCancel()</code>、<code>resetCancellation()</code>、<code>retryFailedCells()</code>、<code>setComputeMinimumPoints()</code>、<code>setComputePolicy()</code>、<code>setExecutionNodeBudget()</code>、<code>setMaxActiveCells()</code>、<code>setMaxGenerationRetries()</code>、<code>setNodeString()</code>、<code>setParameterFloat()</code>、<code>setParameterInt()</code>、<code>setParameterString()</code>、<code>setRefreshWorkBudget()</code>、<code>wasCancelled()</code>。</li>
+</ul>
+<h2>使用要点与地形</h2>
+<p>高度图印章、侵蚀、蒙版、生成会话、草地/树木、多地形事务，以及 GTS 切片与 PCG 运行时辅助见 地形。</p>
+<h2>GridGraph、PointGraph 与 MeshGraph 混合编排</h2>
+<p><code>GridGraph</code> 是面向语义格子的确定性数据流图。内建掩码生成节点覆盖填充、随机噪声、棋盘、点阵、 形状、元胞自动机、随机游走、迷宫和 Poisson 撒点；<code>generate.registry</code> 则直接复用现有 <code>GeneratorRegistry</code>，以 <code>algorithm</code> 字符串选择 <code>dungeon.bsp</code>、<code>level.roguelike</code>、WFC 等成熟 生成器，并把节点上的整数、浮点和字符串参数投影为 <code>Params</code>。地牢算法只保留注册表中的一份实现。 修改与选择节点覆盖布尔组合、反转、膨胀、收缩、平滑、随机/边缘/邻居/规则/岛屿/岛心/ 细节范围/语义选择、寻路与八邻域 autotile。固定 seed 的生成结果可复现。</p>
+<p><code>convert.grid_to_points</code> 是显式的类型边界：它将匹配语义的格子中心转换为 <code>PointSet</code>，并写入 <code>cell_x</code>、<code>cell_y</code>、<code>semantic</code> 和 <code>detail</code> 属性。<code>point.subgraph</code> 随后可把这组点送入独立的 <code>PointGraph</code>，用于筛选、变换、采样和组合。</p>
+<p><code>MeshGraph</code> 接受 <code>Grid2D</code>、<code>PointSet</code> 与 <code>MeshBuild</code> 三种强类型输入。<code>mesh.grid_tiles</code> 从格子 构造顶面和暴露侧墙，并按 <code>group/semantic/tile-kind/rN/(normal|mx)/reference-configuration</code> 建立命名三角形组。 其中标准网格 mask 会映射到 TileWorldCreator 4.3.5 的 3×3 配置表，直接携带瓦片类别、 0/90/180/270 度朝向和 X 镜像语义；原版未归类的配置 350 保持为 <code>none</code>。</p>
+<p><code>eve.ProcgenObjectBuildLayer()</code> 是 Objects Build Layer 的原生对应物。它接收 PointGraph 产生的 <code>PointSet</code>，按稳定点身份和层 seed 确定性选择加权 <code>asset</code>，并应用层偏移、位置散布、Euler 旋转、统一或非统一缩放。<code>setOrientation</code> 可按北、东、南、西优先级朝向另一点层； <code>setPlaceOnTop</code> 读取输入点的 <code>surface_highest_y</code> 或 <code>surface_lowest_y</code>。<code>addChild</code> 生成带 <code>object_role=child</code> 与 <code>parent_index</code> 的子对象点。结果仍是普通 PointSet，可继续送入 PointGraph、 <code>mesh.instance_points</code> 或实例发布接口。</p>
+<p>对象层 API 速查：<code>clearAssets</code> 清空加权资产；<code>setLayerOffset</code>、<code>setLayerScale</code> 设置层级变换； <code>setPositionRadius</code> 设置平面散布半径；<code>setRandomRotation</code>、<code>setRandomScale</code> 设置确定性随机范围； <code>disableOrientation</code> 关闭朝向层；<code>clearChildRules</code> 清空子对象规则；<code>buildOriented</code> 使用显式朝向点集 执行对象层。GridGraph 与 MeshGraph 的运行时输入分别通过 <code>setNodeGrid</code> 绑定；GridGraph 使用 <code>setNodePointSubgraph</code> 绑定拥有明确输入/输出节点的 PointGraph 子图。</p>
+<p><code>eve.ProcgenBuildLayerStack()</code> 将 Tiles 与 Objects 定义放进同一个有序执行器。<code>addTileLayer</code> 和 <code>addObjectLayer</code> 保存值副本，<code>setEnabled</code> 控制参与执行的层；<code>execute</code> 只在全部启用层成功后返回 <code>ProcgenBuildLayerExecution</code>，再通过 <code>getType/getMesh/getPoints</code> 获取具名 artifact。配置使用 <code>EVPCG_BUILD_LAYERS 1</code>，对象层使用嵌入式 <code>EVPCG_OBJECT_LAYER 1</code>；反序列化拒绝未知记录和尾随字段， 并在完整校验成功后原子替换旧配置。</p>
+<p>层栈可用 <code>getLayerId</code>、<code>getLayerType</code> 和 <code>isLayerEnabled</code> 查询定义；<code>executeOriented</code> 为需要朝向 点集的对象层执行完整栈。增量执行器的 <code>getCachedClusterCount</code> 返回当前成功提交的活动簇数量， 失败构建不会改变该计数。</p>
+<p><code>eve.ProcgenIncrementalBuildExecutor()</code> 为 BuildLayerStack 增加跨次构建缓存。<code>update</code> 接收簇边长（格子数） 和格子世界尺寸，返回 <code>ProcgenIncrementalBuildDelta</code>；每项通过 <code>getClusterX/getClusterZ/isRemoved</code> 标识 场景侧应更新或删除的簇，非删除项用 <code>getArtifacts</code> 取得该簇的完整层结果。格子哈希带一格 halo， 因此边界 autotile 改动会同时使相邻簇失效；点按半开世界坐标范围归属一个簇。任一脏簇构建失败时， 内部旧缓存不变。带朝向层时使用 <code>updateOriented</code>；<code>getCachedArtifacts</code> 可按簇坐标读取当前快照。 场景侧应以 <code>clusterX:clusterZ</code> 作为派生缓存键：普通 delta 替换该簇的渲染/碰撞 artifact，removed delta 先从场景隐藏或移除旧对象再删除缓存项。空 PointSet 是合法簇结果，不应尝试上传空实例网格。 示例中的物理消费者按同一键维护静态三角网格刚体：先成功创建替换体再销毁旧体，避免失败时留下 无碰撞窗口；裁剪掉 <code>physics</code> 模块时明确退化为纯渲染路径，不影响生成结果与缓存权威状态。 <code>mesh.instance_points</code> 把任意 <code>MeshBuild</code> 实例化到点集；<code>mesh.merge</code> 与 <code>mesh.transform</code> 完成 组合和变换。输出仍是现有 <code>MeshBuild</code>，可继续交给统一发布、碰撞、材质和场景生命周期。</p>
+<p>三个图各自拥有缓存，不共享跨帧可变裸指针。连接时检查端口类型，Grid 输出不能直接连到 Point 或 Mesh 输入，必须经过显式转换或输入绑定。图拓扑、参数或输入变化会从修改点向下游 失效缓存，相同输入重复执行会复用结果。</p>
+<p>脚本通过 <code>procgen.newGridGraph()</code> 与 <code>procgen.newMeshGraph()</code> 获取模块拥有的句柄；所有失败均为 统一 Result 投影。两种图定义都支持版本化 <code>serializeDefinition()</code> / <code>deserializeDefinition()</code>； 运行时输入值刻意不写入定义，加载后由调用方重新绑定，避免资产与场景实例形成第二份权威状态。</p>
+<p>TileWorldCreator 4 运行时核心能力的逐项对应和边界见 `TileWorldCreator4核心移植.md`。</p>
+<h2>模块体积与连接约束</h2>
+<p><code>eve.ProcgenModuleAssemblyPlan()</code> 是 VM-owned 同步规划对象，不依赖渲染模块。 <code>configure(cellSize,floorHeight,minX,maxX,minZ,maxZ,maxLevels,bounded,requireConnection)</code>、 <code>setAllowedQuarterTurns(turn0,turn90,turn180,turn270)</code> 和 <code>setMinimumSupportRatio(ratio)</code> 返回 Result，必须在注册定义或放置前调用。 <code>registerModule(id,widthCells,depthCells)</code> 注册单层体积； <code>registerVolumeModule(id,widthCells,depthCells,heightLevels)</code> 注册多层体积。 <code>addConnector(id,x,z,facing,tag,accepts)</code>、 <code>addVolumeConnector(id,x,z,level,facing,tag,accepts)</code> 设置带类型的六向连接面； facing 0–5 对应 north/east/south/west/up/down。定义已使用后禁止修改连接器。 这些写操作均返回 Result，失败不提交。</p>
+<p><code>applyConfigJson(json)</code> 只接受空计划，原子加载 <code>eve.procgen.module-assembly</code> schema version 1，unknownFields 必须为 reject。 根字段为 schema/version/unknownFields/constraints/modules；constraints 包含 cellSize、floorHeight、bounds、maxLevels、allowedQuarterTurns、requireConnection、 minimumSupportRatio。modules 定义 id、widthCells、depthCells、heightLevels、connectors； connector 字段为 cellX/cellZ/level/facing/tag/accepts。未知版本/字段及非法值拒绝。 v1 无前驱迁移，不恢复 placement；调用成本随 JSON/连接器大小增长，限制输入 1 MiB。</p>
+<p><code>place(id,x,z,level,quarterTurn)</code> 返回 Result：整数体素占地不得重叠或越界， 所有接触面必须双方 tag/accepts 互认，受旋转白名单、连通性和垂直支撑比例约束。 拒绝后计划不变；quarterTurn 为 90 度整数倍。规划成本随已有体积和连接面增长， 应在地图构建阶段执行，而非每帧调用。 <code>getPlacementCount()</code>、<code>getPlacementModule(index)</code>、<code>getPlacementX(index)</code>、 <code>getPlacementY(index)</code>、<code>getPlacementZ(index)</code>、<code>getPlacementYawDegrees(index)</code> 读取已提交的布局及米制变换。所有方法由调用者线程独占使用，不执行回调、不持锁。</p>
+<h1>House generation grid and points</h1>
+<p>房屋生成已归入 procgen，<code>eve.HouseGen()</code> 保留为兼容构造器。它提供 <code>loadComponentsFromJson</code>、<code>loadComponentsFromFile</code>、<code>clearComponents</code>、 <code>getComponentCount</code>、<code>newRequest</code> 与 <code>newLayout</code>；请求可通过 <code>setPlot</code>、 <code>setFloors</code>、<code>setModuleSize</code>、<code>setFloorHeight</code>、<code>setStyle</code>、<code>setFootprint</code>、 <code>setRoof</code>、<code>setEntrance</code>、<code>setRequiredRooms</code> 与 <code>setPerimeter</code> 配置。 布局提供 <code>toJson</code>、<code>fromJson</code>、<code>getInstanceCount</code>、<code>getInstanceComponentId</code>、 <code>getInstanceX</code>、<code>getInstanceY</code>、<code>getInstanceZ</code>、<code>getInstanceRotationDeg</code>、 <code>getFloorHeight</code>、<code>getFootprintStyle</code>、<code>getRoofStyle</code>、<code>getRoomCount</code>、 <code>getDiagnosticCount</code>、<code>writeFootprintGrid</code> 与 <code>writeComponentPoints</code>。</p>
+<p>房屋不定义专用图类型。<code>writeFootprintGrid</code> 输出 <code>Grid2D</code>，供现有 <code>GridGraph.grid.input</code> 使用； <code>writeComponentPoints</code> 输出 <code>PointSet</code>，供现有 <code>PointGraph.input</code> 使用。后续筛选、变换、合并、 缓存与序列化全部由既有 graph 系统处理。</p>
+<h2>补充绑定参考</h2>
+<p>参数与接收者见 源码生成参考，使用前先确认本章的前置条件与生命周期。</p>
+<h2>集成任务：生成、发布和失效处理</h2>
+<p>按示例先加载生成脚本和输入参数，明确 seed、区域及算法版本；生成 CPU Output 后验证类型和非空内容，再发布图形/物理消费者。地图、mesh、image 的输出不是互换的。缓存键包含参数、种子与资源版本；不要在每帧噪声查询中重建整张地形。编辑热更使用候选 revision，晚到结果如果不匹配则丢弃；失败保留旧发布结果。GTS 渲染 LOD 与碰撞 LOD 分别选定，再共享同一世界变换。</p>
+<p>完整项目：examples/procgen-script-pipeline， 其 <a href="../../../examples/procgen-script-pipeline/main.nut">main.nut</a> 展示实际生命周期。 先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision， 不能只以脚本没有语法错误作为渲染或玩法正确的证据。 详细流程：专题。</p>
+<p>房屋与三维洞穴的脚本分阶段生成见可编辑生成流程。</p>
+<h3>原生道路作者地形策略</h3>
+<p><code>RoadStyle::terrainPolicy</code> 保存高度融合距离、最大高度差、纹理层和透明度、植被清理及隧道开孔规则；<code>enabled=false</code> 保留该道路的所有地形通道。策略随网络保存、预设父子继承及作者历史恢复。预设按整条策略覆盖，缺失则继承；执行预算不属于作者数据。</p>
+<p>原生调用 <code>RoadTerrainPlan::prepare(network, bakeOptions, sharedPolicy, maximumPreparedElements)</code> 从同一网络快照烘焙并按来源区间生成拥有网格的不可变计划。路段消费自己的策略，路口及网络派生几何消费显式 <code>sharedPolicy</code>；关闭共享策略可只应用路段。随后 <code>apply(workspace, maximumWork)</code> 或 <code>applyWorld(world, maximumWork)</code> 通过已有完整通道事务发布一次撤销记录，后续道路失败也不留下部分写回。准备之后的作者修改不会改变已有计划；加载作者数据后重新准备计划，不保存派生网格或运行时指针。</p>
+<p>准备包含完整道路烘焙和来源网格压缩，执行包含三角形覆盖及地形过滤；在明确重建/提交边界调用。生产网格未与其他作者网络按局部id拼接；来源顺序沿用烘焙顺序。共享区域及重叠道路的EasyRoads优先级仍未确认；此入口目前是原生API，不代表脚本或编辑器按钮已经接通。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

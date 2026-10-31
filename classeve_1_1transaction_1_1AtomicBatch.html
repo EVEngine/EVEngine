@@ -1,0 +1,647 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::transaction::AtomicBatch类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1transaction.html">transaction</a></li><li class="navelem"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html">AtomicBatch</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1transaction_1_1AtomicBatch-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::transaction::AtomicBatch类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Single-use composition of domain participants and one payer's costs. Owns staged participants, never game state. Domain producers add independent effects; payment is merged and committed once through the existing coordinator. Script bindings retain each domain facade until commit/destruction. Entity participants must revalidate handles at prepare/commit. VM owners must outlive this batch; all calls run on the same VM/simulation owner thread without reentry. No script callbacks run during commit. This transient builder is not serializable.  
+ <a href="classeve_1_1transaction_1_1AtomicBatch.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="AtomicBatch_8h_source.html">AtomicBatch.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1transaction_1_1AtomicBatch_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:aa0335979f81d1234a7106ea78e3a68b0" id="r_aa0335979f81d1234a7106ea78e3a68b0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#aa0335979f81d1234a7106ea78e3a68b0">AtomicBatch</a> ()</td></tr>
+<tr class="memdesc:aa0335979f81d1234a7106ea78e3a68b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an empty owner-thread batch.  <br /></td></tr>
+<tr class="separator:aa0335979f81d1234a7106ea78e3a68b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a510da04968432d87717dcb3e074373c6" id="r_a510da04968432d87717dcb3e074373c6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#a510da04968432d87717dcb3e074373c6">~AtomicBatch</a> ()</td></tr>
+<tr class="memdesc:a510da04968432d87717dcb3e074373c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release uncommitted stages and retained script owners.  <br /></td></tr>
+<tr class="separator:a510da04968432d87717dcb3e074373c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a424222c36b0b230d1ce949788b2b282f" id="r_a424222c36b0b230d1ce949788b2b282f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#a424222c36b0b230d1ce949788b2b282f">AtomicBatch</a> (const <a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html">AtomicBatch</a> &amp;)=delete</td></tr>
+<tr class="separator:a424222c36b0b230d1ce949788b2b282f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d51fa5f71c3c05bcae4a9a7aff9d7e7" id="r_a5d51fa5f71c3c05bcae4a9a7aff9d7e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html">AtomicBatch</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#a5d51fa5f71c3c05bcae4a9a7aff9d7e7">operator=</a> (const <a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html">AtomicBatch</a> &amp;)=delete</td></tr>
+<tr class="separator:a5d51fa5f71c3c05bcae4a9a7aff9d7e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f0ae9b6512e3211d84b1271433c6cb0" id="r_a4f0ae9b6512e3211d84b1271433c6cb0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#a4f0ae9b6512e3211d84b1271433c6cb0">add</a> (std::vector&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html">ITransactionParticipant</a> &gt; &gt; effects, std::optional&lt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> &gt; <a class="el" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>={})</td></tr>
+<tr class="memdesc:a4f0ae9b6512e3211d84b1271433c6cb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Append owning effects and optional cost without executing them. @cost Linear in effect/cost count; staging amortizes allocation per request.  <br /></td></tr>
+<tr class="separator:a4f0ae9b6512e3211d84b1271433c6cb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace9926916f9a999a8a74b04cacd89111" id="r_ace9926916f9a999a8a74b04cacd89111"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#ace9926916f9a999a8a74b04cacd89111">bindAccount</a> (<a class="el" href="classeve_1_1resource_1_1IResourceAccount.html">resource::IResourceAccount</a> &amp;<a class="el" href="DialoguePayment_8cpp.html#ae8ae5102f9ee2a73efc07b521079dfc9">account</a>, std::function&lt; std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;(std::string_view)&gt; query={})</td></tr>
+<tr class="memdesc:ace9926916f9a999a8a74b04cacd89111"><td class="mdescLeft">&#160;</td><td class="mdescRight">Select the authoritative payer; a different second payer is rejected. @ownership Borrowed account; native callers retain it through commit. Script producers retain the owning facade using retainScriptOwner.  <br /></td></tr>
+<tr class="separator:ace9926916f9a999a8a74b04cacd89111"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeaaa16ef1c9797cfd1b505ea150b8665" id="r_aeaaa16ef1c9797cfd1b505ea150b8665"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#aeaaa16ef1c9797cfd1b505ea150b8665">bindAccount</a> (std::shared_ptr&lt; <a class="el" href="classeve_1_1resource_1_1IResourceAccount.html">resource::IResourceAccount</a> &gt; <a class="el" href="DialoguePayment_8cpp.html#ae8ae5102f9ee2a73efc07b521079dfc9">account</a>, std::function&lt; std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;(std::string_view)&gt; query={})</td></tr>
+<tr class="memdesc:aeaaa16ef1c9797cfd1b505ea150b8665"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retain a protocol adapter while its balance owner remains authoritative.  <br /></td></tr>
+<tr class="separator:aeaaa16ef1c9797cfd1b505ea150b8665"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a021cbafca62625bc39eb6e503ab9be94" id="r_a021cbafca62625bc39eb6e503ab9be94"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#a021cbafca62625bc39eb6e503ab9be94">guard</a> (std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;()&gt; validate)</td></tr>
+<tr class="memdesc:a021cbafca62625bc39eb6e503ab9be94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add a synchronous read-only lifetime/time precondition. Guards run before account access; scripts cannot supply arbitrary callbacks.  <br /></td></tr>
+<tr class="separator:a021cbafca62625bc39eb6e503ab9be94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab03d711ae0af1ba09f41dfb5627756dd" id="r_ab03d711ae0af1ba09f41dfb5627756dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#ab03d711ae0af1ba09f41dfb5627756dd">protect</a> (<a class="el" href="structeve_1_1resource_1_1ResourceCost.html">resource::ResourceCost</a> floor)</td></tr>
+<tr class="memdesc:ab03d711ae0af1ba09f41dfb5627756dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preserve a resource floor after the complete merged payment. Multiple contributors combine floors by maximum, not by summing them.  <br /></td></tr>
+<tr class="separator:ab03d711ae0af1ba09f41dfb5627756dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15137a6645cab6cc4ddd0f3f6230ac9d" id="r_a15137a6645cab6cc4ddd0f3f6230ac9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#a15137a6645cab6cc4ddd0f3f6230ac9d">reject</a> (<a class="el" href="classeve_1_1Status.html">Status</a> <a class="el" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>)</td></tr>
+<tr class="memdesc:a15137a6645cab6cc4ddd0f3f6230ac9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preserve the first admission error and reject further execution.  <br /></td></tr>
+<tr class="separator:a15137a6645cab6cc4ddd0f3f6230ac9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a5345f624e740ec1cc78bc3f7c2c685" id="r_a8a5345f624e740ec1cc78bc3f7c2c685"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#a8a5345f624e740ec1cc78bc3f7c2c685">resource</a> (std::string_view <a class="el" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) const</td></tr>
+<tr class="memdesc:a8a5345f624e740ec1cc78bc3f7c2c685"><td class="mdescLeft">&#160;</td><td class="mdescRight">Query the selected authoritative account for condition evaluation.  <br /></td></tr>
+<tr class="separator:a8a5345f624e740ec1cc78bc3f7c2c685"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0699944436a527e2ea4e67e80174a0b0" id="r_a0699944436a527e2ea4e67e80174a0b0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1transaction_1_1TransactionReceipt.html">TransactionReceipt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#a0699944436a527e2ea4e67e80174a0b0">commit</a> ()</td></tr>
+<tr class="memdesc:a0699944436a527e2ea4e67e80174a0b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Commit all stages once, or roll back/compensate via <a class="el" href="classeve_1_1transaction_1_1Coordinator.html" title="Coordinates participant lifecycles with deterministic ordering.">Coordinator</a>. @cost Linear in stages plus their domain preparation costs; one reservation per batch amortizes payment across all effects. Consumes the builder.  <br /></td></tr>
+<tr class="separator:a0699944436a527e2ea4e67e80174a0b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c3db116386e1d9a68e7816e27c647f9" id="r_a4c3db116386e1d9a68e7816e27c647f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#a4c3db116386e1d9a68e7816e27c647f9">retainScriptOwner</a> (void *<a class="el" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>)</td></tr>
+<tr class="memdesc:a4c3db116386e1d9a68e7816e27c647f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retain the current native script method's self for staged lifetimes.  <br /></td></tr>
+<tr class="separator:a4c3db116386e1d9a68e7816e27c647f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a38a52549afe675b52a3763a4ca2d07e7" id="r_a38a52549afe675b52a3763a4ca2d07e7"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html#a38a52549afe675b52a3763a4ca2d07e7">parseCost</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a38a52549afe675b52a3763a4ca2d07e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parse a positive-integer resource cost object at the script boundary.  <br /></td></tr>
+<tr class="separator:a38a52549afe675b52a3763a4ca2d07e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Single-use composition of domain participants and one payer's costs. Owns staged participants, never game state. Domain producers add independent effects; payment is merged and committed once through the existing coordinator. Script bindings retain each domain facade until commit/destruction. Entity participants must revalidate handles at prepare/commit. VM owners must outlive this batch; all calls run on the same VM/simulation owner thread without reentry. No script callbacks run during commit. This transient builder is not serializable. </p>
+
+<p class="definition">在文件 <a class="el" href="AtomicBatch_8h_source.html">AtomicBatch.h</a> 第 <a class="el" href="AtomicBatch_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="aa0335979f81d1234a7106ea78e3a68b0" name="aa0335979f81d1234a7106ea78e3a68b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0335979f81d1234a7106ea78e3a68b0">&#9670;&#160;</a></span>AtomicBatch() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::transaction::AtomicBatch::AtomicBatch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create an empty owner-thread batch. </p>
+
+<p class="definition">在文件 <a class="el" href="AtomicBatch_8cpp_source.html">AtomicBatch.cpp</a> 第 <a class="el" href="AtomicBatch_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a510da04968432d87717dcb3e074373c6" name="a510da04968432d87717dcb3e074373c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a510da04968432d87717dcb3e074373c6">&#9670;&#160;</a></span>~AtomicBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::transaction::AtomicBatch::~AtomicBatch </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Release uncommitted stages and retained script owners. </p>
+
+</div>
+</div>
+<a id="a424222c36b0b230d1ce949788b2b282f" name="a424222c36b0b230d1ce949788b2b282f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a424222c36b0b230d1ce949788b2b282f">&#9670;&#160;</a></span>AtomicBatch() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::transaction::AtomicBatch::AtomicBatch </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html">AtomicBatch</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a4f0ae9b6512e3211d84b1271433c6cb0" name="a4f0ae9b6512e3211d84b1271433c6cb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f0ae9b6512e3211d84b1271433c6cb0">&#9670;&#160;</a></span>add()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::transaction::AtomicBatch::add </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1transaction_1_1ITransactionParticipant.html">ITransactionParticipant</a> &gt; &gt;&#160;</td>
+          <td class="paramname"><em>effects</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::optional&lt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> &gt;&#160;</td>
+          <td class="paramname"><em>cost</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Append owning effects and optional cost without executing them. @cost Linear in effect/cost count; staging amortizes allocation per request. </p>
+<dl class="section return"><dt>返回</dt><dd>Failure poisons the batch so an ignored staging error cannot commit. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AtomicBatch_8cpp_source.html">AtomicBatch.cpp</a> 第 <a class="el" href="AtomicBatch_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="DialoguePayment_8cpp_source.html#l00028">cost</a>, <a class="el" href="ResourceAccount_8cpp_source.html#l00074">eve::resource::CostSpec::create()</a>, <a class="el" href="ParticlesAttackVfx_8cpp_source.html#l00142">effect</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8cpp_source.html#l00028">eve::Status::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ResourceAccount_8h_source.html#l00185">eve::resource::CostSpec::items()</a>, <a class="el" href="AtomicBatch_8cpp_source.html#l00025">reject()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSStageBindings_8cpp_source.html#l00041">eve::rts::script_internal::exposeStageBindings()</a> , 以及 <a class="el" href="CardStageBindings_8cpp_source.html#l00040">eve::card::Card::stagePlay()</a>.</p>
+
+</div>
+</div>
+<a id="ace9926916f9a999a8a74b04cacd89111" name="ace9926916f9a999a8a74b04cacd89111"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace9926916f9a999a8a74b04cacd89111">&#9670;&#160;</a></span>bindAccount() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::transaction::AtomicBatch::bindAccount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1resource_1_1IResourceAccount.html">resource::IResourceAccount</a> &amp;&#160;</td>
+          <td class="paramname"><em>account</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;(std::string_view)&gt;&#160;</td>
+          <td class="paramname"><em>query</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Select the authoritative payer; a different second payer is rejected. @ownership Borrowed account; native callers retain it through commit. Script producers retain the owning facade using retainScriptOwner. </p>
+
+<p class="definition">在文件 <a class="el" href="AtomicBatch_8cpp_source.html">AtomicBatch.cpp</a> 第 <a class="el" href="AtomicBatch_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DialoguePayment_8cpp_source.html#l00027">account</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8cpp_source.html#l00028">eve::Status::failure()</a>, <a class="el" href="AtomicBatch_8cpp_source.html#l00025">reject()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AtomicBatch_8cpp_source.html#l00039">bindAccount()</a>.</p>
+
+</div>
+</div>
+<a id="aeaaa16ef1c9797cfd1b505ea150b8665" name="aeaaa16ef1c9797cfd1b505ea150b8665"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeaaa16ef1c9797cfd1b505ea150b8665">&#9670;&#160;</a></span>bindAccount() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::transaction::AtomicBatch::bindAccount </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeve_1_1resource_1_1IResourceAccount.html">resource::IResourceAccount</a> &gt;&#160;</td>
+          <td class="paramname"><em>account</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;(std::string_view)&gt;&#160;</td>
+          <td class="paramname"><em>query</em> = <code>{}</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retain a protocol adapter while its balance owner remains authoritative. </p>
+
+<p class="definition">在文件 <a class="el" href="AtomicBatch_8cpp_source.html">AtomicBatch.cpp</a> 第 <a class="el" href="AtomicBatch_8cpp_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DialoguePayment_8cpp_source.html#l00027">account</a>, <a class="el" href="AtomicBatch_8cpp_source.html#l00029">bindAccount()</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Status_8cpp_source.html#l00028">eve::Status::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="AtomicBatch_8cpp_source.html#l00025">reject()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a0699944436a527e2ea4e67e80174a0b0" name="a0699944436a527e2ea4e67e80174a0b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0699944436a527e2ea4e67e80174a0b0">&#9670;&#160;</a></span>commit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1transaction_1_1TransactionReceipt.html">TransactionReceipt</a> &gt; eve::transaction::AtomicBatch::commit </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Commit all stages once, or roll back/compensate via <a class="el" href="classeve_1_1transaction_1_1Coordinator.html" title="Coordinates participant lifecycles with deterministic ordering.">Coordinator</a>. @cost Linear in stages plus their domain preparation costs; one reservation per batch amortizes payment across all effects. Consumes the builder. </p>
+
+<p class="definition">在文件 <a class="el" href="AtomicBatch_8cpp_source.html">AtomicBatch.cpp</a> 第 <a class="el" href="AtomicBatch_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="VegetationPreset_8cpp_source.html#l00094">context</a>, <a class="el" href="DialoguePayment_8cpp_source.html#l00028">cost</a>, <a class="el" href="ResourceAccount_8cpp_source.html#l00074">eve::resource::CostSpec::create()</a>, <a class="el" href="ParticlesAttackVfx_8cpp_source.html#l00142">effect</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="AtomicResourcePayment_8cpp_source.html#l00013">eve::transaction::AtomicResourcePayment::execute()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="AtomicBatch_8cpp_source.html#l00068">guard()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00315">valid</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AtomicBatch_8cpp_source.html#l00195">eve::transaction::script_internal::exposeAtomicBatch()</a>.</p>
+
+</div>
+</div>
+<a id="a021cbafca62625bc39eb6e503ab9be94" name="a021cbafca62625bc39eb6e503ab9be94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a021cbafca62625bc39eb6e503ab9be94">&#9670;&#160;</a></span>guard()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::transaction::AtomicBatch::guard </td>
+          <td>(</td>
+          <td class="paramtype">std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;()&gt;&#160;</td>
+          <td class="paramname"><em>validate</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add a synchronous read-only lifetime/time precondition. Guards run before account access; scripts cannot supply arbitrary callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="AtomicBatch_8cpp_source.html">AtomicBatch.cpp</a> 第 <a class="el" href="AtomicBatch_8cpp_source.html#l00068">68</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8cpp_source.html#l00028">eve::Status::failure()</a>, <a class="el" href="AtomicBatch_8cpp_source.html#l00025">reject()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AtomicBatch_8cpp_source.html#l00144">commit()</a> , 以及 <a class="el" href="AtomicBatch_8cpp_source.html#l00107">resource()</a>.</p>
+
+</div>
+</div>
+<a id="a5d51fa5f71c3c05bcae4a9a7aff9d7e7" name="a5d51fa5f71c3c05bcae4a9a7aff9d7e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d51fa5f71c3c05bcae4a9a7aff9d7e7">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html">AtomicBatch</a> &amp; eve::transaction::AtomicBatch::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1transaction_1_1AtomicBatch.html">AtomicBatch</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a38a52549afe675b52a3763a4ca2d07e7" name="a38a52549afe675b52a3763a4ca2d07e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38a52549afe675b52a3763a4ca2d07e7">&#9670;&#160;</a></span>parseCost()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> &gt; eve::transaction::AtomicBatch::parseCost </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Parse a positive-integer resource cost object at the script boundary. </p>
+
+<p class="definition">在文件 <a class="el" href="AtomicBatch_8cpp_source.html">AtomicBatch.cpp</a> 第 <a class="el" href="AtomicBatch_8cpp_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ResourceAccount_8cpp_source.html#l00063">eve::resource::ResourceCost::create()</a>, <a class="el" href="ResourceAccount_8cpp_source.html#l00074">eve::resource::CostSpec::create()</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Value_8cpp_source.html#l00177">eve::Value::fromJson()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="TileConfig_8cpp_source.html#l00784">object</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSStageBindings_8cpp_source.html#l00041">eve::rts::script_internal::exposeStageBindings()</a>.</p>
+
+</div>
+</div>
+<a id="ab03d711ae0af1ba09f41dfb5627756dd" name="ab03d711ae0af1ba09f41dfb5627756dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab03d711ae0af1ba09f41dfb5627756dd">&#9670;&#160;</a></span>protect()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::transaction::AtomicBatch::protect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1resource_1_1ResourceCost.html">resource::ResourceCost</a>&#160;</td>
+          <td class="paramname"><em>floor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Preserve a resource floor after the complete merged payment. Multiple contributors combine floors by maximum, not by summing them. </p>
+
+<p class="definition">在文件 <a class="el" href="AtomicBatch_8cpp_source.html">AtomicBatch.cpp</a> 第 <a class="el" href="AtomicBatch_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ResourceAccount_8h_source.html#l00120">eve::resource::ResourceCost::amount</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Status_8cpp_source.html#l00028">eve::Status::failure()</a>, <a class="el" href="RpgDialect_8cpp_source.html#l00331">found</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ResourceAccount_8h_source.html#l00053">eve::resource::ResourceId::isValid()</a>, <a class="el" href="ResourceAccount_8h_source.html#l00101">eve::resource::Amount::isZero()</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a>, <a class="el" href="AtomicBatch_8cpp_source.html#l00025">reject()</a>, <a class="el" href="ResourceAccount_8h_source.html#l00119">eve::resource::ResourceCost::resource</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ResourceAccount_8h_source.html#l00056">eve::resource::ResourceId::value()</a> , 以及 <a class="el" href="ResourceAccount_8h_source.html#l00098">eve::resource::Amount::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RTSStageBindings_8cpp_source.html#l00041">eve::rts::script_internal::exposeStageBindings()</a>.</p>
+
+</div>
+</div>
+<a id="a15137a6645cab6cc4ddd0f3f6230ac9d" name="a15137a6645cab6cc4ddd0f3f6230ac9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15137a6645cab6cc4ddd0f3f6230ac9d">&#9670;&#160;</a></span>reject()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::transaction::AtomicBatch::reject </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1Status.html">Status</a>&#160;</td>
+          <td class="paramname"><em>status</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Preserve the first admission error and reject further execution. </p>
+
+<p class="definition">在文件 <a class="el" href="AtomicBatch_8cpp_source.html">AtomicBatch.cpp</a> 第 <a class="el" href="AtomicBatch_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00015">status</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="AtomicBatch_8cpp_source.html#l00088">add()</a>, <a class="el" href="AtomicBatch_8cpp_source.html#l00029">bindAccount()</a>, <a class="el" href="AtomicBatch_8cpp_source.html#l00039">bindAccount()</a>, <a class="el" href="RTSStageBindings_8cpp_source.html#l00041">eve::rts::script_internal::exposeStageBindings()</a>, <a class="el" href="AtomicBatch_8cpp_source.html#l00068">guard()</a>, <a class="el" href="AtomicBatch_8cpp_source.html#l00075">protect()</a>, <a class="el" href="AtomicBatch_8cpp_source.html#l00115">retainScriptOwner()</a> , 以及 <a class="el" href="CardStageBindings_8cpp_source.html#l00040">eve::card::Card::stagePlay()</a>.</p>
+
+</div>
+</div>
+<a id="a8a5345f624e740ec1cc78bc3f7c2c685" name="a8a5345f624e740ec1cc78bc3f7c2c685"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a5345f624e740ec1cc78bc3f7c2c685">&#9670;&#160;</a></span>resource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::transaction::AtomicBatch::resource </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Query the selected authoritative account for condition evaluation. </p>
+
+<p class="definition">在文件 <a class="el" href="AtomicBatch_8cpp_source.html">AtomicBatch.cpp</a> 第 <a class="el" href="AtomicBatch_8cpp_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AtomicBatch_8cpp_source.html#l00068">guard()</a>, <a class="el" href="ECS_8cpp_source.html#l00154">name</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00315">valid</a>.</p>
+
+</div>
+</div>
+<a id="a4c3db116386e1d9a68e7816e27c647f9" name="a4c3db116386e1d9a68e7816e27c647f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c3db116386e1d9a68e7816e27c647f9">&#9670;&#160;</a></span>retainScriptOwner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::transaction::AtomicBatch::retainScriptOwner </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>vm</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retain the current native script method's self for staged lifetimes. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">vm</td><td>Opaque Squirrel VM handle on the current owner thread. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Failure if the builder is consumed or VM self cannot be retained. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="AtomicBatch_8cpp_source.html">AtomicBatch.cpp</a> 第 <a class="el" href="AtomicBatch_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Status_8cpp_source.html#l00028">eve::Status::failure()</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="AtomicBatch_8cpp_source.html#l00025">reject()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="devtools_2Snapshot_8cpp_source.html#l00115">top</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00038">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CardStageBindings_8cpp_source.html#l00052">eve::card::card_internal::exposeStageBindings()</a> , 以及 <a class="el" href="RTSStageBindings_8cpp_source.html#l00041">eve::rts::script_internal::exposeStageBindings()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/transaction/<a class="el" href="AtomicBatch_8h_source.html">AtomicBatch.h</a></li>
+<li>src/modules/transaction/<a class="el" href="AtomicBatch_8cpp_source.html">AtomicBatch.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

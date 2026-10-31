@@ -1,0 +1,947 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen_editing::RoadStyleOverrides结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen__editing.html">procgen_editing</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html">RoadStyleOverrides</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen__editing_1_1RoadStyleOverrides-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen_editing::RoadStyleOverrides结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Field-level author overrides; absent fields inherit, present arrays replace as a whole.  
+ <a href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ad986d4e1246f4b690e983634e5d1757e" id="r_ad986d4e1246f4b690e983634e5d1757e"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadTerrainPolicy.html">procgen::road::RoadTerrainPolicy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#ad986d4e1246f4b690e983634e5d1757e">terrainPolicy</a></td></tr>
+<tr class="memdesc:ad986d4e1246f4b690e983634e5d1757e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whole inherited terrain policy.  <br /></td></tr>
+<tr class="separator:ad986d4e1246f4b690e983634e5d1757e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea650e0be574df7fd9b00ec5331740cd" id="r_aea650e0be574df7fd9b00ec5331740cd"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadSidePlacement.html">procgen::road::RoadSidePlacement</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#aea650e0be574df7fd9b00ec5331740cd">sidePlacement</a></td></tr>
+<tr class="memdesc:aea650e0be574df7fd9b00ec5331740cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whole inherited rigid-placement rule.  <br /></td></tr>
+<tr class="separator:aea650e0be574df7fd9b00ec5331740cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8375281550fc29561e28c13a9be37352" id="r_a8375281550fc29561e28c13a9be37352"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html">procgen::road::RoadSideTerrainRule</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a8375281550fc29561e28c13a9be37352">sideTerrain</a></td></tr>
+<tr class="memdesc:a8375281550fc29561e28c13a9be37352"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whole inherited footprint and height-selection rule.  <br /></td></tr>
+<tr class="separator:a8375281550fc29561e28c13a9be37352"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35aef67d7ab74fb115aa8bd367f55348" id="r_a35aef67d7ab74fb115aa8bd367f55348"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceeve_1_1procgen_1_1road.html#ae65d7e7b241d13c9f77be61774b52aab">procgen::road::RoadSamplingPolicy</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a35aef67d7ab74fb115aa8bd367f55348">samplingPolicy</a></td></tr>
+<tr class="memdesc:a35aef67d7ab74fb115aa8bd367f55348"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit inherited metric-selection policy.  <br /></td></tr>
+<tr class="separator:a35aef67d7ab74fb115aa8bd367f55348"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cc9b65fd9b2c94997e45ceaa9fe74eb" id="r_a3cc9b65fd9b2c94997e45ceaa9fe74eb"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a3cc9b65fd9b2c94997e45ceaa9fe74eb">samplingSpacingMeters</a></td></tr>
+<tr class="separator:a3cc9b65fd9b2c94997e45ceaa9fe74eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae5d27f0a4d37390da64cdcb5b999ac0" id="r_aae5d27f0a4d37390da64cdcb5b999ac0"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#aae5d27f0a4d37390da64cdcb5b999ac0">samplingAngleDegrees</a></td></tr>
+<tr class="memdesc:aae5d27f0a4d37390da64cdcb5b999ac0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inherited metric sampling settings.  <br /></td></tr>
+<tr class="separator:aae5d27f0a4d37390da64cdcb5b999ac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5257c30bd8819eb800dff975eed814be" id="r_a5257c30bd8819eb800dff975eed814be"><td class="memItemLeft" align="right" valign="top">std::optional&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a5257c30bd8819eb800dff975eed814be">crossSectionSubdivisions</a></td></tr>
+<tr class="memdesc:a5257c30bd8819eb800dff975eed814be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inherited bounded section subdivision count.  <br /></td></tr>
+<tr class="separator:a5257c30bd8819eb800dff975eed814be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41c68681a157d7f2e8b39622f0b27173" id="r_a41c68681a157d7f2e8b39622f0b27173"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a412ab31eff41478e63b6f307fee95b96">procgen::road::RoadRollInterpolation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a41c68681a157d7f2e8b39622f0b27173">rollInterpolation</a></td></tr>
+<tr class="memdesc:a41c68681a157d7f2e8b39622f0b27173"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit roll policy; absence inherits.  <br /></td></tr>
+<tr class="separator:a41c68681a157d7f2e8b39622f0b27173"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0de3537a02278fe08705aac40823fdad" id="r_a0de3537a02278fe08705aac40823fdad"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceeve_1_1procgen_1_1road.html#af03e8e80b49ddb8e2e6fb4f84582e46c">procgen::road::RoadFrameOrientation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a0de3537a02278fe08705aac40823fdad">frameOrientation</a></td></tr>
+<tr class="memdesc:a0de3537a02278fe08705aac40823fdad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit frameOrientation override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a0de3537a02278fe08705aac40823fdad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac400b4d91b9991426cdc6c21561043d9" id="r_ac400b4d91b9991426cdc6c21561043d9"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceeve_1_1procgen_1_1road.html#a8de826c25980d8f205cd8d28313e050d">procgen::road::RoadWidthInterpolation</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#ac400b4d91b9991426cdc6c21561043d9">widthInterpolation</a></td></tr>
+<tr class="memdesc:ac400b4d91b9991426cdc6c21561043d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit widthInterpolation override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:ac400b4d91b9991426cdc6c21561043d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d2a9c1967d7280bdecccc6558315d53" id="r_a3d2a9c1967d7280bdecccc6558315d53"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html">procgen::road::RoadProfilePoint</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a3d2a9c1967d7280bdecccc6558315d53">crossSection</a></td></tr>
+<tr class="memdesc:a3d2a9c1967d7280bdecccc6558315d53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit crossSection override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a3d2a9c1967d7280bdecccc6558315d53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a417ee0e8623efe64a93e687d56fe2305" id="r_a417ee0e8623efe64a93e687d56fe2305"><td class="memItemLeft" align="right" valign="top">std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a417ee0e8623efe64a93e687d56fe2305">crossSectionClosed</a></td></tr>
+<tr class="memdesc:a417ee0e8623efe64a93e687d56fe2305"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit crossSectionClosed override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a417ee0e8623efe64a93e687d56fe2305"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31160116bec7d528ae160f66ea7e3d64" id="r_a31160116bec7d528ae160f66ea7e3d64"><td class="memItemLeft" align="right" valign="top">std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a31160116bec7d528ae160f66ea7e3d64">automaticStructures</a></td></tr>
+<tr class="memdesc:a31160116bec7d528ae160f66ea7e3d64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit automaticStructures override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a31160116bec7d528ae160f66ea7e3d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f0a21b504a6b82f51d54a278f9200a1" id="r_a8f0a21b504a6b82f51d54a278f9200a1"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadStructureInterval.html">procgen::road::RoadStructureInterval</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a8f0a21b504a6b82f51d54a278f9200a1">structures</a></td></tr>
+<tr class="memdesc:a8f0a21b504a6b82f51d54a278f9200a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit structures override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a8f0a21b504a6b82f51d54a278f9200a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adceedca9c45fb34bf2b878e3c2cf437c" id="r_adceedca9c45fb34bf2b878e3c2cf437c"><td class="memItemLeft" align="right" valign="top">std::optional&lt; std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadContinuousFacility.html">procgen::road::RoadContinuousFacility</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#adceedca9c45fb34bf2b878e3c2cf437c">facilities</a></td></tr>
+<tr class="memdesc:adceedca9c45fb34bf2b878e3c2cf437c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit facilities override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:adceedca9c45fb34bf2b878e3c2cf437c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91a8a2f0dc598a2cc16e6adda09209c0" id="r_a91a8a2f0dc598a2cc16e6adda09209c0"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a91a8a2f0dc598a2cc16e6adda09209c0">laneWidth</a></td></tr>
+<tr class="memdesc:a91a8a2f0dc598a2cc16e6adda09209c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit laneWidth override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a91a8a2f0dc598a2cc16e6adda09209c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6df3e01d0c5c4dc7c2b9f363212ebfb" id="r_ab6df3e01d0c5c4dc7c2b9f363212ebfb"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#ab6df3e01d0c5c4dc7c2b9f363212ebfb">curbWidth</a></td></tr>
+<tr class="memdesc:ab6df3e01d0c5c4dc7c2b9f363212ebfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit curbWidth override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:ab6df3e01d0c5c4dc7c2b9f363212ebfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29c3ade635f4823ea054f450d31dc594" id="r_a29c3ade635f4823ea054f450d31dc594"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a29c3ade635f4823ea054f450d31dc594">curbHeight</a></td></tr>
+<tr class="memdesc:a29c3ade635f4823ea054f450d31dc594"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit curbHeight override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a29c3ade635f4823ea054f450d31dc594"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab704b0d1555f2a2db5cefb8c8a93b1cb" id="r_ab704b0d1555f2a2db5cefb8c8a93b1cb"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#ab704b0d1555f2a2db5cefb8c8a93b1cb">sidewalkWidth</a></td></tr>
+<tr class="memdesc:ab704b0d1555f2a2db5cefb8c8a93b1cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit sidewalkWidth override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:ab704b0d1555f2a2db5cefb8c8a93b1cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9319070a7e9ce0640f96fd41a5f2fea" id="r_ad9319070a7e9ce0640f96fd41a5f2fea"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#ad9319070a7e9ce0640f96fd41a5f2fea">sidewalkHeight</a></td></tr>
+<tr class="memdesc:ad9319070a7e9ce0640f96fd41a5f2fea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit sidewalkHeight override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:ad9319070a7e9ce0640f96fd41a5f2fea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d7e3eb588206eaf20d763556f098172" id="r_a3d7e3eb588206eaf20d763556f098172"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a3d7e3eb588206eaf20d763556f098172">deckThickness</a></td></tr>
+<tr class="memdesc:a3d7e3eb588206eaf20d763556f098172"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit deckThickness override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a3d7e3eb588206eaf20d763556f098172"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2adef1c6899a2b92b38fd15cc7062f72" id="r_a2adef1c6899a2b92b38fd15cc7062f72"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a2adef1c6899a2b92b38fd15cc7062f72">pierWidth</a></td></tr>
+<tr class="memdesc:a2adef1c6899a2b92b38fd15cc7062f72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit pierWidth override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a2adef1c6899a2b92b38fd15cc7062f72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af308bc61956acc2b40ddbe79fbdbae3b" id="r_af308bc61956acc2b40ddbe79fbdbae3b"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#af308bc61956acc2b40ddbe79fbdbae3b">pierDepth</a></td></tr>
+<tr class="memdesc:af308bc61956acc2b40ddbe79fbdbae3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit pierDepth override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:af308bc61956acc2b40ddbe79fbdbae3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb595fc4911e3aedee4394f67b65e9f9" id="r_abb595fc4911e3aedee4394f67b65e9f9"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#abb595fc4911e3aedee4394f67b65e9f9">pierSpacing</a></td></tr>
+<tr class="memdesc:abb595fc4911e3aedee4394f67b65e9f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit pierSpacing override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:abb595fc4911e3aedee4394f67b65e9f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a087d51917f839dc502365273cebb94d9" id="r_a087d51917f839dc502365273cebb94d9"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a087d51917f839dc502365273cebb94d9">pierClearance</a></td></tr>
+<tr class="memdesc:a087d51917f839dc502365273cebb94d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit pierClearance override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a087d51917f839dc502365273cebb94d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af41233a9be52586e571f1d8d989b9b7c" id="r_af41233a9be52586e571f1d8d989b9b7c"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#af41233a9be52586e571f1d8d989b9b7c">markingWidth</a></td></tr>
+<tr class="memdesc:af41233a9be52586e571f1d8d989b9b7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit markingWidth override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:af41233a9be52586e571f1d8d989b9b7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa56f9c165bdb77fd70fbfffbb056e20" id="r_aaa56f9c165bdb77fd70fbfffbb056e20"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#aaa56f9c165bdb77fd70fbfffbb056e20">dashLength</a></td></tr>
+<tr class="memdesc:aaa56f9c165bdb77fd70fbfffbb056e20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit dashLength override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:aaa56f9c165bdb77fd70fbfffbb056e20"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6dc124c53007b9b8ad89c62fff4e93c" id="r_ad6dc124c53007b9b8ad89c62fff4e93c"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#ad6dc124c53007b9b8ad89c62fff4e93c">dashGap</a></td></tr>
+<tr class="memdesc:ad6dc124c53007b9b8ad89c62fff4e93c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit dashGap override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:ad6dc124c53007b9b8ad89c62fff4e93c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93a18dc5a7ac61080bb8be9c64e087db" id="r_a93a18dc5a7ac61080bb8be9c64e087db"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a93a18dc5a7ac61080bb8be9c64e087db">uvMeters</a></td></tr>
+<tr class="memdesc:a93a18dc5a7ac61080bb8be9c64e087db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit uvMeters override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a93a18dc5a7ac61080bb8be9c64e087db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84b647f611060745950c4fd0c846b854" id="r_a84b647f611060745950c4fd0c846b854"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a84b647f611060745950c4fd0c846b854">speedLimitMps</a></td></tr>
+<tr class="memdesc:a84b647f611060745950c4fd0c846b854"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit speedLimitMps override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a84b647f611060745950c4fd0c846b854"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1c896fb7da31ade3642ca6f485ec82b" id="r_ad1c896fb7da31ade3642ca6f485ec82b"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#ad1c896fb7da31ade3642ca6f485ec82b">sideObjectStartOffset</a></td></tr>
+<tr class="memdesc:ad1c896fb7da31ade3642ca6f485ec82b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit sideObjectStartOffset override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:ad1c896fb7da31ade3642ca6f485ec82b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af81deb50446f30d44bcd8088c4a72375" id="r_af81deb50446f30d44bcd8088c4a72375"><td class="memItemLeft" align="right" valign="top">std::optional&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#af81deb50446f30d44bcd8088c4a72375">sideObjectEndOffset</a></td></tr>
+<tr class="memdesc:af81deb50446f30d44bcd8088c4a72375"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit sideObjectEndOffset override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:af81deb50446f30d44bcd8088c4a72375"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a04e492ec82602d39a46748632e9441" id="r_a6a04e492ec82602d39a46748632e9441"><td class="memItemLeft" align="right" valign="top">std::optional&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a6a04e492ec82602d39a46748632e9441">trafficPriority</a></td></tr>
+<tr class="memdesc:a6a04e492ec82602d39a46748632e9441"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit trafficPriority override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a6a04e492ec82602d39a46748632e9441"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4beea0455415647dcb583b5b399441aa" id="r_a4beea0455415647dcb583b5b399441aa"><td class="memItemLeft" align="right" valign="top">std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a4beea0455415647dcb583b5b399441aa">sideObjectsLeft</a></td></tr>
+<tr class="memdesc:a4beea0455415647dcb583b5b399441aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit sideObjectsLeft override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a4beea0455415647dcb583b5b399441aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54404e0001a3ef7fbf1d16afd2397a37" id="r_a54404e0001a3ef7fbf1d16afd2397a37"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="namespaceeve_1_1procgen_1_1road.html#acd27d5a026612e4b6286dc73e4728493">procgen::road::RoadSideDistribution</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a54404e0001a3ef7fbf1d16afd2397a37">sideObjectDistribution</a></td></tr>
+<tr class="memdesc:a54404e0001a3ef7fbf1d16afd2397a37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit rigid-anchor distribution override.  <br /></td></tr>
+<tr class="separator:a54404e0001a3ef7fbf1d16afd2397a37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22ed34feb184728d2025b91252b39f8f" id="r_a22ed34feb184728d2025b91252b39f8f"><td class="memItemLeft" align="right" valign="top">std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen__editing_1_1RoadStyleOverrides.html#a22ed34feb184728d2025b91252b39f8f">sideObjectsRight</a></td></tr>
+<tr class="memdesc:a22ed34feb184728d2025b91252b39f8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit sideObjectsRight override; absence retains the inherited value.  <br /></td></tr>
+<tr class="separator:a22ed34feb184728d2025b91252b39f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Field-level author overrides; absent fields inherit, present arrays replace as a whole. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00011">11</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a31160116bec7d528ae160f66ea7e3d64" name="a31160116bec7d528ae160f66ea7e3d64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31160116bec7d528ae160f66ea7e3d64">&#9670;&#160;</a></span>automaticStructures</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;bool&gt; eve::procgen_editing::RoadStyleOverrides::automaticStructures</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit automaticStructures override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d2a9c1967d7280bdecccc6558315d53" name="a3d2a9c1967d7280bdecccc6558315d53"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d2a9c1967d7280bdecccc6558315d53">&#9670;&#160;</a></span>crossSection</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;std::vector&lt;<a class="el" href="structeve_1_1procgen_1_1road_1_1RoadProfilePoint.html">procgen::road::RoadProfilePoint</a>&gt; &gt; eve::procgen_editing::RoadStyleOverrides::crossSection</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit crossSection override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a417ee0e8623efe64a93e687d56fe2305" name="a417ee0e8623efe64a93e687d56fe2305"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a417ee0e8623efe64a93e687d56fe2305">&#9670;&#160;</a></span>crossSectionClosed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;bool&gt; eve::procgen_editing::RoadStyleOverrides::crossSectionClosed</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit crossSectionClosed override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5257c30bd8819eb800dff975eed814be" name="a5257c30bd8819eb800dff975eed814be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5257c30bd8819eb800dff975eed814be">&#9670;&#160;</a></span>crossSectionSubdivisions</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;int&gt; eve::procgen_editing::RoadStyleOverrides::crossSectionSubdivisions</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inherited bounded section subdivision count. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00018">18</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a29c3ade635f4823ea054f450d31dc594" name="a29c3ade635f4823ea054f450d31dc594"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29c3ade635f4823ea054f450d31dc594">&#9670;&#160;</a></span>curbHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::curbHeight</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit curbHeight override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab6df3e01d0c5c4dc7c2b9f363212ebfb" name="ab6df3e01d0c5c4dc7c2b9f363212ebfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6df3e01d0c5c4dc7c2b9f363212ebfb">&#9670;&#160;</a></span>curbWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::curbWidth</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit curbWidth override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad6dc124c53007b9b8ad89c62fff4e93c" name="ad6dc124c53007b9b8ad89c62fff4e93c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6dc124c53007b9b8ad89c62fff4e93c">&#9670;&#160;</a></span>dashGap</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::dashGap</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit dashGap override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaa56f9c165bdb77fd70fbfffbb056e20" name="aaa56f9c165bdb77fd70fbfffbb056e20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa56f9c165bdb77fd70fbfffbb056e20">&#9670;&#160;</a></span>dashLength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::dashLength</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit dashLength override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3d7e3eb588206eaf20d763556f098172" name="a3d7e3eb588206eaf20d763556f098172"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d7e3eb588206eaf20d763556f098172">&#9670;&#160;</a></span>deckThickness</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::deckThickness</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit deckThickness override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adceedca9c45fb34bf2b878e3c2cf437c" name="adceedca9c45fb34bf2b878e3c2cf437c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adceedca9c45fb34bf2b878e3c2cf437c">&#9670;&#160;</a></span>facilities</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;std::vector&lt;<a class="el" href="structeve_1_1procgen_1_1road_1_1RoadContinuousFacility.html">procgen::road::RoadContinuousFacility</a>&gt; &gt; eve::procgen_editing::RoadStyleOverrides::facilities</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit facilities override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00033">33</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0de3537a02278fe08705aac40823fdad" name="a0de3537a02278fe08705aac40823fdad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0de3537a02278fe08705aac40823fdad">&#9670;&#160;</a></span>frameOrientation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#af03e8e80b49ddb8e2e6fb4f84582e46c">procgen::road::RoadFrameOrientation</a>&gt; eve::procgen_editing::RoadStyleOverrides::frameOrientation</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit frameOrientation override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a91a8a2f0dc598a2cc16e6adda09209c0" name="a91a8a2f0dc598a2cc16e6adda09209c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91a8a2f0dc598a2cc16e6adda09209c0">&#9670;&#160;</a></span>laneWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::laneWidth</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit laneWidth override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af41233a9be52586e571f1d8d989b9b7c" name="af41233a9be52586e571f1d8d989b9b7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af41233a9be52586e571f1d8d989b9b7c">&#9670;&#160;</a></span>markingWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::markingWidth</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit markingWidth override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a087d51917f839dc502365273cebb94d9" name="a087d51917f839dc502365273cebb94d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a087d51917f839dc502365273cebb94d9">&#9670;&#160;</a></span>pierClearance</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::pierClearance</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit pierClearance override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af308bc61956acc2b40ddbe79fbdbae3b" name="af308bc61956acc2b40ddbe79fbdbae3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af308bc61956acc2b40ddbe79fbdbae3b">&#9670;&#160;</a></span>pierDepth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::pierDepth</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit pierDepth override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abb595fc4911e3aedee4394f67b65e9f9" name="abb595fc4911e3aedee4394f67b65e9f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb595fc4911e3aedee4394f67b65e9f9">&#9670;&#160;</a></span>pierSpacing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::pierSpacing</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit pierSpacing override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2adef1c6899a2b92b38fd15cc7062f72" name="a2adef1c6899a2b92b38fd15cc7062f72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2adef1c6899a2b92b38fd15cc7062f72">&#9670;&#160;</a></span>pierWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::pierWidth</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit pierWidth override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a41c68681a157d7f2e8b39622f0b27173" name="a41c68681a157d7f2e8b39622f0b27173"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41c68681a157d7f2e8b39622f0b27173">&#9670;&#160;</a></span>rollInterpolation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#a412ab31eff41478e63b6f307fee95b96">procgen::road::RoadRollInterpolation</a>&gt; eve::procgen_editing::RoadStyleOverrides::rollInterpolation</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit roll policy; absence inherits. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00019">19</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aae5d27f0a4d37390da64cdcb5b999ac0" name="aae5d27f0a4d37390da64cdcb5b999ac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aae5d27f0a4d37390da64cdcb5b999ac0">&#9670;&#160;</a></span>samplingAngleDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::samplingAngleDegrees</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inherited metric sampling settings. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a35aef67d7ab74fb115aa8bd367f55348" name="a35aef67d7ab74fb115aa8bd367f55348"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35aef67d7ab74fb115aa8bd367f55348">&#9670;&#160;</a></span>samplingPolicy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#ae65d7e7b241d13c9f77be61774b52aab">procgen::road::RoadSamplingPolicy</a>&gt; eve::procgen_editing::RoadStyleOverrides::samplingPolicy</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit inherited metric-selection policy. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00016">16</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3cc9b65fd9b2c94997e45ceaa9fe74eb" name="a3cc9b65fd9b2c94997e45ceaa9fe74eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cc9b65fd9b2c94997e45ceaa9fe74eb">&#9670;&#160;</a></span>samplingSpacingMeters</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::samplingSpacingMeters</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00017">17</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54404e0001a3ef7fbf1d16afd2397a37" name="a54404e0001a3ef7fbf1d16afd2397a37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54404e0001a3ef7fbf1d16afd2397a37">&#9670;&#160;</a></span>sideObjectDistribution</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#acd27d5a026612e4b6286dc73e4728493">procgen::road::RoadSideDistribution</a>&gt; eve::procgen_editing::RoadStyleOverrides::sideObjectDistribution</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit rigid-anchor distribution override. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af81deb50446f30d44bcd8088c4a72375" name="af81deb50446f30d44bcd8088c4a72375"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af81deb50446f30d44bcd8088c4a72375">&#9670;&#160;</a></span>sideObjectEndOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::sideObjectEndOffset</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit sideObjectEndOffset override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4beea0455415647dcb583b5b399441aa" name="a4beea0455415647dcb583b5b399441aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4beea0455415647dcb583b5b399441aa">&#9670;&#160;</a></span>sideObjectsLeft</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;bool&gt; eve::procgen_editing::RoadStyleOverrides::sideObjectsLeft</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit sideObjectsLeft override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a22ed34feb184728d2025b91252b39f8f" name="a22ed34feb184728d2025b91252b39f8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22ed34feb184728d2025b91252b39f8f">&#9670;&#160;</a></span>sideObjectsRight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;bool&gt; eve::procgen_editing::RoadStyleOverrides::sideObjectsRight</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit sideObjectsRight override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad1c896fb7da31ade3642ca6f485ec82b" name="ad1c896fb7da31ade3642ca6f485ec82b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1c896fb7da31ade3642ca6f485ec82b">&#9670;&#160;</a></span>sideObjectStartOffset</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::sideObjectStartOffset</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit sideObjectStartOffset override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aea650e0be574df7fd9b00ec5331740cd" name="aea650e0be574df7fd9b00ec5331740cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea650e0be574df7fd9b00ec5331740cd">&#9670;&#160;</a></span>sidePlacement</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="structeve_1_1procgen_1_1road_1_1RoadSidePlacement.html">procgen::road::RoadSidePlacement</a>&gt; eve::procgen_editing::RoadStyleOverrides::sidePlacement</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whole inherited rigid-placement rule. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00013">13</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8375281550fc29561e28c13a9be37352" name="a8375281550fc29561e28c13a9be37352"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8375281550fc29561e28c13a9be37352">&#9670;&#160;</a></span>sideTerrain</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="structeve_1_1procgen_1_1road_1_1RoadSideTerrainRule.html">procgen::road::RoadSideTerrainRule</a>&gt; eve::procgen_editing::RoadStyleOverrides::sideTerrain</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whole inherited footprint and height-selection rule. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad9319070a7e9ce0640f96fd41a5f2fea" name="ad9319070a7e9ce0640f96fd41a5f2fea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9319070a7e9ce0640f96fd41a5f2fea">&#9670;&#160;</a></span>sidewalkHeight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::sidewalkHeight</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit sidewalkHeight override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab704b0d1555f2a2db5cefb8c8a93b1cb" name="ab704b0d1555f2a2db5cefb8c8a93b1cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab704b0d1555f2a2db5cefb8c8a93b1cb">&#9670;&#160;</a></span>sidewalkWidth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::sidewalkWidth</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit sidewalkWidth override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a84b647f611060745950c4fd0c846b854" name="a84b647f611060745950c4fd0c846b854"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84b647f611060745950c4fd0c846b854">&#9670;&#160;</a></span>speedLimitMps</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::speedLimitMps</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit speedLimitMps override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8f0a21b504a6b82f51d54a278f9200a1" name="a8f0a21b504a6b82f51d54a278f9200a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f0a21b504a6b82f51d54a278f9200a1">&#9670;&#160;</a></span>structures</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;std::vector&lt;<a class="el" href="structeve_1_1procgen_1_1road_1_1RoadStructureInterval.html">procgen::road::RoadStructureInterval</a>&gt; &gt; eve::procgen_editing::RoadStyleOverrides::structures</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit structures override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad986d4e1246f4b690e983634e5d1757e" name="ad986d4e1246f4b690e983634e5d1757e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad986d4e1246f4b690e983634e5d1757e">&#9670;&#160;</a></span>terrainPolicy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="structeve_1_1procgen_1_1road_1_1RoadTerrainPolicy.html">procgen::road::RoadTerrainPolicy</a>&gt; eve::procgen_editing::RoadStyleOverrides::terrainPolicy</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whole inherited terrain policy. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00012">12</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6a04e492ec82602d39a46748632e9441" name="a6a04e492ec82602d39a46748632e9441"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a04e492ec82602d39a46748632e9441">&#9670;&#160;</a></span>trafficPriority</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;int&gt; eve::procgen_editing::RoadStyleOverrides::trafficPriority</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit trafficPriority override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a93a18dc5a7ac61080bb8be9c64e087db" name="a93a18dc5a7ac61080bb8be9c64e087db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a93a18dc5a7ac61080bb8be9c64e087db">&#9670;&#160;</a></span>uvMeters</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;float&gt; eve::procgen_editing::RoadStyleOverrides::uvMeters</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit uvMeters override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac400b4d91b9991426cdc6c21561043d9" name="ac400b4d91b9991426cdc6c21561043d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac400b4d91b9991426cdc6c21561043d9">&#9670;&#160;</a></span>widthInterpolation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="namespaceeve_1_1procgen_1_1road.html#a8de826c25980d8f205cd8d28313e050d">procgen::road::RoadWidthInterpolation</a>&gt; eve::procgen_editing::RoadStyleOverrides::widthInterpolation</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Explicit widthInterpolation override; absence retains the inherited value. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a> 第 <a class="el" href="RoadPresetDocument_8h_source.html#l00023">23</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/editing/<a class="el" href="RoadPresetDocument_8h_source.html">RoadPresetDocument.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

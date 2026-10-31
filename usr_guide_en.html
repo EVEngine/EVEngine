@@ -1,0 +1,417 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: EVEngine User Guide</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">EVEngine User Guide</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>EVEngine User Guide</h1>
+<p><a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/README.md">中文</a> · <a class="el" href="usr_modules_en.html">Module handbook</a> · <a class="el" href="usr_evescript_en.html">EveScript tutorial</a></p>
+<p>EVEngine is a lightweight, Squirrel-driven engine for 2D, third-person 3D and mixed 2D/3D games. This guide covers downloading the SDK, creating a game, debugging and packaging it. To change the engine itself, see the <a class="el" href="dev_guide_en.html">engine developer documentation</a>.</p>
+<p>This English guide is maintained by hand. The Chinese documentation is authoritative; changes to behavior should be documented there first and then reflected here. APIs are still evolving. Run the SDK's <code>share/eve/examples/basic/</code> after an upgrade before adapting your game.</p>
+<p>The <a href="https://evengine.github.io/EVEngine/">online documentation</a> includes user guides and the generated C++ API reference. For callable EveScript methods, use the SDK's <code>share/eve/ai/eve-api.json</code>, editor completion or MCP API lookup; C++ public methods are not necessarily script bindings. See <a class="el" href="usr_conventions_en.html">API conventions</a>.</p>
+<h2>1. Download the SDK</h2>
+<p><b>You do not need to compile the engine to make a game.</b> Download an SDK for your target platform from <a href="https://github.com/EVEngine/EVEngine/releases">GitHub Releases</a>.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Platform   </th><th class="markdownTableHeadNone">Archive   </th><th class="markdownTableHeadNone">Target    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Windows   </td><td class="markdownTableBodyNone"><code>eve-sdk-win32-&lt;version&gt;.zip</code>   </td><td class="markdownTableBodyNone">Windows 10/11 x64    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Linux   </td><td class="markdownTableBodyNone"><code>eve-sdk-linux-&lt;version&gt;.zip</code>   </td><td class="markdownTableBodyNone">Ubuntu 20.04+ or equivalent, with a Vulkan driver    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">macOS   </td><td class="markdownTableBodyNone"><code>eve-sdk-macosx-&lt;version&gt;.zip</code>   </td><td class="markdownTableBodyNone">macOS 12+, Apple Silicon / Intel; bundled MoltenVK    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Android   </td><td class="markdownTableBodyNone"><code>eve-sdk-android-&lt;version&gt;.zip</code>   </td><td class="markdownTableBodyNone">Assemble an arm64 APK on a development machine    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">iOS   </td><td class="markdownTableBodyNone"><code>eve-sdk-ios-&lt;version&gt;.zip</code>   </td><td class="markdownTableBodyNone">Assemble an arm64 app on macOS   </td></tr>
+</table>
+<p>Unzip the archive. No engine installation is required. The SDK contains:</p>
+<ul>
+<li><code>bin/eve</code> (<code>bin/eve.exe</code> on Windows): the desktop runtime and command-line tool.</li>
+<li><code>share/eve/examples/basic/</code>: a runnable reference game.</li>
+<li><code>share/eve/ai/</code>: this SDK's EveScript API catalog, agent skill and MCP bridge.</li>
+<li><code>llms.txt</code>: the entry point for coding agents.</li>
+<li><code>platform/</code>: target packaging templates, including the Android APK project.</li>
+<li><code>share/eve/licenses/</code>: engine and third-party licenses.</li>
+<li><code>include/</code>, <code>lib/</code>, <code>cmake/</code>: native plugin development files; pure script games do not need them.</li>
+</ul>
+<p>The desktop runtime needs a <b>Vulkan driver</b>, not the Vulkan development SDK. Windows graphics drivers normally provide it; macOS uses bundled MoltenVK; Linux needs <code>mesa-vulkan-drivers</code> or the manufacturer's driver. You do not need Git, CMake or a C++ compiler to run a desktop SDK.</p>
+<p>From the unzipped SDK directory, run:</p>
+<div class="fragment"><div class="line"># Windows</div>
+<div class="line">bin\eve.exe run share\eve\examples\basic</div>
+<div class="line"> </div>
+<div class="line"># macOS / Linux</div>
+<div class="line">bin/eve run share/eve/examples/basic</div>
+</div><!-- fragment --><p>An open window displaying the example confirms that the runtime starts. In the commands below, <code>eve</code> means your SDK's <code>bin/eve</code> or <code>bin\eve.exe</code>; use its actual path if it is not on <code>PATH</code>.</p>
+<p>The <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/images/examples/README.en.md">render gallery</a> shows frames captured by the engine.</p>
+<p>See <a class="el" href="usr_examples_en.html">Examples</a>, <a class="el" href="usr_ai_en.html">AI and MCP setup</a> and the <a class="el" href="usr_faq_en.html">FAQ</a> for the next steps.</p>
+<h2>2. Create your first game</h2>
+<div class="fragment"><div class="line">eve create mygame</div>
+<div class="line">eve run mygame</div>
+</div><!-- fragment --><p>A minimal game has two files:</p>
+<div class="fragment"><div class="line">mygame/</div>
+<div class="line">├── config.nut    # Window and development settings</div>
+<div class="line">└── main.nut      # Game logic</div>
+</div><!-- fragment --><p><code>config.nut</code>:</p>
+<div class="fragment"><div class="line">config &lt;- {</div>
+<div class="line">    width = 960</div>
+<div class="line">    height = 540</div>
+<div class="line">    title = &quot;My EVEngine Game&quot;</div>
+<div class="line">    debug = true</div>
+<div class="line">    hotReload = true</div>
+<div class="line">};</div>
+</div><!-- fragment --><p><code>main.nut</code>:</p>
+<div class="fragment"><div class="line">local x = 100.0;</div>
+<div class="line"> </div>
+<div class="line">// Called once when the game starts.</div>
+<div class="line">eve_init &lt;- function() {</div>
+<div class="line">    gfx.setBackgroundColor(0.08, 0.10, 0.16, 1.0);</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">// dt is the time since the previous frame, in seconds.</div>
+<div class="line">eve_update &lt;- function(dt) {</div>
+<div class="line">    x += 80.0 * dt;</div>
+<div class="line">    if (x &gt; config.width) x = -48.0;</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">eve_render &lt;- function() {</div>
+<div class="line">    gfx.clear();</div>
+<div class="line">    gfx.drawSolidRect(x, 220.0, 48.0, 48.0, 0.3, 0.75, 1.0, 1.0);</div>
+<div class="line">};</div>
+</div><!-- fragment --><p>Edit and save <code>main.nut</code> while the game runs to see hot reload. This example uses ordinary temporary state; use <code>persist</code> below to keep state across reloads. You can also copy <code>share/eve/examples/basic/</code> and replace its scripts and assets gradually.</p>
+<p>For a larger project:</p>
+<div class="fragment"><div class="line">mygame/</div>
+<div class="line">├── config.nut</div>
+<div class="line">├── main.nut</div>
+<div class="line">├── scripts/       # EveScript modules loaded with import</div>
+<div class="line">├── maps/          # Tiled JSON or map data</div>
+<div class="line">├── particles/     # Particle JSON</div>
+<div class="line">├── textures/</div>
+<div class="line">├── fonts/</div>
+<div class="line">├── audio/</div>
+<div class="line">└── models/</div>
+</div><!-- fragment --><p>Asset paths are relative to the game's working directory, not the SDK directory.</p>
+<h2>3. Lifecycle and hot reload</h2>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Callback   </th><th class="markdownTableHeadNone">When   </th><th class="markdownTableHeadNone">Typical work    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve_init()</code>   </td><td class="markdownTableBodyNone">Once after loading the game   </td><td class="markdownTableBodyNone">Create worlds, entities, resources and UI    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve_update(dt)</code>   </td><td class="markdownTableBodyNone">Each running frame   </td><td class="markdownTableBodyNone">Input, physics, AI and state updates    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve_render()</code>   </td><td class="markdownTableBodyNone">Each rendered frame   </td><td class="markdownTableBodyNone">Clear and draw maps, sprites and UI    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve_reload()</code>   </td><td class="markdownTableBodyNone">After a script soft reload; optional   </td><td class="markdownTableBodyNone">Adjust existing runtime state    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve_asset_reload(path)</code>   </td><td class="markdownTableBodyNone">After a non-script asset changes; optional   </td><td class="markdownTableBodyNone">Respond to changed textures or maps    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve_quit()</code>   </td><td class="markdownTableBodyNone">On exit; optional   </td><td class="markdownTableBodyNone">Save data and clean up   </td></tr>
+</table>
+<p>With <code>config.hotReload</code> enabled, the engine watches scripts and assets. The default watch root is the game directory. An <code>apps/&lt;editor&gt;</code> entry point that needs sibling <code>editors/</code> or <code>lib/</code> files can set these fields in <code>config.nut</code>:</p>
+<div class="fragment"><div class="line">hotReload = true</div>
+<div class="line">hotReloadWatch = [&quot;..&quot;]   // String or array; default [&quot;.&quot;]</div>
+</div><!-- fragment --><p>Change paths are reported relative to the watch root. Use <code>persist</code> for root state that must survive a reload:</p>
+<div class="fragment"><div class="line">persist player = null</div>
+<div class="line"> </div>
+<div class="line">function eve_init() {</div>
+<div class="line">    if (player == null) {</div>
+<div class="line">        player = createPlayer(); // Your game&#39;s factory; create only once.</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>The initializer runs only when the persistent name first appears. Keep one-time setup in <code>eve_init</code>; keep repeatable declarations at the top level. Changing a persistent data layout requires explicit migration in <code>eve_reload</code>. See the <a class="el" href="usr_evescript_en.html">EveScript tutorial</a>.</p>
+<h2>4. Choose modules and examples</h2>
+<p>Script constructors are exposed through the global <code>eve</code> table. The startup environment also provides common instances such as <code>gfx</code>, <code>keyboard</code>, <code>mouse</code>, <code>physics</code> and <code>ui</code>. Explicit <code>config.modules</code> / <code>optionalModules</code> lists limit which instances are created; see the language tutorial.</p>
+<p>Start with <a class="el" href="mod_graphics_en.html">graphics</a>, <a class="el" href="mod_keyboard_en.html">keyboard</a>, <a class="el" href="mod_mouse_en.html">mouse</a>, <a class="el" href="mod_ui_en.html">UI</a>, <a class="el" href="mod_entity_en.html">ECS</a> and <a class="el" href="mod_filesystem_en.html">files and hot reload</a>. The <a class="el" href="usr_modules_en.html">module handbook</a> links to the remaining capabilities and marks guides that are still in Chinese.</p>
+<h3>A minimal interactive UI</h3>
+<div class="fragment"><div class="line">eve_init &lt;- function() {</div>
+<div class="line">    ui.beginBuild();</div>
+<div class="line">    ui.beginWindow(&quot;Status&quot;, &quot;root&quot;);</div>
+<div class="line">    ui.text(&quot;Ready&quot;, &quot;message&quot;);</div>
+<div class="line">    ui.button(&quot;Start&quot;, &quot;start&quot;);</div>
+<div class="line">    ui.end();</div>
+<div class="line">    ui.mountBuildAs(&quot;hud&quot;);</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">eve_update &lt;- function(dt) {</div>
+<div class="line">    local id = ui.consumeClick();</div>
+<div class="line">    while (id != &quot;&quot;) {</div>
+<div class="line">        if (id == &quot;hud/start&quot;) ui.setText(&quot;message&quot;, &quot;Running&quot;);</div>
+<div class="line">        id = ui.consumeClick();</div>
+<div class="line">    }</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line">eve_render &lt;- function() {</div>
+<div class="line">    gfx.clear();</div>
+<div class="line">    ui.beginFrameAndRender();</div>
+<div class="line">};</div>
+</div><!-- fragment --><p>For ECS, derive data from <code>eve.Component</code>, compose it in <code>eve.Entity</code>, and query entities from <code>eve.System</code>. The repository's <code>examples/ecs/main.nut</code> is a runnable starting point.</p>
+<h3>Command-line tasks</h3>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Command   </th><th class="markdownTableHeadNone">Purpose    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve create &lt;name&gt;</code>   </td><td class="markdownTableBodyNone">Create a game from the template    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve run [directory]</code>   </td><td class="markdownTableBodyNone">Run a game; without a directory, use the current directory, or the built-in demo if no game is present    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve run --debug</code>   </td><td class="markdownTableBodyNone">Enable pause, breakpoints, watches and snapshots    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve run --dap-port=4711</code>   </td><td class="markdownTableBodyNone">Start the debugger adapter service    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve run --mcp-port=7529</code>   </td><td class="markdownTableBodyNone">Start the MCP service for agents    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve dev [--port 8765]</code>   </td><td class="markdownTableBodyNone">Serve game files for remote hot reload    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve zip &lt;directory&gt;</code>   </td><td class="markdownTableBodyNone">Create a <code>.eve</code> archive    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve package &lt;directory&gt; -o &lt;output&gt; --sdk &lt;SDK-directory&gt;</code>   </td><td class="markdownTableBodyNone">Package a game with its runtime    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve test</code>   </td><td class="markdownTableBodyNone">Currently an empty implementation; exit 0 is not test evidence    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>eve doc &lt;name&gt;</code>   </td><td class="markdownTableBodyNone">Look up online documentation    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>eve build</code>   </td><td class="markdownTableBodyNone">Build from source; requires the source tree and development tools   </td></tr>
+</table>
+<h2>5. Debug a game</h2>
+<div class="fragment"><div class="line">eve run --debug /path/to/mygame</div>
+<div class="line">eve run --debug --dap-port=4711 /path/to/mygame</div>
+<div class="line">eve run --debug --mcp-port=7529 /path/to/mygame</div>
+</div><!-- fragment --><p>In debug mode:</p>
+<div class="fragment"><div class="line">eve.dev.togglePause();</div>
+<div class="line">eve.dev.setBreakpoint(&quot;main.nut&quot;, 42);</div>
+<div class="line">eve.dev.addWatch(&quot;score&quot;);</div>
+<div class="line">eve.dev.markStateRoot(&quot;gameState&quot;);</div>
+<div class="line">eve.dev.saveSnapshot(&quot;boss.json&quot;);</div>
+<div class="line">eve.dev.loadSnapshot(&quot;boss.json&quot;);</div>
+<div class="line">eve.dev.ai.note(&quot;boss phase&quot;); // DevTools session log; F9 toggles the panel.</div>
+</div><!-- fragment --><p>In the source tree, <code>make devlab</code> runs the interactive developer example with debug enabled. Try F4 (console/REPL), F6/F7 (snapshots), F9 (AI panel) and Pause.</p>
+<p>The repository's <code>tools/vscode-eve-debug/</code> provides EveScript language support and DAP debugging; <code>tools/eve-mcp/</code> connects agents to the MCP port.</p>
+<p>When a game fails, check:</p>
+<ol type="1">
+<li><code>config.nut</code> and <code>main.nut</code> are in the directory passed to <code>run</code>.</li>
+<li>Rendering begins with <code>gfx.clear()</code>.</li>
+<li>Systems that need <code>update(dt)</code> are advanced from <code>eve_update</code>.</li>
+<li>Asset paths are relative to the game directory.</li>
+<li>The Vulkan driver and runtime environment work.</li>
+</ol>
+<p>Debug snapshots are development tools. For player saves, use the <a class="el" href="usr_save_en.html">save-game guide</a>.</p>
+<h2>6. Package and distribute</h2>
+<h3>Desktop</h3>
+<div class="fragment"><div class="line"># Optional: bundle game content into a single archive.</div>
+<div class="line">eve zip mygame</div>
+<div class="line"> </div>
+<div class="line"># Create a directory containing the runtime and game.</div>
+<div class="line">eve package mygame -o mygame-package --sdk /path/to/sdk</div>
+</div><!-- fragment --><p>Use an SDK matching the platform and version of the runtime. Without <code>--sdk</code>, the tool infers the SDK location from <code>bin/eve</code>. Distribute the entire output directory, including runtime libraries. Players do not need to install the engine.</p>
+<h3>Remote hot reload on mobile devices</h3>
+<p>Packaged app resources are read-only. Edit on your development machine and let the device fetch changes:</p>
+<div class="fragment"><div class="line"># Run from the game directory on the development machine.</div>
+<div class="line">eve dev --port 8765</div>
+</div><!-- fragment --><p>In the device's configuration, set the development machine's LAN address:</p>
+<div class="fragment"><div class="line">config.devServer = &quot;http://192.168.1.5:8765&quot;</div>
+</div><!-- fragment --><p>The device polls the manifest, downloads changed files into a writable overlay and uses the existing reload pipeline. You can also pass <code>eve run --dev-server <a href="http://192.168.1.5:8765">http://192.168.1.5:8765</a></code>. No reinstall is needed for each script or asset change.</p>
+<h3>Android and iOS</h3>
+<p>Download the target SDK and use its packaging templates on a development machine. For Android, put the game in <code>platform/apk/app/src/main/assets/game/</code> and build the SDK's Gradle project with the required Android tools. For iOS, use <code>platform/ios</code> in Xcode on macOS with signing configured. Read the target requirements in the <a href="https://github.com/EVEngine/EVEngine/blob/dev/Readme.en.md">English repository README</a> before packaging.</p>
+<h2>7. Compatibility and licensing</h2>
+<ul>
+<li>SDKs are platform-specific. Packaging and native plugins must match the SDK platform and version.</li>
+<li>Script-callable methods come from bindings, not every C++ public declaration. Check the SDK catalog and <a class="el" href="usr_conventions_en.html">API conventions</a>.</li>
+<li>Use <code>persist</code> to keep root state through hot reload.</li>
+<li>Modules can be trimmed when building from source. Use <code>has_module("slot")</code> for optional features; see <a class="el" href="usr_trimming_en.html">module trimming</a>.</li>
+<li>EVEngine uses dual licensing. Read the <a href="https://github.com/EVEngine/EVEngine/blob/dev/Readme.md#许可证">authoritative license section (Chinese)</a>, especially before commercial distribution.</li>
+<li>Releases and <code>main</code> describe released versions; <code>dev</code> documentation can describe capabilities not yet present in your downloaded SDK.</li>
+</ul>
+<h2>8. Build from source only when needed</h2>
+<p>To change the engine, contribute native code or produce your own SDK, follow <a href="https://github.com/EVEngine/EVEngine/blob/dev/Readme.en.md#building-from-source-engine-developers--contributors">Building from source</a>. Ordinary game development uses the prebuilt SDK.</p>
+<h2>9. Suggested learning path</h2>
+<ol type="1">
+<li>Run and modify the bundled basic example.</li>
+<li>Create a game and learn lifecycle callbacks and hot reload.</li>
+<li>Read the <a class="el" href="usr_evescript_en.html">EveScript tutorial</a>; split scripts with <code>import</code> / <code>export</code>.</li>
+<li>Use the <a class="el" href="usr_modules_en.html">module handbook</a> for gameplay tasks.</li>
+<li>Read <a class="el" href="usr_save_en.html">saving games</a> when you need persistent progress.</li>
+<li>Use the SDK's native plugin CMake package only when native code is needed.</li>
+<li>Check packaging and licensing before distribution.</li>
+</ol>
+<p>The <a href="https://github.com/EVEngine/EVEngine/blob/dev/docs/usr/GAME_DEVELOPMENT.md">complete game tutorial (Chinese)</a> has a runnable collect-and-save game and executable documentation tests.</p>
+<p><a class="el" href="usr_examples_en.html">Choose an Example</a></p>
+<p><a class="el" href="usr_ai_en.html">AI and MCP</a></p>
+<p><a class="el" href="usr_faq_en.html">User FAQ</a></p>
+<p><a class="el" href="usr_evescript_en.html">EveScript Tutorial</a></p>
+<p><a class="el" href="usr_modules_en.html">Module Handbook</a></p>
+<p><a class="el" href="usr_save_en.html">Saving Games</a></p>
+<p><a class="el" href="usr_trimming_en.html">Module Trimming</a></p>
+<p><a class="el" href="usr_conventions_en.html">API Conventions</a></p>
+<p><a class="el" href="mod_window_en.html">Window</a></p>
+<p><a class="el" href="mod_keyboard_en.html">Keyboard</a></p>
+<p><a class="el" href="mod_mouse_en.html">Mouse</a></p>
+<p><a class="el" href="mod_filesystem_en.html">Files and Hot Reload</a></p>
+<p><a class="el" href="mod_entity_en.html">Script ECS</a></p>
+<p><a class="el" href="mod_graphics_en.html">Graphics: Getting Started</a></p>
+<p><a class="el" href="mod_ui_en.html">UI: Getting Started</a> </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

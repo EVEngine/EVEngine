@@ -1,0 +1,621 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::road::RoadTerrainWorkspace类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen_1_1road.html">road</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html">RoadTerrainWorkspace</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::road::RoadTerrainWorkspace类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Single mutable owner of imported terrain tiles and their complete-channel history. Caller-thread affine, synchronous, callback-free. Imported tiles are owned; mesh inputs are borrowed until return. Returned tile values own storage. Same-build deterministic floating arithmetic, no clocks or RNG. History publishes once after every tile succeeds. Snapshot schema procgen.road.terrain version 2 requires originY; version 1 migrates missing originY to zero. Unknown object fields are ignored; unsupported versions and malformed known fields reject atomically. Restore replaces current data and undo/redo history atomically; no external tile pointer or receipt survives.  
+ <a href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RoadTerrainWorkspace_8h_source.html">RoadTerrainWorkspace.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a87ec7c76ee7886219503c4bebb05caea" id="r_a87ec7c76ee7886219503c4bebb05caea"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#a87ec7c76ee7886219503c4bebb05caea">RoadTerrainWorkspace</a> ()</td></tr>
+<tr class="memdesc:a87ec7c76ee7886219503c4bebb05caea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty terrain owner.  <br /></td></tr>
+<tr class="separator:a87ec7c76ee7886219503c4bebb05caea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40e90cb2f961b0dce2927c643a70a04e" id="r_a40e90cb2f961b0dce2927c643a70a04e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#a40e90cb2f961b0dce2927c643a70a04e">~RoadTerrainWorkspace</a> ()</td></tr>
+<tr class="memdesc:a40e90cb2f961b0dce2927c643a70a04e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy owned tiles and history.  <br /></td></tr>
+<tr class="separator:a40e90cb2f961b0dce2927c643a70a04e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0700fa47224ccf9b4c1d7d6f10a1c85c" id="r_a0700fa47224ccf9b4c1d7d6f10a1c85c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#a0700fa47224ccf9b4c1d7d6f10a1c85c">RoadTerrainWorkspace</a> (<a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html">RoadTerrainWorkspace</a> &amp;&amp;) noexcept</td></tr>
+<tr class="memdesc:a0700fa47224ccf9b4c1d7d6f10a1c85c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer ownership; moved-from objects can be initialized again.  <br /></td></tr>
+<tr class="separator:a0700fa47224ccf9b4c1d7d6f10a1c85c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad142111e9def31145b07024875de1cb4" id="r_ad142111e9def31145b07024875de1cb4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html">RoadTerrainWorkspace</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#ad142111e9def31145b07024875de1cb4">operator=</a> (<a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html">RoadTerrainWorkspace</a> &amp;&amp;) noexcept</td></tr>
+<tr class="memdesc:ad142111e9def31145b07024875de1cb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer ownership and release the previous history.  <br /></td></tr>
+<tr class="separator:ad142111e9def31145b07024875de1cb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28903847f2bedcd64391ecfdaadfe7c9" id="r_a28903847f2bedcd64391ecfdaadfe7c9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#a28903847f2bedcd64391ecfdaadfe7c9">RoadTerrainWorkspace</a> (const <a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html">RoadTerrainWorkspace</a> &amp;)=delete</td></tr>
+<tr class="separator:a28903847f2bedcd64391ecfdaadfe7c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1e583c6842204304f2bc26d655d2c0c" id="r_ae1e583c6842204304f2bc26d655d2c0c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html">RoadTerrainWorkspace</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#ae1e583c6842204304f2bc26d655d2c0c">operator=</a> (const <a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html">RoadTerrainWorkspace</a> &amp;)=delete</td></tr>
+<tr class="separator:ae1e583c6842204304f2bc26d655d2c0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5ce6a8d00a0b7f6b5573be883af9cfa" id="r_ad5ce6a8d00a0b7f6b5573be883af9cfa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#ad5ce6a8d00a0b7f6b5573be883af9cfa">initialize</a> (std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadTerrainTile.html">RoadTerrainTile</a> &gt; <a class="el" href="RoguelikeGenerator_8cpp.html#a0c05430de08c4341b29a52bf20bd0ed1">tiles</a>)</td></tr>
+<tr class="memdesc:ad5ce6a8d00a0b7f6b5573be883af9cfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and import complete tile values, clearing history atomically. @cost Linear in all channel samples and tree instances, amortized at import boundaries.  <br /></td></tr>
+<tr class="separator:ad5ce6a8d00a0b7f6b5573be883af9cfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7be6b3c87a4f6ca234cd1c9ddb2678e" id="r_aa7be6b3c87a4f6ca234cd1c9ddb2678e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#aa7be6b3c87a4f6ca234cd1c9ddb2678e">apply</a> (const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;<a class="el" href="OceanRenderBindings_8cpp.html#a55139a87ffac9b4f63e8c424b9d090b1">mesh</a>, const <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadTerrainWriteOptions.html">RoadTerrainWriteOptions</a> &amp;<a class="el" href="SquirrelBinding_8cpp.html#abebf9d839cc4bbffbf6bb3cf6c4b1038">options</a>)</td></tr>
+<tr class="memdesc:aa7be6b3c87a4f6ca234cd1c9ddb2678e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Evaluate road coverage and publish height, texture, details, trees and selected holes together. Bridge surfaces never paint/clear terrain. Tunnel heights and vegetation roofs remain intact unless holes are selected. Splat coverage times opacity raises the selected weight only when greater than its current weight; other layers retain their relative proportions. Zero preserves splats while independent channels execute. No quantization. @cost Raster work is bounded by maximumWork; each transaction copies bounded retained history before publishing.  <br /></td></tr>
+<tr class="separator:aa7be6b3c87a4f6ca234cd1c9ddb2678e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e9c32f6bb5afec53e927456db55c74c" id="r_a0e9c32f6bb5afec53e927456db55c74c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#a0e9c32f6bb5afec53e927456db55c74c">applyBatch</a> (std::span&lt; const <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadTerrainWrite.html">RoadTerrainWrite</a> &gt; writes, std::size_t maximumWork)</td></tr>
+<tr class="memdesc:a0e9c32f6bb5afec53e927456db55c74c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply ordered per-road policies as one complete-channel history frame.  <br /></td></tr>
+<tr class="separator:a0e9c32f6bb5afec53e927456db55c74c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76a2053a297c77e07befac82300f3e38" id="r_a76a2053a297c77e07befac82300f3e38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#a76a2053a297c77e07befac82300f3e38">undo</a> ()</td></tr>
+<tr class="memdesc:a76a2053a297c77e07befac82300f3e38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore the previous complete-channel value; no mutation when history is exhausted. Selects an owned immutable history frame by cursor, without copying channel storage.  <br /></td></tr>
+<tr class="separator:a76a2053a297c77e07befac82300f3e38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c5c4f29440c7890f329935a9e24ebe6" id="r_a7c5c4f29440c7890f329935a9e24ebe6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#a7c5c4f29440c7890f329935a9e24ebe6">redo</a> ()</td></tr>
+<tr class="memdesc:a7c5c4f29440c7890f329935a9e24ebe6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore the next complete-channel value; no mutation when history is exhausted. Selects an owned immutable history frame by cursor, without copying channel storage.  <br /></td></tr>
+<tr class="separator:a7c5c4f29440c7890f329935a9e24ebe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf07befebcd0ac91b099744b0a071721" id="r_acf07befebcd0ac91b099744b0a071721"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadTerrainTile.html">RoadTerrainTile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#acf07befebcd0ac91b099744b0a071721">copyTile</a> (const std::string &amp;<a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="memdesc:acf07befebcd0ac91b099744b0a071721"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy one tile snapshot; returned data never aliases the owner. @cost Linear in this tile's channel storage, amortized at renderer/save boundaries.  <br /></td></tr>
+<tr class="separator:acf07befebcd0ac91b099744b0a071721"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85e00ff5b4c0862078555b95f9e715a3" id="r_a85e00ff5b4c0862078555b95f9e715a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#a85e00ff5b4c0862078555b95f9e715a3">capture</a> () const</td></tr>
+<tr class="memdesc:a85e00ff5b4c0862078555b95f9e715a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode current data and the complete undo/redo history as an owning canonical <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a>. @cost Linear in retained history storage, amortized at save boundaries.  <br /></td></tr>
+<tr class="separator:a85e00ff5b4c0862078555b95f9e715a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a428963ba74cfcb52ca44ae8089a354d5" id="r_a428963ba74cfcb52ca44ae8089a354d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html#a428963ba74cfcb52ca44ae8089a354d5">restore</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;snapshot)</td></tr>
+<tr class="memdesc:a428963ba74cfcb52ca44ae8089a354d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate schema, channel topology and every historical frame before one atomic owner replacement. @cost Linear in encoded history storage, amortized at load boundaries.  <br /></td></tr>
+<tr class="separator:a428963ba74cfcb52ca44ae8089a354d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Single mutable owner of imported terrain tiles and their complete-channel history. Caller-thread affine, synchronous, callback-free. Imported tiles are owned; mesh inputs are borrowed until return. Returned tile values own storage. Same-build deterministic floating arithmetic, no clocks or RNG. History publishes once after every tile succeeds. Snapshot schema procgen.road.terrain version 2 requires originY; version 1 migrates missing originY to zero. Unknown object fields are ignored; unsupported versions and malformed known fields reject atomically. Restore replaces current data and undo/redo history atomically; no external tile pointer or receipt survives. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTerrainWorkspace_8h_source.html">RoadTerrainWorkspace.h</a> 第 <a class="el" href="RoadTerrainWorkspace_8h_source.html#l00059">59</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a87ec7c76ee7886219503c4bebb05caea" name="a87ec7c76ee7886219503c4bebb05caea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87ec7c76ee7886219503c4bebb05caea">&#9670;&#160;</a></span>RoadTerrainWorkspace() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::road::RoadTerrainWorkspace::RoadTerrainWorkspace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct an empty terrain owner. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html">RoadTerrainWorkspace.cpp</a> 第 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a40e90cb2f961b0dce2927c643a70a04e" name="a40e90cb2f961b0dce2927c643a70a04e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40e90cb2f961b0dce2927c643a70a04e">&#9670;&#160;</a></span>~RoadTerrainWorkspace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::road::RoadTerrainWorkspace::~RoadTerrainWorkspace </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destroy owned tiles and history. </p>
+
+</div>
+</div>
+<a id="a0700fa47224ccf9b4c1d7d6f10a1c85c" name="a0700fa47224ccf9b4c1d7d6f10a1c85c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0700fa47224ccf9b4c1d7d6f10a1c85c">&#9670;&#160;</a></span>RoadTerrainWorkspace() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::road::RoadTerrainWorkspace::RoadTerrainWorkspace </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html">RoadTerrainWorkspace</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transfer ownership; moved-from objects can be initialized again. </p>
+
+</div>
+</div>
+<a id="a28903847f2bedcd64391ecfdaadfe7c9" name="a28903847f2bedcd64391ecfdaadfe7c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28903847f2bedcd64391ecfdaadfe7c9">&#9670;&#160;</a></span>RoadTerrainWorkspace() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::procgen::road::RoadTerrainWorkspace::RoadTerrainWorkspace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html">RoadTerrainWorkspace</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa7be6b3c87a4f6ca234cd1c9ddb2678e" name="aa7be6b3c87a4f6ca234cd1c9ddb2678e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7be6b3c87a4f6ca234cd1c9ddb2678e">&#9670;&#160;</a></span>apply()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::road::RoadTerrainWorkspace::apply </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadTerrainWriteOptions.html">RoadTerrainWriteOptions</a> &amp;&#160;</td>
+          <td class="paramname"><em>options</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Evaluate road coverage and publish height, texture, details, trees and selected holes together. Bridge surfaces never paint/clear terrain. Tunnel heights and vegetation roofs remain intact unless holes are selected. Splat coverage times opacity raises the selected weight only when greater than its current weight; other layers retain their relative proportions. Zero preserves splats while independent channels execute. No quantization. @cost Raster work is bounded by maximumWork; each transaction copies bounded retained history before publishing. </p>
+<dl class="section return"><dt>返回</dt><dd>Changed channel element count; any failure preserves every tile and the redo branch. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html">RoadTerrainWorkspace.cpp</a> 第 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html#l00180">180</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html#l00184">applyBatch()</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00026">mesh</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00089">options</a> , 以及 <a class="el" href="Joint3DParameters_8cpp_source.html#l00017">write</a>.</p>
+
+</div>
+</div>
+<a id="a0e9c32f6bb5afec53e927456db55c74c" name="a0e9c32f6bb5afec53e927456db55c74c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e9c32f6bb5afec53e927456db55c74c">&#9670;&#160;</a></span>applyBatch()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::road::RoadTerrainWorkspace::applyBatch </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadTerrainWrite.html">RoadTerrainWrite</a> &gt;&#160;</td>
+          <td class="paramname"><em>writes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>maximumWork</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Apply ordered per-road policies as one complete-channel history frame. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">writes</td><td>Nonempty borrowed operations (at most 4096); referenced meshes must survive this call. </td></tr>
+    <tr><td class="paramname">maximumWork</td><td>Shared work budget across every road and tile; each operation also retains its own cap. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Summed per-operation changed element counts; failure preserves current state and redo history. @cost One retained-history candidate plus bounded raster work summed over the operations, per explicit build. </dd></dl>
+<dl class="section note"><dt>注解</dt><dd>Owner-thread only, synchronous, no callbacks. Overlap follows input order; no reference overlap parity claim. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html">RoadTerrainWorkspace.cpp</a> 第 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html#l00184">184</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="RoadBake_8h_source.html#l00028">eve::procgen::road::RoadTerrainConformOptions::blendDistance</a>, <a class="el" href="RoadBake_8h_source.html#l00026">eve::procgen::road::RoadTerrainConformOptions::cellSize</a>, <a class="el" href="Coupling3DStep_8cpp_source.html#l00027">changed</a>, <a class="el" href="RoadTerrain_8cpp_source.html#l00024">eve::procgen::road::conformHeightmapToRoadWithReceipt()</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00018">coverage</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00041">frame</a>, <a class="el" href="Heightmap_8cpp_source.html#l00016">eve::procgen::Heightmap::getWidth()</a>, <a class="el" href="RoadTerrainWorkspace_8cpp_source.html#l00033">ground</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="RoadTerrainWorkspace_8h_source.html#l00031">eve::procgen::road::RoadTerrainTile::heights</a>, <a class="el" href="RoadBake_8h_source.html#l00027">eve::procgen::road::RoadTerrainConformOptions::heightScale</a>, <a class="el" href="RoadTerrainWorkspace_8h_source.html#l00031">eve::procgen::road::RoadTerrainTile::holes</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>, <a class="el" href="RoadBake_8h_source.html#l00030">eve::procgen::road::RoadTerrainConformOptions::maximumWork</a>, <a class="el" href="RoadBake_8h_source.html#l00029">eve::procgen::road::RoadTerrainConformOptions::maxVerticalDelta</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00026">mesh</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00089">options</a>, <a class="el" href="RoadBake_8h_source.html#l00024">eve::procgen::road::RoadTerrainConformOptions::originX</a>, <a class="el" href="RoadBake_8h_source.html#l00031">eve::procgen::road::RoadTerrainConformOptions::originY</a>, <a class="el" href="RoadBake_8h_source.html#l00025">eve::procgen::road::RoadTerrainConformOptions::originZ</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00156">size</a>, <a class="el" href="RoadTerrainWorkspace_8h_source.html#l00032">eve::procgen::road::RoadTerrainTile::splatLayers</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00934">weight</a> , 以及 <a class="el" href="Joint3DParameters_8cpp_source.html#l00017">write</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html#l00180">apply()</a> , 以及 <a class="el" href="RoadTerrainPlan_8cpp_source.html#l00114">eve::procgen::road::RoadTerrainPlan::apply()</a>.</p>
+
+</div>
+</div>
+<a id="a85e00ff5b4c0862078555b95f9e715a3" name="a85e00ff5b4c0862078555b95f9e715a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85e00ff5b4c0862078555b95f9e715a3">&#9670;&#160;</a></span>capture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::procgen::road::RoadTerrainWorkspace::capture </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encode current data and the complete undo/redo history as an owning canonical <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a>. @cost Linear in retained history storage, amortized at save boundaries. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTerrainWorkspaceCodec_8cpp_source.html">RoadTerrainWorkspaceCodec.cpp</a> 第 <a class="el" href="RoadTerrainWorkspaceCodec_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00041">frame</a> , 以及 <a class="el" href="RoguelikeGenerator_8cpp_source.html#l00750">tiles</a>.</p>
+
+</div>
+</div>
+<a id="acf07befebcd0ac91b099744b0a071721" name="acf07befebcd0ac91b099744b0a071721"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf07befebcd0ac91b099744b0a071721">&#9670;&#160;</a></span>copyTile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadTerrainTile.html">RoadTerrainTile</a> &gt; eve::procgen::road::RoadTerrainWorkspace::copyTile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy one tile snapshot; returned data never aliases the owner. @cost Linear in this tile's channel storage, amortized at renderer/save boundaries. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html">RoadTerrainWorkspace.cpp</a> 第 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html#l00306">306</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ad5ce6a8d00a0b7f6b5573be883af9cfa" name="ad5ce6a8d00a0b7f6b5573be883af9cfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5ce6a8d00a0b7f6b5573be883af9cfa">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::road::RoadTerrainWorkspace::initialize </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadTerrainTile.html">RoadTerrainTile</a> &gt;&#160;</td>
+          <td class="paramname"><em>tiles</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and import complete tile values, clearing history atomically. @cost Linear in all channel samples and tree instances, amortized at import boundaries. </p>
+<dl class="section return"><dt>返回</dt><dd>Imported tile count, or a structured diagnostic leaving this owner unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html">RoadTerrainWorkspace.cpp</a> 第 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html#l00171">171</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SquirrelBinding_8cpp_source.html#l00031">count</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="RoguelikeGenerator_8cpp_source.html#l00750">tiles</a>, <a class="el" href="McpServer_8cpp_source.html#l00315">valid</a> , 以及 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html#l00116">eve::procgen::road::detail::validateTerrainTiles()</a>.</p>
+
+</div>
+</div>
+<a id="ae1e583c6842204304f2bc26d655d2c0c" name="ae1e583c6842204304f2bc26d655d2c0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1e583c6842204304f2bc26d655d2c0c">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html">RoadTerrainWorkspace</a> &amp; eve::procgen::road::RoadTerrainWorkspace::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html">RoadTerrainWorkspace</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad142111e9def31145b07024875de1cb4" name="ad142111e9def31145b07024875de1cb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad142111e9def31145b07024875de1cb4">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html">RoadTerrainWorkspace</a> &amp; eve::procgen::road::RoadTerrainWorkspace::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1procgen_1_1road_1_1RoadTerrainWorkspace.html">RoadTerrainWorkspace</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Transfer ownership and release the previous history. </p>
+
+</div>
+</div>
+<a id="a7c5c4f29440c7890f329935a9e24ebe6" name="a7c5c4f29440c7890f329935a9e24ebe6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c5c4f29440c7890f329935a9e24ebe6">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::road::RoadTerrainWorkspace::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore the next complete-channel value; no mutation when history is exhausted. Selects an owned immutable history frame by cursor, without copying channel storage. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html">RoadTerrainWorkspace.cpp</a> 第 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html#l00301">301</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a428963ba74cfcb52ca44ae8089a354d5" name="a428963ba74cfcb52ca44ae8089a354d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a428963ba74cfcb52ca44ae8089a354d5">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::road::RoadTerrainWorkspace::restore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>snapshot</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate schema, channel topology and every historical frame before one atomic owner replacement. @cost Linear in encoded history storage, amortized at load boundaries. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTerrainWorkspaceCodec_8cpp_source.html">RoadTerrainWorkspaceCodec.cpp</a> 第 <a class="el" href="RoadTerrainWorkspaceCodec_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="BakeRecipe_8cpp_source.html#l00035">cursor</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00041">frame</a>, <a class="el" href="McpProjectIndexTools_8cpp_source.html#l00018">snapshot</a>, <a class="el" href="RoguelikeGenerator_8cpp_source.html#l00750">tiles</a>, <a class="el" href="McpServer_8cpp_source.html#l00315">valid</a> , 以及 <a class="el" href="TerrainGenerationSession_8cpp_source.html#l00035">version</a>.</p>
+
+</div>
+</div>
+<a id="a76a2053a297c77e07befac82300f3e38" name="a76a2053a297c77e07befac82300f3e38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76a2053a297c77e07befac82300f3e38">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::procgen::road::RoadTerrainWorkspace::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore the previous complete-channel value; no mutation when history is exhausted. Selects an owned immutable history frame by cursor, without copying channel storage. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html">RoadTerrainWorkspace.cpp</a> 第 <a class="el" href="RoadTerrainWorkspace_8cpp_source.html#l00296">296</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="Grass_8cpp_source.html#l00233">u</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/road/<a class="el" href="RoadTerrainWorkspace_8h_source.html">RoadTerrainWorkspace.h</a></li>
+<li>src/modules/procgen/road/<a class="el" href="RoadTerrainWorkspace_8cpp_source.html">RoadTerrainWorkspace.cpp</a></li>
+<li>src/modules/procgen/road/<a class="el" href="RoadTerrainWorkspaceCodec_8cpp_source.html">RoadTerrainWorkspaceCodec.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

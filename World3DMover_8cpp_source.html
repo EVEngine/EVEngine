@@ -1,0 +1,361 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/World3DMover.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">World3DMover.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="World3DMover_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="World3DInternal_8h.html">physics/World3DInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cfloat&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">using namespace </span>world3d_detail;</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a47566363e262bce86d080128ad53bdd3">   11</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a47566363e262bce86d080128ad53bdd3">World3D::setMoverUp</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) { <a class="code hl_function" href="namespaceeve_1_1physics_1_1world3d__detail.html#a3d93336797c9481971ffae7d019b11da">worldValue</a>(rigidBackend_-&gt;setMoverUp(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)); }</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="}">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a70d9fc20410ed339bc34cb026ef7528f">   14</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a70d9fc20410ed339bc34cb026ef7528f">World3D::setMoverSlopeLimit</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>) {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>)) <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;World3D.setMoverSlopeLimit: degrees must be finite&quot;</span>);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_variable" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>        = std::clamp(<a class="code hl_variable" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a>, 0.f, 89.9f);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    moverSlopeCos_ = std::cos(<a class="code hl_variable" href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a> * 0.01745329251994329577f);</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>}</div>
+</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="}">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#ae89042565c065f2dcd6896b5a230151f">   20</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#ae89042565c065f2dcd6896b5a230151f">World3D::moveCapsule</a>(<span class="keywordtype">float</span> ax, <span class="keywordtype">float</span> ay, <span class="keywordtype">float</span> az, <span class="keywordtype">float</span> bx, <span class="keywordtype">float</span> by, <span class="keywordtype">float</span> bz, <span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a>,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                          <span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#ad034b3e72ac42aaf697313e8b8f355fe">dz</a>) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1physics_1_1world3d__detail.html#a3d93336797c9481971ffae7d019b11da">worldValue</a>(rigidBackend_-&gt;moveCapsule(ax, ay, az, bx, by, bz, <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a>, <a class="code hl_variable" href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a>, <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#ad034b3e72ac42aaf697313e8b8f355fe">dz</a>));</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a668bab09af69c9e607b5b4c7d2cb87ec">   26</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;CapsuleMove3D&gt;</a> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a668bab09af69c9e607b5b4c7d2cb87ec">World3D::moveCapsuleOwned</a>(<span class="keywordtype">float</span> ax, <span class="keywordtype">float</span> ay, <span class="keywordtype">float</span> az, <span class="keywordtype">float</span> bx, <span class="keywordtype">float</span> by, <span class="keywordtype">float</span> bz,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                                                     <span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#ad034b3e72ac42aaf697313e8b8f355fe">dz</a>, <a class="code hl_struct" href="structeve_1_1physics_1_1QueryFilter3D.html">QueryFilter3D</a> <a class="code hl_variable" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a>,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                                                     <a class="code hl_struct" href="structeve_1_1physics_1_1CapsuleMovePolicy3D.html">CapsuleMovePolicy3D</a> policy) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">return</span> rigidBackend_-&gt;moveCapsuleOwned(ax, ay, az, bx, by, bz, <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a>, <a class="code hl_variable" href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a>, <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#ad034b3e72ac42aaf697313e8b8f355fe">dz</a>, <a class="code hl_variable" href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a>, policy);</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>}</div>
+</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a031a1887020c97a5de0f8d9b5fb3cfa4">   33</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a031a1887020c97a5de0f8d9b5fb3cfa4">World3D::getQueryBodyId</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">if</span> (index &lt; 0 || index &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(queryBodyIds_.size()))</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;World3D.getQueryBodyId: index out of range&quot;</span>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span> queryBodyIds_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)];</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#acca522c8d447f8f566dfc61d33193d52">   39</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#acca522c8d447f8f566dfc61d33193d52">World3D::pointProbe</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, <a class="code hl_struct" href="structeve_1_1physics_1_1ClothContact3D.html">ClothContact3D</a> *<a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#acfd9f0d0de84a9c9c4c56b4d2cdbc36a">pointProbeFiltered</a>(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>, ~uint64_t{0}, ~uint64_t{0}) == <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#affe3f32522fb9d62bf1ae42e04bf3a12aebfe5e1791db03c4cd6ab95801e0977d">ClothProbeStatus::Hit</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
+</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="foldopen" id="foldopen00043" data-start="{" data-end="}">
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#acfd9f0d0de84a9c9c4c56b4d2cdbc36a">   43</a></span><a class="code hl_enumeration" href="namespaceeve_1_1physics.html#affe3f32522fb9d62bf1ae42e04bf3a12">ClothProbeStatus</a> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#acfd9f0d0de84a9c9c4c56b4d2cdbc36a">World3D::pointProbeFiltered</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, <a class="code hl_struct" href="structeve_1_1physics_1_1ClothContact3D.html">ClothContact3D</a> *<a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                                             uint64_t categoryBits, uint64_t maskBits)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>) <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#affe3f32522fb9d62bf1ae42e04bf3a12ae7ddb7cd777b59610b220bcfa80bd95f">ClothProbeStatus::Miss</a>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    *<a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a> = <a class="code hl_function" href="namespaceeve_1_1physics_1_1world3d__detail.html#a3d93336797c9481971ffae7d019b11da">worldValue</a>(rigidBackend_-&gt;pointProbeFiltered(<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>, categoryBits, maskBits));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>-&gt;hit ? <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#affe3f32522fb9d62bf1ae42e04bf3a12aebfe5e1791db03c4cd6ab95801e0977d">ClothProbeStatus::Hit</a> : <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#affe3f32522fb9d62bf1ae42e04bf3a12ae7ddb7cd777b59610b220bcfa80bd95f">ClothProbeStatus::Miss</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>}</div>
+</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">const</span> World3D::RayResult &amp;World3D::rayResultAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">if</span> (index &lt; 0 || index &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(rayResults_.size()))</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;World3D.%s: index out of range&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">return</span> rayResults_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)];</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="" data-end="">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="World3DMover_8cpp.html#a3737edd965303ffad2f66f4904347e59">   57</a></span><span class="preprocessor">#define EV_RAY_INT_GETTER(name, member) \</span></div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="preprocessor">    int World3D::name(int index) const { return rayResultAt(index, #name).member; }</span></div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><a class="code hl_define" href="World3DMover_8cpp.html#a3737edd965303ffad2f66f4904347e59">EV_RAY_INT_GETTER</a>(getRayResultBodyId, bodyId)</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><a class="code hl_define" href="World3DMover_8cpp.html#a3737edd965303ffad2f66f4904347e59">EV_RAY_INT_GETTER</a>(getRayResultShapeId, <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a543fd6fe2dfd9d8c7434dc2653e55058">shapeId</a>)</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><a class="code hl_define" href="World3DMover_8cpp.html#a3737edd965303ffad2f66f4904347e59">EV_RAY_INT_GETTER</a>(getRayResultShapeTag, shapeTag)</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><a class="code hl_define" href="World3DMover_8cpp.html#a3737edd965303ffad2f66f4904347e59">EV_RAY_INT_GETTER</a>(getRayResultMaterialId, materialId)</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><a class="code hl_define" href="World3DMover_8cpp.html#a3737edd965303ffad2f66f4904347e59">EV_RAY_INT_GETTER</a>(getRayResultTriangleIndex, triangleIndex)</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="preprocessor">#undef EV_RAY_INT_GETTER</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="foldopen" id="foldopen00068" data-start="" data-end="">
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="World3DMover_8cpp.html#a006f201349921944ca925deb69d056c1">   68</a></span><span class="preprocessor">#define EV_RAY_FLOAT_GETTER(name, member) \</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="preprocessor">    float World3D::name(int index) const { return rayResultAt(index, #name).member; }</span></div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><a class="code hl_define" href="World3DMover_8cpp.html#a006f201349921944ca925deb69d056c1">EV_RAY_FLOAT_GETTER</a>(getRayResultX, <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><a class="code hl_define" href="World3DMover_8cpp.html#a006f201349921944ca925deb69d056c1">EV_RAY_FLOAT_GETTER</a>(getRayResultY, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><a class="code hl_define" href="World3DMover_8cpp.html#a006f201349921944ca925deb69d056c1">EV_RAY_FLOAT_GETTER</a>(getRayResultZ, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><a class="code hl_define" href="World3DMover_8cpp.html#a006f201349921944ca925deb69d056c1">EV_RAY_FLOAT_GETTER</a>(getRayResultNormalX, normalX)</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><a class="code hl_define" href="World3DMover_8cpp.html#a006f201349921944ca925deb69d056c1">EV_RAY_FLOAT_GETTER</a>(getRayResultNormalY, normalY)</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span><a class="code hl_define" href="World3DMover_8cpp.html#a006f201349921944ca925deb69d056c1">EV_RAY_FLOAT_GETTER</a>(getRayResultNormalZ, normalZ)</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><a class="code hl_define" href="World3DMover_8cpp.html#a006f201349921944ca925deb69d056c1">EV_RAY_FLOAT_GETTER</a>(getRayResultFraction, <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a27d4b30c99badaef20fd27a74112b5ec">fraction</a>)</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span><span class="preprocessor">#undef EV_RAY_FLOAT_GETTER</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span><span class="keyword">const</span> World3D::ShapeCastResult &amp;World3D::shapeCastResultAt(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (index &lt; 0 || index &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(shapeCastResults_.size()))</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;World3D.%s: index out of range&quot;</span>, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">return</span> shapeCastResults_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)];</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>}</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="foldopen" id="foldopen00087" data-start="" data-end="">
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="World3DMover_8cpp.html#a295f9430388f04a447627934e6deaa1e">   87</a></span><span class="preprocessor">#define EV_CAST_INT_GETTER(name, member) \</span></div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="preprocessor">    int World3D::name(int index) const { return shapeCastResultAt(index, #name).member; }</span></div>
+</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span><a class="code hl_define" href="World3DMover_8cpp.html#a295f9430388f04a447627934e6deaa1e">EV_CAST_INT_GETTER</a>(getShapeCastResultBodyId, bodyId)</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span><a class="code hl_define" href="World3DMover_8cpp.html#a295f9430388f04a447627934e6deaa1e">EV_CAST_INT_GETTER</a>(getShapeCastResultShapeId, <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a543fd6fe2dfd9d8c7434dc2653e55058">shapeId</a>)</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><a class="code hl_define" href="World3DMover_8cpp.html#a295f9430388f04a447627934e6deaa1e">EV_CAST_INT_GETTER</a>(getShapeCastResultShapeTag, shapeTag)</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span><a class="code hl_define" href="World3DMover_8cpp.html#a295f9430388f04a447627934e6deaa1e">EV_CAST_INT_GETTER</a>(getShapeCastResultMaterialId, materialId)</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><a class="code hl_define" href="World3DMover_8cpp.html#a295f9430388f04a447627934e6deaa1e">EV_CAST_INT_GETTER</a>(getShapeCastResultTriangleIndex, triangleIndex)</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span><span class="preprocessor">#undef EV_CAST_INT_GETTER</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="foldopen" id="foldopen00098" data-start="" data-end="">
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="World3DMover_8cpp.html#ab24a4906f4cc7bd82eff55390f835eb7">   98</a></span><span class="preprocessor">#define EV_CAST_FLOAT_GETTER(name, member) \</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span><span class="preprocessor">    float World3D::name(int index) const { return shapeCastResultAt(index, #name).member; }</span></div>
+</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><a class="code hl_define" href="World3DMover_8cpp.html#ab24a4906f4cc7bd82eff55390f835eb7">EV_CAST_FLOAT_GETTER</a>(getShapeCastResultX, <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>)</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><a class="code hl_define" href="World3DMover_8cpp.html#ab24a4906f4cc7bd82eff55390f835eb7">EV_CAST_FLOAT_GETTER</a>(getShapeCastResultY, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><a class="code hl_define" href="World3DMover_8cpp.html#ab24a4906f4cc7bd82eff55390f835eb7">EV_CAST_FLOAT_GETTER</a>(getShapeCastResultZ, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span><a class="code hl_define" href="World3DMover_8cpp.html#ab24a4906f4cc7bd82eff55390f835eb7">EV_CAST_FLOAT_GETTER</a>(getShapeCastResultNormalX, normalX)</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><a class="code hl_define" href="World3DMover_8cpp.html#ab24a4906f4cc7bd82eff55390f835eb7">EV_CAST_FLOAT_GETTER</a>(getShapeCastResultNormalY, normalY)</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span><a class="code hl_define" href="World3DMover_8cpp.html#ab24a4906f4cc7bd82eff55390f835eb7">EV_CAST_FLOAT_GETTER</a>(getShapeCastResultNormalZ, normalZ)</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span><a class="code hl_define" href="World3DMover_8cpp.html#ab24a4906f4cc7bd82eff55390f835eb7">EV_CAST_FLOAT_GETTER</a>(getShapeCastResultFraction, <a class="code hl_variable" href="VehicleTires3D_8cpp.html#a27d4b30c99badaef20fd27a74112b5ec">fraction</a>)</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="preprocessor">#undef EV_CAST_FLOAT_GETTER</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="foldopen" id="foldopen00111" data-start="{" data-end="}">
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a3630fba5d60c0135f7313c3100511715">  111</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a3630fba5d60c0135f7313c3100511715">World3D::getQueryShapeId</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">if</span> (index &lt; 0 || index &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(queryShapes_.size()))</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;World3D.getQueryShapeId: index out of range&quot;</span>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">return</span> queryShapes_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)].<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>}</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="foldopen" id="foldopen00117" data-start="{" data-end="}">
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classeve_1_1physics_1_1World3D.html#a453a9db17183d8e7ec36ebfa3d3e0493">  117</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1physics_1_1World3D.html#a453a9db17183d8e7ec36ebfa3d3e0493">World3D::getQueryShapeTag</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">if</span> (index &lt; 0 || index &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(queryShapes_.size()))</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keywordflow">throw</span> <a class="code hl_class" href="classeve_1_1Exception.html">eve::Exception</a>(<span class="stringliteral">&quot;World3D.getQueryShapeTag: index out of range&quot;</span>);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordflow">return</span> queryShapes_[<span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)].<a class="code hl_variable" href="HexSphereTopology_8cpp.html#a1d0c825b660865150899766db0ec7361">second</a>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}</div>
+</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a1d8330996490721964918f24590a398b"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a></div><div class="ttdeci">ActionParameterOperation operation</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00152">ActionNotifyRegistry.cpp:152</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_aa6a11f8f07bde2d8bb6416cf51199a20"><div class="ttname"><a href="CardTypes_8cpp.html#aa6a11f8f07bde2d8bb6416cf51199a20">degrees</a></div><div class="ttdeci">float degrees</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00037">CardTypes.cpp:37</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a1d0c825b660865150899766db0ec7361"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a1d0c825b660865150899766db0ec7361">second</a></div><div class="ttdeci">std::int32_t second</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00089">HexSphereTopology.cpp:89</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a9ebd1b92d5226e25efef9e2af5ca8a34"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a9ebd1b92d5226e25efef9e2af5ca8a34">first</a></div><div class="ttdeci">std::int32_t first</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00088">HexSphereTopology.cpp:88</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a3f67c53b80389c5f53961936edba04c9"><div class="ttname"><a href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a></div><div class="ttdeci">double radius</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00042">MeleeHit.cpp:42</a></div></div>
+<div class="ttc" id="aOceanSpectrumFrame_8cpp_html_a2641fce3670ebce2e79db7c95db36fea"><div class="ttname"><a href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a></div><div class="ttdeci">glm::dvec3 dx</div><div class="ttdef"><b>Definition</b> <a href="OceanSpectrumFrame_8cpp_source.html#l00025">OceanSpectrumFrame.cpp:25</a></div></div>
+<div class="ttc" id="aOceanSpectrumFrame_8cpp_html_ad034b3e72ac42aaf697313e8b8f355fe"><div class="ttname"><a href="OceanSpectrumFrame_8cpp.html#ad034b3e72ac42aaf697313e8b8f355fe">dz</a></div><div class="ttdeci">glm::dvec3 dz</div><div class="ttdef"><b>Definition</b> <a href="OceanSpectrumFrame_8cpp_source.html#l00026">OceanSpectrumFrame.cpp:26</a></div></div>
+<div class="ttc" id="aSceneLoader_8cpp_html_a61e0e449fd7e8647d521cafd4f1d55a3"><div class="ttname"><a href="SceneLoader_8cpp.html#a61e0e449fd7e8647d521cafd4f1d55a3">filter</a></div><div class="ttdeci">std::string filter</div><div class="ttdef"><b>Definition</b> <a href="SceneLoader_8cpp_source.html#l00189">SceneLoader.cpp:189</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a4eeac3157ac481ce95fa8dd8e5e12a5f"><div class="ttname"><a href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a></div><div class="ttdeci">ScriptStructure out</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00023">ScriptStructure.cpp:23</a></div></div>
+<div class="ttc" id="aShadow_8cpp_html_a8f461b6142ce8725218813abb23b06a3"><div class="ttname"><a href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a></div><div class="ttdeci">float dy</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8cpp_source.html#l00151">Shadow.cpp:151</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aVehicleTires3D_8cpp_html_a27d4b30c99badaef20fd27a74112b5ec"><div class="ttname"><a href="VehicleTires3D_8cpp.html#a27d4b30c99badaef20fd27a74112b5ec">fraction</a></div><div class="ttdeci">float fraction</div><div class="ttdef"><b>Definition</b> <a href="VehicleTires3D_8cpp_source.html#l00047">VehicleTires3D.cpp:47</a></div></div>
+<div class="ttc" id="aVehicleTires3D_8cpp_html_a543fd6fe2dfd9d8c7434dc2653e55058"><div class="ttname"><a href="VehicleTires3D_8cpp.html#a543fd6fe2dfd9d8c7434dc2653e55058">shapeId</a></div><div class="ttdeci">int shapeId</div><div class="ttdef"><b>Definition</b> <a href="VehicleTires3D_8cpp_source.html#l00048">VehicleTires3D.cpp:48</a></div></div>
+<div class="ttc" id="aWorld3DInternal_8h_html"><div class="ttname"><a href="World3DInternal_8h.html">World3DInternal.h</a></div></div>
+<div class="ttc" id="aWorld3DMover_8cpp_html_a006f201349921944ca925deb69d056c1"><div class="ttname"><a href="World3DMover_8cpp.html#a006f201349921944ca925deb69d056c1">EV_RAY_FLOAT_GETTER</a></div><div class="ttdeci">#define EV_RAY_FLOAT_GETTER(name, member)</div><div class="ttdef"><b>Definition</b> <a href="World3DMover_8cpp_source.html#l00068">World3DMover.cpp:68</a></div></div>
+<div class="ttc" id="aWorld3DMover_8cpp_html_a295f9430388f04a447627934e6deaa1e"><div class="ttname"><a href="World3DMover_8cpp.html#a295f9430388f04a447627934e6deaa1e">EV_CAST_INT_GETTER</a></div><div class="ttdeci">#define EV_CAST_INT_GETTER(name, member)</div><div class="ttdef"><b>Definition</b> <a href="World3DMover_8cpp_source.html#l00087">World3DMover.cpp:87</a></div></div>
+<div class="ttc" id="aWorld3DMover_8cpp_html_a3737edd965303ffad2f66f4904347e59"><div class="ttname"><a href="World3DMover_8cpp.html#a3737edd965303ffad2f66f4904347e59">EV_RAY_INT_GETTER</a></div><div class="ttdeci">#define EV_RAY_INT_GETTER(name, member)</div><div class="ttdef"><b>Definition</b> <a href="World3DMover_8cpp_source.html#l00057">World3DMover.cpp:57</a></div></div>
+<div class="ttc" id="aWorld3DMover_8cpp_html_ab24a4906f4cc7bd82eff55390f835eb7"><div class="ttname"><a href="World3DMover_8cpp.html#ab24a4906f4cc7bd82eff55390f835eb7">EV_CAST_FLOAT_GETTER</a></div><div class="ttdeci">#define EV_CAST_FLOAT_GETTER(name, member)</div><div class="ttdef"><b>Definition</b> <a href="World3DMover_8cpp_source.html#l00098">World3DMover.cpp:98</a></div></div>
+<div class="ttc" id="aclasseve_1_1Exception_html"><div class="ttname"><a href="classeve_1_1Exception.html">eve::Exception</a></div><div class="ttdoc">EVENGINE_API_FOUNDATION public API.</div><div class="ttdef"><b>Definition</b> <a href="Exception_8h_source.html#l00013">Exception.h:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a031a1887020c97a5de0f8d9b5fb3cfa4"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a031a1887020c97a5de0f8d9b5fb3cfa4">eve::physics::World3D::getQueryBodyId</a></div><div class="ttdeci">int getQueryBodyId(int index) const</div><div class="ttdoc">Body id of the i-th query hit.</div><div class="ttdef"><b>Definition</b> <a href="World3DMover_8cpp_source.html#l00033">World3DMover.cpp:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a3630fba5d60c0135f7313c3100511715"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a3630fba5d60c0135f7313c3100511715">eve::physics::World3D::getQueryShapeId</a></div><div class="ttdeci">int getQueryShapeId(int index) const</div><div class="ttdoc">Stable shape id of the i-th shape hit, sorted ascending.</div><div class="ttdef"><b>Definition</b> <a href="World3DMover_8cpp_source.html#l00111">World3DMover.cpp:111</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a453a9db17183d8e7ec36ebfa3d3e0493"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a453a9db17183d8e7ec36ebfa3d3e0493">eve::physics::World3D::getQueryShapeTag</a></div><div class="ttdeci">int getQueryShapeTag(int index) const</div><div class="ttdoc">User tag paired with the i-th shape hit.</div><div class="ttdef"><b>Definition</b> <a href="World3DMover_8cpp_source.html#l00117">World3DMover.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a47566363e262bce86d080128ad53bdd3"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a47566363e262bce86d080128ad53bdd3">eve::physics::World3D::setMoverUp</a></div><div class="ttdeci">void setMoverUp(float x, float y, float z)</div><div class="ttdoc">Set the up direction used for grounded and slope classification.</div><div class="ttdef"><b>Definition</b> <a href="World3DMover_8cpp_source.html#l00011">World3DMover.cpp:11</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a668bab09af69c9e607b5b4c7d2cb87ec"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a668bab09af69c9e607b5b4c7d2cb87ec">eve::physics::World3D::moveCapsuleOwned</a></div><div class="ttdeci">eve::Result&lt; CapsuleMove3D &gt; moveCapsuleOwned(float ax, float ay, float az, float bx, float by, float bz, float radius, float dx, float dy, float dz, QueryFilter3D filter={}, CapsuleMovePolicy3D policy={})</div><div class="ttdoc">Moves a capsule and returns all resolved movement data as one owning result.</div><div class="ttdef"><b>Definition</b> <a href="World3DMover_8cpp_source.html#l00026">World3DMover.cpp:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_a70d9fc20410ed339bc34cb026ef7528f"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#a70d9fc20410ed339bc34cb026ef7528f">eve::physics::World3D::setMoverSlopeLimit</a></div><div class="ttdeci">void setMoverSlopeLimit(float degrees)</div><div class="ttdoc">Set maximum walkable slope in degrees, clamped to [0, 89.9].</div><div class="ttdef"><b>Definition</b> <a href="World3DMover_8cpp_source.html#l00014">World3DMover.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_acca522c8d447f8f566dfc61d33193d52"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#acca522c8d447f8f566dfc61d33193d52">eve::physics::World3D::pointProbe</a></div><div class="ttdeci">bool pointProbe(float x, float y, float z, float radius, ClothContact3D *out) const</div><div class="ttdoc">Probe the deepest non-sensor shape within radius of a meter-space point. Returns false when nothing i...</div><div class="ttdef"><b>Definition</b> <a href="World3DMover_8cpp_source.html#l00039">World3DMover.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_acfd9f0d0de84a9c9c4c56b4d2cdbc36a"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#acfd9f0d0de84a9c9c4c56b4d2cdbc36a">eve::physics::World3D::pointProbeFiltered</a></div><div class="ttdeci">ClothProbeStatus pointProbeFiltered(float x, float y, float z, float radius, ClothContact3D *out, uint64_t categoryBits, uint64_t maskBits) const</div><div class="ttdoc">Probe a cloth particle using symmetric category/mask filtering.</div><div class="ttdef"><b>Definition</b> <a href="World3DMover_8cpp_source.html#l00043">World3DMover.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html_ae89042565c065f2dcd6896b5a230151f"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html#ae89042565c065f2dcd6896b5a230151f">eve::physics::World3D::moveCapsule</a></div><div class="ttdeci">bool moveCapsule(float ax, float ay, float az, float bx, float by, float bz, float radius, float dx, float dy, float dz)</div><div class="ttdoc">Move a capsule with continuous collision and multi-plane sliding. Existing penetration is recovered b...</div><div class="ttdef"><b>Definition</b> <a href="World3DMover_8cpp_source.html#l00020">World3DMover.cpp:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1world3d__detail_html_a3d93336797c9481971ffae7d019b11da"><div class="ttname"><a href="namespaceeve_1_1physics_1_1world3d__detail.html#a3d93336797c9481971ffae7d019b11da">eve::physics::world3d_detail::worldValue</a></div><div class="ttdeci">T worldValue(eve::Result&lt; T &gt; result)</div><div class="ttdef"><b>Definition</b> <a href="World3DInternal_8h_source.html#l00045">World3DInternal.h:45</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00036">Climbing.h:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_affe3f32522fb9d62bf1ae42e04bf3a12"><div class="ttname"><a href="namespaceeve_1_1physics.html#affe3f32522fb9d62bf1ae42e04bf3a12">eve::physics::ClothProbeStatus</a></div><div class="ttdeci">ClothProbeStatus</div><div class="ttdoc">Named outcome for a filtered cloth particle probe.</div><div class="ttdef"><b>Definition</b> <a href="World3DTypes_8h_source.html#l00032">World3DTypes.h:32</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_affe3f32522fb9d62bf1ae42e04bf3a12ae7ddb7cd777b59610b220bcfa80bd95f"><div class="ttname"><a href="namespaceeve_1_1physics.html#affe3f32522fb9d62bf1ae42e04bf3a12ae7ddb7cd777b59610b220bcfa80bd95f">eve::physics::ClothProbeStatus::Miss</a></div><div class="ttdeci">@ Miss</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_affe3f32522fb9d62bf1ae42e04bf3a12aebfe5e1791db03c4cd6ab95801e0977d"><div class="ttname"><a href="namespaceeve_1_1physics.html#affe3f32522fb9d62bf1ae42e04bf3a12aebfe5e1791db03c4cd6ab95801e0977d">eve::physics::ClothProbeStatus::Hit</a></div><div class="ttdeci">@ Hit</div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1CapsuleMovePolicy3D_html"><div class="ttname"><a href="structeve_1_1physics_1_1CapsuleMovePolicy3D.html">eve::physics::CapsuleMovePolicy3D</a></div><div class="ttdoc">Per-call capsule mover classification policy; never mutates persistent World3D settings.</div><div class="ttdef"><b>Definition</b> <a href="OwnedQuery3D_8h_source.html#l00055">OwnedQuery3D.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1ClothContact3D_html"><div class="ttname"><a href="structeve_1_1physics_1_1ClothContact3D.html">eve::physics::ClothContact3D</a></div><div class="ttdoc">Result of a 3D point probe: deepest non-sensor shape within radius. Normal points from the shape towa...</div><div class="ttdef"><b>Definition</b> <a href="World3DTypes_8h_source.html#l00020">World3DTypes.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1QueryFilter3D_html"><div class="ttname"><a href="structeve_1_1physics_1_1QueryFilter3D.html">eve::physics::QueryFilter3D</a></div><div class="ttdoc">Query filter applied atomically for one owning query operation.</div><div class="ttdef"><b>Definition</b> <a href="OwnedQuery3D_8h_source.html#l00047">OwnedQuery3D.h:47</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

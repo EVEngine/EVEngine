@@ -1,0 +1,230 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/algorithms/CaveGeometry.cpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_4303500d72443b0a50b666855101537d.html">algorithms</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">CaveGeometry.cpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &quot;<a class="el" href="CaveGenerationState_8h_source.html">procgen/algorithms/CaveGenerationState.h</a>&quot;</code><br />
+</div>
+<p><a href="CaveGeometry_8cpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen" id="r_namespaceeve_1_1procgen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen.html">eve::procgen</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1procgen_1_1cave__detail" id="r_namespaceeve_1_1procgen_1_1cave__detail"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html">eve::procgen::cave_detail</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:aef8af6296ddf5292b6730d1f3328b7f0" id="r_aef8af6296ddf5292b6730d1f3328b7f0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#aef8af6296ddf5292b6730d1f3328b7f0">eve::procgen::cave_detail::dot</a> (<a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>)</td></tr>
+<tr class="separator:aef8af6296ddf5292b6730d1f3328b7f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0425acb168135c5cc81aef49be21b229" id="r_a0425acb168135c5cc81aef49be21b229"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a0425acb168135c5cc81aef49be21b229">eve::procgen::cave_detail::sub</a> (<a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>)</td></tr>
+<tr class="separator:a0425acb168135c5cc81aef49be21b229"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39bd1f0ef291edbdada0ac24a6207560" id="r_a39bd1f0ef291edbdada0ac24a6207560"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a39bd1f0ef291edbdada0ac24a6207560">eve::procgen::cave_detail::add</a> (<a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>)</td></tr>
+<tr class="separator:a39bd1f0ef291edbdada0ac24a6207560"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebb57488e5b060184871330320bbab44" id="r_aebb57488e5b060184871330320bbab44"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#aebb57488e5b060184871330320bbab44">eve::procgen::cave_detail::mul</a> (<a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, float <a class="el" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>)</td></tr>
+<tr class="separator:aebb57488e5b060184871330320bbab44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac39375cecebf18bf1ba03c428acb8b4" id="r_aac39375cecebf18bf1ba03c428acb8b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1cave__detail_1_1EdgeKey.html">EdgeKey</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#aac39375cecebf18bf1ba03c428acb8b4">eve::procgen::cave_detail::makeEdgeKey</a> (<a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>)</td></tr>
+<tr class="separator:aac39375cecebf18bf1ba03c428acb8b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedfd1a652be6a57ffb7d80f08c2f1b2e" id="r_aedfd1a652be6a57ffb7d80f08c2f1b2e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#aedfd1a652be6a57ffb7d80f08c2f1b2e">eve::procgen::cave_detail::smoothstep</a> (float edge0, float edge1, float <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="separator:aedfd1a652be6a57ffb7d80f08c2f1b2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51598905f6c6793b53bc9b33c4754885" id="r_a51598905f6c6793b53bc9b33c4754885"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a51598905f6c6793b53bc9b33c4754885">eve::procgen::cave_detail::smoothMaximum</a> (float <a class="el" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, float <a class="el" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, float blendRadius)</td></tr>
+<tr class="separator:a51598905f6c6793b53bc9b33c4754885"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ec49e43ea94bb96ae17d0ac68efd265" id="r_a8ec49e43ea94bb96ae17d0ac68efd265"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a8ec49e43ea94bb96ae17d0ac68efd265">eve::procgen::cave_detail::distanceToSegment</a> (<a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>, <a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>)</td></tr>
+<tr class="separator:a8ec49e43ea94bb96ae17d0ac68efd265"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45a417958056b8ee2c8a3507839af8cc" id="r_a45a417958056b8ee2c8a3507839af8cc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a45a417958056b8ee2c8a3507839af8cc">eve::procgen::cave_detail::ellipsoidDistance</a> (<a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>, const <a class="el" href="structeve_1_1procgen_1_1cave__detail_1_1Chamber.html">Chamber</a> &amp;<a class="el" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>)</td></tr>
+<tr class="separator:a45a417958056b8ee2c8a3507839af8cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a676526d7f54ba2186fa8b17a054bdeae" id="r_a676526d7f54ba2186fa8b17a054bdeae"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a676526d7f54ba2186fa8b17a054bdeae">eve::procgen::cave_detail::taperedSegmentDistance</a> (<a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>, const <a class="el" href="structeve_1_1procgen_1_1cave__detail_1_1Dripstone.html">Dripstone</a> &amp;<a class="el" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>, float horizontalX=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float horizontalZ=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="separator:a676526d7f54ba2186fa8b17a054bdeae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb3675a67f2100be480b824b182c0c5e" id="r_acb3675a67f2100be480b824b182c0c5e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#acb3675a67f2100be480b824b182c0c5e">eve::procgen::cave_detail::flowstoneDistance</a> (<a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>, const <a class="el" href="structeve_1_1procgen_1_1cave__detail_1_1Flowstone.html">Flowstone</a> &amp;<a class="el" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>)</td></tr>
+<tr class="separator:acb3675a67f2100be480b824b182c0c5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c660b7d23a2309f8c9df487f969028d" id="r_a3c660b7d23a2309f8c9df487f969028d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a3c660b7d23a2309f8c9df487f969028d">eve::procgen::cave_detail::curtainDistance</a> (<a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>, const <a class="el" href="structeve_1_1procgen_1_1cave__detail_1_1Curtain.html">Curtain</a> &amp;<a class="el" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>)</td></tr>
+<tr class="separator:a3c660b7d23a2309f8c9df487f969028d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6cf8b4a3f68bef6a56ad3066f75895e" id="r_ad6cf8b4a3f68bef6a56ad3066f75895e"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#ad6cf8b4a3f68bef6a56ad3066f75895e">eve::procgen::cave_detail::hash</a> (uint32_t <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="separator:ad6cf8b4a3f68bef6a56ad3066f75895e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f67ac63340b3ccb239bd5d4998d0980" id="r_a1f67ac63340b3ccb239bd5d4998d0980"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a1f67ac63340b3ccb239bd5d4998d0980">eve::procgen::cave_detail::latticeNoise</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, uint32_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>)</td></tr>
+<tr class="separator:a1f67ac63340b3ccb239bd5d4998d0980"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a074c18dca4a9250e998a133eef031509" id="r_a074c18dca4a9250e998a133eef031509"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a074c18dca4a9250e998a133eef031509">eve::procgen::cave_detail::projectToDensitySurface</a> (<a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> meshPoint, const std::vector&lt; float &gt; &amp;<a class="el" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a>, int <a class="el" href="CaveSurfaceReactivity_8cpp.html#a74d17801d3876700834f1b5eca4605f7">nx</a>, int <a class="el" href="CaveSurfaceReactivity_8cpp.html#a9c79b33ae8c9c2a5388a32077d5eed37">ny</a>, int <a class="el" href="CaveSurfaceReactivity_8cpp.html#a8c50d0e8d34556fe8e48394c315c12fd">nz</a>)</td></tr>
+<tr class="separator:a074c18dca4a9250e998a133eef031509"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d4d65e626217bdd4b786f09f363a3be" id="r_a0d4d65e626217bdd4b786f09f363a3be"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a0d4d65e626217bdd4b786f09f363a3be">eve::procgen::cave_detail::addFacetedTriangle</a> (<a class="el" href="classeve_1_1procgen_1_1MeshBuild.html">MeshBuild</a> &amp;<a class="el" href="OceanRenderBindings_8cpp.html#a55139a87ffac9b4f63e8c424b9d090b1">mesh</a>, <a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, <a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> <a class="el" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>, <a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a2608976c62b410255c6f7472e7a731b5">Vec3</a> referenceNormal)</td></tr>
+<tr class="separator:a0d4d65e626217bdd4b786f09f363a3be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0fc16ecd55a9c17d19b2d83535872a3b" id="r_a0fc16ecd55a9c17d19b2d83535872a3b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a0fc16ecd55a9c17d19b2d83535872a3b">eve::procgen::cave_detail::validStyle</a> (const std::string &amp;style)</td></tr>
+<tr class="separator:a0fc16ecd55a9c17d19b2d83535872a3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f348b23bb50d46a634a252ebc5df1fd" id="r_a7f348b23bb50d46a634a252ebc5df1fd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1procgen_1_1cave__detail.html#a7f348b23bb50d46a634a252ebc5df1fd">eve::procgen::cave_detail::validGenesis</a> (const std::string &amp;genesis)</td></tr>
+<tr class="separator:a7f348b23bb50d46a634a252ebc5df1fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,1221 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::jolt::ShapeBackend类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html">jolt</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html">ShapeBackend</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="classeve_1_1physics_1_1jolt_1_1ShapeBackend-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::jolt::ShapeBackend类 参考<span class="mlabels"><span class="mlabel">final</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="JoltShape_8h_source.html">JoltShape.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::physics::jolt::ShapeBackend 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1physics_1_1jolt_1_1ShapeBackend.png" usemap="#eve::physics::jolt::ShapeBackend_map" alt=""/>
+  <map id="eve::physics::jolt::ShapeBackend_map" name="eve::physics::jolt::ShapeBackend_map">
+<area href="classeve_1_1physics_1_1IShapeBackend3D.html" title="Sole owner of native shape and cooked resources; facade owns portable source geometry...." alt="eve::physics::IShapeBackend3D" shape="rect" coords="0,0,195,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7f8c913c484e881c60d14e5e3e449a40" id="r_a7f8c913c484e881c60d14e5e3e449a40"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a7f8c913c484e881c60d14e5e3e449a40">ShapeBackend</a> (std::shared_ptr&lt; <a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> &gt; <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="separator:a7f8c913c484e881c60d14e5e3e449a40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc1abb6112f6f2d3e9d1bba403c112f2" id="r_acc1abb6112f6f2d3e9d1bba403c112f2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#acc1abb6112f6f2d3e9d1bba403c112f2">~ShapeBackend</a> () override</td></tr>
+<tr class="separator:acc1abb6112f6f2d3e9d1bba403c112f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad38b65e57e60826c03cc2982b12ce7c7" id="r_ad38b65e57e60826c03cc2982b12ce7c7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ShapePlane3D.html">ShapePlane3D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#ad38b65e57e60826c03cc2982b12ce7c7">oneWayPlane</a> (const <a class="el" href="structeve_1_1physics_1_1ShapeGeometry3D.html">ShapeGeometry3D</a> &amp;geometry, <a class="el" href="structeve_1_1physics_1_1PhysicsVector3D.html">PhysicsVector3D</a> <a class="el" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>, float <a class="el" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>) const override</td></tr>
+<tr class="memdesc:ad38b65e57e60826c03cc2982b12ce7c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes an owning world-space plane using the current body pose; no callbacks.  <br /></td></tr>
+<tr class="separator:ad38b65e57e60826c03cc2982b12ce7c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96996e6437680fe6261016d4e828c827" id="r_a96996e6437680fe6261016d4e828c827"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a96996e6437680fe6261016d4e828c827">isValid</a> () const noexcept override</td></tr>
+<tr class="memdesc:a96996e6437680fe6261016d4e828c827"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native shape liveness.  <br /></td></tr>
+<tr class="separator:a96996e6437680fe6261016d4e828c827"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaec6a87a9faf6a975567634b2323f0eb" id="r_aaec6a87a9faf6a975567634b2323f0eb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#aaec6a87a9faf6a975567634b2323f0eb">destroy</a> () noexcept override</td></tr>
+<tr class="memdesc:aaec6a87a9faf6a975567634b2323f0eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Idempotent native resource release after dependent records have been detached.  <br /></td></tr>
+<tr class="separator:aaec6a87a9faf6a975567634b2323f0eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f7c73db7a7383c11f6f2811ede4d54d" id="r_a0f7c73db7a7383c11f6f2811ede4d54d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a0f7c73db7a7383c11f6f2811ede4d54d">invalidate</a> () noexcept override</td></tr>
+<tr class="memdesc:a0f7c73db7a7383c11f6f2811ede4d54d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Detaches native identity before parent teardown; retains cooked data until destruction.  <br /></td></tr>
+<tr class="separator:a0f7c73db7a7383c11f6f2811ede4d54d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a852f32243158de5b5f39266bcd304a5a" id="r_a852f32243158de5b5f39266bcd304a5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a852f32243158de5b5f39266bcd304a5a">bindOwner</a> (<a class="el" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> &amp;<a class="el" href="OceanRenderBindings_8cpp.html#a1c82e23b3363a0cded2d2bdf7abfb5c8">owner</a>) noexcept override</td></tr>
+<tr class="memdesc:a852f32243158de5b5f39266bcd304a5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Binds the owning facade for internal collision attribution; no callbacks. @ownership Borrows its exclusive owner; owner calls invalidate before destruction. @lifetime Reference remains valid until invalidation; cannot be rebound while stepping.  <br /></td></tr>
+<tr class="separator:a852f32243158de5b5f39266bcd304a5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8c763db25d2615f999a361a7b2ff521" id="r_ab8c763db25d2615f999a361a7b2ff521"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#ab8c763db25d2615f999a361a7b2ff521">rebuild</a> (const <a class="el" href="structeve_1_1physics_1_1ShapeGeometry3D.html">ShapeGeometry3D</a> &amp;geometry, <a class="el" href="structeve_1_1physics_1_1ShapeBehavior3D.html">ShapeBehavior3D</a> behavior, std::span&lt; const <a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a> &gt; materials) override</td></tr>
+<tr class="memdesc:ab8c763db25d2615f999a361a7b2ff521"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomically replaces cooked geometry, preserving material, density and filter. @cost One geometry cook and shape replacement per edit; input views are consumed synchronously.  <br /></td></tr>
+<tr class="separator:ab8c763db25d2615f999a361a7b2ff521"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a298698adebe9e591385fbe2037ddf60b" id="r_a298698adebe9e591385fbe2037ddf60b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a298698adebe9e591385fbe2037ddf60b">density</a> () const override</td></tr>
+<tr class="memdesc:a298698adebe9e591385fbe2037ddf60b"><td class="mdescLeft">&#160;</td><td class="mdescRight">density; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:a298698adebe9e591385fbe2037ddf60b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e5439ecc9a410497f7f84f6f21fdcb4" id="r_a3e5439ecc9a410497f7f84f6f21fdcb4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a3e5439ecc9a410497f7f84f6f21fdcb4">setDensity</a> (float <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>, bool updateMass) override</td></tr>
+<tr class="memdesc:a3e5439ecc9a410497f7f84f6f21fdcb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">setDensity; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:a3e5439ecc9a410497f7f84f6f21fdcb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4b761b659400fe41586e9b1af3c326d" id="r_ac4b761b659400fe41586e9b1af3c326d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#ac4b761b659400fe41586e9b1af3c326d">friction</a> () const override</td></tr>
+<tr class="memdesc:ac4b761b659400fe41586e9b1af3c326d"><td class="mdescLeft">&#160;</td><td class="mdescRight">friction; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:ac4b761b659400fe41586e9b1af3c326d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a58e0b28e0f93ffdf766b1fb26a21ef68" id="r_a58e0b28e0f93ffdf766b1fb26a21ef68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a58e0b28e0f93ffdf766b1fb26a21ef68">setFriction</a> (float <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>) override</td></tr>
+<tr class="memdesc:a58e0b28e0f93ffdf766b1fb26a21ef68"><td class="mdescLeft">&#160;</td><td class="mdescRight">setFriction; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:a58e0b28e0f93ffdf766b1fb26a21ef68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb04c7f64e9707a16d59e63bf2f43067" id="r_adb04c7f64e9707a16d59e63bf2f43067"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; float &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#adb04c7f64e9707a16d59e63bf2f43067">restitution</a> () const override</td></tr>
+<tr class="memdesc:adb04c7f64e9707a16d59e63bf2f43067"><td class="mdescLeft">&#160;</td><td class="mdescRight">restitution; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:adb04c7f64e9707a16d59e63bf2f43067"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d7cf96d6ef553761f0176fafbee9959" id="r_a6d7cf96d6ef553761f0176fafbee9959"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a6d7cf96d6ef553761f0176fafbee9959">setRestitution</a> (float <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>) override</td></tr>
+<tr class="memdesc:a6d7cf96d6ef553761f0176fafbee9959"><td class="mdescLeft">&#160;</td><td class="mdescRight">setRestitution; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:a6d7cf96d6ef553761f0176fafbee9959"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a55003abde07897e45dc16bdfe6da0cb1" id="r_a55003abde07897e45dc16bdfe6da0cb1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a55003abde07897e45dc16bdfe6da0cb1">material</a> () const override</td></tr>
+<tr class="memdesc:a55003abde07897e45dc16bdfe6da0cb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">material; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:a55003abde07897e45dc16bdfe6da0cb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac593f54f0bfcf248a2b2c884409fa5fa" id="r_ac593f54f0bfcf248a2b2c884409fa5fa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#ac593f54f0bfcf248a2b2c884409fa5fa">setMaterial</a> (<a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a> <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>) override</td></tr>
+<tr class="memdesc:ac593f54f0bfcf248a2b2c884409fa5fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">setMaterial; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:ac593f54f0bfcf248a2b2c884409fa5fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31076808028f1c85f3bb5a0cc77992de" id="r_a31076808028f1c85f3bb5a0cc77992de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ShapeFilter3D.html">ShapeFilter3D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a31076808028f1c85f3bb5a0cc77992de">filter</a> () const override</td></tr>
+<tr class="memdesc:a31076808028f1c85f3bb5a0cc77992de"><td class="mdescLeft">&#160;</td><td class="mdescRight">filter; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:a31076808028f1c85f3bb5a0cc77992de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd0c73acad32acadb36b1059ef452dfe" id="r_acd0c73acad32acadb36b1059ef452dfe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#acd0c73acad32acadb36b1059ef452dfe">setFilter</a> (<a class="el" href="structeve_1_1physics_1_1ShapeFilter3D.html">ShapeFilter3D</a> <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>, bool updatePairs) override</td></tr>
+<tr class="memdesc:acd0c73acad32acadb36b1059ef452dfe"><td class="mdescLeft">&#160;</td><td class="mdescRight">setFilter; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:acd0c73acad32acadb36b1059ef452dfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac372419ac0c16e81eff9dba39fd4f068" id="r_ac372419ac0c16e81eff9dba39fd4f068"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#ac372419ac0c16e81eff9dba39fd4f068">isSensor</a> () const override</td></tr>
+<tr class="memdesc:ac372419ac0c16e81eff9dba39fd4f068"><td class="mdescLeft">&#160;</td><td class="mdescRight">isSensor; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:ac372419ac0c16e81eff9dba39fd4f068"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a691e75eecb7159ab4bfafbecba2f8c73" id="r_a691e75eecb7159ab4bfafbecba2f8c73"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a691e75eecb7159ab4bfafbecba2f8c73">enableHitEvents</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) override</td></tr>
+<tr class="memdesc:a691e75eecb7159ab4bfafbecba2f8c73"><td class="mdescLeft">&#160;</td><td class="mdescRight">enableHitEvents; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:a691e75eecb7159ab4bfafbecba2f8c73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b37cb75b946fbdcd9e788abc175dff2" id="r_a4b37cb75b946fbdcd9e788abc175dff2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a4b37cb75b946fbdcd9e788abc175dff2">enablePreSolveEvents</a> (bool <a class="el" href="rpg_2Settlement_8cpp.html#a8740ba80e30dd75e71d09fa1dcf04f3d">enabled</a>) override</td></tr>
+<tr class="memdesc:a4b37cb75b946fbdcd9e788abc175dff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">enablePreSolveEvents; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:a4b37cb75b946fbdcd9e788abc175dff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1ac17991b081a062a11b6b054de3e1c" id="r_ab1ac17991b081a062a11b6b054de3e1c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#ab1ac17991b081a062a11b6b054de3e1c">meshMaterialCount</a> () const override</td></tr>
+<tr class="memdesc:ab1ac17991b081a062a11b6b054de3e1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">meshMaterialCount; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:ab1ac17991b081a062a11b6b054de3e1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3d404ae0afa305225345db67ef7706d" id="r_ac3d404ae0afa305225345db67ef7706d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#ac3d404ae0afa305225345db67ef7706d">meshMaterial</a> (int <a class="el" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>) const override</td></tr>
+<tr class="memdesc:ac3d404ae0afa305225345db67ef7706d"><td class="mdescLeft">&#160;</td><td class="mdescRight">meshMaterial; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:ac3d404ae0afa305225345db67ef7706d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adfb61f29333fcb1b71d24568132e243c" id="r_adfb61f29333fcb1b71d24568132e243c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#adfb61f29333fcb1b71d24568132e243c">setMeshMaterial</a> (<a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a> <a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>, int <a class="el" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>) override</td></tr>
+<tr class="memdesc:adfb61f29333fcb1b71d24568132e243c"><td class="mdescLeft">&#160;</td><td class="mdescRight">setMeshMaterial; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:adfb61f29333fcb1b71d24568132e243c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43a24bd931079f4241c22c7619a5e58f" id="r_a43a24bd931079f4241c22c7619a5e58f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a43a24bd931079f4241c22c7619a5e58f">testPoint</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const override</td></tr>
+<tr class="memdesc:a43a24bd931079f4241c22c7619a5e58f"><td class="mdescLeft">&#160;</td><td class="mdescRight">testPoint; synchronous owning-value operation under the class lifetime contract.  <br /></td></tr>
+<tr class="separator:a43a24bd931079f4241c22c7619a5e58f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1physics_1_1IShapeBackend3D"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1physics_1_1IShapeBackend3D')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html">eve::physics::IShapeBackend3D</a></td></tr>
+<tr class="memitem:add3023f7a8ab565e456a5a8e565322cf inherit pub_methods_classeve_1_1physics_1_1IShapeBackend3D" id="r_add3023f7a8ab565e456a5a8e565322cf"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#add3023f7a8ab565e456a5a8e565322cf">~IShapeBackend3D</a> ()=default</td></tr>
+<tr class="separator:add3023f7a8ab565e456a5a8e565322cf inherit pub_methods_classeve_1_1physics_1_1IShapeBackend3D"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a4159509d2c20e83f1ddb4d2ecb46f819" id="r_a4159509d2c20e83f1ddb4d2ecb46f819"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html#a4159509d2c20e83f1ddb4d2ecb46f819">shape</a></td></tr>
+<tr class="separator:a4159509d2c20e83f1ddb4d2ecb46f819"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="JoltShape_8h_source.html">JoltShape.h</a> 第 <a class="el" href="JoltShape_8h_source.html#l00008">8</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a7f8c913c484e881c60d14e5e3e449a40" name="a7f8c913c484e881c60d14e5e3e449a40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f8c913c484e881c60d14e5e3e449a40">&#9670;&#160;</a></span>ShapeBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::jolt::ShapeBackend::ShapeBackend </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> &gt;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltShape_8h_source.html">JoltShape.h</a> 第 <a class="el" href="JoltShape_8h_source.html#l00011">11</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acc1abb6112f6f2d3e9d1bba403c112f2" name="acc1abb6112f6f2d3e9d1bba403c112f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc1abb6112f6f2d3e9d1bba403c112f2">&#9670;&#160;</a></span>~ShapeBackend()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::jolt::ShapeBackend::~ShapeBackend </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltShape_8cpp_source.html">JoltShape.cpp</a> 第 <a class="el" href="JoltShape_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JoltShape_8cpp_source.html#l00123">destroy()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a852f32243158de5b5f39266bcd304a5a" name="a852f32243158de5b5f39266bcd304a5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a852f32243158de5b5f39266bcd304a5a">&#9670;&#160;</a></span>bindOwner()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::ShapeBackend::bindOwner </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Shape3D.html">Shape3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>owner</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Binds the owning facade for internal collision attribution; no callbacks. @ownership Borrows its exclusive owner; owner calls invalidate before destruction. @lifetime Reference remains valid until invalidation; cannot be rebound while stepping. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#ac7860df81669b5fb5aec1975eb38c32e">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShape_8cpp_source.html">JoltShape.cpp</a> 第 <a class="el" href="JoltShape_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00022">owner</a> , 以及 <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>.</p>
+
+</div>
+</div>
+<a id="a298698adebe9e591385fbe2037ddf60b" name="a298698adebe9e591385fbe2037ddf60b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a298698adebe9e591385fbe2037ddf60b">&#9670;&#160;</a></span>density()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; float &gt; eve::physics::jolt::ShapeBackend::density </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>density; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#a4c42fe5b8d37a6c411bec85f6b703274">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00022">22</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00027">setDensity()</a>.</p>
+
+</div>
+</div>
+<a id="aaec6a87a9faf6a975567634b2323f0eb" name="aaec6a87a9faf6a975567634b2323f0eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaec6a87a9faf6a975567634b2323f0eb">&#9670;&#160;</a></span>destroy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::ShapeBackend::destroy </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Idempotent native resource release after dependent records have been detached. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#afcc94c80cd2f4ce62208bfcf0ce099c6">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShape_8cpp_source.html">JoltShape.cpp</a> 第 <a class="el" href="JoltShape_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="JoltShape_8cpp_source.html#l00119">invalidate()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00077">eve::physics::jolt::replaceShapes()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a> , 以及 <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltShape_8cpp_source.html#l00116">~ShapeBackend()</a>.</p>
+
+</div>
+</div>
+<a id="a691e75eecb7159ab4bfafbecba2f8c73" name="a691e75eecb7159ab4bfafbecba2f8c73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a691e75eecb7159ab4bfafbecba2f8c73">&#9670;&#160;</a></span>enableHitEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::jolt::ShapeBackend::enableHitEvents </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>enableHitEvents; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#a58525b905109ee3801a52736115bb5bf">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00120">120</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="JoltInternal_8h_source.html#l00024">eve::physics::jolt::success()</a>.</p>
+
+</div>
+</div>
+<a id="a4b37cb75b946fbdcd9e788abc175dff2" name="a4b37cb75b946fbdcd9e788abc175dff2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b37cb75b946fbdcd9e788abc175dff2">&#9670;&#160;</a></span>enablePreSolveEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::jolt::ShapeBackend::enablePreSolveEvents </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>enablePreSolveEvents; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#a30e01ba893235cdc9583ef18c7555158">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00126">126</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="JoltInternal_8h_source.html#l00024">eve::physics::jolt::success()</a>.</p>
+
+</div>
+</div>
+<a id="a31076808028f1c85f3bb5a0cc77992de" name="a31076808028f1c85f3bb5a0cc77992de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31076808028f1c85f3bb5a0cc77992de">&#9670;&#160;</a></span>filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ShapeFilter3D.html">ShapeFilter3D</a> &gt; eve::physics::jolt::ShapeBackend::filter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>filter; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#a2723760fad000eada728cdce9ff24b6b">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>.</p>
+
+</div>
+</div>
+<a id="ac4b761b659400fe41586e9b1af3c326d" name="ac4b761b659400fe41586e9b1af3c326d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4b761b659400fe41586e9b1af3c326d">&#9670;&#160;</a></span>friction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; float &gt; eve::physics::jolt::ShapeBackend::friction </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>friction; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#a7584fb1e5f0ccf1529f857ec8f5d0052">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>.</p>
+
+</div>
+</div>
+<a id="a0f7c73db7a7383c11f6f2811ede4d54d" name="a0f7c73db7a7383c11f6f2811ede4d54d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f7c73db7a7383c11f6f2811ede4d54d">&#9670;&#160;</a></span>invalidate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::ShapeBackend::invalidate </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Detaches native identity before parent teardown; retains cooked data until destruction. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#abc657154f75ea9e1709eaa94120a71b2">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShape_8cpp_source.html">JoltShape.cpp</a> 第 <a class="el" href="JoltShape_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltShape_8cpp_source.html#l00123">destroy()</a>.</p>
+
+</div>
+</div>
+<a id="ac372419ac0c16e81eff9dba39fd4f068" name="ac372419ac0c16e81eff9dba39fd4f068"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac372419ac0c16e81eff9dba39fd4f068">&#9670;&#160;</a></span>isSensor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt; eve::physics::jolt::ShapeBackend::isSensor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>isSensor; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#a536cc24a7d2fcb6b6d5cbd1b0cf9d4ac">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00115">115</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>.</p>
+
+</div>
+</div>
+<a id="a96996e6437680fe6261016d4e828c827" name="a96996e6437680fe6261016d4e828c827"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96996e6437680fe6261016d4e828c827">&#9670;&#160;</a></span>isValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::jolt::ShapeBackend::isValid </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Native shape liveness. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#ae9df3934f74e24f74cf58d38771ea4db">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShape_8cpp_source.html">JoltShape.cpp</a> 第 <a class="el" href="JoltShape_8cpp_source.html#l00117">117</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00022">density()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00123">destroy()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00120">enableHitEvents()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00126">enablePreSolveEvents()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00100">filter()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00052">friction()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00115">isSensor()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00078">material()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00139">meshMaterial()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00135">meshMaterialCount()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00011">oneWayPlane()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00136">rebuild()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00065">restitution()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00027">setDensity()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00105">setFilter()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00057">setFriction()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00092">setMaterial()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00145">setMeshMaterial()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00070">setRestitution()</a> , 以及 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00155">testPoint()</a>.</p>
+
+</div>
+</div>
+<a id="a55003abde07897e45dc16bdfe6da0cb1" name="a55003abde07897e45dc16bdfe6da0cb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a55003abde07897e45dc16bdfe6da0cb1">&#9670;&#160;</a></span>material()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a> &gt; eve::physics::jolt::ShapeBackend::material </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>material; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#a90c9391b10869cab51e55d060553ff3b">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00078">78</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltShape_8cpp_source.html#l00136">rebuild()</a>.</p>
+
+</div>
+</div>
+<a id="ac3d404ae0afa305225345db67ef7706d" name="ac3d404ae0afa305225345db67ef7706d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3d404ae0afa305225345db67ef7706d">&#9670;&#160;</a></span>meshMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a> &gt; eve::physics::jolt::ShapeBackend::meshMaterial </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>slot</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>meshMaterial; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#a5ff8ef6a6f67bb301ba66ad38561ce65">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00139">139</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>, <a class="el" href="RPGBalance_8cpp_source.html#l00100">slot</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ab1ac17991b081a062a11b6b054de3e1c" name="ab1ac17991b081a062a11b6b054de3e1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1ac17991b081a062a11b6b054de3e1c">&#9670;&#160;</a></span>meshMaterialCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; int &gt; eve::physics::jolt::ShapeBackend::meshMaterialCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>meshMaterialCount; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#acdfe643f18f08db0ba82c64fbbe52117">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00135">135</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ad38b65e57e60826c03cc2982b12ce7c7" name="ad38b65e57e60826c03cc2982b12ce7c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad38b65e57e60826c03cc2982b12ce7c7">&#9670;&#160;</a></span>oneWayPlane()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ShapePlane3D.html">ShapePlane3D</a> &gt; eve::physics::jolt::ShapeBackend::oneWayPlane </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1ShapeGeometry3D.html">ShapeGeometry3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1PhysicsVector3D.html">PhysicsVector3D</a>&#160;</td>
+          <td class="paramname"><em>normal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Computes an owning world-space plane using the current body pose; no callbacks. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#ab115d296548565878b95d9e8c32dfd2f">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00162">normal</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00304">point</a>, <a class="el" href="AudioCapabilities_8cpp_source.html#l00379">pose</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ab8c763db25d2615f999a361a7b2ff521" name="ab8c763db25d2615f999a361a7b2ff521"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8c763db25d2615f999a361a7b2ff521">&#9670;&#160;</a></span>rebuild()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::jolt::ShapeBackend::rebuild </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1ShapeGeometry3D.html">ShapeGeometry3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometry</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1ShapeBehavior3D.html">ShapeBehavior3D</a>&#160;</td>
+          <td class="paramname"><em>behavior</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a> &gt;&#160;</td>
+          <td class="paramname"><em>materials</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Atomically replaces cooked geometry, preserving material, density and filter. @cost One geometry cook and shape replacement per edit; input views are consumed synchronously. </p>
+<dl class="section return"><dt>返回</dt><dd>InvalidArgument/Unsupported/Failed without replacing the previous native shape. </dd></dl>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#a9ff0b159d02d6b9d9c349255452f0482">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShape_8cpp_source.html">JoltShape.cpp</a> 第 <a class="el" href="JoltShape_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="ForceMath_8h_source.html#l00021">eve::physics::force_detail::checked()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00016">eve::physics::jolt::cook()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00078">material()</a>, <a class="el" href="ShapeBackend3D_8h_source.html#l00024">eve::physics::ShapeGeometry3D::meshMaterialIndices</a>, <a class="el" href="JoltShape_8cpp_source.html#l00077">eve::physics::jolt::replaceShapes()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="ShapeBackend3D_8h_source.html#l00047">eve::physics::ShapeBehavior3D::sensor</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="JoltInternal_8h_source.html#l00024">eve::physics::jolt::success()</a> , 以及 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00083">eve::physics::jolt::validateMaterial()</a>.</p>
+
+</div>
+</div>
+<a id="adb04c7f64e9707a16d59e63bf2f43067" name="adb04c7f64e9707a16d59e63bf2f43067"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb04c7f64e9707a16d59e63bf2f43067">&#9670;&#160;</a></span>restitution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; float &gt; eve::physics::jolt::ShapeBackend::restitution </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>restitution; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#a723dc456ac5a61ad4b7ddb6edda5d456">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a> , 以及 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>.</p>
+
+</div>
+</div>
+<a id="a3e5439ecc9a410497f7f84f6f21fdcb4" name="a3e5439ecc9a410497f7f84f6f21fdcb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e5439ecc9a410497f7f84f6f21fdcb4">&#9670;&#160;</a></span>setDensity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::jolt::ShapeBackend::setDensity </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>updateMass</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>setDensity; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#aeb28ba06fababbdeba832cae2e2a68b2">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="JoltShape_8cpp_source.html#l00016">eve::physics::jolt::cook()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00022">density()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00018">previous</a>, <a class="el" href="JoltShape_8cpp_source.html#l00077">eve::physics::jolt::replaceShapes()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="JoltInternal_8h_source.html#l00024">eve::physics::jolt::success()</a>.</p>
+
+</div>
+</div>
+<a id="acd0c73acad32acadb36b1059ef452dfe" name="acd0c73acad32acadb36b1059ef452dfe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd0c73acad32acadb36b1059ef452dfe">&#9670;&#160;</a></span>setFilter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::jolt::ShapeBackend::setFilter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1ShapeFilter3D.html">ShapeFilter3D</a>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>updatePairs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>setFilter; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#acb61adb27f71a177b023cead68f63092">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00105">105</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="JoltInternal_8h_source.html#l00024">eve::physics::jolt::success()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="a58e0b28e0f93ffdf766b1fb26a21ef68" name="a58e0b28e0f93ffdf766b1fb26a21ef68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a58e0b28e0f93ffdf766b1fb26a21ef68">&#9670;&#160;</a></span>setFriction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::jolt::ShapeBackend::setFriction </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>setFriction; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#a686fb3d48b037476b11cfb43d1c550bf">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00057">57</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="JoltInternal_8h_source.html#l00024">eve::physics::jolt::success()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="ac593f54f0bfcf248a2b2c884409fa5fa" name="ac593f54f0bfcf248a2b2c884409fa5fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac593f54f0bfcf248a2b2c884409fa5fa">&#9670;&#160;</a></span>setMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::jolt::ShapeBackend::setMaterial </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a>&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>setMaterial; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#a101f84d3ee1db706e54b23c2c414a70a">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ForceMath_8h_source.html#l00021">eve::physics::force_detail::checked()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="JoltInternal_8h_source.html#l00024">eve::physics::jolt::success()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00083">eve::physics::jolt::validateMaterial()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="adfb61f29333fcb1b71d24568132e243c" name="adfb61f29333fcb1b71d24568132e243c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfb61f29333fcb1b71d24568132e243c">&#9670;&#160;</a></span>setMeshMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::jolt::ShapeBackend::setMeshMaterial </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>slot</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>setMeshMaterial; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#a52139942ad676bd8da012785c87c1528">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00145">145</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ForceMath_8h_source.html#l00021">eve::physics::force_detail::checked()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>, <a class="el" href="RPGBalance_8cpp_source.html#l00100">slot</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="JoltInternal_8h_source.html#l00024">eve::physics::jolt::success()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00083">eve::physics::jolt::validateMaterial()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="a6d7cf96d6ef553761f0176fafbee9959" name="a6d7cf96d6ef553761f0176fafbee9959"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d7cf96d6ef553761f0176fafbee9959">&#9670;&#160;</a></span>setRestitution()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::jolt::ShapeBackend::setRestitution </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>setRestitution; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#ab5789da6bce2881204692615e83dbcb4">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="JoltInternal_8h_source.html#l00024">eve::physics::jolt::success()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="a43a24bd931079f4241c22c7619a5e58f" name="a43a24bd931079f4241c22c7619a5e58f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43a24bd931079f4241c22c7619a5e58f">&#9670;&#160;</a></span>testPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; bool &gt; eve::physics::jolt::ShapeBackend::testPoint </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>testPoint; synchronous owning-value operation under the class lifetime contract. </p>
+
+<p>实现了 <a class="el" href="classeve_1_1physics_1_1IShapeBackend3D.html#ab7bfd445eeab615d37bfce8e902ca611">eve::physics::IShapeBackend3D</a>.</p>
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="JoltInternal_8h_source.html#l00025">eve::physics::jolt::isFinite()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00025">local</a>, <a class="el" href="AudioCapabilities_8cpp_source.html#l00379">pose</a>, <a class="el" href="JoltShape_8h_source.html#l00010">shape</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a4159509d2c20e83f1ddb4d2ecb46f819" name="a4159509d2c20e83f1ddb4d2ecb46f819"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4159509d2c20e83f1ddb4d2ecb46f819">&#9670;&#160;</a></span>shape</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a>&gt; eve::physics::jolt::ShapeBackend::shape</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltShape_8h_source.html">JoltShape.h</a> 第 <a class="el" href="JoltShape_8h_source.html#l00010">10</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00022">density()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00123">destroy()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00126">enablePreSolveEvents()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00100">filter()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00052">friction()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00119">invalidate()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00115">isSensor()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00117">isValid()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00078">material()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00139">meshMaterial()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00135">meshMaterialCount()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00011">oneWayPlane()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00136">rebuild()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00065">restitution()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00027">setDensity()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00105">setFilter()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00057">setFriction()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00092">setMaterial()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00145">setMeshMaterial()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00070">setRestitution()</a> , 以及 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00155">testPoint()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/jolt/<a class="el" href="JoltShape_8h_source.html">JoltShape.h</a></li>
+<li>src/modules/physics/jolt/<a class="el" href="JoltShape_8cpp_source.html">JoltShape.cpp</a></li>
+<li>src/modules/physics/jolt/<a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

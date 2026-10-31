@@ -1,0 +1,529 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::graphics::IGpuParticles类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1graphics.html">graphics</a></li><li class="navelem"><a class="el" href="classeve_1_1graphics_1_1IGpuParticles.html">IGpuParticles</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1graphics_1_1IGpuParticles-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::graphics::IGpuParticles类 参考<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Resident GPU particle surface kept off the high-fanout <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> facade.  
+ <a href="classeve_1_1graphics_1_1IGpuParticles.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::graphics::IGpuParticles 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1graphics_1_1IGpuParticles.png" usemap="#eve::graphics::IGpuParticles_map" alt=""/>
+  <map id="eve::graphics::IGpuParticles_map" name="eve::graphics::IGpuParticles_map">
+<area href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html" title="EVENGINE_API_BACKENDS public API." alt="eve::graphics::vulkan::Graphics" shape="rect" coords="0,56,188,80"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad801831b1c155f4409100334c48eafeb" id="r_ad801831b1c155f4409100334c48eafeb"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IGpuParticles.html#ad801831b1c155f4409100334c48eafeb">~IGpuParticles</a> ()=default</td></tr>
+<tr class="memdesc:ad801831b1c155f4409100334c48eafeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Releases <a class="el" href="classeve_1_1graphics_1_1IGpuParticles.html" title="Resident GPU particle surface kept off the high-fanout Graphics facade.">IGpuParticles</a> resources.  <br /></td></tr>
+<tr class="separator:ad801831b1c155f4409100334c48eafeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa98cc8f95319a5d48885ddf12a940b48" id="r_aa98cc8f95319a5d48885ddf12a940b48"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IGpuParticles.html#aa98cc8f95319a5d48885ddf12a940b48">supportsGpuParticles</a> () const =0</td></tr>
+<tr class="memdesc:aa98cc8f95319a5d48885ddf12a940b48"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when this backend supports resident compute + indirect particle draws.  <br /></td></tr>
+<tr class="separator:aa98cc8f95319a5d48885ddf12a940b48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1cd257a0f4b7c205f89789f62c7f89a" id="r_aa1cd257a0f4b7c205f89789f62c7f89a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IGpuParticles.html#aa1cd257a0f4b7c205f89789f62c7f89a">canSubmitGpuParticles</a> () const =0</td></tr>
+<tr class="memdesc:aa1cd257a0f4b7c205f89789f62c7f89a"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when the current frame topology can accept a GPU particle compute section.  <br /></td></tr>
+<tr class="separator:aa1cd257a0f4b7c205f89789f62c7f89a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8758ffc2fafcdfc00adeef35b042199a" id="r_a8758ffc2fafcdfc00adeef35b042199a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IGpuParticles.html#a8758ffc2fafcdfc00adeef35b042199a">createGpuParticleEmitter</a> (std::uint32_t <a class="el" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a>)=0</td></tr>
+<tr class="memdesc:a8758ffc2fafcdfc00adeef35b042199a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate backend-owned resident state for one particle emitter.  <br /></td></tr>
+<tr class="separator:a8758ffc2fafcdfc00adeef35b042199a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33116919b4b9f2fcc7de0c7ed9767551" id="r_a33116919b4b9f2fcc7de0c7ed9767551"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IGpuParticles.html#a33116919b4b9f2fcc7de0c7ed9767551">releaseGpuParticleEmitter</a> (<a class="el" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a> <a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)=0</td></tr>
+<tr class="memdesc:a33116919b4b9f2fcc7de0c7ed9767551"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release a GPU particle emitter. Explicit release may wait for in-flight frames.  <br /></td></tr>
+<tr class="separator:a33116919b4b9f2fcc7de0c7ed9767551"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3313e2431f1a51d34bfa4452367df0f6" id="r_a3313e2431f1a51d34bfa4452367df0f6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IGpuParticles.html#a3313e2431f1a51d34bfa4452367df0f6">resetGpuParticleEmitter</a> (<a class="el" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a> <a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>)=0</td></tr>
+<tr class="memdesc:a3313e2431f1a51d34bfa4452367df0f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear resident state before the next submitted frame.  <br /></td></tr>
+<tr class="separator:a3313e2431f1a51d34bfa4452367df0f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a617bec1eb9a1885f894e5fd943c91b0a" id="r_a617bec1eb9a1885f894e5fd943c91b0a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IGpuParticles.html#a617bec1eb9a1885f894e5fd943c91b0a">updateGpuParticleEmitter</a> (<a class="el" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a> <a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, const <a class="el" href="structeve_1_1graphics_1_1GpuParticleUpdate.html">GpuParticleUpdate</a> &amp;update, const <a class="el" href="structeve_1_1graphics_1_1GpuParticleSpawn.html">GpuParticleSpawn</a> *spawns, std::uint32_t <a class="el" href="GraphicsParticles_8cpp.html#a77c6414fbb3fc9d877807fb880eb2f1b">spawnCount</a>)=0</td></tr>
+<tr class="memdesc:a617bec1eb9a1885f894e5fd943c91b0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upload one simulation step and optional spawn commands. @compatibility Preserves the established GPU-particle boolean submission contract.  <br /></td></tr>
+<tr class="separator:a617bec1eb9a1885f894e5fd943c91b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3563afdb98c38546bcdb96b43944f086" id="r_a3563afdb98c38546bcdb96b43944f086"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IGpuParticles.html#a3563afdb98c38546bcdb96b43944f086">drawGpuParticleEmitter</a> (<a class="el" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a> <a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>, const <a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html">GpuParticleDraw</a> &amp;<a class="el" href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw</a>)=0</td></tr>
+<tr class="memdesc:a3563afdb98c38546bcdb96b43944f086"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queue an indirect draw at the current 2D overlay position. @compatibility Preserves the established GPU-particle boolean submission contract.  <br /></td></tr>
+<tr class="separator:a3563afdb98c38546bcdb96b43944f086"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6088770ca3683bc2637172ce089dc210" id="r_a6088770ca3683bc2637172ce089dc210"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="structeve_1_1graphics_1_1GpuParticleStats.html">GpuParticleStats</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1graphics_1_1IGpuParticles.html#a6088770ca3683bc2637172ce089dc210">getGpuParticleStats</a> (<a class="el" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a> <a class="el" href="PrimitivePath_8cpp.html#afb09dcd532f47a3a9fa9eed7d5a09e93">handle</a>) const =0</td></tr>
+<tr class="memdesc:a6088770ca3683bc2637172ce089dc210"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the latest fence-complete counters without waiting on the GPU.  <br /></td></tr>
+<tr class="separator:a6088770ca3683bc2637172ce089dc210"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Resident GPU particle surface kept off the high-fanout <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> facade. </p>
+<p>Backends that implement compute + indirect particle draws expose this through <code><a class="el" href="classeve_1_1graphics_1_1Graphics.html#a19de9ed7bf3b3ef5500ed78e3036c96c" title="Borrow the backend particle compute surface when present.">Graphics::gpuParticles()</a></code>. Handle-only <a class="el" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a> includers never see spawn / draw layout records. </p>
+
+<p class="definition">在文件 <a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a> 第 <a class="el" href="GpuParticles_8h_source.html#l00130">130</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ad801831b1c155f4409100334c48eafeb" name="ad801831b1c155f4409100334c48eafeb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad801831b1c155f4409100334c48eafeb">&#9670;&#160;</a></span>~IGpuParticles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual eve::graphics::IGpuParticles::~IGpuParticles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Releases <a class="el" href="classeve_1_1graphics_1_1IGpuParticles.html" title="Resident GPU particle surface kept off the high-fanout Graphics facade.">IGpuParticles</a> resources. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa1cd257a0f4b7c205f89789f62c7f89a" name="aa1cd257a0f4b7c205f89789f62c7f89a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1cd257a0f4b7c205f89789f62c7f89a">&#9670;&#160;</a></span>canSubmitGpuParticles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::graphics::IGpuParticles::canSubmitGpuParticles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when the current frame topology can accept a GPU particle compute section. </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#adbcecd8d583f4ea4f837b2a60ef4321a">eve::graphics::vulkan::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a8758ffc2fafcdfc00adeef35b042199a" name="a8758ffc2fafcdfc00adeef35b042199a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8758ffc2fafcdfc00adeef35b042199a">&#9670;&#160;</a></span>createGpuParticleEmitter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a> eve::graphics::IGpuParticles::createGpuParticleEmitter </td>
+          <td>(</td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>capacity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Allocate backend-owned resident state for one particle emitter. </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a11ff9daaf4219489116683dabbcad77e">eve::graphics::vulkan::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a3563afdb98c38546bcdb96b43944f086" name="a3563afdb98c38546bcdb96b43944f086"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3563afdb98c38546bcdb96b43944f086">&#9670;&#160;</a></span>drawGpuParticleEmitter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::graphics::IGpuParticles::drawGpuParticleEmitter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1GpuParticleDraw.html">GpuParticleDraw</a> &amp;&#160;</td>
+          <td class="paramname"><em>draw</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Queue an indirect draw at the current 2D overlay position. @compatibility Preserves the established GPU-particle boolean submission contract. </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a322a4a7e8f687db4b6ddb21457aa0863">eve::graphics::vulkan::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a6088770ca3683bc2637172ce089dc210" name="a6088770ca3683bc2637172ce089dc210"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6088770ca3683bc2637172ce089dc210">&#9670;&#160;</a></span>getGpuParticleStats()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="structeve_1_1graphics_1_1GpuParticleStats.html">GpuParticleStats</a> eve::graphics::IGpuParticles::getGpuParticleStats </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return the latest fence-complete counters without waiting on the GPU. </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a7a5c47ebc1a7f34954f0cf671799d37c">eve::graphics::vulkan::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a33116919b4b9f2fcc7de0c7ed9767551" name="a33116919b4b9f2fcc7de0c7ed9767551"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33116919b4b9f2fcc7de0c7ed9767551">&#9670;&#160;</a></span>releaseGpuParticleEmitter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::graphics::IGpuParticles::releaseGpuParticleEmitter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Release a GPU particle emitter. Explicit release may wait for in-flight frames. </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ab998da26cb1e21201df049dd87576c9f">eve::graphics::vulkan::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a3313e2431f1a51d34bfa4452367df0f6" name="a3313e2431f1a51d34bfa4452367df0f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3313e2431f1a51d34bfa4452367df0f6">&#9670;&#160;</a></span>resetGpuParticleEmitter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void eve::graphics::IGpuParticles::resetGpuParticleEmitter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Clear resident state before the next submitted frame. </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#ad97a2756cf3031c8609bc91a442824cf">eve::graphics::vulkan::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="aa98cc8f95319a5d48885ddf12a940b48" name="aa98cc8f95319a5d48885ddf12a940b48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa98cc8f95319a5d48885ddf12a940b48">&#9670;&#160;</a></span>supportsGpuParticles()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::graphics::IGpuParticles::supportsGpuParticles </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when this backend supports resident compute + indirect particle draws. </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a0f490b856b1e29f525f11b1a8943f728">eve::graphics::vulkan::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<a id="a617bec1eb9a1885f894e5fd943c91b0a" name="a617bec1eb9a1885f894e5fd943c91b0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a617bec1eb9a1885f894e5fd943c91b0a">&#9670;&#160;</a></span>updateGpuParticleEmitter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool eve::graphics::IGpuParticles::updateGpuParticleEmitter </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1graphics.html#a18c16bf8caa1b5b550e6c974fd0649da">GpuParticleHandle</a>&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1GpuParticleUpdate.html">GpuParticleUpdate</a> &amp;&#160;</td>
+          <td class="paramname"><em>update</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1graphics_1_1GpuParticleSpawn.html">GpuParticleSpawn</a> *&#160;</td>
+          <td class="paramname"><em>spawns</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::uint32_t&#160;</td>
+          <td class="paramname"><em>spawnCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Upload one simulation step and optional spawn commands. @compatibility Preserves the established GPU-particle boolean submission contract. </p>
+
+<p>在 <a class="el" href="classeve_1_1graphics_1_1vulkan_1_1Graphics.html#a7be5c614050cc33a015b0e4a4a59298f">eve::graphics::vulkan::Graphics</a> 内被实现.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/graphics/<a class="el" href="GpuParticles_8h_source.html">GpuParticles.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

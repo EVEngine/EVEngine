@@ -1,0 +1,407 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/jolt/JoltState.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_ff62e0f27e22813015816d9775ff97d9.html">jolt</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">JoltState.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="JoltState_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="comment">// eve-hot-path</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// Jolt requires its platform header before any other native header.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;Jolt/Jolt.h&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// Provider implementation dependencies.</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;Jolt/Core/Factory.h&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;Jolt/Physics/Collision/CollideShape.h&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;Jolt/RegisterTypes.h&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cstdarg&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cstdio&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &quot;<a class="code" href="JoltInternal_8h.html">physics/jolt/JoltInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &quot;<a class="code" href="JoltJoint_8h.html">physics/jolt/JoltJoint.h</a>&quot;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &quot;<a class="code" href="JoltWorld_8h.html">physics/jolt/JoltWorld.h</a>&quot;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics_1_1jolt.html">eve::physics::jolt</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keywordtype">void</span> <a class="code hl_variable" href="Agent_8cpp.html#ae975eceec8a4bdcc279a02759aada6b7">trace</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* format, ...) {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    va_list arguments;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    va_start(arguments, format);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    std::fputs(<span class="stringliteral">&quot;[Jolt] &quot;</span>, stderr);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    std::vfprintf(stderr, format, arguments);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    std::fputc(<span class="charliteral">&#39;\n&#39;</span>, stderr);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    va_end(arguments);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>}</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">struct </span><a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818abc366f2d0ba3d681e7a3899917c5d3de">Runtime</a> {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_enumvalue" href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818abc366f2d0ba3d681e7a3899917c5d3de">Runtime</a>() {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        JPH::RegisterDefaultAllocator();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        JPH::Trace = &amp;<a class="code hl_variable" href="Agent_8cpp.html#ae975eceec8a4bdcc279a02759aada6b7">trace</a>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#ifdef JPH_ENABLE_ASSERTS</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        JPH::AssertFailed = [](<span class="keyword">const</span> <span class="keywordtype">char</span>* expression, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#aefc35c7944eed319c89bc1b399f0eb67">file</a>, JPH::uint <a class="code hl_variable" href="ScriptStructure_8cpp.html#a05ef0c4dbeec4fc8ccb225de9c26d896">line</a>) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            std::fprintf(stderr, <span class="stringliteral">&quot;[Jolt] assertion %s at %s:%u: %s\n&quot;</span>, expression, <a class="code hl_variable" href="ProjectIndexAutomatic_8cpp.html#aefc35c7944eed319c89bc1b399f0eb67">file</a>, <a class="code hl_variable" href="ScriptStructure_8cpp.html#a05ef0c4dbeec4fc8ccb225de9c26d896">line</a>, <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a> ? <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a> : <span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        };</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        JPH::Factory::sInstance = <span class="keyword">new</span> JPH::Factory;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        JPH::RegisterTypes();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    ~Runtime() {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        JPH::UnregisterTypes();</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keyword">delete</span> JPH::Factory::sInstance;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        JPH::Factory::sInstance = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keywordtype">float</span> combine(<span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, uint64_t policyA, uint64_t policyB, <span class="keywordtype">int</span> shift, <span class="keywordtype">bool</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#a585bd15db005143bac988d78710e4e93">friction</a>) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">switch</span> (std::max((policyA &gt;&gt; shift) &amp; 7, (policyB &gt;&gt; shift) &amp; 7)) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">case</span> 1: <span class="keywordflow">return</span> .5f * (<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a> + <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        <span class="keywordflow">case</span> 2: <span class="keywordflow">return</span> std::min(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">case</span> 3: <span class="keywordflow">return</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a> * <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">case</span> 4: <span class="keywordflow">return</span> std::max(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">default</span>: <span class="keywordflow">return</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#a585bd15db005143bac988d78710e4e93">friction</a> ? std::sqrt(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a> * <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>) : <a class="code hl_namespace" href="namespacestd.html">std</a>::<a class="code hl_variable" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">max</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keywordtype">void</span> configure(<span class="keyword">const</span> JPH::Body&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <span class="keyword">const</span> JPH::Body&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, <span class="keyword">const</span> JPH::ContactManifold&amp; <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>, JPH::ContactSettings&amp; <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">auto</span>* sa = <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">child</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.mSubShapeID1);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">auto</span>* sb = <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">child</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.mSubShapeID2);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">if</span> (!sa || !sb) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">const</span> <span class="keyword">auto</span> ma       = <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a7e9ff46bba93a2218f5cba6accc0894b">contactMaterial</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.mSubShapeID1, *sa);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keyword">const</span> <span class="keyword">auto</span> mb       = <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a7e9ff46bba93a2218f5cba6accc0894b">contactMaterial</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.mSubShapeID2, *sb);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keyword">auto</span>       <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#acdae2484d6ee7eafc48f1fb62fbea1cc">velocity</a> = [](<span class="keyword">const</span> JPH::Body&amp; <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>, <span class="keyword">const</span> ShapeState&amp; <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>, <span class="keyword">const</span> SurfaceMaterial3D&amp; <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a> = <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>.geometry;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>.GetRotation() *</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>               (JPH::Quat(<a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>.localQx, <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>.localQy, <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>.localQz, <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>.localQw).Normalized() *</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                JPH::Vec3(<a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>.tangentVelocity.x, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>.tangentVelocity.y, <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a>.tangentVelocity.z));</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    };</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>.mRelativeLinearSurfaceVelocity = <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#acdae2484d6ee7eafc48f1fb62fbea1cc">velocity</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, *sb, mb) - <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#acdae2484d6ee7eafc48f1fb62fbea1cc">velocity</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, *sa, ma);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>                        = <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.GetWorldSpaceContactPointOn1(0);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>                       = <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.mWorldSpaceNormal;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>.mIsSensor                      = sa-&gt;sensor || sb-&gt;sensor || !sa-&gt;owner || !sb-&gt;owner ||</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                         !<a class="code hl_function" href="classeve_1_1physics_1_1jolt_1_1WorldBackend.html#adb74059586591323a251a13271ec250f">WorldBackend::isContactAllowed</a>(*sa-&gt;owner, *sb-&gt;owner, <a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.GetX(), <a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.GetY(),</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                                         <a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>.GetZ(), <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>.GetX(), <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>.GetY(), <a class="code hl_variable" href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a>.GetZ());</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>.mCombinedFriction = combine(ma.friction, mb.friction, ma.userMaterialId, mb.userMaterialId, 32, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>.mCombinedRestitution =</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        combine(ma.restitution, mb.restitution, ma.userMaterialId, mb.userMaterialId, 35, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a> = [](<span class="keyword">const</span> ShapeState&amp; <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>.geometry.kind == <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3ab7095f057db3fefa7325ad93a04e14fd">ShapeKind3D::Sphere</a>) <span class="keywordflow">return</span> <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>.geometry.a;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>.geometry.kind == <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3a4880c0f12c06dd6d142e7a40b041bf1a">ShapeKind3D::Capsule</a>) <span class="keywordflow">return</span> <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>.geometry.b;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>.geometry.kind == <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3a3cfce651e667ab85486dd42a8185f98a">ShapeKind3D::Box</a> || <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>.geometry.kind == <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3a3e1ee9920ed982b5da9becaf4b5463e5">ShapeKind3D::ConvexHull</a>)</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordflow">return</span> .25f * <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a>.native-&gt;GetInnerRadius();</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">return</span> 0.f;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    };</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>.mCombinedRollingResistance =</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        std::max(ma.rollingResistance, mb.rollingResistance) * std::max(<a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>(*sa), <a class="code hl_variable" href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a>(*sb));</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics_1_1jolt.html#a2455996f82e0b824460774c14232eda7">   84</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a2455996f82e0b824460774c14232eda7">initializeRuntime</a>() { <span class="keyword">static</span> Runtime runtime; }</div>
+<div class="foldopen" id="foldopen00085" data-start="{" data-end="}">
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1jolt_1_1State.html#a6f40467ddc99a1916e98b470780e6c80">   85</a></span><a class="code hl_function" href="structeve_1_1physics_1_1jolt_1_1State.html#a6f40467ddc99a1916e98b470780e6c80">State::State</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, <span class="keywordtype">bool</span> allowSleep) : sleep(allowSleep) {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a68e41ba2dc65a6fb04cc4140386ca3ef">system</a>.Init(16384, 0, 65536, 16384, <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a349b753bd2ca4aa2a4f39dd9224b2b38">layers</a>, <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a349b753bd2ca4aa2a4f39dd9224b2b38">layers</a>, <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a349b753bd2ca4aa2a4f39dd9224b2b38">layers</a>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a68e41ba2dc65a6fb04cc4140386ca3ef">system</a>.SetGravity({<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>});</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a89c8569f436bf6f9704c9fc66676c4de">listener</a>        = std::make_unique&lt;Listener&gt;();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a89c8569f436bf6f9704c9fc66676c4de">listener</a>-&gt;state = <span class="keyword">this</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a68e41ba2dc65a6fb04cc4140386ca3ef">system</a>.SetContactListener(<a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a89c8569f436bf6f9704c9fc66676c4de">listener</a>.get());</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a68e41ba2dc65a6fb04cc4140386ca3ef">system</a>.AddStepListener(<a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a89c8569f436bf6f9704c9fc66676c4de">listener</a>.get());</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00093" data-start="{" data-end="}">
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1jolt_1_1State.html#a925184d330e68a765d0d2552e2e8e195">   93</a></span><a class="code hl_function" href="structeve_1_1physics_1_1jolt_1_1State.html#a925184d330e68a765d0d2552e2e8e195">State::~State</a>() {</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a68e41ba2dc65a6fb04cc4140386ca3ef">system</a>.RemoveStepListener(<a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a89c8569f436bf6f9704c9fc66676c4de">listener</a>.get());</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a68e41ba2dc65a6fb04cc4140386ca3ef">system</a>.SetContactListener(<span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00097" data-start="{" data-end="}">
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1jolt_1_1Listener.html#acacbacc795eb13eb340df97c09cc755a">   97</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1physics_1_1jolt_1_1Listener.html#acacbacc795eb13eb340df97c09cc755a">Listener::OnStep</a>(<span class="keyword">const</span> JPH::PhysicsStepListenerContext&amp;) {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    ++<a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1Listener.html#aa211e2534c338c1006affc9f547c6317">substep</a>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="comment">// Jolt owns all body/constraint locks here. Never call the locking BodyInterface.</span></div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; weak : <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1Listener.html#aaf80897d5ab256000385424d5fa2d97e">state</a>-&gt;<a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#ae45d13df23d175545e538c66c3f973bc">joints</a>)</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keywordflow">if</span> (<span class="keyword">auto</span> joint = weak.lock(); joint &amp;&amp; joint-&gt;alive &amp;&amp; joint-&gt;native &amp;&amp;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                                      (joint-&gt;kind == <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#afd233582abf17207b98d5ee6bc1b2f05ab33538179f5661a86cbe327a1793e199">JointKind3D::Motor</a> || joint-&gt;kind == <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#afd233582abf17207b98d5ee6bc1b2f05a24e5c24fabd1c081d4c729094df0b947">JointKind3D::Spherical</a>)) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            <span class="keyword">auto</span>&amp; constraint = joint-&gt;velocity ? *joint-&gt;velocity : <span class="keyword">static_cast&lt;</span>JPH::SixDOFConstraint&amp;<span class="keyword">&gt;</span>(*joint-&gt;native);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#ae29508736a722b546230738c4e54294d">frame</a> =</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                constraint.GetBody1()-&gt;GetCenterOfMassTransform() * constraint.GetConstraintToBody1Matrix();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            constraint.SetTargetAngularVelocityCS(<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#ae29508736a722b546230738c4e54294d">frame</a>.Multiply3x3Transposed(joint-&gt;worldAngularVelocity));</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            <span class="keywordflow">if</span> (joint-&gt;kind == <a class="code hl_enumvalue" href="namespaceeve_1_1physics.html#afd233582abf17207b98d5ee6bc1b2f05ab33538179f5661a86cbe327a1793e199">JointKind3D::Motor</a>)</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                constraint.SetTargetVelocityCS(<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#ae29508736a722b546230738c4e54294d">frame</a>.Multiply3x3Transposed(joint-&gt;worldLinearVelocity));</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        }</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00111" data-start="{" data-end="}">
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a5aa001b43a917c5821c311fdf2b82902">  111</a></span>JPH::ValidateResult <a class="code hl_function" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a5aa001b43a917c5821c311fdf2b82902">Listener::OnContactValidate</a>(<span class="keyword">const</span> JPH::Body&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <span class="keyword">const</span> JPH::Body&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, JPH::RVec3Arg,</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                                                <span class="keyword">const</span> JPH::CollideShapeResult&amp; <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>) {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1Listener.html#aaf80897d5ab256000385424d5fa2d97e">state</a>-&gt;<a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1State.html#a32afd9eb395ac700c5cdb2f14788dd4e">suppressedPairs</a>.contains(<a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#aa89cb35661dc2d6f9b656fad5a0f4f60">pairKey</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.GetID(), <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>.GetID())))</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keywordflow">return</span> JPH::ValidateResult::RejectAllContactsForThisBodyPair;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* sa = <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">child</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.mSubShapeID1);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* sb = <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">child</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.mSubShapeID2);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <span class="keywordflow">if</span> (!sa || !sb || !sa-&gt;owner || !sb-&gt;owner || !<a class="code hl_function" href="classeve_1_1physics_1_1jolt_1_1WorldBackend.html#a982e339f09113c5f6a62537b422dc860">WorldBackend::isPairAllowed</a>(*sa-&gt;owner, *sb-&gt;owner))</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordflow">return</span> JPH::ValidateResult::RejectContact;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; fa     = sa-&gt;filter;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; fb     = sb-&gt;filter;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordtype">bool</span>        accept = fa.groupIndex &amp;&amp; fa.groupIndex == fb.groupIndex</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                             ? fa.groupIndex &gt; 0</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                             : (fa.maskBits &amp; fb.categoryBits) &amp;&amp; (fb.maskBits &amp; fa.categoryBits);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordflow">return</span> accept ? JPH::ValidateResult::AcceptContact : JPH::ValidateResult::RejectContact;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00126" data-start="{" data-end="}">
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a602468dc32dc6e925417d711ee7358c4">  126</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a602468dc32dc6e925417d711ee7358c4">Listener::OnContactAdded</a>(<span class="keyword">const</span> JPH::Body&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <span class="keyword">const</span> JPH::Body&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, <span class="keyword">const</span> JPH::ContactManifold&amp; <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                              JPH::ContactSettings&amp; <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>) {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    configure(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>, <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keyword">auto</span>* sa = <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">child</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.mSubShapeID1);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keyword">auto</span>* sb = <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">child</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.mSubShapeID2);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keywordflow">if</span> (!sa || !sb || !sa-&gt;owner || !sb-&gt;owner) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keyword">auto</span> ba = sa-&gt;body.lock();</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keyword">auto</span> bb = sb-&gt;body.lock();</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keywordflow">if</span> (!ba || !bb || !ba-&gt;owner || !bb-&gt;owner || (<a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>.mIsSensor &amp;&amp; !sa-&gt;sensor &amp;&amp; !sb-&gt;sensor)) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <a class="code hl_struct" href="structeve_1_1physics_1_1jolt_1_1ContactPair.html">ContactPair</a> pair{ba-&gt;owner-&gt;getId(), sa-&gt;owner-&gt;getId(),  sa-&gt;owner-&gt;getTag(), bb-&gt;owner-&gt;getId(),</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                     sb-&gt;owner-&gt;getId(), sb-&gt;owner-&gt;getTag(), sa-&gt;sensor,          sb-&gt;sensor};</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a3417ced948cf2b485a7d5a30faeb0d0e">contacts</a>.insert_or_assign(JPH::SubShapeIDPair(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.GetID(), <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.mSubShapeID1, <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>.GetID(), <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.mSubShapeID2), pair);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a70991dc1bd2aac96e15ac5351fe4a823">begins</a>.push_back(pair);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00140" data-start="{" data-end="}">
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1jolt_1_1Listener.html#adccca06991ff5343583714b3bf17ad64">  140</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1physics_1_1jolt_1_1Listener.html#adccca06991ff5343583714b3bf17ad64">Listener::OnContactPersisted</a>(<span class="keyword">const</span> JPH::Body&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <span class="keyword">const</span> JPH::Body&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, <span class="keyword">const</span> JPH::ContactManifold&amp; <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>,</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                                  JPH::ContactSettings&amp; <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>) {</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <span class="keyword">const</span> JPH::SubShapeIDPair <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.GetID(), <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.mSubShapeID1, <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>.GetID(), <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.mSubShapeID2);</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    configure(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>, <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* sa = <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">child</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.mSubShapeID1);</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* sb = <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">child</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>.mSubShapeID2);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>.mIsSensor &amp;&amp; sa &amp;&amp; sb &amp;&amp; !sa-&gt;sensor &amp;&amp; !sb-&gt;sensor) {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <a class="code hl_function" href="structeve_1_1physics_1_1jolt_1_1Listener.html#abae04e61c82458159cf902ba9e9817dc">OnContactRemoved</a>(<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!<a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a3417ced948cf2b485a7d5a30faeb0d0e">contacts</a>.contains(<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>)) {</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <a class="code hl_function" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a602468dc32dc6e925417d711ee7358c4">OnContactAdded</a>(<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>, <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>, <a class="code hl_variable" href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a>, <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    }</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>}</div>
+</div>
+<div class="foldopen" id="foldopen00152" data-start="{" data-end="}">
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1jolt_1_1Listener.html#abae04e61c82458159cf902ba9e9817dc">  152</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="structeve_1_1physics_1_1jolt_1_1Listener.html#abae04e61c82458159cf902ba9e9817dc">Listener::OnContactRemoved</a>(<span class="keyword">const</span> JPH::SubShapeIDPair&amp; <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>) {</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keyword">auto</span> i = <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a3417ced948cf2b485a7d5a30faeb0d0e">contacts</a>.find(<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordflow">if</span> (i != <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a3417ced948cf2b485a7d5a30faeb0d0e">contacts</a>.end()) {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1Listener.html#ab27c50838200b077a08361d6eb605c63">ends</a>.push_back(i-&gt;second);</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1Listener.html#a3417ced948cf2b485a7d5a30faeb0d0e">contacts</a>.erase(i);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    }</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>}</div>
+</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>}  <span class="comment">// namespace eve::physics::jolt</span></div>
+<div class="ttc" id="aAgent_8cpp_html_ae975eceec8a4bdcc279a02759aada6b7"><div class="ttname"><a href="Agent_8cpp.html#ae975eceec8a4bdcc279a02759aada6b7">trace</a></div><div class="ttdeci">Trace trace</div><div class="ttdef"><b>Definition</b> <a href="Agent_8cpp_source.html#l00050">Agent.cpp:50</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a1f53a56adfc8a8f39c5e553c97a7b2ff"><div class="ttname"><a href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a></div><div class="ttdeci">SQObjectPtr key</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00155">ECS.cpp:155</a></div></div>
+<div class="ttc" id="aForceBindings_8cpp_html_a585bd15db005143bac988d78710e4e93"><div class="ttname"><a href="ForceBindings_8cpp.html#a585bd15db005143bac988d78710e4e93">friction</a></div><div class="ttdeci">float friction</div><div class="ttdef"><b>Definition</b> <a href="ForceBindings_8cpp_source.html#l00101">ForceBindings.cpp:101</a></div></div>
+<div class="ttc" id="aGeometryCollectionCooker_8cpp_html_a06dabf68c338d68a93feca98a29b5a6c"><div class="ttname"><a href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">max</a></div><div class="ttdeci">Vec3 max</div><div class="ttdef"><b>Definition</b> <a href="GeometryCollectionCooker_8cpp_source.html#l00023">GeometryCollectionCooker.cpp:23</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGpuGraph_8cpp_html_aaae841ffb46b13fecc7328d10de4a9f6"><div class="ttname"><a href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a></div><div class="ttdeci">tensor::Graph g</div><div class="ttdef"><b>Definition</b> <a href="GpuGraph_8cpp_source.html#l00007">GpuGraph.cpp:7</a></div></div>
+<div class="ttc" id="aGraphicsShaderResources_8cpp_html_ac49da6a9b4532c873ea3cd746ab99862"><div class="ttname"><a href="GraphicsShaderResources_8cpp.html#ac49da6a9b4532c873ea3cd746ab99862">shape</a></div><div class="ttdeci">ShaderImageInput shape</div><div class="ttdef"><b>Definition</b> <a href="GraphicsShaderResources_8cpp_source.html#l00017">GraphicsShaderResources.cpp:17</a></div></div>
+<div class="ttc" id="aJoltInternal_8h_html"><div class="ttname"><a href="JoltInternal_8h.html">JoltInternal.h</a></div></div>
+<div class="ttc" id="aJoltJoint_8h_html"><div class="ttname"><a href="JoltJoint_8h.html">JoltJoint.h</a></div></div>
+<div class="ttc" id="aJoltWorld_8h_html"><div class="ttname"><a href="JoltWorld_8h.html">JoltWorld.h</a></div></div>
+<div class="ttc" id="aMcpInputTools_8cpp_html_a1b012debbb0243926fff95a55e397b44"><div class="ttname"><a href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a></div><div class="ttdeci">Poco::JSON::Object::Ptr result</div><div class="ttdef"><b>Definition</b> <a href="McpInputTools_8cpp_source.html#l00053">McpInputTools.cpp:53</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a234e391f8e3e00f064813b98fb8f3cdb"><div class="ttname"><a href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a></div><div class="ttdeci">MeleePoint3 b</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00041">MeleeHit.cpp:41</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a3f67c53b80389c5f53961936edba04c9"><div class="ttname"><a href="MeleeHit_8cpp.html#a3f67c53b80389c5f53961936edba04c9">radius</a></div><div class="ttdeci">double radius</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00042">MeleeHit.cpp:42</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a65cfd4d3d71b298048a6baf087fe6579"><div class="ttname"><a href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a></div><div class="ttdeci">MeleePoint3 a</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00040">MeleeHit.cpp:40</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a7fc298ed6f70a0822720769c13216978"><div class="ttname"><a href="ModelRenderer_8cpp.html#a7fc298ed6f70a0822720769c13216978">normal</a></div><div class="ttdeci">Texture * normal</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00162">ModelRenderer.cpp:162</a></div></div>
+<div class="ttc" id="aOceanInteractionBindings_8cpp_html_a1460494a7000b8c7705e16798f6b499e"><div class="ttname"><a href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a></div><div class="ttdeci">OceanWakeSettings settings</div><div class="ttdef"><b>Definition</b> <a href="OceanInteractionBindings_8cpp_source.html#l00010">OceanInteractionBindings.cpp:10</a></div></div>
+<div class="ttc" id="aOceanRenderBindings_8cpp_html_ae29508736a722b546230738c4e54294d"><div class="ttname"><a href="OceanRenderBindings_8cpp.html#ae29508736a722b546230738c4e54294d">frame</a></div><div class="ttdeci">ssq::Object frame</div><div class="ttdef"><b>Definition</b> <a href="OceanRenderBindings_8cpp_source.html#l00041">OceanRenderBindings.cpp:41</a></div></div>
+<div class="ttc" id="aOceanSpectrumFrame_8cpp_html_acdae2484d6ee7eafc48f1fb62fbea1cc"><div class="ttname"><a href="OceanSpectrumFrame_8cpp.html#acdae2484d6ee7eafc48f1fb62fbea1cc">velocity</a></div><div class="ttdeci">glm::dvec3 velocity</div><div class="ttdef"><b>Definition</b> <a href="OceanSpectrumFrame_8cpp_source.html#l00024">OceanSpectrumFrame.cpp:24</a></div></div>
+<div class="ttc" id="aProjectIndexAutomatic_8cpp_html_aefc35c7944eed319c89bc1b399f0eb67"><div class="ttname"><a href="ProjectIndexAutomatic_8cpp.html#aefc35c7944eed319c89bc1b399f0eb67">file</a></div><div class="ttdeci">std::string file</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexAutomatic_8cpp_source.html#l00019">ProjectIndexAutomatic.cpp:19</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a22ffc871c8cdced782372446356096a5"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a></div><div class="ttdeci">std::string body</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00017">ProjectIndexGraph.cpp:17</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ae5f89cb6e6c69abb9c0b93094fd97a1a"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ae5f89cb6e6c69abb9c0b93094fd97a1a">material</a></div><div class="ttdeci">Material * material</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00675">RenderSystem3D.cpp:675</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a05ef0c4dbeec4fc8ccb225de9c26d896"><div class="ttname"><a href="ScriptStructure_8cpp.html#a05ef0c4dbeec4fc8ccb225de9c26d896">line</a></div><div class="ttdeci">unsigned line</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00012">ScriptStructure.cpp:12</a></div></div>
+<div class="ttc" id="aVirtualGeometry_8cpp_html_a68147cce833d98b698183d68629e38d5"><div class="ttname"><a href="VirtualGeometry_8cpp.html#a68147cce833d98b698183d68629e38d5">m</a></div><div class="ttdeci">float m[16]</div><div class="ttdef"><b>Definition</b> <a href="VirtualGeometry_8cpp_source.html#l00081">VirtualGeometry.cpp:81</a></div></div>
+<div class="ttc" id="aVolumeFluidFoamSurface_8cpp_html_ac41ee5e90dfa1dead2adafcda2f01a08"><div class="ttname"><a href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a></div><div class="ttdeci">glm::vec3 point</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoamSurface_8cpp_source.html#l00304">VolumeFluidFoamSurface.cpp:304</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1jolt_1_1WorldBackend_html_a982e339f09113c5f6a62537b422dc860"><div class="ttname"><a href="classeve_1_1physics_1_1jolt_1_1WorldBackend.html#a982e339f09113c5f6a62537b422dc860">eve::physics::jolt::WorldBackend::isPairAllowed</a></div><div class="ttdeci">static bool isPairAllowed(const Shape3D &amp;, const Shape3D &amp;)</div><div class="ttdoc">Reads explicit body/shape pair exclusions for solid and sensor contacts without callbacks.</div><div class="ttdef"><b>Definition</b> <a href="JoltContactPolicy_8cpp_source.html#l00015">JoltContactPolicy.cpp:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1jolt_1_1WorldBackend_html_adb74059586591323a251a13271ec250f"><div class="ttname"><a href="classeve_1_1physics_1_1jolt_1_1WorldBackend.html#adb74059586591323a251a13271ec250f">eve::physics::jolt::WorldBackend::isContactAllowed</a></div><div class="ttdeci">static bool isContactAllowed(const Shape3D &amp;, const Shape3D &amp;, double, double, double, float, float, float)</div><div class="ttdoc">Reads built-in pair overrides and prepared one-way planes synchronously; no user callbacks or locks.</div><div class="ttdef"><b>Definition</b> <a href="JoltContactPolicy_8cpp_source.html#l00010">JoltContactPolicy.cpp:10</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a6b666ee248ddad9eae1806fb3fc78818abc366f2d0ba3d681e7a3899917c5d3de"><div class="ttname"><a href="namespaceeve_1_1editing.html#a6b666ee248ddad9eae1806fb3fc78818abc366f2d0ba3d681e7a3899917c5d3de">eve::editing::PropertyFlag::Runtime</a></div><div class="ttdeci">@ Runtime</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1jolt_html"><div class="ttname"><a href="namespaceeve_1_1physics_1_1jolt.html">eve::physics::jolt</a></div><div class="ttdef"><b>Definition</b> <a href="JoltBody_8cpp_source.html#l00007">JoltBody.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1jolt_html_a2455996f82e0b824460774c14232eda7"><div class="ttname"><a href="namespaceeve_1_1physics_1_1jolt.html#a2455996f82e0b824460774c14232eda7">eve::physics::jolt::initializeRuntime</a></div><div class="ttdeci">void initializeRuntime()</div><div class="ttdoc">Initializes the process-owned allocator and type factory before constructing any native members.</div><div class="ttdef"><b>Definition</b> <a href="JoltState_8cpp_source.html#l00084">JoltState.cpp:84</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1jolt_html_a7e9ff46bba93a2218f5cba6accc0894b"><div class="ttname"><a href="namespaceeve_1_1physics_1_1jolt.html#a7e9ff46bba93a2218f5cba6accc0894b">eve::physics::jolt::contactMaterial</a></div><div class="ttdeci">SurfaceMaterial3D contactMaterial(const JPH::Body &amp;, const JPH::SubShapeID &amp;, const ShapeState &amp;)</div><div class="ttdef"><b>Definition</b> <a href="JoltMesh_8cpp_source.html#l00096">JoltMesh.cpp:96</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1jolt_html_a835b0fb30d3f5282c71137e4b7c55586"><div class="ttname"><a href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">eve::physics::jolt::child</a></div><div class="ttdeci">ShapeState * child(const JPH::Body &amp;body, const JPH::SubShapeID &amp;id)</div><div class="ttdoc">Resolves a native child record for a synchronous callback or query. @ownership Borrowed from the worl...</div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00138">JoltInternal.h:138</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1jolt_html_aa89cb35661dc2d6f9b656fad5a0f4f60"><div class="ttname"><a href="namespaceeve_1_1physics_1_1jolt.html#aa89cb35661dc2d6f9b656fad5a0f4f60">eve::physics::jolt::pairKey</a></div><div class="ttdeci">JPH::uint64 pairKey(JPH::BodyID a, JPH::BodyID b)</div><div class="ttdoc">Counts suppression references for one native pair; sequence numbers prevent reuse aliases.</div><div class="ttdef"><b>Definition</b> <a href="JoltJoint_8cpp_source.html#l00008">JoltJoint.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a8507b742b74a8908176852f9f92c24c3a3cfce651e667ab85486dd42a8185f98a"><div class="ttname"><a href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3a3cfce651e667ab85486dd42a8185f98a">eve::physics::ShapeKind3D::Box</a></div><div class="ttdeci">@ Box</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a8507b742b74a8908176852f9f92c24c3a3e1ee9920ed982b5da9becaf4b5463e5"><div class="ttname"><a href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3a3e1ee9920ed982b5da9becaf4b5463e5">eve::physics::ShapeKind3D::ConvexHull</a></div><div class="ttdeci">@ ConvexHull</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a8507b742b74a8908176852f9f92c24c3a4880c0f12c06dd6d142e7a40b041bf1a"><div class="ttname"><a href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3a4880c0f12c06dd6d142e7a40b041bf1a">eve::physics::ShapeKind3D::Capsule</a></div><div class="ttdeci">@ Capsule</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_a8507b742b74a8908176852f9f92c24c3ab7095f057db3fefa7325ad93a04e14fd"><div class="ttname"><a href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3ab7095f057db3fefa7325ad93a04e14fd">eve::physics::ShapeKind3D::Sphere</a></div><div class="ttdeci">@ Sphere</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_afd233582abf17207b98d5ee6bc1b2f05a24e5c24fabd1c081d4c729094df0b947"><div class="ttname"><a href="namespaceeve_1_1physics.html#afd233582abf17207b98d5ee6bc1b2f05a24e5c24fabd1c081d4c729094df0b947">eve::physics::JointKind3D::Spherical</a></div><div class="ttdeci">@ Spherical</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html_afd233582abf17207b98d5ee6bc1b2f05ab33538179f5661a86cbe327a1793e199"><div class="ttname"><a href="namespaceeve_1_1physics.html#afd233582abf17207b98d5ee6bc1b2f05ab33538179f5661a86cbe327a1793e199">eve::physics::JointKind3D::Motor</a></div><div class="ttdeci">@ Motor</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1ContactPair_html"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1ContactPair.html">eve::physics::jolt::ContactPair</a></div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00036">JoltInternal.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1Listener_html_a3417ced948cf2b485a7d5a30faeb0d0e"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1Listener.html#a3417ced948cf2b485a7d5a30faeb0d0e">eve::physics::jolt::Listener::contacts</a></div><div class="ttdeci">std::unordered_map&lt; JPH::SubShapeIDPair, ContactPair &gt; contacts</div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00112">JoltInternal.h:112</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1Listener_html_a5aa001b43a917c5821c311fdf2b82902"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1Listener.html#a5aa001b43a917c5821c311fdf2b82902">eve::physics::jolt::Listener::OnContactValidate</a></div><div class="ttdeci">JPH::ValidateResult OnContactValidate(const JPH::Body &amp;, const JPH::Body &amp;, JPH::RVec3Arg, const JPH::CollideShapeResult &amp;) override</div><div class="ttdef"><b>Definition</b> <a href="JoltState_8cpp_source.html#l00111">JoltState.cpp:111</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1Listener_html_a602468dc32dc6e925417d711ee7358c4"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1Listener.html#a602468dc32dc6e925417d711ee7358c4">eve::physics::jolt::Listener::OnContactAdded</a></div><div class="ttdeci">void OnContactAdded(const JPH::Body &amp;, const JPH::Body &amp;, const JPH::ContactManifold &amp;, JPH::ContactSettings &amp;) override</div><div class="ttdef"><b>Definition</b> <a href="JoltState_8cpp_source.html#l00126">JoltState.cpp:126</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1Listener_html_a70991dc1bd2aac96e15ac5351fe4a823"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1Listener.html#a70991dc1bd2aac96e15ac5351fe4a823">eve::physics::jolt::Listener::begins</a></div><div class="ttdeci">std::vector&lt; ContactPair &gt; begins</div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00111">JoltInternal.h:111</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1Listener_html_aa211e2534c338c1006affc9f547c6317"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1Listener.html#aa211e2534c338c1006affc9f547c6317">eve::physics::jolt::Listener::substep</a></div><div class="ttdeci">uint32_t substep</div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00116">JoltInternal.h:116</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1Listener_html_aaf80897d5ab256000385424d5fa2d97e"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1Listener.html#aaf80897d5ab256000385424d5fa2d97e">eve::physics::jolt::Listener::state</a></div><div class="ttdeci">State * state</div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00110">JoltInternal.h:110</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1Listener_html_ab27c50838200b077a08361d6eb605c63"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1Listener.html#ab27c50838200b077a08361d6eb605c63">eve::physics::jolt::Listener::ends</a></div><div class="ttdeci">std::vector&lt; ContactPair &gt; ends</div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00111">JoltInternal.h:111</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1Listener_html_abae04e61c82458159cf902ba9e9817dc"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1Listener.html#abae04e61c82458159cf902ba9e9817dc">eve::physics::jolt::Listener::OnContactRemoved</a></div><div class="ttdeci">void OnContactRemoved(const JPH::SubShapeIDPair &amp;) override</div><div class="ttdef"><b>Definition</b> <a href="JoltState_8cpp_source.html#l00152">JoltState.cpp:152</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1Listener_html_acacbacc795eb13eb340df97c09cc755a"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1Listener.html#acacbacc795eb13eb340df97c09cc755a">eve::physics::jolt::Listener::OnStep</a></div><div class="ttdeci">void OnStep(const JPH::PhysicsStepListenerContext &amp;) override</div><div class="ttdef"><b>Definition</b> <a href="JoltState_8cpp_source.html#l00097">JoltState.cpp:97</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1Listener_html_adccca06991ff5343583714b3bf17ad64"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1Listener.html#adccca06991ff5343583714b3bf17ad64">eve::physics::jolt::Listener::OnContactPersisted</a></div><div class="ttdeci">void OnContactPersisted(const JPH::Body &amp;, const JPH::Body &amp;, const JPH::ContactManifold &amp;, JPH::ContactSettings &amp;) override</div><div class="ttdef"><b>Definition</b> <a href="JoltState_8cpp_source.html#l00140">JoltState.cpp:140</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1State_html_a32afd9eb395ac700c5cdb2f14788dd4e"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1State.html#a32afd9eb395ac700c5cdb2f14788dd4e">eve::physics::jolt::State::suppressedPairs</a></div><div class="ttdeci">std::unordered_map&lt; JPH::uint64, int &gt; suppressedPairs</div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00066">JoltInternal.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1State_html_a349b753bd2ca4aa2a4f39dd9224b2b38"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1State.html#a349b753bd2ca4aa2a4f39dd9224b2b38">eve::physics::jolt::State::layers</a></div><div class="ttdeci">Layers layers</div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00059">JoltInternal.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1State_html_a68e41ba2dc65a6fb04cc4140386ca3ef"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1State.html#a68e41ba2dc65a6fb04cc4140386ca3ef">eve::physics::jolt::State::system</a></div><div class="ttdeci">JPH::PhysicsSystem system</div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00062">JoltInternal.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1State_html_a6f40467ddc99a1916e98b470780e6c80"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1State.html#a6f40467ddc99a1916e98b470780e6c80">eve::physics::jolt::State::State</a></div><div class="ttdeci">State(float, float, float, bool)</div><div class="ttdef"><b>Definition</b> <a href="JoltState_8cpp_source.html#l00085">JoltState.cpp:85</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1State_html_a89c8569f436bf6f9704c9fc66676c4de"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1State.html#a89c8569f436bf6f9704c9fc66676c4de">eve::physics::jolt::State::listener</a></div><div class="ttdeci">std::unique_ptr&lt; Listener &gt; listener</div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00063">JoltInternal.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1State_html_a925184d330e68a765d0d2552e2e8e195"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1State.html#a925184d330e68a765d0d2552e2e8e195">eve::physics::jolt::State::~State</a></div><div class="ttdeci">~State()</div><div class="ttdef"><b>Definition</b> <a href="JoltState_8cpp_source.html#l00093">JoltState.cpp:93</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1State_html_ae45d13df23d175545e538c66c3f973bc"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1State.html#ae45d13df23d175545e538c66c3f973bc">eve::physics::jolt::State::joints</a></div><div class="ttdeci">std::vector&lt; std::weak_ptr&lt; JointState &gt; &gt; joints</div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00065">JoltInternal.h:65</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

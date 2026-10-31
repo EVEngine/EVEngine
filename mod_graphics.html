@@ -1,0 +1,528 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 图形渲染模块</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">图形渲染模块</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><h1>图形渲染模块</h1>
+<p><a class="el" href="en_2usr_2modules_2graphics_8md.html">English</a></p>
+<p>游戏 <code>config.nut</code> 支持布尔配置 <code>vsync</code>，默认 <code>true</code>；设置 <code>vsync = false</code> 请求关闭垂直同步。 启动时会在普通窗口或编辑器宿主创建窗口前应用，修改配置后重启游戏生效。 <code>gfx.getVSyncCount()</code> 返回当前请求值（关闭为 0，开启为 1）；<code>gfx.setVSyncCount(0)</code> / <code>gfx.setVSyncCount(1)</code> 可在运行时更新请求。Vulkan 开启时优先 Mailbox、其次 FIFO；关闭时优先 Immediate， 不支持时按原有后端策略回退 Mailbox/FIFO，所以关闭不保证所有平台都能解除显示同步。</p>
+<p><code>Mesh.getLocalBounds()</code> 返回标准 Result，其 value 为 <code>[minX,minY,minZ,maxX,maxY,maxZ]</code>。 结果由 CPU 顶点计算，CPU morph baking 会更新边界；GPU 蒙皮和着色器位移不包含在内。 无有限顶点时返回 NotFound。 <code>eve.destroyRenderable3D(entityId,generation)</code> 在 render/owner thread 销毁当前世界的指定实体， 不存在或 generation 过期返回 NotFound，不销毁 mesh。成功后不得再访问该实体脚本引用。 场景链接保留完整世界矩阵，直接 TRS setter 切回本地模式；链接下一次推送重新更新派生矩阵。</p>
+<p><b>脚本入口：</b> <code><a class="el" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">eve.Graphics()</a></code></p>
+<p>清屏、2D 图元、纹理、Canvas、摄像机和 3D 渲染。Camera2D/Camera3D 提供屏幕与世界坐标换算，供 2D/3D 拾取使用；形状命中测试见 <a class="el" href="math_8md.html">Math</a>，物理体查询见 <a class="el" href="physics_8md.html">Physics</a>。</p>
+<p>高级光照 / AO / GI / AA / 体积雾等见 高级渲染与屏幕空间效果。实时雾气专册见 graphics_fog。</p>
+<h2>当前源码的能力边界</h2>
+<p>当前源码提供下列接口；实际可用性取决于构建和设备。此表不是发布版本或画面验收报告， 未完成项保持显式 Unsupported / 文档边界，不得静默假实现。</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">主题   </th><th class="markdownTableHeadNone">当前接口   </th><th class="markdownTableHeadNone">已知边界（勿当作完成）    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">光照模式   </td><td class="markdownTableBodyNone"><code>RenderControl.setLightingMode("forwardPlus"\|"hybrid")</code>；桌面 preset 可切 Hybrid；半透明仍 Forward+   </td><td class="markdownTableBodyNone">ClassicScenes 像素对比与 FrameGraph 录制仍待补；Lavapipe/CI 默认 ForwardPlus    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">体积雾 / 体积光   </td><td class="markdownTableBodyNone"><code>Volumetric</code>、实时雾气（MAC / ray march / froxel）   </td><td class="markdownTableBodyNone">可选：Froxel 绑真实 CSM shadow map、物体空间 AO / RTAO    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">显示器 HDR   </td><td class="markdownTableBodyNone">Vulkan <code>setDisplayOutputMode</code>（<code>sdr</code>/<code>auto</code>/<code>hdr10</code>/<code>scrgb</code>）；无 HDR 表面软回退 SDR   </td><td class="markdownTableBodyNone">WebGPU 仅 <code>sdr</code>/<code>auto</code>；真 HDR 显示器端到端验收仍待做    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">反射探针   </td><td class="markdownTableBodyNone">采集、Registry 调度、sky backup、发布后 <code>applyToCamera</code>   </td><td class="markdownTableBodyNone"><b>逐像素天空/大气 capture pass**未完成；Vulkan GGX/irradiance **compute filter</b> 在缺嵌入 SPIR-V 时返回 Unsupported，且**不得**把未 filter 的 staging 当已发布反射    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">抗锯齿   </td><td class="markdownTableBodyNone">FXAA 等经 <code>AntiAliasing</code> / RenderControl <code>"aa"</code>   </td><td class="markdownTableBodyNone">硬件 MSAA + 完整多 Pass SMAA LUT + TAA 仍为可选后期    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">其他后端   </td><td class="markdownTableBodyNone">部分资源 Shader / 实例绘制路径仅 Vulkan   </td><td class="markdownTableBodyNone">非 Vulkan 返回结构化 <code>Unsupported</code>，无静默 CPU 假路径   </td></tr>
+</table>
+<p>API 细节：光照模式见 rendering-effects；HDR present 与探针绑定见下文「显示器 HDR」「HDR、景深与反射探针绑定」。设计进度见 `HDR与反射链AAA升级.md`。</p>
+<p><code>gfx.setSceneToneMapping("none" | "aces" | "filmic")</code> 返回标准 Result； <code>getSceneToneMapping()</code> 读取当前模式。默认仍为 <code>aces</code>。Vulkan 的 <code>filmic</code> 使用固定 Rec.709/AP1 电影式曲线、蓝色修正和色域扩展，仅影响最终显示， 不会把线性 HDR 反射或离屏纹理提前映射到 SDR。不支持切换的后端返回 Unsupported 并保留原模式。曝光、暗角和其他镜头效果仍由各自组件控制。</p>
+<p><code>gfx.setScenePhotographicVignette(intensity)</code> 返回 Result，强度范围 <code>[0,1]</code>， 默认 <code>0</code> 关闭；<code>getScenePhotographicVignette()</code> 读取当前值。Vulkan 在最终 色调映射前应用余弦四次方摄影暗角，不改变线性 HDR 捕获。非法参数保留旧值； 未支持此效果的后端只接受 <code>0</code>。此选项与原来的过渡暗角独立。</p>
+<h2>基本用法</h2>
+<div class="fragment"><div class="line">gfx.setBackgroundColor(0.08, 0.1, 0.16, 1.0);</div>
+<div class="line">gfx.clear();</div>
+<div class="line">gfx.drawSolidRect(40, 40, 160, 80, 0.2, 0.7, 1.0, 1.0);</div>
+</div><!-- fragment --><h2>对象关系与调用时机</h2>
+<p><code>Graphics</code> 管理设备、swapchain、camera、light 和提交；Texture/Shader/Mesh/Renderable 是资源或场景对象。CPU 资源创建在 init，帧内只更新参数并 draw。</p>
+<h2>目标导向指南</h2>
+<h3>绘制 2D 游戏帧</h3>
+<p>在 <code>eve_render()</code> 开始调用 <code>clear()</code>，随后按背景、地图、角色、粒子、UI 的顺序提交。纯色占位使用 <code>drawSolidRect()</code>；已有 Texture 使用 <code>drawTexturedRect()</code>。需要围绕矩形中心旋转的精灵可调用 <code>drawTexturedRectRotated(texture, centerX, centerY, width, height, degrees, r, g, b, a)</code>；屏幕坐标 Y 轴向下，因此正角度表现为顺时针旋转。正常主循环由引擎负责 present。</p>
+<p><code>drawText(font, text, x, y, r, g, b, a, scale)</code> 在当前屏幕或 Canvas 坐标的任意 位置绘制 UTF-8 文本，&lt;tt&gt;(x, y) 是该行左上角。<code>font</code> 必须是 <code>newFont()</code> 返回的字体； 绘制调用不读取或修改当前字体状态。原有的 <code>print(text, x, y, r, g, b, a, scale)</code> 继续保留，并使用 <code>setFont()</code> 选择的当前字体。</p>
+<p>需要 UV 动画、旋转、独立混合模式或程序化变换时，使用脚本精灵对象：</p>
+<div class="fragment"><div class="line">local sprite = gfx.newSprite2D();</div>
+<div class="line">sprite.setTexture(sheet.getTexture());</div>
+<div class="line">sprite.setNormalTexture(normalMap); // optional; enables GPU lit2d with Light2D</div>
+<div class="line">sprite.setQuad(quad);</div>
+<div class="line">sprite.setPosition(400, 270);</div>
+<div class="line">sprite.setScale(2.0, 2.0);</div>
+<div class="line">sprite.setRotation(30.0); // degree, rotate around rect center</div>
+<div class="line">sprite.setAnchor(0.25, 0.75); // normalized rotation pivot</div>
+<div class="line">sprite.setFlip(true, false);  // mirror UV without negative scale</div>
+<div class="line">sprite.setReceiveLight(true);</div>
+<div class="line">sprite.setBlend(&quot;alpha&quot;); // alpha | premultiplied | additive | multiply</div>
+<div class="line"> </div>
+<div class="line">// eve_render: clear/draw background first, then submit all live Sprite2D objects</div>
+<div class="line">gfx.renderSprites();</div>
+</div><!-- fragment --><p><code>Sprite2D</code> 还提供 size、color、layer、visible、receiveLight、castOcclusion、normalTexture 等属性。 当 <code>setReceiveLight(true)</code> 且同时设置了 albedo（<code>setTexture</code>）与切线空间法线贴图（<code>setNormalTexture</code>）、且未挂自定义 2D shader 时，走 GPU <code>lit2d</code> 路径，与 <code>Light2D</code>（<code>point</code> / <code>dir</code> / <code>spot</code>，每 canvas 最多 8 盏）和 <code>Camera2D.setAmbient</code> 配合；只有 albedo 时则为 CPU 近似调制。旋转精灵时 lit2d 会按屏幕/UV 导数重建切线帧，法线贴图随几何一起旋转。</p>
+<p>手电式聚光：<code>setType("spot")</code>，用 <code>setPosition</code> + <code>setDirection</code> 对准光束，<code>setRadius</code> 控制射程，<code>setSpotAngle(degrees)</code> 为外半角（整锥 ≈ 2×半角），<code>setSpotSoftness(0..1)</code> 控制边缘软硬；可用 <code>getSpotAngle()</code> / <code>getSpotSoftness()</code> 读取。开启 <code>setVolumetric(true)</code> 后，<code>scatterFromSceneLights2D</code> 会按同一锥角裁剪屏幕空间光柱。Tilemap 需 <code>layer.setReceiveLight(true)</code> 才会受光（默认关闭以保持旧图不受影响）；有纹理的格子走 lit2d（缺法线时用平坦法线）。</p>
+<div class="fragment"><div class="line">local flash = eve.Light2D();</div>
+<div class="line">flash.setType(&quot;spot&quot;);</div>
+<div class="line">flash.setPosition(heroX, heroY);</div>
+<div class="line">flash.setDirection(facingX, facingY); // 光束中心轴</div>
+<div class="line">flash.setColor(1.0, 0.95, 0.8, 2.5);</div>
+<div class="line">flash.setRadius(220.0);</div>
+<div class="line">flash.setSpotAngle(28.0);   // 半角（度）</div>
+<div class="line">flash.setSpotSoftness(0.4);</div>
+<div class="line">layer.setReceiveLight(true);</div>
+</div><!-- fragment --><p> 裁边动画通常由 <code>SpriteAnim.bindSprite(sprite)</code> 自动调用 <code>setFrameLayout</code>，无需游戏代码逐帧修正偏移。 不再使用时调用 <code><a class="el" href="JobSystemThreadPool_8cpp.html#aceb701de009133aff176d2653f4d0da4">destroy()</a></code>；<code>renderSprites()</code> 是聚合提交接口，不要再把同一精灵加入另一条 2D 队列，以免重复绘制。</p>
+<h3>渲染带光照的 3D 对象</h3>
+<p>初始化时创建 mesh、shader 和 renderable，设置 camera、ambient 和 directional light；每帧只更新 transform/material 参数，最后调用 <code>render3D()</code>。阴影开关、bias 和 strength 应逐场景调节。</p>
+<p><code>Light3D</code> 支持 <code>point</code> / <code>dir</code> / <code>spot</code>。聚光用 <code>setType("spot")</code>、<code>setSpotAngle</code> / <code>setSpotSoftness</code>（与 2D 锥体语义相同）。实时阴影通过 <code>setCastShadow(true)</code> 与 <code>setShadowMethod("auto"|"none"|"csm"|"perspective"|"cube")</code> / <code>getShadowMethod()</code> 选择技术；有向光走 CSM，聚光走 perspective 本地 atlas。进程级方案用 <code>gfx.setShadowSchemeDirectionalEnabled</code> / <code>setShadowSchemeSpotEnabled</code> / <code>setShadowSchemePointEnabled</code>、<code>setShadowSchemeMaxSpotCasters</code> / <code>getShadowSchemeMaxSpotCasters</code>，以及本地分页 <code>setShadowSchemePagingEnabled</code>、<code>setShadowSchemeMaxLocalUpdates</code> / <code>getShadowSchemeMaxLocalUpdates</code>、<code>setShadowSchemeHysteresisBonus</code>（固定 atlas 槽位按重要性租用，更新预算可时间切片重绘）。动态阴影分辨率有两层：</p><ol type="1">
+<li>**质量档 / atlas 预算**：<code>setShadowSchemeDirectionalMapSize</code> / <code>setShadowSchemeLocalMapSize</code>（边长钳制到 256/512/1024/2048/4096，GPU depth array 取两者较大值，变更时在下一帧 ensure 路径重建 atlas）、<code>getShadowSchemeAtlasMapSize</code>，以及 CSM 覆盖距离 <code>setShadowSchemeDirectionalMaxDistance</code> / <code>getShadowSchemeDirectionalMaxDistance</code>（默认 64 m）。</li>
+<li>**按距离与屏幕覆盖自适应分配**（默认开启）：<code>setShadowSchemeAdaptiveCascadeResolution</code>。近距 cascade 与屏幕覆盖大（阴影边缘/轮廓更明显）的 cascade 获得更高有效分辨率，远处 cascade 用更小 viewport；Vulkan 数组层尺寸必须统一，因此物理纹理仍是同一 atlas，采样通过 <code>cascadeUvScale</code> 重映射到各 cascade 的左上角子区域。</li>
+</ol>
+<p><code>Camera3D</code> 默认使用透视投影。等距视图可调用 <code>setOrthographic(height)</code>，其中 <code>height</code> 是世界空间中的垂直可视范围；<code>setPerspective()</code> 恢复透视投影。 <code>setClipPlanes(near, far)</code> 配置两种投影共用的近、远裁剪面，并要求 <code>0 &lt; near &lt; far</code>。<code>getEyeX/Y/Z</code> 与 <code>getTargetX/Y/Z</code> 读取世界空间眼点和注视点； <code>getFov()</code> 返回垂直视野（度），与 <code>setFov()</code> 对应。</p>
+<p>Pcg 风格的逐层距离裁剪使用 <code>Camera3D.setLayerCullDistance(layer, distance)</code> 和 <code>Camera3D.getLayerCullDistance(layer)</code>；阴影 caster 使用 <code>Camera3D.setShadowLayerCullDistance(layer, distance)</code> 和 <code>Camera3D.getShadowLayerCullDistance(layer)</code>。层编号范围是 0..31，距离 0 表示沿用普通远裁面或阴影 级联范围。<code>Renderable3D.setLayer(layer)</code> 与 <code>Renderable3D.getLayer()</code> 设置和读取对象层。</p>
+<h3>跨帧绘制 3D 基础图形</h3>
+<p>调试可视化、编辑器辅助线和玩法范围提示应使用持久 <code>Primitive3D</code>，不需要保留帧内 Canvas。Graphics 是图形场景的唯一所有者；脚本对象只保存带 owner、index 和 generation 的句柄。对象被移除、Graphics 销毁或槽位复用后，旧代理会通过 <code>isStale()</code> 明确失效。</p>
+<div class="fragment"><div class="line">local created = gfx.newPrimitiveLine3D(</div>
+<div class="line">    0.0, 0.0, 0.0, 4.0, 1.0, -2.0, 1.0, 0.7, 0.1, 1.0, 3.0);</div>
+<div class="line">if (created.ok) {</div>
+<div class="line">    debugLine &lt;- created.value;</div>
+<div class="line">    debugLine.setDash(12.0, 8.0, 0.0, &quot;screen&quot;); // screen | world</div>
+<div class="line">    debugLine.setDepthMode(&quot;test&quot;);         // test-write | test | ignore</div>
+<div class="line">}</div>
+<div class="line"> </div>
+<div class="line">local sphereResult = gfx.newPrimitiveSphere3D(0.0, 1.0, -4.0, 1.5, 0.2, 0.8, 1.0, 1.0, 2.0);</div>
+<div class="line">local boxResult = gfx.newPrimitiveAabb3D(-1.0, 0.0, -1.0, 1.0, 2.0, 1.0, 1.0, 1.0, 0.0, 1.0, 2.0);</div>
+</div><!-- fragment --><p><code>newPrimitiveLine3D(...)</code>、<code>newPrimitiveSphere3D(...)</code> 和 <code>newPrimitiveAabb3D(...)</code> 返回统一 Result 表；成功后的 <code>value</code> 是 owned <code>Primitive3D</code>。 代理提供 <code>setVisible(bool)</code>、<code>setColor(r,g,b,a)</code>、<code>setLineWidth(width)</code>、 <code>setDash(draw,gap,phase,space)</code>、<code>clearDash()</code>、<code>setDepthMode(mode)</code>、<code>remove()</code> 和 <code>setObjectId(id)</code>、<code>isStale()</code>；<code>ownership()</code> 固定返回 <code>"owned"</code>。所有修改和移除操作都返回 Result，必须检查 <code>ok</code> 或显式忽略；代理析构会 移除仍存活的图形。</p>
+<p>持久图形还提供以下创建入口，参数末尾均为 <code>r,g,b,a,width</code>（浮点数），返回相同 Result/owned proxy：</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">方法   </th><th class="markdownTableHeadNone">几何参数（在颜色和线宽之前）    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>newPrimitiveDisk3D</code>   </td><td class="markdownTableBodyNone"><code>x,y,z,nx,ny,nz,radius</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>newPrimitiveCylinder3D</code>   </td><td class="markdownTableBodyNone"><code>ax,ay,az,bx,by,bz,radius</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>newPrimitiveCapsule3D</code>   </td><td class="markdownTableBodyNone"><code>ax,ay,az,bx,by,bz,radius</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>newPrimitiveCone3D</code>   </td><td class="markdownTableBodyNone"><code>x,y,z,dx,dy,dz,height,radius</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>newPrimitiveArrow3D</code>   </td><td class="markdownTableBodyNone"><code>ax,ay,az,bx,by,bz,headLength,headRadius</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>newPrimitivePolyline3D</code>   </td><td class="markdownTableBodyNone"><code>xyz,closed</code>；xyz 为至少两个点的扁平浮点数组，闭合至少三个点    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>newPrimitiveObb3D</code>   </td><td class="markdownTableBodyNone"><code>xyz</code>；中心和三个 halfAxis 共 12 个浮点数    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>newPrimitiveFrustum3D</code>   </td><td class="markdownTableBodyNone"><code>xyz</code>；8 个角点，共 24 个浮点数，顺序与 C++ Frustum 一致    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>newPrimitiveGrid3D</code>   </td><td class="markdownTableBodyNone"><code>xyz,cellsU,cellsV</code>；原点、axisU、axisV 共 9 个浮点数，格数为 1–4096 的整数    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>newPrimitiveArc3D</code>   </td><td class="markdownTableBodyNone"><code>xyz,radius,start,sweep</code>；中心、法线、起始方向共 9 个浮点数，角度为弧度   </td></tr>
+</table>
+<p>这些图形默认描边；<code>setPaintMode("fill"|"stroke"|"fill-stroke")</code> 切换填充方式。 代理支持 <code>setWidthSpace("screen"|"world")</code>、<code>setLineCap("butt"|"square"|"round")</code>、 <code>setLineJoin("miter"|"bevel"|"round")</code>、<code>setCullMode("none"|"back"|"front")</code>、 <code>setBlendMode("alpha"|"opaque"|"additive"|"premultiplied"|"multiply")</code>。 <code>setTransform(elements)</code> 接受 16 个浮点数的列主序矩阵，整体替换局部到世界变换。 <code>setLayer(layer)</code> 设置非负 uint32 排序层。 <code>gfx.setPrimitiveTransforms3D(proxies,matrices)</code> 批量替换同一 Graphics 所属图形的变换。 <code>proxies</code> 为 Primitive3D 数组；<code>matrices</code> 是每对象 16 个浮点数的扁平列主序矩阵数组。 成功返回 Result 表与 <code>count</code>；任一代理失效、类型错误、owner 不匹配或矩阵非法时整批不修改。 同一代理重复出现时最后一个矩阵生效；空批次成功且 count 为 0。最多接受 65536 个对象。 <code>setPolyline(xyz,closed)</code> 将代理几何替换为新的 owning 折线，保留画笔、变换、可见性和句柄。 所有设置返回 Result；非法模式、矩阵长度或失效代理不会修改原图形。 上述操作在 VM 所在线程同步执行，不保留调用方数组，不调用外部回调。</p>
+<h3>实时编辑与替换 Shader</h3>
+<p>开发工具可保留已有 <code>Shader</code> 对象及其材质引用，仅替换内部后端资源：</p>
+<div class="fragment"><div class="line">local result = gfx.replaceShaderFromGlsl(shader, vertexSource, fragmentSource);</div>
+<div class="line">// Vulkan SPIR-V：gfx.replaceShaderFromSpv(shader, vertexWords, fragmentWords)</div>
+<div class="line">// words 数组须为 uint32 范围整数；先用 spirv-val 验证字节码。返回 Result，失败保留旧管线。</div>
+<div class="line">// WebGPU 后端使用：gfx.replaceShaderFromWgsl(shader, vertexSource, fragmentSource)</div>
+<div class="line">if (!result.ok) {</div>
+<div class="line">    print(result.diagnostics);</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>这些接口都返回统一的结构化 <code>Result</code>，调用方必须检查 <code>ok</code> 或显式忽略结果。编译或 管线创建失败时，原 <code>Shader</code> facade、已声明 uniform 以及上一份可用管线保持不变， 因此编辑器可继续显示最后一次成功的效果。空的 vertex source 表示沿用引擎默认顶点 阶段；调用必须发生在 Graphics 所属的渲染线程。GLSL 是 Vulkan 开发路径，WGSL 是 WebGPU 开发路径；当前后端不支持对应源码格式时会返回 <code>Unsupported</code> 和诊断信息。</p>
+<p>运行期 GLSL→SPIR-V 由引擎自带编译器完成（<code><a class="el" href="GlslCompiler_8cpp.html">graphics/vulkan/GlslCompiler.cpp</a></code>，唯一实现）： Windows 构建在配置时能找到 <code>VULKAN_SDK</code> 就链接 shaderc 静态库，发布出去的包不需要外部 <code>glslc.exe</code>；没有链接 shaderc 的构建才回退到 PATH 上的 <code>glslc</code>。C++ 侧用 <code>Graphics::supportsRuntimeGlslCompilation()</code> 查询该能力（WebGPU 固定为 false）；希望完全不依赖 运行期编译时，改用随包提交的 SPIR-V：<code>gfx.newShaderFromSpvFile</code> / <code>gfx.loadMeshShaderSpv</code>。</p>
+<p>自定义网格着色器可用 <code>Shader.setMeshTexture(slot, texture)</code> 绑定 0..3 四个可移植纹理槽； 传入 <code>null</code> 清除对应槽，越界会抛出脚本异常。纹理由调用方持有，必须存活到解除绑定且 相关绘制结束；该接口只能在 Graphics 所属的渲染线程调用。</p>
+<h3>植被全局字段与细节设置</h3>
+<p><code>gfx.newVegetationField()</code> 创建脚本拥有的 <code>VegetationField</code>，返回带 <code>ok</code>、<code>value</code> 和 <code>ownership="owned"</code> 的 Result 表。字段可以通过 <code>restore(document)</code> 原子恢复，并用 <code>snapshot()</code> 保存。<code>field.sample(x, y, z, colorLayer, extrasLayer, motionLayer, vertexLayer)</code> 在世界坐标采样四个通道；各层编号必须在 0..8，成功结果的 <code>value</code> 包含 <code>color</code>、 <code>extras</code>、<code>motion</code> 和 <code>vertex</code> 四个四元向量。</p>
+<p><code>gfx.newVegetationDetails()</code> 同样返回脚本拥有的 <code>VegetationDetails</code> Result，用于保存和恢复 全局颜色、覆盖、湿润及顶点阶段参数。创建和恢复失败不会发布部分状态；调用方必须检查 Result 的 <code>ok</code>。</p>
+<h3>纹理过滤（mipmap / 各向异性 / LOD）</h3>
+<p>默认 <code>newTexture</code> 仍为线性过滤、单级 mip（兼容旧行为）。需要三线性与各向异性时：</p>
+<div class="fragment"><div class="line">// generateMipmaps=true, maxAnisotropy=16, filter/mipmap=&quot;linear&quot;, lodBias=0</div>
+<div class="line">tex &lt;- gfx.newTextureWithSampler(img, false, false, true, 16.0, &quot;linear&quot;, &quot;linear&quot;, 0.0);</div>
+<div class="line">print(tex.getMipmapCount());</div>
+<div class="line">gfx.setTextureSampler(tex, &quot;nearest&quot;, &quot;none&quot;, 1.0, 0.0); // 像素风</div>
+<div class="line">print(gfx.getMaxAnisotropy());</div>
+</div><!-- fragment --><p>C++ 侧使用 <code>TextureCreateInfo::withMipmaps()</code> / <code>TextureSampler::anisotropic()</code>，并通过同名 <code>setTextureSampler</code> 重载热更新采样状态（字符串版参数与脚本一致）。<code>filter</code> 只接受 <code>nearest</code>/<code>linear</code>，<code>mipmap</code> 只接受 <code>none</code>/<code>nearest</code>/<code>linear</code>，传错会抛异常而不是静默回退。Cubemap（IBL）默认生成完整 mip 链，供 <code>textureLod</code> 按粗糙度采样。</p>
+<p>几何 LOD：<code>Renderable3D.setMeshLod(index, mesh, switchDistance)</code>，<code>RenderSystem3D</code> 按相机距离选择网格。 <code>setMeshLodCullDistance(distance)</code> 设置整条 LOD 链的末级剔除距离，零关闭； <code>setMeshLodRendererState(index, skinQuality, shadowMode, receiveShadows, motionMode, skinnedMotionVectors,
+lightProbeUsage, reflectionProbeUsage)</code> 配置逐级渲染策略，<code>getMeshLodRendererState(index, field)</code> 按 0..6 读取。设置接口使用结构化 Result，并拒绝 Unity 枚举中不存在的空洞数值。 <code>setMeshLodFadeWidth</code> 与 <code>setMeshLodFadePolicy</code> 配置距离或显式时间驱动的 LOD 渐变；时间模式必须由 <code>advanceMeshLodTransition(distance, dt)</code> 推进。主渲染和离屏 Canvas 都同时绘制相邻层，alpha 权重互补； <code>getMeshLodSecondaryLevelAtDistance</code> 和 <code>getMeshLodSecondaryWeightAtDistance</code> 可检查当前混合状态。 逐级 <code>shadowMode=2</code> 使用无面剔除的双面阴影管线；<code>shadowMode=1/3</code> 使用背面剔除管线。普通非 Pcg Renderable3D 保留原有双面阴影默认值。Vulkan 与 WebGPU 对 opaque、alpha-cutout 和 skinned caster 使用相同策略。 <code>getMeshLodCullDistance()</code> 返回当前值。主相机、阴影和反射捕获共享同一选择结果。</p>
+<p>逐级 <code>lightProbeUsage=2</code> 使用 Light Probe Proxy Volume。规则探针网格可以在 X/Y/Z 采用不同且任意数量的 坐标层；渲染时只选择包含物体的当前网格单元，并在片元世界坐标上对该单元的 2/4/8 个角点执行线性、 双线性或三线性二阶球谐插值。缺少角点的非规则探针集合继续使用有界的距离权重回退，不会被误判为规则网格。</p>
+<p>需要把运行对象交给 Editor/MCP 等跨帧工具时，同时读取 <code>Renderable3D.getEntityId()</code> 与 <code>getEntityGeneration()</code>；两者共同构成临时 ECS handle， generation 用于拒绝实体销毁后被复用的旧 id。不要只长期保存 entity id。 Agent 完成材质事务后，可用 <code>getTintR()</code>、<code>getTintG()</code>、<code>getTintB()</code> 与 <code>getRoughness()</code> 独立核对字段材质的运行时状态。</p>
+<h3>材质（Material）与模型部件</h3>
+<p>把着色方法（<code>pbr</code> / <code>unlit</code> / <code>hair</code> / <code>custom</code>）、贴图和 PBR 参数打成一个 <code>Material</code>，挂到整模或某个部件：</p>
+<div class="fragment"><div class="line">local mat = gfx.newMaterial();</div>
+<div class="line">mat.setShadingModel(&quot;pbr&quot;);</div>
+<div class="line">mat.setAlbedoTexture(albedo);</div>
+<div class="line">mat.setNormalTexture(nrm);</div>
+<div class="line">mat.setSurfaceMode(&quot;transparent&quot;); // opaque | masked | transparent</div>
+<div class="line">mat.setBlendMode(&quot;alpha&quot;);         // alpha | premultiplied | additive | multiply</div>
+<div class="line">mat.setDepthWrite(false);</div>
+<div class="line">mat.setDoubleSided(true);</div>
+<div class="line">mat.setCameraFacing(false);         // true：草卡片绕世界 Y 轴朝向活动相机</div>
+<div class="line">mat.setSortPriority(0);             // 同优先级按相机深度从后向前排序</div>
+<div class="line">mat.setMetallic(0.2);</div>
+<div class="line">mat.setRoughness(0.5);</div>
+<div class="line"> </div>
+<div class="line">local r = Renderable3D.create();</div>
+<div class="line">r.setMaterial(mat);                 // 整模</div>
+<div class="line">// 或多部件：r.setPart(0, &quot;body&quot;, bodyMesh, bodyMat);</div>
+<div class="line">r.setPartSortPriority(0, 100);      // 每实例覆盖透明排序，不修改共享 Material</div>
+<div class="line">r.clearPartSortPriority(0);         // 恢复使用 Material.getSortPriority()</div>
+<div class="line">local effectiveOrder = r.getPartSortPriority(0);</div>
+</div><!-- fragment --><p><code>mat.copyPbrSurfaceFrom(sourceMaterial)</code> 返回 Result，通过同一个原生 PbrSurface 校验入口复制 导入材质的扩展 PBR 描述并启用相同渲染路径，适合让程序化服装和导入人物采用一致着色。 不会复制 tint / roughness 等独立字段，也不共享可变材质状态；贴图仍由原 Graphics owner 拥有， 需覆盖目标材质及绘制的生命周期。调用在渲染 / VM 所属线程同步执行，不保留 sourceMaterial 指针。</p>
+<p>遮罩材质使用 <code>setSurfaceMode("masked")</code>、<code>setAlphaCutoff()</code> 和 <code>setAlphaTechnique("cutoff" | "dither" | "coverage")</code>。对应查询接口为 <code>getSurfaceMode()</code>、<code>getBlendMode()</code>、<code>getDepthWrite()</code>、<code>getDoubleSided()</code>、 <code>getCameraFacing()</code>、<code>getSortPriority()</code>、<code>getAlphaCutoff()</code> 和 <code>getAlphaTechnique()</code>。 <code>setCameraFacing(true)</code> 为 GPU-driven 草片启用保持底部锚定的圆柱公告板，使顶点仅绕世界 Y 轴 朝向活动相机；关闭时保留实例原始朝向。纹理 Alpha 数据可用 <code>Texture.setAlphaConvention("straight" | "premultiplied")</code> 声明，并通过 <code>Texture.getAlphaConvention()</code> 查询。</p>
+<p>虚拟纹理由材质拥有并在绑定时自动流式驻留（对齐 UE5 RVT）。脚本只编写图层：</p>
+<div class="fragment"><div class="line">material.enableVirtualTexture(width, height, tileSize, borderSize, residentCapacity, maxDecodesPerUpdate);</div>
+<div class="line">material.addVirtualTextureLayer(albedo, normal, uvScale, constantWeight, heightContrast);</div>
+<div class="line">// 可选带权重图：addVirtualTextureLayerWeighted(albedo, normal, weight, ...)</div>
+</div><!-- fragment --><p><code>usesVirtualTexture()</code> 查询是否已进入 atlas/page-table 采样；<code>clearVirtualTexture()</code> 关闭。 页反馈、解码、上传与页表发布不向外暴露，由 <code>render3D</code> → <code>Material.bind</code> 驱动。 详见 <code>examples/virtual-texture-blending</code> 与 <code>docs/dev/virtual-texture-material-blending.md</code>。</p>
+<h3>高级渲染与屏幕空间效果</h3>
+<p>GBuffer、毛发、体积光、AO、GI 与抗锯齿集中在 高级渲染与屏幕空间效果，避免各类渲染特性持续修改本概览。</p>
+<h3>2D 屏幕拾取</h3>
+<p><code>Camera2D</code> 用 <code>setPosition</code> / <code>setZoom</code> 控制视口中心与缩放；<code>screenToWorldX/Y(screenX, screenY, viewW, viewH)</code> 把鼠标像素换成世界坐标（<code>viewW/H</code> 通常取 <code>gfx.getWidth/Height</code>），再交给 Math 的 <code>pointIn*</code> 或 Physics 的 <code>testPoint</code> / <code>queryAABB</code>。</p>
+<h3>3D 屏幕拾取</h3>
+<p><code>Camera3D.screenToRay(screenX, screenY, viewW, viewH)</code> 写入眼点与单位方向，用 <code>getScreenRayOrigin*</code> / <code>getScreenRayDir*</code> 读取，再对包围球/盒调用 Math 的 <code>raycastSphere</code> / <code>raycastBox</code>。</p>
+<h3>曲面瀑布</h3>
+<p><code>Waterfall.createCurvedSheet(width, height, segX, segY, curveDepth, lipOverhang)</code> 创建带横向弧度和顶部探出段的细分瀑布网格，适合贴合崖壁并形成自然的离壁水帘；原有 <code>createSheet(width, height)</code> 仍用于平面瀑布。</p>
+<div class="fragment"><div class="line">local fall = gfx.newWaterfall();</div>
+<div class="line">fall.createCurvedSheet(3.0, 7.0, 28, 48, 0.75, 0.85);</div>
+</div><!-- fragment --><h3>GroomInstance 毛发 / 发片</h3>
+<p><code>newGroomInstance()</code> 创建运行时 groom 绘制体（C++ 侧完成 bake / rebuild；可失败的 Result API 仍仅限 C++）。脚本侧用 LOD、着色与只读计数器驱动绘制：</p>
+<ul>
+<li>LOD / 几何：<code>setForcedLod</code> / <code>getForcedLod</code>（<code>-1</code> 恢复自动）、<code>setScreenSize</code> / <code>getScreenSize</code>、<code>setWidthScale</code> / <code>getWidthScale</code>、<code>setSideHint</code>、<code>getActiveLodIndex</code> / <code>getActiveRepresentation</code>（<code>0=Strands</code>、<code>1=Cards</code>、<code>2=Meshes</code>、<code>3=None</code>）</li>
+<li>Cluster 剔除：<code>setClusterCullingEnabled</code> / <code>isClusterCullingEnabled</code>、<code>getClusterCount</code>、<code>getVisibleCurveCount</code></li>
+<li>Marschner 近似：<code>setMarschnerLobes(r, tt, trt)</code>、<code>getMarschnerR</code> / <code>getMarschnerTT</code> / <code>getMarschnerTRT</code></li>
+<li>分析型自阴影：<code>setSelfShadow(strength, bias, rootAo)</code>、<code>getSelfShadowStrength</code> / <code>getSelfShadowBias</code> / <code>getRootAoStrength</code></li>
+<li>只读：<code>getCurveCount</code> / <code>getPointCount</code> / <code>getGroupCount</code>、<code>getMesh</code> / <code>getShader</code> / <code>getTexture</code>、<code>isGuideSimulationEnabled</code>、<code>draw</code></li>
+</ul>
+<p>默认 mid LOD 走 <code>HairCards</code> 几何；guide 仿真的 enable/update 仍为 C++-only。</p>
+<div class="fragment"><div class="line">local groom = gfx.newGroomInstance();</div>
+<div class="line">groom.setScreenSize(0.4);</div>
+<div class="line">groom.setForcedLod(1); // Cards</div>
+<div class="line">groom.setMarschnerLobes(1.0, 0.45, 0.25);</div>
+<div class="line">groom.setSelfShadow(0.35, 0.25, 0.3);</div>
+<div class="line">groom.draw();</div>
+</div><!-- fragment --><h3>风格化水体配置</h3>
+<p><code>Water.applyConfigJson(json)</code> 使用 <code>eve.graphics.stylized-water</code> 版本化 schema 一次性校验并应用深浅水色、波浪、泡沫、透明度、折射、反射和焦散参数；失败时保留原配置。<code>Water.configJson()</code> 返回当前配置的规范 JSON，可用于编辑器属性面板、预设保存和运行时复制。</p>
+<div class="fragment"><div class="line">local water = gfx.newWater();</div>
+<div class="line">water.createPlane(14.0, 14.0, 64, 64);</div>
+<div class="line">local current = water.configJson();</div>
+<div class="line">water.applyConfigJson(current);</div>
+</div><!-- fragment --><h2>常见问题</h2>
+<ul>
+<li>忘记每帧 <code>clear()</code>，保留未定义的旧帧内容。</li>
+<li>每帧编译 shader 或上传纹理。</li>
+<li>2D/UI/3D 提交顺序错误导致覆盖。</li>
+<li>拾取时 <code>viewW/H</code> 与实际渲染 drawable 不一致，射线会偏。</li>
+</ul>
+<h2>Agent 运行时观察</h2>
+<p><code>eve_renderable3d_get</code> 使用完整 ECS <code>entityId</code> + <code>generation</code> 读取 live Renderable3D 的 transform、 field-backed PBR 参数与资源占用标志；陈旧 identity 返回结构化 <code>stale</code>。 <code>eve_editor_execute_observe</code> 的默认 <code>renderable3d</code> observer 在写入前验证同一 identity，再通过 Editor 事务修改目标，并在一个响应中返回 live <code>before/after</code>、事务回执和 Editor snapshot。传入 <code>expect</code> JSON 子集和可选 <code>tolerance</code> 后，引擎还会返回 <code>converged</code>、<code>maxError</code> 与不匹配字段路径， Agent 可直接决定是否继续纠正；无效期望会在写入前拒绝。同一协议还支持 <code>scene-node</code> observer， 因此 Agent 不必为场景和渲染对象维护两套调用编排。</p>
+<h2>绑定与行为说明</h2>
+<p><code>drawScene3DRGBA(x, y, w, h, r, g, b, a)</code> 把最近一次 <code>render3D()</code> 产生的正式 场景颜色复合到当前目标（交换链或 <code>Canvas</code>）。它适合自定义编辑器把与游戏相同的场景 呈现在任意 Viewport 中；与 <code>renderScene3DToCanvas</code> 的独立预览渲染不同，它复用完整 运行时场景管线。</p>
+<p><code>updateTextureFromImageData(texture, imageData)</code> 将尺寸相同的 RGBA8 <code>ImageData</code> 重新上传到由当前 Graphics 后端创建的已有纹理；纹理对象保持不变，可继续被材质引用。 该方法必须在渲染线程调用，后端所有权、格式或尺寸不匹配时抛出异常。 <code>setRenderableTextureFromImageData(renderable, imageData, repeatU, repeatV)</code> 则一次完成纹理上传和 Renderable/Material 绑定，避免脚本在两个绑定调用之间传递可空的借用句柄；返回纹理由 Graphics 持有。</p>
+<p>C++ 渲染适配器可调用 <code>updateTextureRegion(texture,x,y,width,height,rgba,bytesPerRow)</code> 更新单 mip RGBA8 纹理的子矩形。Vulkan 使用 staging buffer 和原图 <code>copyBufferToImage</code>， WebGPU 使用带 origin 的 <code>WriteTexture</code>；两者都不重建 Texture、采样器或描述符。 多个离散矩形应使用 <code>updateTextureRegions(texture, regions)</code>：它在任何写入前验证整个 批次；Vulkan 将所有 region 紧密打包进一个 staging buffer 并只提交一次。</p>
+<ul>
+<li><code>GroomInstance</code>：<code>setForcedLod</code>、<code>getForcedLod</code>、<code>setScreenSize</code>、<code>getScreenSize</code>、<code>setWidthScale</code>、<code>getWidthScale</code>、<code>setSideHint</code>、<code>setClusterCullingEnabled</code>、<code>isClusterCullingEnabled</code>、<code>getActiveLodIndex</code>、<code>getActiveRepresentation</code>、<code>getClusterCount</code>、<code>getVisibleCurveCount</code>、<code>setMarschnerLobes</code>、<code>getMarschnerR</code>、<code>getMarschnerTT</code>、<code>getMarschnerTRT</code>、<code>setSelfShadow</code>、<code>getSelfShadowStrength</code>、<code>getSelfShadowBias</code>、<code>getRootAoStrength</code>、<code>getCurveCount</code>、<code>getPointCount</code>、<code>getGroupCount</code>、<code>isGuideSimulationEnabled</code></li>
+<li>字体：<code>newFont()</code>、<code>setFont()</code>、<code>getFont()</code>、<code>drawText()</code>、<code>print()</code>、<code>getAscent()</code>、<code>getBaseline()</code>、<code>hasGlyph()</code></li>
+<li><code>AlphaMask</code>：<code>newAlphaMask()</code>、<code>setThreshold()</code>、<code>getThreshold()</code>、<code>setSoftness()</code>、<code>getSoftness()</code>、<code>setInverted()</code>、<code>getInverted()</code></li>
+<li><code>MapFog</code>：<code>newMapFog()</code>、<code>update()</code>、<code>setTime()</code>、<code>getTime()</code>、<code>setCloudTexture()</code>、<code>getCloudTexture()</code>、<code>setMaskTexture()</code>、<code>getMaskTexture()</code>、<code>setCloudTiling()</code>、<code>setCloudSpeed()</code>、<code>setDistort()</code>、<code>setDistortFix()</code>、<code>setFogColor()</code>、<code>setFogAlpha()</code>、<code>setEdgeSoftness()</code>、<code>setShadowEnabled()</code>、<code>setShadow()</code>、<code>setSelectStrength()</code>、<code>setDissolveScale()</code>、<code>setCloudMix()</code>、<code>setCloudDensity()</code>、<code>getCloudTileA()</code>、<code>getCloudTileB()</code>、<code>getFogAlpha()</code>、<code>getShadowEnabled()</code>、<code>makeCloudTexture()</code>、<code><a class="el" href="MeshVfxRenderBatch_8cpp.html#a90ba9e50cca44205ade0c723c61f20ad">draw()</a></code>（大地图迷雾：双层云 + mask R/G/B）</li>
+<li><code>Sprite2D</code>：<code>setPosition()</code>、<code>getX()</code>、<code>getY()</code>、<code>setRotation()</code>、<code>getRotation()</code>、<code>setScale()</code>、<code>getScaleX()</code>、<code>getScaleY()</code>、<code>setSize()</code>、<code>getWidth()</code>、<code>getHeight()</code>、<code>setTexture()</code>、<code>getTexture()</code>、<code>setNormalTexture()</code>、<code>getNormalTexture()</code>、<code>setQuad()</code>、<code>getQuad()</code>、<code>setColor()</code>、<code>setLayer()</code>、<code>getLayer()</code>、<code>setVisible()</code>、<code>getVisible()</code>、<code>setReceiveLight()</code>、<code>getReceiveLight()</code>、<code>setBlend()</code>、<code>getBlend()</code>、<code>setAnchor()</code>、<code>getAnchorX()</code>、<code>getAnchorY()</code>、<code>setFlip()</code>、<code>getFlipX()</code>、<code>getFlipY()</code>、<code>setFrameLayout()</code>、<code>setCastOcclusion()</code>、<code>getCastOcclusion()</code>、<code><a class="el" href="JobSystemThreadPool_8cpp.html#aceb701de009133aff176d2653f4d0da4">destroy()</a></code></li>
+<li><code>Volumetric</code>：<code>setQuality</code>、<code>setMode</code>、<code>scatter</code>、<code>applyFromScene</code>、<code>rayMarch</code>、<code>applyFog</code>、<code>setFogHeight</code>、<code>setFogStart</code>、<code>setFogEnd</code>、<code>setCamera</code>、<code>setLightDirection</code>、<code>setDensity</code> 等</li>
+<li><code>FogVolume</code>：<code>setShape/getShape</code>、<code>setPosition</code>、<code>setSize</code>、<code>setExtinction/getExtinction</code>、<code>setAlbedo</code>、<code>setEmissive</code>、<code>setAnisotropy/getAnisotropy</code>、<code>setEdgeFalloff/getEdgeFalloff</code>。<code>setNoise(amount, scale, seed)</code> 可加入确定性的世界空间密度变化，<code>getNoiseAmount/getNoiseScale/getNoiseSeed</code> 返回当前设置；调用 <code>Volumetric.setCamera()</code> 后，通过 <code>injectFroxelLocalVolume(volume)</code> 按当前视锥注入 froxel 网格。</li>
+<li><code>Volumetric</code> froxel：<code>configureFroxelGrid</code>、<code>clearFroxelGrid</code>、</li>
+<li><code>AmbientOcclusion</code>：<code>setQuality</code>、<code>setMode</code>、<code>setCamera</code>、<code>setRadius</code>、<code>setBias</code>、<code>setIntensity</code>、<code>setPower</code>、<code>compute</code>、<code>blur</code>、<code>applyOverlay</code>、<code>applyFromDepth</code>、<code>resolutionFor</code> 等</li>
+<li><code>GlobalIllumination</code>：<code>setQuality</code>、<code>setCamera</code>、<code>setRadius</code>、<code>setIntensity</code>、<code>setLightDirection</code>、<code>setLightColor</code>、<code>applyFromDepth</code>、<code>getSampleCount</code> 等</li>
+<li><code>AntiAliasing</code>：<code>setQuality</code>、<code>setMode</code>、<code>apply</code>、<code>applyTo</code>、<code>applyCanvas</code>、<code>applyCanvasTo</code>、<code>suggestScale</code>、<code>resolutionFor</code>、<code>setFloat</code>、<code>getFloat</code> 等</li>
+</ul>
+<h2>使用要点</h2>
+<ul>
+<li>模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。</li>
+<li>带 <code>update(dt)</code> 的系统应在 <code>eve_update</code> 调用；绘制方法应在 <code>eve_render</code> 调用。</li>
+</ul>
+<p><b>源码：</b> <a href="../../../src/modules/graphics/"><code>src/modules/graphics/</code></a> <b>相关测试：</b> 在 <a href="../../../test/"><code>test/</code></a> 中搜索 <code>graphics</code>、<code>Camera2D</code>、<code>Camera3D</code>。 </p><h3>HDR、景深与反射探针绑定</h3>
+<p>详见 <a href="graphics/shader-resources.md#hdr景深与反射探针绑定">Shader 与资源管理</a>。</p>
+<h3>预编译网格 Shader 与画布快照</h3>
+<p>详见 <a href="graphics/shader-resources.md#预编译网格-shader-与画布快照">Shader 与资源管理</a>。</p>
+<h3>自定义网格资源和光栅状态</h3>
+<p>详见 <a href="graphics/shader-resources.md#自定义网格资源和光栅状态">Shader 与资源管理</a>。</p>
+<h3>自定义 Mesh Shader 实例资源</h3>
+<p>详见 <a href="graphics/shader-resources.md#自定义-mesh-shader-实例资源">Shader 与资源管理</a>。</p>
+<h3>显示器 HDR（swapchain 输出）</h3>
+<p>详见 <a href="graphics/shader-resources.md#显示器-hdrswapchain-输出">Shader 与资源管理</a>。</p>
+<h1>Gaussian scatter bloom</h1>
+<p>详见 <a href="graphics/shader-resources.md#gaussian-scatter-bloom">Shader 与资源管理</a>。</p>
+<h3>资源纹理内部共享</h3>
+<p>详见 <a href="graphics/shader-resources.md#资源纹理内部共享">Shader 与资源管理</a>。</p>
+<h3>Native vegetation wind reference (C++)</h3>
+<p>详见 <a href="graphics/vegetation-wind.md#native-vegetation-wind-reference-c">植被风场</a>。</p>
+<h3>Squirrel wind controls</h3>
+<p>详见 <a href="graphics/vegetation-wind.md#squirrel-wind-controls">植被风场</a>。</p>
+<h3>Tree prototype vertex wind</h3>
+<p>详见 <a href="graphics/vegetation-wind.md#tree-prototype-vertex-wind">植被风场</a>。</p>
+<h3>Pcg 水面系统控制器</h3>
+<p>详见 <a href="graphics/water-and-environment.md#pcg-水面系统控制器">水面与环境控制</a>。</p>
+<h3>Pcg WindManager 音量控制</h3>
+<p>详见 <a href="graphics/water-and-environment.md#pcg-windmanager-音量控制">水面与环境控制</a>。</p>
+<h3>Pcg 程序化水面网格</h3>
+<p>详见 <a href="graphics/water-and-environment.md#pcg-程序化水面网格">水面与环境控制</a>。</p>
+<h3>PWS 水波方向</h3>
+<p>详见 <a href="graphics/water-and-environment.md#pws-水波方向">水面与环境控制</a>。</p>
+<h3>Pcg 水深色带</h3>
+<p>详见 <a href="graphics/water-and-environment.md#pcg-水深色带">水面与环境控制</a>。</p>
+<h3>Pcg 平面水反射规划</h3>
+<p>详见 <a href="graphics/water-and-environment.md#pcg-平面水反射规划">水面与环境控制</a>。</p>
+<h3>Pcg 水下效果状态机</h3>
+<p>详见 <a href="graphics/water-and-environment.md#pcg-水下效果状态机">水面与环境控制</a>。</p>
+<h3>Pcg 反射探针距离裁剪</h3>
+<p>详见 <a href="graphics/water-and-environment.md#pcg-反射探针距离裁剪">水面与环境控制</a>。</p>
+<h3>Pcg PhotoMode Water 权威配置</h3>
+<p>详见 <a href="graphics/water-and-environment.md#pcg-photomode-water-权威配置">水面与环境控制</a>。</p>
+<h3>Pcg PhotoMode Grass 权威配置</h3>
+<p>详见 <a href="graphics/water-and-environment.md#pcg-photomode-grass-权威配置">水面与环境控制</a>。</p>
+<h3>Pcg PhotoMode Graphics 权威配置</h3>
+<p>详见 <a href="graphics/water-and-environment.md#pcg-photomode-graphics-权威配置">水面与环境控制</a>。</p>
+<h3>Pcg PhotoMode 全局阴影倍率</h3>
+<p>详见 <a href="graphics/water-and-environment.md#pcg-photomode-全局阴影倍率">水面与环境控制</a>。</p>
+<h3>GPU skin influence limit</h3>
+<p>详见 <a href="graphics/water-and-environment.md#gpu-skin-influence-limit">水面与环境控制</a>。</p>
+<h3>Pcg ReflectionMasker</h3>
+<p>详见 <a href="graphics/water-and-environment.md#pcg-reflectionmasker">水面与环境控制</a>。</p>
+<h2>DamageNumbers：伤害/治疗飘字</h2>
+<p><code>gfx.newDamageNumbers()</code> 返回 owning Result，<code>value</code> 是 <code>eve.DamageNumbers</code> 实例。 它不依赖 combat 或 settlement；游戏在成功结算后把实际数值传入。字体在初始化时创建并 由游戏持有，render 不加载资源。屏幕坐标为 drawable pixels，x 为文字中心，y 为文字顶部。 世界坐标游戏先用自身相机投影，组件不保留角色或相机引用。</p>
+<div class="fragment"><div class="line">local numbers = checked(gfx.newDamageNumbers());</div>
+<div class="line">checked(numbers.spawn(result.value.settlement.applied, screenX, screenY,</div>
+<div class="line">    result.value.settlement.critical ? &quot;critical&quot; : &quot;damage&quot;, targetUuid, 25.0));</div>
+<div class="line">// eve_update(dt)</div>
+<div class="line">checked(numbers.update(dt));</div>
+<div class="line">// eve_render(): font 与 fontData 保持存活，且 font 来自 gfx。</div>
+<div class="line">checked(numbers.render(gfx, font));</div>
+</div><!-- fragment --><p><code>checked</code> 表示检查 Result.ok，失败时处理 diagnostics，成功取 value。</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">方法   </th><th class="markdownTableHeadNone">契约    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>spawn(amount,x,y,kind,group,velocityX)</code>   </td><td class="markdownTableBodyNone">kind 是 damage/critical/heal/miss；返回 spawned/merged/replacedOldest。空 group 禁止合并。    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>setStyle(kind,style)</code>   </td><td class="markdownTableBodyNone">验证并复制 <code>eve.DamageNumberStyle</code>，只影响之后生成的数字。    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>update(dt)</code>   </td><td class="markdownTableBodyNone">dt 为有限非负秒数；失败不改变状态。    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>render(gfx,font)</code>   </td><td class="markdownTableBodyNone">检查必要对象并绘制描边、阴影和文字；返回 Result。    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>snapshot()</code>   </td><td class="markdownTableBodyNone">返回 Result，value 为独立 frame 数组，含 text/x/y/scale/alpha。只读观察需要时使用。    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code><a class="el" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count()</a></code> / <code>clear()</code>   </td><td class="markdownTableBodyNone">活跃数量 / 清空并重置确定性散射序列；场景重开和热重载时调用。   </td></tr>
+</table>
+<p><code>DamageNumberStyle</code> 的可写字段如下（设置后需要 setStyle 提交）：</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">字段   </th><th class="markdownTableHeadNone">含义    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>lifetime</code>   </td><td class="markdownTableBodyNone">生命周期，0..60 秒，必须大于零    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>velocityY</code> / <code>gravity</code>   </td><td class="markdownTableBodyNone">像素/秒与像素/秒²，负速度向上    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>scale</code> / <code>pop</code> / <code>shake</code>   </td><td class="markdownTableBodyNone">基础字号倍率、入场放大幅度、早期横向摇晃幅度    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>r</code> / <code>g</code> / <code>b</code> / <code>outline</code>   </td><td class="markdownTableBodyNone">RGB [0,1] 与描边像素宽度 [0,8]    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>fadeIn</code> / <code>fadeOut</code>   </td><td class="markdownTableBodyNone">首尾透明度过渡秒数；零为即时    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>mergeWindow</code> / <code>mergeRadius</code>   </td><td class="markdownTableBodyNone">同 kind/group 的合并时间窗口与最大屏幕距离；零窗口禁用    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>decimals</code> / <code>compact</code>   </td><td class="markdownTableBodyNone">0..3 位小数，是否使用 K/M 缩写   </td></tr>
+</table>
+<p>最多 256 个活跃数字，满时明确返回 replacedOldest；合并不会刷新生命周期。 所有行为都在调用线程执行，不读取墙钟或全局 RNG。C++ 接口见 <code><a class="el" href="DamageNumbers_8h.html">graphics/DamageNumbers.h</a></code>。 样式和 popup 均为瞬态，不支持存档或网络恢复；不提供 Unity 预制体/材质兼容。 可运行示例：<code>examples/impact-arena</code>。 独立天空的 <code>eve.sky-wisps/3</code> 资源增加 <code>sunDisk.color</code>（线性 HDR RGB）和 <code>sunDisk.shape</code>（弧度半径、正柔化指数、非负反射倍率）。旧版本禁用圆盘。 参数随资源准备复制，太阳方向复用独立帧快照；绘制不推进模拟时间。 主视图和反射复用同一材质，圆盘在薄云混合、父材质对比度和高度雾之前合成。 圆盘颜色目前是明确的配置常量，尚未接入昼夜颜色曲线或二维动态云遮罩。</p>
+<p><code>eve.sky-wisps/4</code> 进一步要求十二个 <code>sunDiskCurve</code> 键（RGB 各四个）： <code>[height,value,arriveTangent,leaveTangent]</code>，每通道高度严格递增，末键值为正。 按独立太阳方向计算高度，采用无权重三次 Hermite 插值及常量端点外推； 颜色相对于末键缩放。准备阶段验证并复制所有数据，绘制期间不读取文件或推进时钟。 版本 1—3 保留原有恒定圆盘颜色。该路径尚不包含日食、天气衰减或曲线 HSV 调整。</p>
+<h2>导入植被的原生 PBR</h2>
+<p><code>material.setFoliageTranslucency(r,g,b,intensity,strength,normalDistortion,scattering,direct,ambient,shadow)</code> 返回 Result；验证完整候选 PBR 状态后才提交，并启用双面背面法线翻转，不替换已导入贴图。 <code>gfx.configureFoliageWind(material,dirX,dirZ,strength,bending,bendingSpeed,branch,branchSpeed,flutter,flutterSpeed,fadeDistance,bendFactor)</code> 返回 Result，在渲染线程复用 Graphics-owned 风场纹理，首次调用含纹理上传成本。 先调用 <code>model3d.prepareFoliageDeformation</code> 为匹配的静态网格建立变形数据。 <code>material.setFoliageWindTime(seconds)</code> 返回 Result，要求已配置风；时间由调用方显式注入， 不读墙钟。参数非法时材质状态不变；贴图借用在 Graphics 资源释放/关闭时失效， 材质必须先停止使用这些资源。调用均为 main/render 线程同步路径，无回调。</p>
+<h3>资源更新与每帧调用成本</h3>
+<p>建议初始化时直接 <code>gfx.loadTexture(path)</code>：脚本返回可直接使用的纹理，失败抛出诊断；C++ 返回 <code>ResultRef&lt;Texture&gt;</code>。首次调用完成解码和上传，缓存命中复用；后续尺寸 getter 不执行准备工作。这个简单入口与兼容 <code>newTextureFromFile</code> 共用同一缓存，不维护第二套资源。</p>
+<ul>
+<li><code>newTextureFromFile(path)</code> 首次请求排队解码并在消费时上传；已缓存路径直接返回同一资源，文件删除或变化不会隐式重载。更新文件需显式 <code>reloadTextureFromFile(path)</code>。首次尺寸查询仍会完成延迟上传；每帧保存并使用已加载纹理。</li>
+<li><code>setTextureSampler(texture, desc)</code> 修改期望配置，相同配置零后端工作；首次消费前合并配置，并复用 Graphics 生命周期内已准备的 sampler。Vulkan 发布改变的描述符仍需要一次批量在途帧等待；setter 本身不等待。持续改变 LOD bias 等配置会产生新 sampler，应避免每帧构造不同描述。释放纹理取消待发布状态。</li>
+<li><code>updateMeshVertices</code> 是显式动态上传：每次调用仍有线性转换/上传成本，内部复用转换数组与 GPU 缓冲容量，不扫描全数组判断是否相同。源数据的 owner 应只在数据变化时调用；无需额外 token/commit。</li>
+<li>Groom 的 <code>update(dt)</code> 完整推进模拟；参数与可见性修改只记录变化。视图准备阶段（或直接 <code>draw</code> 的准备边界）合并几何刷新并复用同一网格。<code>getMesh</code> 等 getter 不触发刷新，返回最后发布结果；<code>rebuild</code> 是兼容的显式同步刷新。<code>Representation::None</code> 隐藏但保留网格以供再次显示复用。显式可见性掩码属于调用者当前视图，多视图时在各视图绘制前更新，不能跨视图复用最后一次掩码。</li>
+<li>Groom 必须在其 Graphics owner 销毁前析构；析构移除准备回调。网格、纹理与 shader 仍由 Graphics 统一回收，不产生第二套所有权。</li>
+</ul>
+<h2>补充绑定参考</h2>
+<p>参数与接收者见 源码生成参考，使用前先确认本章的前置条件与生命周期。</p>
+<h2>集成任务：从资源到一帧</h2>
+<p>先在 init 解码 CPU 图像并创建 Texture，update 只改角色状态，render 按背景、世界、HUD 顺序提交。窗口 resize 后使用实际视口尺寸，设备重建后重建 GPU 资源。教程使用程序化纹理避免外部文件条件。3D 则先准备 Camera/Light/Renderable，再提交同一场景；曝光、阴影和后处理参数放在创建/设置阶段。昂贵的探针捕获和资源 upload 不混入每实体的 draw。</p>
+<p>完整项目：examples/game-tutorial， 其 <a href="../../../examples/game-tutorial/main.nut">main.nut</a> 展示实际生命周期。 先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision， 不能只以脚本没有语法错误作为渲染或玩法正确的证据。 详细流程：专题。 </p><h3>AI 候选遮挡测量</h3>
+<p><code>eve.prepareSceneVisibility(request)</code> 返回 owning 单次查询，<code>query.measure(gfx)</code> 返回结构化 Result。 MCP 可直接调用 <code>eve_scene_modify(action="visibility", target="object", params={width=256,height=256})</code>， 或 <code>params={preview=true}</code> 测量现有物理摆放候选，无需提交或移动实时场景。 结果包含 visibleFraction、fullPixels、visiblePixels、occluders 的 ObjectId/比例和深度歧义。 只有 Measured 状态可作测量证据；少于四像素为 Unmeasurable，Unsupported 不得替代为包围盒估计。 支持静态无贴图不透明网格，具体范围、预算和 schema 见 遮挡接口。</p>
+<p>visibility-request v2 支持对象局部区域 target（v1 字符串 target 仍支持），证据为 v2； 区域用实际目标 depth 还原局部表面点筛选，多个区域复用对象 full pass。 参见 区域协议与验证。</p>
+<h2>投影轮廓重叠</h2>
+<p>作者文档 v4 支持 projected_overlap(subject, reference, minimum, maximum)，可附 reference 的 local_box region。测量两个对象独立真实投影 mask 的交集/reference 像素数；前后顺序及第三者遮挡不改变该构图指标。visibility-evidence v3 的 projectedOverlaps 返回交集像素、双方像素数及比例；任一 mask 少于 4 像素不可测。关系通过原有 relations/relation_begin/relation_check/relation_commit 正式路径使用，提交重新测量并一次撤销。详见 契约与验证。</p>
+<h2>同帧 SceneColor 与实例草坪</h2>
+<p><code>gfx.captureMesh3DSceneColor()</code> 在 <code>gfx.render3D()</code> 后、消费该图像的自定义绘制前调用，返回 <code>captured</code> / <code>scheduled</code> / <code>explicitOverride</code> / <code>historyReuse</code> / <code>unavailable</code>。 它是渲染线程操作，不调用脚本回调；快照及绑定 18 的纹理由 Graphics 持有，使用期内不向脚本转移所有权。 代价约为一次全分辨率 GPU 颜色复制，应每帧捕获一次供所有草簇共享，不能每簇捕获。 <code>historyReuse</code> 明确表示使用历史帧，不能当作同帧证据；当前 Vulkan 同帧复制要求单采样场景通道。</p>
+<p>实例资源 shader 允许在 <b>fragment stage</b> 使用 <code>set=0,binding=18</code> 的普通 <code>sampler2D</code> 读取已完成快照；vertex stage 和其他未登记的绑定仍被拒绝。实例矩阵仍在 <code>set=1,binding=33</code>，不改变已有 ABI。</p>
+<p><code>examples/stylized-meadow</code> 在绘制草之前捕获已受光、含阴影的地表颜色，按草根投影位置的亮度 决定整簇颜色。输入是画面中该位置实际可见的表面；根部被其他物体遮挡时会读取遮挡物的颜色， 并非无限制的离屏地表查询。输出不反馈到快照中。</p>
+<p>边界变更仅扩展 graphics 的既有脚本和 shader 资源面；没有 capability、ECS/Link、事件或工具协议变更。 复用现有后端状态枚举，无全局附加状态、无跨模块 include，也未宣称新增裁剪等级。</p>
+<h3>可复用默认草坪 Style</h3>
+<p>Stylized Grass 提供三阶草色、CPU 生成的两组四帧遮罩、分组慢速摇曳与地面补色。复制目录并调用 <code>StylizedGrassStyle</code>；<code>examples/stylized-meadow</code> 使用同一份 style。要求原生 Vulkan 单采样与同帧 SceneColor 支持，接入、成本和实例数据契约见 style 文档。</p>
+<h3>CPU 生成的默认草坪（无部署素材）</h3>
+<p><code>gfx.buildStylizedGrassPoints(radius, extent, seed)</code> 在 CPU 上生成 Bridson 蓝噪声，返回结构化 Result，value 为交错 x/z 数值数组。初始化时调用；固定种子可复现，半径及半边长为正有限数，radius 至少 extent/1000、seed 非负、最多 49,999 点。</p>
+<p><code>gfx.buildStylizedGrassShader(records, pass)</code> 是初始化 builder：<code>pass</code> 为 <code>grass</code> 或 <code>ground</code>，records 是内存中的列主序仿射矩阵平坦数组，最多 64 MiB。返回 Result.value 中 Graphics 拥有的 shader 借用句柄；所有输入同步复制，调用后可释放。无调用方指针跨帧保留；限定渲染/VM 线程，不调用脚本回调或持有跨回调锁。非法矩阵、未知 pass、非 Vulkan 后端明确失败。失败不返回部分 style。</p>
+<p>@cost 蓝噪声生成、CPU 矢量轮廓栅格化及 GPU 上传远高于普通参数更新，应在初始化阶段完成并跨帧摊销。草 pass 在 CPU 内存生成两种草型、各四帧遮罩，再上传纹理；地面 pass 不生成纹理。shader 已内嵌，无需外部 PNG/RGBA/SPIR-V/草根文件。每帧仍一次地面补色、一次 GPU 草实例绘制与一张同帧场景快照。</p>
+<p>脚本封装、根点 ABI、参数和部署要求见 默认草坪 style。场景高度与剔除回调由脚本初始化时同步执行；没有每帧逐草簇脚本更新。 </p>
+</div></div><!-- contents -->
+</div><!-- PageDoc -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

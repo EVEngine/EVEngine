@@ -1,0 +1,334 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rts/RTSScriptRuntimeInternal.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b34b76c5127db2af25782628231a25c8.html">rts</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RTSScriptRuntimeInternal.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RTSScriptRuntimeInternal_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Action_8h.html">action/Action.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Crowd_8h.html">crowd/Crowd.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="EconomyLedgerResourceAccount_8h.html">economy/EconomyLedgerResourceAccount.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="Fov_8h.html">map/Fov.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Pathfinder_8h.html">map/Pathfinder.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="RTS_8h.html">rts/RTS.h</a>&quot;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &quot;<a class="code" href="Sensing_8h.html">sensing/Sensing.h</a>&quot;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rts.html">eve::rts</a> {</div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html">   12</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html">RTS::ScriptRuntime</a> {</div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1EconomySlot.html">   13</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1EconomySlot.html">EconomySlot</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1EconomySlot.html#a9659bdba4d02af97b309dbf759047c45">   14</a></span>        <a class="code hl_class" href="classeve_1_1economy_1_1EconomyLedger.html">economy::EconomyLedger</a>                <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1EconomySlot.html#a9659bdba4d02af97b309dbf759047c45">ledger</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1EconomySlot.html#a17301f4f04b99052bc1444d610e64556">   15</a></span>        <a class="code hl_class" href="classeve_1_1economy_1_1EconomyLedgerResourceAccount.html">economy::EconomyLedgerResourceAccount</a> <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1EconomySlot.html#a17301f4f04b99052bc1444d610e64556">account</a>{<a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1EconomySlot.html#a9659bdba4d02af97b309dbf759047c45">ledger</a>};</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    };</div>
+</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="};">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html">   18</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html">PaidProduction</a> {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#aedbc9609de9e8edb261d8939ce22488c">   19</a></span>        <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>         <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#aedbc9609de9e8edb261d8939ce22488c">producer</a>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#a2b1d302989d84ba86fa85793b071e438">   20</a></span>        <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>         <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#a2b1d302989d84ba86fa85793b071e438">resultSubject</a>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#a5a2513739b91a33bd52ef393d1a73dcc">   21</a></span>        std::string        <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#a5a2513739b91a33bd52ef393d1a73dcc">kind</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#af3664b6cb91c715126fae38316322ac1">   22</a></span>        std::string        <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#af3664b6cb91c715126fae38316322ac1">product</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#ab5073f7cc906d36bdac8eb99fea6e0b4">   23</a></span>        std::string        <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#ab5073f7cc906d36bdac8eb99fea6e0b4">taskId</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#ad8b834219a1c66c02f08c873d2e7808e">   24</a></span>        std::string        <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#ad8b834219a1c66c02f08c873d2e7808e">orderId</a>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#a42d85c46ab8e9375b15379dbf330a23d">   25</a></span>        <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#a42d85c46ab8e9375b15379dbf330a23d">refund</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    };</div>
+</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction.html">   28</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction.html">PaidConstruction</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction.html#a59f4e29b88970d39e1f49c1d1938530e">   29</a></span>        <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>         <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction.html#a59f4e29b88970d39e1f49c1d1938530e">building</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction.html#a7d7bea0973e765fd98f5f803e8ad4ed9">   30</a></span>        <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>         <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction.html#a7d7bea0973e765fd98f5f803e8ad4ed9">faction</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction.html#a274675947e881410776c77dc38ee3dd3">   31</a></span>        <a class="code hl_class" href="classeve_1_1resource_1_1CostSpec.html">resource::CostSpec</a> <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction.html#a274675947e881410776c77dc38ee3dd3">cost</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    };</div>
+</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html">   34</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html">Checkpoint</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#ab2465038cdb2affd39de1f14c146057f">   35</a></span>        <a class="code hl_class" href="classeve_1_1crowd_1_1Crowd_1_1Snapshot.html">crowd::Crowd::Snapshot</a>                                  <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#ab2465038cdb2affd39de1f14c146057f">crowdState</a>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a6bb5157fe8990de4f30224722d2ea4e6">   36</a></span>        <a class="code hl_struct" href="structeve_1_1rts_1_1RTSStateSnapshot.html">RTSStateSnapshot</a>                                        <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a6bb5157fe8990de4f30224722d2ea4e6">roots</a>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a2e80fecd5a8eb5f37448c342703d8095">   37</a></span>        std::map&lt;std::string, economy::EconomyLedger::Snapshot&gt; <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a2e80fecd5a8eb5f37448c342703d8095">economies</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#aae4f8317eb47569eef9b698f250dd515">   38</a></span>        std::map&lt;std::string, map::Fov::Snapshot&gt;               <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#aae4f8317eb47569eef9b698f250dd515">fovs</a>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a4d126b9f3d9989f720f49c85ef09f077">   39</a></span>        std::map&lt;std::string, SubjectRef&gt;                       <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a4d126b9f3d9989f720f49c85ef09f077">pendingProductionSubjects</a>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a9174b50958eaf8ce996b7311638764dd">   40</a></span>        std::vector&lt;PaidProduction&gt;                             <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a9174b50958eaf8ce996b7311638764dd">paidProduction</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a10de38701f1aa81f2e603756c5afd6a7">   41</a></span>        std::vector&lt;PaidConstruction&gt;                           <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a10de38701f1aa81f2e603756c5afd6a7">paidConstruction</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a91d624ea3f336ea4752b9eb5a182e2fb">   42</a></span>        <a class="code hl_class" href="classeve_1_1rts_1_1RTSCommandLog.html">RTSCommandLog</a>                                           <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a91d624ea3f336ea4752b9eb5a182e2fb">commandLog</a>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#aeff1c2e68726545f50229952df0d8901">   43</a></span>        std::vector&lt;float&gt;                                      <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#aeff1c2e68726545f50229952df0d8901">navigationCosts</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a125437297b2813976fb5673ca595629c">   44</a></span>        std::vector&lt;float&gt;                                      <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a125437297b2813976fb5673ca595629c">terrainElevations</a>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#af6b3ad1112888e0126457b31c45dec65">   45</a></span>        std::uint64_t                                           <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#af6b3ad1112888e0126457b31c45dec65">nextTick</a>             = 1;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a8c7f8e2330c1d7a5043a44bd5b7541f6">   46</a></span>        std::uint64_t                                           <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a8c7f8e2330c1d7a5043a44bd5b7541f6">aiProductionSequence</a> = 1;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    };</div>
+</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a2cfccb8f20420291b476dfa8731a2b26">   49</a></span>    <a class="code hl_class" href="classeve_1_1action_1_1ActionRuntime.html">action::ActionRuntime</a>                               <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a2cfccb8f20420291b476dfa8731a2b26">actions</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a1df471f8914a7710e07b30614aa9699c">   50</a></span>    <a class="code hl_class" href="classeve_1_1rts_1_1ActionAdapter.html">ActionAdapter</a>                                       <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a1df471f8914a7710e07b30614aa9699c">adapter</a>{<a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a2cfccb8f20420291b476dfa8731a2b26">actions</a>};</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a41ff2fe7badccbde0031bf4973c9f5ff">   51</a></span>    <a class="code hl_class" href="classeve_1_1map_1_1Pathfinder.html">map::Pathfinder</a>                                     <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a41ff2fe7badccbde0031bf4973c9f5ff">pathfinder</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a0ad2af80b6b5d555f071fcac82a4d687">   52</a></span>    <a class="code hl_class" href="classeve_1_1crowd_1_1Crowd.html">crowd::Crowd</a>                                        <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a0ad2af80b6b5d555f071fcac82a4d687">crowd</a>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ade23c4b8000d28292f2a1ef9b4985680">   53</a></span>    <a class="code hl_class" href="classeve_1_1sensing_1_1SensingWorld.html">sensing::SensingWorld</a>                               <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ade23c4b8000d28292f2a1ef9b4985680">sensing</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#affa895bbaf48ac9442f59a8103f4b15f">   54</a></span>    <a class="code hl_class" href="classeve_1_1combat_1_1DamageRuntime.html">combat::DamageRuntime</a>                               <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#affa895bbaf48ac9442f59a8103f4b15f">damage</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#aa2c9c444ace54389b43982fb72899aa5">   55</a></span>    <a class="code hl_class" href="classeve_1_1definitions_1_1DefinitionRegistry.html">definitions::DefinitionRegistry</a>                     <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#aa2c9c444ace54389b43982fb72899aa5">definitions</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a924f6335b787600baf485a61e55bb277">   56</a></span>    <a class="code hl_class" href="classeve_1_1rts_1_1RTSCommandLog.html">RTSCommandLog</a>                                       <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a924f6335b787600baf485a61e55bb277">commandLog</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a66fbe96197319c99b8c26e2720a28dd5">   57</a></span>    std::map&lt;std::string, std::unique_ptr&lt;EconomySlot&gt;&gt; <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a66fbe96197319c99b8c26e2720a28dd5">economies</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a7fe6fadb3f059bc96f96c2012f3ddc3d">   58</a></span>    std::map&lt;std::string, std::unique_ptr&lt;map::Fov&gt;&gt;    <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a7fe6fadb3f059bc96f96c2012f3ddc3d">fovs</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a528ba156cf32df0185a87628b5e18733">   59</a></span>    std::map&lt;std::string, SubjectRef&gt;                   <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a528ba156cf32df0185a87628b5e18733">pendingProductionSubjects</a>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a423d0705c1ab5d49dfcd0f72f8d17b2e">   60</a></span>    std::vector&lt;PaidProduction&gt;                         <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a423d0705c1ab5d49dfcd0f72f8d17b2e">paidProduction</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a3927df4affe8865c54fd5f24b17565a7">   61</a></span>    std::vector&lt;PaidConstruction&gt;                       <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a3927df4affe8865c54fd5f24b17565a7">paidConstruction</a>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a0933bd76f0c2e41a55d2b59a5d119739">   62</a></span>    std::map&lt;std::string, Checkpoint&gt;                   <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a0933bd76f0c2e41a55d2b59a5d119739">checkpoints</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a5fcc8fdce817b509fbcd7601449f3a1a">   63</a></span>    std::uint64_t                                       <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a5fcc8fdce817b509fbcd7601449f3a1a">nextTick</a>             = 1;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ae0e4b83534e1edc32e79ff96a43f1380">   64</a></span>    std::uint64_t                                       <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ae0e4b83534e1edc32e79ff96a43f1380">aiProductionSequence</a> = 1;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a4941d9d4cb0f632b052d230b75075687">   65</a></span>    <span class="keywordtype">bool</span>                                                <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a4941d9d4cb0f632b052d230b75075687">spawningProduction</a>   = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ac7e7d64b4c8980bb408d57edf561f1dd">   66</a></span>    <span class="keywordtype">int</span>                                                 <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ac7e7d64b4c8980bb408d57edf561f1dd">width</a>                = 0;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ab5b1bd6d313cf10f074dfad10542a8cd">   67</a></span>    <span class="keywordtype">int</span>                                                 <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ab5b1bd6d313cf10f074dfad10542a8cd">height</a>               = 0;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a022e18dd7ebaf3feca197601f5ccc3b2">   68</a></span>    <span class="keywordtype">float</span>                                               <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a022e18dd7ebaf3feca197601f5ccc3b2">cellSize</a>             = 1.0f;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a93d481d81e9f61bbafac06520caa3d07">   69</a></span>    <span class="keywordtype">float</span>                                               <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a93d481d81e9f61bbafac06520caa3d07">originX</a>              = 0.0f;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ae9b3fd03144681d8fc76237900852029">   70</a></span>    <span class="keywordtype">float</span>                                               <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ae9b3fd03144681d8fc76237900852029">originY</a>              = 0.0f;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a6bf783d7494533347513a70ff174323e">   71</a></span>    std::vector&lt;float&gt;                                  <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a6bf783d7494533347513a70ff174323e">terrainElevations</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a42c837ab3b368866952093467c0766dc">   72</a></span>    <span class="keywordtype">bool</span>                                                <a class="code hl_variable" href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a42c837ab3b368866952093467c0766dc">configured</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>};</div>
+</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}  <span class="comment">// namespace eve::rts</span></div>
+<div class="ttc" id="aAction_8h_html"><div class="ttname"><a href="Action_8h.html">Action.h</a></div><div class="ttdoc">Renderer- and ruleset-neutral gameplay action pipeline.</div></div>
+<div class="ttc" id="aCrowd_8h_html"><div class="ttname"><a href="Crowd_8h.html">Crowd.h</a></div></div>
+<div class="ttc" id="aEconomyLedgerResourceAccount_8h_html"><div class="ttname"><a href="EconomyLedgerResourceAccount_8h.html">EconomyLedgerResourceAccount.h</a></div><div class="ttdoc">Resource-account adapter backed by an EconomyLedger.</div></div>
+<div class="ttc" id="aFov_8h_html"><div class="ttname"><a href="Fov_8h.html">Fov.h</a></div></div>
+<div class="ttc" id="aPathfinder_8h_html"><div class="ttname"><a href="Pathfinder_8h.html">Pathfinder.h</a></div></div>
+<div class="ttc" id="aRTS_8h_html"><div class="ttname"><a href="RTS_8h.html">RTS.h</a></div><div class="ttdoc">RTS module owner and phase-one composition profile entry point.</div></div>
+<div class="ttc" id="aSensing_8h_html"><div class="ttname"><a href="Sensing_8h.html">Sensing.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1action_1_1ActionRuntime_html"><div class="ttname"><a href="classeve_1_1action_1_1ActionRuntime.html">eve::action::ActionRuntime</a></div><div class="ttdoc">Deterministic action lifecycle coordinator.</div><div class="ttdef"><b>Definition</b> <a href="Action_8h_source.html#l00540">Action.h:540</a></div></div>
+<div class="ttc" id="aclasseve_1_1combat_1_1DamageRuntime_html"><div class="ttname"><a href="classeve_1_1combat_1_1DamageRuntime.html">eve::combat::DamageRuntime</a></div><div class="ttdoc">Owner-thread deterministic damage coordinator.</div><div class="ttdef"><b>Definition</b> <a href="Damage_8h_source.html#l00130">Damage.h:130</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1Crowd_1_1Snapshot_html"><div class="ttname"><a href="classeve_1_1crowd_1_1Crowd_1_1Snapshot.html">eve::crowd::Crowd::Snapshot</a></div><div class="ttdoc">Immutable in-process checkpoint; not a persistent or cross-process format.</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00386">Crowd.h:386</a></div></div>
+<div class="ttc" id="aclasseve_1_1crowd_1_1Crowd_html"><div class="ttname"><a href="classeve_1_1crowd_1_1Crowd.html">eve::crowd::Crowd</a></div><div class="ttdoc">群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。</div><div class="ttdef"><b>Definition</b> <a href="Crowd_8h_source.html#l00266">Crowd.h:266</a></div></div>
+<div class="ttc" id="aclasseve_1_1definitions_1_1DefinitionRegistry_html"><div class="ttname"><a href="classeve_1_1definitions_1_1DefinitionRegistry.html">eve::definitions::DefinitionRegistry</a></div><div class="ttdoc">Deterministic registry of topic-neutral, versioned JSON definitions.</div><div class="ttdef"><b>Definition</b> <a href="Definitions_8h_source.html#l00058">Definitions.h:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1EconomyLedgerResourceAccount_html"><div class="ttname"><a href="classeve_1_1economy_1_1EconomyLedgerResourceAccount.html">eve::economy::EconomyLedgerResourceAccount</a></div><div class="ttdoc">Adapts one caller-owned EconomyLedger to IResourceAccount.</div><div class="ttdef"><b>Definition</b> <a href="EconomyLedgerResourceAccount_8h_source.html#l00031">EconomyLedgerResourceAccount.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1economy_1_1EconomyLedger_html"><div class="ttname"><a href="classeve_1_1economy_1_1EconomyLedger.html">eve::economy::EconomyLedger</a></div><div class="ttdoc">单个玩家的资源账本：当前量、上限、收支与浪费统计。</div><div class="ttdef"><b>Definition</b> <a href="EconomyLedger_8h_source.html#l00014">EconomyLedger.h:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1Pathfinder_html"><div class="ttname"><a href="classeve_1_1map_1_1Pathfinder.html">eve::map::Pathfinder</a></div><div class="ttdoc">Pathfinding facade. Single-agent: A*. Group (same goal): Flow Field + follow. Grid/topology internals...</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8h_source.html#l00062">Pathfinder.h:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1resource_1_1CostSpec_html"><div class="ttname"><a href="classeve_1_1resource_1_1CostSpec.html">eve::resource::CostSpec</a></div><div class="ttdoc">Immutable canonical multi-resource cost.</div><div class="ttdef"><b>Definition</b> <a href="ResourceAccount_8h_source.html#l00147">ResourceAccount.h:147</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1ActionAdapter_html"><div class="ttname"><a href="classeve_1_1rts_1_1ActionAdapter.html">eve::rts::ActionAdapter</a></div><div class="ttdoc">Adapter that maps RTS orders to the existing action::ActionRuntime.</div><div class="ttdef"><b>Definition</b> <a href="RTSAction_8h_source.html#l00061">RTSAction.h:61</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1RTSCommandLog_html"><div class="ttname"><a href="classeve_1_1rts_1_1RTSCommandLog.html">eve::rts::RTSCommandLog</a></div><div class="ttdoc">Deterministic lockstep input buffer and portable command log.</div><div class="ttdef"><b>Definition</b> <a href="RTSReplay_8h_source.html#l00063">RTSReplay.h:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1sensing_1_1SensingWorld_html"><div class="ttname"><a href="classeve_1_1sensing_1_1SensingWorld.html">eve::sensing::SensingWorld</a></div><div class="ttdoc">Mirrored world positions and query composition; consumers decide gameplay actions from results.</div><div class="ttdef"><b>Definition</b> <a href="Sensing_8h_source.html#l00188">Sensing.h:188</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html"><div class="ttname"><a href="namespaceeve_1_1rts.html">eve::rts</a></div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00029">RTS.cpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTSStateSnapshot_html"><div class="ttname"><a href="structeve_1_1rts_1_1RTSStateSnapshot.html">eve::rts::RTSStateSnapshot</a></div><div class="ttdoc">Complete RTS-owned state; v2 adds movement groups, v1 imports with no groups. @cost Linear in saved e...</div><div class="ttdef"><b>Definition</b> <a href="RTSSnapshot_8h_source.html#l00172">RTSSnapshot.h:172</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint_html"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html">eve::rts::RTS::ScriptRuntime::Checkpoint</a></div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00034">RTSScriptRuntimeInternal.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint_html_a10de38701f1aa81f2e603756c5afd6a7"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a10de38701f1aa81f2e603756c5afd6a7">eve::rts::RTS::ScriptRuntime::Checkpoint::paidConstruction</a></div><div class="ttdeci">std::vector&lt; PaidConstruction &gt; paidConstruction</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00041">RTSScriptRuntimeInternal.h:41</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint_html_a125437297b2813976fb5673ca595629c"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a125437297b2813976fb5673ca595629c">eve::rts::RTS::ScriptRuntime::Checkpoint::terrainElevations</a></div><div class="ttdeci">std::vector&lt; float &gt; terrainElevations</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00044">RTSScriptRuntimeInternal.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint_html_a2e80fecd5a8eb5f37448c342703d8095"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a2e80fecd5a8eb5f37448c342703d8095">eve::rts::RTS::ScriptRuntime::Checkpoint::economies</a></div><div class="ttdeci">std::map&lt; std::string, economy::EconomyLedger::Snapshot &gt; economies</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00037">RTSScriptRuntimeInternal.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint_html_a4d126b9f3d9989f720f49c85ef09f077"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a4d126b9f3d9989f720f49c85ef09f077">eve::rts::RTS::ScriptRuntime::Checkpoint::pendingProductionSubjects</a></div><div class="ttdeci">std::map&lt; std::string, SubjectRef &gt; pendingProductionSubjects</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00039">RTSScriptRuntimeInternal.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint_html_a6bb5157fe8990de4f30224722d2ea4e6"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a6bb5157fe8990de4f30224722d2ea4e6">eve::rts::RTS::ScriptRuntime::Checkpoint::roots</a></div><div class="ttdeci">RTSStateSnapshot roots</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00036">RTSScriptRuntimeInternal.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint_html_a8c7f8e2330c1d7a5043a44bd5b7541f6"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a8c7f8e2330c1d7a5043a44bd5b7541f6">eve::rts::RTS::ScriptRuntime::Checkpoint::aiProductionSequence</a></div><div class="ttdeci">std::uint64_t aiProductionSequence</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00046">RTSScriptRuntimeInternal.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint_html_a9174b50958eaf8ce996b7311638764dd"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a9174b50958eaf8ce996b7311638764dd">eve::rts::RTS::ScriptRuntime::Checkpoint::paidProduction</a></div><div class="ttdeci">std::vector&lt; PaidProduction &gt; paidProduction</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00040">RTSScriptRuntimeInternal.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint_html_a91d624ea3f336ea4752b9eb5a182e2fb"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#a91d624ea3f336ea4752b9eb5a182e2fb">eve::rts::RTS::ScriptRuntime::Checkpoint::commandLog</a></div><div class="ttdeci">RTSCommandLog commandLog</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00042">RTSScriptRuntimeInternal.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint_html_aae4f8317eb47569eef9b698f250dd515"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#aae4f8317eb47569eef9b698f250dd515">eve::rts::RTS::ScriptRuntime::Checkpoint::fovs</a></div><div class="ttdeci">std::map&lt; std::string, map::Fov::Snapshot &gt; fovs</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00038">RTSScriptRuntimeInternal.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint_html_ab2465038cdb2affd39de1f14c146057f"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#ab2465038cdb2affd39de1f14c146057f">eve::rts::RTS::ScriptRuntime::Checkpoint::crowdState</a></div><div class="ttdeci">crowd::Crowd::Snapshot crowdState</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00035">RTSScriptRuntimeInternal.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint_html_aeff1c2e68726545f50229952df0d8901"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#aeff1c2e68726545f50229952df0d8901">eve::rts::RTS::ScriptRuntime::Checkpoint::navigationCosts</a></div><div class="ttdeci">std::vector&lt; float &gt; navigationCosts</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00043">RTSScriptRuntimeInternal.h:43</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint_html_af6b3ad1112888e0126457b31c45dec65"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1Checkpoint.html#af6b3ad1112888e0126457b31c45dec65">eve::rts::RTS::ScriptRuntime::Checkpoint::nextTick</a></div><div class="ttdeci">std::uint64_t nextTick</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00045">RTSScriptRuntimeInternal.h:45</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1EconomySlot_html"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1EconomySlot.html">eve::rts::RTS::ScriptRuntime::EconomySlot</a></div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00013">RTSScriptRuntimeInternal.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1EconomySlot_html_a17301f4f04b99052bc1444d610e64556"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1EconomySlot.html#a17301f4f04b99052bc1444d610e64556">eve::rts::RTS::ScriptRuntime::EconomySlot::account</a></div><div class="ttdeci">economy::EconomyLedgerResourceAccount account</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00015">RTSScriptRuntimeInternal.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1EconomySlot_html_a9659bdba4d02af97b309dbf759047c45"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1EconomySlot.html#a9659bdba4d02af97b309dbf759047c45">eve::rts::RTS::ScriptRuntime::EconomySlot::ledger</a></div><div class="ttdeci">economy::EconomyLedger ledger</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00014">RTSScriptRuntimeInternal.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction_html"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction.html">eve::rts::RTS::ScriptRuntime::PaidConstruction</a></div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00028">RTSScriptRuntimeInternal.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction_html_a274675947e881410776c77dc38ee3dd3"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction.html#a274675947e881410776c77dc38ee3dd3">eve::rts::RTS::ScriptRuntime::PaidConstruction::cost</a></div><div class="ttdeci">resource::CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00031">RTSScriptRuntimeInternal.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction_html_a59f4e29b88970d39e1f49c1d1938530e"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction.html#a59f4e29b88970d39e1f49c1d1938530e">eve::rts::RTS::ScriptRuntime::PaidConstruction::building</a></div><div class="ttdeci">SubjectRef building</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00029">RTSScriptRuntimeInternal.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction_html_a7d7bea0973e765fd98f5f803e8ad4ed9"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidConstruction.html#a7d7bea0973e765fd98f5f803e8ad4ed9">eve::rts::RTS::ScriptRuntime::PaidConstruction::faction</a></div><div class="ttdeci">SubjectRef faction</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00030">RTSScriptRuntimeInternal.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction_html"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html">eve::rts::RTS::ScriptRuntime::PaidProduction</a></div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00018">RTSScriptRuntimeInternal.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction_html_a2b1d302989d84ba86fa85793b071e438"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#a2b1d302989d84ba86fa85793b071e438">eve::rts::RTS::ScriptRuntime::PaidProduction::resultSubject</a></div><div class="ttdeci">SubjectRef resultSubject</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00020">RTSScriptRuntimeInternal.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction_html_a42d85c46ab8e9375b15379dbf330a23d"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#a42d85c46ab8e9375b15379dbf330a23d">eve::rts::RTS::ScriptRuntime::PaidProduction::refund</a></div><div class="ttdeci">resource::CostSpec refund</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00025">RTSScriptRuntimeInternal.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction_html_a5a2513739b91a33bd52ef393d1a73dcc"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#a5a2513739b91a33bd52ef393d1a73dcc">eve::rts::RTS::ScriptRuntime::PaidProduction::kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00021">RTSScriptRuntimeInternal.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction_html_ab5073f7cc906d36bdac8eb99fea6e0b4"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#ab5073f7cc906d36bdac8eb99fea6e0b4">eve::rts::RTS::ScriptRuntime::PaidProduction::taskId</a></div><div class="ttdeci">std::string taskId</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00023">RTSScriptRuntimeInternal.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction_html_ad8b834219a1c66c02f08c873d2e7808e"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#ad8b834219a1c66c02f08c873d2e7808e">eve::rts::RTS::ScriptRuntime::PaidProduction::orderId</a></div><div class="ttdeci">std::string orderId</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00024">RTSScriptRuntimeInternal.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction_html_aedbc9609de9e8edb261d8939ce22488c"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#aedbc9609de9e8edb261d8939ce22488c">eve::rts::RTS::ScriptRuntime::PaidProduction::producer</a></div><div class="ttdeci">SubjectRef producer</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00019">RTSScriptRuntimeInternal.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction_html_af3664b6cb91c715126fae38316322ac1"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime_1_1PaidProduction.html#af3664b6cb91c715126fae38316322ac1">eve::rts::RTS::ScriptRuntime::PaidProduction::product</a></div><div class="ttdeci">std::string product</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00022">RTSScriptRuntimeInternal.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html">eve::rts::RTS::ScriptRuntime</a></div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00012">RTSScriptRuntimeInternal.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a022e18dd7ebaf3feca197601f5ccc3b2"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a022e18dd7ebaf3feca197601f5ccc3b2">eve::rts::RTS::ScriptRuntime::cellSize</a></div><div class="ttdeci">float cellSize</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00068">RTSScriptRuntimeInternal.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a0933bd76f0c2e41a55d2b59a5d119739"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a0933bd76f0c2e41a55d2b59a5d119739">eve::rts::RTS::ScriptRuntime::checkpoints</a></div><div class="ttdeci">std::map&lt; std::string, Checkpoint &gt; checkpoints</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00062">RTSScriptRuntimeInternal.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a0ad2af80b6b5d555f071fcac82a4d687"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a0ad2af80b6b5d555f071fcac82a4d687">eve::rts::RTS::ScriptRuntime::crowd</a></div><div class="ttdeci">crowd::Crowd crowd</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00052">RTSScriptRuntimeInternal.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a1df471f8914a7710e07b30614aa9699c"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a1df471f8914a7710e07b30614aa9699c">eve::rts::RTS::ScriptRuntime::adapter</a></div><div class="ttdeci">ActionAdapter adapter</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00050">RTSScriptRuntimeInternal.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a2cfccb8f20420291b476dfa8731a2b26"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a2cfccb8f20420291b476dfa8731a2b26">eve::rts::RTS::ScriptRuntime::actions</a></div><div class="ttdeci">action::ActionRuntime actions</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00049">RTSScriptRuntimeInternal.h:49</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a3927df4affe8865c54fd5f24b17565a7"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a3927df4affe8865c54fd5f24b17565a7">eve::rts::RTS::ScriptRuntime::paidConstruction</a></div><div class="ttdeci">std::vector&lt; PaidConstruction &gt; paidConstruction</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00061">RTSScriptRuntimeInternal.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a41ff2fe7badccbde0031bf4973c9f5ff"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a41ff2fe7badccbde0031bf4973c9f5ff">eve::rts::RTS::ScriptRuntime::pathfinder</a></div><div class="ttdeci">map::Pathfinder pathfinder</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00051">RTSScriptRuntimeInternal.h:51</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a423d0705c1ab5d49dfcd0f72f8d17b2e"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a423d0705c1ab5d49dfcd0f72f8d17b2e">eve::rts::RTS::ScriptRuntime::paidProduction</a></div><div class="ttdeci">std::vector&lt; PaidProduction &gt; paidProduction</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00060">RTSScriptRuntimeInternal.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a42c837ab3b368866952093467c0766dc"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a42c837ab3b368866952093467c0766dc">eve::rts::RTS::ScriptRuntime::configured</a></div><div class="ttdeci">bool configured</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00072">RTSScriptRuntimeInternal.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a4941d9d4cb0f632b052d230b75075687"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a4941d9d4cb0f632b052d230b75075687">eve::rts::RTS::ScriptRuntime::spawningProduction</a></div><div class="ttdeci">bool spawningProduction</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00065">RTSScriptRuntimeInternal.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a528ba156cf32df0185a87628b5e18733"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a528ba156cf32df0185a87628b5e18733">eve::rts::RTS::ScriptRuntime::pendingProductionSubjects</a></div><div class="ttdeci">std::map&lt; std::string, SubjectRef &gt; pendingProductionSubjects</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00059">RTSScriptRuntimeInternal.h:59</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a5fcc8fdce817b509fbcd7601449f3a1a"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a5fcc8fdce817b509fbcd7601449f3a1a">eve::rts::RTS::ScriptRuntime::nextTick</a></div><div class="ttdeci">std::uint64_t nextTick</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00063">RTSScriptRuntimeInternal.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a66fbe96197319c99b8c26e2720a28dd5"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a66fbe96197319c99b8c26e2720a28dd5">eve::rts::RTS::ScriptRuntime::economies</a></div><div class="ttdeci">std::map&lt; std::string, std::unique_ptr&lt; EconomySlot &gt; &gt; economies</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00057">RTSScriptRuntimeInternal.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a6bf783d7494533347513a70ff174323e"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a6bf783d7494533347513a70ff174323e">eve::rts::RTS::ScriptRuntime::terrainElevations</a></div><div class="ttdeci">std::vector&lt; float &gt; terrainElevations</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00071">RTSScriptRuntimeInternal.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a7fe6fadb3f059bc96f96c2012f3ddc3d"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a7fe6fadb3f059bc96f96c2012f3ddc3d">eve::rts::RTS::ScriptRuntime::fovs</a></div><div class="ttdeci">std::map&lt; std::string, std::unique_ptr&lt; map::Fov &gt; &gt; fovs</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00058">RTSScriptRuntimeInternal.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a924f6335b787600baf485a61e55bb277"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a924f6335b787600baf485a61e55bb277">eve::rts::RTS::ScriptRuntime::commandLog</a></div><div class="ttdeci">RTSCommandLog commandLog</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00056">RTSScriptRuntimeInternal.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_a93d481d81e9f61bbafac06520caa3d07"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#a93d481d81e9f61bbafac06520caa3d07">eve::rts::RTS::ScriptRuntime::originX</a></div><div class="ttdeci">float originX</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00069">RTSScriptRuntimeInternal.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_aa2c9c444ace54389b43982fb72899aa5"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#aa2c9c444ace54389b43982fb72899aa5">eve::rts::RTS::ScriptRuntime::definitions</a></div><div class="ttdeci">definitions::DefinitionRegistry definitions</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00055">RTSScriptRuntimeInternal.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_ab5b1bd6d313cf10f074dfad10542a8cd"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ab5b1bd6d313cf10f074dfad10542a8cd">eve::rts::RTS::ScriptRuntime::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00067">RTSScriptRuntimeInternal.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_ac7e7d64b4c8980bb408d57edf561f1dd"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ac7e7d64b4c8980bb408d57edf561f1dd">eve::rts::RTS::ScriptRuntime::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00066">RTSScriptRuntimeInternal.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_ade23c4b8000d28292f2a1ef9b4985680"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ade23c4b8000d28292f2a1ef9b4985680">eve::rts::RTS::ScriptRuntime::sensing</a></div><div class="ttdeci">sensing::SensingWorld sensing</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00053">RTSScriptRuntimeInternal.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_ae0e4b83534e1edc32e79ff96a43f1380"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ae0e4b83534e1edc32e79ff96a43f1380">eve::rts::RTS::ScriptRuntime::aiProductionSequence</a></div><div class="ttdeci">std::uint64_t aiProductionSequence</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00064">RTSScriptRuntimeInternal.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_ae9b3fd03144681d8fc76237900852029"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#ae9b3fd03144681d8fc76237900852029">eve::rts::RTS::ScriptRuntime::originY</a></div><div class="ttdeci">float originY</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00070">RTSScriptRuntimeInternal.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1RTS_1_1ScriptRuntime_html_affa895bbaf48ac9442f59a8103f4b15f"><div class="ttname"><a href="structeve_1_1rts_1_1RTS_1_1ScriptRuntime.html#affa895bbaf48ac9442f59a8103f4b15f">eve::rts::RTS::ScriptRuntime::damage</a></div><div class="ttdeci">combat::DamageRuntime damage</div><div class="ttdef"><b>Definition</b> <a href="RTSScriptRuntimeInternal_8h_source.html#l00054">RTSScriptRuntimeInternal.h:54</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/OceanSprayRenderer.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.1</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">OceanSprayRenderer.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="OceanSprayRenderer_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="OceanSpray_8h.html">fluids/OceanSpray.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">Graphics</a>;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>}</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="foldopen" id="foldopen00012" data-start="{" data-end="};">
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanSprayView.html">   12</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1OceanSprayView.html">OceanSprayView</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanSprayView.html#a42563ab3dae661ca62e488b90ac23d64">   13</a></span>    glm::dvec3 <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a42563ab3dae661ca62e488b90ac23d64">eye</a>{0.0}, <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a9fa5f15a0ce0193a92dbf02579aba57b">forward</a>{0.0, 0.0, -1.0}, <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a9f98760326e4b4ff4a3bbbeace20e13c">up</a>{0.0, 1.0, 0.0}, <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayView.html#a3d88407a9378bd7b08d9e58a3d2f4ac8">origin</a>{0.0};</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00016" data-start="{" data-end="};">
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html">   16</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html">OceanSprayMeshFrame</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#a3c8e5e0aaaa80359e8ee3438d5ec16b4">   17</a></span>    std::vector&lt;float&gt;         <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#ad50e41693224d068613e440b8c6398a7">positions</a>, <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#a3c8e5e0aaaa80359e8ee3438d5ec16b4">attributes</a>, <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#ae729313a76a49318d8dfe503431bd392">uv</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#a424a47cd32494ad1b8ae6a7b079e64a5">   18</a></span>    std::vector&lt;std::uint32_t&gt; <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#a424a47cd32494ad1b8ae6a7b079e64a5">indices</a>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#aa904802cbd227af66ec7253b4fc4f759">   19</a></span>    <span class="keywordtype">double</span>                     <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#aa904802cbd227af66ec7253b4fc4f759">time</a> = 0.0;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00022" data-start="{" data-end="};">
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html">   22</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html">OceanSprayMeshBuilder</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#ac828986be1fd2b70013a2046d40cbd1f">   25</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#ac828986be1fd2b70013a2046d40cbd1f">OceanSprayMeshBuilder</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1OceanSprayFrame.html">OceanSprayFrame</a>&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>) : source_(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>) {}</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">   26</a></span>    <a class="code hl_struct" href="structeve_1_1fluids_1_1OceanSprayView.html">OceanSprayView</a> <a class="code hl_variable" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">view</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    [[<a class="code hl_function" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">nodiscard</a>]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;OceanSprayMeshFrame&gt;</a> <a class="code hl_function" href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a78d18e33be87d1590aa54cd5d5ac70b5">build</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1OceanSprayFrame.html">OceanSprayFrame</a>&amp; source_;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>};</div>
+</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1fluids_1_1OceanSprayRendererBuilder.html">OceanSprayRendererBuilder</a>;</div>
+<div class="foldopen" id="foldopen00041" data-start="{" data-end="};">
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanSprayRenderer.html">   41</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1fluids_1_1OceanSprayRenderer.html">OceanSprayRenderer</a> {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanSprayRenderer.html#a035543c11d587b83c55c96cac8a52bfc">   43</a></span>    <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_function" href="classeve_1_1fluids_1_1OceanSprayRenderer.html#a035543c11d587b83c55c96cac8a52bfc">~OceanSprayRenderer</a>();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanSprayRenderer.html#a7958efdb6555e87ab7663d09688399cd">   44</a></span>    <a class="code hl_function" href="classeve_1_1fluids_1_1OceanSprayRenderer.html#a7958efdb6555e87ab7663d09688399cd">OceanSprayRenderer</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1OceanSprayRenderer.html">OceanSprayRenderer</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanSprayRenderer.html#afb49a5e74804c878f9b311341f35ae36">   45</a></span>    <a class="code hl_class" href="classeve_1_1fluids_1_1OceanSprayRenderer.html">OceanSprayRenderer</a>&amp; <a class="code hl_function" href="classeve_1_1fluids_1_1OceanSprayRenderer.html#afb49a5e74804c878f9b311341f35ae36">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1OceanSprayRenderer.html">OceanSprayRenderer</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    [[<a class="code hl_function" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">nodiscard</a>]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1fluids_1_1OceanSprayRenderer.html#a719121a3e030365d21166744e4e5edb2">publish</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html">OceanSprayMeshFrame</a>&amp; <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#ae29508736a722b546230738c4e54294d">frame</a>);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    [[<a class="code hl_function" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">nodiscard</a>]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1fluids_1_1OceanSprayRenderer.html#a2fd6145f4c4c365704c00b9d40155470">draw</a>();</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanSprayRenderer.html#abc8361b206d5d01296b527695e7901dc">   58</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1fluids_1_1OceanSprayRendererBuilder.html">OceanSprayRendererBuilder</a>;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_class" href="classeve_1_1fluids_1_1OceanSprayRenderer.html">OceanSprayRenderer</a>();</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1OceanSprayRenderer_1_1Impl.html">Impl</a>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    std::unique_ptr&lt;Impl&gt; impl_;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="};">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanSprayRendererBuilder.html">   64</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1fluids_1_1OceanSprayRendererBuilder.html">OceanSprayRendererBuilder</a> {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanSprayRendererBuilder.html#a8bc2775072df0f862c7e42fec77c5516">   67</a></span>    <span class="keyword">explicit</span> <a class="code hl_function" href="classeve_1_1fluids_1_1OceanSprayRendererBuilder.html#a8bc2775072df0f862c7e42fec77c5516">OceanSprayRendererBuilder</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>&amp; graphics) : graphics_(<a class="code hl_variable" href="SceneVisibilityProvider_8cpp.html#a7b4888a79ec6bf11e4dab85b0657ac78">graphics</a>) {}</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    [[<a class="code hl_function" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">nodiscard</a>]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;OceanSprayRenderer&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1fluids_1_1OceanSprayRendererBuilder.html#aef6697658d6bd3dca2fae93a61274343">build</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a>&amp; graphics_;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>};</div>
+</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}  <span class="comment">// namespace eve::fluids</span></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aOceanRenderBindings_8cpp_html_ae29508736a722b546230738c4e54294d"><div class="ttname"><a href="OceanRenderBindings_8cpp.html#ae29508736a722b546230738c4e54294d">frame</a></div><div class="ttdeci">ssq::Object frame</div><div class="ttdef"><b>Definition</b> <a href="OceanRenderBindings_8cpp_source.html#l00041">OceanRenderBindings.cpp:41</a></div></div>
+<div class="ttc" id="aOceanSpray_8h_html"><div class="ttname"><a href="OceanSpray_8h.html">OceanSpray.h</a></div></div>
+<div class="ttc" id="aSceneVisibilityProvider_8cpp_html_a7b4888a79ec6bf11e4dab85b0657ac78"><div class="ttname"><a href="SceneVisibilityProvider_8cpp.html#a7b4888a79ec6bf11e4dab85b0657ac78">graphics</a></div><div class="ttdeci">Graphics * graphics</div><div class="ttdef"><b>Definition</b> <a href="SceneVisibilityProvider_8cpp_source.html#l00019">SceneVisibilityProvider.cpp:19</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aa035d90db0e334b2f2f53e55a79e621f"><div class="ttname"><a href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a></div><div class="ttdeci">std::string_view source</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00020">ScriptStructure.cpp:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayFrame_html"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayFrame.html">eve::fluids::OceanSprayFrame</a></div><div class="ttdoc">Immutable owning visual spray state. The application owns the current frame; replacing it with a succ...</div><div class="ttdef"><b>Definition</b> <a href="OceanSpray_8h_source.html#l00045">OceanSpray.h:45</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayMeshBuilder_html"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html">eve::fluids::OceanSprayMeshBuilder</a></div><div class="ttdoc">Cheap borrowed projection; source must remain alive and immutable through build().</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00022">OceanSprayRenderer.h:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayMeshBuilder_html_a78d18e33be87d1590aa54cd5d5ac70b5"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a78d18e33be87d1590aa54cd5d5ac70b5">eve::fluids::OceanSprayMeshBuilder::build</a></div><div class="ttdeci">EVENGINE_API_DOMAINS Result&lt; OceanSprayMeshFrame &gt; build() const</div><div class="ttdoc">Sort back-to-front and build camera-facing quads in a floating render origin.</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayMesh_8cpp_source.html#l00007">OceanSprayMesh.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayMeshBuilder_html_a889f787635623cf1ca5fc2d9fef1799c"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#a889f787635623cf1ca5fc2d9fef1799c">eve::fluids::OceanSprayMeshBuilder::view</a></div><div class="ttdeci">OceanSprayView view</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00026">OceanSprayRenderer.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayMeshBuilder_html_ac828986be1fd2b70013a2046d40cbd1f"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayMeshBuilder.html#ac828986be1fd2b70013a2046d40cbd1f">eve::fluids::OceanSprayMeshBuilder::OceanSprayMeshBuilder</a></div><div class="ttdeci">OceanSprayMeshBuilder(const OceanSprayFrame &amp;source)</div><div class="ttdoc">Borrow source for synchronous build only; never retain across move/destruction.</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00025">OceanSprayRenderer.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayRendererBuilder_html"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayRendererBuilder.html">eve::fluids::OceanSprayRendererBuilder</a></div><div class="ttdoc">Cheap borrowed graphics preparation; provider must survive build and later rendering.</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00064">OceanSprayRenderer.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayRendererBuilder_html_a8bc2775072df0f862c7e42fec77c5516"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayRendererBuilder.html#a8bc2775072df0f862c7e42fec77c5516">eve::fluids::OceanSprayRendererBuilder::OceanSprayRendererBuilder</a></div><div class="ttdeci">OceanSprayRendererBuilder(graphics::Graphics &amp;graphics)</div><div class="ttdoc">Borrow graphics through build; created renderer observes its retirement thereafter.</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00067">OceanSprayRenderer.h:67</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayRendererBuilder_html_aef6697658d6bd3dca2fae93a61274343"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayRendererBuilder.html#aef6697658d6bd3dca2fae93a61274343">eve::fluids::OceanSprayRendererBuilder::build</a></div><div class="ttdeci">EVENGINE_API_DOMAINS Result&lt; std::unique_ptr&lt; OceanSprayRenderer &gt; &gt; build() const</div><div class="ttdoc">Create shaders and double-buffered meshes; retain no builder reference. @cost Pipeline creation and s...</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8cpp_source.html#l00035">OceanSprayRenderer.cpp:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayRenderer_html"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayRenderer.html">eve::fluids::OceanSprayRenderer</a></div><div class="ttdoc">Render-thread-only spray projection; never advances or owns simulation authority. Graphics resources ...</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00041">OceanSprayRenderer.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayRenderer_html_a035543c11d587b83c55c96cac8a52bfc"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayRenderer.html#a035543c11d587b83c55c96cac8a52bfc">eve::fluids::OceanSprayRenderer::~OceanSprayRenderer</a></div><div class="ttdeci">EVENGINE_API_DOMAINS ~OceanSprayRenderer()</div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayRenderer_html_a2fd6145f4c4c365704c00b9d40155470"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayRenderer.html#a2fd6145f4c4c365704c00b9d40155470">eve::fluids::OceanSprayRenderer::draw</a></div><div class="ttdeci">EVENGINE_API_DOMAINS Result&lt; void &gt; draw()</div><div class="ttdoc">Draw one transparent, depth-tested batch after opaque water and hull geometry.</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8cpp_source.html#l00106">OceanSprayRenderer.cpp:106</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayRenderer_html_a719121a3e030365d21166744e4e5edb2"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayRenderer.html#a719121a3e030365d21166744e4e5edb2">eve::fluids::OceanSprayRenderer::publish</a></div><div class="ttdeci">EVENGINE_API_DOMAINS Result&lt; void &gt; publish(const OceanSprayMeshFrame &amp;frame)</div><div class="ttdoc">Upload validated geometry to the inactive mesh, then publish it atomically.</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8cpp_source.html#l00073">OceanSprayRenderer.cpp:73</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayRenderer_html_a7958efdb6555e87ab7663d09688399cd"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayRenderer.html#a7958efdb6555e87ab7663d09688399cd">eve::fluids::OceanSprayRenderer::OceanSprayRenderer</a></div><div class="ttdeci">OceanSprayRenderer(const OceanSprayRenderer &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanSprayRenderer_html_afb49a5e74804c878f9b311341f35ae36"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanSprayRenderer.html#afb49a5e74804c878f9b311341f35ae36">eve::fluids::OceanSprayRenderer::operator=</a></div><div class="ttdeci">OceanSprayRenderer &amp; operator=(const OceanSprayRenderer &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00120">Graphics.h:130</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_1_1ocean__script_html_ad23d23762c333240818be8885f83357c"><div class="ttname"><a href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">eve::fluids::ocean_script::vector</a></div><div class="ttdeci">Value vector(glm::dvec3 v)</div><div class="ttdef"><b>Definition</b> <a href="OceanBindingInternal_8h_source.html#l00033">OceanBindingInternal.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidTarget_8h_source.html#l00012">FluidTarget.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00025">Animation.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">eve::PhotoModeDomain::Graphics</a></div><div class="ttdeci">@ Graphics</div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayMeshFrame_html"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html">eve::fluids::OceanSprayMeshFrame</a></div><div class="ttdoc">Owning batch; attributes store (coverage,0,0) in the mesh normal attribute.</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00016">OceanSprayRenderer.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayMeshFrame_html_a3c8e5e0aaaa80359e8ee3438d5ec16b4"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#a3c8e5e0aaaa80359e8ee3438d5ec16b4">eve::fluids::OceanSprayMeshFrame::attributes</a></div><div class="ttdeci">std::vector&lt; float &gt; attributes</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00017">OceanSprayRenderer.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayMeshFrame_html_a424a47cd32494ad1b8ae6a7b079e64a5"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#a424a47cd32494ad1b8ae6a7b079e64a5">eve::fluids::OceanSprayMeshFrame::indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00018">OceanSprayRenderer.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayMeshFrame_html_aa904802cbd227af66ec7253b4fc4f759"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#aa904802cbd227af66ec7253b4fc4f759">eve::fluids::OceanSprayMeshFrame::time</a></div><div class="ttdeci">double time</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00019">OceanSprayRenderer.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayMeshFrame_html_ad50e41693224d068613e440b8c6398a7"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#ad50e41693224d068613e440b8c6398a7">eve::fluids::OceanSprayMeshFrame::positions</a></div><div class="ttdeci">std::vector&lt; float &gt; positions</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00017">OceanSprayRenderer.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayMeshFrame_html_ae729313a76a49318d8dfe503431bd392"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayMeshFrame.html#ae729313a76a49318d8dfe503431bd392">eve::fluids::OceanSprayMeshFrame::uv</a></div><div class="ttdeci">std::vector&lt; float &gt; uv</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00017">OceanSprayRenderer.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayRenderer_1_1Impl_html"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayRenderer_1_1Impl.html">eve::fluids::OceanSprayRenderer::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8cpp_source.html#l00014">OceanSprayRenderer.cpp:14</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayView_html"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayView.html">eve::fluids::OceanSprayView</a></div><div class="ttdoc">World camera basis and render origin; all positions use metres and Y-up.</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00012">OceanSprayRenderer.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayView_html_a3d88407a9378bd7b08d9e58a3d2f4ac8"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayView.html#a3d88407a9378bd7b08d9e58a3d2f4ac8">eve::fluids::OceanSprayView::origin</a></div><div class="ttdeci">glm::dvec3 origin</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00013">OceanSprayRenderer.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayView_html_a42563ab3dae661ca62e488b90ac23d64"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayView.html#a42563ab3dae661ca62e488b90ac23d64">eve::fluids::OceanSprayView::eye</a></div><div class="ttdeci">glm::dvec3 eye</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00013">OceanSprayRenderer.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayView_html_a9f98760326e4b4ff4a3bbbeace20e13c"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayView.html#a9f98760326e4b4ff4a3bbbeace20e13c">eve::fluids::OceanSprayView::up</a></div><div class="ttdeci">glm::dvec3 up</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00013">OceanSprayRenderer.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanSprayView_html_a9fa5f15a0ce0193a92dbf02579aba57b"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanSprayView.html#a9fa5f15a0ce0193a92dbf02579aba57b">eve::fluids::OceanSprayView::forward</a></div><div class="ttdeci">glm::dvec3 forward</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayRenderer_8h_source.html#l00013">OceanSprayRenderer.h:13</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
