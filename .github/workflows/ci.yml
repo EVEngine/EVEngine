@@ -250,7 +250,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        first: [baseline, wait_idle, semaphore, small]
+        first: [baseline, semaphore, semaphore_repeat, callback]
     env:
       UV_FIRST_MODE: ${{ matrix.first }}
     runs-on: macos-15-intel

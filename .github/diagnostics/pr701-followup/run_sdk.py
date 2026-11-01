@@ -19,8 +19,10 @@ def main(mode):
     env["EVENGINE_VULKAN_VALIDATION"] = "0" if mode == "no_validation" else "1"
     if mode == "sync":
         env["VK_LAYER_ENABLES"] = "VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT"
-    if mode == "semaphore":
+    if mode.startswith("semaphore"):
         env["MVK_CONFIG_VK_SEMAPHORE_SUPPORT_STYLE"] = "0"
+    if mode == "callback":
+        env["MVK_CONFIG_VK_SEMAPHORE_SUPPORT_STYLE"] = "3"
     width, height = (160, 120) if mode == "small" else (320, 240)
     (game / "config.nut").write_text(f'config={{width={width},height={height},title="PR701 glTF diagnosis",debug=false,hotReload=false}};\n', encoding="utf-8")
     print(f"SDK_UV_PROBE mode={mode}",flush=True)
