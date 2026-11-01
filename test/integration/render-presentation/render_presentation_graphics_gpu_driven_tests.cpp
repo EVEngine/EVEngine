@@ -2903,8 +2903,8 @@ TEST_CASE("graphics.deferredTargets.shadowUpdatesSurviveIdleFramesAndResize") {
         return std::vector<uint8_t>(bytes, bytes + pixels->getSize());
     };
     for (int width : {160, 192}) {
-        settings.width  = width;
-        settings.height = width * 3 / 4;
+        settings.width  = static_cast<uint16_t>(width);
+        settings.height = static_cast<uint16_t>(width * 3 / 4);
         REQUIRE(window->setWindowSettings(settings));
         caster->setCastShadow(true);
         const auto unshadowed = capture(false);
