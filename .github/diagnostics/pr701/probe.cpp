@@ -28,6 +28,10 @@ VmaAllocator                     vmaAllocator{};
 bool                             useVma{};
 bool                             depthMode{}, dynamicViewport{};
 VkBuffer borrowedVertex{}, borrowedIndex{};
+#ifdef PROBE_EMBEDDED
+extern "C" VkPipeline wrapperPipeline(const VkGraphicsPipelineCreateInfo*);
+bool useWrapperPipeline{};
+#endif
 VkDeviceMemory                   sharedMemory{};
 VkDeviceSize                     sharedCursor{}, sharedBytes{};
 void*                            sharedMapped{};
@@ -355,6 +359,10 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     if (depthMode) pi.pDepthStencilState = &ds;
     if (dynamicViewport) pi.pDynamicState = &dyn;
     VkPipeline pipeline;
+    #ifdef PROBE_EMBEDDED
+    if (useWrapperPipeline) pipeline=wrapperPipeline(&pi);
+    else
+#endif
     VK(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pi, nullptr, &pipeline));
     std::array<Vertex, 3> vertices{};
     vertices[0].p[0] = -1;
@@ -646,6 +654,14 @@ extern "C" int engineRawProbe(VkPhysicalDevice pd, VkDevice dev, uint32_t family
             failures+=!render(mode,false,false,32);
     }
     borrowedVertex=borrowedIndex=VK_NULL_HANDLE;
+    useWrapperPipeline=true;
+    std::puts("ENGINE_WRAPPER_PIPELINE_START");
+    for (bool depth : {false,true}) {
+        depthMode=depth;
+        for (const char* mode : {"GENERATED","VERTEX","PUSH","GBUFFER_EMBEDDED"})
+            failures+=!render(mode,false,false,32);
+    }
+    useWrapperPipeline=false;
     vkDestroyCommandPool(device,pool,nullptr);
     return failures;
 }

@@ -23,6 +23,22 @@
 #include "window/Window.h"
 
 extern "C" int engineRawProbe(VkPhysicalDevice, VkDevice, uint32_t, VkBuffer, VkBuffer);
+static vkb::Device* probeDevice{};
+extern "C" VkPipeline wrapperPipeline(const VkGraphicsPipelineCreateInfo* pi) {
+    vkb::BuiltRenderPass pass;
+    pass.handle=pi->renderPass;
+    pass.colorAttachmentCount=pi->pColorBlendState->attachmentCount;
+    pass.hasDepth=pi->pDepthStencilState!=nullptr;
+    auto builder=probeDevice->createPipeline();
+    builder.useClassicPipeline(pi->pStages[0].module,pi->pStages[1].module)
+        .setPipelineLayout(pi->layout)
+        .setVertexInputState(*reinterpret_cast<const vk::PipelineVertexInputStateCreateInfo*>(pi->pVertexInputState))
+        .setDynamicStatesViewportScissor()
+        .setRasterizer(vk::PolygonMode::eFill,false,false,1.0f,vk::CullModeFlagBits::eNone,vk::FrontFace::eClockwise)
+        .setColorAttachmentCount(pass.colorAttachmentCount);
+    if (pass.hasDepth) builder.setDepthStencil(true,true,vk::CompareOp::eLess);
+    return VkPipeline(builder.build(pass));
+}
 namespace eve::diagnostic {
 static void crash(int signal) {
     const char text[] = "ENGINE_PROBE_SIGNAL\n";
@@ -57,6 +73,7 @@ public:
         auto* backend = dynamic_cast<graphics::vulkan::Graphics*>(gfx);
         if (!backend) throw std::runtime_error("Not Vulkan");
         auto& dev = backend->getDevice();
+        probeDevice=&dev;
         std::printf("ENGINE_DEVICE %p physical=%p family=%u\n", (void*)VkDevice(dev.instance), (void*)VkPhysicalDevice(dev.physical_device.instance), dev.get_queue_index(vkb::QueueType::graphics));
         auto* gm = static_cast<graphics::vulkan::GpuMesh*>(mesh->gpuHandle);
         auto* vp = static_cast<const graphics::vulkan::MeshVertex*>(gm->vertices.map());
