@@ -63,13 +63,13 @@ public:
     /** @brief Sets the speed. */
     void  setSpeed(float speed);
     /** @brief Returns the speed. */
-    float getSpeed() const { return speed_; }
+    float getSpeed() const noexcept { return speed_; }
     /** @brief Sets the time. */
     void  setTime(float seconds);
     /** @brief Returns the time. */
-    float getTime() const { return time_; }
+    float getTime() const noexcept { return time_; }
     /** @brief Sets the loop. */
-    void  setLoop(bool loop) {
+    void setLoop(bool loop) noexcept {
         loopOverride_    = loop;
         hasLoopOverride_ = true;
     }
@@ -77,9 +77,9 @@ public:
     bool getLoop() const;
 
     /** @brief True when playing. */
-    bool isPlaying() const { return playing_ && clip_ != nullptr; }
+    bool isPlaying() const noexcept { return playing_ && clip_ != nullptr; }
     /** @brief True when paused. */
-    bool isPaused() const { return paused_; }
+    bool isPaused() const noexcept { return paused_; }
 
     /** @brief Borrow the selected clip, or null if none is selected.
      * The caller owns the clip and must keep it alive during playback and this borrow.

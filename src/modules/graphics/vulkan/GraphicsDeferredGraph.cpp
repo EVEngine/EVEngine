@@ -16,23 +16,24 @@ void Graphics::resetDeferredFrameGraphs() {
     // Graph command pools/framebuffers borrow these targets. Retire every
     // submitted slot before destroying graphs, then destroy target images.
     if (device.instance) device->waitIdle();
-    for (auto &graph : deferredFrameGraphs_) graph.reset();
+    for (auto &slot : deferredFrameGraphs_)
+        for (auto &graph : slot) graph.reset();
     deferredRecordingState_    = {};
     deferredGraphRecorded_     = false;
     deferredGraphRecordedSlot_ = 0;
 }
 
 vkb::FrameGraph *Graphics::currentDeferredFrameGraph() {
-    if (deferredFrameGraphs_[0] == nullptr) return nullptr;
-    return deferredFrameGraphs_[currentFrameSlot() % deferredFrameGraphs_.size()].get();
+    const size_t variant = shadowPendingMask != 0 ? 1u : 0u;
+    return deferredFrameGraphs_[currentFrameSlot() % deferredFrameGraphs_.size()][variant].get();
 }
 
 void Graphics::buildDeferredFrameGraphs() {
-    // One FrameGraph per in-flight slot imports the engine-owned targets and
-    // owns the deferred passes: the 3 CSM cascades (per-layer views of the
-    // shadow array) + the G-buffer fill share one dependency-free layer, so the
-    // JobSystem executor records all four command buffers concurrently (see
-    // recordDeferredFrameGraph). The engine keeps image ownership so
+    // Cache both shadow-update and G-buffer-only plans per in-flight slot.
+    // Build a variant lazily, once, rather than rebuilding on light toggles.
+    // Shadow resources are initialized into sampled layout at creation; frames
+    // without pending updates need neither clear passes nor layout transitions.
+    // The engine keeps image ownership so
     // renderEntityIdMask / readGBufferToImageData and the postFX wrappers are
     // unaffected. Each graph is only used on its slot's frames, so its command
     // buffer is reused two frames later — by then the present slot fence
@@ -45,6 +46,7 @@ void Graphics::buildDeferredFrameGraphs() {
     const uint32_t   shadowLayers = uint32_t(ShadowConfig::kTotalLayers);
     const uint32_t   w            = gbufferWidth > 0 ? uint32_t(gbufferWidth) : 1u;
     const uint32_t   h            = gbufferHeight > 0 ? uint32_t(gbufferHeight) : 1u;
+    const size_t     variant      = shadowPendingMask != 0 ? 1u : 0u;
 
     for (size_t i = 0; i < deferredFrameGraphs_.size(); ++i) {
         auto graph = std::make_unique<vkb::FrameGraph>(&device, 1);
@@ -61,7 +63,7 @@ void Graphics::buildDeferredFrameGraphs() {
         vk::ClearValue shadowClear{};
         shadowClear.depthStencil  = vk::ClearDepthStencilValue{1.0f, 0};
         const bool haveShadowSlot = i < shadowMaps.size() && shadowMaps[i].image.layerCount() >= shadowLayers;
-        if (haveShadowSlot) {
+        if (haveShadowSlot && variant != 0) {
             const vk::Image shadowImage = shadowMaps[i].image.image();
             for (uint32_t c = 0; c < shadowLayers; ++c) {
                 auto shadowH = graph->importTexture("shadowCascade" + std::to_string(c), shadowImage,
@@ -114,7 +116,7 @@ void Graphics::buildDeferredFrameGraphs() {
                 .record([this](vkb::FrameGraphPassContext& ctx) { recordGBufferPassDraws(ctx); });
         }
         graph->compile();
-        deferredFrameGraphs_[i] = std::move(graph);
+        deferredFrameGraphs_[i][variant] = std::move(graph);
     }
 }
 
@@ -258,9 +260,8 @@ void Graphics::recordDeferredFrameGraph() {
                                                  &targets->normalTex, &targets->albedoTex, &targets->depthTex,
                                                  &targets->pbrParamsTex, &targets->emissiveTex);
     }
-    // Record the declarative deferred passes (3 CSM cascades + G-buffer, one
-    // independent layer) with the JobSystem executor — the four command
-    // buffers are recorded concurrently on workers — then submit them on the
+    // Record the selected deferred plan (G-buffer, plus shadow layers only
+    // when updates are pending) with the JobSystem executor, then submit on the
     // graphics queue before the swapchain pass begins. Layout transitions and
     // the render-pass instances are planned by the FrameGraph. Same-queue
     // submission order plus the present slot fence (waited in Present::begin)

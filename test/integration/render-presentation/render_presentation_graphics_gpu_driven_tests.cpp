@@ -2772,7 +2772,12 @@ TEST_CASE("graphics.lighting.boundedFrameSlotSubmission") {
 }
 }  // namespace test_graphics_deferred_lifetime
 // Contract section: graphics deferred targets
+#include <array>
+#include <cmath>
+#include <memory>
+#include <vector>
 #include "PrivateTestScope.h"
+#include "graphics/Mesh.h"
 
 // graphics_deferred_targets.cpp
 namespace test_graphics_deferred_targets {
@@ -2843,6 +2848,83 @@ TEST_CASE("graphics.deferredTargets.lateGbufferAndResize") {
         REQUIRE_EQ(emptyPixels[center], uint8_t(255));
         graphics->begin3DFrame();
         graphics->present();
+    }
+}
+
+TEST_CASE("graphics.deferredTargets.shadowUpdatesSurviveIdleFramesAndResize") {
+    using namespace eve::graphics;
+    auto                       *window = eve::window::Window::create();
+    auto                       *gfx    = Graphics::create();
+    eve::window::WindowSettings settings;
+    settings.width  = 160;
+    settings.height = 120;
+    settings.vsync  = 0;
+    REQUIRE(window->setWindowSettings(settings));
+    struct CloseWindow {
+        eve::window::Window *window;
+        ~CloseWindow() { window->close(); }
+    } cleanup{window};
+    gfx->setScreenReadbackEnabled(true);
+    auto *control = gfx->getRenderControl();
+    for (const char *feature : {"ao", "gi", "aa", "atmosphere", "msaa"}) control->disable(feature);
+    auto *mesh = gfx->newMeshCube();
+    REQUIRE(mesh != nullptr);
+    const uint8_t white[] = {200, 200, 200, 255};
+    auto         *texture = gfx->newTexture(1, 1, white);
+    REQUIRE(texture != nullptr);
+    auto *ground = Renderable3D::create();
+    ground->setMesh(mesh);
+    ground->setTexture(texture);
+    ground->setScale(8, .1f, 8);
+    ground->setPosition(0, -.1f, 0);
+    ground->setCastShadow(false);
+    auto *caster = Renderable3D::create();
+    caster->setMesh(mesh);
+    caster->setTexture(texture);
+    caster->setPosition(0, .5f, 0);
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(3, 3, 4);
+    camera->setTarget(0, 0, 0);
+    camera->data()->nearZ = .1f;
+    camera->data()->farZ  = 30.f;
+    auto *light           = Light3D::createLight("dir");
+    light->setDirection(.6f, 1, .3f);
+    light->setColor(1, 1, 1, 1.5f);
+    const auto capture = [&](bool shadow) {
+        light->setCastShadow(shadow);
+        for (int frame = 0; frame < 3; ++frame) {
+            RenderSystem3D::render(*gfx);
+            RenderSystem::render(*gfx);
+        }
+        std::unique_ptr<eve::image::ImageData> pixels(gfx->newImageData());
+        REQUIRE(pixels != nullptr);
+        REQUIRE(pixels->getSize() == size_t(settings.width) * settings.height * 4);
+        const auto *bytes = static_cast<const uint8_t *>(pixels->getData());
+        return std::vector<uint8_t>(bytes, bytes + pixels->getSize());
+    };
+    for (int width : {160, 192}) {
+        settings.width  = width;
+        settings.height = width * 3 / 4;
+        REQUIRE(window->setWindowSettings(settings));
+        caster->setCastShadow(true);
+        const auto unshadowed = capture(false);
+        caster->setCastShadow(false);
+        // PCF treats out-of-cascade taps differently from disabled shadows.
+        // Compare empty updates against a freshly cleared active atlas.
+        const auto emptyShadow = capture(true);
+        caster->setCastShadow(true);
+        const auto shadowed      = capture(true);
+        size_t     changedPixels = 0;
+        for (size_t p = 0; p < shadowed.size(); p += 4)
+            changedPixels += std::abs(int(shadowed[p]) - int(emptyShadow[p])) > 8;
+        CHECK(changedPixels > 20);
+        CHECK(bool(capture(false) == unshadowed));
+        CHECK(bool(capture(true) == shadowed));
+        // A submitted shadow update with zero draws must clear old casters.
+        caster->setCastShadow(false);
+        CHECK(bool(capture(true) == emptyShadow));
+        caster->setCastShadow(true);
+        CHECK(bool(capture(true) == shadowed));
     }
 }
 
@@ -2928,6 +3010,157 @@ TEST_CASE("graphics.hybridLighting.deferredPassAvailable") {
         REQUIRE(!rc->hasHybridLightingFallback());
         REQUIRE(rc->hasPass("deferredLighting"));
     };
+}
+
+TEST_CASE("graphics.hybridLighting.coreOpaqueMatchesForwardLighting") {
+    using namespace eve::graphics;
+    auto                       *window = eve::window::Window::create();
+    auto                       *gfx    = Graphics::create();
+    eve::window::WindowSettings settings;
+    settings.width  = 160;
+    settings.height = 120;
+    settings.vsync  = 0;
+    REQUIRE(window->setWindowSettings(settings));
+    struct CloseWindow {
+        eve::window::Window *window;
+        ~CloseWindow() { window->close(); }
+    } cleanup{window};
+    if (!gfx->supportsDeferredLighting()) return;
+    gfx->setScreenReadbackEnabled(true);
+    auto *control = gfx->getRenderControl();
+    for (const char *feature : {"ao", "gi", "aa", "atmosphere", "msaa", "shadow"}) control->disable(feature);
+    const float    positions[] = {-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0};
+    const float    normals[]   = {0, .6f, .8f, 0, .6f, .8f, 0, .6f, .8f, 0, .6f, .8f};
+    const float    uv[]        = {0, 0, 1, 0, 1, 1, 0, 1};
+    const uint32_t indices[]   = {0, 1, 2, 0, 2, 3};
+    auto          *mesh        = gfx->newMeshFromArrays(positions, normals, uv, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+    const uint8_t color[] = {120, 85, 60, 255};
+    auto         *texture = gfx->newTexture(1, 1, color);
+    REQUIRE(texture != nullptr);
+    auto *object = Renderable3D::create();
+    object->setMesh(mesh);
+    object->setTexture(texture);
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(0, 0, 3);
+    camera->setTarget(0, 0, 0);
+    camera->setAmbient(.08f, .1f, .12f);
+    auto *light = Light3D::createLight();
+    light->setCastShadow(false);
+    light->setColor(1, .85f, .7f, .6f);
+    const auto capture = [&](LightingMode mode) {
+        REQUIRE(control->setLightingMode(mode).ok());
+        control->compile();
+        REQUIRE(control->getEffectiveLightingMode() == mode);
+        for (int frame = 0; frame < 3; ++frame) {
+            RenderSystem3D::render(*gfx);
+            RenderSystem::render(*gfx);
+        }
+        return std::array<Color, 3>{gfx->getPixel(80, 60), gfx->getPixel(68, 52), gfx->getPixel(92, 68)};
+    };
+    for (int source = 0; source < 3; ++source) {
+        light->setType(source == 2 ? "point" : "dir");
+        light->setDirection(.2f, .7f, source == 1 ? -1.f : 1.f);
+        light->setPosition(.4f, .5f, 1.3f);
+        light->setRadius(5.f);
+        for (float metallic : {0.f, .7f}) {
+            object->setMetallic(metallic);
+            for (float roughness : {.2f, .75f}) {
+                object->setRoughness(roughness);
+                const auto forward = capture(LightingMode::ForwardPlus);
+                const auto hybrid  = capture(LightingMode::Hybrid);
+                for (std::size_t i = 0; i < forward.size(); ++i) {
+                    CHECK(forward[i].r + forward[i].g + forward[i].b > .01f);
+                    CHECK(std::fabs(forward[i].r - hybrid[i].r) < .025f);
+                    CHECK(std::fabs(forward[i].g - hybrid[i].g) < .025f);
+                    CHECK(std::fabs(forward[i].b - hybrid[i].b) < .025f);
+                }
+            }
+        }
+    }
+}
+
+TEST_CASE("graphics.skinning.sparseWeightsMatchCpuReference") {
+    using namespace eve::graphics;
+    auto                       *window = eve::window::Window::create();
+    auto                       *gfx    = Graphics::create();
+    eve::window::WindowSettings settings;
+    settings.width  = 160;
+    settings.height = 120;
+    settings.vsync  = 0;
+    REQUIRE(window->setWindowSettings(settings));
+    struct CloseWindow {
+        eve::window::Window *window;
+        ~CloseWindow() { window->close(); }
+    } cleanup{window};
+    gfx->setScreenReadbackEnabled(true);
+    auto *control = gfx->getRenderControl();
+    for (const char *feature : {"ao", "gi", "aa", "atmosphere", "msaa", "shadow"}) control->disable(feature);
+    const float    positions[] = {-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0};
+    const float    normals[]   = {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1};
+    const float    uv[]        = {0, 0, 1, 0, 1, 1, 0, 1};
+    const uint32_t indices[]   = {0, 1, 2, 0, 2, 3};
+    const uint16_t joints[]    = {0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3};
+    // Vary influence counts within a primitive, including non-leading zero slots.
+    const float           weights[] = {1, 0, 0, 0, .75f, .25f, 0, 0, .4f, .3f, .2f, .1f, 0, 0, .5f, .5f};
+    std::array<float, 64> palette{};
+    for (int bone = 0; bone < 4; ++bone) {
+        for (int d : {0, 5, 10, 15}) palette[bone * 16 + d] = 1;
+        palette[bone * 16 + 12] = .15f * (bone - 1);
+        palette[bone * 16 + 13] = .1f * (bone % 2);
+    }
+    std::array<float, 12> reference{};
+    for (int vertex = 0; vertex < 4; ++vertex)
+        for (int axis = 0; axis < 3; ++axis)
+            for (int bone = 0; bone < 4; ++bone)
+                reference[vertex * 3 + axis] +=
+                    weights[vertex * 4 + bone] * (positions[vertex * 3 + axis] + palette[bone * 16 + 12 + axis]);
+    auto *skinned = gfx->newMeshFromArrays(positions, normals, uv, 4, indices, 6);
+    auto *cpu     = gfx->newMeshFromArrays(reference.data(), normals, uv, 4, indices, 6);
+    REQUIRE(skinned != nullptr);
+    REQUIRE(cpu != nullptr);
+    REQUIRE(gfx->setMeshSkinningData(skinned, joints, weights, 4));
+    REQUIRE(skinned->setSkinPalette(palette.data(), 4).ok());
+    const uint8_t color[] = {120, 85, 60, 255};
+    auto         *texture = gfx->newTexture(1, 1, color);
+    REQUIRE(texture != nullptr);
+    auto *object = Renderable3D::create();
+    object->setTexture(texture);
+    auto *camera = Camera3D::createCamera();
+    camera->setEye(0, 0, 3);
+    camera->setTarget(0, 0, 0);
+    auto *light = Light3D::createLight("dir");
+    light->setCastShadow(false);
+    light->setDirection(.2f, .7f, 1);
+    const auto capture = [&](Mesh *mesh) {
+        object->setMesh(mesh);
+        for (int frame = 0; frame < 3; ++frame) {
+            RenderSystem3D::render(*gfx);
+            RenderSystem::render(*gfx);
+        }
+        std::unique_ptr<eve::image::ImageData> pixels(gfx->newImageData());
+        REQUIRE(pixels != nullptr);
+        REQUIRE(pixels->getSize() == 160u * 120u * 4u);
+        const auto *bytes = static_cast<const uint8_t *>(pixels->getData());
+        return std::vector<uint8_t>(bytes, bytes + pixels->getSize());
+    };
+    for (LightingMode mode : {LightingMode::ForwardPlus, LightingMode::Hybrid}) {
+        if (mode == LightingMode::Hybrid && !gfx->supportsDeferredLighting()) continue;
+        REQUIRE(control->setLightingMode(mode).ok());
+        control->compile();
+        const auto expected    = capture(cpu);
+        const auto actual      = capture(skinned);
+        unsigned   differences = 0, foreground = 0;
+        for (size_t pixel = 0; pixel < expected.size(); pixel += 4) {
+            bool changed = false;
+            for (size_t channel = 0; channel < 3; ++channel)
+                changed |= std::abs(int(expected[pixel + channel]) - int(actual[pixel + channel])) > 2;
+            differences += changed;
+            foreground += expected[pixel] != expected[0];
+        }
+        CHECK(foreground > 1000);
+        CHECK(differences < 16);
+    }
 }
 
 TEST_CASE("graphics.lightingPreset.ciKeepsForwardPlus") {

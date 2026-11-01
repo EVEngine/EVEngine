@@ -1,0 +1,1513 @@
+{
+  "schema": "evengine.gameplay-cpu-comparison",
+  "version": 1,
+  "date": "2026-10-31",
+  "base_revision": "8315da221165c0623159353c8672d3c8c25dbf51",
+  "compiler": "GCC 14.2.0",
+  "build_type": "Release",
+  "flags": "-O3 -DNDEBUG; no fast-math; IPO off",
+  "cpu": "AMD EPYC 9V74, 5 visible logical CPUs, 4-CPU quota",
+  "memory_limit_bytes": 17179869184,
+  "render_device": "llvmpipe (LLVM 19.1.7, 256 bits)",
+  "render_enabled_in_timing_comparison": false,
+  "workload": "4 native 3D scenarios x 3 size tiers x 3 independent processes; 60 warmup + 300 measured frames per process",
+  "scope": "Scene edits/propagation plus animation sampling/blending, bone worlds and real mesh palette publication; excludes render/present during CPU comparison.",
+  "change": "Root motion samples only the selected local bone using the existing private AnimClip sampler; display pose still samples every bone. Time wrapping/clamping, bind fallback and ordering are unchanged.",
+  "binary_sha256": {
+    "before": "10a4f8747f83ef2516275112838657812c3e91424217632f356cf45b25dd2a5b",
+    "after": "627b1e68f0ca33a27a9ddb610066a217178e95231e9375dac24d690cb50611cf"
+  },
+  "benchmark_source_sha256": {
+    "GameplayBenchmark.cpp": "d75e376654e7ba1c89eedadb29f905e62a09b9cc6e6579c7dd237cc627562dcb",
+    "GameplayBenchmark.h": "cb95bfab58762c20ebaf6dd693a4be4cfe3f4827e01d017a34592bca903f9c06",
+    "main.cpp": "36ca15bc9d1b8a22e9da01f2035a1016bb1f9f990836a2f45335653dd12c2573",
+    "run_gameplay.py": "05cca758ddd0a4d4843dfadf6102b64ee62f71bc6de163a0c71b241bd43db6bc"
+  },
+  "validation": {
+    "matching_world_bone_palette_hashes_all_72_runs": true,
+    "animation_process_isolated_cases_passed": 30,
+    "runtime_test_scope": "Animation/player/batch-LOD/root-motion source selections plus source-local SMR math cases; linked against CMake production objects. Not the full engine runtime suite.",
+    "software_vulkan_smoke_cases_passed": [
+      "static",
+      "dynamic",
+      "animated",
+      "mixed"
+    ],
+    "source_quality": "make check CI_BASE=HEAD passed (includes architecture and layering checks)",
+    "presented_frame_before_after_byte_identical": true,
+    "presented_frame_ppm_sha256": "46b865e35486823bea1ee009fbd9eeeb28de37209935c1227dfa190ac19f6f25",
+    "presented_frame_workload": "3d-gameplay-mixed, 64 props, 4 actors, 60 warmup + 20 measured frames, 640x360; readback after timing",
+    "architecture": "Implementation-only animation optimization; no public API, module boundary, persisted format or lifecycle change; no exceptions."
+  },
+  "limitations": [
+    "Synthetic workload tiers, not requirements measured from a shipping game.",
+    "Shared VM; no statistical-significance claim. Static/dynamic cases are controls and have no intended animation benefit.",
+    "GPU throughput and full-game FPS were not measured; software Vulkan used for initialization and functional rendering only.",
+    "Per-phase medians are not additive; animationAndPalette is the parent of three child phases.",
+    "gprofng capture included graphics startup; its whole-process percentages are not steady-state frame percentages."
+  ],
+  "comparison": [
+    {
+      "case": "static-256-8",
+      "before_median_frame_p50_ms": 0.011938,
+      "after_median_frame_p50_ms": 0.011918,
+      "frame_reduction_percent": 0.16753224995812444,
+      "before_median_sampling_p50_ms": 2e-05,
+      "after_median_sampling_p50_ms": 2e-05,
+      "sampling_reduction_percent": null,
+      "state_checksum": "13186067741053510437"
+    },
+    {
+      "case": "dynamic-256-8",
+      "before_median_frame_p50_ms": 0.034822,
+      "after_median_frame_p50_ms": 0.034031,
+      "frame_reduction_percent": 2.271552466831317,
+      "before_median_sampling_p50_ms": 2e-05,
+      "after_median_sampling_p50_ms": 2e-05,
+      "sampling_reduction_percent": null,
+      "state_checksum": "6007368923601299804"
+    },
+    {
+      "case": "animated-256-8",
+      "before_median_frame_p50_ms": 0.062242,
+      "after_median_frame_p50_ms": 0.04774,
+      "frame_reduction_percent": 23.29937983997944,
+      "before_median_sampling_p50_ms": 0.030275,
+      "after_median_sampling_p50_ms": 0.016064,
+      "sampling_reduction_percent": 46.939719240297286,
+      "state_checksum": "4388157532603844771"
+    },
+    {
+      "case": "mixed-256-8",
+      "before_median_frame_p50_ms": 0.084896,
+      "after_median_frame_p50_ms": 0.070444,
+      "frame_reduction_percent": 17.023181304183932,
+      "before_median_sampling_p50_ms": 0.030345,
+      "after_median_sampling_p50_ms": 0.015944,
+      "sampling_reduction_percent": 47.457571263799636,
+      "state_checksum": "14729763674077338666"
+    },
+    {
+      "case": "static-1000-32",
+      "before_median_frame_p50_ms": 0.042894,
+      "after_median_frame_p50_ms": 0.042333,
+      "frame_reduction_percent": 1.3078752273045113,
+      "before_median_sampling_p50_ms": 2e-05,
+      "after_median_sampling_p50_ms": 2e-05,
+      "sampling_reduction_percent": null,
+      "state_checksum": "15023391551511512357"
+    },
+    {
+      "case": "dynamic-1000-32",
+      "before_median_frame_p50_ms": 0.123593,
+      "after_median_frame_p50_ms": 0.12819,
+      "frame_reduction_percent": -3.719466312817077,
+      "before_median_sampling_p50_ms": 2e-05,
+      "after_median_sampling_p50_ms": 2e-05,
+      "sampling_reduction_percent": null,
+      "state_checksum": "16295067414137538407"
+    },
+    {
+      "case": "animated-1000-32",
+      "before_median_frame_p50_ms": 0.250701,
+      "after_median_frame_p50_ms": 0.194488,
+      "frame_reduction_percent": 22.422327792868803,
+      "before_median_sampling_p50_ms": 0.12134,
+      "after_median_sampling_p50_ms": 0.065036,
+      "sampling_reduction_percent": 46.40184605241471,
+      "state_checksum": "1229888542857799274"
+    },
+    {
+      "case": "mixed-1000-32",
+      "before_median_frame_p50_ms": 0.370329,
+      "after_median_frame_p50_ms": 0.28996,
+      "frame_reduction_percent": 21.702054119445148,
+      "before_median_sampling_p50_ms": 0.124174,
+      "after_median_sampling_p50_ms": 0.065698,
+      "sampling_reduction_percent": 47.09198382914297,
+      "state_checksum": "15887305093537250000"
+    },
+    {
+      "case": "static-5000-64",
+      "before_median_frame_p50_ms": 0.309599,
+      "after_median_frame_p50_ms": 0.336499,
+      "frame_reduction_percent": -8.688658555098684,
+      "before_median_sampling_p50_ms": 2e-05,
+      "after_median_sampling_p50_ms": 2e-05,
+      "sampling_reduction_percent": null,
+      "state_checksum": "17480464706167655717"
+    },
+    {
+      "case": "dynamic-5000-64",
+      "before_median_frame_p50_ms": 0.745676,
+      "after_median_frame_p50_ms": 0.752585,
+      "frame_reduction_percent": -0.9265418224537081,
+      "before_median_sampling_p50_ms": 2e-05,
+      "after_median_sampling_p50_ms": 2e-05,
+      "sampling_reduction_percent": null,
+      "state_checksum": "12379744695834093477"
+    },
+    {
+      "case": "animated-5000-64",
+      "before_median_frame_p50_ms": 0.751313,
+      "after_median_frame_p50_ms": 0.646178,
+      "frame_reduction_percent": 13.993502042424389,
+      "before_median_sampling_p50_ms": 0.249881,
+      "after_median_sampling_p50_ms": 0.13461,
+      "sampling_reduction_percent": 46.130358050431994,
+      "state_checksum": "8641613402328776219"
+    },
+    {
+      "case": "mixed-5000-64",
+      "before_median_frame_p50_ms": 1.17191,
+      "after_median_frame_p50_ms": 1.08444,
+      "frame_reduction_percent": 7.463883745338795,
+      "before_median_sampling_p50_ms": 0.249359,
+      "after_median_sampling_p50_ms": 0.136392,
+      "sampling_reduction_percent": 45.30295678118696,
+      "state_checksum": "4475523728495779739"
+    }
+  ],
+  "runs": [
+    {
+      "variant": "before",
+      "case": "static-256-8",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.011808,
+        "edits": 0.000121,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.010686,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.012068,
+      "state_checksum": "13186067741053510437"
+    },
+    {
+      "variant": "before",
+      "case": "dynamic-256-8",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.035623,
+        "edits": 0.00028,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.0343,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.047331,
+      "state_checksum": "6007368923601299804"
+    },
+    {
+      "variant": "before",
+      "case": "animated-256-8",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.067691,
+        "edits": 0.000131,
+        "animationAndPalette": 0.055292,
+        "clipSamplingAndBlend": 0.035532,
+        "boneWorldTransforms": 0.00701,
+        "skinPalettePublication": 0.012519,
+        "sceneTransforms": 0.011206,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.187598,
+      "state_checksum": "4388157532603844771"
+    },
+    {
+      "variant": "before",
+      "case": "mixed-256-8",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.084896,
+        "edits": 0.000281,
+        "animationAndPalette": 0.050284,
+        "clipSamplingAndBlend": 0.030505,
+        "boneWorldTransforms": 0.007,
+        "skinPalettePublication": 0.012558,
+        "sceneTransforms": 0.033339,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.140388,
+      "state_checksum": "14729763674077338666"
+    },
+    {
+      "variant": "before",
+      "case": "static-1000-32",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.042243,
+        "edits": 0.000121,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.041111,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.05388,
+      "state_checksum": "15023391551511512357"
+    },
+    {
+      "variant": "before",
+      "case": "dynamic-1000-32",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.124364,
+        "edits": 0.000691,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.122401,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.203021,
+      "state_checksum": "16295067414137538407"
+    },
+    {
+      "variant": "before",
+      "case": "animated-1000-32",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.289088,
+        "edits": 0.00028,
+        "animationAndPalette": 0.219034,
+        "clipSamplingAndBlend": 0.125496,
+        "boneWorldTransforms": 0.028082,
+        "skinPalettePublication": 0.051587,
+        "sceneTransforms": 0.047791,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.525289,
+      "state_checksum": "1229888542857799274"
+    },
+    {
+      "variant": "before",
+      "case": "mixed-1000-32",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.370329,
+        "edits": 0.000871,
+        "animationAndPalette": 0.210022,
+        "clipSamplingAndBlend": 0.125055,
+        "boneWorldTransforms": 0.028052,
+        "skinPalettePublication": 0.051487,
+        "sceneTransforms": 0.133418,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.60753,
+      "state_checksum": "15887305093537250000"
+    },
+    {
+      "variant": "before",
+      "case": "static-5000-64",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.306514,
+        "edits": 0.00032,
+        "animationAndPalette": 0.00022,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.303019,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.478419,
+      "state_checksum": "17480464706167655717"
+    },
+    {
+      "variant": "before",
+      "case": "dynamic-5000-64",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.743962,
+        "edits": 0.002824,
+        "animationAndPalette": 0.000211,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.737692,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.99936,
+      "state_checksum": "12379744695834093477"
+    },
+    {
+      "variant": "before",
+      "case": "animated-5000-64",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.752685,
+        "edits": 0.00031,
+        "animationAndPalette": 0.423367,
+        "clipSamplingAndBlend": 0.249881,
+        "boneWorldTransforms": 0.056654,
+        "skinPalettePublication": 0.104745,
+        "sceneTransforms": 0.310841,
+        "render3dIncludingWaits": 4e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 1.19546,
+      "state_checksum": "8641613402328776219"
+    },
+    {
+      "variant": "before",
+      "case": "mixed-5000-64",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 1.16985,
+        "edits": 0.002864,
+        "animationAndPalette": 0.420713,
+        "clipSamplingAndBlend": 0.247517,
+        "boneWorldTransforms": 0.056765,
+        "skinPalettePublication": 0.104625,
+        "sceneTransforms": 0.737212,
+        "render3dIncludingWaits": 4e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 1.51937,
+      "state_checksum": "4475523728495779739"
+    },
+    {
+      "variant": "before",
+      "case": "mixed-5000-64",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 1.17191,
+        "edits": 0.002874,
+        "animationAndPalette": 0.422025,
+        "clipSamplingAndBlend": 0.249359,
+        "boneWorldTransforms": 0.056664,
+        "skinPalettePublication": 0.104595,
+        "sceneTransforms": 0.736,
+        "render3dIncludingWaits": 4e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 1.48146,
+      "state_checksum": "4475523728495779739"
+    },
+    {
+      "variant": "before",
+      "case": "animated-5000-64",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.749751,
+        "edits": 0.000331,
+        "animationAndPalette": 0.421905,
+        "clipSamplingAndBlend": 0.246765,
+        "boneWorldTransforms": 0.056774,
+        "skinPalettePublication": 0.104445,
+        "sceneTransforms": 0.309378,
+        "render3dIncludingWaits": 5e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 1.0799,
+      "state_checksum": "8641613402328776219"
+    },
+    {
+      "variant": "before",
+      "case": "dynamic-5000-64",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.770251,
+        "edits": 0.002954,
+        "animationAndPalette": 0.00021,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.76299,
+        "render3dIncludingWaits": 4e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.939732,
+      "state_checksum": "12379744695834093477"
+    },
+    {
+      "variant": "before",
+      "case": "static-5000-64",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.309599,
+        "edits": 0.00027,
+        "animationAndPalette": 0.0002,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.306744,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.419422,
+      "state_checksum": "17480464706167655717"
+    },
+    {
+      "variant": "before",
+      "case": "mixed-1000-32",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.350149,
+        "edits": 0.000841,
+        "animationAndPalette": 0.206386,
+        "clipSamplingAndBlend": 0.123263,
+        "boneWorldTransforms": 0.028131,
+        "skinPalettePublication": 0.051436,
+        "sceneTransforms": 0.132115,
+        "render3dIncludingWaits": 4e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.55394,
+      "state_checksum": "15887305093537250000"
+    },
+    {
+      "variant": "before",
+      "case": "animated-1000-32",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.246385,
+        "edits": 0.0002,
+        "animationAndPalette": 0.198975,
+        "clipSamplingAndBlend": 0.120859,
+        "boneWorldTransforms": 0.027531,
+        "skinPalettePublication": 0.050074,
+        "sceneTransforms": 0.045637,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.408255,
+      "state_checksum": "1229888542857799274"
+    },
+    {
+      "variant": "before",
+      "case": "dynamic-1000-32",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.123503,
+        "edits": 0.000671,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.12161,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.17525,
+      "state_checksum": "16295067414137538407"
+    },
+    {
+      "variant": "before",
+      "case": "static-1000-32",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.044085,
+        "edits": 0.00012,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.042913,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.057365,
+      "state_checksum": "15023391551511512357"
+    },
+    {
+      "variant": "before",
+      "case": "mixed-256-8",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.085396,
+        "edits": 0.00029,
+        "animationAndPalette": 0.050165,
+        "clipSamplingAndBlend": 0.030345,
+        "boneWorldTransforms": 0.007001,
+        "skinPalettePublication": 0.012599,
+        "sceneTransforms": 0.033861,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.145296,
+      "state_checksum": "14729763674077338666"
+    },
+    {
+      "variant": "before",
+      "case": "animated-256-8",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.061812,
+        "edits": 0.00013,
+        "animationAndPalette": 0.049734,
+        "clipSamplingAndBlend": 0.030184,
+        "boneWorldTransforms": 0.006981,
+        "skinPalettePublication": 0.012478,
+        "sceneTransforms": 0.010997,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.111114,
+      "state_checksum": "4388157532603844771"
+    },
+    {
+      "variant": "before",
+      "case": "dynamic-256-8",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.034822,
+        "edits": 0.000281,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.033499,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.037976,
+      "state_checksum": "6007368923601299804"
+    },
+    {
+      "variant": "before",
+      "case": "static-256-8",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.011948,
+        "edits": 0.00012,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.010836,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.012168,
+      "state_checksum": "13186067741053510437"
+    },
+    {
+      "variant": "before",
+      "case": "static-256-8",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.011938,
+        "edits": 0.000121,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.010806,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.012168,
+      "state_checksum": "13186067741053510437"
+    },
+    {
+      "variant": "before",
+      "case": "dynamic-256-8",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.034001,
+        "edits": 0.00028,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.032689,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.043604,
+      "state_checksum": "6007368923601299804"
+    },
+    {
+      "variant": "before",
+      "case": "animated-256-8",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.062242,
+        "edits": 0.00016,
+        "animationAndPalette": 0.049984,
+        "clipSamplingAndBlend": 0.030275,
+        "boneWorldTransforms": 0.006991,
+        "skinPalettePublication": 0.012529,
+        "sceneTransforms": 0.011096,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.108131,
+      "state_checksum": "4388157532603844771"
+    },
+    {
+      "variant": "before",
+      "case": "mixed-256-8",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.084465,
+        "edits": 0.0003,
+        "animationAndPalette": 0.049804,
+        "clipSamplingAndBlend": 0.030254,
+        "boneWorldTransforms": 0.00689,
+        "skinPalettePublication": 0.012499,
+        "sceneTransforms": 0.03338,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.123352,
+      "state_checksum": "14729763674077338666"
+    },
+    {
+      "variant": "before",
+      "case": "static-1000-32",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.042894,
+        "edits": 0.00013,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.041732,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.075171,
+      "state_checksum": "15023391551511512357"
+    },
+    {
+      "variant": "before",
+      "case": "dynamic-1000-32",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.123593,
+        "edits": 0.000702,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.121731,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.192866,
+      "state_checksum": "16295067414137538407"
+    },
+    {
+      "variant": "before",
+      "case": "animated-1000-32",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.250701,
+        "edits": 0.0002,
+        "animationAndPalette": 0.200808,
+        "clipSamplingAndBlend": 0.12134,
+        "boneWorldTransforms": 0.027922,
+        "skinPalettePublication": 0.050705,
+        "sceneTransforms": 0.047821,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.422597,
+      "state_checksum": "1229888542857799274"
+    },
+    {
+      "variant": "before",
+      "case": "mixed-1000-32",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.388936,
+        "edits": 0.000872,
+        "animationAndPalette": 0.204182,
+        "clipSamplingAndBlend": 0.124174,
+        "boneWorldTransforms": 0.028011,
+        "skinPalettePublication": 0.051216,
+        "sceneTransforms": 0.167598,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.589454,
+      "state_checksum": "15887305093537250000"
+    },
+    {
+      "variant": "before",
+      "case": "static-5000-64",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.318111,
+        "edits": 0.00027,
+        "animationAndPalette": 0.000201,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.314677,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.543676,
+      "state_checksum": "17480464706167655717"
+    },
+    {
+      "variant": "before",
+      "case": "dynamic-5000-64",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.745676,
+        "edits": 0.002864,
+        "animationAndPalette": 0.000191,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.738826,
+        "render3dIncludingWaits": 4e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.976558,
+      "state_checksum": "12379744695834093477"
+    },
+    {
+      "variant": "before",
+      "case": "animated-5000-64",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.751313,
+        "edits": 0.0003,
+        "animationAndPalette": 0.423317,
+        "clipSamplingAndBlend": 0.25633,
+        "boneWorldTransforms": 0.056724,
+        "skinPalettePublication": 0.103954,
+        "sceneTransforms": 0.306584,
+        "render3dIncludingWaits": 4e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 1.05497,
+      "state_checksum": "8641613402328776219"
+    },
+    {
+      "variant": "before",
+      "case": "mixed-5000-64",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 1.20461,
+        "edits": 0.003094,
+        "animationAndPalette": 0.425992,
+        "clipSamplingAndBlend": 0.251703,
+        "boneWorldTransforms": 0.056835,
+        "skinPalettePublication": 0.105506,
+        "sceneTransforms": 0.766105,
+        "render3dIncludingWaits": 5e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 1.51069,
+      "state_checksum": "4475523728495779739"
+    },
+    {
+      "variant": "after",
+      "case": "static-256-8",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.011918,
+        "edits": 0.00013,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.010786,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.017897,
+      "state_checksum": "13186067741053510437"
+    },
+    {
+      "variant": "after",
+      "case": "dynamic-256-8",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.03401,
+        "edits": 0.00028,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.032678,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.053909,
+      "state_checksum": "6007368923601299804"
+    },
+    {
+      "variant": "after",
+      "case": "animated-256-8",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.047941,
+        "edits": 0.000131,
+        "animationAndPalette": 0.035794,
+        "clipSamplingAndBlend": 0.016094,
+        "boneWorldTransforms": 0.00701,
+        "skinPalettePublication": 0.012529,
+        "sceneTransforms": 0.010996,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.09429,
+      "state_checksum": "4388157532603844771"
+    },
+    {
+      "variant": "after",
+      "case": "mixed-256-8",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.073019,
+        "edits": 0.000321,
+        "animationAndPalette": 0.036264,
+        "clipSamplingAndBlend": 0.016205,
+        "boneWorldTransforms": 0.007041,
+        "skinPalettePublication": 0.012839,
+        "sceneTransforms": 0.035262,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.147289,
+      "state_checksum": "14729763674077338666"
+    },
+    {
+      "variant": "after",
+      "case": "static-1000-32",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.042333,
+        "edits": 0.000121,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.041161,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.098346,
+      "state_checksum": "15023391551511512357"
+    },
+    {
+      "variant": "after",
+      "case": "dynamic-1000-32",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.12819,
+        "edits": 0.000731,
+        "animationAndPalette": 0.000181,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.125747,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.313825,
+      "state_checksum": "16295067414137538407"
+    },
+    {
+      "variant": "after",
+      "case": "animated-1000-32",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.194488,
+        "edits": 0.00021,
+        "animationAndPalette": 0.145075,
+        "clipSamplingAndBlend": 0.065076,
+        "boneWorldTransforms": 0.027942,
+        "skinPalettePublication": 0.050866,
+        "sceneTransforms": 0.046168,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.407004,
+      "state_checksum": "1229888542857799274"
+    },
+    {
+      "variant": "after",
+      "case": "mixed-1000-32",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.334495,
+        "edits": 0.000951,
+        "animationAndPalette": 0.153408,
+        "clipSamplingAndBlend": 0.069032,
+        "boneWorldTransforms": 0.028132,
+        "skinPalettePublication": 0.052027,
+        "sceneTransforms": 0.137184,
+        "render3dIncludingWaits": 4e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.591937,
+      "state_checksum": "15887305093537250000"
+    },
+    {
+      "variant": "after",
+      "case": "static-5000-64",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.306044,
+        "edits": 0.00027,
+        "animationAndPalette": 0.00019,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.30353,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.434565,
+      "state_checksum": "17480464706167655717"
+    },
+    {
+      "variant": "after",
+      "case": "dynamic-5000-64",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.752585,
+        "edits": 0.002925,
+        "animationAndPalette": 0.00021,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.746326,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.959523,
+      "state_checksum": "12379744695834093477"
+    },
+    {
+      "variant": "after",
+      "case": "animated-5000-64",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 0.657495,
+        "edits": 0.00032,
+        "animationAndPalette": 0.308357,
+        "clipSamplingAndBlend": 0.135742,
+        "boneWorldTransforms": 0.056464,
+        "skinPalettePublication": 0.104605,
+        "sceneTransforms": 0.327776,
+        "render3dIncludingWaits": 4e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.921135,
+      "state_checksum": "8641613402328776219"
+    },
+    {
+      "variant": "after",
+      "case": "mixed-5000-64",
+      "repeat": 1,
+      "phase_p50_ms": {
+        "frame": 1.12883,
+        "edits": 0.003084,
+        "animationAndPalette": 0.306694,
+        "clipSamplingAndBlend": 0.136672,
+        "boneWorldTransforms": 0.056473,
+        "skinPalettePublication": 0.104935,
+        "sceneTransforms": 0.784713,
+        "render3dIncludingWaits": 4e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 1.49363,
+      "state_checksum": "4475523728495779739"
+    },
+    {
+      "variant": "after",
+      "case": "mixed-5000-64",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 1.08444,
+        "edits": 0.003034,
+        "animationAndPalette": 0.313494,
+        "clipSamplingAndBlend": 0.136392,
+        "boneWorldTransforms": 0.056344,
+        "skinPalettePublication": 0.109212,
+        "sceneTransforms": 0.752455,
+        "render3dIncludingWaits": 4e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 1.38343,
+      "state_checksum": "4475523728495779739"
+    },
+    {
+      "variant": "after",
+      "case": "animated-5000-64",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.646178,
+        "edits": 0.000331,
+        "animationAndPalette": 0.306244,
+        "clipSamplingAndBlend": 0.13461,
+        "boneWorldTransforms": 0.056364,
+        "skinPalettePublication": 0.103884,
+        "sceneTransforms": 0.32353,
+        "render3dIncludingWaits": 5e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.912192,
+      "state_checksum": "8641613402328776219"
+    },
+    {
+      "variant": "after",
+      "case": "dynamic-5000-64",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.776199,
+        "edits": 0.002905,
+        "animationAndPalette": 0.000201,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.768919,
+        "render3dIncludingWaits": 4e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.959581,
+      "state_checksum": "12379744695834093477"
+    },
+    {
+      "variant": "after",
+      "case": "static-5000-64",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.336499,
+        "edits": 0.00027,
+        "animationAndPalette": 0.00022,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.331642,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.561512,
+      "state_checksum": "17480464706167655717"
+    },
+    {
+      "variant": "after",
+      "case": "mixed-1000-32",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.28996,
+        "edits": 0.000871,
+        "animationAndPalette": 0.146808,
+        "clipSamplingAndBlend": 0.065698,
+        "boneWorldTransforms": 0.027941,
+        "skinPalettePublication": 0.051937,
+        "sceneTransforms": 0.131225,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.471109,
+      "state_checksum": "15887305093537250000"
+    },
+    {
+      "variant": "after",
+      "case": "animated-1000-32",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.191674,
+        "edits": 0.00022,
+        "animationAndPalette": 0.143883,
+        "clipSamplingAndBlend": 0.064806,
+        "boneWorldTransforms": 0.027941,
+        "skinPalettePublication": 0.050595,
+        "sceneTransforms": 0.045798,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.31686,
+      "state_checksum": "1229888542857799274"
+    },
+    {
+      "variant": "after",
+      "case": "dynamic-1000-32",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.126538,
+        "edits": 0.000701,
+        "animationAndPalette": 0.00019,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.124675,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.193277,
+      "state_checksum": "16295067414137538407"
+    },
+    {
+      "variant": "after",
+      "case": "static-1000-32",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.042262,
+        "edits": 0.00013,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.041061,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.054912,
+      "state_checksum": "15023391551511512357"
+    },
+    {
+      "variant": "after",
+      "case": "mixed-256-8",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.070294,
+        "edits": 0.000311,
+        "animationAndPalette": 0.035663,
+        "clipSamplingAndBlend": 0.015884,
+        "boneWorldTransforms": 0.006981,
+        "skinPalettePublication": 0.012618,
+        "sceneTransforms": 0.03329,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.137474,
+      "state_checksum": "14729763674077338666"
+    },
+    {
+      "variant": "after",
+      "case": "animated-256-8",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.04774,
+        "edits": 0.00013,
+        "animationAndPalette": 0.035663,
+        "clipSamplingAndBlend": 0.016064,
+        "boneWorldTransforms": 0.007,
+        "skinPalettePublication": 0.012479,
+        "sceneTransforms": 0.010976,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.073178,
+      "state_checksum": "4388157532603844771"
+    },
+    {
+      "variant": "after",
+      "case": "dynamic-256-8",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.034261,
+        "edits": 0.000291,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.032819,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.138516,
+      "state_checksum": "6007368923601299804"
+    },
+    {
+      "variant": "after",
+      "case": "static-256-8",
+      "repeat": 2,
+      "phase_p50_ms": {
+        "frame": 0.011707,
+        "edits": 0.00012,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.010585,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.016385,
+      "state_checksum": "13186067741053510437"
+    },
+    {
+      "variant": "after",
+      "case": "static-256-8",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.012608,
+        "edits": 0.00012,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.011487,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.019429,
+      "state_checksum": "13186067741053510437"
+    },
+    {
+      "variant": "after",
+      "case": "dynamic-256-8",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.034031,
+        "edits": 0.00028,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.032718,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.036985,
+      "state_checksum": "6007368923601299804"
+    },
+    {
+      "variant": "after",
+      "case": "animated-256-8",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.04757,
+        "edits": 0.00013,
+        "animationAndPalette": 0.035512,
+        "clipSamplingAndBlend": 0.015743,
+        "boneWorldTransforms": 0.00697,
+        "skinPalettePublication": 0.012649,
+        "sceneTransforms": 0.010987,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.078196,
+      "state_checksum": "4388157532603844771"
+    },
+    {
+      "variant": "after",
+      "case": "mixed-256-8",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.070444,
+        "edits": 0.00031,
+        "animationAndPalette": 0.035643,
+        "clipSamplingAndBlend": 0.015944,
+        "boneWorldTransforms": 0.007,
+        "skinPalettePublication": 0.012588,
+        "sceneTransforms": 0.03345,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.095171,
+      "state_checksum": "14729763674077338666"
+    },
+    {
+      "variant": "after",
+      "case": "static-1000-32",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.042433,
+        "edits": 0.00013,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.041271,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.075292,
+      "state_checksum": "15023391551511512357"
+    },
+    {
+      "variant": "after",
+      "case": "dynamic-1000-32",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.130283,
+        "edits": 0.000721,
+        "animationAndPalette": 0.00018,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.12835,
+        "render3dIncludingWaits": 2e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.176211,
+      "state_checksum": "16295067414137538407"
+    },
+    {
+      "variant": "after",
+      "case": "animated-1000-32",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.194738,
+        "edits": 0.000201,
+        "animationAndPalette": 0.144925,
+        "clipSamplingAndBlend": 0.065036,
+        "boneWorldTransforms": 0.027982,
+        "skinPalettePublication": 0.050865,
+        "sceneTransforms": 0.046699,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.365903,
+      "state_checksum": "1229888542857799274"
+    },
+    {
+      "variant": "after",
+      "case": "mixed-1000-32",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.282869,
+        "edits": 0.000841,
+        "animationAndPalette": 0.145055,
+        "clipSamplingAndBlend": 0.065447,
+        "boneWorldTransforms": 0.027901,
+        "skinPalettePublication": 0.050906,
+        "sceneTransforms": 0.130914,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.417719,
+      "state_checksum": "15887305093537250000"
+    },
+    {
+      "variant": "after",
+      "case": "static-5000-64",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.338362,
+        "edits": 0.000301,
+        "animationAndPalette": 0.00021,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.333805,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.574352,
+      "state_checksum": "17480464706167655717"
+    },
+    {
+      "variant": "after",
+      "case": "dynamic-5000-64",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.741229,
+        "edits": 0.002875,
+        "animationAndPalette": 0.0002,
+        "clipSamplingAndBlend": 2e-05,
+        "boneWorldTransforms": 2e-05,
+        "skinPalettePublication": 2e-05,
+        "sceneTransforms": 0.734799,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.848468,
+      "state_checksum": "12379744695834093477"
+    },
+    {
+      "variant": "after",
+      "case": "animated-5000-64",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 0.624026,
+        "edits": 0.0003,
+        "animationAndPalette": 0.297251,
+        "clipSamplingAndBlend": 0.134609,
+        "boneWorldTransforms": 0.056213,
+        "skinPalettePublication": 0.104215,
+        "sceneTransforms": 0.31007,
+        "render3dIncludingWaits": 4e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 0.823731,
+      "state_checksum": "8641613402328776219"
+    },
+    {
+      "variant": "after",
+      "case": "mixed-5000-64",
+      "repeat": 3,
+      "phase_p50_ms": {
+        "frame": 1.07091,
+        "edits": 0.002985,
+        "animationAndPalette": 0.304902,
+        "clipSamplingAndBlend": 0.136212,
+        "boneWorldTransforms": 0.056463,
+        "skinPalettePublication": 0.104575,
+        "sceneTransforms": 0.746086,
+        "render3dIncludingWaits": 3e-05,
+        "compositeAndPresentIncludingWaits": 2e-05
+      },
+      "frame_p95_ms": 1.30897,
+      "state_checksum": "4475523728495779739"
+    }
+  ],
+  "interleaved_control": [
+    {
+      "variant": "before",
+      "repeat": 1,
+      "frame_p50_ms": 0.348186,
+      "sampling_p50_ms": 0.122932,
+      "state_checksum": "3887246924695264691"
+    },
+    {
+      "variant": "after",
+      "repeat": 1,
+      "frame_p50_ms": 0.278433,
+      "sampling_p50_ms": 0.065347,
+      "state_checksum": "3887246924695264691"
+    },
+    {
+      "variant": "after",
+      "repeat": 2,
+      "frame_p50_ms": 0.282689,
+      "sampling_p50_ms": 0.065648,
+      "state_checksum": "3887246924695264691"
+    },
+    {
+      "variant": "before",
+      "repeat": 2,
+      "frame_p50_ms": 0.351381,
+      "sampling_p50_ms": 0.122482,
+      "state_checksum": "3887246924695264691"
+    },
+    {
+      "variant": "before",
+      "repeat": 3,
+      "frame_p50_ms": 0.348166,
+      "sampling_p50_ms": 0.124114,
+      "state_checksum": "3887246924695264691"
+    },
+    {
+      "variant": "after",
+      "repeat": 3,
+      "frame_p50_ms": 0.293205,
+      "sampling_p50_ms": 0.066018,
+      "state_checksum": "3887246924695264691"
+    }
+  ]
+}

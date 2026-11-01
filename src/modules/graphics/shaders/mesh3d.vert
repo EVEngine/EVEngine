@@ -54,10 +54,11 @@ void main() {
         if (ubo.skinInfo.y < 1.5) weights.y = 0.0;
         float weightSum = dot(weights, vec4(1.0));
         if (weightSum > 1e-8) weights /= weightSum;
-        mat4 skin = weights.x * skinPalette.bones[inJoints.x]
-                  + weights.y * skinPalette.bones[inJoints.y]
-                  + weights.z * skinPalette.bones[inJoints.z]
-                  + weights.w * skinPalette.bones[inJoints.w];
+        // Avoid palette reads and blends for inactive influences.
+        mat4 skin = weights.x * skinPalette.bones[inJoints.x];
+        if (weights.y != 0.0) skin += weights.y * skinPalette.bones[inJoints.y];
+        if (weights.z != 0.0) skin += weights.z * skinPalette.bones[inJoints.z];
+        if (weights.w != 0.0) skin += weights.w * skinPalette.bones[inJoints.w];
         localPos = skin * localPos;
         localNormal = mat3(skin) * localNormal;
     }

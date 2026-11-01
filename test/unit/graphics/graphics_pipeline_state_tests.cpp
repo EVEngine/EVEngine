@@ -1837,6 +1837,25 @@ TEST_CASE("graphics.primitiveScene.batchMutationIsAtomicAndRenderingSkipsHiddenD
 #include <vector>
 
 namespace test_graphics_skin_palette {
+TEST_CASE("graphics.skinPalette.reusesStorageAndSupportsOverlappingInput") {
+    eve::graphics::Mesh mesh;
+    std::vector<float>  input(64u);
+    for (std::size_t i = 0; i < input.size(); ++i) input[i] = float(i);
+    REQUIRE(mesh.setSkinPalette(input.data(), 4).ok());
+    const auto* storage = mesh.skinPalette().data();
+    for (int frame = 0; frame < 100; ++frame) {
+        REQUIRE(mesh.setSkinPalette(input.data(), 4).ok());
+        CHECK(mesh.skinPalette().data() == storage);
+    }
+    REQUIRE(mesh.setSkinPalette(mesh.skinPalette().data(), 4).ok());
+    CHECK_EQ(mesh.skinPalette(), input);
+    REQUIRE(mesh.setSkinPalette(mesh.skinPalette().data() + 16, 3).ok());
+    CHECK_EQ(mesh.skinPalette(), std::vector<float>(input.begin() + 16, input.end()));
+    REQUIRE(mesh.setSkinPalette(input.data(), 4).ok());
+    CHECK(mesh.skinPalette().data() == storage);
+    CHECK_EQ(mesh.skinPalette(), input);
+}
+
 TEST_CASE("graphics.skinPalette.copiesDynamicMatrixArrayAndReplacesPreviousCount") {
     eve::graphics::Mesh mesh;
     for (const int count : {1, 129, 4096, 17}) {

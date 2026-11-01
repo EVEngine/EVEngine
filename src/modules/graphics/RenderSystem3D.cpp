@@ -802,7 +802,9 @@ void RenderSystem3D::render(Graphics& gfx) {
     std::vector<ClusteredLightGpu> clusteredDirs;
     if (useClustered) {
         splitLights(packed, clusteredPoints, clusteredDirs);
-        if (clusteredDirs.empty()) {
+        // Match packLights3D: the default sun belongs only to a lightless scene.
+        // Point-only scenes must not gain a directional light when using Hybrid.
+        if (packed.empty()) {
             ClusteredLightGpu d{};
             d.posRadius = glm::vec4(gLightDir, 0.f);
             d.color     = glm::vec4(gLightColor, 1.f);
@@ -1933,12 +1935,6 @@ void RenderSystem3D::renderToCanvasImpl(Graphics& gfx, Canvas* target, Camera3D*
             std::vector<ClusteredLightGpu> clusteredPoints;
             std::vector<ClusteredLightGpu> clusteredDirections;
             splitLights(packed, clusteredPoints, clusteredDirections);
-            if (clusteredDirections.empty()) {
-                ClusteredLightGpu direction{};
-                direction.posRadius = glm::vec4(gLightDir, 0.f);
-                direction.color     = glm::vec4(gLightColor, 1.f);
-                clusteredDirections.push_back(direction);
-            }
             ClusteredLightingUpload clustered =
                 buildClusteredLighting(clusteredPoints, clusteredDirections, viewM, cd->nearZ, cd->farZ,
                                        target->getWidth(), target->getHeight(), cd->fovYDeg * 0.017453292519943295f,
