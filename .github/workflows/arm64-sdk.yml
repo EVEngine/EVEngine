@@ -49,7 +49,7 @@ jobs:
         if: runner.os == 'Windows'
         uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
-          vulkan_version: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
+          vulkan_version: ${{ vars.VULKAN_VERSION || '1.4.363.0' }}
           cache: true
           cache_save_if: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
