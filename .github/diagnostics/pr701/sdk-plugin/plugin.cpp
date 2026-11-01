@@ -22,7 +22,7 @@
 #include "image/ImageData.h"
 #include "window/Window.h"
 
-extern "C" int engineRawProbe(VkPhysicalDevice, VkDevice, uint32_t);
+extern "C" int engineRawProbe(VkPhysicalDevice, VkDevice, uint32_t, VkBuffer, VkBuffer);
 namespace eve::diagnostic {
 static void crash(int signal) {
     const char text[] = "ENGINE_PROBE_SIGNAL\n";
@@ -65,7 +65,7 @@ public:
         auto* ip = static_cast<const uint32_t*>(gm->indices.map());
         std::printf("ENGINE_INDEX %u,%u,%u,%u,%u,%u\n",ip[0],ip[1],ip[2],ip[3],ip[4],ip[5]);
         gm->indices.unmap();
-        failures += engineRawProbe(VkPhysicalDevice(dev.physical_device.instance), VkDevice(dev.instance), dev.get_queue_index(vkb::QueueType::graphics));
+        failures += engineRawProbe(VkPhysicalDevice(dev.physical_device.instance), VkDevice(dev.instance), dev.get_queue_index(vkb::QueueType::graphics), VkBuffer(gm->vertices.buffer), VkBuffer(gm->indices.buffer));
         for (int size : {64, 96}) {
             std::printf("ENGINE_PROBE begin GBuffer %d\n", size);
             std::fflush(stdout);

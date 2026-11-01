@@ -27,6 +27,7 @@ VkPhysicalDeviceProperties       properties;
 VmaAllocator                     vmaAllocator{};
 bool                             useVma{};
 bool                             depthMode{}, dynamicViewport{};
+VkBuffer borrowedVertex{}, borrowedIndex{};
 VkDeviceMemory                   sharedMemory{};
 VkDeviceSize                     sharedCursor{}, sharedBytes{};
 void*                            sharedMapped{};
@@ -144,7 +145,7 @@ bool render(const char* mode, bool full, bool offset, int indices) {
                         " memoryOffset=" + std::to_string(offset) + " indices=" + std::to_string(indices) +
                         " sharedBytes=" + std::to_string(sharedBytes) + " flush=" + std::to_string(flushCoherent) +
                         " VMA=" + std::to_string(useVma) + " depth=" + std::to_string(depthMode) +
-                        " dynamicViewport=" + std::to_string(dynamicViewport);
+                        " dynamicViewport=" + std::to_string(dynamicViewport) + " borrowed=" + std::to_string(bool(borrowedVertex));
     const int                   attachments = gbuffer || std::strcmp(mode, "MRT") == 0 ? 5 : 1;
     std::vector<VkImage>        images(attachments);
     std::vector<VkImageView>    views(attachments);
@@ -533,10 +534,11 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     vkCmdPushConstants(cb, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, 128,
                        constants.data());
     VkDeviceSize zero = 0;
-    if (!generated) vkCmdBindVertexBuffers(cb, 0, 1, &vbo.handle, &zero);
+    VkBuffer drawVertex=borrowedVertex ? borrowedVertex : vbo.handle;
+    if (!generated) vkCmdBindVertexBuffers(cb, 0, 1, &drawVertex, &zero);
     if (!generated && indices) {
-        vkCmdBindIndexBuffer(cb, ibo.handle, 0, indices == 16 ? VK_INDEX_TYPE_UINT16 : VK_INDEX_TYPE_UINT32);
-        vkCmdDrawIndexed(cb, 3, 1, 0, 0, 0);
+        vkCmdBindIndexBuffer(cb, borrowedIndex ? borrowedIndex : ibo.handle, 0, indices == 16 ? VK_INDEX_TYPE_UINT16 : VK_INDEX_TYPE_UINT32);
+        vkCmdDrawIndexed(cb, borrowedIndex ? 6 : 3, 1, 0, 0, 0);
     } else
         vkCmdDraw(cb, 3, 1, 0, 0);
     vkCmdEndRenderPass(cb);
@@ -622,7 +624,7 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     return good;
 }
 #ifdef PROBE_EMBEDDED
-extern "C" int engineRawProbe(VkPhysicalDevice pd, VkDevice dev, uint32_t family) {
+extern "C" int engineRawProbe(VkPhysicalDevice pd, VkDevice dev, uint32_t family, VkBuffer bv, VkBuffer bi) {
     physical=pd; device=dev;
     vkGetPhysicalDeviceProperties(physical, &properties);
     vkGetPhysicalDeviceMemoryProperties(physical, &memoryProperties);
@@ -637,6 +639,13 @@ extern "C" int engineRawProbe(VkPhysicalDevice pd, VkDevice dev, uint32_t family
         for (const char* mode : {"GENERATED","VERTEX","PUSH","UBO","GBUFFER_EMBEDDED"})
             failures+=!render(mode,false,false,32);
     }
+    borrowedVertex=bv; borrowedIndex=bi;
+    for (bool depth : {false,true}) {
+        depthMode=depth;
+        for (const char* mode : {"VERTEX","PUSH","GBUFFER_EMBEDDED"})
+            failures+=!render(mode,false,false,32);
+    }
+    borrowedVertex=borrowedIndex=VK_NULL_HANDLE;
     vkDestroyCommandPool(device,pool,nullptr);
     return failures;
 }

@@ -37,6 +37,7 @@ jobs:
             medialoader
             VKBuilder
             vulkan
+            vk_video
             vma
       - name: Reproduce through the existing native SDK
         env:
