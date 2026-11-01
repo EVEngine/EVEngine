@@ -1,15 +1,17 @@
 #include "graphics/RenderControl.h"
 
+#include "common/Capability.h"
 #include "common/Diagnostic.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/IRayTracing.h"
 #include "graphics/ScreenSpaceReflection.h"
 
 namespace eve::graphics {
 namespace {
 
-const char* kKnownFeatures[] = {"depthTest",
+const char *kKnownFeatures[] = {"depthTest",
                                 "shadow",
                                 "gbuffer",
                                 "gbufferAlbedo",
@@ -26,6 +28,8 @@ const char* kKnownFeatures[] = {"depthTest",
                                 "ssr",
                                 "reflectionChain",
                                 "rtx",
+                                "pathTracing",
+                                "pathTemporal",
                                 "outline",
                                 "gpuDriven",
                                 "visResolve",
@@ -87,10 +91,23 @@ RenderControl::RenderControl() {
 
 void RenderControl::attach(Graphics *gfx) {
     gfx_ = gfx;
+    pathProvider_ = eve::cap::query<IRayTracing>();
     gbuffer_.attach(gfx);
 }
 
 bool RenderControl::supports(const std::string &feature) const { return isKnownFeature(feature); }
+
+Result<void> RenderControl::setPathTracingSamples(uint32_t samples) {
+    if (samples == 0 || samples > 16)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "path tracing samples must be in [1, 16]",
+                                                       "graphics.RenderControl.pathSamples"));
+    if (pathSamples_ != samples) {
+        pathSamples_     = samples;
+        pathSampleIndex_ = 0;
+    }
+    return Result<void>::success();
+}
 
 void RenderControl::syncClusteredDeferredFeature() {
     features_["clusteredDeferred"] = lightingMode_ == LightingMode::Hybrid;
@@ -159,6 +176,16 @@ void RenderControl::setFeature(const std::string &feature, bool enabled) {
     const bool cur = it == features_.end() ? false : it->second;
     if (cur == enabled) return;
     features_[feature] = enabled;
+    if (feature == "pathTracing") {
+        pathTracingRequested_ = enabled;
+        pathTracingState_     = PathTracingFrameState::Disabled;
+        pathTracingDiagnostic_.clear();
+        pathSampleIndex_ = 0;
+    }
+    if (feature == "pathTemporal") {
+        pathTemporalRequested_ = enabled;
+        pathSampleIndex_       = 0;
+    }
     if (gfx_ && (feature == "ssr" || feature == "rtgi" || feature == "reflectionChain" || feature == "rtx")) {
         gfx_->pipelineScreenSpaceReflection()->invalidateHistory();
         gfx_->pipelineGlobalIllumination()->invalidateHistory();

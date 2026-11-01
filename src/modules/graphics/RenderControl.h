@@ -13,6 +13,9 @@
 namespace eve::graphics {
 
 class Graphics;
+class IRayTracing;
+/** @brief Observable result of the latest automatic path-tracing frame selection. */
+enum class PathTracingFrameState { Disabled, Active, Unavailable, SceneRejected };
 
 /**
  * @brief Declarative, compilable 3D render control.
@@ -43,6 +46,7 @@ class Graphics;
  *   "msaa"          — hardware MSAA on the 3D scene color pass (default on; sample count via
  *                     Graphics.setMsaaSamples, default 4, clamped to device support)
  *   "ssr"           — PBR-aware screen-space reflections with coarse/fine tracing and temporal denoise
+ *   "pathTemporal"  — bounded camera reprojection and spatial filtering for pathTracing; opt-in.
  *   "rtx"           — hardware Vulkan KHR ray-traced reflections when IRayTracing is available;
  *                     otherwise a no-op (SSR remains the portable path)
  *   "reflectionChain"— enables TAA plus the complete RTGI then SSR lighting chain (default off)
@@ -95,6 +99,22 @@ public:
     void disable(const std::string &feature);
     /** @brief True when enabled. */
     bool isEnabled(const std::string &feature) const;
+    /** @brief True when the pathTracing feature is requested; render-thread query. */
+    bool isPathTracingRequested() const { return pathTracingRequested_; }
+    /** @brief Latest render selection; Active means recorded, not GPU-complete. */
+    PathTracingFrameState pathTracingFrameState() const { return pathTracingState_; }
+    /** @brief Owning diagnostic copy explaining the latest raster fallback. */
+    std::string pathTracingDiagnostic() const { return pathTracingDiagnostic_; }
+
+    /** @brief Set the automatic path renderer's independent samples per pixel per frame.
+     * @param samples Count in [1, 16]; default 1. Ray work scales approximately linearly.
+     * @return Success, or InvalidArgument without changing the previous setting.
+     * @thread Render-thread affine; copies the value, retains no references, invokes no callbacks.
+     * @lifetime Takes effect on the next render3D call and starts fresh temporal history.
+     */
+    [[nodiscard]] Result<void> setPathTracingSamples(uint32_t samples);
+    /** @brief Return the requested per-frame sample count; render-thread affine. */
+    uint32_t pathTracingSamples() const { return pathSamples_; }
 
     /**
      * @brief Request the opaque lighting strategy (transparent stays Forward+).
@@ -185,10 +205,18 @@ public:
     void ensureCompiled();
 
 private:
+    friend class RenderSystem3D;
     void setFeature(const std::string &feature, bool enabled);
     void syncClusteredDeferredFeature();
 
     Graphics *gfx_ = nullptr;
+    IRayTracing                          *pathProvider_          = nullptr;  // Borrowed static capability provider.
+    bool                                  pathTracingRequested_  = false;
+    bool                                  pathTemporalRequested_ = false;
+    PathTracingFrameState                 pathTracingState_      = PathTracingFrameState::Disabled;
+    std::string                           pathTracingDiagnostic_;
+    uint32_t                              pathSampleIndex_ = 0;
+    uint32_t                              pathSamples_     = 1;
     std::unordered_map<std::string, bool> features_;
     std::vector<std::string> passes_;
     std::string reflectionQuality_ = "high";

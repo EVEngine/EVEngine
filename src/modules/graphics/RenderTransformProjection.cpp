@@ -6,6 +6,14 @@
 namespace eve::graphics::detail {
 glm::mat4 modelFromTransform(const Renderable3D::Transform3D& t) {
     if (t.hasLinkedWorld) return t.linkedWorld;
+    if (t.yaw == 0.f && t.pitch == 0.f && t.roll == 0.f) {
+        glm::mat4 m(1.f);
+        m[0][0] = t.sx;
+        m[1][1] = t.sy;
+        m[2][2] = t.sz;
+        m[3]    = glm::vec4(t.x, t.y, t.z, 1.f);
+        return m;
+    }
     glm::mat4 m(1.f);
     m = glm::translate(m, glm::vec3(t.x, t.y, t.z));
     m = glm::rotate(m, t.yaw, glm::vec3(0.f, 1.f, 0.f));

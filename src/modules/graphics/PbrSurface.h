@@ -43,6 +43,8 @@ struct PbrTextureBinding {
     std::array<float, 2> offset{0, 0}, scale{1, 1};
     float                rotation = 0;
     uint32_t             wrapS = 10497, wrapT = 10497, minFilter = 9987, magFilter = 9729;
+    /** @brief Compare owned parameters and borrowed texture identities without dereferencing resources. */
+    bool operator==(const PbrTextureBinding&) const = default;
 };
 /** @brief Owning vegetation translucency controls, evaluated per light after normal mapping.
  * Intensity zero disables
@@ -65,6 +67,8 @@ struct PbrTranslucency {
      * maximum-minimum+0.0001 must
      * be nonzero. */
     float maskMinimum = 0, maskMaximum = 0;
+    /** @brief Compare owned parameters and borrowed texture identities without dereferencing resources. */
+    bool operator==(const PbrTranslucency&) const = default;
 };
 /** @brief Owning per-fragment TVE surface-stage inputs in linear space.
  * Scalar controls are [0,1]. Overlay RGB is
@@ -92,6 +96,8 @@ struct PbrVegetationColorStages {
     float                vertexOcclusionMinimum = 0, vertexOcclusionMaximum = 1;
     bool                 invertVertexOcclusion = false, invertVertexOcclusionColors = false;
     PbrVegetationBackfaceNormalMode backfaceNormalMode = PbrVegetationBackfaceNormalMode::Flip;
+    /** @brief Compare owned parameters and borrowed texture identities without dereferencing resources. */
+    bool operator==(const PbrVegetationColorStages&) const = default;
 };
 /** @brief TVE secondary material layer evaluated after primary texture sampling.
  * Three borrowed bindings contain
@@ -111,6 +117,8 @@ struct PbrVegetationDetail {
     uint32_t uvMode = 0, colorMode = 0, blendMode = 0, alphaMode = 1;
     uint32_t maskMode = 0, meshMode = 0;
     bool     inverseUvScale = false;
+    /** @brief Compare owned parameters and borrowed texture identities without dereferencing resources. */
+    bool operator==(const PbrVegetationDetail&) const = default;
 };
 /** @brief Borrowed TVE Extras RGBA16F array and owning sampling controls.
  * Channels are emissive, wetness, overlay
@@ -126,6 +134,8 @@ struct PbrVegetationExtras {
     std::array<float, 4> coords{1, 1, 0, 0};
     uint32_t             layer            = 0;
     bool                 usePivotPosition = false;
+    /** @brief Compare owned parameters and borrowed texture identities without dereferencing resources. */
+    bool operator==(const PbrVegetationExtras&) const = default;
 };
 /** @brief Borrowed TVE Colors RGBA16F array and owning layer sampling controls.
  * RGB is linear tint and alpha is
@@ -137,6 +147,8 @@ struct PbrVegetationColors {
     std::array<float, 4> fallback{1, 1, 1, 0}, coords{1, 1, 0, 0};
     uint32_t             layer            = 0;
     bool                 usePivotPosition = false;
+    /** @brief Compare owned parameters and borrowed texture identities without dereferencing resources. */
+    bool operator==(const PbrVegetationColors&) const = default;
 };
 /** @brief Select the single owner of vegetation vertex deformation for a draw.
  * RestMesh leaves authored positions unchanged. CpuDeformed declares that the mesh already contains
@@ -157,6 +169,8 @@ struct PbrVegetationVertex {
     float                          globalSize = 1, sizeFadeStart = 0, sizeFadeEnd = 100, distanceFadeBias = 1;
     uint32_t                       layer  = 0;
     PbrVegetationDeformationSource source = PbrVegetationDeformationSource::RestMesh;
+    /** @brief Compare owned parameters and borrowed texture identities without dereferencing resources. */
+    bool operator==(const PbrVegetationVertex&) const = default;
 };
 /** @brief Select source-equivalent GPU motion evaluation for rest vegetation geometry. */
 enum class PbrVegetationMotionMode : uint32_t { Disabled, Object };
@@ -185,6 +199,8 @@ struct PbrVegetationMotion {
     float                   perspectivePush = 0, perspectiveNoise = 0, perspectiveAngle = 1;
     uint32_t                layer = 0;
     PbrVegetationMotionMode mode  = PbrVegetationMotionMode::Disabled;
+    /** @brief Compare owned parameters and borrowed texture identities without dereferencing resources. */
+    bool operator==(const PbrVegetationMotion&) const = default;
 };
 /** @brief TVE global-alpha controls applied after optional detail alpha blending.
  * When enabled, masked clipping uses
@@ -197,17 +213,23 @@ struct PbrVegetationAlpha {
     float    cameraFadeMin = 0, cameraFadeMax = 100, noiseTiling = 1;
     bool     detailFade = false;
     bool     enabled    = false;
+    /** @brief Compare owned parameters and borrowed texture identities without dereferencing resources. */
+    bool operator==(const PbrVegetationAlpha&) const = default;
 };
 /** @brief TVE emissive remap and global Extras modulation for the borrowed emissive texture binding. */
 struct PbrVegetationEmission {
     float minimum = 0, maximum = 1, phase = 1, global = 1;
     bool  enabled = false;
+    /** @brief Compare owned parameters and borrowed texture identities without dereferencing resources. */
+    bool operator==(const PbrVegetationEmission&) const = default;
 };
 /** @brief TVE mesh-height gradient tint, masked by the blended main/detail blue channel. */
 struct PbrVegetationGradient {
     std::array<float, 3> colorOne{1, 1, 1}, colorTwo{1, 1, 1};
     float                minimum = 0, maximum = 1;
     bool                 enabled = false;
+    /** @brief Compare owned parameters and borrowed texture identities without dereferencing resources. */
+    bool operator==(const PbrVegetationGradient&) const = default;
 };
 /** @brief Owning material parameter snapshot; texture pointers remain borrowed.
  * Base color/metallic/roughness
@@ -267,6 +289,8 @@ struct PbrSurface {
      * retained borrows.
      */
     std::array<float, 3> motionHighlightColor{0, 0, 0};
+    /** @brief Compare owned parameters and borrowed texture identities without dereferencing resources. */
+    bool operator==(const PbrSurface&) const = default;
 };
 /** @brief Validate finite material factors and sampler enums without changing the input.
  * @return Checked validation status; performs no IO, backend calls or callbacks.

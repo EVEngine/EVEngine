@@ -1,0 +1,47 @@
+#version 460
+
+layout(local_size_x = 8, local_size_y = 8) in;
+layout(binding = 2, rgba16f) uniform readonly image2D noisyColor;
+layout(binding = 8, rgba32f) uniform readonly image2D normalDepth;
+layout(binding = 9, rgba16f) uniform readonly image2D albedo;
+layout(binding = 11, rgba16f) uniform writeonly image2D filteredColor;
+layout(binding = 13, rgba32f) uniform readonly image2D temporalColor;
+layout(push_constant) uniform DenoiseSettings { layout(offset = 112) uvec4 counts; } settings;
+vec3 sourceColor(ivec2 pixel) {
+    return settings.counts.z == 2u ? imageLoad(temporalColor,pixel).rgb : imageLoad(noisyColor,pixel).rgb;
+}
+
+void main() {
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 extent = imageSize(noisyColor);
+    if (any(greaterThanEqual(pixel, extent))) return;
+    vec4 center = imageLoad(normalDepth, pixel);
+    vec3 base = imageLoad(albedo, pixel).rgb;
+    // Multi-sample temporal quality spends more on spatial reconstruction too.
+    // Keep the inexpensive single-sample and spatial-only modes at 5x5.
+    // Geometry and albedo weights protect silhouettes and texture boundaries.
+    const float kernel[7] = float[7](1.0, 6.0, 15.0, 20.0, 15.0, 6.0, 1.0);
+    const float spatialKernel[5] = float[5](1.0, 4.0, 6.0, 4.0, 1.0);
+    int radius = settings.counts.z == 2u && settings.counts.y > 1u ? 3 : 2;
+    vec3 total = vec3(0.0);
+    float weightSum = 0.0;
+    for (int y = -radius; y <= radius; ++y) {
+        for (int x = -radius; x <= radius; ++x) {
+            ivec2 q = pixel + ivec2(x, y);
+            if (any(lessThan(q, ivec2(0))) || any(greaterThanEqual(q, extent))) continue;
+            vec4 guide = imageLoad(normalDepth, q);
+            if ((center.w == 0.0) != (guide.w == 0.0)) continue;
+            float weight = radius == 3 ? kernel[x + 3] * kernel[y + 3]
+                                      : spatialKernel[x + 2] * spatialKernel[y + 2];
+            if (center.w > 0.0) {
+                weight *= pow(max(dot(center.xyz, guide.xyz), 0.0), 32.0);
+                weight *= exp(-abs(center.w - guide.w) / max(0.02, center.w * 0.02));
+                vec3 delta = base - imageLoad(albedo, q).rgb;
+                weight *= exp(-32.0 * dot(delta, delta));
+            }
+            total += sourceColor(q) * weight;
+            weightSum += weight;
+        }
+    }
+    imageStore(filteredColor, pixel, vec4(total / max(weightSum, 1e-8), 1.0));
+}

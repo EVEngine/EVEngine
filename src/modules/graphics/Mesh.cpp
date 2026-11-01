@@ -34,6 +34,7 @@ const std::vector<float> kEmptyAttribute;
 }
 
 void Mesh::captureImportedAttributes(const ::aiMesh &mesh) {
+    markTangentFrameChanged();
     importedUvs_.clear();
     for (unsigned channel = 0; channel < mesh.GetNumUVChannels(); ++channel) {
         if (!mesh.HasTextureCoords(channel)) continue;

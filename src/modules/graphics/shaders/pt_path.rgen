@@ -1,0 +1,329 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+#extension GL_GOOGLE_include_directive : require
+#include "pt_sampling.glsl"
+#include "pt_scene.glsl"
+
+layout(binding = 0) uniform accelerationStructureEXT scene;
+layout(binding = 1, rgba32f) uniform image2D history;
+layout(binding = 2, rgba16f) uniform writeonly image2D outputColor;
+#include "pt_surface.glsl"
+layout(binding = 7, std430) readonly buffer Lights { PtLight lights[]; };
+layout(binding = 8, rgba32f) uniform writeonly image2D outputNormalDepth;
+layout(binding = 9, rgba16f) uniform writeonly image2D outputAlbedo;
+layout(binding = 14, rgba32f) uniform writeonly image2D outputPosition;
+
+// 128 bytes, within Vulkan's guaranteed minimum push-constant size.
+layout(push_constant) uniform Constants {
+    mat4 invViewProj;
+    vec4 eye;
+    uvec4 sampling; // absolute first sample, samples this dispatch, max bounces, seed
+    vec4 environment;
+    uvec4 counts; // light count, history sample count, reserved, reserved
+} pc;
+
+layout(location = 0) rayPayloadEXT PtPayload payload;
+
+struct Surface {
+    vec3 position;
+    vec3 geometricNormal;
+    vec3 normal;
+    PtMaterial material;
+    uint light;
+};
+
+Surface surfaceAt(vec3 origin, vec3 direction) {
+    PtInstance instance = instances[payload.instance];
+    PtTriangle triangle = triangles[instance.offsets.x + payload.primitive];
+    PtVertex a = vertices[instance.offsets.y + triangle.indicesMaterial.x];
+    PtVertex b = vertices[instance.offsets.y + triangle.indicesMaterial.y];
+    PtVertex c = vertices[instance.offsets.y + triangle.indicesMaterial.z];
+    vec3 bary = vec3(1.0 - payload.barycentric.x - payload.barycentric.y, payload.barycentric);
+    Surface s;
+    s.position = origin + payload.distance * direction;
+    vec3 edge0 = mat3(instance.objectToWorld) * (b.position.xyz - a.position.xyz);
+    vec3 edge1 = mat3(instance.objectToWorld) * (c.position.xyz - a.position.xyz);
+    s.geometricNormal = normalize(cross(edge0, edge1));
+    if (dot(s.geometricNormal, direction) > 0.0) s.geometricNormal = -s.geometricNormal;
+    vec3 normal = mat3(instance.normalToWorld) *
+        (bary.x * a.normal.xyz + bary.y * b.normal.xyz + bary.z * c.normal.xyz);
+    vec3 frameNormal = dot(normal, normal) > 1e-12 ? normalize(normal) : normalize(cross(edge0, edge1));
+    s.normal = frameNormal;
+    if (dot(s.normal, s.geometricNormal) < 0.0) s.normal = -s.normal;
+    if (dot(s.normal, direction) >= 0.0) s.normal = s.geometricNormal;
+    s.material = materials[triangle.indicesMaterial.w];
+    vec2 uv = bary.x * a.texcoord.xy + bary.y * b.texcoord.xy + bary.z * c.texcoord.xy;
+    if (s.material.textures.x != PT_INVALID)
+        s.material.baseColor.rgb *= samplePathTexture(s.material.textures.x, uv).rgb;
+    if (s.material.textures.y != PT_INVALID) {
+        vec4 parameters = samplePathTexture(s.material.textures.y, uv);
+        s.material.emissionRoughness.w *= parameters.g;
+        s.material.parameters.x *= parameters.b;
+    }
+    if (s.material.textures.z != PT_INVALID)
+        s.material.emissionRoughness.rgb *= samplePathTexture(s.material.textures.z, uv).rgb;
+    if (s.material.textures.w != PT_INVALID) {
+        vec3 tangent, bitangent;
+        if (a.tangent.w != 0.0) {
+            tangent = mat3(instance.objectToWorld) * (bary.x*a.tangent.xyz + bary.y*b.tangent.xyz + bary.z*c.tangent.xyz);
+            bitangent = mat3(instance.objectToWorld) * (bary.x*a.bitangent.xyz + bary.y*b.bitangent.xyz + bary.z*c.bitangent.xyz);
+        } else {
+            vec2 du0 = b.texcoord.xy-a.texcoord.xy, du1 = c.texcoord.xy-a.texcoord.xy;
+            PtTexture normalTexture = textures[s.material.textures.w];
+            mat2 rotation = mat2(normalTexture.parameters.x, normalTexture.parameters.y,
+                                 -normalTexture.parameters.y, normalTexture.parameters.x);
+            du0 = rotation * (normalTexture.scaleOffset.xy * du0);
+            du1 = rotation * (normalTexture.scaleOffset.xy * du1);
+            float determinant = du0.x*du1.y-du0.y*du1.x;
+            tangent = (edge0*du1.y-edge1*du0.y)/determinant;
+            bitangent = (edge1*du0.x-edge0*du1.x)/determinant;
+        }
+        tangent -= frameNormal*dot(frameNormal,tangent);
+        vec3 mapped = samplePathTexture(s.material.textures.w, uv).rgb*2.0-1.0;
+        mapped.xy *= s.material.parameters.w;
+        float mappedMagnitude = max(abs(mapped.x), max(abs(mapped.y),abs(mapped.z)));
+        if (dot(tangent,tangent) > 1e-12 && mappedMagnitude > 0.0) {
+            mapped /= mappedMagnitude;
+            tangent = normalize(tangent);
+            vec3 crossBitangent = cross(frameNormal,tangent);
+            bitangent = crossBitangent * (dot(crossBitangent,bitangent) < 0.0 ? -1.0 : 1.0);
+            mapped = normalize(tangent*mapped.x + bitangent*mapped.y + frameNormal*mapped.z);
+            if (dot(frameNormal,s.geometricNormal) < 0.0) mapped = -mapped;
+            // Keep the shading frame above the geometric surface and facing the incident ray.
+            // Ray offsets and visibility continue to use the unperturbed geometric normal.
+            if (dot(mapped,s.geometricNormal) > 0.0 && dot(mapped,direction) < 0.0) s.normal = mapped;
+        }
+    }
+    s.light = triangle.emitter.x == PT_INVALID ? PT_INVALID : instance.offsets.z + triangle.emitter.x;
+    return s;
+}
+
+bool visible(vec3 origin, vec3 direction, float maximum, inout uint rng) {
+    payload.instance = 0u;
+    ptRandom(rng);
+    payload.opacitySeed = rng;
+    traceRayEXT(scene, gl_RayFlagsTerminateOnFirstHitEXT |
+                gl_RayFlagsSkipClosestHitShaderEXT, 0xff, 0, 0, 0,
+                origin, 0.0, direction, maximum, 0);
+    return payload.instance == PT_INVALID;
+}
+
+float emitterPdf(uint index, vec3 previous, vec3 hit) {
+    PtLight light = lights[index];
+    vec3 delta = hit - previous;
+    float distanceSquared = dot(delta, delta);
+    if (distanceSquared <= 0.0 || light.p0Area.w <= 0.0) return 0.0;
+    vec3 normal = normalize(cross(light.p1Kind.xyz - light.p0Area.xyz,
+                                  light.p2.xyz - light.p0Area.xyz));
+    float cosine = abs(dot(normal, normalize(delta)));
+    return cosine > 0.0 ? distanceSquared / (light.p0Area.w * cosine * float(pc.counts.x + 1u)) : 0.0;
+}
+
+vec3 directLighting(Surface s, vec3 wo, inout uint rng) {
+    // One candidate from all finite lights plus the constant environment.
+    uint count = pc.counts.x + 1u;
+    uint index = min(uint(ptRandom(rng) * float(count)), count - 1u);
+    vec3 wi;
+    vec3 incoming;
+    vec3 target = vec3(0.0);
+    bool finiteLight = false;
+    bool deltaLight = false;
+    float pdf = 1.0 / float(count);
+    if (index == pc.counts.x) {
+        wi = ptUniformSphere(ptRandom2(rng));
+        incoming = pc.environment.rgb;
+        pdf /= 4.0 * PT_PI;
+    } else {
+        PtLight light = lights[index];
+        uint kind = uint(light.p1Kind.w);
+        incoming = light.emission.rgb;
+        if (kind == 2u) {
+            wi = normalize(light.p0Area.xyz);
+            deltaLight = true;
+        } else {
+            finiteLight = true;
+            target = light.p0Area.xyz;
+            if (kind == 0u) {
+                vec2 u = ptRandom2(rng);
+                float root = sqrt(u.x);
+                target = (1.0 - root) * light.p0Area.xyz +
+                    root * (1.0 - u.y) * light.p1Kind.xyz + root * u.y * light.p2.xyz;
+                uint emitterInstance = floatBitsToUint(light.emission.w);
+                uint emitterPrimitive = floatBitsToUint(light.p2.w);
+                vec2 emitterBarycentric = vec2(root * (1.0 - u.y), root * u.y);
+                incoming = surfaceEmission(emitterInstance, emitterPrimitive, emitterBarycentric) *
+                           surfaceCoverage(emitterInstance, emitterPrimitive, emitterBarycentric);
+            }
+            vec3 delta = target - s.position;
+            float distanceSquared = dot(delta, delta);
+            if (distanceSquared <= 1e-12) return vec3(0.0);
+            wi = delta * inversesqrt(distanceSquared);
+            if (kind == 0u) {
+                vec3 normal = normalize(cross(light.p1Kind.xyz - light.p0Area.xyz,
+                                              light.p2.xyz - light.p0Area.xyz));
+                float cosine = abs(dot(normal, wi));
+                if (cosine <= 1e-7 || light.p0Area.w <= 0.0) return vec3(0.0);
+                pdf *= distanceSquared / (cosine * light.p0Area.w);
+            } else {
+                deltaLight = true;
+                incoming /= distanceSquared;
+                if (kind == 3u) {
+                    float cosine = dot(light.p1Kind.xyz, -wi);
+                    float width = light.p2.y - light.p2.x;
+                    float cone = width > 0.0 ? clamp((cosine - light.p2.x) / width, 0.0, 1.0)
+                                             : (cosine >= light.p2.x ? 1.0 : 0.0);
+                    incoming *= cone * cone;
+                }
+            }
+        }
+    }
+    if (dot(wi, s.geometricNormal) <= 0.0) return vec3(0.0);
+    float bsdfPdf;
+    vec3 bsdf = ptEvaluateBsdf(s.normal, wo, wi, s.material.baseColor.rgb,
+                              s.material.parameters.x, s.material.emissionRoughness.w, bsdfPdf);
+    if (bsdfPdf <= 0.0 || max(incoming.r, max(incoming.g, incoming.b)) <= 0.0) return vec3(0.0);
+    vec3 origin = ptOffset(s.position, s.geometricNormal, wi);
+    vec3 shadowDirection = wi;
+    float maximum = 1e30;
+    if (finiteLight) {
+        vec3 segment = target - origin;
+        float distance = length(segment);
+        if (distance <= 1e-6) return vec3(0.0);
+        shadowDirection = segment / distance;
+        maximum = distance * (1.0 - 2e-5);
+    }
+    if (!visible(origin, shadowDirection, maximum, rng)) return vec3(0.0);
+    float weight = deltaLight ? 1.0 : ptPowerHeuristic(pdf, bsdfPdf);
+    return bsdf * incoming * (weight / pdf);
+}
+
+vec3 integrate(vec3 origin, vec3 direction, inout uint rng, out vec4 normalDepth, out vec3 albedo, out vec4 position) {
+    vec3 radiance = vec3(0.0);
+    vec3 throughput = vec3(1.0);
+    vec3 previous = origin;
+    float previousPdf = 0.0;
+    normalDepth = vec4(0.0);
+    position = vec4(0.0);
+    albedo = vec3(0.0);
+    for (uint bounce = 0u; bounce <= pc.sampling.z; ++bounce) {
+        payload.instance = PT_INVALID;
+        ptRandom(rng);
+        payload.opacitySeed = rng;
+        traceRayEXT(scene, gl_RayFlagsNoneEXT, 0xff, 0, 0, 0, origin, 0.0, direction, 1e30, 0);
+        if (payload.instance == PT_INVALID) {
+            float lightPdf = 1.0 / (4.0 * PT_PI * float(pc.counts.x + 1u));
+            float weight = bounce == 0u ? 1.0 : ptPowerHeuristic(previousPdf, lightPdf);
+            radiance += throughput * pc.environment.rgb * weight;
+            break;
+        }
+        Surface s = surfaceAt(origin, direction);
+        if (bounce == 0u) {
+            normalDepth = vec4(s.normal, payload.distance);
+            position = vec4(s.position, float(payload.instance + 1u));
+            albedo = s.material.baseColor.rgb;
+        }
+        float emissionWeight = 1.0;
+        if (bounce > 0u && s.light != PT_INVALID)
+            emissionWeight = ptPowerHeuristic(previousPdf, emitterPdf(s.light, previous, s.position));
+        radiance += throughput * s.material.emissionRoughness.rgb * emissionWeight;
+        // Evaluate the final BSDF-sampled emitter before terminating; otherwise
+        // direct-light MIS weights would lose their complementary estimator.
+        if (bounce == pc.sampling.z) break;
+        radiance += throughput * directLighting(s, -direction, rng);
+        vec3 next = ptSampleBsdf(s.normal, -direction, s.material.baseColor.rgb,
+                                 s.material.parameters.x, s.material.emissionRoughness.w, rng);
+        if (dot(next, s.geometricNormal) <= 0.0) break;
+        float pdf;
+        vec3 bsdf = ptEvaluateBsdf(s.normal, -direction, next, s.material.baseColor.rgb,
+                                  s.material.parameters.x, s.material.emissionRoughness.w, pdf);
+        if (pdf <= 0.0) break;
+        throughput *= bsdf / pdf;
+        if (bounce >= 2u) {
+            float survival = clamp(max(throughput.r, max(throughput.g, throughput.b)), 0.05, 0.95);
+            if (ptRandom(rng) >= survival) break;
+            throughput /= survival;
+        }
+        previous = s.position;
+        previousPdf = pdf;
+        direction = next;
+        origin = ptOffset(s.position, s.geometricNormal, direction);
+    }
+    return radiance;
+}
+
+void main() {
+    ivec2 pixel = ivec2(gl_LaunchIDEXT.xy);
+    vec3 sum = vec3(0.0);
+    vec4 guide = vec4(0.0);
+    vec3 baseColor = vec3(0.0);
+    vec4 positionGuide = vec4(0.0);
+    uint pixelIndex = gl_LaunchIDEXT.y * gl_LaunchSizeEXT.x + gl_LaunchIDEXT.x;
+    bool stableGuides = pc.counts.z == 2u && pc.sampling.y > 1u;
+    bool guideDiscontinuity = false;
+    vec4 cameraFar = pc.invViewProj * vec4(0.0, 0.0, 1.0, 1.0);
+    vec3 cameraForward = normalize(cameraFar.xyz - pc.eye.xyz * cameraFar.w);
+    for (uint sampleIndex = 0u; sampleIndex < pc.sampling.y; ++sampleIndex) {
+        uint absoluteSample = pc.sampling.x + sampleIndex;
+        uint rng = ptHash(pixelIndex ^ ptHash(absoluteSample) ^ ptHash(pc.sampling.w));
+        vec2 jitter = ptRandom2(rng);
+        if (stableGuides) {
+            // A pair covers complementary pixel quadrants. Each marginal is
+            // uniform; absolute pair indices preserve batching reproducibility.
+            uint pairRng = ptHash(pixelIndex ^ ptHash(absoluteSample / 2u) ^ ptHash(pc.sampling.w ^ 0x9e3779b9u));
+            jitter = fract(ptRandom2(pairRng) + vec2(0.5 * float(absoluteSample & 1u)));
+        }
+        vec2 uv = (vec2(pixel) + jitter) / vec2(gl_LaunchSizeEXT.xy);
+        vec4 farPoint = pc.invViewProj * vec4(uv * 2.0 - 1.0, 1.0, 1.0);
+        vec3 direction = normalize(farPoint.xyz - pc.eye.xyz * farPoint.w);
+        vec4 normalDepth;
+        vec3 albedo;
+        vec4 position;
+        sum += integrate(pc.eye.xyz, direction, rng, normalDepth, albedo, position);
+        // Axial depth does not fluctuate with ray length on a front-facing
+        // plane. This keeps neighboring filter weights stable at silhouettes.
+        if (stableGuides && position.w > 0.0)
+            normalDepth.w = dot(position.xyz-pc.eye.xyz,cameraForward);
+        if (sampleIndex == 0u) {
+            guide = normalDepth;
+            positionGuide = position;
+            baseColor = albedo;
+        } else if (stableGuides) {
+            vec3 colorDelta = albedo - baseColor;
+            guideDiscontinuity = guideDiscontinuity || position.w != positionGuide.w ||
+                (position.w > 0.0 && (dot(normalDepth.xyz, guide.xyz) < 0.95 ||
+                 abs(normalDepth.w-guide.w) > max(0.01, guide.w*0.02))) ||
+                dot(colorDelta,colorDelta) > 0.01;
+        }
+    }
+    if (stableGuides && guideDiscontinuity) {
+        // Guide identity must not jump between the two sides of a silhouette
+        // just because the first radiance ray moved within its pixel. Trace a
+        // separate center ray only where samples disagree about the surface,
+        // for reconstruction only, never for radiance.
+        vec2 uv = (vec2(pixel) + vec2(0.5)) / vec2(gl_LaunchSizeEXT.xy);
+        vec4 farPoint = pc.invViewProj * vec4(uv * 2.0 - 1.0, 1.0, 1.0);
+        vec3 direction = normalize(farPoint.xyz - pc.eye.xyz * farPoint.w);
+        payload.instance = PT_INVALID;
+        payload.opacitySeed = ptHash(pixelIndex ^ ptHash(pc.sampling.w));
+        traceRayEXT(scene, gl_RayFlagsNoneEXT, 0xff, 0, 0, 0,
+                    pc.eye.xyz, 0.0, direction, 1e30, 0);
+        guide = vec4(0.0);
+        positionGuide = vec4(0.0);
+        baseColor = vec3(0.0);
+        if (payload.instance != PT_INVALID) {
+            Surface center = surfaceAt(pc.eye.xyz, direction);
+            guide = vec4(center.normal, dot(center.position-pc.eye.xyz,cameraForward));
+            positionGuide = vec4(center.position, float(payload.instance + 1u));
+            baseColor = center.material.baseColor.rgb;
+        }
+    }
+    float oldCount = float(pc.counts.y);
+    vec3 oldMean = pc.counts.y == 0u ? vec3(0.0) : imageLoad(history, pixel).rgb;
+    float total = oldCount + float(pc.sampling.y);
+    vec3 mean = (oldMean * oldCount + sum) / max(total, 1.0);
+    if (pc.counts.z != 2u) imageStore(history, pixel, vec4(mean, total));
+    if (pc.counts.z == 2u) imageStore(outputPosition, pixel, positionGuide);
+    imageStore(outputColor, pixel, vec4(mean, 1.0));
+    imageStore(outputNormalDepth, pixel, guide);
+    imageStore(outputAlbedo, pixel, vec4(baseColor, 1.0));
+}
