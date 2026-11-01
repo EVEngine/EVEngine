@@ -1,11 +1,17 @@
 name: PR701 followup diagnostics
 on:
   workflow_dispatch:
+    inputs:
+      target:
+        type: choice
+        default: both
+        options: [both, linux, intel]
 permissions:
   contents: read
   actions: read
 jobs:
   dawn-macro:
+    if: ${{ inputs.target != 'intel' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -17,7 +23,7 @@ jobs:
           curl -fsSL https://github.com/google/dawn/releases/download/v20260423.175430/emdawnwebgpu_pkg-v20260423.175430.zip -o "$RUNNER_TEMP/dawn-probe.zip"
           echo '3ad7ebe95a4a20764df46c5a63b0ad489782aee26804fff8511d9797c10e732f  '"$RUNNER_TEMP/dawn-probe.zip" | sha256sum -c -
           unzip -q "$RUNNER_TEMP/dawn-probe.zip" -d "$RUNNER_TEMP/dawn-probe"
-          header=$(rg --files "$RUNNER_TEMP/dawn-probe" | rg '/webgpu_cpp.h$' | head -1)
+          header=$(find "$RUNNER_TEMP/dawn-probe" -path '*/webgpu/webgpu_cpp.h' -print -quit)
           include=$(dirname "$(dirname "$header")")
           python3 .github/diagnostics/pr701-followup/macro_probe.py
           if g++ -std=c++20 -fsyntax-only $(sdl2-config --cflags) -I"$include" /tmp/pr701-before.cpp >/tmp/pr701-before.log 2>&1; then
@@ -27,6 +33,7 @@ jobs:
           cat /tmp/pr701-before.log
           g++ -std=c++20 -Wall -Wextra -Werror -fsyntax-only $(sdl2-config --cflags) -I"$include" /tmp/pr701-after.cpp
   intel-uv:
+    if: ${{ inputs.target != 'linux' }}
     runs-on: macos-15-intel
     timeout-minutes: 20
     steps:
