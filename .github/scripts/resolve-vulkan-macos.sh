@@ -101,6 +101,13 @@ elif [ -f "$RESOLVED/../setup-env.sh" ]; then
   source "$RESOLVED/../setup-env.sh"
 fi
 
+# Select MoltenVK rather than scanning the SDK directory, which also contains
+# an arm64-only KosmicKrisp driver that the Intel loader cannot load.
+MOLTENVK_ICD="$RESOLVED/share/vulkan/icd.d/MoltenVK_icd.json"
+if [ -f "$MOLTENVK_ICD" ]; then
+  export VK_ICD_FILENAMES="$MOLTENVK_ICD"
+fi
+
 if [ -n "${GITHUB_ENV:-}" ]; then
   [ -n "${VK_ICD_FILENAMES:-}" ] && echo "VK_ICD_FILENAMES=$VK_ICD_FILENAMES" >> "$GITHUB_ENV"
   echo "PATH=$PATH" >> "$GITHUB_ENV"

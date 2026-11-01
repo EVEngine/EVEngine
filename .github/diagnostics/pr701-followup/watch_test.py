@@ -22,7 +22,7 @@ def main():
     with log.open("w", encoding="utf-8") as output:
         process = subprocess.Popen(args, stdin=subprocess.DEVNULL, stdout=output, stderr=subprocess.STDOUT)
         try:
-            result = process.wait(timeout=45)
+            result = process.wait(timeout=float(os.environ.get("WATCH_PENDING_SECONDS", "45")))
         except subprocess.TimeoutExpired:
             print(f"CASE_PENDING pid={process.pid}; sampling", flush=True)
             try:
@@ -32,7 +32,7 @@ def main():
             except subprocess.TimeoutExpired:
                 print("sample timed out", flush=True)
             try:
-                result = process.wait(timeout=15)
+                result = process.wait(timeout=float(os.environ.get("WATCH_GRACE_SECONDS", "15")))
             except subprocess.TimeoutExpired:
                 process.kill()
                 try:

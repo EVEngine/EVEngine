@@ -5,7 +5,7 @@ on:
       target:
         type: choice
         default: both
-        options: [both, linux, intel, intel_fresh, dawn_full, intel_full, loader, replay, compute]
+        options: [both, linux, intel, intel_fresh, dawn_full, intel_full, loader, replay, compute, full_replay]
 permissions:
   contents: read
   actions: read
@@ -575,3 +575,68 @@ jobs:
           path: |
             build/replay/Testing/Temporary/
             compute-diagnostics/
+
+  intel-full-replay:
+    if: ${{ inputs.target == 'full_replay' }}
+    runs-on: macos-15-intel
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {configuration: release, semaphore: '0'}
+          - {configuration: release, semaphore: '3'}
+          - {configuration: debug, semaphore: '3'}
+    env:
+      MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS: '0'
+      MVK_CONFIG_VK_SEMAPHORE_SUPPORT_STYLE: ${{ matrix.semaphore }}
+      CONFIGURATION: ${{ matrix.configuration }}
+      WATCH_GRACE_SECONDS: '45'
+      MVK_CONFIG_LOG_LEVEL: '0' 
+      ALSOFT_DRIVERS: 'null'
+      EVENGINE_VIEW_SECONDS: '0.3'
+      EVENGINE_PERF_FRAMES: '30'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          submodules: recursive
+      - uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533
+        with:
+          vulkan_version: '1.4.363.0'
+          cache: true
+          destination: ${{ runner.temp }}/VulkanSDK
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+      - name: Replay every original failure through canonical CTest discovery
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          platform="macosx-x86_64${suffix}"
+          build="$PWD/build/$platform"
+          gh run download 41332710462 --repo github.com/EVEngine/EVEngine --name "pr701-intel-native-$CONFIGURATION" --dir "$RUNNER_TEMP/native-replay"
+          make "configure/$platform" CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF -DDART_TESTING_TIMEOUT=120"
+          cmake --build "$build" --parallel 4 --target native_test_plugin reload_test_plugin_v1 reload_test_plugin_v2 reload_test_plugin_fail_init reload_test_plugin_throw_init reload_test_plugin_fail_bind reload_test_plugin_conflict reload_test_plugin_no_entry assertion_contract_probe onnx_compiler_queue_contract download_spine_models download_skinned_character
+          cp "$RUNNER_TEMP/native-replay/unit_test" "$build/test/unit_test"
+          chmod +x "$build/test/unit_test"
+          export UNIT_TEST_BINARY="$build/test/unit_test"
+          export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:-}:$RUNNER_TEMP/native-replay"
+          printf '#!/usr/bin/env bash\nexec python3 "%s/.github/diagnostics/pr701-followup/watch_test.py" "$@"\n' "$PWD" > "$build/test/watch-test"
+          chmod +x "$build/test/watch-test"
+          cmake -DZEROERR_EXE="$build/test/watch-test" -DCTEST_FILE="$build/test/unit_test_zeroerr_tests.cmake" -DZEROERR_WORKING_DIRECTORY="$PWD" -DZEROERR_LABEL=unit_test -DZEROERR_LEVEL_FILE="$build/test/test_levels.cmake" -P cmake/ZeroErrDiscoverTestsImpl.cmake
+          ctest --test-dir "$build" -N -E '^bundle/' -LE benchmark --show-only=json-v1 > "$build/inventory.json"
+          python3 -c 'import json,sys; data=json.load(open(sys.argv[1],encoding="utf-8")); count=len(data["tests"]); print("Full inventory:",count); assert count==5061' "$build/inventory.json"
+          grep -E '^TimeOut: +120$' "$build/DartConfiguration.tcl"
+          make --old-file="build/$platform" "test/$platform" CTEST_JOBS=1 CTEST_REPEAT='' LABEL_FILTER='' CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF -DDART_TESTING_TIMEOUT=120"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: pr701-intel-full-replay-${{ matrix.configuration }}-${{ matrix.semaphore }}
+          path: |
+            build/macosx-x86_64*/Testing/Temporary/
+            build/macosx-x86_64*/inventory.json
+            compute-diagnostics/
+
