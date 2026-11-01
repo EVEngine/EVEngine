@@ -11,6 +11,25 @@ ROOT = Path(__file__).resolve().parents[2]
 
 @unittest.skipUnless(os.name != "nt" and shutil.which("bash"), "requires POSIX Bash")
 class ResolveVulkanMacosTests(unittest.TestCase):
+    def test_selects_moltenvk_manifest_instead_of_scanning_sdk_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            sdk = root / "SDK with spaces" / "macOS"
+            (sdk / "lib").mkdir(parents=True)
+            (sdk / "lib/libvulkan.dylib").touch()
+            manifests = sdk / "share/vulkan/icd.d"
+            manifests.mkdir(parents=True)
+            for name in ("MoltenVK_icd.json", "kosmickrisp_icd.json"):
+                (manifests / name).write_text("{}", encoding="utf-8")
+            (sdk / "setup-env.sh").write_text(
+                'export VK_ICD_FILENAMES="$VULKAN_SDK/share/vulkan/icd.d/"\n', encoding="utf-8")
+            env = dict(os.environ, VULKAN_SDK=str(sdk), HOME=str(root), GITHUB_ENV=str(root / "env"))
+            result = subprocess.run(["bash", str(ROOT / ".github/scripts/resolve-vulkan-macos.sh"), str(sdk)],
+                                    env=env, capture_output=True, text=True, encoding="utf-8", check=False)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            exported = (root / "env").read_text(encoding="utf-8").splitlines()
+            self.assertIn(f"VK_ICD_FILENAMES={manifests / 'MoltenVK_icd.json'}", exported)
+
     def test_optional_pkg_config_path_is_initialized_and_preserved(self):
         for existing in (None, "/custom/pkgconfig"):
             with self.subTest(existing=existing), tempfile.TemporaryDirectory() as directory:

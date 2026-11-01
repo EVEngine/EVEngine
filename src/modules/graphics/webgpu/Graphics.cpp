@@ -54,6 +54,10 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
+// SDL's native X11 declarations define Success, which collides with WebGPU enums.
+#ifdef Success
+#undef Success
+#endif
 #if defined(__APPLE__) && !defined(__EMSCRIPTEN__)
 #include <objc/message.h>
 #include <objc/runtime.h>

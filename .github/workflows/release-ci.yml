@@ -116,6 +116,13 @@ jobs:
   macos-x86_64:
     name: macOS x86_64 (${{ matrix.configuration }}, build + test)
     needs: [debug-checks, macos-metal-probe]
+    # Owner: EVEngine; tracking: #701. Intel AppleParavirtDevice aborts during
+    # Metal argument-buffer probing and times out on its first 3D frame with
+    # Metal event semaphores. Remove these settings when headless initialization,
+    # fresh glTF rendering and both full suites pass with the defaults.
+    env:
+      MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS: '0'
+      MVK_CONFIG_VK_SEMAPHORE_SUPPORT_STYLE: '0'
     runs-on: macos-15-intel
     timeout-minutes: 360
     strategy:
@@ -163,7 +170,7 @@ jobs:
           mkdir -p build
           log="build/macosx-x86_64${suffix}.log"
           if make "build/macosx-x86_64${suffix}" JOBS=4 \
-            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF" >"$log" 2>&1; then
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF -DDART_TESTING_TIMEOUT=120" >"$log" 2>&1; then
             tail -n 30 "$log"
           else
             awk '/error:|FAILED:|Undefined symbols|^ld:/ {remaining=12} remaining>0 {if (shown++ < 240) print; remaining--}' "$log"
@@ -195,8 +202,10 @@ jobs:
           suffix=""
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
           # Share the virtual GPU between one test process at a time.
-          make "test/macosx-x86_64${suffix}" JOBS=4 CTEST_JOBS=1 CTEST_REPEAT='' LABEL_FILTER='' \
-            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+          # Bound a stalled case before it consumes the whole validation lane.
+          make --old-file="build/macosx-x86_64${suffix}" "test/macosx-x86_64${suffix}" \
+            JOBS=4 CTEST_JOBS=1 CTEST_REPEAT='' LABEL_FILTER='' \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF -DDART_TESTING_TIMEOUT=120"
 
       - name: Upload Intel macOS build diagnostics
         if: failure()
