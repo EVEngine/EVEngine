@@ -19,7 +19,7 @@ jobs:
       - name: Probe independent Vulkan paths
         env:
           MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS: '0'
-          MVK_CONFIG_DEBUG: '1'
+          MVK_CONFIG_DEBUG: '0'
           MVK_CONFIG_LOG_LEVEL: '4'
         run: |
           set -euo pipefail
@@ -39,7 +39,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           EVENGINE_VULKAN_VALIDATION: '1'
-          MVK_CONFIG_DEBUG: '1'
+          MVK_CONFIG_DEBUG: '0'
           MVK_CONFIG_LOG_LEVEL: '4'
         run: |
           set -euo pipefail

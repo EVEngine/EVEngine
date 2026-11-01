@@ -19,6 +19,10 @@ VkQueue                          queue;
 VkCommandPool                    pool;
 VkPhysicalDeviceMemoryProperties memoryProperties;
 VkPhysicalDeviceProperties       properties;
+VkDeviceMemory                   sharedMemory{};
+VkDeviceSize                     sharedCursor{}, sharedBytes{};
+void*                            sharedMapped{};
+bool                             flushCoherent{};
 uint32_t                         memoryType(uint32_t bits, VkMemoryPropertyFlags flags) {
     for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; ++i)
         if ((bits & (1u << i)) && (memoryProperties.memoryTypes[i].propertyFlags & flags) == flags) return i;
@@ -39,6 +43,22 @@ Buffer buffer(VkDeviceSize size, VkBufferUsageFlags usage, bool offset) {
     VkMemoryRequirements mr;
     vkGetBufferMemoryRequirements(device, b.handle, &mr);
     b.offset = offset ? ((4096 + mr.alignment - 1) / mr.alignment) * mr.alignment : 0;
+    if (sharedBytes) {
+        if (!sharedMemory) {
+            VkMemoryAllocateInfo ai{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
+            ai.allocationSize  = sharedBytes;
+            ai.memoryTypeIndex = memoryType(mr.memoryTypeBits,
+                                            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+            VK(vkAllocateMemory(device, &ai, nullptr, &sharedMemory));
+            VK(vkMapMemory(device, sharedMemory, 0, VK_WHOLE_SIZE, 0, &sharedMapped));
+        }
+        b.offset     = ((sharedCursor + mr.alignment - 1) / mr.alignment) * mr.alignment;
+        sharedCursor = b.offset + mr.size;
+        if (sharedCursor > sharedBytes) throw std::runtime_error("probe shared pool exhausted");
+        b.memory = sharedMemory;
+        VK(vkBindBufferMemory(device, b.handle, b.memory, b.offset));
+        return b;
+    }
     VkMemoryAllocateInfo ai{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
     ai.allocationSize = mr.size + b.offset;
     ai.memoryTypeIndex =
@@ -48,6 +68,16 @@ Buffer buffer(VkDeviceSize size, VkBufferUsageFlags usage, bool offset) {
     return b;
 }
 void write(Buffer b, const void* p, size_t bytes, VkDeviceSize extra = 0) {
+    if (b.memory == sharedMemory && sharedMapped) {
+        std::memcpy((char*)sharedMapped + b.offset + extra, p, bytes);
+        if (flushCoherent) {
+            VkMappedMemoryRange range{VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE};
+            range.memory = b.memory;
+            range.size   = VK_WHOLE_SIZE;
+            VK(vkFlushMappedMemoryRanges(device, 1, &range));
+        }
+        return;
+    }
     void* dst;
     VK(vkMapMemory(device, b.memory, 0, VK_WHOLE_SIZE, 0, &dst));
     std::memcpy((char*)dst + b.offset + extra, p, bytes);
@@ -55,7 +85,7 @@ void write(Buffer b, const void* p, size_t bytes, VkDeviceSize extra = 0) {
 }
 void release(Buffer b) {
     vkDestroyBuffer(device, b.handle, nullptr);
-    vkFreeMemory(device, b.memory, nullptr);
+    if (b.memory != sharedMemory) vkFreeMemory(device, b.memory, nullptr);
 }
 VkShaderModule shader(const std::string& name) {
     std::ifstream f(name, std::ios::binary | std::ios::ate);
@@ -81,7 +111,8 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     const bool  generated = std::strcmp(mode, "GENERATED") == 0;
     const bool  dynamic   = !gbuffer && (full || std::strcmp(mode, "UBO") == 0);
     std::string label     = std::string(mode) + " layout=" + (full ? "engine" : "minimal") +
-                        " memoryOffset=" + std::to_string(offset) + " indices=" + std::to_string(indices);
+                        " memoryOffset=" + std::to_string(offset) + " indices=" + std::to_string(indices) +
+                        " sharedBytes=" + std::to_string(sharedBytes) + " flush=" + std::to_string(flushCoherent);
     const int                   attachments = gbuffer || std::strcmp(mode, "MRT") == 0 ? 5 : 1;
     std::vector<VkImage>        images(attachments);
     std::vector<VkImageView>    views(attachments);
@@ -440,13 +471,21 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     submit.pCommandBuffers    = &cb;
     VK(vkQueueSubmit(queue, 1, &submit, fence));
     VK(vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX));
-    void* bytes;
-    VK(vkMapMemory(device, readback.memory, 0, VK_WHOLE_SIZE, 0, &bytes));
+    void* bytes = sharedMapped;
+    if (sharedMapped) {
+        if (flushCoherent) {
+            VkMappedMemoryRange range{VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE};
+            range.memory = sharedMemory;
+            range.size   = VK_WHOLE_SIZE;
+            VK(vkInvalidateMappedMemoryRanges(device, 1, &range));
+        }
+    } else
+        VK(vkMapMemory(device, readback.memory, 0, VK_WHOLE_SIZE, 0, &bytes));
     const uint8_t* p    = (uint8_t*)bytes + readback.offset + (32 * 64 + 32) * 4;
     bool           good = p[0] > 240 && p[1] < 10 && p[2] < 10;
     std::printf("PROBE %s center=%u,%u,%u,%u %s\n", label.c_str(), p[0], p[1], p[2], p[3], good ? "PASS" : "FAIL");
     std::fflush(stdout);
-    vkUnmapMemory(device, readback.memory);
+    if (!sharedMapped) vkUnmapMemory(device, readback.memory);
     vkDestroyFence(device, fence, nullptr);
     vkFreeCommandBuffers(device, pool, 1, &cb);
     release(textureStaging);
@@ -471,6 +510,13 @@ bool render(const char* mode, bool full, bool offset, int indices) {
         vkDestroyImageView(device, views[i], nullptr);
         vkDestroyImage(device, images[i], nullptr);
         vkFreeMemory(device, imageMemory[i], nullptr);
+    }
+    if (sharedMemory) {
+        vkUnmapMemory(device, sharedMemory);
+        vkFreeMemory(device, sharedMemory, nullptr);
+        sharedMemory = VK_NULL_HANDLE;
+        sharedMapped = nullptr;
+        sharedCursor = 0;
     }
     return good;
 }
@@ -525,20 +571,27 @@ int main() {
         pi.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         VK(vkCreateCommandPool(device, &pi, nullptr, &pool));
         bool good = true;
-        for (bool full : {false, true})
-            for (bool offset : {false, true})
-                for (const char* mode : {"GENERATED", "VERTEX", "PUSH", "UBO", "SSBO", "MRT", "SAMPLER_VERTEX",
-                                         "SAMPLER_ALL", "GBUFFER", "GBUFFER_VERTEX", "GBUFFER_EMBEDDED"})
-                    for (int indices : {0, 16, 32}) {
-                        if (std::strcmp(mode, "VERTEX") && indices != 32) continue;
-                        try {
-                            good = render(mode, full, offset, indices) && good;
-                        } catch (const std::exception& e) {
-                            std::printf("PROBE ERROR %s full=%d offset=%d indices=%d %s\n", mode, full, offset, indices,
-                                        e.what());
-                            good = false;
-                        }
-                    }
+        for (VkDeviceSize block : {VkDeviceSize(0), VkDeviceSize(1u << 20), VkDeviceSize(128u << 20)}) {
+            sharedBytes = block;
+            for (bool flush : {false, true}) {
+                if (!block && flush) continue;
+                flushCoherent = flush;
+                for (bool full : {false, true})
+                    for (bool offset : {false, true})
+                        for (const char* mode : {"GENERATED", "VERTEX", "PUSH", "UBO", "SSBO", "MRT", "SAMPLER_VERTEX",
+                                                 "SAMPLER_ALL", "GBUFFER", "GBUFFER_VERTEX", "GBUFFER_EMBEDDED"})
+                            for (int indices : {0, 16, 32}) {
+                                if (std::strcmp(mode, "VERTEX") && indices != 32) continue;
+                                try {
+                                    good = render(mode, full, offset, indices) && good;
+                                } catch (const std::exception& e) {
+                                    std::printf("PROBE ERROR %s full=%d offset=%d indices=%d %s\n", mode, full, offset,
+                                                indices, e.what());
+                                    good = false;
+                                }
+                            }
+            }
+        }
         VK(vkDeviceWaitIdle(device));
         vkDestroyCommandPool(device, pool, nullptr);
         vkDestroyDevice(device, nullptr);
