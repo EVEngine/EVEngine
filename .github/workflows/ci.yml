@@ -517,7 +517,7 @@ jobs:
           mkdir -p build/replay
           python3 -X utf8 scripts/test_levels.py --emit-cmake "$PWD/build/replay/test_levels.cmake"
           cmake -DZEROERR_EXE="$RUNNER_TEMP/native-replay/unit_test" -DCTEST_FILE="$PWD/build/replay/CTestTestfile.cmake" -DZEROERR_WORKING_DIRECTORY="$PWD" -DZEROERR_LEVEL_FILE="$PWD/build/replay/test_levels.cmake" -P cmake/ZeroErrDiscoverTestsImpl.cmake
-          ctest --test-dir build/replay --tests-from-file .github/diagnostics/pr701-followup/failed-cases.txt --no-tests=error --output-on-failure -j 1 --timeout 120
+          ctest --test-dir build/replay --tests-from-file "$PWD/.github/diagnostics/pr701-followup/failed-cases.txt" --no-tests=error --output-on-failure -j 1 --timeout 120
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         with:
