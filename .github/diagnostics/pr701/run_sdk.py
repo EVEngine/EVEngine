@@ -9,12 +9,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
 import utf8_stdio
 
 
-def main():
+def main(heap_mode=None):
     executable = Path(sys.argv[1]).resolve()
     game = Path(__file__).resolve().parent / "sdk-game"
     log = Path("engine-probe.log").resolve()
     sample = Path("engine-probe-sample.txt").resolve()
     env = dict(os.environ, ALSOFT_DRIVERS="null", MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS="0")
+    if heap_mode is not None:
+        env["MVK_CONFIG_USE_MTLHEAP"] = str(heap_mode)
+        log = log.with_name(f"engine-probe-heap{heap_mode}.log")
+    print(f"SDK_VARIANT heap={heap_mode}", flush=True)
     with log.open("w", encoding="utf-8") as output:
         process = subprocess.Popen([str(executable), "run"], cwd=game, env=env,
                                    stdout=output, stderr=subprocess.STDOUT)
@@ -50,4 +54,5 @@ def main():
 
 if __name__ == "__main__":
     utf8_stdio.enable_utf8_stdio()
-    raise SystemExit(main())
+    results = [main(mode) for mode in (None, 0, 2)]
+    raise SystemExit(max(results))
