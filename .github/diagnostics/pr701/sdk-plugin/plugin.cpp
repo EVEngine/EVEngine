@@ -17,10 +17,12 @@
 #include "gpgpu/Gpgpu.h"
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
+#include "graphics/vulkan/Graphics.h"
 #include "graphics/Light.h"
 #include "image/ImageData.h"
 #include "window/Window.h"
 
+extern "C" int engineRawProbe(VkPhysicalDevice, VkDevice, uint32_t);
 namespace eve::diagnostic {
 static void crash(int signal) {
     const char text[] = "ENGINE_PROBE_SIGNAL\n";
@@ -52,6 +54,18 @@ public:
         const uint8_t  red[]{255, 0, 0, 255};
         auto*          texture  = gfx->newTexture(1, 1, red);
         int            failures = 0;
+        auto* backend = dynamic_cast<graphics::vulkan::Graphics*>(gfx);
+        if (!backend) throw std::runtime_error("Not Vulkan");
+        auto& dev = backend->getDevice();
+        std::printf("ENGINE_DEVICE %p physical=%p family=%u\n", (void*)VkDevice(dev.instance), (void*)VkPhysicalDevice(dev.physical_device.instance), dev.get_queue_index(vkb::QueueType::graphics));
+        auto* gm = static_cast<graphics::vulkan::GpuMesh*>(mesh->gpuHandle);
+        auto* vp = static_cast<const graphics::vulkan::MeshVertex*>(gm->vertices.map());
+        std::printf("ENGINE_VERTEX size=%zu first=%f,%f,%f last=%f,%f,%f\n", sizeof(*vp), vp[0].pos.x, vp[0].pos.y, vp[0].pos.z, vp[3].pos.x, vp[3].pos.y, vp[3].pos.z);
+        gm->vertices.unmap();
+        auto* ip = static_cast<const uint32_t*>(gm->indices.map());
+        std::printf("ENGINE_INDEX %u,%u,%u,%u,%u,%u\n",ip[0],ip[1],ip[2],ip[3],ip[4],ip[5]);
+        gm->indices.unmap();
+        failures += engineRawProbe(VkPhysicalDevice(dev.physical_device.instance), VkDevice(dev.instance), dev.get_queue_index(vkb::QueueType::graphics));
         for (int size : {64, 96}) {
             std::printf("ENGINE_PROBE begin GBuffer %d\n", size);
             std::fflush(stdout);

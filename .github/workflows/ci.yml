@@ -35,6 +35,9 @@ jobs:
           sparse-checkout: |
             glm
             medialoader
+            VKBuilder
+            vulkan
+            vma
       - name: Reproduce through the existing native SDK
         env:
           GH_TOKEN: ${{ github.token }}
@@ -43,13 +46,14 @@ jobs:
           MVK_CONFIG_LOG_LEVEL: '4'
         run: |
           set -euo pipefail
-          git -C probe-third-party submodule update --init --depth 1 medialoader
+          git -C probe-third-party submodule update --init --depth 1 medialoader VKBuilder
           gh run download 41285557254 --repo github.com/EVEngine/EVEngine --name sdk-macosx-arm64 --dir "$RUNNER_TEMP/probe-sdk-download"
           unzip -q "$RUNNER_TEMP/probe-sdk-download/eve-sdk-macosx-arm64-v0.6.1.zip" -d "$RUNNER_TEMP/probe-sdk"
           sdk="$RUNNER_TEMP/probe-sdk/eve-sdk/macosx-arm64"
           cmake -S .github/diagnostics/pr701/sdk-plugin -B build/probe-plugin -DEVEngine_DIR="$sdk/cmake" -DPROBE_TP_DIR="$GITHUB_WORKSPACE/probe-third-party" -DCMAKE_BUILD_TYPE=Release
           cmake --build build/probe-plugin --parallel 2
           cp build/probe-plugin/pr701_probe.dylib .github/diagnostics/pr701/sdk-game/
+          cp .github/diagnostics/pr701/*.spv .github/diagnostics/pr701/sdk-game/
           python3 .github/diagnostics/pr701/run_sdk.py "$sdk/bin/eve"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()

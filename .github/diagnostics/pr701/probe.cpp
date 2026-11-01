@@ -621,6 +621,26 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     }
     return good;
 }
+#ifdef PROBE_EMBEDDED
+extern "C" int engineRawProbe(VkPhysicalDevice pd, VkDevice dev, uint32_t family) {
+    physical=pd; device=dev;
+    vkGetPhysicalDeviceProperties(physical, &properties);
+    vkGetPhysicalDeviceMemoryProperties(physical, &memoryProperties);
+    vkGetDeviceQueue(device, family, 0, &queue);
+    VkCommandPoolCreateInfo pi{VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO};
+    pi.queueFamilyIndex=family; pi.flags=VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    VK(vkCreateCommandPool(device,&pi,nullptr,&pool));
+    int failures=0;
+    useVma=false; sharedBytes=0;
+    for (bool depth : {false,true}) {
+        depthMode=depth; dynamicViewport=true;
+        for (const char* mode : {"GENERATED","VERTEX","PUSH","UBO","GBUFFER_EMBEDDED"})
+            failures+=!render(mode,false,false,32);
+    }
+    vkDestroyCommandPool(device,pool,nullptr);
+    return failures;
+}
+#else
 int main() {
     try {
         VkApplicationInfo app{VK_STRUCTURE_TYPE_APPLICATION_INFO};
@@ -747,3 +767,5 @@ int main() {
         return 2;
     }
 }
+
+#endif
