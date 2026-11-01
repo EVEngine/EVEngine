@@ -25,13 +25,15 @@ jobs:
           unzip -q "$RUNNER_TEMP/dawn-probe.zip" -d "$RUNNER_TEMP/dawn-probe"
           header=$(find "$RUNNER_TEMP/dawn-probe" -path '*/webgpu/webgpu_cpp.h' -print -quit)
           include=$(dirname "$(dirname "$header")")
+          c_header=$(find "$RUNNER_TEMP/dawn-probe" -path '*/webgpu/webgpu.h' -print -quit)
+          c_include=$(dirname "$(dirname "$c_header")")
           python3 .github/diagnostics/pr701-followup/macro_probe.py
-          if g++ -std=c++20 -fsyntax-only $(sdl2-config --cflags) -I"$include" /tmp/pr701-before.cpp >/tmp/pr701-before.log 2>&1; then
+          if g++ -std=c++20 -fsyntax-only $(sdl2-config --cflags) -I"$include" -I"$c_include" /tmp/pr701-before.cpp >/tmp/pr701-before.log 2>&1; then
             echo 'Expected the old include boundary to expose the X11 macro conflict'
             exit 1
           fi
           cat /tmp/pr701-before.log
-          g++ -std=c++20 -Wall -Wextra -Werror -fsyntax-only $(sdl2-config --cflags) -I"$include" /tmp/pr701-after.cpp
+          g++ -std=c++20 -Wall -Wextra -Werror -fsyntax-only $(sdl2-config --cflags) -I"$include" -I"$c_include" /tmp/pr701-after.cpp
   intel-uv:
     if: ${{ inputs.target != 'linux' }}
     runs-on: macos-15-intel
