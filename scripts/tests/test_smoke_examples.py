@@ -20,7 +20,8 @@ class SmokeExamplesTests(unittest.TestCase):
             (root / "examples" / "probe").mkdir(parents=True)
             (root / "examples" / "probe" / "main.nut").write_text("", encoding="utf-8")
             script = root / "scripts" / "smoke_examples.sh"
-            shutil.copyfile(ROOT / "scripts" / "smoke_examples.sh", script)
+            script.write_text((ROOT / "scripts" / "smoke_examples.sh").read_text(encoding="utf-8"),
+                              encoding="utf-8")
             engine = root / "engine"
             engine.write_text(f"#!{sys.executable}\nimport time\n" + body, encoding="utf-8")
             engine.chmod(0o755)
@@ -46,6 +47,20 @@ class SmokeExamplesTests(unittest.TestCase):
         result, _ = self.run_smoke('print("[startup] first present", flush=True)\ntime.sleep(0.2)\n')
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("liveness window", result.stdout)
+
+    def test_exit_before_initialization_is_not_reported_as_timeout(self):
+        result, _ = self.run_smoke('raise SystemExit(7)\n')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("exited during initialization (exit code 7", result.stdout)
+        self.assertNotIn("did not finish initialization", result.stdout)
+
+    def test_signal_during_initialization_is_not_harness_timeout(self):
+        result, _ = self.run_smoke(
+            'import os, signal\nos.kill(os.getpid(), signal.SIGTERM)\n')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertRegex(result.stdout,
+                         r"exited during initialization \(exit code (15|143), harness termination 0\)")
+        self.assertNotIn("did not finish initialization", result.stdout)
 
     def test_initialization_error_is_not_hidden_by_liveness(self):
         result, log = self.run_smoke(

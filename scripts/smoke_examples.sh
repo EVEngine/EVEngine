@@ -129,9 +129,11 @@ for name in "${EXAMPLES[@]}"; do
   # A live but stuck initializer or renderer still fails within a separate
   # startup budget. The first completed present proves startup reached rendering.
   startup_ready=0
+  startup_error=0
   startup_deadline=$((SECONDS + STARTUP_SECONDS_PER))
   while kill -0 "$pid" 2>/dev/null && [[ "$SECONDS" -lt "$startup_deadline" ]]; do
     if grep -qE 'eve_init failed|Run failed:|engine build is missing the window or graphics module' "$log"; then
+      startup_error=1
       break
     fi
     if grep -qF "[startup] first present" "$log"; then
@@ -188,8 +190,12 @@ for name in "${EXAMPLES[@]}"; do
   # clean self-exit.  Both must be rebuilt every iteration.
   reason=""
   note=""
-  if [[ "$startup_ready" -eq 0 ]]; then
-    reason="did not finish initialization within ${STARTUP_SECONDS_PER}s (exit code ${rc})"
+  if [[ "$startup_error" -eq 1 ]]; then
+    reason="reported an initialization error (exit code ${rc}, harness termination ${killed_by_harness})"
+  elif [[ "$early_exit" -eq 1 && "$startup_ready" -eq 0 ]]; then
+    reason="exited during initialization (exit code ${rc}, harness termination 0)"
+  elif [[ "$startup_ready" -eq 0 ]]; then
+    reason="did not finish initialization within ${STARTUP_SECONDS_PER}s (exit code ${rc}, harness termination ${killed_by_harness})"
   elif [[ "$early_exit" -eq 1 ]]; then
     reason="died inside the ${MIN_RUN_SECONDS_PER}s liveness window (exit code ${rc})"
   elif [[ "$killed_by_harness" -eq 0 ]]; then

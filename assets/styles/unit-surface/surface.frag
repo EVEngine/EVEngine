@@ -199,7 +199,11 @@ void main() {
     float wave=0.5+0.5*sin(q.y*6.283185-t*3.0);
     float coverage=u.p[9], mask=0.0;
     vec3 color=vec3(u.p[2],u.p[3],u.p[4]);
+#ifdef UNIT_SURFACE_MODE
+    const int mode=int(float(UNIT_SURFACE_MODE)+0.5);
+#else
     int mode=int(u.p[10]+0.5);
+#endif
     if(u.p[27]>3.5) {
         if(mode==14) {
             vec3 flow=vLocalPos*vec3(4.5,2.5,4.5)+vec3(sin(t*0.7)*0.3,-t*0.5,0);

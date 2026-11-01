@@ -24,7 +24,8 @@ Windows 用 `make run/win32-debug GAME=examples/unit-surface-effects`。
 - M：开关单位位移；上下键：光效强度；R：时钟归零。
 
 自动热重载关闭。修改后重新启动进程，避免将引擎热重启问题混入视觉验收。
-冷启动会准备所有效果的 GPU 管线；软件 Vulkan 上需较长时间，等待 READY 和首帧。
+冷启动仍准备全部 26 个效果；预设编号在离线构建时专门化，避免每次管线创建都编译全部效果分支。
+修改 shader 后运行 `assets/styles/unit-surface/build.sh`，等待 READY 和首帧。
 
 ## 逐项采集
 
