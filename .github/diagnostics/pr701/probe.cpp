@@ -77,11 +77,12 @@ struct Vertex {
     float    weights[4], color[4], tangent[4];
 };
 bool render(const char* mode, bool full, bool offset, int indices) {
+    const bool  gbuffer   = std::string(mode).starts_with("GBUFFER");
     const bool  generated = std::strcmp(mode, "GENERATED") == 0;
-    const bool  dynamic   = full || std::strcmp(mode, "UBO") == 0;
+    const bool  dynamic   = !gbuffer && (full || std::strcmp(mode, "UBO") == 0);
     std::string label     = std::string(mode) + " layout=" + (full ? "engine" : "minimal") +
                         " memoryOffset=" + std::to_string(offset) + " indices=" + std::to_string(indices);
-    const int                   attachments = std::strcmp(mode, "MRT") == 0 ? 5 : 1;
+    const int                   attachments = gbuffer || std::strcmp(mode, "MRT") == 0 ? 5 : 1;
     std::vector<VkImage>        images(attachments);
     std::vector<VkImageView>    views(attachments);
     std::vector<VkDeviceMemory> imageMemory(attachments);
@@ -167,6 +168,11 @@ bool render(const char* mode, bool full, bool offset, int indices) {
         bindings.push_back({21, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr});
     if (!full)
         bindings.push_back({1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr});
+    if (gbuffer) {
+        bindings.clear();
+        bindings.push_back({0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr});
+        bindings.push_back({1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr});
+    }
     VkDescriptorSetLayoutCreateInfo li{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
     li.bindingCount = bindings.size();
     li.pBindings    = bindings.data();
@@ -198,7 +204,7 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     if (!generated) {
         vertex.vertexBindingDescriptionCount   = 1;
         vertex.pVertexBindingDescriptions      = &vb;
-        vertex.vertexAttributeDescriptionCount = full ? 7 : 1;
+        vertex.vertexAttributeDescriptionCount = full ? 7 : (gbuffer ? 3 : 1);
         vertex.pVertexAttributeDescriptions    = attrs;
     }
     VkPipelineInputAssemblyStateCreateInfo ia{VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO};
@@ -242,7 +248,11 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     vertices[1].p[1] = -1;
     vertices[2].p[0] = -1;
     vertices[2].p[1] = 3;
-    for (auto& v : vertices) v.p[2] = .5f;
+    for (auto& v : vertices) {
+        v.p[2]  = .5f;
+        v.n[2]  = 1.0f;
+        v.uv[0] = v.uv[1] = 0.5f;
+    }
     Buffer vbo = buffer(sizeof(vertices), VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, offset);
     write(vbo, vertices.data(), sizeof(vertices));
     uint32_t ix32[]{0, 1, 2};
@@ -252,7 +262,14 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     std::array<float, 32> constants{};
     constants[0] = constants[5] = constants[10] = constants[15] = 1;
     constants[16] = constants[21] = constants[26] = 1;
-    constants[28] = constants[31]   = 1;
+    constants[28] = constants[31] = 1;
+    if (gbuffer) {
+        constants[28]   = 0.1f;
+        constants[29]   = 100.0f;
+        uint32_t packed = 63u | (32u << 18u) | (95u << 25u);
+        std::memcpy(&constants[30], &packed, 4);
+        constants[31] = float(2047u | (2047u << 12u));
+    }
     VkDeviceSize          uboOffset = dynamic ? properties.limits.minUniformBufferOffsetAlignment : 0;
     std::array<float, 20> uniforms{};
     uniforms[0] = uniforms[5] = uniforms[10] = uniforms[15] = uniforms[16] = uniforms[19] = 1;
@@ -313,26 +330,33 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     write(textureStaging, red, 4);
     VkDescriptorBufferInfo            ub{ubo.handle, 0, sizeof(uniforms)}, sb{ssbo.handle, 0, 64};
     std::vector<VkWriteDescriptorSet> writes;
-    VkWriteDescriptorSet              w{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET};
-    w.dstSet          = set;
-    w.dstBinding      = 0;
-    w.descriptorCount = 1;
-    w.descriptorType  = dynamic ? VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC : VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    w.pBufferInfo     = &ub;
-    writes.push_back(w);
-    w.dstBinding     = 21;
-    w.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    w.pBufferInfo    = &sb;
-    writes.push_back(w);
-    if (full) {
-        w.dstBinding     = 4;
-        w.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-        w.pBufferInfo    = &ub;
+    if (!gbuffer) {
+        VkWriteDescriptorSet w{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET};
+        w.dstSet          = set;
+        w.dstBinding      = 0;
+        w.descriptorCount = 1;
+        w.descriptorType  = dynamic ? VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC : VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        w.pBufferInfo     = &ub;
         writes.push_back(w);
+        w.dstBinding     = 21;
+        w.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        w.pBufferInfo    = &sb;
+        writes.push_back(w);
+        if (full) {
+            w.dstBinding     = 4;
+            w.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
+            w.pBufferInfo    = &ub;
+            writes.push_back(w);
+        }
     }
     VkDescriptorImageInfo sampled{sampler, textureView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
-    for (uint32_t binding : {1u, 2u, 3u, 5u, 6u, 7u, 8u, 9u, 10u, 16u, 17u, 18u, 20u}) {
-        if (!full && binding != 1) continue;
+    for (uint32_t binding : {0u, 1u, 2u, 3u, 5u, 6u, 7u, 8u, 9u, 10u, 16u, 17u, 18u, 20u}) {
+        if (gbuffer) {
+            if (binding > 1) continue;
+        } else {
+            if (binding == 0) continue;
+            if (!full && binding != 1) continue;
+        }
         VkWriteDescriptorSet iw{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET};
         iw.dstSet          = set;
         iw.dstBinding      = binding;
@@ -369,7 +393,7 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     tb.newLayout                = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     tb.srcAccessMask            = VK_ACCESS_TRANSFER_WRITE_BIT;
     tb.dstAccessMask            = VK_ACCESS_SHADER_READ_BIT;
-    VkPipelineStageFlags target = std::strcmp(mode, "SAMPLER_VERTEX") == 0
+    VkPipelineStageFlags target = (std::strcmp(mode, "SAMPLER_VERTEX") == 0 || std::strcmp(mode, "GBUFFER_VERTEX") == 0)
                                       ? VK_PIPELINE_STAGE_VERTEX_SHADER_BIT
                                       : VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     vkCmdPipelineBarrier(cb, VK_PIPELINE_STAGE_TRANSFER_BIT, target, 0, 0, nullptr, 0, nullptr, 1, &tb);
@@ -386,7 +410,7 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     uint32_t dynamicOffsets[2] = {uint32_t(uboOffset), 0};
     if (!dynamic) dynamicOffsets[0] = 0;
     vkCmdBindDescriptorSets(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &set,
-                            (dynamic ? 1 : 0) + (full ? 1 : 0), dynamicOffsets);
+                            gbuffer ? 0 : ((dynamic ? 1 : 0) + (full ? 1 : 0)), dynamicOffsets);
     vkCmdPushConstants(cb, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, 0, 128,
                        constants.data());
     VkDeviceSize zero = 0;
@@ -400,7 +424,8 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     VkBufferImageCopy copy{};
     copy.imageSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1};
     copy.imageExtent      = {64, 64, 1};
-    vkCmdCopyImageToBuffer(cb, images[0], VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, readback.handle, 1, &copy);
+    vkCmdCopyImageToBuffer(cb, images[gbuffer ? 2 : 0], VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, readback.handle, 1,
+                           &copy);
     VkMemoryBarrier barrier{VK_STRUCTURE_TYPE_MEMORY_BARRIER};
     barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
     barrier.dstAccessMask = VK_ACCESS_HOST_READ_BIT;
@@ -502,8 +527,8 @@ int main() {
         bool good = true;
         for (bool full : {false, true})
             for (bool offset : {false, true})
-                for (const char* mode :
-                     {"GENERATED", "VERTEX", "PUSH", "UBO", "SSBO", "MRT", "SAMPLER_VERTEX", "SAMPLER_ALL"})
+                for (const char* mode : {"GENERATED", "VERTEX", "PUSH", "UBO", "SSBO", "MRT", "SAMPLER_VERTEX",
+                                         "SAMPLER_ALL", "GBUFFER", "GBUFFER_VERTEX", "GBUFFER_EMBEDDED"})
                     for (int indices : {0, 16, 32}) {
                         if (std::strcmp(mode, "VERTEX") && indices != 32) continue;
                         try {
