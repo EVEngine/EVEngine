@@ -5,7 +5,7 @@ on:
       target:
         type: choice
         default: both
-        options: [both, linux, intel, dawn_full]
+        options: [both, linux, intel, intel_fresh, dawn_full]
 permissions:
   contents: read
   actions: read
@@ -244,3 +244,64 @@ jobs:
             ctest --test-dir build/webgpu-native \
               -R '^Graphics\.screenGetPixelAfterPresent$' \
               --no-tests=error --timeout 300 --output-on-failure
+
+  intel-fresh:
+    if: ${{ inputs.target == 'intel_fresh' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        first: [baseline, wait_idle, semaphore, small]
+    env:
+      UV_FIRST_MODE: ${{ matrix.first }}
+    runs-on: macos-15-intel
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533
+        with:
+          vulkan_version: '1.4.363.0'
+          cache: true
+          destination: ${{ runner.temp }}/VulkanSDK
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: EVEngine/third-party
+          ref: e7e0a476be19a05839add497c29482c372f2c484
+          path: probe-third-party
+          sparse-checkout: |
+            glm
+            medialoader
+            SDL2
+            VKBuilder
+            vulkan
+            vk_video
+            vma
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: assimp/assimp
+          ref: c35200e38ea8f058812b83de2ef32c6093b0ece2
+          path: probe-assimp
+          sparse-checkout: include
+      - name: Reproduce glTF frames through the existing Intel SDK
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENGINE_VULKAN_VALIDATION: '1'
+          MVK_CONFIG_LOG_LEVEL: '4'
+        run: |
+          set -euo pipefail
+          git -C probe-third-party submodule update --init --depth 1 medialoader SDL2 VKBuilder
+          gh run download 41299927015 --repo github.com/EVEngine/EVEngine --name sdk-macosx-x86_64 --dir "$RUNNER_TEMP/sdk-download"
+          unzip -q "$RUNNER_TEMP/sdk-download/eve-sdk-macosx-x86_64-v0.6.1.zip" -d "$RUNNER_TEMP/sdk"
+          sdk="$RUNNER_TEMP/sdk/eve-sdk/macosx-x86_64"
+          cmake -S .github/diagnostics/pr701-followup/sdk-plugin -B build/followup-plugin -DEVEngine_DIR="$sdk/cmake" -DPROBE_TP_DIR="$GITHUB_WORKSPACE/probe-third-party" -DPROBE_ASSIMP_DIR="$GITHUB_WORKSPACE/probe-assimp" -DCMAKE_BUILD_TYPE=Release
+          cmake --build build/followup-plugin --parallel 2
+          cp build/followup-plugin/pr701_probe.dylib .github/diagnostics/pr701-followup/sdk-game/
+          python3 .github/diagnostics/pr701-followup/run_sdk.py "$sdk/bin/eve"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: pr701-intel-fresh-${{ matrix.first }}
+          path: |
+            engine-probe*.log
+            engine-probe-sample.txt
