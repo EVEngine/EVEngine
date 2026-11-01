@@ -26,6 +26,7 @@ VkPhysicalDeviceMemoryProperties memoryProperties;
 VkPhysicalDeviceProperties       properties;
 VmaAllocator                     vmaAllocator{};
 bool                             useVma{};
+bool rawReadback{};
 bool                             depthMode{}, dynamicViewport{};
 VkBuffer borrowedVertex{}, borrowedIndex{};
 #ifdef PROBE_EMBEDDED
@@ -53,12 +54,14 @@ Buffer buffer(VkDeviceSize size, VkBufferUsageFlags usage, bool offset) {
     VkBufferCreateInfo ci{VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
     ci.size  = size;
     ci.usage = usage;
-    if (useVma) {
+    if (useVma && !(rawReadback && usage==VK_BUFFER_USAGE_TRANSFER_DST_BIT)) {
         VmaAllocationCreateInfo ai{};
         ai.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
         VmaAllocationInfo info{};
         VK(vmaCreateBuffer(vmaAllocator, &ci, &ai, &b.handle, &b.allocation, &info));
         b.memory = info.deviceMemory;
+        VkMemoryPropertyFlags flags{}; vmaGetAllocationMemoryProperties(vmaAllocator,b.allocation,&flags);
+        std::printf("VMA_BUFFER usage=%u bytes=%llu type=%u flags=%u offset=%llu size=%llu\n",usage,(unsigned long long)size,info.memoryType,flags,(unsigned long long)info.offset,(unsigned long long)info.size);
         return b;
     }
     VK(vkCreateBuffer(device, &ci, nullptr, &b.handle));
@@ -675,6 +678,22 @@ extern "C" int engineRawProbe(VkPhysicalDevice pd, VkDevice dev, uint32_t family
     std::puts("ENGINE_ALLOCATOR_FRESH_START");
     for (const char* mode : {"VERTEX","PUSH","GBUFFER_EMBEDDED"})
         failures+=!render(mode,false,false,32);
+    rawReadback=true;
+    std::puts("ENGINE_ALLOCATOR_RAW_READBACK_START");
+    for (const char* mode : {"GENERATED","VERTEX","PUSH","GBUFFER_EMBEDDED"})
+        failures+=!render(mode,false,false,32);
+    rawReadback=false;
+    VmaAllocatorInfo allocatorInfo{};vmaGetAllocatorInfo(allocator,&allocatorInfo);
+    std::printf("ENGINE_ALLOCATOR_INFO instance=%p physical=%p device=%p matches=%d\n",(void*)allocatorInfo.instance,(void*)allocatorInfo.physicalDevice,(void*)allocatorInfo.device, allocatorInfo.device==device && allocatorInfo.physicalDevice==physical);
+    VmaAllocatorCreateInfo aci{};
+    aci.instance=allocatorInfo.instance;aci.physicalDevice=physical;aci.device=device;aci.vulkanApiVersion=VK_API_VERSION_1_0;
+    VmaVulkanFunctions funcs{}; funcs.vkGetInstanceProcAddr=vkGetInstanceProcAddr;funcs.vkGetDeviceProcAddr=vkGetDeviceProcAddr;
+    aci.pVulkanFunctions=&funcs;
+    VK(vmaCreateAllocator(&aci,&vmaAllocator));
+    std::puts("ENGINE_NEW_ALLOCATOR_START");
+    for(const char* mode : {"GENERATED","VERTEX","PUSH","GBUFFER_EMBEDDED"})
+        failures+=!render(mode,false,false,32);
+    vmaDestroyAllocator(vmaAllocator);
     useVma=false;
     vkDestroyCommandPool(device,pool,nullptr);
     return failures;
