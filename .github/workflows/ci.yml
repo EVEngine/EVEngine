@@ -5,7 +5,7 @@ on:
       target:
         type: choice
         default: both
-        options: [both, linux, intel, intel_fresh, dawn_full]
+        options: [both, linux, intel, intel_fresh, dawn_full, intel_full]
 permissions:
   contents: read
   actions: read
@@ -305,3 +305,101 @@ jobs:
           path: |
             engine-probe*.log
             engine-probe-sample.txt
+
+  macos-x86_64:
+    name: macOS x86_64 (${{ matrix.configuration }}, build + test)
+    if: ${{ inputs.target == 'intel_full' }}
+    env:
+      MVK_CONFIG_VK_SEMAPHORE_SUPPORT_STYLE: '0'
+    runs-on: macos-15-intel
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [debug, release]
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+
+      - name: Verify native Intel runner
+        timeout-minutes: 5
+        run: test "$(uname -s)" = Darwin && test "$(uname -m)" = x86_64
+
+      - name: Install build tools
+        timeout-minutes: 10
+        run: brew install ninja
+
+      - name: Install Vulkan SDK (MoltenVK)
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          destination: ${{ runner.temp }}/VulkanSDK
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve Vulkan SDK paths
+        timeout-minutes: 5
+        run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+
+      - name: Build macOS x86_64
+        timeout-minutes: 140
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          mkdir -p build
+          log="build/macosx-x86_64${suffix}.log"
+          if make "build/macosx-x86_64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF" >"$log" 2>&1; then
+            tail -n 30 "$log"
+          else
+            awk '/error:|FAILED:|Undefined symbols|^ld:/ {remaining=12} remaining>0 {if (shown++ < 240) print; remaining--}' "$log"
+            tail -n 40 "$log"
+            exit 1
+          fi
+
+      - name: Validate Intel macOS rendering before the full suite
+        timeout-minutes: 20
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_VULKAN_VALIDATION: "1"
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          # Cover independent paths in one bounded pass, so one blank map does
+          # not hide texture, skinning, frame-slot or compute failures.
+          ctest --test-dir "build/macosx-x86_64${suffix}" --output-on-failure -j 1 \
+            --timeout 120 --no-tests=error \
+            -R '^(map\.render\.orthoAndIsoPreview|spritestack\.render\.(pure2DStack|rotationChangesPixels)|model3d\.render\.gltfEmbeddedUvOrientation|animation\.skinned\.render\.bindPose|graphics\.frameRecording\.fxaaSlotReuseResizeAndPersistentCanvas|fluids\.ocean\.gpuSpectrumMatchesCpuAndRejectsStaleFrames|graphics\.resources\.customProgramsDoNotReserveUnusedMaterialSamplers|procgen\.roguelike\.bothLBendsConnectAllRooms)$'
+
+      - name: Run native Intel macOS unit tests
+        timeout-minutes: 150
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          ALSOFT_DRIVERS: "null"
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          # Share the virtual GPU between one test process at a time.
+          make "test/macosx-x86_64${suffix}" JOBS=4 CTEST_JOBS=1 CTEST_REPEAT='' LABEL_FILTER='' \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Upload Intel macOS build diagnostics
+        if: failure()
+        timeout-minutes: 10
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: macosx-x86_64-${{ matrix.configuration }}-build-logs
+          path: |
+            build/macosx-x86_64*.log
+            build/macosx-x86_64*/Testing/Temporary/
+          if-no-files-found: ignore
+
