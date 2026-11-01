@@ -32,6 +32,12 @@
     "graphics_texture_mips.cpp"
   ],
   "cases": {
+    "render-window": [
+      "graphics.raytracing.path_scene.pending_frame_preserves_snapshot",
+      "graphics.raytracing.path_scene.runtime_mode",
+      "graphics.raytracing.path_scene.runtime_benchmark",
+      "graphics.raytracing.path_scene.gallery_showcase"
+    ],
     "runtime-lifecycle": [
       "gpgpu.module.create",
       "gpgpu.procgen.transformChainRejectsInvalidLength"
@@ -55,6 +61,8 @@
 
 // Contract section: action prefab runtime
 #include "PrivateTestScope.h"
+#include "common/GpuTimer.h"
+#include "common/Profile.h"
 #include "zeroerr/assert.h"
 
 #include <filesystem>
@@ -1465,6 +1473,9 @@ using namespace eve::fluids;
 #include "procgen/PointCompute.h"
 #include "procgen/PointGraph.h"
 #include "window/Window.h"
+#ifndef EVENGINE_WEBGPU
+#include "graphics/vulkan/Graphics.h"
+#endif
 // gpgpu.cpp
 namespace test_gpgpu {
 using namespace eve;
@@ -4089,6 +4100,680 @@ TEST_CASE("graphics.raytracing.reflectionHitVisibility") {
 }
 }  // namespace test_graphics_raytracing_alignment
 
+#include "window/Window.h"
+
+TEST_CASE("graphics.raytracing.path_scene.pending_frame_preserves_snapshot") {
+    using namespace eve::graphics;
+    REQUIRE(eve::image::Image::create() != nullptr);
+    auto                       *window = eve::window::Window::create();
+    auto                       *gfx    = Graphics::create();
+    eve::window::WindowSettings settings;
+    settings.width  = 128;
+    settings.height = 128;
+    REQUIRE(window->setWindowSettings(settings));
+    auto *rt = eve::cap::query<IRayTracing>();
+    if (!rt || !rt->isAvailable()) {
+        std::fprintf(stderr, "Pending-frame path probe: hardware/provider unavailable\n");
+        return;
+    }
+    const std::array<glm::vec3, 3> positions{{{-3.f, -3.f, 0.5f}, {3.f, -3.f, 0.5f}, {0.f, 3.f, 0.5f}}};
+    const std::array<uint32_t, 3>  indices{0, 1, 2};
+    PathGeometry                   geometry{positions, {}, indices, 0};
+    PathInstance                   instance;
+    PathMaterial                   material;
+    material.emission = {0.25f, 0.5f, 1.f};
+    PathSceneDescription scene{std::span(&geometry, 1), std::span(&instance, 1), std::span(&material, 1)};
+    auto                 prepared = rt->preparePathScene(gfx, scene);
+    REQUIRE(prepared.ok());
+    auto          activeScene = prepared.value();
+    auto         *dest        = gfx->newHDRCanvas(16, 16);
+    PathTraceView view;
+    view.eye        = {0.f, 0.f, -1.f};
+    view.maxBounces = 0;
+#ifndef EVENGINE_WEBGPU
+    auto *vkGraphics = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    REQUIRE(vkGraphics != nullptr);
+    REQUIRE(vkGraphics->recordingPresentSequence() == 0);
+    const auto priorSubmission = vkGraphics->submittedPresentSequence();
+#endif
+    auto output = rt->preparePathFrame(activeScene, 16, 16);
+    REQUIRE(output.ok());
+    gfx->setScreenReadbackEnabled(true);
+    gfx->begin3DFrame();
+#ifndef EVENGINE_WEBGPU
+    const auto firstSequence = vkGraphics->recordingPresentSequence();
+    REQUIRE(firstSequence > priorSubmission);
+    REQUIRE(vkGraphics->submittedPresentSequence() == priorSubmission);
+#endif
+    auto rejectedPrepare = rt->preparePathScene(gfx, scene);
+    REQUIRE(!rejectedPrepare.ok());
+    auto rejectedUpdate = rt->updatePathInstances(activeScene, scene.instances);
+    REQUIRE(!rejectedUpdate.ok());
+    auto rejectedRender = rt->renderPaths(activeScene, dest, view);
+    REQUIRE(!rejectedRender.ok());
+    gfx->setCanvas(dest);
+    gfx->setCanvas(nullptr);
+    auto recorded = rt->recordPathFrame(activeScene, output.value(), view);
+    REQUIRE(recorded.ok());
+    auto duplicate = rt->recordPathFrame(activeScene, output.value(), view);
+    REQUIRE(!duplicate.ok());
+    gfx->drawTexturedRectShaderUV(recorded.value(), nullptr, 0.f, 0.f, 128.f, 128.f, 0.f, 0.f, 1.f, 1.f,
+                                  Color(1.f, 1.f, 1.f, 1.f));
+    gfx->present();
+    const auto displayed = gfx->getPixel(64, 64);
+    REQUIRE(displayed.b > 0.9f);
+    REQUIRE(displayed.g > displayed.r);
+    REQUIRE(displayed.b > displayed.g);
+#ifndef EVENGINE_WEBGPU
+    REQUIRE(vkGraphics->recordingPresentSequence() == 0);
+    REQUIRE(vkGraphics->submittedPresentSequence() == firstSequence);
+    auto sequence = firstSequence;
+    for (int frame = 0; frame < 4; ++frame) {
+        if (frame == 2) {
+            material.roughness = 0.7f;
+            auto replacement   = rt->preparePathScene(gfx, scene);
+            REQUIRE(replacement.ok());
+            activeScene         = replacement.value();
+            auto replacedOutput = rt->preparePathFrame(activeScene, 16, 16);
+            REQUIRE(replacedOutput.ok());
+            REQUIRE(replacedOutput.value().generation != output.value().generation);
+            output = std::move(replacedOutput);
+        }
+        auto reused = rt->preparePathFrame(activeScene, 16, 16);
+        REQUIRE(reused.ok());
+        REQUIRE(reused.value().generation == output.value().generation);
+        view.firstSample = view.historySamples = uint32_t(frame < 2 ? frame + 1 : frame - 2);
+        view.denoise                           = frame % 2 ? PathDenoise::Spatial : PathDenoise::None;
+        gfx->begin3DFrame();
+        const auto next = vkGraphics->recordingPresentSequence();
+        REQUIRE(next > sequence);
+        REQUIRE(vkGraphics->submittedPresentSequence() == sequence);
+        gfx->setCanvas(dest);
+        gfx->setCanvas(nullptr);
+        auto continued = rt->recordPathFrame(activeScene, output.value(), view);
+        REQUIRE(continued.ok());
+        if (view.denoise == PathDenoise::None) REQUIRE(continued.value() == recorded.value());
+        gfx->drawTexturedRectShaderUV(continued.value(), nullptr, 0.f, 0.f, 128.f, 128.f, 0.f, 0.f, 1.f, 1.f,
+                                      Color(1.f, 1.f, 1.f, 1.f));
+        gfx->present();
+        REQUIRE(gfx->getPixel(64, 64).b > 0.9f);
+        REQUIRE(vkGraphics->submittedPresentSequence() == next);
+        sequence = next;
+    }
+#endif
+    auto resized = rt->preparePathFrame(activeScene, 32, 32);
+    REQUIRE(resized.ok());
+    REQUIRE(resized.value().generation != output.value().generation);
+    gfx->begin3DFrame();
+    gfx->setCanvas(dest);
+    gfx->setCanvas(nullptr);
+    view.firstSample = view.historySamples = 0;
+    auto stale                             = rt->recordPathFrame(activeScene, output.value(), view);
+    REQUIRE(!stale.ok());
+    auto fresh = rt->recordPathFrame(activeScene, resized.value(), view);
+    REQUIRE(fresh.ok());
+    gfx->drawTexturedRectShaderUV(fresh.value(), nullptr, 0.f, 0.f, 128.f, 128.f, 0.f, 0.f, 1.f, 1.f,
+                                  Color(1.f, 1.f, 1.f, 1.f));
+    gfx->present();
+    REQUIRE(gfx->getPixel(64, 64).b > 0.9f);
+    auto rendered = rt->renderPaths(activeScene, dest, view);
+    REQUIRE(rendered.ok());
+    std::unique_ptr<eve::image::ImageData> image(dest->newHDRImageData());
+    REQUIRE(image != nullptr);
+    REQUIRE(std::abs(image->getPixel(8, 8).b - 1.f) < 0.002f);
+}
+
+// Contract section: path-tracing sampling on the Vulkan device
+TEST_CASE("graphics.raytracing.path_scene.emission_and_lifetime") {
+    using namespace eve::graphics;
+    REQUIRE(eve::image::Image::create() != nullptr);
+    auto *gfx = Graphics::create();
+    gfx->initHeadless(32, 32);
+    auto *rt = eve::cap::query<IRayTracing>();
+    if (!rt || !rt->isAvailable()) {
+        std::fprintf(stderr, "Path scene probe: hardware/provider unavailable; no path dispatch executed\n");
+        return;
+    }
+    const std::array<glm::vec3, 4> positions{
+        {{-2.f, -2.f, 0.5f}, {2.f, -2.f, 0.5f}, {2.f, 2.f, 0.5f}, {-2.f, 2.f, 0.5f}}};
+    const std::array<uint32_t, 6> indices{0, 1, 2, 0, 2, 3};
+    PathGeometry                  geometry{positions, {}, indices, 0};
+    PathInstance                  instance;
+    PathMaterial                  material;
+    material.emission = {0.25f, 0.5f, 1.f};
+    PathSceneDescription scene{std::span(&geometry, 1), std::span(&instance, 1), std::span(&material, 1)};
+    auto                 prepared = rt->preparePathScene(gfx, scene);
+    REQUIRE(prepared.ok());
+    auto          token = prepared.value();
+    auto         *dest  = gfx->newHDRCanvas(32, 32);
+    PathTraceView view;
+    view.eye        = {0.f, 0.f, -1.f};
+    view.maxBounces = 0;
+    auto rendered   = rt->renderPaths(token, dest, view);
+    REQUIRE(rendered.ok());
+    view.denoise          = PathDenoise::Spatial;
+    auto filteredEmission = rt->renderPaths(token, dest, view);
+    REQUIRE(filteredEmission.ok());
+    view.denoise = PathDenoise::None;
+    std::unique_ptr<eve::image::ImageData> image(dest->newHDRImageData());
+    REQUIRE(image != nullptr);
+    for (const auto pixel : {image->getPixel(8, 8), image->getPixel(24, 24)}) {
+        REQUIRE(std::abs(pixel.r - 0.25f) < 0.002f);
+        REQUIRE(std::abs(pixel.g - 0.5f) < 0.002f);
+        REQUIRE(std::abs(pixel.b - 1.f) < 0.002f);
+        REQUIRE(std::abs(pixel.a - 1.f) < 0.002f);
+    }
+    view.firstSample    = 1;
+    view.historySamples = 1;
+    auto accumulated    = rt->renderPaths(token, dest, view);
+    REQUIRE(accumulated.ok());
+    auto repeated = rt->renderPaths(token, dest, view);
+    REQUIRE(!repeated.ok());
+    geometry.material = 99;
+    auto rejected     = rt->preparePathScene(gfx, scene);
+    REQUIRE(!rejected.ok());
+    geometry.material   = 0;
+    view.firstSample    = 2;
+    view.historySamples = 2;
+    auto preserved      = rt->renderPaths(token, dest, view);
+    REQUIRE(preserved.ok());
+    auto unchanged = rt->preparePathScene(gfx, scene);
+    REQUIRE(unchanged.ok());
+    REQUIRE(unchanged.value().generation == token.generation);
+    material.roughness = 0.7f;
+    auto replacement   = rt->preparePathScene(gfx, scene);
+    REQUIRE(replacement.ok());
+    auto stale = rt->renderPaths(token, dest, PathTraceView{});
+    REQUIRE(!stale.ok());
+    material.roughness = 1.f;
+    material.emission  = glm::vec3(0.f);
+    material.baseColor = {0.8f, 0.2f, 0.1f};
+    auto diffuseScene  = rt->preparePathScene(gfx, scene);
+    REQUIRE(diffuseScene.ok());
+    view.firstSample    = 0;
+    view.historySamples = 0;
+    view.samples        = 256;
+    view.maxBounces     = 2;
+    view.environment    = glm::vec3(1.f);
+    auto diffuse        = rt->renderPaths(diffuseScene.value(), dest, view);
+    REQUIRE(diffuse.ok());
+    std::unique_ptr<eve::image::ImageData> diffuseImage(dest->newHDRImageData());
+    REQUIRE(diffuseImage != nullptr);
+    glm::vec3 mean(0.f);
+    for (int y = 12; y < 20; ++y)
+        for (int x = 12; x < 20; ++x) {
+            const auto pixel = diffuseImage->getPixel(x, y);
+            mean += glm::vec3(pixel.r, pixel.g, pixel.b) / 64.f;
+        }
+    REQUIRE(mean.r > 0.3f);
+    REQUIRE(mean.r < 1.f);
+    REQUIRE(mean.g > 0.05f);
+    REQUIRE(mean.b > 0.02f);
+    REQUIRE(mean.r > 2.f * mean.g);
+    REQUIRE(mean.g > mean.b);
+    std::fprintf(stderr, "Path diffuse mean: %.5f %.5f %.5f\n", mean.r, mean.g, mean.b);
+    view.samples   = 1;
+    auto rawSample = rt->renderPaths(diffuseScene.value(), dest, view);
+    REQUIRE(rawSample.ok());
+    std::unique_ptr<eve::image::ImageData> noisyImage(dest->newHDRImageData());
+    REQUIRE(noisyImage != nullptr);
+    view.denoise        = PathDenoise::Spatial;
+    auto filteredSample = rt->renderPaths(diffuseScene.value(), dest, view);
+    REQUIRE(filteredSample.ok());
+    std::unique_ptr<eve::image::ImageData> filteredImage(dest->newHDRImageData());
+    REQUIRE(filteredImage != nullptr);
+    double rawError = 0., filteredError = 0.;
+    for (int y = 4; y < 28; ++y)
+        for (int x = 4; x < 28; ++x) {
+            const auto      reference = diffuseImage->getPixel(x, y);
+            const auto      raw       = noisyImage->getPixel(x, y);
+            const auto      filtered  = filteredImage->getPixel(x, y);
+            const glm::vec3 target(reference.r, reference.g, reference.b);
+            const glm::vec3 rawDelta      = glm::vec3(raw.r, raw.g, raw.b) - target;
+            const glm::vec3 filteredDelta = glm::vec3(filtered.r, filtered.g, filtered.b) - target;
+            rawError += glm::dot(rawDelta, rawDelta);
+            filteredError += glm::dot(filteredDelta, filteredDelta);
+        }
+    REQUIRE(std::isfinite(filteredError));
+    REQUIRE(rawError > 0.);
+    REQUIRE(filteredError < rawError * 0.7);
+    std::fprintf(stderr, "Path spatial filter squared error: %.6f -> %.6f\n", rawError, filteredError);
+    view.denoise = PathDenoise::None;
+    view.samples = 256;
+    // The emitter is behind the eye, so it cannot contribute as a primary hit.
+    // Lighting must reach the visible receiver through scene-space transport.
+    std::array<PathMaterial, 2> areaMaterials{material, PathMaterial{}};
+    areaMaterials[1].baseColor = glm::vec3(0.f);
+    std::array<PathGeometry, 2> areaGeometry{geometry, geometry};
+    areaGeometry[1].material = 1;
+    std::array<PathInstance, 2> areaInstances{PathInstance{}, PathInstance{}};
+    areaInstances[1].geometry = 1;
+    areaInstances[1].transform =
+        glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -5.f)) * glm::scale(glm::mat4(1.f), glm::vec3(0.25f));
+    PathSceneDescription areaScene{areaGeometry, areaInstances, areaMaterials};
+    // A zero-strength analytic entry shifts area-light indices without changing
+    // their physical contribution, exercising the mixed-light MIS addressing.
+    PathLight areaIndexOffset;
+    areaIndexOffset.strength = glm::vec3(0.f);
+    areaScene.lights         = std::span(&areaIndexOffset, 1);
+    view.environment         = glm::vec3(0.f);
+    view.samples             = 128;
+    std::array<glm::vec3, 2> areaMeans{};
+    PathSceneToken           areaToken;
+    for (size_t variant = 0; variant < areaMeans.size(); ++variant) {
+        areaMaterials[1].emission = glm::vec3(4.f * float(variant + 1));
+        auto areaPrepared         = rt->preparePathScene(gfx, areaScene);
+        REQUIRE(areaPrepared.ok());
+        areaToken         = areaPrepared.value();
+        auto areaRendered = rt->renderPaths(areaPrepared.value(), dest, view);
+        REQUIRE(areaRendered.ok());
+        std::unique_ptr<eve::image::ImageData> areaImage(dest->newHDRImageData());
+        REQUIRE(areaImage != nullptr);
+        for (int y = 12; y < 20; ++y)
+            for (int x = 12; x < 20; ++x) {
+                const auto pixel = areaImage->getPixel(x, y);
+                REQUIRE(std::isfinite(pixel.r));
+                REQUIRE(std::isfinite(pixel.g));
+                REQUIRE(std::isfinite(pixel.b));
+                areaMeans[variant] += glm::vec3(pixel.r, pixel.g, pixel.b) / 64.f;
+            }
+    }
+    REQUIRE(areaMeans[0].r > 0.005f);
+    REQUIRE(areaMeans[0].r > 2.f * areaMeans[0].g);
+    for (int channel = 0; channel < 3; ++channel)
+        REQUIRE(std::abs(areaMeans[1][channel] - 2.f * areaMeans[0][channel]) < 0.001f);
+    std::fprintf(stderr, "Offscreen area light means: %.6f / %.6f (red)\n", areaMeans[0].r, areaMeans[1].r);
+    areaInstances[1].transform =
+        glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, -5.f)) * glm::scale(glm::mat4(1.f), glm::vec3(0.5f));
+    auto instanceUpdate = rt->updatePathInstances(areaToken, areaInstances);
+    REQUIRE(instanceUpdate.ok());
+    auto oldInstanceToken = rt->renderPaths(areaToken, dest, view);
+    REQUIRE(!oldInstanceToken.ok());
+    auto invalidInstances        = areaInstances;
+    invalidInstances[1].geometry = 99;
+    auto failedUpdate            = rt->updatePathInstances(instanceUpdate.value(), invalidInstances);
+    REQUIRE(!failedUpdate.ok());
+    // Alternate retired snapshots, including growth then shrinkage. The last
+    // update restores the reference scene without an intervening render.
+    for (int update = 0; update < 8; ++update) {
+        std::vector<eve::graphics::PathInstance> changing(areaInstances.begin(), areaInstances.end());
+        if (update % 2 == 0) {
+            auto extra      = areaInstances[0];
+            extra.transform = glm::translate(glm::mat4(1.f), glm::vec3(1000.f));
+            changing.insert(changing.end(), 64, extra);
+        }
+        instanceUpdate = rt->updatePathInstances(instanceUpdate.value(), changing);
+        REQUIRE(instanceUpdate.ok());
+    }
+    auto updatedFrame = rt->renderPaths(instanceUpdate.value(), dest, view);
+    REQUIRE(updatedFrame.ok());
+    std::unique_ptr<eve::image::ImageData> updatedImage(dest->newHDRImageData());
+    REQUIRE(updatedImage != nullptr);
+    const auto updatedPixel = updatedImage->getPixel(16, 16);
+    // Force an independent build; identical prepare inputs now intentionally reuse the scene.
+    rt->detachFromGraphics();
+    auto rebuiltScene = rt->preparePathScene(gfx, areaScene);
+    REQUIRE(rebuiltScene.ok());
+    auto rebuiltFrame = rt->renderPaths(rebuiltScene.value(), dest, view);
+    REQUIRE(rebuiltFrame.ok());
+    std::unique_ptr<eve::image::ImageData> rebuiltImage(dest->newHDRImageData());
+    REQUIRE(rebuiltImage != nullptr);
+    const auto rebuiltPixel = rebuiltImage->getPixel(16, 16);
+    REQUIRE(std::abs(updatedPixel.r - rebuiltPixel.r) < 0.001f);
+    REQUIRE(std::abs(updatedPixel.g - rebuiltPixel.g) < 0.001f);
+    REQUIRE(std::abs(updatedPixel.b - rebuiltPixel.b) < 0.001f);
+    REQUIRE(updatedPixel.r > areaMeans[1].r);
+    PathLight analytic;
+    analytic.strength = glm::vec3(8.f);
+    scene.lights      = std::span(&analytic, 1);
+    view.environment  = glm::vec3(0.f);
+    view.samples      = 256;
+    std::array<float, 4> analyticRed{};
+    for (int variant = 0; variant < 4; ++variant) {
+        analytic.kind             = variant < 2 ? PathLightKind::Point : PathLightKind::Directional;
+        analytic.position         = {0.f, 0.f, variant == 0 ? -1.5f : -3.5f};
+        analytic.directionToLight = {0.f, 0.f, variant == 2 ? -2.f : -7.f};
+        auto lightScene           = rt->preparePathScene(gfx, scene);
+        REQUIRE(lightScene.ok());
+        auto lightUpdate = rt->updatePathInstances(lightScene.value(), scene.instances);
+        REQUIRE(lightUpdate.ok());
+        // Invalid light input must preserve the published light snapshot.
+        const auto strength = analytic.strength;
+        analytic.strength.x = -1.f;
+        auto badLight       = rt->preparePathScene(gfx, scene);
+        REQUIRE(!badLight.ok());
+        analytic.strength = strength;
+        auto lightFrame   = rt->renderPaths(lightUpdate.value(), dest, view);
+        REQUIRE(lightFrame.ok());
+        std::unique_ptr<eve::image::ImageData> lightImage(dest->newHDRImageData());
+        REQUIRE(lightImage != nullptr);
+        analyticRed[variant] = lightImage->getPixel(16, 16).r;
+        REQUIRE(std::isfinite(analyticRed[variant]));
+        REQUIRE(analyticRed[variant] > 0.01f);
+    }
+    REQUIRE(std::abs(analyticRed[0] / analyticRed[1] - 4.f) < 0.1f);
+    REQUIRE(std::abs(analyticRed[2] - analyticRed[3]) < 0.001f);
+    analytic.directionToLight = glm::vec3(0.f);
+    auto zeroDirection        = rt->preparePathScene(gfx, scene);
+    REQUIRE(!zeroDirection.ok());
+    analytic.kind     = PathLightKind::Spot;
+    analytic.position = {0.f, 0.f, -1.5f};
+    analytic.cosOuter = 0.8f;
+    analytic.cosInner = 0.95f;
+    std::array<float, 3> spotRed{};
+    for (size_t variant = 0; variant < spotRed.size(); ++variant) {
+        analytic.beamDirection = variant == 0
+                                     ? glm::vec3(0.f, 0.f, 1.f)
+                                     : (variant == 1 ? glm::vec3(0.5f, 0.f, 0.8660254f) : glm::vec3(1.f, 0.f, 0.f));
+        auto spotScene         = rt->preparePathScene(gfx, scene);
+        REQUIRE(spotScene.ok());
+        auto spotFrame = rt->renderPaths(spotScene.value(), dest, view);
+        REQUIRE(spotFrame.ok());
+        std::unique_ptr<eve::image::ImageData> spotImage(dest->newHDRImageData());
+        REQUIRE(spotImage != nullptr);
+        spotRed[variant] = spotImage->getPixel(16, 16).r;
+    }
+    REQUIRE(std::abs(spotRed[0] - analyticRed[0]) < 0.002f);
+    REQUIRE(spotRed[1] > 0.01f * spotRed[0]);
+    REQUIRE(spotRed[1] < 0.6f * spotRed[0]);
+    REQUIRE(spotRed[2] < 0.0001f);
+    analytic.cosOuter = 0.99f;
+    auto invalidCone  = rt->preparePathScene(gfx, scene);
+    REQUIRE(!invalidCone.ok());
+    scene.lights                                 = {};
+    const auto                     originalColor = material.baseColor;
+    std::array<glm::vec3, 4>       texels;
+    PathColorTexture               colorTexture{2, 2, texels};
+    std::array<glm::vec2, 4>       uv;
+    const std::array<glm::vec2, 4> coordinates{{{0.25f, 0.25f}, {0.75f, 0.25f}, {0.5f, 0.5f}, {-0.25f, 0.25f}}};
+    const std::array<glm::vec3, 4> expectedColors{
+        {{1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.5f, 0.5f, 0.5f}, {0.f, 1.f, 0.f}}};
+    view.environment = glm::vec3(1.f);
+    for (size_t variant = 0; variant < coordinates.size(); ++variant) {
+        texels = {{{1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, 1.f}, {1.f, 1.f, 1.f}}};
+        uv.fill(coordinates[variant]);
+        geometry.texcoords        = uv;
+        scene.colorTextures       = std::span(&colorTexture, 1);
+        material.baseColor        = glm::vec3(1.f);
+        material.baseColorTexture = 0;
+        auto textured             = rt->preparePathScene(gfx, scene);
+        REQUIRE(textured.ok());
+        geometry.texcoords = {};
+        auto missingUv     = rt->preparePathScene(gfx, scene);
+        REQUIRE(!missingUv.ok());
+        geometry.texcoords = uv;
+        // Caller storage may change after preparation; updates retain the copy.
+        texels.fill(glm::vec3(0.f));
+        auto textureUpdate = rt->updatePathInstances(textured.value(), scene.instances);
+        REQUIRE(textureUpdate.ok());
+        auto texturedFrame = rt->renderPaths(textureUpdate.value(), dest, view);
+        REQUIRE(texturedFrame.ok());
+        std::unique_ptr<eve::image::ImageData> textureImage(dest->newHDRImageData());
+        REQUIRE(textureImage != nullptr);
+        const auto texturePixel   = textureImage->getPixel(16, 16);
+        material.baseColorTexture = UINT32_MAX;
+        material.baseColor        = expectedColors[variant];
+        auto colorReference       = rt->preparePathScene(gfx, scene);
+        REQUIRE(colorReference.ok());
+        auto referenceFrame = rt->renderPaths(colorReference.value(), dest, view);
+        REQUIRE(referenceFrame.ok());
+        std::unique_ptr<eve::image::ImageData> referenceImage(dest->newHDRImageData());
+        REQUIRE(referenceImage != nullptr);
+        const auto referencePixel = referenceImage->getPixel(16, 16);
+        REQUIRE(std::abs(texturePixel.r - referencePixel.r) < 0.002f);
+        REQUIRE(std::abs(texturePixel.g - referencePixel.g) < 0.002f);
+        REQUIRE(std::abs(texturePixel.b - referencePixel.b) < 0.002f);
+    }
+    material.baseColor  = originalColor;
+    geometry.texcoords  = {};
+    scene.colorTextures = {};
+    std::vector<float> meshPositions;
+    for (const auto &position : positions)
+        meshPositions.insert(meshPositions.end(), {position.x, position.y, position.z});
+    auto *sourceMesh = gfx->newMeshFromArrays(meshPositions.data(), nullptr, nullptr, 4, indices.data(), 6);
+    REQUIRE(sourceMesh != nullptr);
+    PathGeometry engineGeometry;
+    engineGeometry.sourceMesh = sourceMesh;
+    PathMaterial engineMaterial;
+    engineMaterial.emission = {0.25f, 0.5f, 1.f};
+    PathSceneDescription engineScene{std::span(&engineGeometry, 1), std::span(&instance, 1),
+                                     std::span(&engineMaterial, 1)};
+    auto                 enginePrepared = rt->preparePathScene(gfx, engineScene);
+    REQUIRE(enginePrepared.ok());
+    engineGeometry.positions = positions;
+    auto mixedSources        = rt->preparePathScene(gfx, engineScene);
+    REQUIRE(!mixedSources.ok());
+    engineGeometry.positions = {};
+    for (size_t i = 0; i < meshPositions.size(); i += 3) meshPositions[i] += 100.f;
+    REQUIRE(gfx->updateMeshVertices(sourceMesh, meshPositions.data(), nullptr, nullptr, 4, nullptr, 0));
+    view.environment   = glm::vec3(0.f);
+    view.maxBounces    = 0;
+    view.samples       = 1;
+    auto capturedFrame = rt->renderPaths(enginePrepared.value(), dest, view);
+    REQUIRE(capturedFrame.ok());
+    std::unique_ptr<eve::image::ImageData> capturedImage(dest->newHDRImageData());
+    REQUIRE(capturedImage != nullptr);
+    REQUIRE(std::abs(capturedImage->getPixel(16, 16).b - 1.f) < 0.002f);
+    auto recaptured = rt->preparePathScene(gfx, engineScene);
+    REQUIRE(recaptured.ok());
+    REQUIRE(gfx->releaseMesh(sourceMesh));
+    engineGeometry.sourceMesh = nullptr;
+    auto recapturedFrame      = rt->renderPaths(recaptured.value(), dest, view);
+    REQUIRE(recapturedFrame.ok());
+    std::unique_ptr<eve::image::ImageData> recapturedImage(dest->newHDRImageData());
+    REQUIRE(recapturedImage != nullptr);
+    REQUIRE(recapturedImage->getPixel(16, 16).b < 0.002f);
+    if (const char *output = std::getenv("EVE_PT_BENCHMARK_CSV")) {
+        const auto setting = [&](const char *name, int fallback, int maximum) {
+            const char *text = std::getenv(name);
+            if (!text) return fallback;
+            char      *end   = nullptr;
+            const long value = std::strtol(text, &end, 10);
+            REQUIRE(end != text);
+            REQUIRE(*end == '\0');
+            REQUIRE(value > 0);
+            REQUIRE(value <= maximum);
+            return int(value);
+        };
+        const int              columns       = setting("EVE_PT_BENCHMARK_COLUMNS", 100, 2000);
+        const int              rows          = setting("EVE_PT_BENCHMARK_ROWS", 50, 2000);
+        const int              width         = setting("EVE_PT_BENCHMARK_WIDTH", 1920, 4096);
+        const int              height        = setting("EVE_PT_BENCHMARK_HEIGHT", 1080, 4096);
+        const int              warmup        = setting("EVE_PT_BENCHMARK_WARMUP", 120, 10000);
+        const int              frames        = setting("EVE_PT_BENCHMARK_FRAMES", 600, 10000);
+        const int              repeats       = setting("EVE_PT_BENCHMARK_REPEATS", 3, 20);
+        const char            *motionSetting = std::getenv("EVE_PT_BENCHMARK_UPDATE_INSTANCES");
+        const bool             moving        = motionSetting && std::string_view(motionSetting) == "1";
+        std::vector<glm::vec3> grid;
+        std::vector<uint32_t>  gridIndices;
+        grid.reserve(size_t(columns + 1) * size_t(rows + 1));
+        gridIndices.reserve(size_t(columns) * size_t(rows) * 6);
+        for (int y = 0; y <= rows; ++y)
+            for (int x = 0; x <= columns; ++x)
+                grid.emplace_back(-2.f + 4.f * float(x) / float(columns), -2.f + 4.f * float(y) / float(rows), 0.5f);
+        for (int y = 0; y < rows; ++y)
+            for (int x = 0; x < columns; ++x) {
+                const auto a = uint32_t(y * (columns + 1) + x);
+                const auto b = a + uint32_t(columns + 1);
+                gridIndices.insert(gridIndices.end(), {a, a + 1, b + 1, a, b + 1, b});
+            }
+        geometry.positions        = grid;
+        geometry.indices          = gridIndices;
+        const auto start          = std::chrono::steady_clock::now();
+        auto       benchmarkScene = rt->preparePathScene(gfx, scene);
+        REQUIRE(benchmarkScene.ok());
+        auto         benchmarkToken = benchmarkScene.value();
+        PathInstance movingInstance;
+        const double prepareMs =
+            std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
+        auto *benchmarkCanvas = gfx->newHDRCanvas(width, height);
+        REQUIRE(benchmarkCanvas != nullptr);
+        PathTraceView batch;
+        batch.eye                  = view.eye;
+        batch.environment          = glm::vec3(1.f);
+        batch.seed                 = 0x12345678u;
+        batch.maxBounces           = 4;
+        const char *denoiseSetting = std::getenv("EVE_PT_BENCHMARK_SPATIAL_DENOISE");
+        const bool  spatial        = denoiseSetting && std::string_view(denoiseSetting) == "1";
+        batch.denoise              = spatial ? PathDenoise::Spatial : PathDenoise::None;
+        const std::string_view outputUtf8(output);
+        const std::u8string    outputPath(outputUtf8.begin(), outputUtf8.end());
+        std::ofstream          csv{std::filesystem::path(outputPath)};
+        REQUIRE(csv.good());
+        csv << "schema_version,scene,triangles,instances,width,height,spp,bounces,repeat,frame,prepare_ms,batch_wall_"
+               "ms,instance_motion,instance_update_ms,denoise\n";
+        for (int repeat = 0; repeat < repeats; ++repeat) {
+            std::vector<std::pair<double, double>> times;
+            times.reserve(size_t(frames));
+            for (int frame = 0; frame < warmup + frames; ++frame) {
+                batch.firstSample   = uint32_t(repeat * (warmup + frames) + frame);
+                const auto begin    = std::chrono::steady_clock::now();
+                double     updateMs = 0;
+                if (moving) {
+                    movingInstance.transform = glm::translate(
+                        glm::mat4(1.f), glm::vec3(0.25f * std::sin(float(batch.firstSample) * 0.01f), 0.f, 0.f));
+                    auto update = rt->updatePathInstances(benchmarkToken, std::span(&movingInstance, 1));
+                    REQUIRE(update.ok());
+                    benchmarkToken = update.value();
+                    updateMs =
+                        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - begin).count();
+                }
+                auto         result = rt->renderPaths(benchmarkToken, benchmarkCanvas, batch);
+                const double ms =
+                    std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - begin).count();
+                REQUIRE(result.ok());
+                if (frame >= warmup) times.emplace_back(ms, updateMs);
+            }
+            for (size_t frame = 0; frame < times.size(); ++frame)
+                csv << "1,planar_grid," << gridIndices.size() / 3 << ",1," << width << ',' << height << ",1,4,"
+                    << repeat << ',' << frame << ',' << prepareMs << ',' << times[frame].first << ','
+                    << (moving ? "translate_x" : "static") << ',' << times[frame].second << ','
+                    << (spatial ? "spatial" : "none") << '\n';
+        }
+        csv.flush();
+        REQUIRE(csv.good());
+    }
+    rt->detachFromGraphics();
+    auto detached = rt->renderPaths(replacement.value(), dest, PathTraceView{});
+    REQUIRE(!detached.ok());
+    auto detachedUpdate = rt->updatePathInstances(replacement.value(), areaInstances);
+    REQUIRE(!detachedUpdate.ok());
+    std::fprintf(stderr, "Path scene probe: emissive pixels, accumulation and scene lifetime verified\n");
+}
+
+#include "common/config.h"
+#ifndef EVENGINE_WEBGPU
+#include <array>
+#include <cmath>
+#include <vulkan/vulkan_raii.hpp>
+#include "pt_sampling_spv.inc"
+#endif
+
+namespace test_graphics_path_sampling {
+#ifndef EVENGINE_WEBGPU
+// Run the production sampling functions on the GPU. Uniform hemisphere
+// integration supplies an independent estimator, not a copy of the sampler.
+TEST_CASE("graphics.raytracing.sampling.gpu_integral_contract") {
+    vk::raii::Context      context;
+    vk::ApplicationInfo    app("EVEngine sampling contract", 1, "EVEngine", 1, VK_API_VERSION_1_2);
+    vk::InstanceCreateInfo instanceInfo({}, &app);
+    const char            *portability = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
+    for (const auto &extension : context.enumerateInstanceExtensionProperties()) {
+        if (std::string_view(extension.extensionName.data()) == portability) {
+            instanceInfo.flags                   = vk::InstanceCreateFlagBits::eEnumeratePortabilityKHR;
+            instanceInfo.enabledExtensionCount   = 1;
+            instanceInfo.ppEnabledExtensionNames = &portability;
+        }
+    }
+    vk::raii::Instance        instance(context, instanceInfo);
+    vk::raii::PhysicalDevices devices(instance);
+    REQUIRE(!devices.empty());
+    auto    &physical = devices.front();
+    auto     families = physical.getQueueFamilyProperties();
+    uint32_t family   = 0;
+    while (family < families.size() && !(families[family].queueFlags & vk::QueueFlagBits::eCompute)) ++family;
+    REQUIRE(family < families.size());
+    float                     priority = 1.0f;
+    vk::DeviceQueueCreateInfo qci({}, family, 1, &priority);
+    vk::DeviceCreateInfo      deviceInfo({}, qci);
+    const char               *subset = "VK_KHR_portability_subset";
+    for (const auto &extension : physical.enumerateDeviceExtensionProperties()) {
+        if (std::string_view(extension.extensionName.data()) == subset) {
+            deviceInfo.enabledExtensionCount   = 1;
+            deviceInfo.ppEnabledExtensionNames = &subset;
+        }
+    }
+    vk::raii::Device device(physical, deviceInfo);
+    vk::raii::Queue  queue(device, family, 0);
+    constexpr size_t count = 8 * 1024;
+    constexpr size_t bytes = count * 12 * sizeof(float);
+    vk::raii::Buffer buffer(device, vk::BufferCreateInfo({}, bytes, vk::BufferUsageFlagBits::eStorageBuffer));
+    auto             requirements     = buffer.getMemoryRequirements();
+    auto             memoryProperties = physical.getMemoryProperties();
+    uint32_t         memoryType       = 0;
+    auto             wanted = vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent;
+    while (memoryType < memoryProperties.memoryTypeCount &&
+           (!(requirements.memoryTypeBits & (1u << memoryType)) ||
+            (memoryProperties.memoryTypes[memoryType].propertyFlags & wanted) != wanted))
+        ++memoryType;
+    REQUIRE(memoryType < memoryProperties.memoryTypeCount);
+    vk::raii::DeviceMemory memory(device, vk::MemoryAllocateInfo(requirements.size, memoryType));
+    buffer.bindMemory(*memory, 0);
+    vk::DescriptorSetLayoutBinding binding(0, vk::DescriptorType::eStorageBuffer, 1, vk::ShaderStageFlagBits::eCompute);
+    vk::raii::DescriptorSetLayout  layout(device, vk::DescriptorSetLayoutCreateInfo({}, binding));
+    vk::DescriptorPoolSize         poolSize(vk::DescriptorType::eStorageBuffer, 1);
+    vk::raii::DescriptorPool       descriptorPool(
+        device, vk::DescriptorPoolCreateInfo(vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet, 1, poolSize));
+    vk::raii::DescriptorSets sets(device, vk::DescriptorSetAllocateInfo(*descriptorPool, *layout));
+    vk::DescriptorBufferInfo bufferInfo(*buffer, 0, bytes);
+    device.updateDescriptorSets(
+        vk::WriteDescriptorSet(*sets[0], 0, 0, 1, vk::DescriptorType::eStorageBuffer, nullptr, &bufferInfo), {});
+    vk::raii::ShaderModule shader(
+        device, vk::ShaderModuleCreateInfo({}, pt_sampling_spv_count * sizeof(uint32_t), pt_sampling_spv));
+    vk::raii::PipelineLayout          pipelineLayout(device, vk::PipelineLayoutCreateInfo({}, *layout));
+    vk::PipelineShaderStageCreateInfo stage({}, vk::ShaderStageFlagBits::eCompute, *shader, "main");
+    vk::raii::Pipeline       pipeline(device, nullptr, vk::ComputePipelineCreateInfo({}, stage, *pipelineLayout));
+    vk::raii::CommandPool    commandPool(device, vk::CommandPoolCreateInfo({}, family));
+    vk::raii::CommandBuffers commands(device,
+                                      vk::CommandBufferAllocateInfo(*commandPool, vk::CommandBufferLevel::ePrimary, 1));
+    auto                    &cmd = commands[0];
+    cmd.begin(vk::CommandBufferBeginInfo(vk::CommandBufferUsageFlagBits::eOneTimeSubmit));
+    cmd.bindPipeline(vk::PipelineBindPoint::eCompute, *pipeline);
+    cmd.bindDescriptorSets(vk::PipelineBindPoint::eCompute, *pipelineLayout, 0, *sets[0], {});
+    cmd.dispatch(static_cast<uint32_t>(count / 64), 1, 1);
+    vk::MemoryBarrier barrier(vk::AccessFlagBits::eShaderWrite, vk::AccessFlagBits::eHostRead);
+    cmd.pipelineBarrier(vk::PipelineStageFlagBits::eComputeShader, vk::PipelineStageFlagBits::eHost, {}, barrier, {},
+                        {});
+    cmd.end();
+    queue.submit(vk::SubmitInfo({}, {}, *cmd));
+    queue.waitIdle();
+    std::array<std::array<double, 12>, 8> means{};
+    const auto                           *data = static_cast<const float *>(memory.mapMemory(0, bytes));
+    for (size_t config = 0; config < means.size(); ++config) {
+        for (size_t i = 0; i < 1024; ++i) {
+            for (size_t j = 0; j < 12; ++j) means[config][j] += data[(config * 1024 + i) * 12 + j] / 1024.0;
+        }
+    }
+    memory.unmapMemory();
+    buffer.clear();
+    for (const auto &mean : means) {
+        for (double value : mean) CHECK(std::isfinite(value));
+        for (size_t channel = 0; channel < 3; ++channel) {
+            CHECK(mean[channel] >= 0.0);
+            CHECK(mean[channel] <= 1.02);
+            CHECK(std::abs(mean[channel] - mean[channel + 4]) < 0.03);
+        }
+        CHECK(mean[3] == 0.0);  // No invalid PDF, non-finite evaluation or reciprocity error.
+        CHECK(std::abs(mean[8] - 0.5) < 0.005);
+        CHECK(std::abs(mean[9] - 0.5) < 0.005);
+        CHECK(std::abs(mean[10] - 2.0 / 3.0) < 0.005);
+        CHECK(mean[11] < 1e-6);
+    }
+}
+#endif
+
+}  // namespace test_graphics_path_sampling
+
 // Contract section: graphics skin palette render
 #include "PrivateTestScope.h"
 
@@ -4348,3 +5033,1780 @@ TEST_CASE("graphics.pbrSurface.texture_dimensions_are_validated_before_publicati
     REQUIRE(gfx->releaseTexture(texture2d));
 }
 }  // namespace test_graphics_texture_mips
+
+#include "graphics/PathSceneCapture.h"
+#include "graphics/RenderSystem3D.h"
+
+namespace {
+class PathCaptureObserver final : public eve::graphics::IRayTracing {
+    IRayTracing &target;
+
+public:
+    explicit PathCaptureObserver(IRayTracing &provider) : target(provider) {}
+    size_t                                     geometryCount = 0, instanceCount = 0;
+    bool                                       isAvailable() const override { return target.isAvailable(); }
+    eve::graphics::RayTracingCaps              caps() const override { return target.caps(); }
+    eve::Result<eve::graphics::PathSceneToken> preparePathScene(
+        eve::graphics::Graphics *graphics, const eve::graphics::PathSceneDescription &scene) override {
+        geometryCount = scene.geometry.size();
+        instanceCount = scene.instances.size();
+        return target.preparePathScene(graphics, scene);
+    }
+    eve::Result<eve::graphics::PathSceneToken> updatePathInstances(
+        eve::graphics::PathSceneToken token, std::span<const eve::graphics::PathInstance> instances) override {
+        return target.updatePathInstances(token, instances);
+    }
+    eve::Result<void> renderPaths(eve::graphics::PathSceneToken token, eve::graphics::Canvas *canvas,
+                                  const eve::graphics::PathTraceView &view) override {
+        return target.renderPaths(token, canvas, view);
+    }
+    eve::Result<eve::graphics::PathFrameToken> preparePathFrame(eve::graphics::PathSceneToken scene, uint32_t width,
+                                                                uint32_t height) override {
+        return target.preparePathFrame(scene, width, height);
+    }
+    eve::Result<eve::graphics::Texture *> recordPathFrame(eve::graphics::PathSceneToken       scene,
+                                                          eve::graphics::PathFrameToken       output,
+                                                          const eve::graphics::PathTraceView &view) override {
+        return target.recordPathFrame(scene, output, view);
+    }
+    eve::Result<void> applyReflections(eve::graphics::Graphics *graphics, eve::graphics::Texture *color,
+                                       eve::graphics::Texture *depth, eve::graphics::Texture *normal,
+                                       eve::graphics::Canvas *canvas, const glm::mat4 &inverse, const glm::mat4 &matrix,
+                                       const glm::vec3 &eye) override {
+        return target.applyReflections(graphics, color, depth, normal, canvas, inverse, matrix, eye);
+    }
+    eve::Result<void>     rebuildScene() override { return target.rebuildScene(); }
+    eve::Result<uint32_t> addTriangleMesh(const float *positions, int vertices, const uint32_t *indices, int count,
+                                          const glm::mat4 &transform) override {
+        return target.addTriangleMesh(positions, vertices, indices, count, transform);
+    }
+    eve::Result<uint32_t> addMesh(eve::graphics::Mesh *mesh, const glm::mat4 &transform) override {
+        return target.addMesh(mesh, transform);
+    }
+    void clearScene() override { target.clearScene(); }
+};
+}  // namespace
+
+TEST_CASE("graphics.texture.content_identity") {
+#ifndef EVENGINE_WEBGPU
+    using namespace eve::graphics;
+    REQUIRE(eve::image::Image::create() != nullptr);
+    auto *gfx = dynamic_cast<eve::graphics::vulkan::Graphics *>(Graphics::create());
+    REQUIRE(gfx != nullptr);
+    gfx->initHeadless(16, 16);
+    const std::array<uint8_t, 4> red{255, 0, 0, 255}, green{0, 255, 0, 255};
+    auto                        *texture = gfx->newTexture(1, 1, red.data());
+    REQUIRE(texture != nullptr);
+    const auto identity = [&]() {
+        auto result = gfx->textureContentIdentity(texture);
+        REQUIRE(result.ok());
+        REQUIRE(result.value() != 0);
+        return result.value();
+    };
+    const auto initial = identity();
+    REQUIRE(identity() == initial);
+    Texture foreign;
+    foreign.gpuHandle  = texture->gpuHandle;
+    auto rejectedOwner = gfx->textureContentIdentity(&foreign);
+    REQUIRE(!rejectedOwner.ok());
+    auto noTexture = gfx->textureContentIdentity(nullptr);
+    REQUIRE(!noTexture.ok());
+    auto empty = gfx->updateTextureRegions(texture, {});
+    REQUIRE(empty.ok());
+    REQUIRE(identity() == initial);
+    const TextureRegionUpload invalidBatch[] = {{0, 0, 1, 1, green, 0}, {1, 0, 1, 1, green, 0}};
+    auto                      rejectedUpdate = gfx->updateTextureRegions(texture, invalidBatch);
+    REQUIRE(!rejectedUpdate.ok());
+    REQUIRE(identity() == initial);
+    auto updated = gfx->updateTextureRegion(texture, 0, 0, 1, 1, green);
+    REQUIRE(updated.ok());
+    const auto regionVersion = identity();
+    REQUIRE(regionVersion != initial);
+    REQUIRE(gfx->updateTexture(texture, 1, 1, red.data()));
+    const auto fullVersion = identity();
+    REQUIRE(fullVersion != regionVersion);
+    REQUIRE(gfx->replaceTexturePixelsRGBA(texture, 1, 1, green.data()));
+    const auto replaced = identity();
+    REQUIRE(replaced != fullVersion);
+
+    auto              &device = gfx->getDevice();
+    vkb::GenericBuffer upload(device, vk::BufferUsageFlagBits::eTransferSrc, 4,
+                              vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+    upload.updateLocal(vkb::FrameSlot::gpuIdle(), red.data(), 4);
+    eve::GpuResidentBufferView resident;
+    resident.backend   = eve::GpuResidentBackend::Vulkan;
+    resident.sizeBytes = 4;
+    const VkBuffer raw = upload.buffer;
+    static_assert(sizeof(raw) <= sizeof(resident.nativeHandle));
+    std::memcpy(&resident.nativeHandle, &raw, sizeof(raw));
+    auto gpuWrite = gfx->updateTextureFromResidentRgba8(texture, resident, 1, 1);
+    REQUIRE(gpuWrite.ok());
+    const auto residentVersion = identity();
+    REQUIRE(residentVersion != replaced);
+    resident.sizeBytes   = 3;
+    auto invalidResident = gfx->updateTextureFromResidentRgba8(texture, resident, 1, 1);
+    REQUIRE(!invalidResident.ok());
+    REQUIRE(identity() == residentVersion);
+    upload.release();
+    REQUIRE(gfx->releaseTexture(texture));
+    auto released = gfx->textureContentIdentity(texture);
+    REQUIRE(!released.ok());
+    delete texture;  // releaseTexture transfers the facade back to its caller.
+    texture = gfx->newTexture(1, 1, red.data());
+    REQUIRE(identity() != residentVersion);
+    auto mip = gfx->newTextureMipChain(1, 1, 1, red);
+    REQUIRE(mip.ok());
+    auto mipIdentity = gfx->textureContentIdentity(mip.value());
+    REQUIRE(mipIdentity.ok());
+    REQUIRE(mipIdentity.value() != identity());
+#endif
+}
+
+TEST_CASE("graphics.raytracing.path_scene.native_texture_snapshot") {
+    using namespace eve::graphics;
+    REQUIRE(eve::image::Image::create() != nullptr);
+    auto *gfx = Graphics::create();
+    gfx->initHeadless(16, 16);
+    auto *rt = eve::cap::query<IRayTracing>();
+    if (!rt || !rt->isAvailable()) {
+        std::fprintf(stderr, "Native path texture probe: provider/device unavailable; no dispatch executed\n");
+        return;
+    }
+    const std::array<glm::vec3, 4> positions{
+        {{-2.f, -2.f, 0.5f}, {2.f, -2.f, 0.5f}, {2.f, 2.f, 0.5f}, {-2.f, 2.f, 0.5f}}};
+    const std::array<uint32_t, 6> indices{0, 1, 2, 0, 2, 3};
+    std::array<glm::vec2, 4>      uv;
+    uv.fill({0.25f, 0.5f});
+    PathGeometry geometry{positions, {}, indices, 0, uv};
+    PathInstance instance;
+    PathMaterial material;
+    material.baseColorTexture = 0;
+    const std::array<uint8_t, 8> bytes{128, 64, 32, 255, 0, 255, 0, 0};
+    TextureCreateInfo            info;
+    info.sampler   = TextureSampler::nearest();
+    auto *original = gfx->newTexture(2, 1, bytes.data(), info);
+    REQUIRE(original != nullptr);
+    PathColorTexture source;
+    source.sourceTexture = original;
+    PathSceneDescription scene{
+        std::span(&geometry, 1), std::span(&instance, 1), std::span(&material, 1), {}, std::span(&source, 1)};
+    auto         *canvas = gfx->newHDRCanvas(16, 16);
+    PathTraceView view;
+    view.eye         = {0.f, 0.f, -1.f};
+    view.environment = glm::vec3(1.f);
+    view.samples     = 256;
+    view.maxBounces  = 1;
+    const auto read  = [&](PathSceneToken token) {
+        auto rendered = rt->renderPaths(token, canvas, view);
+        REQUIRE(rendered.ok());
+        std::unique_ptr<eve::image::ImageData> image(canvas->newHDRImageData());
+        REQUIRE(image != nullptr);
+        auto pixel = image->getPixel(8, 8);
+        return glm::vec3(pixel.r, pixel.g, pixel.b);
+    };
+    const auto prepare = [&]() {
+        auto result = rt->preparePathScene(gfx, scene);
+        REQUIRE(result.ok());
+        return result.value();
+    };
+    const auto compareSolid = [&](glm::vec3 expected) {
+        auto textured             = read(prepare());
+        material.baseColorTexture = UINT32_MAX;
+        material.baseColor        = expected;
+        auto solid                = read(prepare());
+        REQUIRE(glm::length(textured - solid) < 0.003f);
+        material.baseColorTexture = 0;
+        material.baseColor        = glm::vec3(1.f);
+    };
+    compareSolid({0.2158605f, 0.05126946f, 0.01444384f});
+    source.srgbDecode = false;
+    compareSolid({128.f / 255.f, 64.f / 255.f, 32.f / 255.f});
+    source.srgbDecode = true;
+    uv.fill({1.25f, 0.5f});
+    compareSolid({0.f, 1.f, 0.f});  // Clamp, even outside the authored UV range.
+    info.sampler.repeatU = true;
+    source.sourceTexture = gfx->newTexture(2, 1, bytes.data(), info);
+    compareSolid({0.2158605f, 0.05126946f, 0.01444384f});
+    info.sampler         = TextureSampler::linear();
+    source.sourceTexture = gfx->newTexture(2, 1, bytes.data(), info);
+    uv.fill({0.5f, 0.5f});
+    compareSolid({0.10793025f, 0.52563473f, 0.00722192f});  // Decode before filtering.
+    const std::array<uint8_t, 4> premultiplied{64, 0, 0, 128};
+    auto                        *premultipliedTexture = gfx->newTexture(1, 1, premultiplied.data());
+    premultipliedTexture->setAlphaConvention("premultiplied");
+    source.sourceTexture = premultipliedTexture;
+    source.srgbDecode    = false;
+    compareSolid({0.5f, 0.f, 0.f});
+
+    source.sourceTexture = original;
+    source.srgbDecode    = true;
+    uv.fill({0.75f, 0.5f});
+    material.alphaMode = PathAlphaMode::Masked;
+    REQUIRE(glm::length(read(prepare()) - glm::vec3(1.f)) < 0.003f);
+    material.alphaMode = PathAlphaMode::Opaque;
+    uv.fill({0.25f, 0.5f});
+    auto snapshot = prepare();
+    auto before   = read(snapshot);
+    REQUIRE(prepare().generation == snapshot.generation);
+    source.width      = 2;
+    auto mixedSources = rt->preparePathScene(gfx, scene);
+    REQUIRE(!mixedSources.ok());
+    source.width = 0;
+    const std::array<uint8_t, 8> blue{0, 0, 255, 255, 0, 0, 255, 255};
+    REQUIRE(gfx->updateTexture(original, 2, 1, blue.data()));
+    REQUIRE(glm::length(read(snapshot) - before) < 0.0001f);
+    auto refreshed = prepare();
+    REQUIRE(refreshed.generation != snapshot.generation);
+    auto bluePixel = read(refreshed);
+    REQUIRE(bluePixel.b > bluePixel.r + 0.1f);
+#ifndef EVENGINE_WEBGPU
+    auto *native = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    REQUIRE(native != nullptr);
+    const std::array<uint8_t, 8> green{0, 255, 0, 255, 0, 255, 0, 255};
+    vkb::GenericBuffer           upload(native->getDevice(), vk::BufferUsageFlagBits::eTransferSrc, green.size(),
+                                        vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+    upload.updateLocal(vkb::FrameSlot::gpuIdle(), green.data(), green.size());
+    eve::GpuResidentBufferView resident;
+    resident.backend   = eve::GpuResidentBackend::Vulkan;
+    resident.sizeBytes = green.size();
+    const VkBuffer raw = upload.buffer;
+    std::memcpy(&resident.nativeHandle, &raw, sizeof(raw));
+    auto gpuWritten = native->updateTextureFromResidentRgba8(original, resident, 2, 1);
+    REQUIRE(gpuWritten.ok());
+    REQUIRE(glm::length(read(refreshed) - bluePixel) < 0.0001f);
+    auto gpuSnapshot = prepare();
+    REQUIRE(gpuSnapshot.generation != refreshed.generation);
+    auto greenPixel = read(gpuSnapshot);
+    REQUIRE(greenPixel.g > greenPixel.b + 0.1f);
+    upload.release();
+    refreshed = gpuSnapshot;
+    bluePixel = greenPixel;
+#endif
+    REQUIRE(gfx->releaseTexture(original));
+    auto releasedSource = rt->preparePathScene(gfx, scene);
+    REQUIRE(!releasedSource.ok());
+    REQUIRE(glm::length(read(refreshed) - bluePixel) < 0.0001f);
+    source.sourceTexture = nullptr;
+    delete original;
+}
+
+TEST_CASE("graphics.raytracing.path_scene.material_texture_roles") {
+    using namespace eve::graphics;
+    REQUIRE(eve::image::Image::create() != nullptr);
+    auto *gfx = Graphics::create();
+    gfx->initHeadless(16, 16);
+    auto *rt = eve::cap::query<IRayTracing>();
+    if (!rt || !rt->isAvailable()) {
+        std::fprintf(stderr, "Material texture probe: provider/device unavailable; no dispatch executed\n");
+        return;
+    }
+    const std::array<glm::vec3, 4> positions{{{-2.f, -2.f, .5f}, {2.f, -2.f, .5f}, {2.f, 2.f, .5f}, {-2.f, 2.f, .5f}}};
+    const std::array<uint32_t, 6>  indices{0, 1, 2, 0, 2, 3};
+    std::array<glm::vec2, 4>       uv;
+    uv.fill({.25f, .25f});
+    PathGeometry geometry{positions, {}, indices, 0, uv};
+    PathInstance instance;
+    PathMaterial material;
+    material.roughness                = .6f;
+    material.metallic                 = .8f;
+    material.metallicRoughnessTexture = 0;
+    std::array<glm::vec3, 1>      data{{{.9f, .25f, .5f}}};
+    const std::array<uint8_t, 16> bytes{128, 64, 32, 0, 0, 255, 0, 0, 0, 0, 255, 0, 255, 255, 255, 0};
+    TextureCreateInfo             info;
+    info.sampler = TextureSampler::nearest();
+    std::array<PathColorTexture, 2> textures;
+    textures[0].width = textures[0].height = 1;
+    textures[0].pixels                     = data;
+    textures[1].sourceTexture              = gfx->newTexture(2, 2, bytes.data(), info);
+    REQUIRE(textures[1].sourceTexture != nullptr);
+    PathSceneDescription scene{std::span(&geometry, 1), std::span(&instance, 1), std::span(&material, 1), {}, textures};
+    auto                *canvas = gfx->newHDRCanvas(16, 16);
+    PathTraceView        view;
+    view.eye           = {0.f, 0.f, -1.f};
+    view.environment   = glm::vec3(1.f);
+    view.samples       = 512;
+    view.maxBounces    = 1;
+    const auto prepare = [&]() {
+        auto result = rt->preparePathScene(gfx, scene);
+        REQUIRE(result.ok());
+        return result.value();
+    };
+    const auto read = [&](PathSceneToken token) {
+        auto result = rt->renderPaths(token, canvas, view);
+        REQUIRE(result.ok());
+        std::unique_ptr<eve::image::ImageData> image(canvas->newHDRImageData());
+        REQUIRE(image != nullptr);
+        auto pixel = image->getPixel(8, 8);
+        return glm::vec3(pixel.r, pixel.g, pixel.b);
+    };
+    auto textured = read(prepare());
+    data[0].r     = 0.f;
+    REQUIRE(glm::length(read(prepare()) - textured) < .0001f);
+    material.metallicRoughnessTexture = UINT32_MAX;
+    material.roughness                = .15f;
+    material.metallic                 = .4f;
+    REQUIRE(glm::length(read(prepare()) - textured) < .003f);
+    material.emission        = {2.f, 3.f, 4.f};
+    material.emissionTexture = 1;
+    view.maxBounces          = 0;
+    REQUIRE(glm::length(read(prepare()) - glm::vec3(.431721f, .15380838f, .05777536f)) < .003f);
+    textures[1].offset.x = .5f;
+    REQUIRE(glm::length(read(prepare()) - glm::vec3(0.f, 3.f, 0.f)) < .003f);
+    textures[1].scale  = glm::vec2(0.f);
+    textures[1].offset = {.25f, .75f};
+    REQUIRE(glm::length(read(prepare()) - glm::vec3(0.f, 0.f, 4.f)) < .003f);
+    textures[1].scale    = {1.f, 2.f};
+    textures[1].rotation = 1.57079632679f;
+    textures[1].offset   = {.75f, 0.f};
+    auto snapshot        = prepare();
+    auto expected        = read(snapshot);
+    REQUIRE(glm::length(expected - glm::vec3(.431721f, .15380838f, .05777536f)) < .003f);
+    material.metallicRoughnessTexture = 1;
+    REQUIRE(!rt->preparePathScene(gfx, scene).ok());
+    material.metallicRoughnessTexture = UINT32_MAX;
+    textures[1].rotation              = std::numeric_limits<float>::quiet_NaN();
+    REQUIRE(!rt->preparePathScene(gfx, scene).ok());
+    REQUIRE(glm::length(read(snapshot) - expected) < .0001f);
+    // Off-camera emission exercises both explicit light sampling and secondary hits.
+    textures[1].rotation = 0.f;
+    textures[1].scale    = glm::vec2(1.f);
+    textures[1].offset   = {.5f, 0.f};
+    const std::array<glm::vec3, 4> emitterPositions{
+        {{.3f, -2.f, -.25f}, {1.5f, -2.f, -.25f}, {1.5f, 2.f, -.25f}, {.3f, 2.f, -.25f}}};
+    std::array<PathGeometry, 2> geometryPair{PathGeometry{positions, {}, indices, 0},
+                                             PathGeometry{emitterPositions, {}, indices, 1, uv}};
+    std::array<PathInstance, 2> instancePair{PathInstance{0}, PathInstance{1}};
+    std::array<PathMaterial, 2> materialPair{};
+    materialPair[1].baseColor       = glm::vec3(0.f);
+    materialPair[1].emission        = glm::vec3(3.f);
+    materialPair[1].emissionTexture = 1;
+    scene                           = {geometryPair, instancePair, materialPair, {}, textures};
+    view.environment                = glm::vec3(0.f);
+    view.maxBounces                 = 1;
+    view.samples                    = 1024;
+    auto illuminated                = read(prepare());
+    REQUIRE(illuminated.g > .01f);
+    REQUIRE(illuminated.r < .0001f);
+    REQUIRE(illuminated.b < .0001f);
+    materialPair[1].emissionTexture = UINT32_MAX;
+    materialPair[1].emission        = {0.f, 3.f, 0.f};
+    REQUIRE(glm::length(read(prepare()) - illuminated) < .003f);
+    materialPair[1].emissionTexture  = 1;
+    materialPair[1].emission         = glm::vec3(3.f);
+    materialPair[1].baseColorTexture = 1;
+    materialPair[1].alphaMode        = PathAlphaMode::Masked;
+    REQUIRE(glm::length(read(prepare())) < .0001f);
+}
+
+TEST_CASE("graphics.raytracing.path_scene.alpha_visibility") {
+    using namespace eve::graphics;
+    REQUIRE(eve::image::Image::create() != nullptr);
+    auto *gfx = Graphics::create();
+    gfx->initHeadless(16, 16);
+    auto *rt = eve::cap::query<IRayTracing>();
+    if (!rt || !rt->isAvailable()) {
+        std::fprintf(stderr, "Path alpha probe: hardware/provider unavailable; no dispatch executed\n");
+        return;
+    }
+    const std::array<glm::vec3, 4> positions{
+        {{-2.f, -2.f, 0.5f}, {2.f, -2.f, 0.5f}, {2.f, 2.f, 0.5f}, {-2.f, 2.f, 0.5f}}};
+    const std::array<uint32_t, 6> indices{0, 1, 2, 0, 2, 3};
+    std::array<glm::vec2, 4>      uv;
+    uv.fill({0.25f, 0.5f});
+    PathGeometry geometry{positions, {}, indices, 0, uv};
+    PathInstance instance;
+    PathMaterial material;
+    material.emission = {1.f, 0.f, 0.f};
+    PathSceneDescription scene{std::span(&geometry, 1), std::span(&instance, 1), std::span(&material, 1)};
+    auto                *canvas = gfx->newHDRCanvas(16, 16);
+    PathTraceView        view;
+    view.eye              = {0.f, 0.f, -1.f};
+    view.environment      = {0.f, 0.f, 1.f};
+    view.maxBounces       = 0;
+    view.samples          = 512;
+    const auto renderMean = [&]() {
+        auto prepared = rt->preparePathScene(gfx, scene);
+        REQUIRE(prepared.ok());
+        auto rendered = rt->renderPaths(prepared.value(), canvas, view);
+        REQUIRE(rendered.ok());
+        std::unique_ptr<eve::image::ImageData> image(canvas->newHDRImageData());
+        REQUIRE(image != nullptr);
+        glm::vec3 sum(0.f);
+        for (int y = 6; y < 10; ++y)
+            for (int x = 6; x < 10; ++x) {
+                auto pixel = image->getPixel(x, y);
+                sum += glm::vec3(pixel.r, pixel.g, pixel.b);
+            }
+        return sum / 16.f;
+    };
+    material.opacity = 0.f;
+    REQUIRE(std::abs(renderMean().r - 1.f) < 0.002f);  // Opaque ignores opacity.
+    material.alphaMode = PathAlphaMode::Masked;
+    REQUIRE(std::abs(renderMean().b - 1.f) < 0.002f);
+    material.opacity = material.alphaCutoff;
+    REQUIRE(std::abs(renderMean().r - 1.f) < 0.002f);  // Equality is accepted.
+    material.alphaMode = PathAlphaMode::Blend;
+    auto blended       = renderMean();
+    REQUIRE(std::abs(blended.r - 0.5f) < 0.025f);
+    REQUIRE(std::abs(blended.b - 0.5f) < 0.025f);
+    REQUIRE(glm::length(renderMean() - blended) < 0.0001f);
+    const std::array<glm::vec3, 2> texels{glm::vec3(1.f), glm::vec3(1.f)};
+    std::array<float, 2>           alpha{0.f, 1.f};
+    PathColorTexture               texture{2, 1, texels, alpha};
+    scene.colorTextures       = std::span(&texture, 1);
+    material.baseColorTexture = 0;
+    material.opacity          = 1.f;
+    material.alphaMode        = PathAlphaMode::Masked;
+    REQUIRE(std::abs(renderMean().b - 1.f) < 0.002f);
+    uv.fill({0.75f, 0.5f});
+    REQUIRE(std::abs(renderMean().r - 1.f) < 0.002f);
+    alpha[1] = 0.f;  // Texture alpha edits must invalidate the scene cache.
+    REQUIRE(std::abs(renderMean().b - 1.f) < 0.002f);
+    auto valid = rt->preparePathScene(gfx, scene);
+    REQUIRE(valid.ok());
+    alpha[1]          = std::numeric_limits<float>::quiet_NaN();
+    auto invalidAlpha = rt->preparePathScene(gfx, scene);
+    REQUIRE(!invalidAlpha.ok());
+    alpha[1]          = 0.f;
+    texture.alpha     = std::span(alpha).first(1);
+    auto invalidCount = rt->preparePathScene(gfx, scene);
+    REQUIRE(!invalidCount.ok());
+    texture.alpha      = alpha;
+    material.alphaMode = static_cast<PathAlphaMode>(99);
+    auto invalidMode   = rt->preparePathScene(gfx, scene);
+    REQUIRE(!invalidMode.ok());
+    material.alphaMode  = PathAlphaMode::Masked;
+    material.opacity    = -1.f;
+    auto invalidOpacity = rt->preparePathScene(gfx, scene);
+    REQUIRE(!invalidOpacity.ok());
+    material.opacity = 1.f;
+    auto preserved   = rt->renderPaths(valid.value(), canvas, view);
+    REQUIRE(preserved.ok());
+
+    // Camera misses the blocker, but directional-light shadow rays cross it.
+    const std::array<glm::vec3, 4> blockerPositions{
+        {{0.3f, -2.f, -0.25f}, {1.5f, -2.f, -0.25f}, {1.5f, 2.f, -0.25f}, {0.3f, 2.f, -0.25f}}};
+    std::array<PathGeometry, 2> geometryPair{PathGeometry{positions, {}, indices, 0},
+                                             PathGeometry{blockerPositions, {}, indices, 1}};
+    std::array<PathInstance, 2> instancePair{PathInstance{0}, PathInstance{1}};
+    std::array<PathMaterial, 2> materialPair{};
+    materialPair[1].alphaMode = PathAlphaMode::Blend;
+    materialPair[1].baseColor = glm::vec3(0.f);
+    PathLight light;
+    light.kind              = PathLightKind::Directional;
+    light.directionToLight  = {1.f, 0.f, -1.f};
+    light.strength          = glm::vec3(1.f);
+    scene                   = {geometryPair, instancePair, materialPair, std::span(&light, 1)};
+    view.environment        = glm::vec3(0.f);
+    view.maxBounces         = 1;
+    materialPair[1].opacity = 0.f;
+    float unobstructed      = renderMean().r;
+    REQUIRE(unobstructed > 0.1f);
+    materialPair[1].opacity = 1.f;
+    REQUIRE(renderMean().r < 0.0001f);
+    materialPair[1].opacity = 0.25f;
+    REQUIRE(std::abs(renderMean().r / unobstructed - 0.75f) < 0.04f);
+    materialPair[1].alphaMode = PathAlphaMode::Masked;
+    REQUIRE(std::abs(renderMean().r / unobstructed - 1.f) < 0.001f);
+
+    // NEE and BSDF hits must both respect coverage of an off-camera emitter.
+    scene.lights              = {};
+    materialPair[1].emission  = glm::vec3(3.f);
+    materialPair[1].opacity   = 1.f;
+    materialPair[1].alphaMode = PathAlphaMode::Blend;
+    float fullEmission        = renderMean().r;
+    REQUIRE(fullEmission > 0.01f);
+    materialPair[1].opacity = 0.f;
+    REQUIRE(renderMean().r < 0.0001f);
+    materialPair[1].opacity = 0.5f;
+    REQUIRE(std::abs(renderMean().r / fullEmission - 0.5f) < 0.06f);
+}
+
+TEST_CASE("graphics.raytracing.path_scene.world_capture") {
+    using namespace eve::graphics;
+    REQUIRE(eve::image::Image::create() != nullptr);
+    auto *gfx = Graphics::create();
+    gfx->initHeadless(16, 16);
+    auto *rt = eve::cap::query<IRayTracing>();
+    if (!rt || !rt->isAvailable()) return;
+    ecs::Table       world;
+    ecs::ScopedTable scope(world);
+    const float      positions[] = {-3.f, -3.f, 0.5f, 3.f, -3.f, 0.5f, 0.f, 3.f, 0.5f};
+    const uint32_t   indices[]   = {0, 1, 2};
+    auto            *mesh        = gfx->newMeshFromArrays(positions, nullptr, nullptr, 3, indices, 3);
+    REQUIRE(mesh != nullptr);
+    auto *object = Renderable3D::create();
+    object->setMesh(mesh);
+    // No camera exists and the raster LOD distance would cull this object.
+    object->meshRenderer()->lodCullDistance = 0.001f;
+    object->meshRenderer()->r               = 0.2f;
+    object->meshRenderer()->g               = 0.4f;
+    object->meshRenderer()->b               = 0.8f;
+    PathCaptureObserver observed(*rt);
+    for (int i = 0; i < 128; ++i) {
+        auto *duplicate = Renderable3D::create();
+        duplicate->setMesh(mesh);
+        duplicate->setPosition(10.f + float(i), 0.f, 0.f);
+        duplicate->meshRenderer()->r = 0.2f;
+        duplicate->meshRenderer()->g = 0.4f;
+        duplicate->meshRenderer()->b = 0.8f;
+    }
+    auto captured = preparePathWorld(world, *gfx, observed);
+    REQUIRE(captured.ok());
+    REQUIRE(observed.geometryCount == 1);
+    REQUIRE(observed.instanceCount == 129);
+    PathTraceView view;
+    view.eye         = {0.f, 0.f, -1.f};
+    view.environment = {1.f, 1.f, 1.f};
+    view.samples     = 64;
+    auto *canvas     = gfx->newHDRCanvas(16, 16);
+    auto  rendered   = rt->renderPaths(captured.value(), canvas, view);
+    REQUIRE(rendered.ok());
+    std::unique_ptr<eve::image::ImageData> initial(canvas->newHDRImageData());
+    REQUIRE(initial != nullptr);
+    auto pixel = initial->getPixel(8, 8);
+    REQUIRE(pixel.b > pixel.g);
+    REQUIRE(pixel.g > pixel.r);
+    REQUIRE(pixel.r > 0.05f);
+    auto identical = preparePathWorld(world, *gfx, observed);
+    REQUIRE(identical.ok());
+    REQUIRE(identical.value().generation == captured.value().generation);
+    // Failed conversion must preserve the already-published scene.
+    object->meshRenderer()->receiveLight = false;
+    auto rejected                        = preparePathWorld(world, *gfx, *rt);
+    REQUIRE(!rejected.ok());
+    auto preserved = rt->renderPaths(captured.value(), canvas, view);
+    REQUIRE(preserved.ok());
+    std::unique_ptr<eve::image::ImageData> after(canvas->newHDRImageData());
+    REQUIRE(after != nullptr);
+    REQUIRE(std::abs(after->getPixel(8, 8).b - pixel.b) < 0.002f);
+    object->meshRenderer()->receiveLight = true;
+    auto originalOutput                  = rt->preparePathFrame(captured.value(), 16, 16);
+    REQUIRE(originalOutput.ok());
+    object->setPosition(100.f, 0.f, 0.f);
+    auto transformed = preparePathWorld(world, *gfx, observed);
+    REQUIRE(transformed.ok());
+    REQUIRE(transformed.value().generation != captured.value().generation);
+    auto transformedOutput = rt->preparePathFrame(transformed.value(), 16, 16);
+    REQUIRE(transformedOutput.ok());
+    REQUIRE(transformedOutput.value().generation == originalOutput.value().generation);
+    auto unchangedTransform = preparePathWorld(world, *gfx, observed);
+    REQUIRE(unchangedTransform.ok());
+    REQUIRE(unchangedTransform.value().generation == transformed.value().generation);
+    auto transformedRender = rt->renderPaths(transformed.value(), canvas, view);
+    REQUIRE(transformedRender.ok());
+    std::unique_ptr<eve::image::ImageData> transformedImage(canvas->newHDRImageData());
+    REQUIRE(transformedImage != nullptr);
+    REQUIRE(std::abs(transformedImage->getPixel(8, 8).r - 1.f) < 0.002f);
+    object->meshRenderer()->roughness = 0.8f;
+    auto moved                        = preparePathWorld(world, *gfx, observed);
+    REQUIRE(moved.ok());
+    REQUIRE(observed.geometryCount == 2);
+    REQUIRE(observed.instanceCount == 129);
+    auto stale = rt->renderPaths(captured.value(), canvas, view);
+    REQUIRE(!stale.ok());
+    auto movedRender = rt->renderPaths(moved.value(), canvas, view);
+    REQUIRE(movedRender.ok());
+    std::unique_ptr<eve::image::ImageData> background(canvas->newHDRImageData());
+    REQUIRE(background != nullptr);
+    REQUIRE(std::abs(background->getPixel(8, 8).r - 1.f) < 0.002f);
+    object->setPosition(0.f, 0.f, 0.f);
+    auto *spot              = Light3D::createLight("spot");
+    spot->data()->z         = -1.5f;
+    spot->data()->dx        = 0.f;
+    spot->data()->dy        = 0.f;
+    spot->data()->dz        = 1.f;
+    spot->data()->intensity = 8.f;
+    view.environment        = glm::vec3(0.f);
+    auto spotWorld          = preparePathWorld(world, *gfx, observed);
+    REQUIRE(spotWorld.ok());
+    auto spotRendered = rt->renderPaths(spotWorld.value(), canvas, view);
+    REQUIRE(spotRendered.ok());
+    std::unique_ptr<eve::image::ImageData> spotPixels(canvas->newHDRImageData());
+    REQUIRE(spotPixels != nullptr);
+    REQUIRE(spotPixels->getPixel(8, 8).b > 0.01f);
+    spot->data()->dz = -1.f;
+    auto awayWorld   = preparePathWorld(world, *gfx, observed);
+    REQUIRE(awayWorld.ok());
+    auto awayRendered = rt->renderPaths(awayWorld.value(), canvas, view);
+    REQUIRE(awayRendered.ok());
+    std::unique_ptr<eve::image::ImageData> awayPixels(canvas->newHDRImageData());
+    REQUIRE(awayPixels != nullptr);
+    REQUIRE(awayPixels->getPixel(8, 8).b < 0.0001f);
+    spot->data()->enabled = false;
+    view.environment      = glm::vec3(1.f);
+    Material alphaMaterial;
+    alphaMaterial.setTint(0.f, 0.f, 1.f, 0.25f);
+    alphaMaterial.setSurfaceMode("masked");
+    object->setMaterial(&alphaMaterial);
+    for (int variant = 0; variant < 3; ++variant) {
+        alphaMaterial.setAlphaCutoff(variant == 0 ? 0.5f : 0.25f);
+        if (variant == 2) {
+            object->setMaterial(nullptr);
+            object->meshRenderer()->a = 0.f;
+        }
+        auto alphaWorld = preparePathWorld(world, *gfx, observed);
+        REQUIRE(alphaWorld.ok());
+        auto alphaFrame = rt->renderPaths(alphaWorld.value(), canvas, view);
+        REQUIRE(alphaFrame.ok());
+        std::unique_ptr<eve::image::ImageData> alphaPixels(canvas->newHDRImageData());
+        REQUIRE(alphaPixels != nullptr);
+        const auto alphaPixel = alphaPixels->getPixel(8, 8);
+        if (variant == 1) {
+            REQUIRE(alphaPixel.b > alphaPixel.r + 0.1f);
+        } else {
+            REQUIRE(std::abs(alphaPixel.r - 1.f) < 0.002f);
+            REQUIRE(std::abs(alphaPixel.b - 1.f) < 0.002f);
+        }
+    }
+    object->meshRenderer()->a = 1.f;
+    const std::array<uint8_t, 4> redTexture{255, 0, 0, 255}, greenTexture{0, 255, 0, 255};
+    auto                        *albedo = gfx->newTexture(1, 1, redTexture.data());
+    REQUIRE(albedo != nullptr);
+    object->meshRenderer()->texture = albedo;
+    auto texturedWorld              = preparePathWorld(world, *gfx, observed);
+    REQUIRE(texturedWorld.ok());
+    auto sameTexture = preparePathWorld(world, *gfx, observed);
+    REQUIRE(sameTexture.ok());
+    REQUIRE(sameTexture.value().generation == texturedWorld.value().generation);
+    auto textureFrame = rt->renderPaths(texturedWorld.value(), canvas, view);
+    REQUIRE(textureFrame.ok());
+    std::unique_ptr<eve::image::ImageData> texturePixels(canvas->newHDRImageData());
+    REQUIRE(texturePixels != nullptr);
+    REQUIRE(texturePixels->getPixel(8, 8).r > texturePixels->getPixel(8, 8).g + 0.01f);
+    REQUIRE(gfx->updateTexture(albedo, 1, 1, greenTexture.data()));
+    auto updatedTexture = preparePathWorld(world, *gfx, observed);
+    REQUIRE(updatedTexture.ok());
+    REQUIRE(updatedTexture.value().generation != texturedWorld.value().generation);
+    auto updatedFrame = rt->renderPaths(updatedTexture.value(), canvas, view);
+    REQUIRE(updatedFrame.ok());
+    std::unique_ptr<eve::image::ImageData> updatedPixels(canvas->newHDRImageData());
+    REQUIRE(updatedPixels != nullptr);
+    REQUIRE(updatedPixels->getPixel(8, 8).g > updatedPixels->getPixel(8, 8).r + 0.01f);
+    alphaMaterial.setTint(1.f, 1.f, 1.f, 1.f);
+    alphaMaterial.setSurfaceMode("opaque");
+    alphaMaterial.setAlbedoTexture(albedo);
+    object->setMaterial(&alphaMaterial);
+    auto materialTexture = preparePathWorld(world, *gfx, observed);
+    REQUIRE(materialTexture.ok());
+    auto materialFrame = rt->renderPaths(materialTexture.value(), canvas, view);
+    REQUIRE(materialFrame.ok());
+    std::unique_ptr<eve::image::ImageData> materialPixels(canvas->newHDRImageData());
+    REQUIRE(materialPixels != nullptr);
+    REQUIRE(materialPixels->getPixel(8, 8).g > materialPixels->getPixel(8, 8).r + 0.1f);
+    object->setMaterial(nullptr);
+}
+
+TEST_CASE("graphics.raytracing.path_scene.temporal_reprojection") {
+    using namespace eve::graphics;
+    REQUIRE(eve::image::Image::create() != nullptr);
+    constexpr int edge = 48;
+    auto         *gfx  = Graphics::create();
+    gfx->initHeadless(edge, edge);
+    auto *rt = eve::cap::query<IRayTracing>();
+    if (!rt || !rt->isAvailable()) {
+        std::fprintf(stderr, "Temporal path probe: provider/device unavailable; no dispatch executed\n");
+        return;
+    }
+    const std::array<glm::vec3, 4> positions{{{-4.f, -4.f, .5f}, {4.f, -4.f, .5f}, {4.f, 4.f, .5f}, {-4.f, 4.f, .5f}}};
+    const std::array<uint32_t, 6>  indices{0, 1, 2, 0, 2, 3};
+    PathGeometry                   geometry{positions, {}, indices, 0};
+    PathInstance                   instance;
+    PathMaterial                   material;
+    material.baseColor = {.2f, .4f, .8f};
+    PathLight light;
+    light.kind     = PathLightKind::Point;
+    light.position = {1.f, -1.f, -.5f};
+    light.strength = glm::vec3(2.f);
+    PathSceneDescription scene{std::span(&geometry, 1), std::span(&instance, 1), std::span(&material, 1),
+                               std::span(&light, 1)};
+    auto                 prepared = rt->preparePathScene(gfx, scene);
+    REQUIRE(prepared.ok());
+    auto          token  = prepared.value();
+    auto         *canvas = gfx->newHDRCanvas(edge, edge);
+    PathTraceView view;
+    view.environment  = glm::vec3(1.f);
+    view.maxBounces   = 1;
+    const auto camera = [&](float x) {
+        view.eye         = {x, 0.f, -1.f};
+        view.invViewProj = glm::inverse(perspectiveVulkanRH_ZO(glm::radians(60.f), 1.f, .01f, 100.f) *
+                                        glm::lookAtRH(view.eye, glm::vec3(x, 0.f, .5f), glm::vec3(0.f, 1.f, 0.f)));
+    };
+    const auto render = [&]() {
+        REQUIRE(rt->renderPaths(token, canvas, view).ok());
+        std::unique_ptr<eve::image::ImageData> image(canvas->newHDRImageData());
+        REQUIRE(image != nullptr);
+        std::vector<glm::vec3> pixels;
+        for (int y = 0; y < edge; ++y)
+            for (int x = 0; x < edge; ++x) {
+                auto pixel = image->getPixel(x, y);
+                pixels.push_back({pixel.r, pixel.g, pixel.b});
+            }
+        return pixels;
+    };
+    const auto mse = [&](const auto &actual, const auto &expected) {
+        double error = 0;
+        int    count = 0;
+        for (int y = 8; y < edge - 8; ++y)
+            for (int x = 8; x < edge - 8; ++x) {
+                auto difference = actual[size_t(y) * edge + x] - expected[size_t(y) * edge + x];
+                error += glm::dot(difference, difference);
+                ++count;
+            }
+        return error / double(count * 3);
+    };
+    camera(0.f);
+    view.samples     = 1024;
+    view.firstSample = 10000;
+    view.denoise     = PathDenoise::Spatial;
+    auto reference   = render();
+    camera(.03f);
+    auto movedReference = render();
+    view.samples        = 1;
+    view.firstSample    = 32;
+    auto movedSpatial   = render();
+    camera(0.f);
+    view.firstSample = 0;
+    auto spatial     = render();
+    view.denoise     = PathDenoise::Temporal;
+    auto first       = render();
+    REQUIRE(mse(first, spatial) < 1e-8);
+    auto invalid           = view;
+    invalid.denoise        = PathDenoise::Spatial;
+    invalid.firstSample    = 1;
+    invalid.historySamples = 1;
+    REQUIRE(!rt->renderPaths(token, canvas, invalid).ok());
+    invalid             = view;
+    invalid.invViewProj = glm::mat4(0.f);
+    REQUIRE(!rt->renderPaths(token, canvas, invalid).ok());
+    for (uint32_t frame = 1; frame < 32; ++frame) {
+        view.firstSample = frame;
+        REQUIRE(rt->renderPaths(token, canvas, view).ok());
+    }
+    view.firstSample    = 32;
+    auto   accumulated  = render();
+    double spatialError = mse(spatial, reference), temporalError = mse(accumulated, reference);
+    std::fprintf(stderr, "Temporal static MSE: spatial=%g temporal=%g\n", spatialError, temporalError);
+    REQUIRE(spatialError > 1e-7);
+    REQUIRE(temporalError < spatialError * .7);
+    camera(.03f);
+    view.firstSample  = 33;
+    auto   moved      = render();
+    double movedError = mse(moved, movedReference), movedSpatialError = mse(movedSpatial, movedReference);
+    std::fprintf(stderr, "Temporal camera MSE: spatial=%g temporal=%g\n", movedSpatialError, movedError);
+    REQUIRE(movedError < movedSpatialError * .8);
+    view.firstSample          = 34;
+    view.resetTemporalHistory = true;
+    auto reset                = render();
+    view.denoise              = PathDenoise::Spatial;
+    REQUIRE(mse(reset, render()) < 1e-8);
+    view.denoise              = PathDenoise::Temporal;
+    view.resetTemporalHistory = false;
+    view.historySamples       = 1;
+    REQUIRE(!rt->renderPaths(token, canvas, view).ok());
+    view.historySamples = 0;
+    view.firstSample    = 35;
+    render();
+    material.baseColor = {.8f, .1f, .1f};
+    prepared           = rt->preparePathScene(gfx, scene);
+    REQUIRE(prepared.ok());
+    token            = prepared.value();
+    view.firstSample = 36;
+    auto changed     = render();
+    view.denoise     = PathDenoise::Spatial;
+    REQUIRE(mse(changed, render()) < 1e-8);
+    view.denoise     = PathDenoise::Temporal;
+    view.firstSample = 37;
+    render();
+    view.environment = glm::vec3(.1f);
+    view.firstSample = 38;
+    auto relit       = render();
+    view.denoise     = PathDenoise::Spatial;
+    REQUIRE(mse(relit, render()) < 1e-8);
+    view.denoise     = PathDenoise::Temporal;
+    view.firstSample = 39;
+    render();
+    view.firstSample   = 100;
+    auto discontinuous = render();
+    view.denoise       = PathDenoise::Spatial;
+    REQUIRE(mse(discontinuous, render()) < 1e-8);
+    view.denoise     = PathDenoise::Temporal;
+    view.firstSample = 101;
+    render();
+    canvas           = gfx->newHDRCanvas(edge + 4, edge + 4);
+    view.firstSample = 102;
+    auto resized     = render();
+    view.denoise     = PathDenoise::Spatial;
+    REQUIRE(mse(resized, render()) < 1e-8);
+
+    // A nearby red occluder reveals a blue background under lateral camera motion.
+    // The mask uses world-space visibility in both cameras, not same-pixel color changes.
+    canvas = gfx->newHDRCanvas(edge, edge);
+    const std::array<glm::vec3, 4> foreground{
+        {{-.25f, -4.f, -.4f}, {.25f, -4.f, -.4f}, {.25f, 4.f, -.4f}, {-.25f, 4.f, -.4f}}};
+    std::array<PathGeometry, 2> layers{geometry, PathGeometry{foreground, {}, indices, 1}};
+    std::array<PathInstance, 2> layerInstances{};
+    layerInstances[1].geometry = 1;
+    std::array<PathMaterial, 2> layerMaterials{};
+    layerMaterials[0].baseColor = glm::vec3(0.f);
+    layerMaterials[0].emission  = {.02f, .1f, 1.f};
+    layerMaterials[1].baseColor = glm::vec3(0.f);
+    layerMaterials[1].emission  = {4.f, .02f, .01f};
+    view.maxBounces             = 0;  // Isolate visibility from real interreflection between the emissive layers.
+    PathSceneDescription layeredScene{layers, layerInstances, layerMaterials};
+    prepared = rt->preparePathScene(gfx, layeredScene);
+    REQUIRE(prepared.ok());
+    token            = prepared.value();
+    view.environment = glm::vec3(0.f);
+    for (uint32_t batch : {1u, 2u}) {
+        view.samples = batch;
+        view.denoise = PathDenoise::Temporal;
+        camera(0.f);
+        for (uint32_t frame = 0; frame < 32; ++frame) {
+            view.firstSample = frame * batch;
+            REQUIRE(rt->renderPaths(token, canvas, view).ok());
+        }
+        camera(.08f);
+        view.firstSample          = 32 * batch;
+        auto revealed             = render();
+        view.resetTemporalHistory = true;
+        auto freshReveal          = render();
+        view.resetTemporalHistory = false;
+        int    revealedPixels     = 0;
+        double revealError        = 0.;
+        for (int y = 8; y < edge - 8; ++y)
+            for (int x = 0; x < edge; ++x) {
+                const glm::vec2 ndc             = (glm::vec2(x, y) + .5f) / float(edge) * 2.f - 1.f;
+                auto            farPoint        = view.invViewProj * glm::vec4(ndc, 1.f, 1.f);
+                const auto      ray             = glm::vec3(farPoint) / farPoint.w - view.eye;
+                const auto      background      = view.eye + ray * ((.5f - view.eye.z) / ray.z);
+                const float     oldIntersection = background.x * .4f;
+                const float     newIntersection = view.eye.x + (background.x - view.eye.x) * .4f;
+                const size_t    pixel           = size_t(y) * edge + x;
+                // Exclude stochastic silhouette coverage; count only unambiguous new background.
+                if (std::abs(oldIntersection) >= .245f || newIntersection <= .255f || freshReveal[pixel].r > .03f)
+                    continue;
+                ++revealedPixels;
+                const auto delta = revealed[pixel] - freshReveal[pixel];
+                revealError += glm::dot(delta, delta);
+                REQUIRE(revealed[pixel].r < .03f);
+                REQUIRE(revealed[pixel].b > .99f);
+            }
+        std::fprintf(stderr, "Temporal disocclusion: pixels=%d squared-error=%g\n", revealedPixels, revealError);
+        REQUIRE(revealedPixels >= 16);
+        REQUIRE(revealError / double(revealedPixels * 3) < 1e-7);
+    }
+    view.denoise = PathDenoise::Spatial;
+
+    // A stationary pixel estimates coverage of both surfaces. First-hit guides
+    // fluctuate with stochastic transparency and must not discard that history.
+    layerMaterials[1].alphaMode = PathAlphaMode::Blend;
+    layerMaterials[1].opacity   = .5f;
+    prepared                    = rt->preparePathScene(gfx, layeredScene);
+    REQUIRE(prepared.ok());
+    token = prepared.value();
+    camera(0.f);
+    view.samples           = 1024;
+    view.firstSample       = 10000;
+    auto coverageReference = render();
+    view.samples           = 1;
+    view.firstSample       = 0;
+    auto coverageSpatial   = render();
+    view.denoise           = PathDenoise::Temporal;
+    for (uint32_t frame = 0; frame < 63; ++frame) {
+        view.firstSample = frame;
+        REQUIRE(rt->renderPaths(token, canvas, view).ok());
+    }
+    view.firstSample                   = 63;
+    auto         coverageTemporal      = render();
+    const double coverageSpatialError  = mse(coverageSpatial, coverageReference);
+    const double coverageTemporalError = mse(coverageTemporal, coverageReference);
+    std::fprintf(stderr, "Temporal static coverage MSE: spatial=%g temporal=%g\n", coverageSpatialError,
+                 coverageTemporalError);
+    REQUIRE(coverageSpatialError > 1e-3);
+    REQUIRE(coverageTemporalError < coverageSpatialError * .2);
+
+    // Put an opaque vertical silhouette through a pixel center. Complementary
+    // subpixel pairs must preserve partial coverage without randomly changing
+    // the reconstruction surface. Reset history each frame to expose jitter.
+    layerMaterials[1].alphaMode = PathAlphaMode::Opaque;
+    layerMaterials[1].opacity   = 1.f;
+    prepared                    = rt->preparePathScene(gfx, layeredScene);
+    REQUIRE(prepared.ok());
+    token                     = prepared.value();
+    const int   boundaryPixel = edge / 2;
+    const float ndcX          = 2.f * (float(boundaryPixel) + .5f) / float(edge) - 1.f;
+    camera(.25f - .6f * std::tan(glm::radians(30.f)) * ndcX);
+    view.samples               = 2;
+    view.resetTemporalHistory  = true;
+    view.firstSample           = 0;
+    const auto   edgeReference = render();
+    const size_t edgeIndex     = size_t(edge / 2) * edge + boundaryPixel;
+    REQUIRE(edgeReference[edgeIndex].r > .1f);
+    REQUIRE(edgeReference[edgeIndex].r < 3.9f);
+    REQUIRE(edgeReference[edgeIndex].b > .05f);
+    REQUIRE(edgeReference[edgeIndex].b < .95f);
+    double edgeJitter = 0.;
+    for (uint32_t frame = 1; frame <= 16; ++frame) {
+        view.firstSample      = frame * 2;
+        const auto pixels     = render();
+        const auto difference = pixels[edgeIndex] - edgeReference[edgeIndex];
+        edgeJitter += glm::dot(difference, difference);
+    }
+    std::fprintf(stderr, "Temporal silhouette pair jitter: squared-error=%g\n", edgeJitter);
+    REQUIRE(edgeJitter < 1e-7);
+}
+
+TEST_CASE("graphics.raytracing.path_scene.normal_mapping") {
+    using namespace eve::graphics;
+    REQUIRE(eve::image::Image::create() != nullptr);
+    auto *gfx = Graphics::create();
+    gfx->initHeadless(16, 16);
+    auto *rt = eve::cap::query<IRayTracing>();
+    if (!rt || !rt->isAvailable()) {
+        std::fprintf(stderr, "Normal path probe: provider/device unavailable; no dispatch executed\n");
+        return;
+    }
+    const std::array<glm::vec3, 4> positions{{{-2.f, -2.f, .5f}, {2.f, -2.f, .5f}, {2.f, 2.f, .5f}, {-2.f, 2.f, .5f}}};
+    std::array<glm::vec3, 4>       normals;
+    normals.fill({0.f, 0.f, -1.f});
+    std::array<glm::vec2, 4>      uv{{{0.f, 0.f}, {1.f, 0.f}, {1.f, 1.f}, {0.f, 1.f}}};
+    const std::array<uint32_t, 6> indices{0, 1, 2, 0, 2, 3};
+    PathGeometry                  geometry{positions, normals, indices, 0, uv};
+    PathInstance                  instance;
+    PathMaterial                  material;
+    material.normalTexture = 0;
+    std::array<glm::vec3, 1> texels{{{.8f, .5f, .9f}}};
+    PathColorTexture         source;
+    source.width = source.height = 1;
+    source.pixels                = texels;
+    PathLight light;
+    light.kind             = PathLightKind::Directional;
+    light.directionToLight = {1.f, 0.f, -1.f};
+    light.strength         = glm::vec3(1.f);
+    PathSceneDescription scene{std::span(&geometry, 1), std::span(&instance, 1), std::span(&material, 1),
+                               std::span(&light, 1), std::span(&source, 1)};
+    PathTraceView        view;
+    view.eye          = {0.f, 0.f, -1.f};
+    view.environment  = glm::vec3(0.f);
+    view.maxBounces   = 1;
+    view.samples      = 512;
+    auto      *canvas = gfx->newHDRCanvas(16, 16);
+    const auto read   = [&](PathSceneToken token) {
+        REQUIRE(rt->renderPaths(token, canvas, view).ok());
+        std::unique_ptr<eve::image::ImageData> image(canvas->newHDRImageData());
+        REQUIRE(image != nullptr);
+        auto pixel = image->getPixel(8, 8);
+        return glm::vec3(pixel.r, pixel.g, pixel.b);
+    };
+    const auto prepare = [&]() {
+        auto result = rt->preparePathScene(gfx, scene);
+        REQUIRE(result.ok());
+        return result.value();
+    };
+    const auto compareNormal = [&](glm::vec3 expectedWorld) {
+        auto mapped            = read(prepare());
+        material.normalTexture = UINT32_MAX;
+        normals.fill(glm::transpose(glm::mat3(instance.transform)) * expectedWorld);
+        auto reference = read(prepare());
+        REQUIRE(glm::length(mapped - reference) < .003f);
+        material.normalTexture = 0;
+        normals.fill({0.f, 0.f, -1.f});
+        return mapped;
+    };
+    auto tilted     = compareNormal({.6f, 0.f, -.8f});
+    source.rotation = 1.57079632679f;
+    compareNormal({0.f, -.6f, -.8f});
+    source.rotation = 0.f;
+    source.scale.x  = -1.f;
+    compareNormal({-.6f, 0.f, -.8f});
+    source.scale.x       = 1.f;
+    material.normalScale = 0.f;
+    auto flat            = compareNormal({0.f, 0.f, -1.f});
+    REQUIRE(tilted.r > flat.r + .03f);
+    material.normalScale = .5f;
+    compareNormal(glm::normalize(glm::vec3(.3f, 0.f, -.8f)));
+    material.normalScale = -.5f;
+    compareNormal(glm::normalize(glm::vec3(-.3f, 0.f, -.8f)));
+    material.normalScale     = 1.f;
+    instance.transform[0][0] = -2.f;
+    instance.transform[1][1] = .5f;
+    compareNormal({-.6f, 0.f, -.8f});
+    instance.transform    = glm::mat4(1.f);
+    instance.transform[0] = {0.f, 2.f, 0.f, 0.f};
+    instance.transform[1] = {-.5f, 0.f, 0.f, 0.f};
+    compareNormal({0.f, .6f, -.8f});
+    instance.transform = glm::mat4(1.f);
+    std::array<glm::vec3, 4> tangents, bitangents;
+    tangents.fill({0.f, 1.f, 0.f});
+    bitangents.fill({-1.f, 0.f, 0.f});
+    geometry.tangents   = tangents;
+    geometry.bitangents = bitangents;
+    uv.fill({.5f, .5f});
+    compareNormal({0.f, .6f, -.8f});
+    source.rotation = 1.57079632679f;
+    compareNormal({0.f, .6f, -.8f});
+    source.rotation     = 0.f;
+    auto snapshot       = prepare();
+    auto before         = read(snapshot);
+    geometry.bitangents = std::span(bitangents).first(1);
+    REQUIRE(!rt->preparePathScene(gfx, scene).ok());
+    geometry.tangents   = {};
+    geometry.bitangents = {};
+    REQUIRE(!rt->preparePathScene(gfx, scene).ok());
+    REQUIRE(glm::length(read(snapshot) - before) < .0001f);
+    geometry.tangents    = tangents;
+    geometry.bitangents  = bitangents;
+    material.normalScale = std::numeric_limits<float>::quiet_NaN();
+    REQUIRE(!rt->preparePathScene(gfx, scene).ok());
+    material.normalScale = 1.f;
+
+    // Authoring mutations must invalidate source-mesh capture without retaining mesh pointers.
+    uv         = {{{0.f, 0.f}, {1.f, 0.f}, {1.f, 1.f}, {0.f, 1.f}}};
+    auto *mesh = gfx->newMeshFromArrays(&positions[0].x, &normals[0].x, &uv[0].x, 4, indices.data(), 6);
+    REQUIRE(mesh != nullptr);
+    std::vector<float> t(12), b(12);
+    for (int i = 0; i < 4; ++i) {
+        t[i * 3]     = 1.f;
+        b[i * 3 + 1] = 1.f;
+    }
+    auto revision = mesh->tangentFrameRevision();
+    REQUIRE(mesh->setTangentFrame(t, b).ok());
+    REQUIRE(mesh->tangentFrameRevision() != revision);
+    ecs::Table       world;
+    ecs::ScopedTable scope(world);
+    auto            *object = Renderable3D::create();
+    object->setMesh(mesh);
+    const std::array<uint8_t, 4> normalPixel{204, 128, 230, 255};
+    auto                        *normalTexture = gfx->newTexture(1, 1, normalPixel.data());
+    REQUIRE(normalTexture != nullptr);
+    Material   authored;
+    PbrSurface pbr;
+    auto      &binding = pbr.textures[size_t(PbrTextureSlot::Normal)];
+    binding.texture    = normalTexture;
+    binding.srgbDecode = false;
+    REQUIRE(authored.setPbrSurface(pbr).ok());
+    object->setMaterial(&authored);
+    auto *sun              = Light3D::createLight("dir");
+    sun->data()->dx        = 1.f;
+    sun->data()->dy        = 0.f;
+    sun->data()->dz        = -1.f;
+    sun->data()->intensity = 1.f;
+    const auto capture     = [&]() {
+        auto result = preparePathWorld(world, *gfx, *rt);
+        REQUIRE(result.ok());
+        return result.value();
+    };
+    auto first   = capture();
+    auto initial = read(first);
+    REQUIRE(capture().generation == first.generation);
+    std::vector<float> rotatedT(12), rotatedB(12);
+    for (int i = 0; i < 4; ++i) {
+        rotatedT[i * 3 + 1] = 1.f;
+        rotatedB[i * 3]     = -1.f;
+    }
+    REQUIRE(mesh->setTangentFrame(rotatedT, rotatedB).ok());
+    auto changed = capture();
+    REQUIRE(changed.generation != first.generation);
+    REQUIRE(initial.r > read(changed).r + .03f);
+    revision = mesh->tangentFrameRevision();
+    REQUIRE(!mesh->setTangentFrame(t, t).ok());
+    REQUIRE(mesh->tangentFrameRevision() == revision);
+    REQUIRE(capture().generation == changed.generation);
+    REQUIRE(mesh->adoptTangentFrame(std::move(t), std::move(b)).ok());
+    REQUIRE(mesh->tangentFrameRevision() != revision);
+    auto restored = capture();
+    REQUIRE(glm::length(read(restored) - initial) < .003f);
+    REQUIRE(mesh->setTangentFrame({}, {}).ok());
+    auto derived = capture();
+    REQUIRE(derived.generation != restored.generation);
+    REQUIRE(glm::length(read(derived) - initial) < .003f);
+    const std::array<float, 8> mirroredUv{1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 1.f, 1.f};
+    REQUIRE(mesh->setTexcoordSet(0, mirroredUv).ok());
+    auto mirrored = capture();
+    REQUIRE(mirrored.generation != derived.generation);
+    REQUIRE(initial.r > read(mirrored).r + .03f);
+    const std::array<float, 8> originalUv{0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+    REQUIRE(mesh->setTexcoordSet(0, originalUv).ok());
+    derived = capture();
+    REQUIRE(glm::length(read(derived) - initial) < .003f);
+    binding.srgbDecode = true;
+    REQUIRE(authored.setPbrSurface(pbr).ok());
+    REQUIRE(!preparePathWorld(world, *gfx, *rt).ok());
+    REQUIRE(glm::length(read(derived) - initial) < .003f);
+    object->setMaterial(nullptr);
+}
+
+TEST_CASE("graphics.raytracing.path_scene.world_pbr_material") {
+    using namespace eve::graphics;
+    REQUIRE(eve::image::Image::create() != nullptr);
+    auto *gfx = Graphics::create();
+    gfx->initHeadless(16, 16);
+    auto *rt = eve::cap::query<IRayTracing>();
+    if (!rt || !rt->isAvailable()) {
+        std::fprintf(stderr, "PBR world probe: provider/device unavailable; no dispatch executed\n");
+        return;
+    }
+    ecs::Table       world;
+    ecs::ScopedTable scope(world);
+    const float      positions[]{-3.f, -3.f, .5f, 3.f, -3.f, .5f, 0.f, 3.f, .5f};
+    const float      uv[]{.25f, .5f, .25f, .5f, .25f, .5f};
+    const uint32_t   indices[]{0, 1, 2};
+    auto            *mesh = gfx->newMeshFromArrays(positions, nullptr, uv, 3, indices, 3);
+    REQUIRE(mesh != nullptr);
+    auto *object = Renderable3D::create();
+    object->setMesh(mesh);
+    Material material;
+    object->setMaterial(&material);
+    const std::array<uint8_t, 8> pixels{255, 0, 0, 255, 0, 255, 0, 255};
+    auto                        *texture = gfx->newTexture(2, 1, pixels.data());
+    REQUIRE(texture != nullptr);
+    PbrSurface pbr;
+    pbr.emissive         = {2.f, 3.f, 4.f};
+    pbr.emissiveStrength = 2.f;
+    auto &emission       = pbr.textures[size_t(PbrTextureSlot::Emissive)];
+    emission.texture     = texture;
+    emission.magFilter   = 9728;
+    emission.wrapS       = 10497;
+    PathTraceView view;
+    view.eye           = {0.f, 0.f, -1.f};
+    view.environment   = glm::vec3(0.f);
+    view.maxBounces    = 0;
+    view.samples       = 256;
+    auto      *canvas  = gfx->newHDRCanvas(16, 16);
+    const auto prepare = [&]() {
+        REQUIRE(material.setPbrSurface(pbr).ok());
+        auto result = preparePathWorld(world, *gfx, *rt);
+        REQUIRE(result.ok());
+        return result.value();
+    };
+    const auto read = [&](PathSceneToken token) {
+        REQUIRE(rt->renderPaths(token, canvas, view).ok());
+        std::unique_ptr<eve::image::ImageData> image(canvas->newHDRImageData());
+        REQUIRE(image != nullptr);
+        auto pixel = image->getPixel(8, 8);
+        return glm::vec3(pixel.r, pixel.g, pixel.b);
+    };
+    REQUIRE(glm::length(read(prepare()) - glm::vec3(4.f, 0.f, 0.f)) < .003f);
+    emission.offset[0] = 1.f;
+    REQUIRE(glm::length(read(prepare()) - glm::vec3(4.f, 0.f, 0.f)) < .003f);
+    emission.wrapS = 33648;
+    REQUIRE(glm::length(read(prepare()) - glm::vec3(0.f, 6.f, 0.f)) < .003f);
+    emission.offset[0] = -.5f;
+    REQUIRE(glm::length(read(prepare()) - glm::vec3(4.f, 0.f, 0.f)) < .003f);
+    emission.magFilter = 9729;
+    emission.offset[0] = .75f;
+    REQUIRE(glm::length(read(prepare()) - glm::vec3(0.f, 6.f, 0.f)) < .003f);
+    emission.wrapS = 10497;
+    REQUIRE(glm::length(read(prepare()) - glm::vec3(2.f, 3.f, 0.f)) < .003f);
+    emission.wrapS = 33071;
+    REQUIRE(glm::length(read(prepare()) - glm::vec3(0.f, 6.f, 0.f)) < .003f);
+    auto token = prepare();
+    REQUIRE(prepare().generation == token.generation);
+    const auto previous = read(token);
+    pbr.clearcoatFactor = .5f;
+    REQUIRE(material.setPbrSurface(pbr).ok());
+    REQUIRE(!preparePathWorld(world, *gfx, *rt).ok());
+    REQUIRE(glm::length(read(token) - previous) < .0001f);
+    pbr.clearcoatFactor = 0.f;
+    emission.texcoord   = 1;
+    REQUIRE(material.setPbrSurface(pbr).ok());
+    REQUIRE(!preparePathWorld(world, *gfx, *rt).ok());
+    emission.texcoord    = 0;
+    emission             = {};
+    pbr.emissive         = {0.f, 0.f, 0.f};
+    pbr.emissiveStrength = 1.f;
+    auto &base           = pbr.textures[size_t(PbrTextureSlot::BaseColor)];
+    base.texture         = texture;
+    base.magFilter       = 9728;
+    auto &mr             = pbr.textures[size_t(PbrTextureSlot::MetallicRoughness)];
+    mr                   = base;
+    mr.srgbDecode        = false;
+    mr.offset[0]         = .5f;
+    material.setMetallic(.8f);
+    material.setRoughness(.6f);
+    view.maxBounces  = 1;
+    view.environment = glm::vec3(1.f);
+    auto mapped      = read(prepare());
+    mr               = {};
+    material.setMetallic(0.f);  // Green texel has G=1 and B=0; independent of the red base-color binding.
+    REQUIRE(glm::length(read(prepare()) - mapped) < .003f);
+    REQUIRE(mapped.r > mapped.g + .1f);
+    object->setMaterial(nullptr);
+}
+
+TEST_CASE("graphics.raytracing.path_scene.runtime_mode") {
+    using namespace eve::graphics;
+    REQUIRE(eve::image::Image::create() != nullptr);
+    auto                       *window = eve::window::Window::create();
+    auto                       *gfx    = Graphics::create();
+    eve::window::WindowSettings settings;
+    settings.width = settings.height = 128;
+    REQUIRE(window->setWindowSettings(settings));
+    auto *provider = eve::cap::query<IRayTracing>();
+    if (!provider || !provider->isAvailable()) return;
+    ecs::Table       world;
+    ecs::ScopedTable scope(world);
+    auto            *camera = Camera3D::createCamera();
+    camera->setEye(0.f, 0.f, -1.f);
+    camera->setTarget(0.f, 0.f, 0.5f);
+    camera->setAmbient(1.f, 1.f, 1.f);
+    const float    positions[] = {-3.f, -3.f, 0.5f, 3.f, -3.f, 0.5f, 0.f, 3.f, 0.5f};
+    const uint32_t indices[]   = {0, 1, 2};
+    auto          *mesh        = gfx->newMeshFromArrays(positions, nullptr, nullptr, 3, indices, 3);
+    REQUIRE(mesh != nullptr);
+    auto *object = Renderable3D::create();
+    object->setMesh(mesh);
+    auto *control = gfx->getRenderControl();
+    REQUIRE(control->supports("pathTracing"));
+    REQUIRE(control->supports("pathTemporal"));
+    control->disable("shadow");
+    control->disable("gbuffer");
+    control->disable("aa");
+    control->enable("pathTracing");
+    gfx->setScreenReadbackEnabled(true);
+    const char *frameSetting  = std::getenv("EVE_PT_RUNTIME_FRAMES");
+    const int   runtimeFrames = frameSetting ? std::clamp(std::atoi(frameSetting), 3, 2048) : 24;
+    std::fprintf(stderr, "Path runtime rebuild endurance: %d frames\n", runtimeFrames);
+    for (int frame = 0; frame < runtimeFrames; ++frame) {
+        if (frame == 4) control->enable("pathTemporal");
+        if (frame == 16) control->disable("pathTemporal");
+        object->meshRenderer()->r = frame % 2 == 1 ? 0.9f : 0.05f;
+        object->meshRenderer()->g = 0.05f;
+        object->meshRenderer()->b = frame % 2 == 1 ? 0.05f : 0.9f;
+        gfx->render3D();
+        REQUIRE(control->pathTracingFrameState() == PathTracingFrameState::Active);
+        REQUIRE(control->pathTracingDiagnostic().empty());
+        gfx->drawSolidRect(0.f, 0.f, 16.f, 16.f, 0.f, 1.f, 0.f, 1.f);
+        gfx->present();
+        const auto pixel = gfx->getPixel(64, 64);
+        REQUIRE((frame % 2 == 1 ? pixel.r > pixel.b : pixel.b > pixel.r));
+        REQUIRE(gfx->getPixel(8, 8).g > 0.9f);
+    }
+    object->meshRenderer()->receiveLight = false;
+    gfx->render3D();
+    REQUIRE(control->pathTracingFrameState() == PathTracingFrameState::SceneRejected);
+    REQUIRE(!control->pathTracingDiagnostic().empty());
+    gfx->present();
+    control->disable("pathTracing");
+    gfx->render3D();
+    REQUIRE(control->pathTracingFrameState() == PathTracingFrameState::Disabled);
+    gfx->present();
+}
+
+TEST_CASE("graphics.raytracing.path_scene.runtime_benchmark") {
+    const char *output = std::getenv("EVE_PT_BENCHMARK_CSV");
+    if (!output || !*output) return;
+    using namespace eve::graphics;
+    const auto setting = [](const char *name, int fallback, int maximum) {
+        const char *value = std::getenv(name);
+        return value ? std::clamp(std::atoi(value), 1, maximum) : fallback;
+    };
+    const int   columns         = setting("EVE_PT_BENCHMARK_COLUMNS", 100, 2000);
+    const int   rows            = setting("EVE_PT_BENCHMARK_ROWS", 50, 2000);
+    const int   width           = setting("EVE_PT_BENCHMARK_WIDTH", 1920, 4096);
+    const int   height          = setting("EVE_PT_BENCHMARK_HEIGHT", 1080, 4096);
+    const int   warmup          = setting("EVE_PT_BENCHMARK_WARMUP", 120, 10000);
+    const int   frames          = setting("EVE_PT_BENCHMARK_FRAMES", 600, 10000);
+    const int   repeats         = setting("EVE_PT_BENCHMARK_REPEATS", 3, 20);
+    const char *temporalSetting = std::getenv("EVE_PT_BENCHMARK_TEMPORAL");
+    const bool  temporal        = temporalSetting && std::string_view(temporalSetting) == "1";
+    const int   instanceCount   = setting("EVE_PT_BENCHMARK_INSTANCES", 1, 10000);
+    const char *textureSetting  = std::getenv("EVE_PT_BENCHMARK_TEXTURE_SIZE");
+    const int   textureSize     = textureSetting ? std::clamp(std::atoi(textureSetting), 0, 4096) : 0;
+    const char *pbrSetting      = std::getenv("EVE_PT_BENCHMARK_PBR_MATERIAL");
+    const bool  pbrMaterial     = pbrSetting && std::string_view(pbrSetting) == "1";
+    REQUIRE((!pbrMaterial || textureSize > 0));
+    const char *normalSetting = std::getenv("EVE_PT_BENCHMARK_NORMAL_MAP");
+    const bool  normalMap     = normalSetting && std::string_view(normalSetting) == "1";
+    REQUIRE((!normalMap || pbrMaterial));
+    const char            *motion       = std::getenv("EVE_PT_BENCHMARK_UPDATE_INSTANCES");
+    const bool             moving       = motion && std::string_view(motion) == "1";
+    const char            *sceneSetting = std::getenv("EVE_PT_BENCHMARK_SCENE");
+    const std::string_view sceneName    = sceneSetting ? sceneSetting : "planar_grid";
+    REQUIRE((sceneName == "planar_grid" || sceneName == "corrugated_grid"));
+    const char *cameraSetting = std::getenv("EVE_PT_BENCHMARK_MOVING_CAMERA");
+    const bool  movingCamera  = cameraSetting && std::string_view(cameraSetting) == "1";
+    const bool  corrugated    = sceneName == "corrugated_grid";
+    REQUIRE(eve::image::Image::create() != nullptr);
+    auto                       *window = eve::window::Window::create();
+    auto                       *gfx    = Graphics::create();
+    eve::window::WindowSettings settings;
+    settings.width    = uint16_t(width);
+    settings.height   = uint16_t(height);
+    settings.high_dpi = settings.use_dpi_scale = false;
+    settings.vsync                             = 0;
+    REQUIRE(window->setWindowSettings(settings));
+    REQUIRE(gfx->getPixelWidth() == width);
+    REQUIRE(gfx->getPixelHeight() == height);
+    REQUIRE(window->getVSync() == 0);
+    std::string presentMode;
+#ifndef EVENGINE_WEBGPU
+    auto *vkGraphics = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    REQUIRE(vkGraphics != nullptr);
+    const auto mode = vkGraphics->currentPresentMode();
+    REQUIRE((mode == vk::PresentModeKHR::eImmediate || mode == vk::PresentModeKHR::eMailbox));
+    presentMode = mode == vk::PresentModeKHR::eImmediate ? "immediate" : "mailbox";
+#endif
+    auto *provider = eve::cap::query<IRayTracing>();
+    REQUIRE(provider != nullptr);
+    REQUIRE(provider->isAvailable());
+    auto *gpuTimer = eve::cap::query<eve::service::IGpuTimer>();
+    REQUIRE(gpuTimer != nullptr);
+    ecs::Table       world;
+    ecs::ScopedTable scope(world);
+    auto            *camera = Camera3D::createCamera();
+    camera->setEye(0.f, 0.f, -1.f);
+    camera->setTarget(0.f, 0.f, 0.5f);
+    camera->setAmbient(1.f, 1.f, 1.f);
+    std::vector<float>    positions, texcoords;
+    std::vector<uint32_t> indices;
+    for (int y = 0; y <= rows; ++y)
+        for (int x = 0; x <= columns; ++x) {
+            positions.push_back(-3.f + 6.f * float(x) / float(columns));
+            positions.push_back(-3.f + 6.f * float(y) / float(rows));
+            const float px = positions[positions.size() - 2], py = positions.back();
+            positions.push_back(corrugated ? .5f + .4f * std::sin(4.f * px) * std::sin(4.f * py) : .5f);
+            texcoords.push_back(float(x) / float(columns));
+            texcoords.push_back(float(y) / float(rows));
+        }
+    for (int y = 0; y < rows; ++y)
+        for (int x = 0; x < columns; ++x) {
+            const uint32_t a = uint32_t(y * (columns + 1) + x), b = a + uint32_t(columns + 1);
+            indices.insert(indices.end(), {a, a + 1, b, a + 1, b + 1, b});
+        }
+    auto *mesh = gfx->newMeshFromArrays(positions.data(), nullptr, textureSize ? texcoords.data() : nullptr,
+                                        int(positions.size() / 3), indices.data(), int(indices.size()));
+    REQUIRE(mesh != nullptr);
+    Texture *albedo = nullptr;
+    if (textureSize) {
+        std::vector<uint8_t> pixels(size_t(textureSize) * textureSize * 4);
+        for (int y = 0; y < textureSize; ++y)
+            for (int x = 0; x < textureSize; ++x) {
+                const size_t  offset = (size_t(y) * textureSize + x) * 4;
+                const uint8_t value  = ((x / 16 + y / 16) & 1) ? 160 : 255;
+                pixels[offset] = pixels[offset + 1] = pixels[offset + 2] = value;
+                pixels[offset + 3]                                       = 255;
+            }
+        albedo = gfx->newTexture(textureSize, textureSize, pixels.data());
+        REQUIRE(albedo != nullptr);
+    }
+    Material benchmarkMaterial;
+    if (pbrMaterial) {
+        PbrSurface surface;
+        auto      &base = surface.textures[size_t(PbrTextureSlot::BaseColor)];
+        base.texture    = albedo;
+        base.wrapS = base.wrapT = 33071;
+        auto &mr                = surface.textures[size_t(PbrTextureSlot::MetallicRoughness)];
+        mr.texture              = albedo;
+        mr.srgbDecode           = false;
+        mr.wrapS = mr.wrapT = 33648;
+        mr.scale            = {2.f, 2.f};
+        benchmarkMaterial.setTint(.2f, .4f, .8f, 1.f);
+        benchmarkMaterial.setMetallic(.7f);
+        benchmarkMaterial.setRoughness(.6f);
+        if (normalMap) {
+            std::vector<uint8_t> pixels(size_t(textureSize) * textureSize * 4);
+            for (int y = 0; y < textureSize; ++y)
+                for (int x = 0; x < textureSize; ++x) {
+                    float  nx          = .4f * std::sin(float(x) * .09817477f);
+                    float  ny          = .4f * std::cos(float(y) * .09817477f);
+                    float  nz          = std::sqrt(1.f - nx * nx - ny * ny);
+                    size_t offset      = (size_t(y) * textureSize + x) * 4;
+                    pixels[offset]     = uint8_t((nx * .5f + .5f) * 255.f + .5f);
+                    pixels[offset + 1] = uint8_t((ny * .5f + .5f) * 255.f + .5f);
+                    pixels[offset + 2] = uint8_t((nz * .5f + .5f) * 255.f + .5f);
+                    pixels[offset + 3] = 255;
+                }
+            auto &normal   = surface.textures[size_t(PbrTextureSlot::Normal)];
+            normal.texture = gfx->newTexture(textureSize, textureSize, pixels.data());
+            REQUIRE(normal.texture != nullptr);
+            normal.srgbDecode = false;
+        }
+        REQUIRE(benchmarkMaterial.setPbrSurface(surface).ok());
+    }
+    const int side = int(std::ceil(std::sqrt(float(instanceCount))));
+    REQUIRE(side * side == instanceCount);
+    std::vector<Renderable3D *> objects;
+    std::vector<glm::vec3>      origins;
+    for (int index = 0; index < instanceCount; ++index) {
+        auto *object = Renderable3D::create();
+        object->setMesh(mesh);
+        object->meshRenderer()->texture = albedo;
+        if (pbrMaterial) object->setMaterial(&benchmarkMaterial);
+        object->setScale(1.f / float(side), 1.f / float(side), 1.f);
+        const glm::vec3 origin(-3.f + 6.f * (float(index % side) + 0.5f) / float(side),
+                               -3.f + 6.f * (float(index / side) + 0.5f) / float(side), 0.f);
+        object->setPosition(origin.x, origin.y, origin.z);
+        object->meshRenderer()->r = 0.2f;
+        object->meshRenderer()->g = 0.4f;
+        object->meshRenderer()->b = 0.8f;
+        objects.push_back(object);
+        origins.push_back(origin);
+    }
+    auto *control = gfx->getRenderControl();
+    control->disable("shadow");
+    control->disable("gbuffer");
+    control->disable("aa");
+    control->enable("pathTracing");
+    if (temporal)
+        control->enable("pathTemporal");
+    else
+        control->disable("pathTemporal");
+    gfx->setScreenReadbackEnabled(false);
+    const std::string_view utf8(output);
+    std::ofstream          csv{std::filesystem::path(std::u8string(utf8.begin(), utf8.end()))};
+    REQUIRE(csv.good());
+    const char  *profileSetting   = std::getenv("EVE_PT_BENCHMARK_PROFILE_TAIL_MS");
+    const double profileThreshold = profileSetting ? std::atof(profileSetting) : 0.;
+    REQUIRE((std::isfinite(profileThreshold) && profileThreshold >= 0.));
+    std::vector<std::string> tailProfiles;
+    if (profileThreshold > 0.) eve::prof::Profiler::setEnabled(true);
+    csv << "schema_version,scene,triangles,instances,width,height,spp,bounces,repeat,frame,frame_wall_ms,instance_"
+           "motion,denoise,path_active,vsync,readback,present_mode,motion_ms,render_ms,present_ui_ms,gpu_available,gpu_"
+           "last_completed_ms,texture_size,pbr_material,normal_map,camera_motion,camera_x\n";
+    for (int repeat = 0; repeat < repeats; ++repeat) {
+        std::vector<std::array<double, 6>> times;
+        times.reserve(size_t(frames));
+        for (int frame = 0; frame < warmup + frames; ++frame) {
+            const auto  begin   = std::chrono::steady_clock::now();
+            const float cameraX = movingCamera ? .35f * std::sin(float(frame) * .01f) : 0.f;
+            if (movingCamera) camera->setEye(cameraX, 0.f, -1.f);
+            if (moving)
+                for (size_t i = 0; i < objects.size(); ++i)
+                    objects[i]->setPosition(origins[i].x + 0.25f * std::sin(float(frame) * 0.01f) / float(side),
+                                            origins[i].y, origins[i].z);
+            const auto afterMotion = std::chrono::steady_clock::now();
+            gfx->render3D();
+            const auto afterRender = std::chrono::steady_clock::now();
+            gfx->drawSolidRect(0.f, 0.f, 16.f, 16.f, 0.f, 1.f, 0.f, 1.f);
+            gfx->present();
+            const auto end          = std::chrono::steady_clock::now();
+            const auto milliseconds = [](auto duration) {
+                return std::chrono::duration<double, std::milli>(duration).count();
+            };
+            if (profileThreshold > 0.) {
+                (void)eve::prof::Profiler::frameMark();
+                if (frame >= warmup && milliseconds(end - begin) >= profileThreshold)
+                    tailProfiles.push_back("repeat=" + std::to_string(repeat) +
+                                           " frame=" + std::to_string(frame - warmup) +
+                                           " wall_ms=" + std::to_string(milliseconds(end - begin)) + "\n" +
+                                           eve::prof::Profiler::textReport());
+            }
+            REQUIRE(control->pathTracingFrameState() == PathTracingFrameState::Active);
+            REQUIRE(!gfx->isScreenReadbackEnabled());
+            if (frame >= warmup)
+                times.push_back({milliseconds(end - begin), milliseconds(afterMotion - begin),
+                                 milliseconds(afterRender - afterMotion), milliseconds(end - afterRender),
+                                 gpuTimer->gpuTimingAvailable() ? double(gpuTimer->gpuFrameMs()) : 0.0,
+                                 double(camera->getEyeX())});
+        }
+        for (size_t frame = 0; frame < times.size(); ++frame)
+            csv << "2," << sceneName << ',' << indices.size() / 3 << ',' << instanceCount << ',' << width << ','
+                << height << ",1,4," << repeat << ',' << frame << ',' << times[frame][0] << ','
+                << (moving ? "translate_x" : "static") << (temporal ? ",temporal,1,0,0," : ",spatial,1,0,0,")
+                << presentMode << ',' << times[frame][1] << ',' << times[frame][2] << ',' << times[frame][3] << ','
+                << (times[frame][4] > 0.0 ? 1 : 0) << ',' << times[frame][4] << ',' << textureSize << ','
+                << int(pbrMaterial) << ',' << int(normalMap) << ','
+                << (movingCamera ? "sine_x_look_at_origin" : "static") << ',' << times[frame][5] << '\n';
+    }
+    if (profileThreshold > 0.) {
+        eve::prof::Profiler::setEnabled(false);
+        auto profilePath = std::filesystem::path(std::u8string(utf8.begin(), utf8.end()));
+        profilePath += ".profile.txt";
+        std::ofstream profiles(profilePath);
+        REQUIRE(profiles.good());
+        profiles << "Diagnostic instrumented run; profiler aggregation occurs between frames.\n";
+        for (const auto &report : tailProfiles) profiles << report << '\n';
+        profiles.flush();
+        REQUIRE(profiles.good());
+    }
+    csv.flush();
+    REQUIRE(csv.good());
+    // One diagnostic frame outside timing; keep motion active to exercise TLAS work.
+    eve::prof::Profiler::setEnabled(true);
+    if (moving)
+        for (size_t i = 0; i < objects.size(); ++i)
+            objects[i]->setPosition(origins[i].x + 0.1f / float(side), origins[i].y, origins[i].z);
+    gfx->render3D();
+    gfx->present();
+    (void)eve::prof::Profiler::frameMark();
+    std::cout << "Path diagnostic frame (outside samples):\n" << eve::prof::Profiler::textReport();
+    eve::prof::Profiler::setEnabled(false);
+    // Visual sanity is outside every measured interval.
+    gfx->setScreenReadbackEnabled(true);
+    gfx->render3D();
+    gfx->present();
+    const auto reportImage = [&](const eve::image::ImageData &image, const char *label) {
+        glm::dvec3 sum(0.0), maximum(0.0);
+        size_t     black = 0;
+        for (int y = 0; y < image.getHeight(); ++y)
+            for (int x = 0; x < image.getWidth(); ++x) {
+                const auto       pixel = image.getPixel(x, y);
+                const glm::dvec3 rgb(pixel.r, pixel.g, pixel.b);
+                REQUIRE((std::isfinite(rgb.x) && std::isfinite(rgb.y) && std::isfinite(rgb.z)));
+                sum += rgb;
+                maximum = glm::max(maximum, rgb);
+                if (glm::dot(rgb, rgb) == 0.) ++black;
+            }
+        const auto center = image.getPixel(image.getWidth() / 2, image.getHeight() / 2);
+        const auto mean   = sum / double(image.getWidth() * image.getHeight());
+        std::fprintf(stderr, "%s center=(%g,%g,%g) mean=(%g,%g,%g) max=(%g,%g,%g) black=%zu/%d\n", label, center.r,
+                     center.g, center.b, mean.x, mean.y, mean.z, maximum.x, maximum.y, maximum.z, black,
+                     image.getWidth() * image.getHeight());
+    };
+    if (std::getenv("EVENGINE_RENDER_PARITY_DIR")) {
+        std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+        REQUIRE(image != nullptr);
+        reportImage(*image, "Path runtime output");
+        eve::graphics::parity_test::writeParityArtifact(*image, "path_runtime_" + std::string(sceneName),
+                                                        gfx->getBackendName());
+    }
+    const int referenceSamples = setting("EVE_PT_BENCHMARK_REFERENCE_SPP", 0, 4096);
+    if (referenceSamples) {
+        auto referenceScene = preparePathWorld(world, *gfx, *provider);
+        REQUIRE(referenceScene.ok());
+        auto         *referenceCanvas = gfx->newHDRCanvas(width, height);
+        const auto    data            = camera->data();
+        PathTraceView referenceView;
+        referenceView.eye = {data->eyeX, data->eyeY, data->eyeZ};
+        referenceView.invViewProj =
+            glm::inverse(cameraProjectionVulkanRH_ZO(false, glm::radians(data->fovYDeg), data->orthoHeight,
+                                                     float(width) / float(height), data->nearZ, data->farZ) *
+                         glm::lookAtRH(referenceView.eye, glm::vec3(data->targetX, data->targetY, data->targetZ),
+                                       glm::vec3(data->upX, data->upY, data->upZ)));
+        referenceView.environment = {data->ambientR, data->ambientG, data->ambientB};
+        referenceView.samples     = uint32_t(referenceSamples);
+        referenceView.maxBounces  = uint32_t(setting("EVE_PT_BENCHMARK_REFERENCE_BOUNCES", 4, 64));
+        std::fprintf(stderr, "Path reference spp=%u bounces=%u (outside timed frames)\n", referenceView.samples,
+                     referenceView.maxBounces);
+        REQUIRE(provider->renderPaths(referenceScene.value(), referenceCanvas, referenceView).ok());
+        std::unique_ptr<eve::image::ImageData> linear(referenceCanvas->newHDRImageData());
+        REQUIRE(linear != nullptr);
+        reportImage(*linear, "Path reference linear HDR");
+        if (std::getenv("EVENGINE_RENDER_PARITY_DIR")) {
+            eve::image::ImageData display(width, height);
+            for (int y = 0; y < height; ++y)
+                for (int x = 0; x < width; ++x) {
+                    const auto pixel = linear->getPixel(x, y);
+                    const auto rgb   = glm::pow(
+                        glm::vec3(pixel.r, pixel.g, pixel.b) / (glm::vec3(1.f) + glm::vec3(pixel.r, pixel.g, pixel.b)),
+                        glm::vec3(1.f / 2.2f));
+                    display.setPixel(x, y, {rgb.r, rgb.g, rgb.b, 1.f});
+                }
+            eve::graphics::parity_test::writeParityArtifact(
+                display, "path_reference_reinhard_" + std::string(sceneName), gfx->getBackendName());
+        }
+    }
+    const auto pixel = gfx->getPixel(width / 2, height / 2);
+    REQUIRE(pixel.b > pixel.g);
+    REQUIRE(pixel.g > pixel.r);
+    for (auto *object : objects) object->setMaterial(nullptr);
+}
+
+
+TEST_CASE("graphics.raytracing.path_scene.gallery_showcase") {
+    const char *directory = std::getenv("EVE_PT_GALLERY_DIR");
+    if (!directory || !*directory) return;
+    const char    *sampleSetting   = std::getenv("EVE_PT_GALLERY_SPP");
+    const uint32_t samplesPerPixel = sampleSetting ? uint32_t(std::strtoul(sampleSetting, nullptr, 10)) : 2u;
+    using namespace eve::graphics;
+    REQUIRE(eve::image::Image::create() != nullptr);
+    const std::string_view      utf8(directory);
+    const std::filesystem::path output(std::u8string(utf8.begin(), utf8.end()));
+    std::filesystem::create_directories(output);
+    auto                       *window = eve::window::Window::create();
+    auto                       *gfx    = Graphics::create();
+    eve::window::WindowSettings settings;
+    settings.width    = 1920;
+    settings.height   = 1080;
+    settings.high_dpi = settings.use_dpi_scale = false;
+    settings.vsync                             = 0;
+    REQUIRE(window->setWindowSettings(settings));
+    REQUIRE(gfx->getPixelWidth() == 1920);
+    REQUIRE(gfx->getPixelHeight() == 1080);
+    REQUIRE(window->getVSync() == 0);
+#ifndef EVENGINE_WEBGPU
+    auto *vkGraphics = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
+    REQUIRE(vkGraphics != nullptr);
+    const auto presentMode = vkGraphics->currentPresentMode();
+    REQUIRE((presentMode == vk::PresentModeKHR::eImmediate || presentMode == vk::PresentModeKHR::eMailbox));
+    std::fprintf(stderr, "Gallery present mode: %s\n",
+                 presentMode == vk::PresentModeKHR::eImmediate ? "immediate" : "mailbox");
+#endif
+
+    auto *rt = eve::cap::query<IRayTracing>();
+    REQUIRE(rt != nullptr);
+    REQUIRE(rt->isAvailable());
+    auto *timer = eve::cap::query<eve::service::IGpuTimer>();
+    REQUIRE(timer != nullptr);
+    ecs::Table       world;
+    ecs::ScopedTable scope(world);
+    auto            *camera = Camera3D::createCamera();
+    camera->setTarget(0.f, 1.25f, 1.f);
+    camera->setFov(48.f);
+    camera->setAmbient(.12f, .14f, .18f);
+    camera->setClipPlanes(.05f, 100.f);
+    auto *cube     = gfx->newMeshCube();
+    auto *sphere   = gfx->newMeshSphere(96, 48);
+    auto *cylinder = gfx->newMeshCylinder(64, 1, true);
+    REQUIRE(cube != nullptr);
+    REQUIRE(sphere != nullptr);
+    REQUIRE(cylinder != nullptr);
+    std::vector<std::unique_ptr<Material>> materials;
+    std::vector<Renderable3D *>            objects;
+    uint64_t                               triangles = 0;
+    const auto material = [&](glm::vec3 tint, float metallic, float roughness, Texture *texture = nullptr) {
+        auto owned = std::make_unique<Material>();
+        owned->setTint(tint.r, tint.g, tint.b, 1.f);
+        owned->setMetallic(metallic);
+        owned->setRoughness(roughness);
+        if (texture) {
+            PbrSurface surface;
+            surface.textures[size_t(PbrTextureSlot::BaseColor)].texture = texture;
+            REQUIRE(owned->setPbrSurface(surface).ok());
+        }
+        auto *result = owned.get();
+        materials.push_back(std::move(owned));
+        return result;
+    };
+    const auto texture = [&](bool wood) {
+        constexpr int        edge = 512;
+        std::vector<uint8_t> pixels(edge * edge * 4);
+        for (int y = 0; y < edge; ++y)
+            for (int x = 0; x < edge; ++x) {
+                glm::vec3 color;
+                if (wood) {
+                    const float grain = .5f + .5f * std::sin(float(y) * .32f + 2.f * std::sin(float(x) * .014f));
+                    color             = glm::vec3(.42f, .23f, .105f) * (.75f + .3f * grain);
+                } else {
+                    const bool  grout = x % 64 < 2 || y % 64 < 2;
+                    const float tile  = ((x / 64 + y / 64) & 1) ? .66f : .78f;
+                    color             = glm::vec3(grout ? .22f : tile);
+                }
+                const size_t i = (size_t(y) * edge + x) * 4;
+                pixels[i]      = uint8_t(color.r * 255.f);
+                pixels[i + 1]  = uint8_t(color.g * 255.f);
+                pixels[i + 2]  = uint8_t(color.b * 255.f);
+                pixels[i + 3]  = 255;
+            }
+        return gfx->newTexture(edge, edge, pixels.data());
+    };
+    auto      *floorMat   = material({1.f, 1.f, 1.f}, .08f, .32f, texture(false));
+    auto      *woodMat    = material({1.f, 1.f, 1.f}, 0.f, .5f, texture(true));
+    auto      *wallMat    = material({.72f, .73f, .69f}, 0.f, .9f);
+    auto      *darkMat    = material({.035f, .045f, .06f}, .3f, .4f);
+    auto      *goldMat    = material({.83f, .51f, .18f}, .95f, .2f);
+    auto      *ceramicMat = material({.85f, .83f, .76f}, 0.f, .16f);
+    auto      *tealMat    = material({.035f, .35f, .33f}, .35f, .28f);
+    auto      *redMat     = material({.5f, .075f, .04f}, 0.f, .55f);
+    auto      *blueMat    = material({.035f, .09f, .28f}, .1f, .68f);
+    auto      *greenMat   = material({.055f, .22f, .07f}, 0.f, .8f);
+    const auto object     = [&](Mesh *mesh, Material *mat, glm::vec3 position, glm::vec3 scale) {
+        auto *item = Renderable3D::create();
+        item->setMesh(mesh);
+        item->setMaterial(mat);
+        item->setPosition(position.x, position.y, position.z);
+        item->setScale(scale.x, scale.y, scale.z);
+        objects.push_back(item);
+        triangles += uint64_t(mesh->indexCount / 3);
+        return item;
+    };
+    object(cube, floorMat, {0.f, -.12f, 1.f}, {12.f, .2f, 11.f});
+    object(cube, wallMat, {0.f, 2.2f, 5.f}, {12.f, 4.4f, .2f});
+    object(cube, wallMat, {-6.f, 2.2f, 2.5f}, {.2f, 4.4f, 5.f});
+    object(cube, blueMat, {6.f, 2.2f, 2.5f}, {.2f, 4.4f, 5.f});
+    for (int i = -2; i <= 2; ++i) {
+        object(cube, woodMat, {float(i) * 2.2f, 2.2f, 4.82f}, {.12f, 4.3f, .12f});
+    }
+    const std::array<Material *, 3> art{tealMat, redMat, blueMat};
+    for (int i = 0; i < 3; ++i) {
+        const float x = float(i - 1) * 3.2f;
+        object(cube, darkMat, {x, 2.5f, 4.7f}, {2.2f, 2.1f, .12f});
+        object(cube, art[size_t(i)], {x, 2.5f, 4.6f}, {2.f, 1.9f, .12f});
+        object(cube, goldMat, {x - .55f, 2.5f, 4.5f}, {.10f, 1.5f, .10f});
+        object(cube, ceramicMat, {x + .3f, 2.7f, 4.5f}, {.7f, .55f, .10f});
+    }
+    object(cylinder, darkMat, {-2.5f, .45f, 1.3f}, {.9f, .45f, .9f});
+    object(sphere, goldMat, {-2.5f, 1.65f, 1.3f}, {.78f, .78f, .78f});
+    object(cube, woodMat, {0.f, .4f, 2.f}, {1.6f, .8f, 1.6f});
+    object(sphere, ceramicMat, {0.f, 1.55f, 2.f}, {.72f, .72f, .72f});
+    object(cylinder, darkMat, {2.5f, .6f, 1.2f}, {.9f, .6f, .9f});
+    object(sphere, tealMat, {2.5f, 1.9f, 1.2f}, {.72f, .72f, .72f});
+    for (int i = 0; i < 4; ++i) object(cube, woodMat, {-2.5f, .65f, -1.9f + float(i) * .16f}, {2.7f, .14f, .13f});
+    object(cube, darkMat, {-3.5f, .3f, -1.65f}, {.12f, .6f, .7f});
+    object(cube, darkMat, {-1.5f, .3f, -1.65f}, {.12f, .6f, .7f});
+    object(cube, blueMat, {1.7f, .02f, -1.3f}, {3.5f, .03f, 2.1f});
+    for (float x : {-4.7f, 4.7f}) {
+        object(cylinder, ceramicMat, {x, .35f, 3.4f}, {.45f, .35f, .45f});
+        object(cylinder, woodMat, {x, 1.1f, 3.4f}, {.09f, .6f, .09f});
+        object(sphere, greenMat, {x, 1.9f, 3.4f}, {.65f, .8f, .65f});
+    }
+    const auto light = [&](glm::vec3 position, glm::vec3 color, float intensity) {
+        auto *lamp      = Light3D::createLight("point");
+        lamp->data()->x = position.x;
+        lamp->data()->y = position.y;
+        lamp->data()->z = position.z;
+        lamp->setColor(color.r, color.g, color.b, intensity);
+    };
+    light({-3.f, 4.f, -1.f}, {1.f, .83f, .64f}, 65.f);
+    light({3.f, 3.5f, -.5f}, {.62f, .8f, 1.f}, 45.f);
+    light({0.f, 3.8f, 4.f}, {1.f, .94f, .8f}, 30.f);
+    auto *control = gfx->getRenderControl();
+    control->disable("shadow");
+    control->disable("gbuffer");
+    control->disable("aa");
+    control->enable("pathTracing");
+    control->enable("pathTemporal");
+    const auto moveCamera = [&](int frame) {
+        const float angle = -.55f + 1.1f * float(frame) / 719.f;
+        camera->setEye(8.f * std::sin(angle), 3.25f, -8.f * std::cos(angle));
+    };
+    auto sampling = control->setPathTracingSamples(samplesPerPixel);
+    REQUIRE(sampling.ok());
+    REQUIRE(control->pathTracingSamples() == samplesPerPixel);
+    std::ofstream csv(output / "frames.csv");
+    REQUIRE(csv.good());
+    csv << "schema_version,scene,width,height,instances,triangles,spp,bounces,repeat,frame,frame_wall_ms,gpu_available,"
+           "gpu_last_completed_ms,camera_x,camera_z\n";
+    gfx->setScreenReadbackEnabled(false);
+    for (int repeat = 0; repeat < 3; ++repeat) {
+        std::vector<std::array<double, 4>> samples;
+        for (int frame = 0; frame < 720; ++frame) {
+            const auto begin = std::chrono::steady_clock::now();
+            moveCamera(frame);
+            gfx->render3D();
+            gfx->present();
+            const double ms =
+                std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - begin).count();
+            REQUIRE(control->pathTracingFrameState() == PathTracingFrameState::Active);
+            REQUIRE(control->pathTracingDiagnostic().empty());
+            if (frame >= 120)
+                samples.push_back({ms, timer->gpuTimingAvailable() ? double(timer->gpuFrameMs()) : 0.,
+                                   camera->getEyeX(), camera->getEyeZ()});
+        }
+        for (size_t i = 0; i < samples.size(); ++i)
+            csv << "1,material_gallery,1920,1080," << objects.size() << ',' << triangles << ',' << samplesPerPixel
+                << ",4," << repeat << ',' << i << ',' << samples[i][0] << ',' << (samples[i][1] > 0. ? 1 : 0) << ','
+                << samples[i][1] << ',' << samples[i][2] << ',' << samples[i][3] << '\n';
+    }
+    csv.flush();
+    REQUIRE(csv.good());
+    for (int frame = 0; frame < 720; ++frame) {
+        moveCamera(frame);
+        const bool capture = frame == 120 || frame == 420 || frame == 719;
+        gfx->setScreenReadbackEnabled(capture);
+        gfx->render3D();
+        gfx->present();
+        REQUIRE(control->pathTracingFrameState() == PathTracingFrameState::Active);
+        if (capture) {
+            std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+            REQUIRE(image != nullptr);
+            eve::graphics::parity_test::writeParityArtifact(*image, "gallery_motion_" + std::to_string(frame),
+                                                            gfx->getBackendName());
+        }
+    }
+    std::fprintf(stderr, "Gallery: instances=%zu instanced_triangles=%llu materials=%zu lights=3 native=1920x1080\n",
+                 objects.size(), static_cast<unsigned long long>(triangles), materials.size());
+    for (auto *item : objects) item->setMaterial(nullptr);
+}

@@ -536,6 +536,14 @@ Canvas *Graphics::newHDRCanvas(int w, int h) {
     return raw;
 }
 
+void Graphics::beginPathSceneOutput() {
+    if (sceneColorPassOpen) endSceneColorRenderPass();
+}
+
+void Graphics::resolvePathSceneOutput(Texture *texture) { pendingSceneResolveSource = texture; }
+
+void Graphics::retirePathSceneOutput() { invalidateTextureBindings(); }
+
 void Graphics::setCanvas(Canvas *canvas) {
     Canvas *next = canvas;
     if (next == static_cast<Canvas *>(this)) next = nullptr;
@@ -1295,6 +1303,7 @@ void Graphics::abortOpen3DFrame() {
                                       : false;
             submitGpuTimingPrefix();
             presentRecording.end().submitAndPresent();
+            submittedPresentSequence_ = presentSequence_;
             presentRecording = {};
             if (captured) {
                 hasPresentedFrame = true;
@@ -1694,6 +1703,7 @@ void Graphics::flushToSwapchain() {
         EV_PROFILE_MODULE("graphics", "Frame.SubmitPresent");
         submitGpuTimingPrefix();
         presentRecording.end().submitAndPresent();
+        submittedPresentSequence_ = presentSequence_;
     }
     markFrameCaptureSubmitted();
     presentRecording = {};

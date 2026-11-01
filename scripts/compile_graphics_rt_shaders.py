@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Compile Vulkan ray-tracing reflection shaders to SPIR-V C++ include arrays."""
+"""Compile and validate Vulkan reflection/path-tracing shaders as C++ arrays."""
 
 from __future__ import annotations
 
 import struct
 import subprocess
 import shutil
+import tempfile
 from pathlib import Path
 import utf8_stdio
 
@@ -16,7 +17,14 @@ SHADERS = [
     ("rt_reflection.rgen", "rgen", "rt_reflection_rgen_spv"),
     ("rt_reflection.rmiss", "rmiss", "rt_reflection_rmiss_spv"),
     ("rt_reflection.rchit", "rchit", "rt_reflection_rchit_spv"),
+    ("pt_path.rgen", "rgen", "pt_path_rgen_spv"),
+    ("pt_path.rmiss", "rmiss", "pt_path_rmiss_spv"),
+    ("pt_path.rahit", "rahit", "pt_path_rahit_spv"),
+    ("pt_path.rchit", "rchit", "pt_path_rchit_spv"),
+    ("pt_denoise.comp", "compute", "pt_denoise_spv"),
+    ("pt_temporal.comp", "compute", "pt_temporal_spv"),
 ]
+SAMPLING_TEST = ROOT / "test" / "integration" / "render-pipeline"
 
 
 def spv_to_inc(spv_path: Path, array_name: str, out_path: Path) -> None:
@@ -46,23 +54,34 @@ def main() -> int:
     glslc = shutil.which("glslc")
     if not glslc:
         raise SystemExit("need glslc on PATH (Vulkan SDK)")
-    for name, stage, array in SHADERS:
-        src = SHADER_DIR / name
-        if not src.is_file():
-            raise SystemExit(f"missing {src}")
-        out_spv = src.with_suffix(".spv")
-        command = [
-            glslc,
-            f"-fshader-stage={stage}",
-            "--target-env=vulkan1.2",
-            str(src),
-            "-o",
-            str(out_spv),
-        ]
-        r = subprocess.run(command, capture_output=True, text=True)
-        if r.returncode != 0:
-            raise SystemExit(f"shader compile failed for {name}:\n{r.stderr or r.stdout}")
-        spv_to_inc(out_spv, array, SHADER_DIR / f"{array}.inc")
+    validator = shutil.which("spirv-val")
+    if not validator:
+        raise SystemExit("need spirv-val on PATH (Vulkan SDK)")
+    with tempfile.TemporaryDirectory(prefix="eve-rt-shaders-") as temporary:
+        pending: list[tuple[Path, str, Path]] = []
+        jobs = [(SHADER_DIR / name, stage, array, SHADER_DIR) for name, stage, array in SHADERS]
+        jobs.append((SAMPLING_TEST / "path_sampling.comp", "compute", "pt_sampling_spv", SAMPLING_TEST))
+        for src, stage, array, destination in jobs:
+            if not src.is_file():
+                raise SystemExit(f"missing {src}")
+            out_spv = Path(temporary) / f"{array}.spv"
+            command = [
+                glslc,
+                f"-fshader-stage={stage}",
+                "--target-env=vulkan1.2",
+                "-I", str(SHADER_DIR),
+                str(src),
+                "-o",
+                str(out_spv),
+            ]
+            for step in (command, [validator, "--target-env", "vulkan1.2", str(out_spv)]):
+                r = subprocess.run(step, capture_output=True, text=True, encoding="utf-8")
+                if r.returncode != 0:
+                    raise SystemExit(f"shader build failed for {src.name}:\n{r.stderr or r.stdout}")
+            pending.append((out_spv, array, destination))
+        # A compilation failure must not publish only part of a shader family.
+        for out_spv, array, destination in pending:
+            spv_to_inc(out_spv, array, destination / f"{array}.inc")
     return 0
 
 

@@ -1,0 +1,18 @@
+#version 460
+#extension GL_EXT_ray_tracing : require
+#extension GL_GOOGLE_include_directive : require
+#include "pt_sampling.glsl"
+#include "pt_scene.glsl"
+#include "pt_surface.glsl"
+
+layout(location = 0) rayPayloadInEXT PtPayload payload;
+hitAttributeEXT vec2 barycentric;
+
+void main() {
+    float coverage = surfaceCoverage(gl_InstanceCustomIndexEXT, gl_PrimitiveID, barycentric);
+    // Never mutate the stream here: Vulkan may invoke any-hit more than once
+    // for a candidate, and traversal order must not alter its coverage decision.
+    uint seed = ptHash(payload.opacitySeed ^ ptHash(uint(gl_InstanceCustomIndexEXT)) ^
+                       ptHash(uint(gl_PrimitiveID) + 0x9e3779b9u));
+    if (coverage <= 0.0 || (coverage < 1.0 && ptRandom(seed) >= coverage)) ignoreIntersectionEXT;
+}

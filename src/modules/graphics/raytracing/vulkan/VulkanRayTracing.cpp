@@ -1,3 +1,4 @@
+#include "common/Profile.h"
 // eve-hot-path
 #include "graphics/raytracing/vulkan/VulkanRayTracing.h"
 
@@ -60,6 +61,8 @@ void DeviceAddressBuffer::release() {
     size    = 0;
     address = 0;
     device  = nullptr;
+    usage_      = {};
+    properties_ = {};
 }
 
 void DeviceAddressBuffer::steal(DeviceAddressBuffer& o) noexcept {
@@ -68,6 +71,8 @@ void DeviceAddressBuffer::steal(DeviceAddressBuffer& o) noexcept {
     size      = o.size;
     address   = o.address;
     device    = o.device;
+    usage_      = o.usage_;
+    properties_ = o.properties_;
     o.buffer  = vk::Buffer{};
     o.memory  = vk::DeviceMemory{};
     o.size    = 0;
@@ -76,8 +81,32 @@ void DeviceAddressBuffer::steal(DeviceAddressBuffer& o) noexcept {
 }
 
 Result<void> DeviceAddressBuffer::allocate(vkb::Device& dev, vk::DeviceSize bytes, vk::BufferUsageFlags usage) {
+    return allocateWithProperties(dev, bytes, usage, vk::MemoryPropertyFlagBits::eDeviceLocal);
+}
+
+Result<void> DeviceAddressBuffer::initializeHostVisible(vkb::Device& dev, const void* data, vk::DeviceSize bytes,
+                                                        vk::BufferUsageFlags usage) {
+    if (!data)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "Host-visible buffer needs initial data", "graphics.raytracing"));
+    if (auto r = allocateWithProperties(
+            dev, bytes, usage, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+        !r.ok())
+        return r;
+    void* mapped = (*device)->mapMemory(memory, 0, bytes);
+    std::memcpy(mapped, data, size_t(bytes));
+    (*device)->unmapMemory(memory);
+    return Result<void>::success();
+}
+
+Result<void> DeviceAddressBuffer::allocateWithProperties(vkb::Device& dev, vk::DeviceSize bytes,
+                                                         vk::BufferUsageFlags    usage,
+                                                         vk::MemoryPropertyFlags properties) {
     if (bytes == 0) return Result<void>::failure(
         Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("DeviceAddressBuffer.allocate") + ": " + "size is zero", "graphics.raytracing"));
+    if (device == &dev && buffer && memory && address && size >= bytes && (usage_ & usage) == usage &&
+        (properties_ & properties) == properties)
+        return Result<void>::success();
     release();
     device = &dev;
 
@@ -96,10 +125,11 @@ Result<void> DeviceAddressBuffer::allocate(vkb::Device& dev, vk::DeviceSize byte
     vk::MemoryAllocateInfo allocInfo{};
     allocInfo.pNext          = &flagsInfo;
     allocInfo.allocationSize = memreq.size;
-    allocInfo.memoryTypeIndex =
-        device->physical_device.findMemoryTypeIndex(memreq.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal);
+    allocInfo.memoryTypeIndex = device->physical_device.findMemoryTypeIndex(memreq.memoryTypeBits, properties);
     memory = (*device)->allocateMemory(allocInfo, device->allocation_callbacks);
     (*device)->bindBufferMemory(buffer, memory, 0);
+    usage_      = usage;
+    properties_ = properties;
 
     vk::BufferDeviceAddressInfo addrInfo{};
     addrInfo.buffer = buffer;
@@ -210,6 +240,18 @@ void VulkanRayTracing::attachDevice(vkb::Device* device, const RayTracingCaps& c
 }
 
 void VulkanRayTracing::detachDevice() {
+    if (pathPipeline_ && graphicsQueue_) graphicsQueue_.waitIdle();
+    if (pathFrame_ && pathGraphics_) pathGraphics_->retirePathSceneOutput();
+    pathFrame_.reset();
+    pathScene_.reset();
+    pathSceneWords_.clear();
+    pathMeshSceneWords_.clear();
+    pathInstanceWords_.clear();
+    pathGraphics_         = nullptr;
+    pathRecordedSequence_ = 0;
+    pathSpareScene_.reset();
+    pathHistorySamples_ = 0;
+    pathPipeline_.reset();
     clearScene();
     if (device_) {
         if (pipeline_) (*device_)->destroyPipeline(pipeline_, device_->allocation_callbacks);
@@ -400,8 +442,11 @@ Result<void> VulkanRayTracing::buildBlas(TriangleMeshRecord& mesh) {
 }
 
 Result<void> VulkanRayTracing::buildTlas() {
-    tlas_.release();
-    if (meshes_.empty()) return Result<void>::success();
+    if (meshes_.empty()) {
+        if (tlas_.handle) graphicsQueue_.waitIdle();
+        tlas_.release();
+        return Result<void>::success();
+    }
 
     std::vector<vk::AccelerationStructureInstanceKHR> instances;
     instances.reserve(meshes_.size());
@@ -416,15 +461,32 @@ Result<void> VulkanRayTracing::buildTlas() {
         instances.push_back(inst);
     }
 
-    DeviceAddressBuffer  instanceBuffer;
+    AccelerationStructure candidate;
+    if (auto r = buildTlas(instances, candidate); !r.ok()) return r;
+    // The build completes on the graphics queue before replacing the live TLAS.
+    tlas_ = std::move(candidate);
+    return Result<void>::success();
+}
+
+Result<void> VulkanRayTracing::buildTlas(std::span<const vk::AccelerationStructureInstanceKHR> instances,
+                                         AccelerationStructure&                                target) {
+    TlasWorkspace workspace;
+    return buildTlas(instances, target, workspace);
+}
+
+Result<void> VulkanRayTracing::buildTlas(std::span<const vk::AccelerationStructureInstanceKHR> instances,
+                                         AccelerationStructure& target, TlasWorkspace& workspace) {
+    EV_PROFILE_MODULE("graphics", "Path.BuildTlas");
+    if (instances.empty() || instances.size() > UINT32_MAX)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "TLAS build requires a valid instance count", "graphics.raytracing"));
+
+    auto&                instanceBuffer = workspace.instances;
     const vk::DeviceSize bytes = vk::DeviceSize(instances.size()) * sizeof(instances[0]);
-    if (auto r = instanceBuffer.allocate(*device_, bytes,
-                                         vk::BufferUsageFlagBits::eAccelerationStructureBuildInputReadOnlyKHR |
-                                             vk::BufferUsageFlagBits::eShaderDeviceAddress |
-                                             vk::BufferUsageFlagBits::eTransferDst);
+    if (auto r = instanceBuffer.initializeHostVisible(
+            *device_, instances.data(), bytes, vk::BufferUsageFlagBits::eAccelerationStructureBuildInputReadOnlyKHR);
         !r.ok())
         return r;
-    if (auto r = instanceBuffer.upload(uploadPool_, graphicsQueue_, instances.data(), bytes); !r.ok()) return r;
 
     vk::AccelerationStructureGeometryInstancesDataKHR instancesData{};
     instancesData.arrayOfPointers    = VK_FALSE;
@@ -445,31 +507,34 @@ Result<void> VulkanRayTracing::buildTlas() {
     const auto sizes = (*device_)->getAccelerationStructureBuildSizesKHR(vk::AccelerationStructureBuildTypeKHR::eDevice,
                                                                          buildInfo, primitiveCount);
 
-    if (auto r = tlas_.storage.allocate(
-            *device_, sizes.accelerationStructureSize,
-            vk::BufferUsageFlagBits::eAccelerationStructureStorageKHR | vk::BufferUsageFlagBits::eShaderDeviceAddress);
-        !r.ok())
-        return r;
+    if (target.handle && target.storage.size < sizes.accelerationStructureSize) target.release();
+    if (!target.handle) {
+        if (auto r = target.storage.allocate(*device_, sizes.accelerationStructureSize,
+                                             vk::BufferUsageFlagBits::eAccelerationStructureStorageKHR |
+                                                 vk::BufferUsageFlagBits::eShaderDeviceAddress);
+            !r.ok())
+            return r;
 
-    vk::AccelerationStructureCreateInfoKHR createInfo{};
-    createInfo.buffer = tlas_.storage.buffer;
-    createInfo.size   = sizes.accelerationStructureSize;
-    createInfo.type   = vk::AccelerationStructureTypeKHR::eTopLevel;
-    tlas_.handle      = (*device_)->createAccelerationStructureKHR(createInfo, device_->allocation_callbacks);
-    tlas_.device      = device_;
+        vk::AccelerationStructureCreateInfoKHR createInfo{};
+        createInfo.buffer = target.storage.buffer;
+        createInfo.size   = sizes.accelerationStructureSize;
+        createInfo.type   = vk::AccelerationStructureTypeKHR::eTopLevel;
+        target.handle     = (*device_)->createAccelerationStructureKHR(createInfo, device_->allocation_callbacks);
+        target.device     = device_;
 
-    vk::AccelerationStructureDeviceAddressInfoKHR addrInfo{};
-    addrInfo.accelerationStructure = tlas_.handle;
-    tlas_.deviceAddress            = (*device_)->getAccelerationStructureAddressKHR(addrInfo);
+        vk::AccelerationStructureDeviceAddressInfoKHR addrInfo{};
+        addrInfo.accelerationStructure = target.handle;
+        target.deviceAddress           = (*device_)->getAccelerationStructureAddressKHR(addrInfo);
+    }
 
-    DeviceAddressBuffer scratch;
+    auto& scratch = workspace.scratch;
     if (auto r =
             scratch.allocate(*device_, sizes.buildScratchSize,
                              vk::BufferUsageFlagBits::eStorageBuffer | vk::BufferUsageFlagBits::eShaderDeviceAddress);
         !r.ok())
         return r;
 
-    buildInfo.dstAccelerationStructure  = tlas_.handle;
+    buildInfo.dstAccelerationStructure  = target.handle;
     buildInfo.scratchData.deviceAddress = scratch.address;
 
     vk::AccelerationStructureBuildRangeInfoKHR range{};
