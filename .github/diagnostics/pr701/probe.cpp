@@ -24,8 +24,9 @@ VkQueue                          queue;
 VkCommandPool                    pool;
 VkPhysicalDeviceMemoryProperties memoryProperties;
 VkPhysicalDeviceProperties       properties;
-VmaAllocator vmaAllocator{};
-bool useVma{};
+VmaAllocator                     vmaAllocator{};
+bool                             useVma{};
+bool                             depthMode{}, dynamicViewport{};
 VkDeviceMemory                   sharedMemory{};
 VkDeviceSize                     sharedCursor{}, sharedBytes{};
 void*                            sharedMapped{};
@@ -142,7 +143,8 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     std::string label     = std::string(mode) + " layout=" + (full ? "engine" : "minimal") +
                         " memoryOffset=" + std::to_string(offset) + " indices=" + std::to_string(indices) +
                         " sharedBytes=" + std::to_string(sharedBytes) + " flush=" + std::to_string(flushCoherent) +
-                        " VMA=" + std::to_string(useVma);
+                        " VMA=" + std::to_string(useVma) + " depth=" + std::to_string(depthMode) +
+                        " dynamicViewport=" + std::to_string(dynamicViewport);
     const int                   attachments = gbuffer || std::strcmp(mode, "MRT") == 0 ? 5 : 1;
     std::vector<VkImage>        images(attachments);
     std::vector<VkImageView>    views(attachments);
@@ -173,6 +175,35 @@ bool render(const char* mode, bool full, bool offset, int indices) {
         vi.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
         VK(vkCreateImageView(device, &vi, nullptr, &views[i]));
     }
+    VkImage        depthImage{};
+    VkDeviceMemory depthMemory{};
+    VkImageView    depthView{};
+    if (depthMode) {
+        VkImageCreateInfo ci{VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
+        ci.imageType   = VK_IMAGE_TYPE_2D;
+        ci.format      = VK_FORMAT_D32_SFLOAT;
+        ci.extent      = {64, 64, 1};
+        ci.mipLevels   = 1;
+        ci.arrayLayers = 1;
+        ci.samples     = VK_SAMPLE_COUNT_1_BIT;
+        ci.tiling      = VK_IMAGE_TILING_OPTIMAL;
+        ci.usage       = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+        VK(vkCreateImage(device, &ci, nullptr, &depthImage));
+        VkMemoryRequirements mr;
+        vkGetImageMemoryRequirements(device, depthImage, &mr);
+        VkMemoryAllocateInfo ai{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
+        ai.allocationSize  = mr.size;
+        ai.memoryTypeIndex = memoryType(mr.memoryTypeBits, 0);
+        VK(vkAllocateMemory(device, &ai, nullptr, &depthMemory));
+        VK(vkBindImageMemory(device, depthImage, depthMemory, 0));
+        VkImageViewCreateInfo vi{VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+        vi.image            = depthImage;
+        vi.viewType         = VK_IMAGE_VIEW_TYPE_2D;
+        vi.format           = ci.format;
+        vi.subresourceRange = {VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1};
+        VK(vkCreateImageView(device, &vi, nullptr, &depthView));
+        views.push_back(depthView);
+    }
     std::vector<VkAttachmentDescription> ads(attachments);
     std::vector<VkAttachmentReference>   refs(attachments);
     for (int i = 0; i < attachments; ++i) {
@@ -184,10 +215,22 @@ bool render(const char* mode, bool full, bool offset, int indices) {
         ads[i].finalLayout   = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
         refs[i]              = {uint32_t(i), VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL};
     }
+    VkAttachmentReference depthRef{uint32_t(attachments), VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL};
+    if (depthMode) {
+        VkAttachmentDescription ad{};
+        ad.format        = VK_FORMAT_D32_SFLOAT;
+        ad.samples       = VK_SAMPLE_COUNT_1_BIT;
+        ad.loadOp        = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        ad.storeOp       = VK_ATTACHMENT_STORE_OP_STORE;
+        ad.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        ad.finalLayout   = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        ads.push_back(ad);
+    }
     VkSubpassDescription sp{};
     sp.pipelineBindPoint    = VK_PIPELINE_BIND_POINT_GRAPHICS;
     sp.colorAttachmentCount = attachments;
     sp.pColorAttachments    = refs.data();
+    if (depthMode) sp.pDepthStencilAttachment = &depthRef;
     VkSubpassDependency dep{};
     dep.srcSubpass    = 0;
     dep.dstSubpass    = VK_SUBPASS_EXTERNAL;
@@ -196,7 +239,7 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     dep.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
     dep.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
     VkRenderPassCreateInfo ri{VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO};
-    ri.attachmentCount = attachments;
+    ri.attachmentCount = uint32_t(ads.size());
     ri.pAttachments    = ads.data();
     ri.subpassCount    = 1;
     ri.pSubpasses      = &sp;
@@ -206,7 +249,7 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     VK(vkCreateRenderPass(device, &ri, nullptr, &pass));
     VkFramebufferCreateInfo fi{VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO};
     fi.renderPass      = pass;
-    fi.attachmentCount = attachments;
+    fi.attachmentCount = uint32_t(views.size());
     fi.pAttachments    = views.data();
     fi.width           = 64;
     fi.height          = 64;
@@ -289,6 +332,14 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     VkPipelineColorBlendStateCreateInfo bs{VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO};
     bs.attachmentCount = attachments;
     bs.pAttachments    = blend.data();
+    VkPipelineDepthStencilStateCreateInfo ds{VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO};
+    ds.depthTestEnable                               = VK_TRUE;
+    ds.depthWriteEnable                              = VK_TRUE;
+    ds.depthCompareOp                                = VK_COMPARE_OP_LESS;
+    VkDynamicState                   dynamicStates[] = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+    VkPipelineDynamicStateCreateInfo dyn{VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO};
+    dyn.dynamicStateCount = 2;
+    dyn.pDynamicStates    = dynamicStates;
     VkGraphicsPipelineCreateInfo pi{VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO};
     pi.stageCount          = 2;
     pi.pStages             = stages;
@@ -300,6 +351,8 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     pi.pColorBlendState    = &bs;
     pi.layout              = pipelineLayout;
     pi.renderPass          = pass;
+    if (depthMode) pi.pDepthStencilState = &ds;
+    if (dynamicViewport) pi.pDynamicState = &dyn;
     VkPipeline pipeline;
     VK(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pi, nullptr, &pipeline));
     std::array<Vertex, 3> vertices{};
@@ -458,16 +511,21 @@ bool render(const char* mode, bool full, bool offset, int indices) {
                                       ? VK_PIPELINE_STAGE_VERTEX_SHADER_BIT
                                       : VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     vkCmdPipelineBarrier(cb, VK_PIPELINE_STAGE_TRANSFER_BIT, target, 0, 0, nullptr, 0, nullptr, 1, &tb);
-    std::vector<VkClearValue> clears(attachments);
+    std::vector<VkClearValue> clears(attachments + int(depthMode));
     for (auto& c : clears) c.color.float32[3] = 1;
     VkRenderPassBeginInfo rbi{VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO};
-    rbi.renderPass      = pass;
-    rbi.framebuffer     = framebuffer;
-    rbi.renderArea      = {{0, 0}, {64, 64}};
-    rbi.clearValueCount = attachments;
+    rbi.renderPass  = pass;
+    rbi.framebuffer = framebuffer;
+    rbi.renderArea  = {{0, 0}, {64, 64}};
+    if (depthMode) clears.back().depthStencil = {1.0f, 0};
+    rbi.clearValueCount = uint32_t(clears.size());
     rbi.pClearValues    = clears.data();
     vkCmdBeginRenderPass(cb, &rbi, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+    if (dynamicViewport) {
+        vkCmdSetViewport(cb, 0, 1, &viewport);
+        vkCmdSetScissor(cb, 0, 1, &scissor);
+    }
     uint32_t dynamicOffsets[2] = {uint32_t(uboOffset), 0};
     if (!dynamic) dynamicOffsets[0] = 0;
     vkCmdBindDescriptorSets(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &set,
@@ -548,6 +606,11 @@ bool render(const char* mode, bool full, bool offset, int indices) {
         vkDestroyImageView(device, views[i], nullptr);
         vkDestroyImage(device, images[i], nullptr);
         vkFreeMemory(device, imageMemory[i], nullptr);
+    }
+    if (depthMode) {
+        vkDestroyImageView(device, depthView, nullptr);
+        vkDestroyImage(device, depthImage, nullptr);
+        vkFreeMemory(device, depthMemory, nullptr);
     }
     if (sharedMemory) {
         vkUnmapMemory(device, sharedMemory);
@@ -662,6 +725,16 @@ int main() {
                 vmaUnmapMemory(vmaAllocator, keeper.allocation);
                 release(keeper);
             }
+        }
+        useVma        = false;
+        depthMode     = true;
+        sharedBytes   = 0;
+        flushCoherent = false;
+        for (bool dynViewport : {false, true}) {
+            dynamicViewport = dynViewport;
+            for (bool full : {false, true})
+                for (const char* mode : {"VERTEX", "PUSH", "UBO", "SAMPLER_ALL", "GBUFFER_EMBEDDED"})
+                    good = render(mode, full, false, 32) && good;
         }
         vmaDestroyAllocator(vmaAllocator);
         VK(vkDeviceWaitIdle(device));
