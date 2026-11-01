@@ -5,7 +5,7 @@ on:
       target:
         type: choice
         default: both
-        options: [both, linux, intel, intel_fresh, dawn_full, intel_full, loader]
+        options: [both, linux, intel, intel_fresh, dawn_full, intel_full, loader, replay]
 permissions:
   contents: read
   actions: read
@@ -484,3 +484,42 @@ jobs:
             engine-probe*.log
             engine-probe-sample.txt
 
+
+  intel-replay:
+    if: ${{ inputs.target == 'replay' }}
+    runs-on: macos-15-intel
+    timeout-minutes: 45
+    env:
+      MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS: '0'
+      MVK_CONFIG_VK_SEMAPHORE_SUPPORT_STYLE: '0'
+      ALSOFT_DRIVERS: 'null'
+      EVENGINE_VIEW_SECONDS: '0.3'
+      EVENGINE_PERF_FRAMES: '30'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          submodules: recursive
+      - uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533
+        with:
+          vulkan_version: '1.4.363.0'
+          cache: true
+          destination: ${{ runner.temp }}/VulkanSDK
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+      - name: Replay every original failure through canonical CTest discovery
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh run download 41332710462 --repo github.com/EVEngine/EVEngine --name pr701-intel-native-release --dir "$RUNNER_TEMP/native-replay"
+          chmod +x "$RUNNER_TEMP/native-replay/unit_test"
+          export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:-}:$RUNNER_TEMP/native-replay"
+          mkdir -p build/replay
+          python3 -X utf8 scripts/test_levels.py --emit-cmake "$PWD/build/replay/test_levels.cmake"
+          cmake -DZEROERR_EXE="$RUNNER_TEMP/native-replay/unit_test" -DCTEST_FILE="$PWD/build/replay/CTestTestfile.cmake" -DZEROERR_WORKING_DIRECTORY="$PWD" -DZEROERR_LEVEL_FILE="$PWD/build/replay/test_levels.cmake" -P cmake/ZeroErrDiscoverTestsImpl.cmake
+          ctest --test-dir build/replay --tests-from-file .github/diagnostics/pr701-followup/failed-cases.txt --no-tests=error --output-on-failure -j 1 --timeout 120
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: pr701-intel-failure-replay
+          path: build/replay/Testing/Temporary/
