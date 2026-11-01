@@ -5,7 +5,7 @@ on:
       target:
         type: choice
         default: both
-        options: [both, linux, intel, intel_fresh, dawn_full, intel_full, loader, replay]
+        options: [both, linux, intel, intel_fresh, dawn_full, intel_full, loader, replay, compute]
 permissions:
   contents: read
   actions: read
@@ -523,3 +523,55 @@ jobs:
         with:
           name: pr701-intel-failure-replay
           path: build/replay/Testing/Temporary/
+
+  intel-compute:
+    if: ${{ inputs.target == 'compute' }}
+    runs-on: macos-15-intel
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        semaphore: ['0', '3']
+        validation: [off, sync]
+    env:
+      MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS: '0'
+      MVK_CONFIG_VK_SEMAPHORE_SUPPORT_STYLE: ${{ matrix.semaphore }}
+      EVENGINE_VULKAN_VALIDATION: ${{ matrix.validation == 'sync' && '1' || '0' }}
+      ALSOFT_DRIVERS: 'null'
+      EVENGINE_VIEW_SECONDS: '0.3'
+      EVENGINE_PERF_FRAMES: '30'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          submodules: recursive
+      - uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533
+        with:
+          vulkan_version: '1.4.363.0'
+          cache: true
+          destination: ${{ runner.temp }}/VulkanSDK
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+      - name: Replay every original failure through canonical CTest discovery
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh run download 41332710462 --repo github.com/EVEngine/EVEngine --name pr701-intel-native-release --dir "$RUNNER_TEMP/native-replay"
+          chmod +x "$RUNNER_TEMP/native-replay/unit_test"
+          export DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH:-}:$RUNNER_TEMP/native-replay"
+          export UNIT_TEST_BINARY="$RUNNER_TEMP/native-replay/unit_test"
+          export MVK_CONFIG_LOG_LEVEL=4
+          if [ "$EVENGINE_VULKAN_VALIDATION" = 1 ]; then export VK_LAYER_ENABLES=VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT; fi
+          printf '#!/usr/bin/env bash\nexec python3 "%s/.github/diagnostics/pr701-followup/watch_test.py" "$@"\n' "$PWD" > "$RUNNER_TEMP/native-replay/watch-test"
+          chmod +x "$RUNNER_TEMP/native-replay/watch-test"
+          mkdir -p build/replay
+          python3 -X utf8 scripts/test_levels.py --emit-cmake "$PWD/build/replay/test_levels.cmake"
+          cmake -DZEROERR_EXE="$RUNNER_TEMP/native-replay/watch-test" -DCTEST_FILE="$PWD/build/replay/CTestTestfile.cmake" -DZEROERR_WORKING_DIRECTORY="$PWD" -DZEROERR_LEVEL_FILE="$PWD/build/replay/test_levels.cmake" -P cmake/ZeroErrDiscoverTestsImpl.cmake
+          ctest --test-dir build/replay -R '^gpgpu[.](sequence[.]dispatchScale|procgen[.]transformParity)$' --repeat until-fail:20 --no-tests=error --output-on-failure -j 1 --timeout 90
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: pr701-intel-compute-${{ matrix.semaphore }}-${{ matrix.validation }}
+          path: |
+            build/replay/Testing/Temporary/
+            compute-diagnostics/
