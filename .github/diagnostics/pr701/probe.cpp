@@ -364,13 +364,14 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     else
 #endif
     VK(vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pi, nullptr, &pipeline));
-    std::array<Vertex, 3> vertices{};
+    std::array<Vertex, 4> vertices{};
     vertices[0].p[0] = -1;
     vertices[0].p[1] = -1;
     vertices[1].p[0] = 3;
     vertices[1].p[1] = -1;
     vertices[2].p[0] = -1;
     vertices[2].p[1] = 3;
+    vertices[3]=vertices[0];
     for (auto& v : vertices) {
         v.p[2]  = .5f;
         v.n[2]  = 1.0f;
@@ -584,7 +585,7 @@ bool render(const char* mode, bool full, bool offset, int indices) {
         }
     } else
         VK(vkMapMemory(device, readback.memory, 0, VK_WHOLE_SIZE, 0, &bytes));
-    const uint8_t* p    = (uint8_t*)bytes + readback.offset + (32 * 64 + 32) * 4;
+    const uint8_t* p    = (uint8_t*)bytes + readback.offset + (20 * 64 + 40) * 4;
     bool           good = p[0] > 240 && p[1] < 10 && p[2] < 10;
     std::printf("PROBE %s center=%u,%u,%u,%u %s\n", label.c_str(), p[0], p[1], p[2], p[3], good ? "PASS" : "FAIL");
     std::fflush(stdout);
@@ -632,7 +633,7 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     return good;
 }
 #ifdef PROBE_EMBEDDED
-extern "C" int engineRawProbe(VkPhysicalDevice pd, VkDevice dev, uint32_t family, VkBuffer bv, VkBuffer bi) {
+extern "C" int engineRawProbe(VkPhysicalDevice pd, VkDevice dev, uint32_t family, VkBuffer bv, VkBuffer bi, VmaAllocator allocator) {
     physical=pd; device=dev;
     vkGetPhysicalDeviceProperties(physical, &properties);
     vkGetPhysicalDeviceMemoryProperties(physical, &memoryProperties);
@@ -654,6 +655,14 @@ extern "C" int engineRawProbe(VkPhysicalDevice pd, VkDevice dev, uint32_t family
             failures+=!render(mode,false,false,32);
     }
     borrowedVertex=borrowedIndex=VK_NULL_HANDLE;
+    for (int which : {0,1}) {
+        borrowedVertex=which==0 ? bv : VK_NULL_HANDLE;
+        borrowedIndex=which==1 ? bi : VK_NULL_HANDLE;
+        std::printf("ENGINE_BORROW_ONLY %s\n",which==0 ? "vertex" : "index");
+        depthMode=false;
+        failures+=!render("VERTEX",false,false,32);
+    }
+    borrowedVertex=borrowedIndex=VK_NULL_HANDLE;
     useWrapperPipeline=true;
     std::puts("ENGINE_WRAPPER_PIPELINE_START");
     for (bool depth : {false,true}) {
@@ -662,6 +671,11 @@ extern "C" int engineRawProbe(VkPhysicalDevice pd, VkDevice dev, uint32_t family
             failures+=!render(mode,false,false,32);
     }
     useWrapperPipeline=false;
+    vmaAllocator=allocator; useVma=true;
+    std::puts("ENGINE_ALLOCATOR_FRESH_START");
+    for (const char* mode : {"VERTEX","PUSH","GBUFFER_EMBEDDED"})
+        failures+=!render(mode,false,false,32);
+    useVma=false;
     vkDestroyCommandPool(device,pool,nullptr);
     return failures;
 }

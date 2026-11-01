@@ -22,8 +22,19 @@
 #include "image/ImageData.h"
 #include "window/Window.h"
 
-extern "C" int engineRawProbe(VkPhysicalDevice, VkDevice, uint32_t, VkBuffer, VkBuffer);
+extern "C" int engineRawProbe(VkPhysicalDevice, VkDevice, uint32_t, VkBuffer, VkBuffer, VmaAllocator);
 static vkb::Device* probeDevice{};
+static PFN_vkCreateGraphicsPipelines originalCreate{};
+static VkResult VKAPI_PTR traceCreate(VkDevice d, VkPipelineCache c, uint32_t n, const VkGraphicsPipelineCreateInfo* ps, const VkAllocationCallbacks* ac, VkPipeline* out) {
+    for(uint32_t i=0;i<n;++i) {
+        const auto& p=ps[i];
+        std::printf("PIPELINE stages=%u attrs=%u bindings=%u topology=%u discard=%u cull=%u depth=%u compare=%u colors=%u\n",p.stageCount,p.pVertexInputState->vertexAttributeDescriptionCount,p.pVertexInputState->vertexBindingDescriptionCount,p.pInputAssemblyState->topology,p.pRasterizationState->rasterizerDiscardEnable,p.pRasterizationState->cullMode,p.pDepthStencilState?p.pDepthStencilState->depthTestEnable:0,p.pDepthStencilState?p.pDepthStencilState->depthCompareOp:0,p.pColorBlendState->attachmentCount);
+        for(uint32_t j=0;j<p.pVertexInputState->vertexBindingDescriptionCount;++j) {const auto& b=p.pVertexInputState->pVertexBindingDescriptions[j];std::printf("PIPELINE_BINDING %u stride=%u rate=%u\n",b.binding,b.stride,b.inputRate);}
+        for(uint32_t j=0;j<p.pVertexInputState->vertexAttributeDescriptionCount;++j) {const auto& a=p.pVertexInputState->pVertexAttributeDescriptions[j];std::printf("PIPELINE_ATTR %u binding=%u format=%u offset=%u\n",a.location,a.binding,a.format,a.offset);}
+    }
+    return originalCreate(d,c,n,ps,ac,out);
+}
+
 extern "C" VkPipeline wrapperPipeline(const VkGraphicsPipelineCreateInfo* pi) {
     vkb::BuiltRenderPass pass;
     pass.handle=pi->renderPass;
@@ -74,6 +85,8 @@ public:
         if (!backend) throw std::runtime_error("Not Vulkan");
         auto& dev = backend->getDevice();
         probeDevice=&dev;
+        originalCreate=vk::defaultDispatchLoaderDynamic.vkCreateGraphicsPipelines;
+        vk::defaultDispatchLoaderDynamic.vkCreateGraphicsPipelines=traceCreate;
         std::printf("ENGINE_DEVICE %p physical=%p family=%u\n", (void*)VkDevice(dev.instance), (void*)VkPhysicalDevice(dev.physical_device.instance), dev.get_queue_index(vkb::QueueType::graphics));
         auto* gm = static_cast<graphics::vulkan::GpuMesh*>(mesh->gpuHandle);
         auto* vp = static_cast<const graphics::vulkan::MeshVertex*>(gm->vertices.map());
@@ -82,7 +95,12 @@ public:
         auto* ip = static_cast<const uint32_t*>(gm->indices.map());
         std::printf("ENGINE_INDEX %u,%u,%u,%u,%u,%u\n",ip[0],ip[1],ip[2],ip[3],ip[4],ip[5]);
         gm->indices.unmap();
-        failures += engineRawProbe(VkPhysicalDevice(dev.physical_device.instance), VkDevice(dev.instance), dev.get_queue_index(vkb::QueueType::graphics), VkBuffer(gm->vertices.buffer), VkBuffer(gm->indices.buffer));
+        for (auto* b : {static_cast<vkb::GenericBuffer*>(&gm->vertices), &gm->indices}) {
+            VmaAllocationInfo ai{}; vmaGetAllocationInfo(dev.vma_allocator,b->vma_allocation,&ai);
+            VkMemoryPropertyFlags flags{};vmaGetAllocationMemoryProperties(dev.vma_allocator,b->vma_allocation,&flags);
+            std::printf("ENGINE_ALLOCATION type=%u flags=%u offset=%llu size=%llu mapped=%p buffer=%p memory=%p\n",ai.memoryType,flags,(unsigned long long)ai.offset,(unsigned long long)ai.size,ai.pMappedData,(void*)VkBuffer(b->buffer),(void*)ai.deviceMemory);
+        }
+        failures += engineRawProbe(VkPhysicalDevice(dev.physical_device.instance), VkDevice(dev.instance), dev.get_queue_index(vkb::QueueType::graphics), VkBuffer(gm->vertices.buffer), VkBuffer(gm->indices.buffer), dev.vma_allocator);
         for (int size : {64, 96}) {
             std::printf("ENGINE_PROBE begin GBuffer %d\n", size);
             std::fflush(stdout);
