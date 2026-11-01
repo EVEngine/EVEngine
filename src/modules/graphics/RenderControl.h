@@ -82,9 +82,16 @@ public:
 
     /** @brief Supports. */
     bool supports(const std::string &feature) const;
-    /** @brief Enables . */
+    /** @brief Request a feature change with an observable Unsupported result when the backend cannot run it.
+     * @param feature Registered feature name.
+     * @param enabled Whether to enable the feature.
+     * @return Success, or Unsupported for an unknown or unavailable feature.
+     * @thread Render thread only; does not retain feature or invoke callbacks.
+     */
+    [[nodiscard]] Result<void> requestFeature(const std::string& feature, bool enabled);
+    /** @brief Compatibility-only feature enablement; use requestFeature to observe failure. */
     void enable(const std::string &feature);
-    /** @brief Disables . */
+    /** @brief Compatibility-only feature disablement; use requestFeature to observe failure. */
     void disable(const std::string &feature);
     /** @brief True when enabled. */
     bool isEnabled(const std::string &feature) const;

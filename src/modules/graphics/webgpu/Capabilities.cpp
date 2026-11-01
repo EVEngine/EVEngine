@@ -44,6 +44,8 @@ void Capabilities::capture(wgpu::Adapter &adapter, wgpu::Device &device) {
             maxDynamicUniformBuffers_ = limits.maxDynamicUniformBuffersPerPipelineLayout;
         if (limits.maxSampledTexturesPerShaderStage != wgpu::kLimitU32Undefined)
             maxSampledTexturesPerShaderStage_ = limits.maxSampledTexturesPerShaderStage;
+        if (limits.maxColorAttachmentBytesPerSample != wgpu::kLimitU32Undefined)
+            maxColorAttachmentBytesPerSample_ = limits.maxColorAttachmentBytesPerSample;
         if (limits.maxSamplersPerShaderStage != wgpu::kLimitU32Undefined)
             maxSamplersPerShaderStage_ = limits.maxSamplersPerShaderStage;
         // Max sample count is not a single limit; cap conservatively at 4.

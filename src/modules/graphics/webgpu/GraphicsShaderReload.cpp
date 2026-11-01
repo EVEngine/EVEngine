@@ -1,8 +1,13 @@
 #include "graphics/webgpu/Graphics.h"
 
 #include <algorithm>
+#include <cstring>
 #include <exception>
 #include <utility>
+
+#if defined(__EMSCRIPTEN__)
+#include <emscripten/emscripten.h>
+#endif
 
 #include "common/Diagnostic.h"
 #include "graphics/Shader.h"
@@ -51,6 +56,8 @@ Result<void> Graphics::replaceShaderFromWgsl(Shader &shader, const std::string &
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation, "shader has no reusable default vertex WGSL", "vertWgsl", {},
                                                    "graphics.webgpu.shader_reload"));
 
+    std::string preparationError;
+    device.PushErrorScope(wgpu::ErrorFilter::Validation);
     try {
         if (!candidate.isMesh3D) {
             candidate.swapchainPipeline = createPipelineForShader(
@@ -69,12 +76,39 @@ Result<void> Graphics::replaceShaderFromWgsl(Shader &shader, const std::string &
                     false, false, false, mesh3dPipelineLayout);
         }
     } catch (const std::exception &error) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, std::string("failed to prepare replacement pipeline: ") + error.what(), "pipeline", {},
-                                                   "graphics.webgpu.shader_reload"));
+        preparationError = error.what();
     } catch (...) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "failed to prepare replacement pipeline", "pipeline", {},
-                                                   "graphics.webgpu.shader_reload"));
+        preparationError = "unknown pipeline preparation error";
     }
+
+    bool            done            = false;
+    wgpu::ErrorType validationError = wgpu::ErrorType::Unknown;
+    std::string     validationMessage;
+    device.PopErrorScope(wgpu::CallbackMode::AllowProcessEvents, [&](wgpu::PopErrorScopeStatus status,
+                                                                     wgpu::ErrorType type, wgpu::StringView message) {
+        validationError = status == wgpu::PopErrorScopeStatus::Success ? type : wgpu::ErrorType::Unknown;
+        if (message.data) {
+            const auto length = message.length == WGPU_STRLEN ? std::strlen(message.data) : message.length;
+            validationMessage.assign(message.data, length);
+        }
+        done = true;
+    });
+    while (!done) {
+#if defined(__EMSCRIPTEN__)
+        emscripten_sleep(0);
+#endif
+        wgpuInstanceProcessEvents(instance.Get());
+    }
+    const bool missingPipeline =
+        candidate.isMesh3D ? !candidate.mesh3dPipeline || (!candidate.isHair3D && !candidate.mesh3dXrayPipeline)
+                           : !candidate.swapchainPipeline || !candidate.offscreenPipeline;
+    if (!preparationError.empty() || validationError != wgpu::ErrorType::NoError || missingPipeline)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed,
+                                                       !preparationError.empty() ? preparationError
+                                                       : !validationMessage.empty()
+                                                           ? validationMessage
+                                                           : "WebGPU rejected replacement pipeline",
+                                                       "pipeline", {}, "graphics.webgpu.shader_reload"));
 
     current->swapchainPipeline = std::move(candidate.swapchainPipeline);
     current->offscreenPipeline = std::move(candidate.offscreenPipeline);
