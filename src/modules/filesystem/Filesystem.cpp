@@ -263,7 +263,7 @@ bool Filesystem::mountExternalReadOnly(const std::string &path, const std::strin
 FileData *Filesystem::newFileData(const void *data, std::string filename, size_t size) const {
     const bool validData = size == 0 || data != nullptr;
     EV_PARAM_CHECK(validData, "file data must not be null when size > 0");
-    FileData *fd = new FileData(std::string(filename), size);
+    FileData* fd = new FileData(filename, size);
     memcpy(fd->getData(), data, size);
     return fd;
 }

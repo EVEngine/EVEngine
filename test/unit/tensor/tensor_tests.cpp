@@ -486,3 +486,186 @@ TEST_CASE("tensor.onnx.deferredStorageAliasCopiesOnCpuMutation") {
     CHECK_EQ(static_cast<const onnx_detail::ByteStorage&>(original)[0], uint8_t{1});
     CHECK_EQ(deferred->reads, 2);
 }
+
+TEST_CASE("tensor.onnx.rangeTopKOutputsRetainOrderShapesAndOwnership") {
+    auto encode = [](int64_t k) {
+        Bytes graph;
+        auto  initializer = [&](const char* name, int64_t value) {
+            Bytes tensor, raw(sizeof(value));
+            std::memcpy(raw.data(), &value, sizeof(value));
+            if (std::strcmp(name, "k") == 0) number(tensor, 1, 1);
+            number(tensor, 2, 7);
+            field(tensor, 8, stringBytes(name));
+            field(tensor, 9, raw);
+            field(graph, 5, tensor);
+        };
+        initializer("start", 1);
+        initializer("limit", 5);
+        initializer("delta", 1);
+        initializer("k", k);
+        Bytes range;
+        for (const char* name : {"start", "limit", "delta"}) field(range, 1, stringBytes(name));
+        field(range, 2, stringBytes("range"));
+        field(range, 4, stringBytes("Range"));
+        field(graph, 1, range);
+        Bytes top;
+        field(top, 1, stringBytes("range"));
+        field(top, 1, stringBytes("k"));
+        for (const char* name : {"values", "indices"}) field(top, 2, stringBytes(name));
+        field(top, 4, stringBytes("TopK"));
+        field(graph, 1, top);
+        for (const char* name : {"values", "indices"}) {
+            Bytes output;
+            field(output, 1, stringBytes(name));
+            field(graph, 12, output);
+        }
+        Bytes model, opset;
+        number(model, 1, 7);
+        number(opset, 2, 14);
+        field(model, 8, opset);
+        field(model, 7, graph);
+        return model;
+    };
+    auto model = OnnxModel::load(encode(2));
+    REQUIRE(model.ok());
+    auto result = model.value()->run({});
+    REQUIRE(result.ok());
+    model.value().reset();
+    REQUIRE_EQ(result.value().size(), size_t{2});
+    CHECK_EQ(result.value()[0].name, std::string("values"));
+    CHECK_EQ(result.value()[1].name, std::string("indices"));
+    const int64_t expected[2][2]{{4, 3}, {3, 2}};
+    for (size_t output = 0; output < 2; ++output) {
+        const auto& tensor = result.value()[output].tensor;
+        CHECK(tensor.shape == std::vector<int64_t>{2});
+        REQUIRE_EQ(tensor.bytes.size(), sizeof(expected[output]));
+        int64_t actual[2]{};
+        std::memcpy(actual, tensor.bytes.data(), sizeof(actual));
+        CHECK_EQ(actual[0], expected[output][0]);
+        CHECK_EQ(actual[1], expected[output][1]);
+    }
+    auto invalid = OnnxModel::load(encode(7));
+    REQUIRE(invalid.ok());
+    auto rejected = invalid.value()->run({});
+    CHECK(!rejected.ok());
+}
+
+TEST_CASE("tensor.onnx.dynamicQuantizedOutputsRetainOrderAndOwnership") {
+    Bytes       graph, initializer, raw(4 * sizeof(float));
+    const float input[]{0.f, 1.f, 2.f, 3.f};
+    std::memcpy(raw.data(), input, sizeof(input));
+    number(initializer, 1, 4);
+    number(initializer, 2, 1);
+    field(initializer, 8, stringBytes("input"));
+    field(initializer, 9, raw);
+    field(graph, 5, initializer);
+    Bytes node;
+    field(node, 1, stringBytes("input"));
+    for (const char* name : {"quantized", "scale", "zero"}) {
+        field(node, 2, stringBytes(name));
+        Bytes output;
+        field(output, 1, stringBytes(name));
+        field(graph, 12, output);
+    }
+    field(node, 4, stringBytes("DynamicQuantizeLinear"));
+    field(graph, 1, node);
+    Bytes encoded, opset;
+    number(encoded, 1, 7);
+    number(opset, 2, 14);
+    field(encoded, 8, opset);
+    field(encoded, 7, graph);
+    auto model = OnnxModel::load(encoded);
+    REQUIRE(model.ok());
+    auto first = model.value()->run({});
+    REQUIRE(first.ok());
+    auto second = model.value()->run({});
+    REQUIRE(second.ok());
+    model.value().reset();
+    REQUIRE_EQ(first.value().size(), size_t{3});
+    CHECK_EQ(first.value()[0].name, std::string("quantized"));
+    CHECK_EQ(first.value()[1].name, std::string("scale"));
+    CHECK_EQ(first.value()[2].name, std::string("zero"));
+    const auto& q = first.value()[0].tensor;
+    CHECK(q.element == OnnxElement::UInt8);
+    CHECK(q.shape == std::vector<int64_t>{4});
+    REQUIRE_EQ(q.bytes.size(), size_t{4});
+    for (size_t i = 0; i < 4; ++i) CHECK_EQ(q.bytes[i], static_cast<uint8_t>(85 * i));
+    const auto& scale = first.value()[1].tensor;
+    CHECK(scale.element == OnnxElement::Float32);
+    CHECK(scale.shape.empty());
+    REQUIRE_EQ(scale.bytes.size(), sizeof(float));
+    float actual = 0;
+    std::memcpy(&actual, scale.bytes.data(), sizeof(actual));
+    CHECK(near(actual, 3.f / 255.f));
+    const auto& zero = first.value()[2].tensor;
+    CHECK(zero.element == OnnxElement::UInt8);
+    CHECK(zero.shape.empty());
+    REQUIRE_EQ(zero.bytes.size(), size_t{1});
+    CHECK_EQ(zero.bytes[0], uint8_t{0});
+    second.value()[0].tensor.bytes[0] = 17;
+    CHECK_EQ(q.bytes[0], uint8_t{0});
+}
+
+TEST_CASE("tensor.onnx.quantizedLstmOutputsRetainStatesAndOwnership") {
+    Bytes graph;
+    auto  initializer = [&](const char* name, std::initializer_list<int64_t> dims, int dtype, const auto& values) {
+        Bytes tensor, raw(values.size() * sizeof(values[0]));
+        for (auto dim : dims) number(tensor, 1, dim);
+        number(tensor, 2, dtype);
+        field(tensor, 8, stringBytes(name));
+        std::memcpy(raw.data(), values.data(), raw.size());
+        field(tensor, 9, raw);
+        field(graph, 5, tensor);
+    };
+    initializer("x", {2, 1, 1}, 1, std::vector<float>{0, 0});
+    initializer("w", {1, 1, 4}, 2, std::vector<uint8_t>(4, 0));
+    initializer("r", {1, 1, 4}, 2, std::vector<uint8_t>(4, 0));
+    initializer("initial_c", {1, 1, 1}, 1, std::vector<float>{1});
+    initializer("scale", {1}, 1, std::vector<float>{1});
+    initializer("zero", {1}, 2, std::vector<uint8_t>{0});
+    Bytes node, hidden;
+    for (const char* name : {"x", "w", "r", "", "", "", "initial_c", "", "scale", "zero", "scale", "zero"})
+        field(node, 1, stringBytes(name));
+    for (const char* name : {"y", "h", "c"}) {
+        field(node, 2, stringBytes(name));
+        Bytes output;
+        field(output, 1, stringBytes(name));
+        field(graph, 12, output);
+    }
+    field(node, 4, stringBytes("DynamicQuantizeLSTM"));
+    field(node, 7, stringBytes("com.microsoft"));
+    field(hidden, 1, stringBytes("hidden_size"));
+    number(hidden, 3, 1);
+    number(hidden, 20, 2);
+    field(node, 5, hidden);
+    field(graph, 1, node);
+    Bytes encoded, opset;
+    number(encoded, 1, 7);
+    field(opset, 1, stringBytes("com.microsoft"));
+    number(opset, 2, 1);
+    field(encoded, 8, opset);
+    Bytes standardOpset;
+    number(standardOpset, 2, 14);
+    field(encoded, 8, standardOpset);
+    field(encoded, 7, graph);
+    auto model = OnnxModel::load(encoded);
+    REQUIRE(model.ok());
+    auto result = model.value()->run({});
+    REQUIRE(result.ok());
+    model.value().reset();
+    REQUIRE_EQ(result.value().size(), size_t{3});
+    const std::vector<std::vector<int64_t>> shapes{{2, 1, 1, 1}, {1, 1, 1}, {1, 1, 1}};
+    const std::vector<std::vector<float>>   expected{
+        {0.5f * std::tanh(0.5f), 0.5f * std::tanh(0.25f)}, {0.5f * std::tanh(0.25f)}, {0.25f}};
+    const char* names[]{"y", "h", "c"};
+    for (size_t i = 0; i < 3; ++i) {
+        const auto& tensor = result.value()[i].tensor;
+        CHECK_EQ(result.value()[i].name, std::string(names[i]));
+        CHECK(tensor.element == OnnxElement::Float32);
+        CHECK(tensor.shape == shapes[i]);
+        REQUIRE_EQ(tensor.bytes.size(), expected[i].size() * sizeof(float));
+        std::vector<float> actual(expected[i].size());
+        std::memcpy(actual.data(), tensor.bytes.data(), tensor.bytes.size());
+        for (size_t j = 0; j < actual.size(); ++j) CHECK(near(actual[j], expected[i][j]));
+    }
+}

@@ -6,6 +6,7 @@
 #include <mutex>
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include "filesystem/physfs/File.h"
 #include "common/b64.h"
@@ -188,7 +189,7 @@ bool Filesystem::setSource(std::string source) {
     // Check whether directory is already set.
     if (!game_source.empty()) return false;
 
-    std::string new_search_path = source;
+    std::string new_search_path = std::move(source);
 
 #ifdef EVENGINE_ANDROID
     if (!android::createStorageDirectories()) SDL_Log("Error creating storage directories!");
@@ -238,7 +239,7 @@ bool Filesystem::setSource(std::string source) {
 #endif
 
     // Save the game source.
-    game_source = new_search_path;
+    game_source = std::move(new_search_path);
 
     return true;
 }

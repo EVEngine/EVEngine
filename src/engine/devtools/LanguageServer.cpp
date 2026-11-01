@@ -425,7 +425,7 @@ bool belongsToType(const script::BindingContract& contract, std::string_view typ
 
 std::string returnedScriptClass(const script::BindingContract&         factory,
                                 const script::BindingContractRegistry& bindings) {
-    const auto returned = trimTypeName(factory.returnType);
+    auto returned = trimTypeName(factory.returnType);
     if (isPrimitiveType(returned)) return {};
     if (bindings.hasScriptClass(returned)) return returned;
     // Generated factories can retain a native type name while their methods

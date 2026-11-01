@@ -9,7 +9,7 @@ namespace eve {
 namespace {
 
 Diagnostic invalidTime(std::string message) {
-    return Diagnostic::error(DiagnosticCode::InvalidArgument, message);
+    return Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message));
 }
 
 }  // namespace

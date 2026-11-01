@@ -50,7 +50,11 @@ Result<void> ActionTimelinePayloadEditor::patch(const LogicalId& itemId, Value::
     if (!item)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.action.timeline.payload-item-missing"), "Editable action-block payload was not found");
     auto merged = item->payload;
-    for (auto& [field, value] : fields) merged.insert_or_assign(std::move(field), std::move(value));
+    while (!fields.empty()) {
+        auto node     = fields.extract(fields.begin());
+        auto inserted = merged.insert(std::move(node));
+        if (!inserted.inserted) inserted.position->second = std::move(inserted.node.mapped());
+    }
     action::ActionTimelineEvent event{item->kind, item->trackId, itemId, item->type, item->time, merged};
     auto valid = registry_.validate(event);
     if (!valid) return Result<void>::failure(valid.status());

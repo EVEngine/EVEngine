@@ -552,7 +552,7 @@ std::string RuleEngine::snapshotJson() const {
         row.emplace("fired", eve::Value(runtime_[i].fired));
         row.emplace("disabled", eve::Value(runtime_[i].disabled));
         row.emplace("cooldownUntil", eve::Value(static_cast<std::int64_t>(runtime_[i].cooldownUntil)));
-        rules.push_back(eve::Value(std::move(row)));
+        rules.emplace_back(std::move(row));
     }
     root.emplace("rules", eve::Value(std::move(rules)));
     auto encoded = eve::Value(std::move(root)).toJson();

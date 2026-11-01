@@ -24,7 +24,7 @@ std::vector<StatusChangeEvent>& changeQueue() { return detail::simulationEvents(
 
 eve::Status rejectedStatus(eve::DiagnosticCode code, std::string message,
                            eve::StatusCode statusCode = eve::StatusCode::Rejected) {
-    return eve::Status::failure(statusCode, eve::Diagnostic::error(code, message));
+    return eve::Status::failure(statusCode, eve::Diagnostic::error(code, std::move(message)));
 }
 
 template <typename T>

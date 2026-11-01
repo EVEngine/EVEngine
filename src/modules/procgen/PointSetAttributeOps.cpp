@@ -1,5 +1,7 @@
 #include "procgen/PointSet.h"
 
+#include <utility>
+
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -12,7 +14,7 @@ namespace {
 
 Result<float> invalidChannelFloat(std::string message, std::string path) {
     return Result<float>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, message, path));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
 }
 
 bool isMetadataName(std::string_view name) noexcept {

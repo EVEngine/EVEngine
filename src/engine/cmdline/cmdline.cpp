@@ -18,7 +18,7 @@ std::vector<std::function<Handler*()>>& Cmdline::handers() {
     return cmds;
 }
 
-void Cmdline::registerCmd(std::function<Handler*()> handler) { handers().push_back(handler); }
+void Cmdline::registerCmd(std::function<Handler*()> handler) { handers().push_back(std::move(handler)); }
 
 class MyFormatter : public CLI::Formatter {
 public:

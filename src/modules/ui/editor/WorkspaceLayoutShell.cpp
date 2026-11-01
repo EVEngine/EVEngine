@@ -57,7 +57,10 @@ WidgetDesc regionContent(const std::vector<WorkspacePanelDescriptor> &panels,
 }
 
 WidgetDesc wrapDock(const std::string &region, WidgetDesc child) {
-    return ui::dockArea(region, {std::move(child)}, "dock/" + region);
+    std::vector<WidgetDesc> children;
+    children.reserve(1);
+    children.emplace_back(std::move(child));
+    return ui::dockArea(region, std::move(children), "dock/" + region);
 }
 
 }  // namespace
@@ -72,7 +75,7 @@ std::vector<WorkspacePanelDescriptor> WorkspaceLayoutShell::panelsInRegion(
         if (!panel.ok()) continue;
         if (!panel.value().visible) continue;
         if (panel.value().region != region) continue;
-        out.push_back(panel.value());
+        out.push_back(std::move(panel).takeValue());
     }
     std::stable_sort(out.begin(), out.end(),
                      [](const WorkspacePanelDescriptor &a, const WorkspacePanelDescriptor &b) {
@@ -125,11 +128,15 @@ ui::WidgetDesc WorkspaceLayoutShell::buildDockBody(const editor::EditorWorkspace
 ui::WidgetDesc WorkspaceLayoutShell::buildWindow(const editor::EditorWorkspace &workspace,
                                                  ContentBuilder content,
                                                  WorkspaceShellOptions options) {
-    WidgetDesc body = buildDockBody(workspace, std::move(content), options);
-    WidgetDesc frame =
-        ui::appFrame(std::move(body), std::move(options.toolbar), std::move(options.statusBar),
-                     "app-frame");
-    return ui::window(workspace.getTitle(), {std::move(frame)}, options.windowId);
+    auto       toolbar   = std::move(options.toolbar);
+    auto       statusBar = std::move(options.statusBar);
+    auto       windowId  = std::move(options.windowId);
+    WidgetDesc body      = buildDockBody(workspace, std::move(content), std::move(options));
+    WidgetDesc frame     = ui::appFrame(std::move(body), std::move(toolbar), std::move(statusBar), "app-frame");
+    std::vector<WidgetDesc> children;
+    children.reserve(1);
+    children.emplace_back(std::move(frame));
+    return ui::window(workspace.getTitle(), std::move(children), std::move(windowId));
 }
 
 }  // namespace eve::ui_editor

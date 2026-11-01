@@ -89,6 +89,7 @@ Result<ConvexHull3D> convexHull3D(std::span<const HullPoint3> input, double tole
         scale         = std::max(scale, double((*hi)[k]) - (*lo)[k]);
     }
     std::vector<Point> pts;
+    pts.reserve(original.size());
     for (const auto& p : original)
         pts.push_back({(double(p[0]) - original[0][0]) / scale, (double(p[1]) - original[0][1]) / scale,
                        (double(p[2]) - original[0][2]) / scale});
@@ -129,6 +130,7 @@ Result<ConvexHull3D> convexHull3D(std::span<const HullPoint3> input, double tole
             double      operator[](std::size_t k) const { return k == 0 ? x : y; }
         };
         std::vector<Projected> projected;
+        projected.reserve(pts.size());
         for (std::size_t i = 0; i < pts.size(); ++i) projected.push_back({pts[i][x], pts[i][y], i});
         std::sort(projected.begin(), projected.end(), [](const auto& p, const auto& q) {
             if (p.x != q.x) return p.x < q.x;

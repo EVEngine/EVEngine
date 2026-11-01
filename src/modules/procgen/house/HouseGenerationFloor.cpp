@@ -1,3 +1,4 @@
+#include <utility>
 #include "procgen/house/HouseGenerationState.h"
 
 namespace eve::housegen::house_detail {
@@ -102,7 +103,7 @@ eve::Result<void> State::floor(const procgen::Grid2D &grid, const std::vector<st
                 if (active(mask, r.width, r.depth, x, y))
                     generated.instances.push_back({pick(roof, rng)->id, x, y, z + 1, 0});
     }
-    previousMask = mask;
+    previousMask = std::move(mask);
     ++z;
     planned.reset();
     return eve::Result<void>::success();

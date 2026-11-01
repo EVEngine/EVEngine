@@ -142,7 +142,8 @@ EVENGINE_API_FOUNDATION Result<void> restoreScriptComponents(const SnapshotEnvel
                                    componentName + "@" + std::to_string(componentVersion.value()));
         // 未知字段策略：显式拒绝。字段集变过的旧载荷必须走迁移链，不能被静默收下——否则存储里会
         // 出现没人声明的字段，序列化/编辑器都会看见它。
-        for (const std::string& key : fields->keys()) {
+        for (const auto& fieldEntry : *fields->getIf<Value::Object>()) {
+            const std::string& key      = fieldEntry.first;
             bool declared = false;
             for (const std::string& field : record->fields) {
                 if (field == key) {

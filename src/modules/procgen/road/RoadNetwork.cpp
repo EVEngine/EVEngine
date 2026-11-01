@@ -216,7 +216,7 @@ Result<std::uint32_t> RoadNetwork::addEdge(std::uint32_t from, std::uint32_t to,
     edge.controlPoints = std::move(controlPoints);
     edge.lanesForward  = lanesForward;
     edge.lanesBackward = lanesBackward;
-    edge.style         = style;
+    edge.style         = std::move(style);
     edges_.push_back(std::move(edge));
     ++revision_;
     return Result<std::uint32_t>::success(id);
@@ -490,7 +490,7 @@ Result<void> RoadNetwork::setEdgeStyle(std::uint32_t edgeId, RoadStyle style) {
         *this               = std::move(candidate);
         return Result<void>::success();
     }
-    edges_[static_cast<std::size_t>(idx)].style = style;
+    edges_[static_cast<std::size_t>(idx)].style = std::move(style);
     ++revision_;
     return Result<void>::success();
 }

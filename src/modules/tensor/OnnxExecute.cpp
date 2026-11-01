@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <limits>
 #include <numeric>
@@ -206,7 +207,6 @@ std::vector<int> dims(const RuntimeTensor& x) {
     }
     return out;
 }
-std::vector<RuntimeTensor> single(RuntimeTensor x) { return {std::move(x)}; }
 }  // namespace
 std::vector<RuntimeTensor> execute(const Node& n, const std::vector<const RuntimeTensor*>& in, OnnxCompute* compute) {
     if (n.domain == "com.microsoft" && n.op == "DynamicQuantizeLSTM") return executeQuantLstm(n, in, compute);
@@ -436,7 +436,7 @@ OnnxBuffer enqueueInteger(OnnxCompute& d, const std::string& source, OnnxBuffer 
     std::vector<uint8_t> bytes(z.size_bytes());
     std::memcpy(bytes.data(), z.data(), bytes.size());
     auto                          host = std::make_shared<const std::vector<uint8_t>>(std::move(bytes));
-    const std::vector<OnnxBuffer> inputs{a, b, {host, {}, host->size()}};
+    const std::array<OnnxBuffer, 3> inputs{{std::move(a), std::move(b), {host, {}, host->size()}}};
     auto                          r = d.enqueue(source, inputs, size * 4, static_cast<uint32_t>(size));
     if (!r.ok()) throw Failure(r.error()->message(), r.error()->code());
     return std::move(r.value());
@@ -449,7 +449,7 @@ OnnxBuffer gpuMatmulResident(OnnxCompute& d, OnnxBuffer a, OnnxBuffer b, bool as
       << "uint r=i/" << n << "u,c=i%" << n << "u;int v=0;for(uint j=0;j<" << k << "u;++j)"
       << "v+=(av(r*" << k << "u+j)-(" << az << "))*(bv(" << bOffset << "u+j*" << n << "u+c)-zp["
       << (bz.size() == 1 ? "0" : "c") << "]);y[i]=v;}";
-    return enqueueInteger(d, s.str(), a, b, bz, m * n, k);
+    return enqueueInteger(d, s.str(), std::move(a), std::move(b), bz, m * n, k);
 }
 
 OnnxBuffer gpuConvResident(OnnxCompute& d, OnnxBuffer x, OnnxBuffer w, bool xs, bool ws, const affine::ConvShape& c,
@@ -477,7 +477,7 @@ OnnxBuffer gpuConvResident(OnnxCompute& d, OnnxBuffer x, OnnxBuffer w, bool xs, 
       << "+iy)*" << c.width << "+ix);"
       << "uint bi=uint(((o*" << cg << "+ch)*" << c.kernelH << "+ky)*" << c.kernelW << "+kx);"
       << "v+=(av(ai)-(" << xz << "))*(bv(bi)-zp[" << (wz.size() == 1 ? "0" : "o") << "]);}y[i]=v;}";
-    return enqueueInteger(d, s.str(), x, w, wz, size, size_t(cg) * c.kernelH * c.kernelW);
+    return enqueueInteger(d, s.str(), std::move(x), std::move(w), wz, size, size_t(cg) * c.kernelH * c.kernelW);
 }
 }  // namespace eve::tensor::onnx_detail
 
@@ -485,7 +485,7 @@ OnnxBuffer gpuConvResident(OnnxCompute& d, OnnxBuffer x, OnnxBuffer w, bool xs, 
 namespace eve::tensor::onnx_detail {
 std::optional<std::vector<RuntimeTensor>> executeIndex(const Node& n, const std::vector<const RuntimeTensor*>& in) {
     const auto& x   = required(in, 0);
-    auto        one = [](RuntimeTensor t) { return std::vector<RuntimeTensor>{std::move(t)}; };
+    auto        one = [](RuntimeTensor t) { return single(std::move(t)); };
     if (n.op == "Range") {
         const auto& end   = required(in, 1);
         const auto& delta = required(in, 2);
@@ -549,7 +549,11 @@ std::optional<std::vector<RuntimeTensor>> executeIndex(const Node& n, const std:
                                 x.bytes.data() + src * elementSize(x.element), elementSize(x.element));
                 }
             }
-        return std::vector<RuntimeTensor>{std::move(values), make(OnnxElement::Int64, shape, indices)};
+        std::vector<RuntimeTensor> outputs;
+        outputs.reserve(2);
+        outputs.emplace_back(std::move(values));
+        outputs.emplace_back(make(OnnxElement::Int64, shape, indices));
+        return outputs;
     }
     if (n.op == "ScatterElements" || n.op == "ScatterND") {
         const auto& idx     = required(in, 1);
@@ -787,7 +791,11 @@ std::vector<RuntimeTensor> executeQuantLstm(const Node& n, const std::vector<con
             }
         }
     }
-    return {make(OnnxElement::Float32, {time, dirs, batch, hidden}, y),
-            make(OnnxElement::Float32, {dirs, batch, hidden}, h), make(OnnxElement::Float32, {dirs, batch, hidden}, c)};
+    std::vector<RuntimeTensor> result;
+    result.reserve(3);
+    result.emplace_back(make(OnnxElement::Float32, {time, dirs, batch, hidden}, y));
+    result.emplace_back(make(OnnxElement::Float32, {dirs, batch, hidden}, h));
+    result.emplace_back(make(OnnxElement::Float32, {dirs, batch, hidden}, c));
+    return result;
 }
 }  // namespace eve::tensor::onnx_detail

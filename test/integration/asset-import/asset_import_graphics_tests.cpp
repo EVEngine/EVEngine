@@ -773,14 +773,35 @@ TEST_CASE("editor.v2.disk_asset_sidecar_preserves_guid_across_move_and_poll") {
         std::ofstream source(root / "Content" / "Trees" / "Oak.asset", std::ios::binary);
         source << "oak-v1";
     }
+    const AssetGuid     guid("guid-oak-" + std::string(64, 'g'));
     MemoryAssetDatabase database;
     DiskAssetCatalog    catalog(root, &database);
-    REQUIRE(catalog.writeSidecar("Trees/Oak.asset", AssetGuid("guid-oak"), "park.tree").ok());
+    REQUIRE(catalog.writeSidecar("Trees/Oak.asset", guid, "park.tree").ok());
     auto first = catalog.scan();
     REQUIRE(first.ok());
     CHECK_EQ(first.value().indexed, static_cast<std::size_t>(1));
     CHECK_EQ(first.value().changed, static_cast<std::size_t>(1));
-    CHECK_EQ(database.find(AssetGuid("guid-oak")).value().logicalUri, "content://Trees/Oak.asset");
+    CHECK_EQ(database.find(guid).value().logicalUri, "content://Trees/Oak.asset");
+
+    auto unchanged = catalog.poll();
+    REQUIRE(unchanged.ok());
+    CHECK_EQ(unchanged.value().changed, std::size_t{0});
+    const auto metadataPath = root / "Content" / "Trees" / "Oak.asset.evmeta";
+    {
+        std::ofstream metadata(metadataPath, std::ios::binary | std::ios::trunc);
+        metadata << "{\"guid\":\"" << guid.value() << "\",\"type\":\"park.tree\",\"schemaVersion\":1,\"notes\":\""
+                 << std::string(32768, 'x') << "\"}";
+    }
+    auto metadataChanged = catalog.poll();
+    REQUIRE(metadataChanged.ok());
+    CHECK_EQ(metadataChanged.value().changed, std::size_t{1});
+    auto metadataStable = catalog.poll();
+    REQUIRE(metadataStable.ok());
+    CHECK_EQ(metadataStable.value().changed, std::size_t{0});
+    std::ofstream(metadataPath, std::ios::binary | std::ios::app) << '\n';
+    auto formattingChanged = catalog.poll();
+    REQUIRE(formattingChanged.ok());
+    CHECK_EQ(formattingChanged.value().changed, std::size_t{1});
 
     std::filesystem::create_directories(root / "Content" / "Plants");
     std::filesystem::rename(root / "Content" / "Trees" / "Oak.asset", root / "Content" / "Plants" / "Oak.asset");
@@ -789,7 +810,7 @@ TEST_CASE("editor.v2.disk_asset_sidecar_preserves_guid_across_move_and_poll") {
     auto moved = catalog.poll();
     REQUIRE(moved.ok());
     CHECK_EQ(moved.value().changed, static_cast<std::size_t>(1));
-    CHECK_EQ(database.find(AssetGuid("guid-oak")).value().logicalUri, "content://Plants/Oak.asset");
+    CHECK_EQ(database.find(guid).value().logicalUri, "content://Plants/Oak.asset");
 
     std::error_code ec;
     std::filesystem::remove_all(root, ec);
@@ -3577,10 +3598,20 @@ TEST_CASE("SceneLoader.loadAsync.mountsOnPoll") {
     auto      *loader = SceneLoader::create();
     bool       called = false;
     SceneHost *cbHost = nullptr;
-    REQUIRE(loader->loadAsync("sl_async.obj", eve::sceneloader::LoadOptions{}, [&](SceneHost *h) {
+    struct CopyProbe {
+        std::shared_ptr<std::atomic<int>> copies;
+        std::array<char, 256>             payload{};
+        explicit CopyProbe(std::shared_ptr<std::atomic<int>> counter) : copies(std::move(counter)) {}
+        CopyProbe(const CopyProbe& other) : copies(other.copies), payload(other.payload) { ++*copies; }
+        CopyProbe(CopyProbe&&) = default;
+    };
+    auto                            copies     = std::make_shared<std::atomic<int>>(0);
+    std::function<void(SceneHost*)> completion = [&, probe = CopyProbe(copies)](SceneHost* h) {
+        (void)probe;
         called = true;
         cbHost = h;
-    }));
+    };
+    REQUIRE(loader->loadAsync("sl_async.obj", eve::sceneloader::LoadOptions{}, std::move(completion)));
 
     int applied = 0;
     for (int i = 0; i < 100 && applied == 0; ++i) {
@@ -3590,6 +3621,7 @@ TEST_CASE("SceneLoader.loadAsync.mountsOnPoll") {
     CHECK(applied == 1);
     CHECK(called);
     REQUIRE(cbHost != nullptr);
+    CHECK_EQ(copies->load(), 0);
     CHECK(loader->host("sl_async.obj") == cbHost);
     CHECK(loader->nodeCount("sl_async.obj") >= 2);
     CHECK(loader->pendingAsyncCount() == 0);

@@ -149,6 +149,7 @@
       "squirrel_binding.value_enforces_depth_limit",
       "squirrel_binding.value_rejects_non_finite_numbers_with_path_and_source",
       "squirrel_binding.value_round_trip_preserves_nested_value",
+      "squirrel_binding.push_value_preserves_stack_and_first_error",
       "statepatch.script.batchConflictQueryAndSnapshot",
       "tactics.graphScriptMovementSnapshotAndStaleRelease",
       "tactics.scriptAbilityDeclarationIsCostedAndLogged",
@@ -3533,17 +3534,65 @@ TEST_CASE("squirrel_binding.value_round_trip_preserves_nested_value") {
     Value::Array items;
     items.emplace_back(Value::Object{{"enabled", true}, {"label", "nested"}});
     items.emplace_back(std::int64_t{9});
-    const Value original(Value::Object{
+    const std::string longKey = "entry_" + std::string(96, 'k');
+    const Value       original(Value::Object{
         {"name", "round-trip"},
         {"items", Value(std::move(items))},
         {"ratio", 1.25},
+        {longKey, Value(Value::Object{{"utf8", "中文"}, {"blob", std::string("a\0b", 3)}})},
+        {std::string("key\0tail", 8), "binary-key"},
     });
 
+    sq_pushinteger(vm.getHandle(), 777);
+    const auto top    = sq_gettop(vm.getHandle());
     auto pushed = eve::script::pushValue(vm.getHandle(), original);
     REQUIRE(pushed.ok());
+    CHECK_EQ(sq_gettop(vm.getHandle()), top + 1);
     auto restored = eve::script::valueFromSquirrel(vm.getHandle(), -1);
     REQUIRE(restored.ok());
     CHECK(restored.value() == original);
+    sq_pop(vm.getHandle(), 1);
+    CHECK_EQ(sq_gettop(vm.getHandle()), top);
+    SQInteger sentinel = 0;
+    REQUIRE(SQ_SUCCEEDED(sq_getinteger(vm.getHandle(), -1, &sentinel)));
+    CHECK_EQ(sentinel, SQInteger{777});
+    sq_pop(vm.getHandle(), 1);
+}
+
+TEST_CASE("squirrel_binding.push_value_preserves_stack_and_first_error") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    sq_pushinteger(vm.getHandle(), 314);
+    const auto                        top      = sq_gettop(vm.getHandle());
+    const std::string                 firstKey = "alpha_" + std::string(64, 'a');
+    const std::string                 lastKey  = "zeta_" + std::string(64, 'z');
+    const Value                       invalid(Value::Object{{lastKey, std::numeric_limits<double>::infinity()},
+                                                            {firstKey, std::numeric_limits<double>::infinity()}});
+    eve::script::SquirrelValueOptions options;
+    options.source = "audit.value.push";
+    auto rejected  = eve::script::pushValue(vm.getHandle(), invalid, options);
+    REQUIRE(!rejected.ok());
+    REQUIRE(rejected.error() != nullptr);
+    CHECK(rejected.error()->code() == DiagnosticCode::InvalidArgument);
+    CHECK_EQ(rejected.error()->path(), "$." + firstKey);
+    CHECK_EQ(rejected.error()->source(), std::string("audit.value.push"));
+    CHECK_EQ(sq_gettop(vm.getHandle()), top);
+    const Value valid(Value::Object{{lastKey, 2}, {firstKey, Value(Value::Array{Value(1)})}});
+    options.maxElements = 1;
+    rejected            = eve::script::pushValue(vm.getHandle(), valid, options);
+    REQUIRE(!rejected.ok());
+    REQUIRE(rejected.error() != nullptr);
+    CHECK_EQ(rejected.error()->path(), "$." + firstKey);
+    CHECK_EQ(sq_gettop(vm.getHandle()), top);
+    options.maxElements = 100;
+    options.maxDepth    = 1;
+    rejected            = eve::script::pushValue(vm.getHandle(), valid, options);
+    REQUIRE(!rejected.ok());
+    REQUIRE(rejected.error() != nullptr);
+    CHECK_EQ(rejected.error()->path(), "$." + firstKey);
+    CHECK_EQ(sq_gettop(vm.getHandle()), top);
+    SQInteger sentinel = 0;
+    REQUIRE(SQ_SUCCEEDED(sq_getinteger(vm.getHandle(), -1, &sentinel)));
+    CHECK_EQ(sentinel, SQInteger{314});
     sq_pop(vm.getHandle(), 1);
 }
 

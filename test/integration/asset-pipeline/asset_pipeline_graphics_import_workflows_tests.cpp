@@ -2187,6 +2187,16 @@ Material:
     REQUIRE(batch.value().manifest.entrypoints.contains("oak#converted-mesh"));
     REQUIRE(batch.value().manifest.entrypoints.contains("pine"));
     REQUIRE(batch.value().manifest.entrypoints.contains("pine#converted-mesh"));
+    std::string previousPath;
+    for (const auto& entry : batch.value().entries) {
+        if (entry.path == "reports/import.json") continue;
+        CHECK(previousPath < entry.path);
+        previousPath = entry.path;
+    }
+    auto batchArchive = asset::buildEvaArchive(batch.value().manifest, batch.value().entries);
+    REQUIRE(batchArchive.ok());
+    auto parsedBatch = asset::parseEvaArchive(batchArchive.value());
+    REQUIRE(parsedBatch.ok());
     REQUIRE(std::count_if(batch.value().entries.begin(), batch.value().entries.end(),
                           [](const auto& entry) { return entry.path == "reports/import.json"; }) == 1);
     batchRequest.objects[1].outputKey = "oak";

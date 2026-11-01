@@ -209,6 +209,45 @@ conversation scene entry=end {
     CHECK_EQ(diagnostics[0].code, std::string("DnutParseError"));
 }
 
+TEST_CASE("dialogue.compiler.poolAttributeMergePreservesFirstValueAndGeneratedIds") {
+    const std::string                   source = R"(schema "eve.dnut"
+version 1
+pool greeting {
+ guide: "Hello" id="first" id="ignored" weight=2 tags=["one","two"] meta(origin="fixture")
+ guide: "Default"
+}
+)";
+    std::vector<ConversationDiagnostic> diagnostics;
+    auto                                parsed = parseDnutDocument(source, "pool.dnut", diagnostics);
+    REQUIRE(parsed.ok());
+    const auto* pools = parsed.value().poolRoot.find("pools");
+    REQUIRE(pools != nullptr);
+    const auto* pool = pools->find("greeting");
+    REQUIRE(pool != nullptr);
+    const auto* lines = pool->find("lines");
+    REQUIRE(lines != nullptr);
+    REQUIRE(lines->isArray());
+    const auto* values = lines->getIf<DataValue::Array>();
+    REQUIRE(values != nullptr);
+    REQUIRE_EQ(values->size(), 2U);
+    const auto* firstObject = (*values)[0].getIf<DataValue::Object>();
+    REQUIRE(firstObject != nullptr);
+    const auto& first = *firstObject;
+    CHECK_EQ(first.at("id").asString(), std::string("first"));
+    CHECK_EQ(first.at("speaker").asString(), std::string("guide"));
+    CHECK_EQ(first.at("text").asString(), std::string("Hello"));
+    CHECK_EQ(first.at("weight").asInt(), 2);
+    const auto* tags = first.at("tags").getIf<DataValue::Array>();
+    REQUIRE(tags != nullptr);
+    CHECK_EQ(tags->size(), 2U);
+    const auto* metadata = first.at("meta").getIf<DataValue::Object>();
+    REQUIRE(metadata != nullptr);
+    CHECK_EQ(metadata->at("origin").asString(), std::string("fixture"));
+    const auto* second = (*values)[1].getIf<DataValue::Object>();
+    REQUIRE(second != nullptr);
+    CHECK_EQ(second->at("id").asString(), std::string("greeting.2"));
+}
+
 TEST_CASE("dialogue.compiler.routePaymentAndMutationHaveTypedPayloads") {
     auto steps    = registry();
     auto compiled = compileDnutConversations(
@@ -513,22 +552,19 @@ conversation dropped entry=end { node end end })";
 TEST_CASE("dialogue.reload.poolAndConversationCommitTogether") {
     DialogueFlow      flow;
     auto*             dialogue = Dialogue::create();
-    const std::string source   = R"(schema "eve.dnut"
-version 1
-pool greeting { guide: "hello" }
-conversation scene entry=end { node end end })";
+    const std::string poolId   = "greeting_" + std::string(96, 'p');
+    const std::string source   = "schema \"eve.dnut\"\nversion 1\npool " + poolId +
+                                 " { guide: \"hello\" }\nconversation scene entry=end { node end end }";
     REQUIRE(flow.loadDnutChecked(source, "one.dnut").ok());
-    CHECK(dialogue->hasPool("greeting"));
+    CHECK(dialogue->hasPool(poolId));
     CHECK(flow.hasConversation("scene"));
-    const std::string conflict = R"(schema "eve.dnut"
-version 1
-pool greeting { guide: "duplicate" }
-conversation other entry=end { node end end })";
+    const std::string conflict = "schema \"eve.dnut\"\nversion 1\npool " + poolId +
+                                 " { guide: \"duplicate\" }\nconversation other entry=end { node end end }";
     CHECK(!flow.loadDnutChecked(conflict, "two.dnut").ok());
     CHECK(!flow.hasConversation("other"));
-    CHECK(dialogue->hasPool("greeting"));
+    CHECK(dialogue->hasPool(poolId));
     REQUIRE(flow.removeSourceChecked("one.dnut").ok());
-    CHECK(!dialogue->hasPool("greeting"));
+    CHECK(!dialogue->hasPool(poolId));
 }
 
 TEST_CASE("dialogue.reload.unsupportedSchemaVersionHasLocatedDiagnostic") {
@@ -750,4 +786,28 @@ TEST_CASE("dialogue.facade.stageProjectionTracksSlotAndVisibility") {
     dialogue->reset();
     portrait->release();
     delete portrait;
+}
+
+TEST_CASE("dialogue.text.multipleToneRulesPreserveOrderAndOwnedOutput") {
+    ConversationTextRenderer renderer;
+    const std::string        body   = std::string(32768, 'x') + "中文{missing}";
+    const std::string        text   = "raw:" + body;
+    const std::string        inner  = std::string(96, 'a');
+    const std::string        outer  = std::string(96, 'b') + "BEGIN|";
+    const std::string        suffix = "|tail" + std::string(96, 'z');
+    renderer.addToneRule("skip", "unwanted", "unwanted", {}, {});
+    renderer.addToneRule("first", inner + "OLD|", suffix, "raw:", "fixed:");
+    renderer.addToneRule({}, outer, "|end", "OLD|", "NEW|");
+    renderer.addToneRule("last", {}, {}, "fixed:", "done:");
+    const eve::Value         empty(eve::Value::Object{});
+    std::vector<std::string> evaluated;
+    const auto               rendered = renderer.render(text, empty, empty, [&](const std::string& expression) {
+        evaluated.push_back(expression);
+        return expression != "skip";
+    });
+    REQUIRE_EQ(rendered, outer + inner + "NEW|done:" + body + suffix + "|end");
+    CHECK((evaluated == std::vector<std::string>{"skip", "first", "last"}));
+    renderer.clearToneRules();
+    CHECK_EQ(renderer.render(text, empty, empty), text);
+    CHECK_EQ(rendered, outer + inner + "NEW|done:" + body + suffix + "|end");
 }

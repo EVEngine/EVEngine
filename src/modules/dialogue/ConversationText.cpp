@@ -94,7 +94,8 @@ std::string ConversationTextRenderer::render(const std::string& text, const eve:
     for (const auto& rule : rules_) {
         if (!rule.expression.empty() && (!evaluate || !evaluate(rule.expression))) continue;
         replaceAll(output, rule.find, rule.replacement);
-        output = rule.prefix + output + rule.suffix;
+        output.insert(0, rule.prefix);
+        output.append(rule.suffix);
     }
     return output;
 }

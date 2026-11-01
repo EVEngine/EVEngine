@@ -262,11 +262,8 @@ private:
 
         DataValue::Object attributes;
         parseAttributes(sourceLine, attributes);
-        bool hasId = false;
-        for (auto& [key, value] : attributes) {
-            if (key == "id") hasId = true;
-            fields.emplace(std::move(key), std::move(value));
-        }
+        const bool hasId = attributes.contains("id");
+        fields.merge(attributes);
         if (!hasId) fields.emplace("id", DataValue::string(poolId + "." + std::to_string(lineIndex)));
         return DataValue::object(std::move(fields));
     }
@@ -355,7 +352,9 @@ eve::Result<DnutDocument> parseDnutDocument(const std::string& source, const std
         return eve::Result<DnutDocument>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::ParseError, diagnostics.back().message, path, {}, "dialogue.dnut.parse"));
     }
-    document.poolRoot = DataValue::object({{"pools", DataValue::object(std::move(pools))}});
+    DataValue::Object root;
+    root.emplace("pools", std::move(pools));
+    document.poolRoot = DataValue::object(std::move(root));
 
     eve::dnut::StepKindRegistry registry;
     auto                        registered = registerDialogueSequenceSteps(registry);

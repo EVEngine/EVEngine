@@ -12,7 +12,8 @@ namespace {
 Result<editing::GizmoSnapshot> failure(StatusCode code, DiagnosticCode diagnostic, std::string message,
                                        std::string path = {}) {
     return Result<editing::GizmoSnapshot>::failure(
-        Status(code, {Diagnostic::error(diagnostic, message, path, {}, "graphics_editing.vegetation_field_gizmo")}));
+        Status(code, {Diagnostic::error(diagnostic, std::move(message), std::move(path), {},
+                                        "graphics_editing.vegetation_field_gizmo")}));
 }
 
 std::array<double, 4> channelColor(graphics::VegetationChannel channel, float opacity) {

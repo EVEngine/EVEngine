@@ -58,10 +58,11 @@ void exposeMotionMatcherBindings(ssq::Table& table) {
             if (sources.size() != static_cast<std::size_t>(self->getClipCount()))
                 throw std::runtime_error("one curve source per database clip is required");
             std::vector<std::string> names;
+            names.reserve(sources.size());
             for (std::size_t i = 0; i < sources.size(); ++i) names.push_back(sources.get<std::string>(i));
             auto* fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
             if (!fs) throw std::runtime_error("filesystem unavailable");
-            auto* raw = fs->read(path);
+            auto* raw = fs->read(std::move(path));
             if (!raw) throw std::runtime_error("feature curve file unavailable");
             Owned<eve::filesystem::FileData> data(raw);
             return script::projectResult(

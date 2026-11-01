@@ -732,7 +732,7 @@ eve::Result<std::string> VehicleOrderQueueAdapter::append(const VehicleOrder& or
                                                           double timeoutSeconds) {
     auto id = impl_->queue.append(vehicleOrderTypeName(order.type), priority, timeoutSeconds);
     if (!id) return id;
-    const std::string key = std::move(id).takeValue();
+    std::string key = std::move(id).takeValue();
     impl_->payloads.emplace(key, order);
     return eve::Result<std::string>::success(std::move(key), eve::Status::success(eve::StatusCode::Applied));
 }
@@ -741,7 +741,7 @@ eve::Result<std::string> VehicleOrderQueueAdapter::replace(const VehicleOrder& o
                                                            double timeoutSeconds) {
     auto id = impl_->queue.replace(vehicleOrderTypeName(order.type), priority, timeoutSeconds);
     if (!id) return id;
-    const std::string key = std::move(id).takeValue();
+    std::string key = std::move(id).takeValue();
     pruneTerminalPayloads();
     impl_->payloads.emplace(key, order);
     return eve::Result<std::string>::success(std::move(key), eve::Status::success(eve::StatusCode::Applied));
@@ -751,7 +751,7 @@ eve::Result<std::string> VehicleOrderQueueAdapter::interrupt(const VehicleOrder&
                                                              double timeoutSeconds) {
     auto id = impl_->queue.interrupt(vehicleOrderTypeName(order.type), priority, timeoutSeconds);
     if (!id) return id;
-    const std::string key = std::move(id).takeValue();
+    std::string key = std::move(id).takeValue();
     pruneTerminalPayloads();
     impl_->payloads.emplace(key, order);
     return eve::Result<std::string>::success(std::move(key), eve::Status::success(eve::StatusCode::Applied));

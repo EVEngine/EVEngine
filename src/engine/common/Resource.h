@@ -9,14 +9,15 @@
 // <squirrel.h> just to name a resource handle.
 #include "common/RuntimeRegistry.h"
 
-#include <cstddef>
 #include <condition_variable>
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <span>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace eve {
@@ -111,7 +112,7 @@ public:
 
 protected:
     /** @brief Constructs a Resource. */
-    Resource(std::string uri) : uri(uri) {}
+    Resource(std::string uri) : uri(std::move(uri)) {}
 
     /** @brief Set the resource URI (the cache key). Used by ResourceManager. */
     void setUri(std::string value) { uri = std::move(value); }

@@ -31,6 +31,7 @@ void exposeAnimInertializerBindings(ssq::Table& table) {
                 if (factors.size() != 0 && factors.size() != static_cast<std::size_t>(source->getBoneCount()))
                     throw std::runtime_error("time factors must match bone count");
                 std::vector<float> values;
+                values.reserve(factors.size());
                 for (std::size_t i = 0; i < factors.size(); ++i) values.push_back(factors.get<float>(i));
                 return script::projectResult(bind.vm(), self->begin(*source, *previousSource, *target, *previousTarget,
                                                                     history, duration, values));

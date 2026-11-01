@@ -37,6 +37,7 @@
 #include <sstream>
 #include <string>
 #include <system_error>
+#include <utility>
 #include <vector>
 
 namespace eve::filesystem {
@@ -203,7 +204,7 @@ bool resolveOsWatchRoot(Filesystem *fs, const std::string &root, std::filesystem
     auto canonical = std::filesystem::weakly_canonical(candidate, ec);
     if (ec) return false;
     if (!std::filesystem::is_directory(canonical, ec)) return false;
-    out = canonical;
+    out = std::move(canonical);
     return true;
 }
 

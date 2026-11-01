@@ -1109,7 +1109,19 @@ TEST_CASE("ui.photoMode.sessionRejectsMismatchedOrMalformedProfilesAtomically") 
         REQUIRE(working.ok());
         CHECK_EQ(fieldOfView(working.value()), 60.f);
         REQUIRE(session.replaceWorkingJson(profile("World", 2, 75.f)).ok());
+        auto edited = session.workingJson();
+        REQUIRE(edited.ok());
+        CHECK_EQ(fieldOfView(edited.value()), 75.f);
+        auto pendingOutput = session.outputJson();
+        REQUIRE(pendingOutput.ok());
+        CHECK_EQ(fieldOfView(pendingOutput.value()), 75.f);
         REQUIRE(session.end(true, true).ok());
+        auto restored = session.outputJson();
+        REQUIRE(restored.ok());
+        CHECK_EQ(fieldOfView(restored.value()), 60.f);
+        auto retainedWorking = session.workingJson();
+        REQUIRE(retainedWorking.ok());
+        CHECK_EQ(fieldOfView(retainedWorking.value()), 75.f);
         CHECK(!session.end(true, true).ok());
     };
     SUB_CASE("lighting flag inconsistent with profile identity rejects saved profile") {

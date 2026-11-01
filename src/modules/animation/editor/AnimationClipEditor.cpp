@@ -73,13 +73,19 @@ animation_editing::Result<void> AnimationClipEditor::loadRuntimeClip(const anima
         int keyIndex = 0;
         for (const double time : times) {
             clip.sample(static_cast<float>(time), &pose, &skeleton);
-            keys.push_back(animation_editing::EditorValue::Object{
-                {"id", "runtime-key:" + std::to_string(bone) + ":" + std::to_string(keyIndex++)}, {"time", time},
-                {"px", static_cast<double>(pose.getLocalPositionX(bone))}, {"py", static_cast<double>(pose.getLocalPositionY(bone))},
-                {"pz", static_cast<double>(pose.getLocalPositionZ(bone))}, {"rx", static_cast<double>(pose.getLocalRotationX(bone))},
-                {"ry", static_cast<double>(pose.getLocalRotationY(bone))}, {"rz", static_cast<double>(pose.getLocalRotationZ(bone))},
-                {"rw", static_cast<double>(pose.getLocalRotationW(bone))}, {"sx", static_cast<double>(pose.getLocalScaleX(bone))},
-                {"sy", static_cast<double>(pose.getLocalScaleY(bone))}, {"sz", static_cast<double>(pose.getLocalScaleZ(bone))}});
+            keys.emplace_back(animation_editing::EditorValue::Object{
+                {"id", "runtime-key:" + std::to_string(bone) + ":" + std::to_string(keyIndex++)},
+                {"time", time},
+                {"px", static_cast<double>(pose.getLocalPositionX(bone))},
+                {"py", static_cast<double>(pose.getLocalPositionY(bone))},
+                {"pz", static_cast<double>(pose.getLocalPositionZ(bone))},
+                {"rx", static_cast<double>(pose.getLocalRotationX(bone))},
+                {"ry", static_cast<double>(pose.getLocalRotationY(bone))},
+                {"rz", static_cast<double>(pose.getLocalRotationZ(bone))},
+                {"rw", static_cast<double>(pose.getLocalRotationW(bone))},
+                {"sx", static_cast<double>(pose.getLocalScaleX(bone))},
+                {"sy", static_cast<double>(pose.getLocalScaleY(bone))},
+                {"sz", static_cast<double>(pose.getLocalScaleZ(bone))}});
         }
         tracks.push_back(trackValue(("runtime-track:" + std::to_string(bone)).c_str(), name.c_str(), std::move(keys)));
     }
@@ -122,13 +128,13 @@ void AnimationClipEditor::seedPreviewClip() {
     tracks.push_back(trackValue("left-arm-track", "LeftArm", {keyValue("left-arm-start", 0.0, -0.55, 1.75, 0.0), keyValue("left-arm-end", 2.0, 1.45, 1.65, 0.0)}));
     tracks.push_back(trackValue("right-arm-track", "RightArm", {keyValue("right-arm-start", 0.0, 0.55, 1.75, 0.0), keyValue("right-arm-end", 2.0, 2.55, 1.85, 0.0)}));
     animation_editing::EditorValue::Array events;
-    events.push_back(animation_editing::EditorValue::Object{{"id", std::string("footstep")},
-                                                            {"time", 0.5},
-                                                            {"name", std::string("footstep")},
-                                                            {"payload", std::string("left")}});
+    events.emplace_back(animation_editing::EditorValue::Object{{"id", std::string("footstep")},
+                                                               {"time", 0.5},
+                                                               {"name", std::string("footstep")},
+                                                               {"payload", std::string("left")}});
     animation_editing::EditorValue::Array masks;
-    masks.push_back(animation_editing::EditorValue::Object{{"bone", std::string("Hips")}, {"weight", 1.0}});
-    masks.push_back(animation_editing::EditorValue::Object{{"bone", std::string("Spine")}, {"weight", 1.0}});
+    masks.emplace_back(animation_editing::EditorValue::Object{{"bone", std::string("Hips")}, {"weight", 1.0}});
+    masks.emplace_back(animation_editing::EditorValue::Object{{"bone", std::string("Spine")}, {"weight", 1.0}});
     animation_editing::EditorValue::Object root;
     root["schemaVersion"] = std::int64_t{1};
     root["settings"] =

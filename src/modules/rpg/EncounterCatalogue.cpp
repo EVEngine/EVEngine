@@ -28,9 +28,8 @@ bool validId(const std::string &value, bool allowEmpty = false) {
 }
 
 eve::Result<int> failure(std::string message, std::string path) {
-    return eve::Result<int>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, message, path, {},
-        "rpg.encounter-catalogue"));
+    return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message),
+                                                            std::move(path), {}, "rpg.encounter-catalogue"));
 }
 
 const std::unordered_set<std::string> &knownFields() {

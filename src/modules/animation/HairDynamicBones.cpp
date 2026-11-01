@@ -1,5 +1,7 @@
 #include "animation/HairDynamicBones.h"
 
+#include <utility>
+
 #include "animation/AnimSkeleton.h"
 #include "animation/DynamicBoneSolver.h"
 #include "common/Diagnostic.h"
@@ -9,7 +11,7 @@ namespace {
 
 Result<int> invalidInt(std::string message, std::string path) {
     return Result<int>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, message, path));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
 }
 
 }  // namespace

@@ -137,6 +137,7 @@ Result<void> capProfileRing(MeshBuild& mesh, const SplineFrameSample& frame, con
     if (profile.explicitMaterials) {
         if (!profile.closed) return Result<void>::success();
         std::vector<V3> polygon;
+        polygon.reserve(profile.points.size());
         for (const auto& point : profile.points) polygon.push_back({point.side, 0.f, point.up});
         std::vector<std::array<std::size_t, 3>> triangles;
         if (triangulateBoundary(polygon, triangles, BoundaryPointPolicy::IncludeBoundary) !=

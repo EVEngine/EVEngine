@@ -1,5 +1,7 @@
 #include "procgen/MeshBuild.h"
 
+#include <utility>
+
 #include <algorithm>
 #include <cmath>
 
@@ -76,7 +78,7 @@ eve::Result<void> MeshBuild::restoreGroupData(std::vector<std::string> names, st
                                               int activeGroup) {
     const auto invalid = [&](std::string message, std::string path) {
         return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ProcgenGroupDataInvalid, message, path, {}, "procgen.mesh"));
+            eve::DiagnosticCode::ProcgenGroupDataInvalid, std::move(message), std::move(path), {}, "procgen.mesh"));
     };
     if (assignments.size() != indices_.size() / 3u || activeGroup < -1 ||
         activeGroup >= static_cast<int>(names.size()) ||

@@ -316,10 +316,22 @@ TEST_CASE("dialogueState.valueRoundtripAndLegacyFacadeParity") {
     values.pushBack(eve::StateValue::string("中文🚀"));
     legacy.set("values", std::move(values));
     legacy.set("name", eve::StateValue::string("dialogue"));
+    const std::string longKey = "entry_" + std::string(96, 'k');
+    legacy.set(longKey, eve::StateValue::string(std::string("a\0b", 3)));
+    legacy.set("largeInteger", eve::StateValue::integer(9007199254740993LL));
 
     const Value           canonical = eve::dialogue::toCanonicalValue(legacy);
     const eve::StateValue restored  = eve::dialogue::toDialogueStateValue(canonical);
     CHECK(restored == legacy);
+    CHECK(restored.keys() == canonical.keys());
+    CHECK(eve::toLegacyStateValue(canonical) == restored);
+    auto transient   = canonical;
+    auto independent = eve::dialogue::toDialogueStateValue(transient);
+    transient        = Value{};
+    CHECK(independent == legacy);
+    independent.set("name", eve::StateValue::string("changed"));
+    REQUIRE(canonical.find("name") != nullptr);
+    CHECK_EQ(canonical.find("name")->asString(), std::string("dialogue"));
 
     auto encoded = canonical.toJson();
     REQUIRE(encoded.ok());
@@ -1462,6 +1474,31 @@ TEST_CASE("editor.brush.stamp_and_erase") {
     brush->setEraseTile(0);
     brush->setSize(1);
     brush->eraseAt(buf.get(), 2, 2);
+}
+
+TEST_CASE("editor.inspector.fieldBuildersRetainOwningValuesAcrossVectorGrowth") {
+    eve::editor::EditorInspector inspector;
+    const std::string            expectedLabel(128, 'l'), expectedValue(256, 'v');
+    {
+        auto label = expectedLabel, value = expectedValue;
+        inspector.addFloat("float", label, 1.f, 0.f, 2.f, .25f);
+        inspector.addFloat3("vector", label, 1.f, 2.f, 3.f);
+        inspector.addBool("bool", label, true);
+        inspector.addString("string", label, value);
+        inspector.addChoice("choice", label, value + ",other", value);
+    }
+    for (int i = 0; i < 64; ++i) inspector.addBool("growth/" + std::to_string(i), "growth", false);
+    REQUIRE_EQ(inspector.getFieldCount(), 69);
+    CHECK_EQ(inspector.getFieldId(0), std::string("float"));
+    CHECK_EQ(inspector.getFieldKind(0), std::string("float"));
+    CHECK_EQ(inspector.getFieldLabel(0), expectedLabel);
+    CHECK_EQ(inspector.getFloat("float"), 1.f);
+    CHECK_EQ(inspector.getFloatStep("float"), .25f);
+    CHECK_EQ(inspector.getFloat3Y("vector"), 2.f);
+    CHECK(inspector.getBool("bool"));
+    CHECK_EQ(inspector.getString("string"), expectedValue);
+    CHECK_EQ(inspector.getChoice("choice"), expectedValue);
+    CHECK_EQ(inspector.getChoicesCsv("choice"), expectedValue + ",other");
 }
 
 TEST_CASE("editor.toolbar_inspector_dock") {
@@ -2725,6 +2762,22 @@ TEST_CASE("editor.animation.state_graph_builds_real_runtime_state_machine") {
     auto missing = builder.build(graph, &skeleton,
                                  [](const std::string&) { return static_cast<eve::animation::AnimClip*>(nullptr); });
     CHECK_EQ(static_cast<int>(missing.code()), static_cast<int>(EditorStatus::NotFound));
+
+    auto              longGraph = graph;
+    const std::string prefix(96, 'n');
+    for (auto& node : longGraph.nodes) node.id = GraphNodeId(prefix + node.id.value());
+    (*longGraph.parameters.getIf<EditorValue::Object>())["entry"] = prefix + "idle";
+    auto longBuilt = builder.build(longGraph, &skeleton, [&](const std::string& asset) {
+        return asset == "asset://animations/idle.eva" ? &idle : &run;
+    });
+    REQUIRE(longBuilt.ok());
+    longGraph = {};
+    CHECK_EQ(longBuilt.value()->getStateCount(), 2);
+    CHECK_EQ(longBuilt.value()->getCurrentState(), prefix + "idle");
+    longBuilt.value()->setFloat("speed", 1.0F);
+    longBuilt.value()->update(0.2F);
+    CHECK_EQ(longBuilt.value()->getCurrentState(), prefix + "run");
+    delete longBuilt.value();
 }
 }  // namespace test_editor_animation_clip
 

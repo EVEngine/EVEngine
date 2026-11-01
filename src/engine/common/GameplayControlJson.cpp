@@ -1,5 +1,7 @@
 #include "common/GameplayControlJson.h"
 
+#include <utility>
+
 #include "common/Capability.h"
 #include "common/GameplayInstanceCatalog.h"
 
@@ -14,7 +16,7 @@ Result<const Value::Object*> asObject(const Value& value, std::string path) {
     const auto* object = value.getIf<Value::Object>();
     if (!object)
         return Result<const Value::Object*>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "gameplay control value must be an object", path));
+            Diagnostic::error(DiagnosticCode::ParseError, "gameplay control value must be an object", std::move(path)));
     return Result<const Value::Object*>::success(object);
 }
 
@@ -61,7 +63,7 @@ Result<SubjectRef> subject(std::string_view text, std::string path) {
     const auto parsed = PersistentId::parse(text);
     if (!parsed)
         return Result<SubjectRef>::failure(Diagnostic::error(
-            DiagnosticCode::ParseError, "gameplay subject must be a canonical UUID", path));
+            DiagnosticCode::ParseError, "gameplay subject must be a canonical UUID", std::move(path)));
     return Result<SubjectRef>::success(SubjectRef::fromPersistentId(*parsed));
 }
 

@@ -714,7 +714,7 @@ std::string EditorHost::applyEditor(const std::string& json) {
                 }
             } catch (...) {
             }
-            std::string err = openWindow(ed.title + " - EVEngine AI Host", w, h);
+            std::string err = openWindow(I.editors.at(id).title + " - EVEngine AI Host", w, h);
             if (err.rfind("error:", 0) == 0) return err;
         }
         return editorState(id);
@@ -972,6 +972,7 @@ void renderWidget(EditorHost::Impl& I, Editor& ed, Object::Ptr w) {
     } else if (type == "dropdown" || type == "listbox") {
         const std::vector<std::string> opts = varStrings(cur("options", Var()));
         std::vector<const char*> items;
+        items.reserve(opts.size());
         for (const auto& s : opts) items.push_back(s.c_str());
         std::string sel = varString(cur("value", strOf(w, "value")));
         int idx = 0;
@@ -1420,7 +1421,7 @@ void EditorHost::loadEditorsFromDisk() {
     std::vector<std::pair<std::string, std::string>> pending;
     for (auto& entry : std::filesystem::directory_iterator(dir, ec)) {
         if (ec) break;
-        const std::filesystem::path p = entry.path();
+        const std::filesystem::path& p      = entry.path();
         const std::string name = p.filename().string();
         const std::string suffix = ".editor.json";
         if (p.extension() != ".json" || name.size() <= suffix.size() ||

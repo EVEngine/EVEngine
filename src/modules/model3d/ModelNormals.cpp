@@ -19,13 +19,11 @@ namespace model3d {
 namespace {
 
 eve::Diagnostic invalidArg(std::string message, std::string path) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message,
-                                  path);
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path));
 }
 
 eve::Diagnostic unsupported(std::string message, std::string path) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, message,
-                                  path);
+    return eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, std::move(message), std::move(path));
 }
 
 aiVector3D unitOrUp(float x, float y, float z) {

@@ -1,5 +1,7 @@
 #include "graphics/Material.h"
 
+#include <utility>
+
 #include "graphics/ClusteredLight.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
@@ -14,7 +16,7 @@ namespace eve::graphics {
 
 namespace {
 eve::Diagnostic invalidMaterial(std::string message) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message);
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message));
 }
 }  // namespace
 

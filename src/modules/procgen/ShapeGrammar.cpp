@@ -118,6 +118,7 @@ bool ShapeGrammar::validate(const std::string& grammar) {
         return false;
     }
     std::vector<const Element*> stack;
+    stack.reserve(parsed.size());
     for (const auto& element : parsed) stack.push_back(&element);
     while (!stack.empty()) {
         const Element* element = stack.back();

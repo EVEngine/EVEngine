@@ -64,6 +64,7 @@
       "moduleExpose.allBindingsPreserveProcgenRockSurface"
     ],
     "render-window": [
+      "devtools.mcp.hostEditorRetainsTitleAfterOwnershipTransfer",
       "procgen.animation.pcgSkinnedMesh.realGraphicsAcceptsCombinedSkinStreams"
     ],
     "runtime-lifecycle": [
@@ -81,9 +82,11 @@
 */
 // clang-format on
 
+#include "graphics/Graphics.h"
 #include "physics/Physics.h"
 #include "procgen/Procgen.h"
 #include "ui/UI.h"
+#include "window/Window.h"
 #include "zeroerr/assert.h"
 
 #include <Poco/Dynamic/Var.h>
@@ -1502,6 +1505,101 @@ TEST_CASE("devtools.mcp.crashReportExplainsPreviousRun") {
     const auto crashLog = statusObject->getObject("crashLog");
     REQUIRE(crashLog);
     CHECK_EQ(crashLog->getValue<std::string>("path"), path);
+}
+
+TEST_CASE("devtools.mcp.hostEditorRetainsTitleAfterOwnershipTransfer") {
+    eve::ui::UI uiModule;
+    auto*       window   = eve::window::Window::create();
+    auto*       graphics = eve::graphics::Graphics::create();
+    REQUIRE(window != nullptr);
+    REQUIRE(graphics != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width  = 320;
+    settings.height = 240;
+    REQUIRE(window->setWindowSettings(settings));
+    auto& host = eve::ui::EditorHost::instance();
+    host.stop();
+    const auto root = std::filesystem::temp_directory_path() /
+                      ("eve_host_title_" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::filesystem::create_directories(root);
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    host.start(vm, root.string(), true);
+    const std::string title   = "Long editor title whose storage must move with its owner";
+    const auto        applied = host.applyEditor("{\"id\":\"title-test\",\"title\":\"" + title + "\",\"widgets\":[]}");
+    REQUIRE(applied.find("error:") != 0);
+    auto state = parseObject(host.windowState());
+    REQUIRE(state);
+    CHECK_EQ(state->getValue<std::string>("title"), title + " - EVEngine AI Host");
+    CHECK_EQ(window->getWindowTitle(), title + " - EVEngine AI Host");
+    CHECK_EQ(state->getValue<int>("width"), 320);
+    CHECK_EQ(state->getValue<int>("height"), 240);
+    auto editor = parseObject(host.editorState("title-test"));
+    REQUIRE(editor);
+    auto editors = editor->getArray("editors");
+    REQUIRE(editors);
+    REQUIRE_EQ(editors->size(), size_t{1});
+    CHECK_EQ(editors->getObject(0)->getValue<std::string>("title"), title);
+    host.stop();
+    std::filesystem::remove_all(root);
+}
+
+TEST_CASE("devtools.mcp.sceneToolsRetainLargeOwnedResponses") {
+    auto& dt = DevTool::instance();
+    McpServer::instance().stop();
+    dt.detach();
+    std::vector<std::string> snapshots;
+    {
+        ssq::VM vm(1024, ssq::Libs::ALL);
+        dt.attach(vm, false);
+        dt.exposeScriptApi(vm);
+        auto bootstrap = vm.compileSource(R"nut(
+            mcp_payload <- "";
+            for (local i = 0; i < 4096; ++i) mcp_payload += "abcdefgh";
+            mcp_result <- function(op) { return {payload = ::mcp_payload, operation = op}; };
+            scene_director <- {
+                reset = function() { return ::mcp_result("reset"); },
+                modify = function(action, target, params) { return ::mcp_result("modify"); },
+                batch = function(actions, options) { return ::mcp_result("batch"); },
+                cameras = function(count) { return ::mcp_result("cameras"); },
+                info = function() { return ::mcp_result("info"); }
+            };
+        )nut");
+        vm.run(bootstrap);
+        const char* tools[]{"eve_scene_reset", "eve_scene_modify", "eve_scene_batch", "eve_camera_generate",
+                            "eve_scene_info"};
+        const char* operations[]{"reset", "modify", "batch", "cameras", "info"};
+        const char* arguments[]{"{}", R"({"action":"fixture","target":"fixture","params":{}})", R"({"actions":[]})",
+                                R"({"count":2})", "{}"};
+        for (size_t i = 0; i < 5; ++i) {
+            const auto response = callToolOnce(tools[i], arguments[i]);
+            REQUIRE(!toolIsError(response));
+            snapshots.push_back(toolText(response));
+            auto value = parseObject(snapshots.back());
+            REQUIRE(value);
+            CHECK_EQ(value->getValue<std::string>("payload").size(), size_t{32768});
+            CHECK_EQ(value->getValue<std::string>("operation"), std::string(operations[i]));
+        }
+        auto change = vm.compileSource("mcp_payload = \"changed\";");
+        vm.run(change);
+        auto changed = parseObject(toolText(callToolOnce("eve_scene_info", "{}")));
+        REQUIRE(changed);
+        CHECK_EQ(changed->getValue<std::string>("payload"), std::string("changed"));
+        auto fail = vm.compileSource("scene_director.info = function() { throw \"fixture failure\"; };");
+        vm.run(fail);
+        const auto failed = callToolOnce("eve_scene_info", "{}");
+        CHECK(toolIsError(failed));
+        CHECK(toolText(failed).find("fixture failure") != std::string::npos);
+        dt.detach();
+    }
+    for (const auto& snapshot : snapshots) {
+        auto value = parseObject(snapshot);
+        REQUIRE(value);
+        const auto  payload = value->getValue<std::string>("payload");
+        std::string expected;
+        expected.reserve(32768);
+        for (size_t i = 0; i < 4096; ++i) expected += "abcdefgh";
+        CHECK_EQ(payload, expected);
+    }
 }
 
 TEST_CASE("devtools.mcp.scriptToolExportRoundTrip") {

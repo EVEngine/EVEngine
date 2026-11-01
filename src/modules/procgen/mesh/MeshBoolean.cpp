@@ -281,7 +281,9 @@ MeshBuild meshFromPolygons(const std::vector<Polygon>& polygons, const MeshBuild
                            std::string_view operation) {
     MeshBuild output;
     std::vector<int> leftGroups;
+    leftGroups.reserve(static_cast<std::size_t>(left.getGroupCount()));
     std::vector<int> rightGroups;
+    rightGroups.reserve(static_cast<std::size_t>(right.getGroupCount()));
     for (int i = 0; i < left.getGroupCount(); ++i) leftGroups.push_back(output.setActiveGroup(left.getGroupName(i)));
     for (int i = 0; i < right.getGroupCount(); ++i)
         rightGroups.push_back(output.setActiveGroup("cutter." + right.getGroupName(i)));

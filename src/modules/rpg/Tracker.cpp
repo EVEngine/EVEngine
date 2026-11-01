@@ -74,8 +74,8 @@ eve::Result<void> Tracker::restoreSnapshotJson(std::string_view json) {
     auto parsed = eve::Value::fromJson(json);
     if (!parsed.ok()) return eve::Result<void>::failure(parsed.status());
     const eve::Value &root = parsed.value();
-    auto fail = [](eve::DiagnosticCode code, std::string message, std::string path) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(code, message, path));
+    auto              fail = [](eve::DiagnosticCode code, std::string message, std::string path) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message), std::move(path)));
     };
     if (!root.isObject())
         return fail(eve::DiagnosticCode::ParseError, "quest tracker root must be an object", "$");

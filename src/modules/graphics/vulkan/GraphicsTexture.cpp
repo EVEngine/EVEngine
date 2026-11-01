@@ -6,8 +6,10 @@
 // strict-warning CI builds.
 
 #include "graphics/vulkan/Graphics.h"
-#include "graphics/vulkan/GraphicsInternal.h"
+
+#include <utility>
 #include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/GraphicsInternal.h"
 
 #include "common/Diagnostic.h"
 #include "common/Exception.h"
@@ -142,7 +144,7 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
 Result<Texture *> Graphics::newTextureMipChain(uint32_t width, uint32_t height, uint32_t levels,
                                                std::span<const uint8_t> rgba) {
     auto fail = [](DiagnosticCode code, std::string message) {
-        return Result<Texture *>::failure(Diagnostic::error(code, message, {}, {}, "graphics.texture.mips"));
+        return Result<Texture*>::failure(Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.mips"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto maximum = device.physical_device.properties.limits.maxImageDimension2D;
@@ -201,8 +203,7 @@ Result<Texture *> Graphics::newTextureMipChain(uint32_t width, uint32_t height, 
 Result<Texture *> Graphics::newTextureArrayRgba16f(uint32_t width, uint32_t height, uint32_t layers,
                                                    std::span<const uint16_t> rgbaHalf) {
     auto fail = [](DiagnosticCode code, std::string message) {
-        return Result<Texture *>::failure(
-            Diagnostic::error(code, message, {}, {}, "graphics.texture.array"));
+        return Result<Texture*>::failure(Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.array"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto    &limits = device.physical_device.properties.limits;
@@ -255,8 +256,8 @@ Result<Texture *> Graphics::newTextureArrayRgba16f(uint32_t width, uint32_t heig
 Result<Texture *> Graphics::newTexture3DRgba8(uint32_t width, uint32_t height, uint32_t depth,
                                               std::span<const uint8_t> rgba) {
     auto fail = [](DiagnosticCode code, std::string message) {
-        return Result<Texture *>::failure(
-            Diagnostic::error(code, message, {}, {}, "graphics.texture.volume"));
+        return Result<Texture*>::failure(
+            Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.volume"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto    &limits = device.physical_device.properties.limits;

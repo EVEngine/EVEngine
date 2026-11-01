@@ -840,12 +840,17 @@ TEST_CASE("editor.v2.scene_document_and_savegame_share_one_persistence_contract"
     auto              saveCommit     = saveGame.commit(saveBase.value(), checkpoint, {operation});
     REQUIRE(documentCommit.ok());
     REQUIRE(saveCommit.ok());
+    CHECK(documentCommit.value().content == checkpoint);
+    CHECK(saveCommit.value().content == checkpoint);
     CHECK(documentCommit.value().content == saveCommit.value().content);
     CHECK_EQ(documentCommit.value().journal.size(), saveCommit.value().journal.size());
     CHECK_EQ(documentCommit.value().journal.front().type, saveCommit.value().journal.front().type);
 
     auto stale = saveGame.commit(saveBase.value(), checkpoint, {operation});
     CHECK_EQ(static_cast<int>(stale.code()), static_cast<int>(EditorStatus::Conflict));
+    auto unchanged = saveGame.load();
+    REQUIRE(unchanged.ok());
+    CHECK(unchanged.value().content == checkpoint);
 }
 
 // editor_physics_target.cpp
