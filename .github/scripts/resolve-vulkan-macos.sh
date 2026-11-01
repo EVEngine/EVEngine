@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Resolve VULKAN_SDK + MoltenVK.xcframework layout after install-vulkan-sdk-action.
 # Usage: resolve-vulkan-macos.sh [SDK_ROOT]
-# Writes VULKAN_SDK (and optional VK_ICD_FILENAMES/PATH) into GITHUB_ENV when set.
+# Writes SDK paths and the CI MoltenVK allocation configuration into GITHUB_ENV when set.
 set -euo pipefail
 
 SDK_ROOT="${1:-${RUNNER_TEMP:-/tmp}/VulkanSDK}"
@@ -104,4 +104,10 @@ fi
 if [ -n "${GITHUB_ENV:-}" ]; then
   [ -n "${VK_ICD_FILENAMES:-}" ] && echo "VK_ICD_FILENAMES=$VK_ICD_FILENAMES" >> "$GITHUB_ENV"
   echo "PATH=$PATH" >> "$GITHUB_ENV"
+  # GitHub's AppleParavirtDevice returns black indexed draws with MTLHeap-backed
+  # VMA allocations; the same buffers render correctly without Metal heaps.
+  # Owner: EVEngine; tracking: #701. Remove this default when the indexed-draw,
+  # GBuffer and Ocean regressions pass with heaps on GitHub's virtual GPU.
+  # Keep an explicit value available for the corresponding diagnostic runs.
+  echo "MVK_CONFIG_USE_MTLHEAP=${MVK_CONFIG_USE_MTLHEAP:-0}" >> "$GITHUB_ENV"
 fi

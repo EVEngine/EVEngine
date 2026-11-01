@@ -26,9 +26,13 @@ class ResolveVulkanMacosTests(unittest.TestCase):
                     encoding="utf-8") + '\nprintf "RESULT=%s\\n" "$PKG_CONFIG_PATH"\n', encoding="utf-8")
                 env = dict(os.environ, VULKAN_SDK=str(sdk), HOME=str(root), GITHUB_ENV=str(root / "env"))
                 env.pop("PKG_CONFIG_PATH", None)
+                env.pop("MVK_CONFIG_USE_MTLHEAP", None)
                 if existing is not None:
                     env["PKG_CONFIG_PATH"] = existing
+                    env["MVK_CONFIG_USE_MTLHEAP"] = "2"
                 result = subprocess.run(["bash", str(script), str(root / "SDK")], env=env,
                                         capture_output=True, text=True, encoding="utf-8", check=False)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 self.assertIn("RESULT=/sdk/pkgconfig:" + (existing or ""), result.stdout)
+                exported = (root / "env").read_text(encoding="utf-8").splitlines()
+                self.assertIn("MVK_CONFIG_USE_MTLHEAP=" + ("0" if existing is None else "2"), exported)
