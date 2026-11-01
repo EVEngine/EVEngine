@@ -7,3 +7,7 @@ target_include_directories(pr701_probe PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/incl
 if(PROBE_ASSIMP_DIR)
   target_include_directories(pr701_probe PRIVATE "${PROBE_ASSIMP_DIR}/include")
 endif()
+
+target_sources(pr701_probe PRIVATE adapter.cpp)
+target_include_directories(pr701_probe PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../../../../src/modules" "${PROBE_TP_DIR}/VKBuilder/include" "${PROBE_TP_DIR}" "${PROBE_TP_DIR}/vma")
+set_source_files_properties(adapter.cpp PROPERTIES COMPILE_DEFINITIONS "VKB_ENABLE_VMA=1;VMA_VULKAN_VERSION=1000000;VMA_STATIC_VULKAN_FUNCTIONS=0;VMA_DYNAMIC_VULKAN_FUNCTIONS=1")

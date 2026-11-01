@@ -58,6 +58,10 @@ jobs:
             glm
             medialoader
             SDL2
+            VKBuilder
+            vulkan
+            vk_video
+            vma
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: assimp/assimp
@@ -71,7 +75,7 @@ jobs:
           MVK_CONFIG_LOG_LEVEL: '4'
         run: |
           set -euo pipefail
-          git -C probe-third-party submodule update --init --depth 1 medialoader SDL2
+          git -C probe-third-party submodule update --init --depth 1 medialoader SDL2 VKBuilder
           gh run download 41299927015 --repo github.com/EVEngine/EVEngine --name sdk-macosx-x86_64 --dir "$RUNNER_TEMP/sdk-download"
           unzip -q "$RUNNER_TEMP/sdk-download/eve-sdk-macosx-x86_64-v0.6.1.zip" -d "$RUNNER_TEMP/sdk"
           sdk="$RUNNER_TEMP/sdk/eve-sdk/macosx-x86_64"

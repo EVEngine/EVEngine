@@ -17,6 +17,8 @@ def main(mode):
     env = dict(os.environ, ALSOFT_DRIVERS="null", MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS="0")
     env["UV_MODE"] = mode
     env["EVENGINE_VULKAN_VALIDATION"] = "0" if mode == "no_validation" else "1"
+    if mode == "sync":
+        env["VK_LAYER_ENABLES"] = "VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT"
     print(f"SDK_UV_PROBE mode={mode}",flush=True)
     with log.open("w", encoding="utf-8") as output:
         process = subprocess.Popen([str(executable), "run"], cwd=game, env=env,
@@ -53,6 +55,6 @@ def main(mode):
 
 if __name__ == "__main__":
     utf8_stdio.enable_utf8_stdio()
-    results = {mode: main(mode) for mode in ("no_validation", "shadow", "ao", "aa", "msaa", "atmosphere", "tilted_light", "forward_only")}
+    results = {mode: main(mode) for mode in ("baseline", "recompile", "epsilon_light", "wait_idle", "sync", "gi", "gbuffer")}
     print(f"UV_RESULTS {results}")
     raise SystemExit(0)

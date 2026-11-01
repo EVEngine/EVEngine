@@ -21,6 +21,7 @@
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "filesystem/FileData.h"
+extern "C" void probeWaitIdle(eve::graphics::Graphics*);
 namespace eve::diagnostic {
 using namespace graphics;
 #include "helpers.h"
@@ -34,7 +35,7 @@ public:
   std::string mode=std::getenv("UV_MODE")?std::getenv("UV_MODE"):"baseline";
   std::printf("UV_MODE %s\n",mode.c_str());std::fflush(stdout);
   auto* rc=gfx->getRenderControl();
-  for(const auto* feature : {"shadow","ao","aa","msaa","atmosphere"}) {
+  for(const auto* feature : {"shadow","ao","aa","msaa","atmosphere","gbuffer","gi"}) {
     if(mode==feature || mode=="forward_only") {
       if(!rc || !rc->requestFeature(feature,false).ok()) throw std::runtime_error(feature);
     }
@@ -54,10 +55,13 @@ public:
   auto* ent=mod->createRenderable(gfx,md,0);
   if(!ent) throw std::runtime_error("entity");
   auto* cam=Camera3D::createCamera(*ent->table);cam->setEye(0,0,3);cam->setTarget(0,0,0);cam->setUp(0,1,0);cam->data()->nearZ=.05f;cam->data()->farZ=100;
-  if(mode=="tilted_light")RenderSystem3D::setDirectionalLight(.2f,1,.4f,1.5f,1.5f,1.5f);
+  if(mode=="recompile") {if(!rc->requestFeature("aa",false).ok() || !rc->requestFeature("aa",true).ok())throw std::runtime_error("toggle");}
+  for(const auto* f : {"shadow","ao","aa","msaa","atmosphere","gbuffer","gi"})std::printf("UV_FEATURE %s=%d\n",f,int(rc->isEnabled(f)));
+  if(mode=="epsilon_light")RenderSystem3D::setDirectionalLight(0,.001f,-1,1.5f,1.5f,1.5f);
+  else if(mode=="tilted_light")RenderSystem3D::setDirectionalLight(.2f,1,.4f,1.5f,1.5f,1.5f);
   else RenderSystem3D::setDirectionalLight(0,0,-1,1.5f,1.5f,1.5f);
   gfx->setScreenReadbackEnabled(true);gfx->setBackgroundColor(Color(0,0,0,1));
-  for(int i=0;i<8;++i){stage("render3D_start",i);RenderSystem3D::render(*gfx);stage("render2D_start",i);RenderSystem::render(*gfx);stage("poll_start",i);SDL_Event e;while(SDL_PollEvent(&e)){if(e.type==SDL_QUIT)break;}stage("frame_done",i);}
+  for(int i=0;i<8;++i){stage("render3D_start",i);RenderSystem3D::render(*gfx);stage("render2D_start",i);RenderSystem::render(*gfx);if(mode=="wait_idle"){stage("wait_idle",i);probeWaitIdle(gfx);}stage("poll_start",i);SDL_Event e;while(SDL_PollEvent(&e)){if(e.type==SDL_QUIT)break;}stage("frame_done",i);}
   stage("pixels");
   auto top=gfx->getPixel(gfx->getWidth()/2,gfx->getHeight()/4);auto bot=gfx->getPixel(gfx->getWidth()/2,gfx->getHeight()*3/4);
   std::printf("UV_PIXEL top=%f,%f,%f bottom=%f,%f,%f\n",top.r,top.g,top.b,bot.r,bot.g,bot.b);std::fflush(stdout);
