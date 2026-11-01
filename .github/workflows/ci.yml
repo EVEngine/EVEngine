@@ -311,6 +311,7 @@ jobs:
     if: ${{ inputs.target == 'intel_full' }}
     env:
       MVK_CONFIG_VK_SEMAPHORE_SUPPORT_STYLE: '0'
+      MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS: '0'
     runs-on: macos-15-intel
     timeout-minutes: 360
     strategy:
@@ -365,6 +366,21 @@ jobs:
             exit 1
           fi
 
+      - name: Preserve native test binary for bounded follow-up diagnosis
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          mkdir -p build/native-runtime
+          cp "build/macosx-x86_64${suffix}/test/unit_test" build/native-runtime/
+          find build/third-party-releases -path '*/lib/*.dylib' \( -type f -o -type l \) -exec cp -L {} build/native-runtime/ \;
+          otool -L build/native-runtime/unit_test > build/native-runtime/dependencies.txt
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr701-intel-native-${{ matrix.configuration }}
+          path: build/native-runtime/
+          retention-days: 3
       - name: Validate Intel macOS rendering before the full suite
         timeout-minutes: 20
         env:
@@ -378,7 +394,7 @@ jobs:
           # not hide texture, skinning, frame-slot or compute failures.
           ctest --test-dir "build/macosx-x86_64${suffix}" --output-on-failure -j 1 \
             --timeout 120 --no-tests=error \
-            -R '^(map\.render\.orthoAndIsoPreview|spritestack\.render\.(pure2DStack|rotationChangesPixels)|model3d\.render\.gltfEmbeddedUvOrientation|animation\.skinned\.render\.bindPose|graphics\.frameRecording\.fxaaSlotReuseResizeAndPersistentCanvas|fluids\.ocean\.gpuSpectrumMatchesCpuAndRejectsStaleFrames|graphics\.resources\.customProgramsDoNotReserveUnusedMaterialSamplers|procgen\.roguelike\.bothLBendsConnectAllRooms)$'
+            -R '^(map\.render\.orthoAndIsoPreview|spritestack\.render\.(pure2DStack|rotationChangesPixels)|model3d\.render\.gltfEmbeddedUvOrientation|animation\.skinned\.render\.bindPose|graphics\.frameRecording\.fxaaSlotReuseResizeAndPersistentCanvas|fluids\.ocean\.gpuSpectrumMatchesCpuAndRejectsStaleFrames|graphics\.resources\.customProgramsDoNotReserveUnusedMaterialSamplers|graphics\.headless\.initCanvasDrawAndErrors|graphics\.backendParity\.primitive2DAnd3DReadback|gpgpu\.dispatch\.scaleFloats|procgen\.roguelike\.bothLBendsConnectAllRooms)$'
 
       - name: Run native Intel macOS unit tests
         timeout-minutes: 150
