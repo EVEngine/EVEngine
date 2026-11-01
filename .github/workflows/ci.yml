@@ -578,6 +578,20 @@ jobs:
           python3 plugins/ssui-generation/tests/protocol_test.py --mode success \
             --native-eve "$RUNNER_TEMP/ssui-sdk/bin/eve" --project "$RUNNER_TEMP/ssui-project"
 
+      - name: Validate macOS frame resource lifetime
+        timeout-minutes: 15
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_VULKAN_VALIDATION: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/macos-render-validation
+          ctest --test-dir build/macosx-debug -V --no-tests=error -j 1 --timeout 120 \
+            -R 'graphics.frameArena|graphics.deferredTargets.lateGbufferAndResize|graphics.Grass.gpuRenderScreenshot|IBL.newCubemapCreatesSixLayers|GraphicsSmoke.cubemapGeneratesMipChain|fluids.ocean.scriptRenderBuildersOwnInputsAcrossGc' \
+            2>&1 | tee artifacts/macos-render-validation/validation.log
+          # Validation errors must fail even when a pixel assertion passes.
+          ! grep -F '[ERROR: Validation]' artifacts/macos-render-validation/validation.log
+
       - name: Run macosx unit tests
         # Run 39701509245 completed 6597/7063 cases at the 60m guard
         # while tests were still progressing. Keep room for the full suite.
@@ -609,6 +623,8 @@ jobs:
           path: |
             build/macosx-debug/Testing/Temporary/LastTestsFailed.log
             build/macosx-debug/Testing/Temporary/LastTest.log
+            artifacts/macos-render-validation/validation.log
+            build/macosx-debug/test/out/grass_field.png
           if-no-files-found: ignore
           retention-days: 7
 

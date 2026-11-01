@@ -264,7 +264,7 @@ struct Mesh3DClusteredUBO {
 struct GpuTexture {
     vkb::TextureImage2D image;
     vkb::GenericImage arrayImage;
-    vkb::TextureImageCube cubeImage;
+    vkb::GenericImage   cubeImage;
     /** @brief HDR probe cube (attachment + storage + transfer); empty when unused. */
     vkb::CubemapRenderTarget hdrCube;
     bool isCube = false;

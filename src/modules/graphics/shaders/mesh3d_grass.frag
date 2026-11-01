@@ -41,7 +41,7 @@ layout(set = 0, binding = 0, std140) uniform Frame {
 
 layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
 layout(set = 0, binding = 2) uniform sampler2D normalSampler;
-layout(set = 0, binding = 3) uniform sampler2D maskSampler;
+layout(set = 0, binding = 6) uniform sampler2D maskSampler;
 
 layout(set = 0, binding = 4, std140) uniform ShadowFrame {
     mat4 lightVP[3];

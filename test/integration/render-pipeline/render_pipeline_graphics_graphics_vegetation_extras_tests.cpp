@@ -1091,7 +1091,11 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     };
     for (int y = 0; y < h; y += 2) {
         for (int x = 0; x < w; x += 2) {
-            auto c = frame->getPixel(x, y);
+            // ImageData uses physical pixels; keep this logical sampling grid
+            // stable on Retina displays as well as 1x CI displays.
+            const int px = int(int64_t(x) * frame->getWidth() / w);
+            const int py = int(int64_t(y) * frame->getHeight() / h);
+            auto      c  = frame->getPixel(px, py);
             c.r    = linearize(c.r);
             c.g    = linearize(c.g);
             c.b    = linearize(c.b);
