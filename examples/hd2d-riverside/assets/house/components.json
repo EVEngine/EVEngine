@@ -1,0 +1,11 @@
+{
+  "components": [
+    {"id":"foundation","model":"components/building-block.glb","category":"foundation"},
+    {"id":"floor","model":"components/building-block.glb","category":"floor"},
+    {"id":"wall","model":"components/building-block.glb","category":"wall"},
+    {"id":"window","model":"components/building-window.glb","category":"wall","tags":["window"]},
+    {"id":"door","model":"components/building-door.glb","category":"door"},
+    {"id":"roof","model":"components/roof-gable.glb","category":"roof"},
+    {"id":"stairs","model":"components/building-block.glb","category":"stairs"}
+  ]
+}
