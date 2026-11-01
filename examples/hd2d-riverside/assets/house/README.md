@@ -1,19 +1,12 @@
-# Riverside cottage
+# Native house component library
 
-Original low-poly cottage authored for this EVEngine scene. The actual model is
-`cottage.obj`, with `cottage.mtl`; the four textured materials reference
-`../terrain.png`. Preserve that directory relationship when importing elsewhere.
+`components.json` uses the existing HouseGen component-library format. Its model references are valid
+Kenney Modular Buildings assets copied from the repository HouseGen fixture. Their CC0 license is
+retained in `components/License.txt`.
 
-- Y up; front faces +Z; origin at ground center.
-- 3350 triangles, 10 material groups; 32 world units per map tile.
-- Structural footprint: X [-88,88], Z [-42,48]. Roof overhang: X [-100,100].
-- Height: 154 units, including chimney cap.
-- Windows and door are modeled exterior detail; there is no navigable interior.
-- Regenerate with `python ../../build_house.py` from this directory, or run the
-  script by its absolute path from any directory. Source geometry and palette
-  live in that script. The runtime imports the OBJ through `model3d`.
+The riverside presentation consumes HouseLayout component IDs, positions and rotations and builds
+its meshes using native Procgen recipes. It does not load these GLB meshes for rendering; they keep
+the shared component library usable by the standard HouseGen model backend as well.
 
-The sibling `cottage-model.zip` packages the OBJ/MTL and referenced texture for
-import into a DCC application. Mesh normals, per-face UVs and materials are
-included; roof slates, chimney, timber beams, window frames and handle are mesh
-geometry, not a flat house image.
+Appearance and palette settings live in `../../house-native.nut` and `../../house-settings.nut`.
+There is no offline Python or OBJ house generation step.
