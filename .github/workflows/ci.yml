@@ -5,7 +5,7 @@ on:
       target:
         type: choice
         default: both
-        options: [both, linux, intel, intel_fresh, dawn_full, intel_full, loader, replay, compute, full_replay]
+        options: [both, linux, intel, intel_fresh, dawn_full, intel_full, loader, replay, compute, full_replay, fixture_replay]
 permissions:
   contents: read
   actions: read
@@ -577,7 +577,7 @@ jobs:
             compute-diagnostics/
 
   intel-full-replay:
-    if: ${{ inputs.target == 'full_replay' }}
+    if: ${{ inputs.target == 'full_replay' || inputs.target == 'fixture_replay' }}
     runs-on: macos-15-intel
     timeout-minutes: 180
     strategy:
@@ -619,7 +619,7 @@ jobs:
           build="$PWD/build/$platform"
           gh run download 41332710462 --repo github.com/EVEngine/EVEngine --name "pr701-intel-native-$CONFIGURATION" --dir "$RUNNER_TEMP/native-replay"
           make "configure/$platform" CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF -DDART_TESTING_TIMEOUT=120"
-          cmake --build "$build" --parallel 4 --target native_test_plugin reload_test_plugin_v1 reload_test_plugin_v2 reload_test_plugin_fail_init reload_test_plugin_throw_init reload_test_plugin_fail_bind reload_test_plugin_conflict reload_test_plugin_no_entry assertion_contract_probe onnx_compiler_queue_contract download_spine_models download_skinned_character
+          cmake --build "$build" --parallel 4 --target native_test_plugin reload_test_plugin_v1 reload_test_plugin_v2 reload_test_plugin_fail_init reload_test_plugin_throw_init reload_test_plugin_fail_bind reload_test_plugin_conflict reload_test_plugin_no_entry assertion_contract_probe onnx_compiler_queue_contract scad_compiler_timeout_fixture download_spine_models download_skinned_character
           cp "$RUNNER_TEMP/native-replay/unit_test" "$build/test/unit_test"
           chmod +x "$build/test/unit_test"
           export UNIT_TEST_BINARY="$build/test/unit_test"
@@ -630,7 +630,12 @@ jobs:
           ctest --test-dir "$build" -N -E '^bundle/' -LE benchmark --show-only=json-v1 > "$build/inventory.json"
           python3 -c 'import json,sys; data=json.load(open(sys.argv[1],encoding="utf-8")); count=len(data["tests"]); print("Full inventory:",count); assert count==5061' "$build/inventory.json"
           grep -E '^TimeOut: +120$' "$build/DartConfiguration.tcl"
+          if [ "${{ inputs.target }}" = fixture_replay ]; then
+            test -x "$build/test/scad_compiler_timeout_fixture"
+            ctest --test-dir "$build" -R '^asset[.]import[.]structuredModelsScadCompilerTimeout$' --output-on-failure --repeat until-fail:5
+          else
           make --old-file="build/$platform" "test/$platform" CTEST_JOBS=1 CTEST_REPEAT='' LABEL_FILTER='' CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF -DDART_TESTING_TIMEOUT=120"
+          fi
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         with:
