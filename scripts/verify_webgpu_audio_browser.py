@@ -18,18 +18,28 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--url", default="http://127.0.0.1:8091/eve.html")
     parser.add_argument("--timeout", type=int, default=90)
+    parser.add_argument("--port", type=int, help="Connect to an existing Chromium CDP port")
     args = parser.parse_args()
     with sync_playwright() as playwright:
-        browser = playwright.chromium.launch(headless=False, args=[
+        browser = (playwright.chromium.connect_over_cdp(f"http://127.0.0.1:{args.port}")
+                   if args.port else playwright.chromium.launch(headless=False, args=[
             "--no-sandbox", "--disable-gpu-sandbox", "--enable-unsafe-webgpu",
             "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist", "--enable-gpu",
             "--use-gpu-in-tests", "--enable-accelerated-2d-canvas",
             "--use-angle=vulkan", "--enable-features=Vulkan", "--disable-vulkan-surface",
             "--use-vulkan=swiftshader", "--use-webgpu-adapter=swiftshader",
-        ])
+        ]))
         try:
-            page = browser.new_page(viewport={"width": 1400, "height": 900})
-            page.goto(args.url, wait_until="domcontentloaded", timeout=30000)
+            if args.port:
+                context = browser.contexts[0]
+                page = next((candidate for candidate in context.pages if candidate.url == args.url),
+                            None)
+                if page is None:
+                    page = context.new_page()
+            else:
+                page = browser.new_page(viewport={"width": 1400, "height": 900})
+            if page.url != args.url:
+                page.goto(args.url, wait_until="domcontentloaded", timeout=30000)
             timeout_ms = args.timeout * 1000
             page.wait_for_function("document.getElementById('stEngine')?.className === 'ok'",
                                    timeout=timeout_ms)

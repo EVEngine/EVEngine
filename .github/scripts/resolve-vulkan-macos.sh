@@ -90,6 +90,9 @@ else
   find "$SDK_ROOT" -maxdepth 5 -name 'MoltenVK.xcframework' -type d 2>/dev/null | head -20 || true
 fi
 
+# LunarG's setup-env.sh appends to this optional variable without a default.
+# Keep nounset enabled for our resolver while providing the normal empty value.
+export PKG_CONFIG_PATH="${PKG_CONFIG_PATH:-}"
 if [ -f "$RESOLVED/setup-env.sh" ]; then
   # shellcheck disable=SC1090
   source "$RESOLVED/setup-env.sh"

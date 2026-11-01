@@ -218,6 +218,11 @@ jobs:
             http://127.0.0.1:8091/eve.html >webgpu-audio-browser.log 2>&1 &
           browser_pid=$!
           trap 'kill "$browser_pid" "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            curl --fail --silent http://127.0.0.1:9223/json/version >/dev/null && break
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:9223/json/version >/dev/null
           python3 scripts/verify_webgpu_audio_browser.py --port 9223 --timeout 90
 
       - name: Upload browser audio diagnostics
