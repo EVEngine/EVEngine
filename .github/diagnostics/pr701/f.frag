@@ -9,8 +9,14 @@ layout(push_constant) uniform P { mat4 m; vec4 rows[3]; vec4 color; } push;
 #ifdef UBO
 layout(set=0,binding=0,std140) uniform U { mat4 m; vec4 color; } u;
 #endif
+#if defined(SAMPLER_VERTEX) || defined(SAMPLER_ALL)
+layout(set=0,binding=1) uniform sampler2D texture0;
+#endif
 void main() {
 color=vec4(1,0,0,1);
+#if defined(SAMPLER_VERTEX) || defined(SAMPLER_ALL)
+color=texture(texture0,vec2(0.5));
+#endif
 #ifdef MRT
 c1=color;c2=color;c3=color;c4=color;
 #endif

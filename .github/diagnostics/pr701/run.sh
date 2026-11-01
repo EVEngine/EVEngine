@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd .github/diagnostics/pr701
-for mode in GENERATED VERTEX PUSH UBO SSBO MRT; do
+for mode in GENERATED VERTEX PUSH UBO SSBO MRT SAMPLER_VERTEX SAMPLER_ALL; do
   glslc -D"$mode" v.vert -o "$mode.vert.spv"
   glslc -D"$mode" f.frag -o "$mode.frag.spv"
 done

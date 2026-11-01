@@ -78,7 +78,7 @@ struct Vertex {
 };
 bool render(const char* mode, bool full, bool offset, int indices) {
     const bool  generated = std::strcmp(mode, "GENERATED") == 0;
-    const bool  dynamic   = std::strcmp(mode, "UBO") == 0;
+    const bool  dynamic   = full || std::strcmp(mode, "UBO") == 0;
     std::string label     = std::string(mode) + " layout=" + (full ? "engine" : "minimal") +
                         " memoryOffset=" + std::to_string(offset) + " indices=" + std::to_string(indices);
     const int                   attachments = std::strcmp(mode, "MRT") == 0 ? 5 : 1;
@@ -165,6 +165,8 @@ bool render(const char* mode, bool full, bool offset, int indices) {
         bindings.push_back({4, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr});
     } else
         bindings.push_back({21, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, VK_SHADER_STAGE_VERTEX_BIT, nullptr});
+    if (!full)
+        bindings.push_back({1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, VK_SHADER_STAGE_FRAGMENT_BIT, nullptr});
     VkDescriptorSetLayoutCreateInfo li{VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO};
     li.bindingCount = bindings.size();
     li.pBindings    = bindings.data();
@@ -274,6 +276,41 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     dai.pSetLayouts        = &layout;
     VkDescriptorSet set;
     VK(vkAllocateDescriptorSets(device, &dai, &set));
+    VkImage           texture;
+    VkDeviceMemory    textureMemory;
+    VkImageView       textureView;
+    VkSampler         sampler;
+    VkImageCreateInfo ti{VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO};
+    ti.imageType   = VK_IMAGE_TYPE_2D;
+    ti.format      = VK_FORMAT_R8G8B8A8_UNORM;
+    ti.extent      = {1, 1, 1};
+    ti.mipLevels   = 1;
+    ti.arrayLayers = 1;
+    ti.samples     = VK_SAMPLE_COUNT_1_BIT;
+    ti.tiling      = VK_IMAGE_TILING_OPTIMAL;
+    ti.usage       = VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+    VK(vkCreateImage(device, &ti, nullptr, &texture));
+    VkMemoryRequirements tm;
+    vkGetImageMemoryRequirements(device, texture, &tm);
+    VkMemoryAllocateInfo tai{VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO};
+    tai.allocationSize  = tm.size;
+    tai.memoryTypeIndex = memoryType(tm.memoryTypeBits, 0);
+    VK(vkAllocateMemory(device, &tai, nullptr, &textureMemory));
+    VK(vkBindImageMemory(device, texture, textureMemory, 0));
+    VkImageViewCreateInfo tvi{VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO};
+    tvi.image            = texture;
+    tvi.viewType         = VK_IMAGE_VIEW_TYPE_2D;
+    tvi.format           = ti.format;
+    tvi.subresourceRange = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+    VK(vkCreateImageView(device, &tvi, nullptr, &textureView));
+    VkSamplerCreateInfo sci{VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO};
+    sci.magFilter = VK_FILTER_NEAREST;
+    sci.minFilter = VK_FILTER_NEAREST;
+    sci.maxLod    = 1;
+    VK(vkCreateSampler(device, &sci, nullptr, &sampler));
+    Buffer  textureStaging = buffer(4, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, offset);
+    uint8_t red[]          = {255, 0, 0, 255};
+    write(textureStaging, red, 4);
     VkDescriptorBufferInfo            ub{ubo.handle, 0, sizeof(uniforms)}, sb{ssbo.handle, 0, 64};
     std::vector<VkWriteDescriptorSet> writes;
     VkWriteDescriptorSet              w{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET};
@@ -293,6 +330,17 @@ bool render(const char* mode, bool full, bool offset, int indices) {
         w.pBufferInfo    = &ub;
         writes.push_back(w);
     }
+    VkDescriptorImageInfo sampled{sampler, textureView, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL};
+    for (uint32_t binding : {1u, 2u, 3u, 5u, 6u, 7u, 8u, 9u, 10u, 16u, 17u, 18u, 20u}) {
+        if (!full && binding != 1) continue;
+        VkWriteDescriptorSet iw{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET};
+        iw.dstSet          = set;
+        iw.dstBinding      = binding;
+        iw.descriptorCount = 1;
+        iw.descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        iw.pImageInfo      = &sampled;
+        writes.push_back(iw);
+    }
     vkUpdateDescriptorSets(device, writes.size(), writes.data(), 0, nullptr);
     Buffer                      readback = buffer(64 * 64 * 4, VK_BUFFER_USAGE_TRANSFER_DST_BIT, offset);
     VkCommandBufferAllocateInfo cai{VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO};
@@ -303,6 +351,28 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     VK(vkAllocateCommandBuffers(device, &cai, &cb));
     VkCommandBufferBeginInfo bi{VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO};
     VK(vkBeginCommandBuffer(cb, &bi));
+    VkImageMemoryBarrier tb{VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER};
+    tb.image               = texture;
+    tb.subresourceRange    = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+    tb.oldLayout           = VK_IMAGE_LAYOUT_UNDEFINED;
+    tb.newLayout           = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    tb.dstAccessMask       = VK_ACCESS_TRANSFER_WRITE_BIT;
+    tb.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    tb.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    vkCmdPipelineBarrier(cb, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0,
+                         nullptr, 1, &tb);
+    VkBufferImageCopy texCopy{};
+    texCopy.imageSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1};
+    texCopy.imageExtent      = {1, 1, 1};
+    vkCmdCopyBufferToImage(cb, textureStaging.handle, texture, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &texCopy);
+    tb.oldLayout                = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    tb.newLayout                = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    tb.srcAccessMask            = VK_ACCESS_TRANSFER_WRITE_BIT;
+    tb.dstAccessMask            = VK_ACCESS_SHADER_READ_BIT;
+    VkPipelineStageFlags target = std::strcmp(mode, "SAMPLER_VERTEX") == 0
+                                      ? VK_PIPELINE_STAGE_VERTEX_SHADER_BIT
+                                      : VK_PIPELINE_STAGE_VERTEX_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    vkCmdPipelineBarrier(cb, VK_PIPELINE_STAGE_TRANSFER_BIT, target, 0, 0, nullptr, 0, nullptr, 1, &tb);
     std::vector<VkClearValue> clears(attachments);
     for (auto& c : clears) c.color.float32[3] = 1;
     VkRenderPassBeginInfo rbi{VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO};
@@ -354,6 +424,11 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     vkUnmapMemory(device, readback.memory);
     vkDestroyFence(device, fence, nullptr);
     vkFreeCommandBuffers(device, pool, 1, &cb);
+    release(textureStaging);
+    vkDestroySampler(device, sampler, nullptr);
+    vkDestroyImageView(device, textureView, nullptr);
+    vkDestroyImage(device, texture, nullptr);
+    vkFreeMemory(device, textureMemory, nullptr);
     release(readback);
     release(vbo);
     release(ibo);
@@ -427,7 +502,8 @@ int main() {
         bool good = true;
         for (bool full : {false, true})
             for (bool offset : {false, true})
-                for (const char* mode : {"GENERATED", "VERTEX", "PUSH", "UBO", "SSBO", "MRT"})
+                for (const char* mode :
+                     {"GENERATED", "VERTEX", "PUSH", "UBO", "SSBO", "MRT", "SAMPLER_VERTEX", "SAMPLER_ALL"})
                     for (int indices : {0, 16, 32}) {
                         if (std::strcmp(mode, "VERTEX") && indices != 32) continue;
                         try {
