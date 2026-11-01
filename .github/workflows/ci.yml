@@ -457,7 +457,9 @@ jobs:
           done
           echo '=== explicit MoltenVK manifest control ==='
           export VK_ICD_FILENAMES="$VULKAN_SDK/share/vulkan/icd.d/MoltenVK_icd.json"
-          ./build-loader-probe default 2>&1
+          ./build-loader-probe default 2>&1 || true
+          echo '=== Metal argument buffers disabled control ==='
+          MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS=0 ./build-loader-probe default 2>&1
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         with:
