@@ -43,7 +43,7 @@ Result<const Value::Object*> object(const Value& value, std::string path) {
     const auto* result = value.getIf<Value::Object>();
     if (!result)
         return Result<const Value::Object*>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "expected object", path));
+            Diagnostic::error(DiagnosticCode::ParseError, "expected object", std::move(path)));
     return Result<const Value::Object*>::success(result);
 }
 
@@ -59,7 +59,7 @@ Result<std::int64_t> integer(const Value& value, std::string path) {
     const auto* result = value.getIf<std::int64_t>();
     if (!result)
         return Result<std::int64_t>::failure(
-            Diagnostic::error(DiagnosticCode::ParseError, "expected integer", path));
+            Diagnostic::error(DiagnosticCode::ParseError, "expected integer", std::move(path)));
     return Result<std::int64_t>::success(*result);
 }
 

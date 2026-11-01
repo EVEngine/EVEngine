@@ -1,5 +1,7 @@
 #include "asset/import/UnrealImporter.h"
 
+#include <utility>
+
 #include "asset/import/ImportCommon.h"
 
 #include <cmath>
@@ -18,7 +20,7 @@ Result<std::string> requiredString(const Value::Object& object, std::string_view
     if (!value || !value->isString() || value->asString().empty())
         return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::ParseError,
                                                               "Unreal adapter field must be a non-empty string",
-                                                              path, {}, "asset.import"));
+                                                              std::move(path), {}, "asset.import"));
     return Result<std::string>::success(value->asString());
 }
 
@@ -28,7 +30,7 @@ Result<std::uint32_t> requiredUint32(const Value::Object& object, std::string_vi
         value->asInt() > std::numeric_limits<std::uint32_t>::max())
         return Result<std::uint32_t>::failure(Diagnostic::error(DiagnosticCode::ParseError,
                                                                 "Unreal adapter field must be a positive uint32",
-                                                                path, {}, "asset.import"));
+                                                                std::move(path), {}, "asset.import"));
     return Result<std::uint32_t>::success(static_cast<std::uint32_t>(value->asInt()));
 }
 

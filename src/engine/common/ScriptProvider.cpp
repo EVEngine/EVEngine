@@ -438,7 +438,7 @@ Result<ScriptProviderHandle> ScriptProviderRegistry::publishForCapability(std::s
 
     auto published = publish(std::move(name), instance);
     if (!published) return Result<ScriptProviderHandle>::failure(published.status());
-    const ScriptProviderHandle handle = published.value();
+    auto handle = std::move(published).takeValue();
 
     // Record the seam on the entry *before* running the binder. A binder that fails
     // halfway has usually already installed part of its adapter, and the rollback
@@ -473,7 +473,7 @@ Result<ScriptProviderHandle> ScriptProviderRegistry::publishForCapability(std::s
         return Result<ScriptProviderHandle>::failure(providerDiagnostic(
             DiagnosticCode::Failed, "the capability binder replaced the provider it was binding", handle.name));
     }
-    return Result<ScriptProviderHandle>::success(handle);
+    return Result<ScriptProviderHandle>::success(std::move(handle));
 }
 
 void ScriptProviderRegistry::clearAll() {

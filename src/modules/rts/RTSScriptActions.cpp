@@ -242,6 +242,7 @@ Result<RTSBuildReceipt> RTS::queueScriptUnit(Building& producer, SubjectRef unit
         cost = std::move(merged).takeValue();
     }
     std::vector<transaction::ITransactionParticipant*> parts;
+    parts.reserve(stage.stage.effects.size() + effects.size());
     for (auto& effect : stage.stage.effects) parts.push_back(effect.get());
     parts.insert(parts.end(), effects.begin(), effects.end());
     auto receipt = transaction::AtomicResourcePayment::execute(

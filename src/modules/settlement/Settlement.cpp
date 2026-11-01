@@ -188,7 +188,7 @@ eve::Result<game_event::GameEvent> makeEvent(const SettlementContext& context) {
         value["sample"]    = decision.sample;
         value["threshold"] = decision.threshold;
         value["accepted"]  = decision.accepted;
-        decisions.emplace_back(eve::Value(std::move(value)));
+        decisions.emplace_back(std::move(value));
     }
     payload["decisions"] = eve::Value(std::move(decisions));
 
@@ -215,7 +215,7 @@ eve::Result<game_event::GameEvent> makeEvent(const SettlementContext& context) {
             stageValue["before"]  = stage.before;
             stageValue["after"]   = stage.after;
             stageValue["details"] = stage.details;
-            stages.emplace_back(eve::Value(std::move(stageValue)));
+            stages.emplace_back(std::move(stageValue));
         }
     }
     payload["stages"] = eve::Value(std::move(stages));
@@ -577,7 +577,7 @@ void SettlementContext::recordMutationViolation(std::string message, std::string
     if (mutationViolation_) return;
     try {
         mutationViolation_.emplace(
-            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, message, path));
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message), std::move(path)));
     } catch (...) {
         // A late mutation is a contract violation. If recording its
         // diagnostic itself cannot allocate, fail closed instead of allowing

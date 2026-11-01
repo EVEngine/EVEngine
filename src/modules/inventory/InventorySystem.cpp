@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <type_traits>
+#include <utility>
 
 namespace eve::inventory {
 
@@ -891,13 +893,14 @@ bool InventorySystem::equipFromBag(EquipmentSet *eq, const std::string &equipSlo
 
     auto &bs = bag->slots()[size_t(bagSlot)];
     ItemStack moving = bs;
+    static_assert(std::is_nothrow_move_assignable_v<ItemStack>);
     // Equipment slots hold one logical item (quantity preserved but typically 1).
     bs.clear();
 
     auto *dest = eq->stackAt(equipSlot);
     if (!dest) {
         // restore
-        bag->slots()[size_t(bagSlot)] = moving;
+        bag->slots()[size_t(bagSlot)] = std::move(moving);
         return false;
     }
 
@@ -905,7 +908,7 @@ bool InventorySystem::equipFromBag(EquipmentSet *eq, const std::string &equipSlo
     if (!dest->empty()) {
         bag->slots()[size_t(bagSlot)] = *dest;
     }
-    *dest = moving;
+    *dest = std::move(moving);
 
     InventoryChangeEvent ev;
     ev.action = "equip";

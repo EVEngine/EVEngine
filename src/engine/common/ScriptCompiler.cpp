@@ -22,6 +22,12 @@ namespace {
 std::mutex                                       compilerRegistryMutex;
 std::unordered_map<HSQUIRRELVM, ScriptCompiler*> compilerRegistry;
 
+std::string& namedArgumentChoicesBuffer() {
+    // Keep thread storage outside the lambda of a dllexport constructor.
+    static thread_local std::string buffer;
+    return buffer;
+}
+
 std::string hashSource(std::string_view source) {
     uint64_t hash = 1469598103934665603ull;
     for (const unsigned char c : source) {
@@ -524,7 +530,7 @@ ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_
             static const char* units[] = {nullptr, "seconds", "milliseconds", "radians", "degrees", "pixels", "meters"};
             if (unit != nullptr) *unit = units[static_cast<size_t>(parameter.unit)];
             if (choices != nullptr) {
-                static thread_local std::string choiceBuffer;
+                auto& choiceBuffer = namedArgumentChoicesBuffer();
                 choiceBuffer.clear();
                 for (size_t i = 0; i < parameter.choices.size(); ++i) {
                     if (i != 0) choiceBuffer += ',';

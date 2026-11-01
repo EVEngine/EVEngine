@@ -98,7 +98,7 @@ bool UdpSocket::sendTo(eve::data::ByteData* data, std::string host, uint16_t por
 bool UdpSocket::sendToString(std::string s, std::string host, uint16_t port) {
     if (s.empty()) return false;
     eve::data::ByteData data(s.data(), s.size());
-    return sendTo(&data, host, port);
+    return sendTo(&data, std::move(host), port);
 }
 
 bool UdpSocket::send(eve::data::ByteData* data) {

@@ -311,6 +311,7 @@ std::string MeshGraph::serializeDefinition() const {
         const auto& node = nodes_.at(id);
         out << "NODE " << std::quoted(id) << ' ' << std::quoted(node.operation) << '\n';
         std::vector<std::string> keys;
+        keys.reserve(node.floats.size());
         for (const auto& [key, value] : node.floats) keys.push_back(key);
         std::sort(keys.begin(), keys.end());
         for (const auto& key : keys)

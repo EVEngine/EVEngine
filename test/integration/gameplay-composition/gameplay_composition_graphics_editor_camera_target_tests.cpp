@@ -1958,7 +1958,8 @@ public:
 TEST_CASE("editor.hd2d.sprite_preset_is_reversible_and_scrubs_frames") {
     Hd2dDocumentTarget target("hero");
     const auto         selection = select(target);
-    apply(target, target.makeSet(selection, PropertyPath("asset.source"), "hero.png", PropertySetMode::Absolute));
+    const std::string  sourceAsset = "hero-" + std::string(128, 'x') + ".png";
+    apply(target, target.makeSet(selection, PropertyPath("asset.source"), sourceAsset, PropertySetMode::Absolute));
     apply(target, target.makeSet(selection, PropertyPath("sprite.grid"), EditorValue::Array{4.0, 2.0},
                                  PropertySetMode::Absolute));
     apply(target, target.makeSet(selection, PropertyPath("sprite.animation"), EditorValue::Array{2.0, 5.0},
@@ -1977,6 +1978,7 @@ TEST_CASE("editor.hd2d.sprite_preset_is_reversible_and_scrubs_frames") {
     undo.payload         = flip.value().inverse;
     REQUIRE(target.applyDomainOperation(undo).ok());
     CHECK(!target.value().flipX);
+    CHECK_EQ(target.value().sourceAsset, sourceAsset);
 }
 TEST_CASE("editor.hd2d.rejects_invalid_frame_ranges_and_loads_atomically") {
     Hd2dDocumentTarget target("hero");
@@ -4271,6 +4273,13 @@ TEST_CASE("editor.material.batch_reports_mixed_and_commits_one_atomic_publicatio
     CHECK_EQ(sink.observed, 2U);
     const auto read = batch.read(both, PropertyPath("shading.tint"));
     REQUIRE_EQ(static_cast<int>(read.state), static_cast<int>(PropertyReadState::Value));
+    CHECK(read.value == sharedTint);
+    auto independent = batch.read(both, PropertyPath("shading.tint"));
+    REQUIRE_EQ(static_cast<int>(independent.state), static_cast<int>(PropertyReadState::Value));
+    auto* tint = independent.value.getIf<Value::Array>();
+    REQUIRE(tint != nullptr);
+    (*tint)[0] = Value(0.99);
+    CHECK(batch.read(both, PropertyPath("shading.tint")).value == sharedTint);
     CHECK(read.value == sharedTint);
 }
 

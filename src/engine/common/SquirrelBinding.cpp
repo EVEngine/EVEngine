@@ -1,5 +1,7 @@
 #include "common/SquirrelBinding.h"
 
+#include <utility>
+
 #include "common/Assert.h"
 #include "common/ScriptError.h"
 #include "common/ScriptProvider.h"
@@ -93,7 +95,7 @@ struct ConversionContext {
 
 Diagnostic conversionError(const ConversionContext& context, DiagnosticCode code, std::string message,
                            std::string path) {
-    return Diagnostic::error(code, message, path, {}, context.options.source);
+    return Diagnostic::error(code, std::move(message), std::move(path), {}, context.options.source);
 }
 
 std::string childPath(std::string_view parent, std::size_t index) {
@@ -311,10 +313,8 @@ bool validateValue(const Value& value, const SquirrelValueOptions& options, std:
         }
         return true;
     }
-    for (const std::string& key : value.keys()) {
-        const Value* member = value.find(key);
-        if (!member) continue;
-        if (!validateValue(*member, options, depth + 1, elements, memberPath(path, key), diagnostic)) return false;
+    for (const auto& [key, member] : *value.getIf<Value::Object>()) {
+        if (!validateValue(member, options, depth + 1, elements, memberPath(path, key), diagnostic)) return false;
     }
     return true;
 }
@@ -368,11 +368,9 @@ bool pushImpl(HSQUIRRELVM vm, const Value& value, const SquirrelValueOptions& op
         return true;
     }
     sq_newtable(vm);
-    for (const std::string& key : value.keys()) {
-        const Value* member = value.find(key);
-        if (!member) continue;
+    for (const auto& [key, member] : *value.getIf<Value::Object>()) {
         sq_pushstring(vm, key.c_str(), static_cast<SQInteger>(key.size()));
-        if (!pushImpl(vm, *member, options, depth + 1, memberPath(path, key), diagnostic)) return false;
+        if (!pushImpl(vm, member, options, depth + 1, memberPath(path, key), diagnostic)) return false;
         if (SQ_FAILED(sq_newslot(vm, -3, SQFalse))) {
             diagnostic = Diagnostic::error(DiagnosticCode::Failed, "failed to add Value object member to Squirrel",
                                            memberPath(path, key), {}, options.source);

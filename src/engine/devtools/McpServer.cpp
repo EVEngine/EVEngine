@@ -1381,7 +1381,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!vm) return "error: no VM";
         std::string err;
         if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) return sceneDirectorToolError(name, err);
-        const std::string out = callSceneDirectorReturn(vm, "return ::scene_director.reset();", &err);
+        std::string out = callSceneDirectorReturn(vm, "return ::scene_director.reset();", &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
     }
@@ -1409,7 +1409,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!paramsLiteral.ok()) return sceneDirectorToolError(name, paramsLiteral.status().describe());
         const std::string snippet = "return ::scene_director.modify(" + actionLiteral.value() + "," +
                                     targetLiteral.value() + "," + paramsLiteral.value() + ");";
-        const std::string out = callSceneDirectorReturn(vm, snippet, &err);
+        std::string out = callSceneDirectorReturn(vm, snippet, &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
     }
@@ -1443,7 +1443,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!optionsLiteral.ok()) return sceneDirectorToolError(name, optionsLiteral.status().describe());
         const std::string snippet =
             "return ::scene_director.batch(" + actionsLiteral.value() + "," + optionsLiteral.value() + ");";
-        const std::string out = callSceneDirectorReturn(vm, snippet, &err);
+        std::string out = callSceneDirectorReturn(vm, snippet, &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
     }
@@ -1455,7 +1455,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) return sceneDirectorToolError(name, err);
         const int         count   = getArgInt(args, "count", 6);
         const std::string snippet = "return ::scene_director.cameras(" + std::to_string(count) + ");";
-        const std::string out     = callSceneDirectorReturn(vm, snippet, &err);
+        std::string       out     = callSceneDirectorReturn(vm, snippet, &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
     }
@@ -1465,7 +1465,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!vm) return "error: no VM";
         std::string err;
         if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) return sceneDirectorToolError(name, err);
-        const std::string out = callSceneDirectorReturn(vm, "return ::scene_director.info();", &err);
+        std::string out = callSceneDirectorReturn(vm, "return ::scene_director.info();", &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
     }

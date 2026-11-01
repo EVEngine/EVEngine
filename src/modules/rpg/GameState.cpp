@@ -12,13 +12,14 @@ eve::Result<std::unordered_map<std::string, double>> parseNumbers(const eve::Val
     if (!value || !value->isObject())
         return eve::Result<std::unordered_map<std::string, double>>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "game state field must be an object", path));
+    const auto&                             object = *value->getIf<eve::Value::Object>();
     std::unordered_map<std::string, double> result;
-    for (const auto &key : value->keys()) {
-        const eve::Value *item = value->find(key);
-        if (!item || !item->isNumeric())
+    result.reserve(object.size());
+    for (const auto& [key, item] : object) {
+        if (!item.isNumeric())
             return eve::Result<std::unordered_map<std::string, double>>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::ParseError, "game state variable must be numeric", path + "." + key));
-        const double number = item->isInt64() ? static_cast<double>(item->asInt()) : item->asDouble();
+        const double number = item.isInt64() ? static_cast<double>(item.asInt()) : item.asDouble();
         if (!std::isfinite(number))
             return eve::Result<std::unordered_map<std::string, double>>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvalidArgument, "game state variable must be finite", path + "." + key));
@@ -32,13 +33,14 @@ eve::Result<std::unordered_map<std::string, std::string>> parseStrings(const eve
     if (!value || !value->isObject())
         return eve::Result<std::unordered_map<std::string, std::string>>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "game state field must be an object", path));
+    const auto&                                  object = *value->getIf<eve::Value::Object>();
     std::unordered_map<std::string, std::string> result;
-    for (const auto &key : value->keys()) {
-        const eve::Value *item = value->find(key);
-        if (!item || !item->isString())
+    result.reserve(object.size());
+    for (const auto& [key, item] : object) {
+        if (!item.isString())
             return eve::Result<std::unordered_map<std::string, std::string>>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::ParseError, "game state string fact must be a string", path + "." + key));
-        result.emplace(key, item->asString());
+        result.emplace(key, item.asString());
     }
     return eve::Result<std::unordered_map<std::string, std::string>>::success(std::move(result));
 }
@@ -164,13 +166,14 @@ eve::Result<void> GameState::restoreSnapshotJson(std::string_view json) {
     if (!switches || !switches->isObject())
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::ParseError, "game state switches must be an object", "$.switches"));
+    const auto&                           switchObject = *switches->getIf<eve::Value::Object>();
     std::unordered_map<std::string, bool> candidateSwitches;
-    for (const auto &key : switches->keys()) {
-        const eve::Value *item = switches->find(key);
-        if (!item || !item->isBool())
+    candidateSwitches.reserve(switchObject.size());
+    for (const auto& [key, item] : switchObject) {
+        if (!item.isBool())
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::ParseError, "game state switch must be boolean", "$.switches." + key));
-        candidateSwitches.emplace(key, item->asBool());
+        candidateSwitches.emplace(key, item.asBool());
     }
 
     auto candidateVariables = parseNumbers(root.find("variables"), "$.variables");
@@ -180,8 +183,10 @@ eve::Result<void> GameState::restoreSnapshotJson(std::string_view json) {
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::ParseError, "game state selfVariables must be an object", "$.selfVariables"));
     std::unordered_map<std::string, std::unordered_map<std::string, double>> candidateScoped;
-    for (const auto &scope : scoped->keys()) {
-        auto values = parseNumbers(scoped->find(scope), "$.selfVariables." + scope);
+    const auto& scopedObject = *scoped->getIf<eve::Value::Object>();
+    candidateScoped.reserve(scopedObject.size());
+    for (const auto& [scope, content] : scopedObject) {
+        auto values = parseNumbers(&content, "$.selfVariables." + scope);
         if (!values.ok()) return eve::Result<void>::failure(values.status());
         candidateScoped.emplace(scope, std::move(values).takeValue());
     }
@@ -191,8 +196,10 @@ eve::Result<void> GameState::restoreSnapshotJson(std::string_view json) {
         if (!scopedStrings->isObject())
             return eve::Result<void>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::ParseError, "game state selfStrings must be an object", "$.selfStrings"));
-        for (const auto &scope : scopedStrings->keys()) {
-            auto values = parseStrings(scopedStrings->find(scope), "$.selfStrings." + scope);
+        const auto& stringObject = *scopedStrings->getIf<eve::Value::Object>();
+        candidateStrings.reserve(stringObject.size());
+        for (const auto& [scope, content] : stringObject) {
+            auto values = parseStrings(&content, "$.selfStrings." + scope);
             if (!values.ok()) return eve::Result<void>::failure(values.status());
             candidateStrings.emplace(scope, std::move(values).takeValue());
         }

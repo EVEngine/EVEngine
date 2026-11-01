@@ -643,8 +643,8 @@ void SensingWorld::publishResults(std::vector<RankedCandidate> ranked) {
     results_.reserve(ranked.size());
     for (const auto& candidate : ranked)
         results_.push_back(Candidate{candidate.id, candidate.x, candidate.y, candidate.distance, candidate.z});
-    lastQuery_.ranked   = ranked;
-    lastQuery_.accepted = static_cast<std::uint32_t>(ranked.size());
+    lastQuery_.ranked   = std::move(ranked);
+    lastQuery_.accepted = static_cast<std::uint32_t>(lastQuery_.ranked.size());
 }
 
 eve::Result<CandidateCollection> SensingWorld::collectCandidates(const QueryOrigin& origin,

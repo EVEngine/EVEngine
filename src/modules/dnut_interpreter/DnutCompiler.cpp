@@ -344,8 +344,13 @@ private:
                 object != nullptr && object->contains("any") && object->at("any").isArray()) {
                 object->at("any").pushBack(std::move(right));
             } else {
-                left = eve::Value(eve::Value::Object{
-                    {"any", eve::Value(eve::Value::Array{std::move(left), std::move(right)})}});
+                eve::Value::Array operands;
+                operands.reserve(2);
+                operands.emplace_back(std::move(left));
+                operands.emplace_back(std::move(right));
+                eve::Value::Object combined;
+                combined.emplace("any", std::move(operands));
+                left = eve::Value(std::move(combined));
             }
         }
         return left;
@@ -360,8 +365,13 @@ private:
                 object != nullptr && object->contains("all") && object->at("all").isArray()) {
                 object->at("all").pushBack(std::move(right));
             } else {
-                left = eve::Value(eve::Value::Object{
-                    {"all", eve::Value(eve::Value::Array{std::move(left), std::move(right)})}});
+                eve::Value::Array operands;
+                operands.reserve(2);
+                operands.emplace_back(std::move(left));
+                operands.emplace_back(std::move(right));
+                eve::Value::Object combined;
+                combined.emplace("all", std::move(operands));
+                left = eve::Value(std::move(combined));
             }
         }
         return left;

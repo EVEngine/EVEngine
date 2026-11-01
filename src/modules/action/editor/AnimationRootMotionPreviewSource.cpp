@@ -1,5 +1,7 @@
 #include "action/editor/AnimationRootMotionPreviewSource.h"
 
+#include <utility>
+
 #include "animation/AnimClip.h"
 #include "animation/AnimClipRegistry.h"
 #include "animation/AnimPose.h"
@@ -15,7 +17,7 @@ namespace {
 Result<std::vector<action::ActionPreviewPoint3>> sampleError(DiagnosticCode code, std::string message,
                                                              std::string path = {}) {
     return Result<std::vector<action::ActionPreviewPoint3>>::failure(
-        Diagnostic::error(code, message, path));
+        Diagnostic::error(code, std::move(message), std::move(path)));
 }
 
 }  // namespace

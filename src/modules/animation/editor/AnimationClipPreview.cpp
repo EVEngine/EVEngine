@@ -86,6 +86,7 @@ animation_editing::Result<void> AnimationClipEditor::requestPreview() {
         return editing::failed<void>(editing::Status::Unsupported, editing::RuleId("editor.animation.preview-provider"),
                                      "Pose provider is unavailable");
     std::vector<AnimationPreviewBone> skeleton;
+    skeleton.reserve(skeleton_.size());
     for (const auto& bone : skeleton_) skeleton.push_back({bone.name, bone.parent});
     previewDirty_ = false;
     // Copy the authoritative document once; the worker never borrows the editor or its target.

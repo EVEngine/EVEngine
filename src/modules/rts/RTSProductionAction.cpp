@@ -4,6 +4,7 @@
 #include <exception>
 #include <memory>
 #include <optional>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -495,8 +496,9 @@ eve::Result<RTSCancelProductionReceipt> RTSProductionActionAdapter::cancel(
     auto publishedProduction = request.production->restore(productionAfter.value());
     if (!publishedProduction)
         return eve::Result<RTSCancelProductionReceipt>::failure(publishedProduction.status());
+    static_assert(std::is_nothrow_move_assignable_v<orders::CommandQueue>);
     try {
-        *request.orders = stagedOrders;
+        *request.orders = std::move(stagedOrders);
     } catch (const std::exception& exception) {
         auto restored = request.production->restore(productionBefore.value());
         restored.ignore("best-effort production cancellation rollback");
@@ -509,7 +511,7 @@ eve::Result<RTSCancelProductionReceipt> RTSProductionActionAdapter::cancel(
     if (!credited) {
         auto restoredProduction = request.production->restore(productionBefore.value());
         try {
-            *request.orders = ordersBefore;
+            *request.orders = std::move(ordersBefore);
         } catch (...) {
             return eve::Result<RTSCancelProductionReceipt>::failure(eve::Diagnostic::error(
                 eve::DiagnosticCode::InvariantViolation,

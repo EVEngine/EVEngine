@@ -436,8 +436,8 @@ struct FormulaParser {
 
     void fail(std::string message) {
         if (error) return;
-        error =
-            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, message, "formula[" + std::to_string(pos) + "]");
+        error = eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(message),
+                                       "formula[" + std::to_string(pos) + "]");
     }
 };
 
@@ -698,8 +698,9 @@ namespace {
 
 eve::Result<BattleVictoryReceipt> victoryFailure(eve::DiagnosticCode code, std::string message, std::string path,
                                                  const BattleVictoryRequest &request) {
-    return eve::Result<BattleVictoryReceipt>::failure(eve::Diagnostic::error(
-        code, message, path, {{"mapId", request.mapId}, {"objectId", request.objectId}}, "rpg.battle-victory"));
+    return eve::Result<BattleVictoryReceipt>::failure(
+        eve::Diagnostic::error(code, std::move(message), std::move(path),
+                               {{"mapId", request.mapId}, {"objectId", request.objectId}}, "rpg.battle-victory"));
 }
 
 struct TrackerRollback {

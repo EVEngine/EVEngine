@@ -76,7 +76,8 @@ Result<int> applyTerrainLegacySteepestErosion(Heightmap& heights, const Heightma
         return Result<int>::success(0);
     const int width = heights.getWidth(), depth = heights.getHeight();
     auto result = heights.data();
-    const Heightmap hardnessInput = hardness;
+    // The destination is published only after the last sample, so aliasing hardness stays stable.
+    const Heightmap& hardnessInput = hardness;
     const auto at = [width](int x, int z) { return size_t(z) * size_t(width) + size_t(x); };
     for (int iteration = 0; iteration < settings.iterations; ++iteration)
         for (int x = 1; x < width - 1; ++x)

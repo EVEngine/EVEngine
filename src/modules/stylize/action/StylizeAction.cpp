@@ -49,7 +49,7 @@ eve::Value projectFrame(eve::stylize::AttackVfxFrame frame) {
             case eve::stylize::AttackVfxFrameEvent::Kind::LayerStarted: kind = "layerStarted"; break;
             case eve::stylize::AttackVfxFrameEvent::Kind::LayerSkipped: kind = "layerSkipped"; break;
         }
-        events.push_back(eve::Value::Object{
+        events.emplace_back(eve::Value::Object{
             {"kind", kind},
             {"role", std::string(eve::stylize::attackVfxLayerRoleName(event.role))},
             {"cue", event.cue},

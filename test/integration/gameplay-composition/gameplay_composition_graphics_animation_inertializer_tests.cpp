@@ -1766,17 +1766,19 @@ TEST_CASE("actionTimelinePayloadEditor.patchPreservesUnknownFieldsAndRejectsAtom
     eve::editor::ActionTimelinePayloadEditor payloads(editor, registry.value());
     const auto                               itemId = payloadId("test-state:audio");
 
-    REQUIRE(payloads
-                .patch(itemId, {{"volume", 0.5},
-                                {"looping", true},
-                                {"randomUris", eve::Value::Array{"asset://audio/a.wav", "asset://audio/b.wav"}},
-                                {"randomPitchOffset", 0.08},
-                                {"spatialBlend", 0.5},
-                                {"minDistance", 2.0},
-                                {"maxDistance", 24.0},
-                                {"fadeOutOnExit", true},
-                                {"fadeOutDuration", 0.2}})
-                .ok());
+    eve::Value::Object patchFields{{"volume", 0.5},
+                                   {"looping", true},
+                                   {"randomUris", eve::Value::Array{"asset://audio/a.wav", "asset://audio/b.wav"}},
+                                   {"randomPitchOffset", 0.08},
+                                   {"spatialBlend", 0.5},
+                                   {"minDistance", 2.0},
+                                   {"maxDistance", 24.0},
+                                   {"fadeOutOnExit", true},
+                                   {"fadeOutDuration", 0.2}};
+    REQUIRE(payloads.patch(itemId, patchFields).ok());
+    REQUIRE(patchFields.at("randomUris").isArray());
+    patchFields["volume"] = 0.75;
+    patchFields.at("randomUris").getIf<eve::Value::Array>()->push_back("asset://audio/c.wav");
     auto edited = payloads.payload(itemId);
     REQUIRE(edited.ok());
     CHECK_EQ(*edited.value().at("extensionField").getIf<std::string>(), "preserved");

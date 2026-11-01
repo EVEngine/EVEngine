@@ -13,7 +13,7 @@ namespace {
 
 template <typename T>
 Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, message, path));
+    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
 }
 
 LogicalId id(std::string_view text) { return LogicalId::parse(text).value(); }
@@ -167,11 +167,11 @@ void DialogueControl::record(Entry& entry, const GameplayCommand& command, std::
     event.causationCommandId = command.id;
     event.correlationId      = command.id;
     event.payload            = Value(Value::Object{
-                   {"instance", Value(entry.instance.format())},
-                   {"detail", Value(detail)},
-                   {"quantity", Value(quantity)},
-                   {"node", Value(flow_ != nullptr && flow_->isActive() ? flow_->getNodeId() : std::string{})},
-                   {"nodeKind", Value(flow_ != nullptr && flow_->isActive() ? flow_->getNodeKind() : std::string{})}});
+        {"instance", Value(entry.instance.format())},
+        {"detail", Value(std::move(detail))},
+        {"quantity", Value(quantity)},
+        {"node", Value(flow_ != nullptr && flow_->isActive() ? flow_->getNodeId() : std::string{})},
+        {"nodeKind", Value(flow_ != nullptr && flow_->isActive() ? flow_->getNodeKind() : std::string{})}});
     entry.events.push_back(std::move(event));
 }
 

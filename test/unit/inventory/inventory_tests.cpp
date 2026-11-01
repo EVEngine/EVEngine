@@ -384,16 +384,27 @@ TEST_CASE("inventory.equipment.rejectsWrongSlotAndReturnsItemOnUnequip") {
     Bag bag(4);
     REQUIRE(bag.addItem("sword", 1) == 1);
     REQUIRE(bag.addItem("coin", 1) == 1);
+    auto& sword              = bag.slots()[static_cast<size_t>(bag.findItem("sword"))];
+    sword.instanceId         = 77;
+    sword.durability         = .65f;
+    sword.props["engraving"] = std::string(128, 'x');
     EquipmentSet equipment;
     equipment.defineSlot("weapon");
     equipment.addSlotAllowedTag("weapon", "weapon");
     CHECK(!equipment.equipFromBag("weapon", &bag, bag.findItem("coin")));
     REQUIRE(equipment.equipFromBag("weapon", &bag, bag.findItem("sword")));
     CHECK_EQ(equipment.getSlotItemId("weapon"), std::string("sword"));
+    REQUIRE(equipment.stackAt("weapon") != nullptr);
+    CHECK_EQ(equipment.stackAt("weapon")->instanceId, 77);
+    CHECK_EQ(equipment.stackAt("weapon")->durability, .65f);
+    CHECK_EQ(equipment.stackAt("weapon")->getProp("engraving"), std::string(128, 'x'));
     CHECK_EQ(bag.countItem("sword"), 0);
     REQUIRE(equipment.unequipToBag("weapon", &bag));
     CHECK(equipment.isSlotEmpty("weapon"));
     CHECK_EQ(bag.countItem("sword"), 1);
+    const auto& restored = bag.slots()[static_cast<size_t>(bag.findItem("sword"))];
+    CHECK_EQ(restored.instanceId, 77);
+    CHECK_EQ(restored.getProp("engraving"), std::string(128, 'x'));
 }
 
 TEST_CASE("inventory.facade.exposesDefinitionsAndObservableChangeEvents") {

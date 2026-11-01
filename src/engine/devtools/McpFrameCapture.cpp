@@ -339,7 +339,7 @@ std::string callMcpFrameCaptureTool(std::string_view name, Object::Ptr args) {
     }
     auto result = service->snapshot(token);
     if (!result) return resultError(result.status());
-    const auto snapshot = result.value();
+    const auto& snapshot = result.value();
     if (name == "eve_frame_capture_status") {
         auto o = envelope(std::string(frameCapturePhaseName(snapshot.phase)));
         o->set("token", token);
@@ -462,11 +462,10 @@ std::string callMcpFrameCaptureTool(std::string_view name, Object::Ptr args) {
         jobs.erase(disposable);
     }
     const auto jobToken  = "job:" + std::to_string(caps.generation) + ":" + std::to_string(nextJob++);
-    const auto buffer    = *it;
     auto       cancelled = std::make_shared<std::atomic<bool>>(false);
     auto       future    = std::async(
         std::launch::async,
-        [buffer, options, token, snapshotFrame = snapshot.frameId, exporting, encoding, path, jobToken,
+        [buffer = *it, options, token, snapshotFrame = snapshot.frameId, exporting, encoding, path, jobToken,
          cancelled]() -> JobOutput {
             try {
                 FramePreview preview;

@@ -15,7 +15,7 @@ namespace {
 
 template <typename T>
 Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, message, path));
+    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
 }
 
 LogicalId id(std::string_view text) { return LogicalId::parse(text).value(); }
@@ -172,7 +172,7 @@ Value EconomyControl::ledgerState(const Entry& entry) const {
             resource.emplace("category", Value(def->category));
             resource.emplace("depletion", Value(depletionName(def->depletion)));
         }
-        resources.emplace_back(Value(std::move(resource)));
+        resources.emplace_back(std::move(resource));
     }
     return Value(Value::Object{{"player", Value(static_cast<std::int64_t>(entry.player))},
                                {"resources", Value(std::move(resources))}});

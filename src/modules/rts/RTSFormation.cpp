@@ -234,6 +234,7 @@ Result<FanOutReceipt> CommandFanOutSystem::fanOut(std::span<const ecs::EntityHan
         return selected[a]->identity()->subject.persistentId() < selected[b]->identity()->subject.persistentId();
     });
     std::vector<AvailableSlot> spatialSlots;
+    spatialSlots.reserve(plannedTargets.size());
     for (std::size_t index = 0; index < plannedTargets.size(); ++index)
         spatialSlots.push_back({plannedTargets[index], static_cast<int>(index)});
     std::sort(spatialSlots.begin(), spatialSlots.end(), [&](const auto& a, const auto& b) {

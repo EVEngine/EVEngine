@@ -1,5 +1,7 @@
 #include "procgen/ScriptGeneratorHost.h"
 
+#include <utility>
+
 #include "common/ScriptError.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
@@ -21,7 +23,7 @@ namespace {
 template <class T>
 eve::Result<T> hostFailure(eve::DiagnosticCode code, std::string message, std::string path) {
     return eve::Result<T>::failure(
-        eve::Diagnostic::error(code, message, path, {}, "procgen.script-host"));
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "procgen.script-host"));
 }
 
 ssq::Table projectHostResult(HSQUIRRELVM vm, eve::Result<eve::Value>&& result) {

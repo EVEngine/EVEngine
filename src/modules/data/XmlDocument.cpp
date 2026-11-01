@@ -1,11 +1,13 @@
 #include "XmlDocument.h"
 
+#include <utility>
+
 namespace eve {
 namespace data {
 
 XmlDocument::XmlDocument() : doc_(new Poco::XML::Document) {}
 
-XmlDocument::XmlDocument(Poco::AutoPtr<Poco::XML::Document> doc) : doc_(doc) {}
+XmlDocument::XmlDocument(Poco::AutoPtr<Poco::XML::Document> doc) : doc_(std::move(doc)) {}
 
 XmlDocument::XmlDocument(XmlDocument&&) noexcept            = default;
 XmlDocument& XmlDocument::operator=(XmlDocument&&) noexcept = default;

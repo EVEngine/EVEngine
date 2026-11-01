@@ -552,6 +552,7 @@ TEST_CASE("Class catalogue loads level gated skills and class change replaces tr
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_gamestate)
 #include "PrivateTestScope.h"
+#include "common/Value.h"
 #include "rpg/GameState.h"
 #include "rpg/RPG.h"
 namespace test_rpg_game_state_contract {
@@ -582,6 +583,9 @@ TEST_CASE("Game state snapshot round trips and invalid schema or data leaves pub
     source.switchOn("door.open");
     source.setVariable("gold", 125.5);
     source.setSelfVariable("map:1", "visits", 2);
+    const std::string longKey = "story-key-" + std::string(96, 'k');
+    source.setSelfVariable("map:1", longKey, 42.25);
+    source.setSelfString("story.scope", longKey, "未完成的章节");
     const auto encoded = source.snapshotJson();
     REQUIRE(encoded.ok());
     GameState target;
@@ -590,6 +594,8 @@ TEST_CASE("Game state snapshot round trips and invalid schema or data leaves pub
     CHECK(target.isSwitchOn("door.open"));
     CHECK_EQ(target.getVariable("gold"), 125.5);
     CHECK_EQ(target.getSelfVariable("map:1", "visits"), 2.0);
+    CHECK_EQ(target.getSelfVariable("map:1", longKey), 42.25);
+    CHECK_EQ(target.getSelfString("story.scope", longKey), std::string("未完成的章节"));
     CHECK_EQ(target.getVariable("sentinel"), 0.0);
     {
         CHECK(
@@ -606,6 +612,22 @@ TEST_CASE("Game state snapshot round trips and invalid schema or data leaves pub
                    .ok());
         CHECK_EQ(target.getVariable("gold"), 125.5);
     };
+    auto invalid = eve::Value::fromJson(encoded.value());
+    REQUIRE(invalid.ok());
+    auto& invalidRoot   = *invalid.value().getIf<eve::Value::Object>();
+    auto& scopes        = *invalidRoot.at("selfStrings").getIf<eve::Value::Object>();
+    auto& strings       = *scopes.at("story.scope").getIf<eve::Value::Object>();
+    strings.at(longKey) = eve::Value(7);
+    auto invalidJson    = invalid.value().toJson();
+    REQUIRE(invalidJson.ok());
+    auto rejected = target.restoreSnapshotJson(invalidJson.value());
+    REQUIRE(!rejected.ok());
+    REQUIRE(rejected.error() != nullptr);
+    CHECK(rejected.error()->code() == eve::DiagnosticCode::ParseError);
+    CHECK_EQ(rejected.error()->path(), "$.selfStrings.story.scope." + longKey);
+    auto unchanged = target.snapshotJson();
+    REQUIRE(unchanged.ok());
+    CHECK_EQ(unchanged.value(), encoded.value());
 }
 }  // namespace test_rpg_game_state_contract
 #endif

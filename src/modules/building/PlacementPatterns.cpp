@@ -1,5 +1,7 @@
 #include "building/PlacementInternal.h"
 
+#include <utility>
+
 #include "building/BuildingDef.h"
 #include "building/Ghost.h"
 #include "building/HeightfieldSurface.h"
@@ -410,8 +412,8 @@ eve::Result<PlacementSystem::PatternPreview> PlacementSystem::previewPattern(Pla
                                                                              const std::string    &buildingId,
                                                                              const PatternRequest &request) {
     const auto failure = [&](std::string message) {
-        return eve::Result<PatternPreview>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, buildingId, {}, "building.pattern"));
+        return eve::Result<PatternPreview>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, std::move(message), buildingId, {}, "building.pattern"));
     };
     const auto corners = [&]() -> eve::Result<std::vector<CornerAddress>> {
         std::vector<CornerAddress> result;

@@ -1,4 +1,5 @@
 #include "rpg/Quest.h"
+
 #include <algorithm>
 #include <climits>
 #include <cmath>
@@ -6,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 #include "common/Json.h"
 #include "inventory/InventorySystem.h"
@@ -115,8 +117,8 @@ QuestDefinition parseQuestObject(Value o) {
 }
 
 eve::Result<int> strictFailure(std::string message, std::string path) {
-    return eve::Result<int>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::ParseError, message, path, {}, "rpg.quest-content"));
+    return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(message),
+                                                            std::move(path), {}, "rpg.quest-content"));
 }
 
 bool validContentId(const std::string &id) {
@@ -360,7 +362,7 @@ namespace {
 
 eve::Result<int> rewardFailure(eve::DiagnosticCode code, std::string message, std::string path, std::string questId) {
     return eve::Result<int>::failure(
-        eve::Diagnostic::error(code, message, path, {{"questId", questId}}, "rpg.quest-reward"));
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {{"questId", questId}}, "rpg.quest-reward"));
 }
 
 }  // namespace

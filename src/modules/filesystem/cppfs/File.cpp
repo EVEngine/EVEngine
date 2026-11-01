@@ -1,5 +1,7 @@
 #include "filesystem/cppfs/File.h"
 
+#include <utility>
+
 #include "common/Exception.h"
 
 // Assume POSIX or Visual Studio.
@@ -17,7 +19,8 @@ namespace eve {
 namespace filesystem {
 namespace cppfs {
 
-File::File(std::string filename) : filename(filename), file(nullptr), mode("c"), bufferMode("none"), bufferSize(0) {}
+File::File(std::string filename)
+    : filename(std::move(filename)), file(nullptr), mode("c"), bufferMode("none"), bufferSize(0) {}
 
 File::~File() {
     if (mode != "c") close();

@@ -1940,6 +1940,20 @@ TEST_CASE("combatDamage.defaultRuleCommitsHealthPoiseReactionAndKnockback") {
     CHECK_EQ(outcome.value().knockback.x, 2.0);
     CHECK(static_cast<int>(outcome.value().reaction) == static_cast<int>(eve::combat::HitReaction::Flinch));
     CHECK(static_cast<int>(outcome.value().ruleSource) == static_cast<int>(eve::combat::DamageRuleSource::Default));
+    const auto audit = outcome.value().settlementResult;
+    REQUIRE(!audit.stages.empty());
+    auto next         = request;
+    next.healthDamage = 1.0;
+    auto second       = damage.apply(target, next);
+    REQUIRE(second.ok());
+    CHECK_EQ(outcome.value().settlementResult.applied, audit.applied);
+    REQUIRE_EQ(outcome.value().settlementResult.stages.size(), audit.stages.size());
+    for (size_t i = 0; i < audit.stages.size(); ++i) {
+        const auto& retained = outcome.value().settlementResult.stages[i];
+        CHECK_EQ(retained.name, audit.stages[i].name);
+        CHECK_EQ(retained.after, audit.stages[i].after);
+        CHECK(retained.details == audit.stages[i].details);
+    }
 }
 
 TEST_CASE("combatDamage.providerPathIsObservableAndPreparedBeforeCommit") {

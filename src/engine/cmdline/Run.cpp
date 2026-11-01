@@ -536,7 +536,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         eve::filesystem::physfs::installScriptFileApi(runtime.vm());
         std::fprintf(stderr, "[startup] load.nut begins at process clock %.1f ms\n",
                      (double) std::clock() * 1000.0 / (double) CLOCKS_PER_SEC);
-        runtime.runSource(root, "load.nut");
+        runtime.runSource(std::move(root), "load.nut");
         if (std::getenv("EVE_PACKAGE_CHECK")) {
             if (runtime.root().find("_frame_count").toInt() < 30)
                 throw std::runtime_error("Package acceptance did not complete 30 frames");
