@@ -56,6 +56,12 @@ jobs:
             glm
             medialoader
             SDL2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: assimp/assimp
+          ref: c35200e38ea8f058812b83de2ef32c6093b0ece2
+          path: probe-assimp
+          sparse-checkout: include
       - name: Reproduce glTF frames through the existing Intel SDK
         env:
           GH_TOKEN: ${{ github.token }}
@@ -64,11 +70,10 @@ jobs:
         run: |
           set -euo pipefail
           git -C probe-third-party submodule update --init --depth 1 medialoader SDL2
-          git -C probe-third-party/medialoader submodule update --init --depth 1 model-libs/assimp
           gh run download 41299927015 --repo github.com/EVEngine/EVEngine --name sdk-macosx-x86_64 --dir "$RUNNER_TEMP/sdk-download"
           unzip -q "$RUNNER_TEMP/sdk-download/eve-sdk-macosx-x86_64-v0.6.1.zip" -d "$RUNNER_TEMP/sdk"
           sdk="$RUNNER_TEMP/sdk/eve-sdk/macosx-x86_64"
-          cmake -S .github/diagnostics/pr701-followup/sdk-plugin -B build/followup-plugin -DEVEngine_DIR="$sdk/cmake" -DPROBE_TP_DIR="$GITHUB_WORKSPACE/probe-third-party" -DCMAKE_BUILD_TYPE=Release
+          cmake -S .github/diagnostics/pr701-followup/sdk-plugin -B build/followup-plugin -DEVEngine_DIR="$sdk/cmake" -DPROBE_TP_DIR="$GITHUB_WORKSPACE/probe-third-party" -DPROBE_ASSIMP_DIR="$GITHUB_WORKSPACE/probe-assimp" -DCMAKE_BUILD_TYPE=Release
           cmake --build build/followup-plugin --parallel 2
           cp build/followup-plugin/pr701_probe.dylib .github/diagnostics/pr701-followup/sdk-game/
           python3 .github/diagnostics/pr701-followup/run_sdk.py "$sdk/bin/eve"

@@ -13,6 +13,7 @@
 #include "data/ByteData.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
@@ -30,6 +31,14 @@ public:
  int run() {
   stage("begin");
   auto* gfx=Graphics::create();resetScene3D();
+  std::string mode=std::getenv("UV_MODE")?std::getenv("UV_MODE"):"baseline";
+  std::printf("UV_MODE %s\n",mode.c_str());std::fflush(stdout);
+  auto* rc=gfx->getRenderControl();
+  for(const auto* feature : {"shadow","ao","aa","msaa","atmosphere"}) {
+    if(mode==feature || mode=="forward_only") {
+      if(!rc || !rc->requestFeature(feature,false).ok()) throw std::runtime_error(feature);
+    }
+  }
   std::vector<uint8_t> px(4*2*4);
   for(int y=0;y<2;++y)for(int x=0;x<4;++x){auto* p=px.data()+(y*4+x)*4;p[0]=y==0?255:0;p[1]=0;p[2]=y==0?0:255;p[3]=255;}
   image::Image::create();
@@ -45,7 +54,8 @@ public:
   auto* ent=mod->createRenderable(gfx,md,0);
   if(!ent) throw std::runtime_error("entity");
   auto* cam=Camera3D::createCamera(*ent->table);cam->setEye(0,0,3);cam->setTarget(0,0,0);cam->setUp(0,1,0);cam->data()->nearZ=.05f;cam->data()->farZ=100;
-  RenderSystem3D::setDirectionalLight(0,0,-1,1.5f,1.5f,1.5f);
+  if(mode=="tilted_light")RenderSystem3D::setDirectionalLight(.2f,1,.4f,1.5f,1.5f,1.5f);
+  else RenderSystem3D::setDirectionalLight(0,0,-1,1.5f,1.5f,1.5f);
   gfx->setScreenReadbackEnabled(true);gfx->setBackgroundColor(Color(0,0,0,1));
   for(int i=0;i<8;++i){stage("render3D_start",i);RenderSystem3D::render(*gfx);stage("render2D_start",i);RenderSystem::render(*gfx);stage("poll_start",i);SDL_Event e;while(SDL_PollEvent(&e)){if(e.type==SDL_QUIT)break;}stage("frame_done",i);}
   stage("pixels");

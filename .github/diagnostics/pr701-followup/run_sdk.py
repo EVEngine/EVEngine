@@ -9,13 +9,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "scripts"))
 import utf8_stdio
 
 
-def main():
+def main(mode):
     executable = Path(sys.argv[1]).resolve()
     game = Path(__file__).resolve().parent / "sdk-game"
-    log = Path("engine-probe.log").resolve()
+    log = Path(f"engine-probe-{mode}.log").resolve()
     sample = Path("engine-probe-sample.txt").resolve()
     env = dict(os.environ, ALSOFT_DRIVERS="null", MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS="0")
-    print("SDK_UV_PROBE",flush=True)
+    env["UV_MODE"] = mode
+    env["EVENGINE_VULKAN_VALIDATION"] = "0" if mode == "no_validation" else "1"
+    print(f"SDK_UV_PROBE mode={mode}",flush=True)
     with log.open("w", encoding="utf-8") as output:
         process = subprocess.Popen([str(executable), "run"], cwd=game, env=env,
                                    stdout=output, stderr=subprocess.STDOUT)
@@ -51,4 +53,6 @@ def main():
 
 if __name__ == "__main__":
     utf8_stdio.enable_utf8_stdio()
-    raise SystemExit(main())
+    results = {mode: main(mode) for mode in ("no_validation", "shadow", "ao", "aa", "msaa", "atmosphere", "tilted_light", "forward_only")}
+    print(f"UV_RESULTS {results}")
+    raise SystemExit(0)
