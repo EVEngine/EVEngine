@@ -1,11 +1,19 @@
 name: PR701 isolated Vulkan probe
 on:
   workflow_dispatch:
+    inputs:
+      full_mac:
+        description: Run the original complete macOS lane with the verified heap configuration
+        type: boolean
+        default: false
 permissions:
   contents: read
   actions: read
+env:
+  VULKAN_VERSION: "1.4.363.0"
 jobs:
   probe:
+    if: ${{ !inputs.full_mac }}
     runs-on: macos-latest
     timeout-minutes: 15
     steps:
@@ -66,3 +74,167 @@ jobs:
             engine-probe-sample.txt
             .github/diagnostics/pr701/sdk-game/*.ppm
             .github/diagnostics/pr701/*.ppm
+
+  macos:
+    name: macOS
+    if: ${{ inputs.full_mac }}
+    runs-on: macos-latest
+    # The debug unit suite exceeded its former 30-minute step guard in release
+    # run 35566503055. Budget the debug build and unit suite together.
+    timeout-minutes: 240
+    env:
+      MVK_CONFIG_USE_MTLHEAP: "0"
+      CI_TEST_MODE: full
+      CI_NATIVE_PATHS: ""
+      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
+      SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v')) && 'READ_WRITE' || 'READ_ONLY' }}
+      SCCACHE_DIRECT: "false"
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.ref }}
+          submodules: recursive
+
+      - name: Install tools
+        timeout-minutes: 10
+        run: brew install ninja || true
+
+      - name: Setup C/C++ compilation cache
+        timeout-minutes: 10
+        uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
+        with:
+          version: "v0.16.0"
+
+      - name: Install Vulkan SDK (MoltenVK + iOS)
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          destination: ${{ runner.temp }}/VulkanSDK
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve VULKAN_SDK
+        timeout-minutes: 5
+        run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: bash .github/scripts/identify-third-party-toolchain.sh macosx >> "$GITHUB_OUTPUT"
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: macosx
+          configuration: Debug
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
+
+      - name: Build macosx debug
+        # Same reasoning as the win32 guard above: a cache-cold pull-request ref
+        # compiles the whole engine. Run 37331690856 was killed at exactly 60m
+        # standing at ~90% with 421 sccache hits / 3549 misses / 3549 write
+        # errors and no compiler error, while the warm sibling run 37316201997
+        # finished the whole macOS job. Keep a bounded hang guard with room for
+        # the cold/write-fail case (match Windows debug's 90m budget).
+        timeout-minutes: 90
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE ${{ steps.third-party-cache.outputs.cmake-args }}"
+
+      - name: Verify built third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh "${{ steps.third-party-cache.outputs.prefix }}" macosx Release build/macosx-debug/CMakeCache.txt
+
+      - name: Save third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' ||
+           startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v'))
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.third-party-cache.outputs.path }}
+          key: ${{ steps.third-party-cache.outputs.key }}
+
+      - name: Verify SSUI plugin against the built SDK
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: |
+          cmake --install build/macosx-debug --prefix "$RUNNER_TEMP/ssui-sdk"
+          # Use the host's resolved dependency tree (AUTO may select a release
+          # package). Relative prefixes otherwise resolve under the plugin source.
+          ssui_poco_prefix="$(sed -n 's/^EVENGINE_TP_INSTALL_PREFIX:INTERNAL=//p' build/macosx-debug/CMakeCache.txt)"
+          if [ -z "$ssui_poco_prefix" ]; then
+            ssui_poco_prefix="$(sed -n 's/^EVENGINE_THIRD_PARTY_BINARY_DIR:PATH=//p' build/macosx-debug/CMakeCache.txt)"
+          fi
+          test -n "$ssui_poco_prefix"
+          ssui_poco_prefix="$(cd "$ssui_poco_prefix" && pwd)"
+          cmake -S plugins/ssui-generation -B build/ssui-generation -DCMAKE_BUILD_TYPE=Debug \
+            -DEVEngine_DIR="$RUNNER_TEMP/ssui-sdk/cmake" \
+            -DCMAKE_PREFIX_PATH="$ssui_poco_prefix"
+          cmake --build build/ssui-generation -j 4
+          ctest --test-dir build/ssui-generation --output-on-failure
+          cmake --install build/ssui-generation --prefix "$RUNNER_TEMP/ssui-project"
+          python3 plugins/ssui-generation/tests/protocol_test.py --mode success \
+            --native-eve "$RUNNER_TEMP/ssui-sdk/bin/eve" --project "$RUNNER_TEMP/ssui-project"
+
+      - name: Validate macOS frame resource lifetime
+        timeout-minutes: 15
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_VULKAN_VALIDATION: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts/macos-render-validation
+          ctest --test-dir build/macosx-debug -V --no-tests=error -j 1 --timeout 120 \
+            -R 'graphics.frameArena|graphics.deferredTargets.lateGbufferAndResize|graphics.Grass.gpuRenderScreenshot|IBL.newCubemapCreatesSixLayers|GraphicsSmoke.cubemapGeneratesMipChain|fluids.ocean.scriptRenderBuildersOwnInputsAcrossGc' \
+            2>&1 | tee artifacts/macos-render-validation/validation.log
+          # Validation errors must fail even when a pixel assertion passes.
+          ! grep -F '[ERROR: Validation]' artifacts/macos-render-validation/validation.log
+
+      - name: Run macosx unit tests
+        # Run 39701509245 completed 6597/7063 cases at the 60m guard
+        # while tests were still progressing. Keep room for the full suite.
+        timeout-minutes: 90
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: >-
+          make test/ci-macosx-debug
+          LABEL_FILTER=''
+
+      - name: Report network phase timings
+        if: always()
+        run: |
+          log=build/macosx-debug/Testing/Temporary/LastTest.log
+          if test -f "$log"; then
+            sed -n '/NetHostPeers .*: .* ms/p' "$log"
+          fi
+
+      - name: Report C/C++ compilation cache
+        if: always()
+        timeout-minutes: 5
+        run: sccache --show-stats
+
+      - name: Upload macOS test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-test-failure-logs
+          path: |
+            build/macosx-debug/Testing/Temporary/LastTestsFailed.log
+            build/macosx-debug/Testing/Temporary/LastTest.log
+            artifacts/macos-render-validation/validation.log
+            build/macosx-debug/test/out/grass_field.png
+          if-no-files-found: ignore
+          retention-days: 7
+
