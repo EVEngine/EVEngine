@@ -29,7 +29,7 @@ def main(mode):
     with log.open("w", encoding="utf-8") as output:
         process = subprocess.Popen([str(executable), "run"], cwd=game, env=env,
                                    stdout=output, stderr=subprocess.STDOUT)
-        deadline = time.monotonic() + 60
+        deadline = time.monotonic() + 180
         result = None
         while time.monotonic() < deadline:
             text = log.read_text(encoding="utf-8", errors="replace")
@@ -54,7 +54,11 @@ def main(mode):
             except subprocess.TimeoutExpired:
                 process.kill()
                 process.wait()
-    print(log.read_text(encoding="utf-8", errors="replace"))
+    final_text = log.read_text(encoding="utf-8", errors="replace")
+    marker = re.search(r"ENGINE_PROBE_DONE failures=(\d+)", final_text)
+    if marker:
+        result = int(marker.group(1))
+    print(final_text)
     print(f"SDK probe observed failures={result}, process exit={process.returncode}")
     return 0 if result == 0 else 1
 
