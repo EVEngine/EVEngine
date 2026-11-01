@@ -17,5 +17,9 @@ for stage in ('vert','frag'):
     words=[int(x,16) for x in re.findall(r'0x[0-9a-fA-F]+',p.read_text(encoding='utf-8'))]
     Path(f'GBUFFER_EMBEDDED.{stage}.spv').write_bytes(struct.pack(f'<{len(words)}I',*words))
 PYSPV
+if [ ! -f vk_mem_alloc.h ]; then
+  curl -fsSL https://raw.githubusercontent.com/EVEngine/third-party/e7e0a476be19a05839add497c29482c372f2c484/vma/vk_mem_alloc.h -o vk_mem_alloc.h
+fi
+printf '%s\n' 'b34efcd7ffd9436cee78468bd47299cd9f50013b24efd0d9d39ce1dbb06a2688  vk_mem_alloc.h' | shasum -a 256 -c -
 clang++ -std=c++20 -O0 -g probe.cpp -I"$VULKAN_SDK/include" -L"$VULKAN_SDK/lib" -lvulkan -Wl,-rpath,"$VULKAN_SDK/lib" -o probe
 ./probe

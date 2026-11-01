@@ -1,4 +1,8 @@
 #include <vulkan/vulkan.h>
+#define VMA_IMPLEMENTATION
+#define VMA_STATIC_VULKAN_FUNCTIONS  0
+#define VMA_DYNAMIC_VULKAN_FUNCTIONS 1
+#define VMA_VULKAN_VERSION           1000000
 #include <array>
 #include <cstdint>
 #include <cstdio>
@@ -8,6 +12,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "vk_mem_alloc.h"
 #define VK(call)                                                                                            \
     do {                                                                                                    \
         VkResult r = (call);                                                                                \
@@ -19,6 +24,8 @@ VkQueue                          queue;
 VkCommandPool                    pool;
 VkPhysicalDeviceMemoryProperties memoryProperties;
 VkPhysicalDeviceProperties       properties;
+VmaAllocator vmaAllocator{};
+bool useVma{};
 VkDeviceMemory                   sharedMemory{};
 VkDeviceSize                     sharedCursor{}, sharedBytes{};
 void*                            sharedMapped{};
@@ -29,6 +36,7 @@ uint32_t                         memoryType(uint32_t bits, VkMemoryPropertyFlags
     throw std::runtime_error("memory type unavailable");
 }
 struct Buffer {
+    VmaAllocation  allocation{};
     VkBuffer       handle{};
     VkDeviceMemory memory{};
     VkDeviceSize   offset{}, size{};
@@ -39,6 +47,14 @@ Buffer buffer(VkDeviceSize size, VkBufferUsageFlags usage, bool offset) {
     VkBufferCreateInfo ci{VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO};
     ci.size  = size;
     ci.usage = usage;
+    if (useVma) {
+        VmaAllocationCreateInfo ai{};
+        ai.requiredFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+        VmaAllocationInfo info{};
+        VK(vmaCreateBuffer(vmaAllocator, &ci, &ai, &b.handle, &b.allocation, &info));
+        b.memory = info.deviceMemory;
+        return b;
+    }
     VK(vkCreateBuffer(device, &ci, nullptr, &b.handle));
     VkMemoryRequirements mr;
     vkGetBufferMemoryRequirements(device, b.handle, &mr);
@@ -68,6 +84,14 @@ Buffer buffer(VkDeviceSize size, VkBufferUsageFlags usage, bool offset) {
     return b;
 }
 void write(Buffer b, const void* p, size_t bytes, VkDeviceSize extra = 0) {
+    if (b.allocation) {
+        void* ptr;
+        VK(vmaMapMemory(vmaAllocator, b.allocation, &ptr));
+        std::memcpy((char*)ptr + extra, p, bytes);
+        vmaUnmapMemory(vmaAllocator, b.allocation);
+        return;
+    }
+
     if (b.memory == sharedMemory && sharedMapped) {
         std::memcpy((char*)sharedMapped + b.offset + extra, p, bytes);
         if (flushCoherent) {
@@ -84,6 +108,11 @@ void write(Buffer b, const void* p, size_t bytes, VkDeviceSize extra = 0) {
     vkUnmapMemory(device, b.memory);
 }
 void release(Buffer b) {
+    if (b.allocation) {
+        vmaDestroyBuffer(vmaAllocator, b.handle, b.allocation);
+        return;
+    }
+
     vkDestroyBuffer(device, b.handle, nullptr);
     if (b.memory != sharedMemory) vkFreeMemory(device, b.memory, nullptr);
 }
@@ -112,7 +141,8 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     const bool  dynamic   = !gbuffer && (full || std::strcmp(mode, "UBO") == 0);
     std::string label     = std::string(mode) + " layout=" + (full ? "engine" : "minimal") +
                         " memoryOffset=" + std::to_string(offset) + " indices=" + std::to_string(indices) +
-                        " sharedBytes=" + std::to_string(sharedBytes) + " flush=" + std::to_string(flushCoherent);
+                        " sharedBytes=" + std::to_string(sharedBytes) + " flush=" + std::to_string(flushCoherent) +
+                        " VMA=" + std::to_string(useVma);
     const int                   attachments = gbuffer || std::strcmp(mode, "MRT") == 0 ? 5 : 1;
     std::vector<VkImage>        images(attachments);
     std::vector<VkImageView>    views(attachments);
@@ -472,7 +502,12 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     VK(vkQueueSubmit(queue, 1, &submit, fence));
     VK(vkWaitForFences(device, 1, &fence, VK_TRUE, UINT64_MAX));
     void* bytes = sharedMapped;
-    if (sharedMapped) {
+    if (readback.allocation) {
+        VK(vmaMapMemory(vmaAllocator, readback.allocation, &bytes));
+    }
+
+    if (readback.allocation) {
+    } else if (sharedMapped) {
         if (flushCoherent) {
             VkMappedMemoryRange range{VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE};
             range.memory = sharedMemory;
@@ -485,7 +520,10 @@ bool render(const char* mode, bool full, bool offset, int indices) {
     bool           good = p[0] > 240 && p[1] < 10 && p[2] < 10;
     std::printf("PROBE %s center=%u,%u,%u,%u %s\n", label.c_str(), p[0], p[1], p[2], p[3], good ? "PASS" : "FAIL");
     std::fflush(stdout);
-    if (!sharedMapped) vkUnmapMemory(device, readback.memory);
+    if (readback.allocation)
+        vmaUnmapMemory(vmaAllocator, readback.allocation);
+    else if (!sharedMapped)
+        vkUnmapMemory(device, readback.memory);
     vkDestroyFence(device, fence, nullptr);
     vkFreeCommandBuffers(device, pool, 1, &cb);
     release(textureStaging);
@@ -570,6 +608,17 @@ int main() {
         pi.queueFamilyIndex = family;
         pi.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         VK(vkCreateCommandPool(device, &pi, nullptr, &pool));
+        VmaVulkanFunctions funcs{};
+        funcs.vkGetInstanceProcAddr = vkGetInstanceProcAddr;
+        funcs.vkGetDeviceProcAddr =
+            reinterpret_cast<PFN_vkGetDeviceProcAddr>(vkGetInstanceProcAddr(instance, "vkGetDeviceProcAddr"));
+        VmaAllocatorCreateInfo vci{};
+        vci.instance         = instance;
+        vci.physicalDevice   = physical;
+        vci.device           = device;
+        vci.vulkanApiVersion = VK_API_VERSION_1_0;
+        vci.pVulkanFunctions = &funcs;
+        VK(vmaCreateAllocator(&vci, &vmaAllocator));
         bool good = true;
         for (VkDeviceSize block : {VkDeviceSize(0), VkDeviceSize(1u << 20), VkDeviceSize(128u << 20)}) {
             sharedBytes = block;
@@ -592,6 +641,29 @@ int main() {
                             }
             }
         }
+        useVma        = true;
+        sharedBytes   = 0;
+        flushCoherent = false;
+        for (bool persistent : {false, true}) {
+            Buffer keeper{};
+            if (persistent) {
+                keeper = buffer(8u << 20,
+                                VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
+                                    VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                false);
+                void* ptr;
+                VK(vmaMapMemory(vmaAllocator, keeper.allocation, &ptr));
+            }
+            std::printf("VMA persistent=%d\n", int(persistent));
+            for (bool full : {false, true})
+                for (const char* mode : {"VERTEX", "PUSH", "UBO", "SSBO", "SAMPLER_ALL", "GBUFFER_EMBEDDED"})
+                    good = render(mode, full, false, 32) && good;
+            if (persistent) {
+                vmaUnmapMemory(vmaAllocator, keeper.allocation);
+                release(keeper);
+            }
+        }
+        vmaDestroyAllocator(vmaAllocator);
         VK(vkDeviceWaitIdle(device));
         vkDestroyCommandPool(device, pool, nullptr);
         vkDestroyDevice(device, nullptr);
