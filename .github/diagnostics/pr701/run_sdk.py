@@ -55,4 +55,5 @@ def main(heap_mode=None, argument_buffers=0):
 if __name__ == "__main__":
     utf8_stdio.enable_utf8_stdio()
     results = [main(), main(0), main(0, 1), main(2)]
-    raise SystemExit(max(results))
+    print(f"SDK_CONTROL_RESULTS {results}")
+    raise SystemExit(0 if results[:3] == [0, 0, 0] and results[3] > 0 else 1)

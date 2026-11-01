@@ -24,6 +24,8 @@ jobs:
           cache: true
           destination: ${{ runner.temp }}/VulkanSDK
           github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Resolve the candidate CI Vulkan configuration
+        run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
       - name: Probe independent Vulkan paths
         env:
           MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS: '0'
@@ -237,4 +239,3 @@ jobs:
             build/macosx-debug/test/out/grass_field.png
           if-no-files-found: ignore
           retention-days: 7
-

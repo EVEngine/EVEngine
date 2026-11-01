@@ -1,5 +1,7 @@
 #version 450
+#ifndef GENERATED
 layout(location=0) in vec3 p;
+#endif
 #ifdef PUSH
 layout(push_constant) uniform P { mat4 m; vec4 rows[3]; vec4 color; } push;
 #endif
