@@ -766,10 +766,10 @@ int main() {
         useVma        = true;
         sharedBytes   = 0;
         flushCoherent = false;
-        for (bool persistent : {false, true}) {
+        for (int persistent : {0, 8, 16, 32, 64}) {
             Buffer keeper{};
             if (persistent) {
-                keeper = buffer(8u << 20,
+                keeper = buffer(VkDeviceSize(persistent) << 20,
                                 VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |
                                     VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
                                 false);

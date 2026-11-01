@@ -101,6 +101,16 @@ public:
             std::printf("ENGINE_ALLOCATION type=%u flags=%u offset=%llu size=%llu mapped=%p buffer=%p memory=%p\n",ai.memoryType,flags,(unsigned long long)ai.offset,(unsigned long long)ai.size,ai.pMappedData,(void*)VkBuffer(b->buffer),(void*)ai.deviceMemory);
         }
         failures += engineRawProbe(VkPhysicalDevice(dev.physical_device.instance), VkDevice(dev.instance), dev.get_queue_index(vkb::QueueType::graphics), VkBuffer(gm->vertices.buffer), VkBuffer(gm->indices.buffer), dev.vma_allocator);
+        std::puts("ENGINE_EXPLICIT_FLUSH_START");
+        for (auto* b : {static_cast<vkb::GenericBuffer*>(&gm->vertices), &gm->indices}) {
+            (void)b->map();
+            VkMappedMemoryRange range{VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE};
+            range.memory=VkDeviceMemory(b->memory); range.offset=0; range.size=VK_WHOLE_SIZE;
+            auto result=vk::defaultDispatchLoaderDynamic.vkFlushMappedMemoryRanges(VkDevice(dev.instance),1,&range);
+            std::printf("ENGINE_EXPLICIT_FLUSH result=%d\n",result);
+            b->unmap();
+        }
+        failures += engineRawProbe(VkPhysicalDevice(dev.physical_device.instance), VkDevice(dev.instance), dev.get_queue_index(vkb::QueueType::graphics), VkBuffer(gm->vertices.buffer), VkBuffer(gm->indices.buffer), dev.vma_allocator);
         for (int size : {64, 96}) {
             std::printf("ENGINE_PROBE begin GBuffer %d\n", size);
             std::fflush(stdout);
