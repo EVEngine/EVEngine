@@ -344,6 +344,40 @@ TEST_CASE("crowd.avoidance.spec.budgetAndLayerFiltering") {
         }
     };
 }
+
+TEST_CASE("crowd.avoidance.nearestSelectionPreservesTiesAcrossInsertionOrders") {
+    // A symmetric grid exercises equal distances, replacement at capacity, and the
+    // untruncated case. Named identities must determine scoring order, not dense slots.
+    for (int limit : {1, 8, 32, 128}) {
+        Crowd forward, reversed;
+        configure(forward);
+        configure(reversed);
+        REQUIRE(forward.configureAvoidance({true, 2.f, .1f, limit}).ok());
+        REQUIRE(reversed.configureAvoidance({true, 2.f, .1f, limit}).ok());
+        std::vector<int> first(49), second(49);
+        const auto       add = [](Crowd& crowd, int i) {
+            const float x = float(i % 7) * 1.5f, y = float(i / 7) * 1.5f;
+            return mover(crowd, std::to_string(i), x, y, x + (i % 2 ? -100.f : 100.f), y);
+        };
+        for (int i = 0; i < 49; ++i) first[i] = add(forward, i);
+        for (int i = 48; i >= 0; --i) second[i] = add(reversed, i);
+        for (int frame = 0; frame < 30; ++frame) {
+            auto a = forward.advance(1.f / 60.f);
+            auto b = reversed.advance(1.f / 60.f);
+            REQUIRE(a.ok());
+            REQUIRE(b.ok());
+            CHECK_EQ(a.value().avoidanceChecks, b.value().avoidanceChecks);
+            CHECK_EQ(a.value().avoidanceTruncations, b.value().avoidanceTruncations);
+            for (int i = 0; i < 49; ++i) {
+                const auto left = forward.getAgentState(first[i]), right = reversed.getAgentState(second[i]);
+                CHECK_EQ(left.x, right.x);
+                CHECK_EQ(left.y, right.y);
+                CHECK_EQ(left.vx, right.vx);
+                CHECK_EQ(left.vy, right.vy);
+            }
+        }
+    }
+}
 }  // namespace test_crowd_avoidance
 #endif
 

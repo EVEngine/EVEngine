@@ -1988,8 +1988,8 @@ private:
     glm::mat4 decalViewProj{1.f};
     float decalNear = 0.1f;
     float decalFar = 100.f;
-    // One FrameGraph per in-flight slot for the deferred passes: the 3 CSM
-    // shadow cascades + the G-buffer fill are declarative passes in one layer,
+    // Two lazily-created FrameGraphs per in-flight slot: G-buffer-only (0),
+    // or all shadow layers plus G-buffer (1), with passes in one layer,
     // recorded concurrently on JobSystem workers. Each graph's command buffer
     // is only reused two frames later — by then the present slot fence (waited
     // in Present::begin) guarantees the previous graph submit has completed
@@ -1997,7 +1997,7 @@ private:
     // import the engine-owned shadow array + ColorTarget images; the engine
     // keeps ownership so readback / entity-ID rendering / postFX wrappers keep
     // working unchanged.
-    std::array<std::unique_ptr<vkb::FrameGraph>, kAsyncResourceCopies> deferredFrameGraphs_;
+    std::array<std::array<std::unique_ptr<vkb::FrameGraph>, 2>, kAsyncResourceCopies> deferredFrameGraphs_;
     FrameGraphRecordingState                                           deferredRecordingState_;
     // Only fully overwritten pipeline intermediates are frame-local. User canvases
     // and temporal histories retain their persistent-image semantics.
@@ -2008,7 +2008,7 @@ private:
     /** @brief True once this frame slot's deferred graph was recorded+submitted. */
     bool deferredGraphRecorded_ = false;
     size_t deferredGraphRecordedSlot_ = 0;
-    /** @brief (Re)build one deferred FrameGraph per slot from current targets. */
+    /** @brief Build the selected deferred plan per slot from current targets. */
     void buildDeferredFrameGraphs();
     /** @brief On the render thread, wait for submitted work and release graph
      * borrowers before replacing their

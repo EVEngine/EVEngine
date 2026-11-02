@@ -2280,15 +2280,15 @@ fn fresnelSchlick(cosT: f32, f0: vec3f) -> vec3f {
 fn shadeLight(n: vec3f, v: vec3f, l: vec3f, rad: vec3f, albedo: vec3f, metallic: f32,
               rough: f32, specularFactor: f32) -> vec3f {
     let ndl = max(dot(n, l), 0.0);
-    if (ndl <= 0.0) { return vec3f(0.0); }
+    let diffuse = mix(ndl, ndl * 0.5 + 0.5, 0.25);
     let h = normalize(v + l);
     let f0 = mix(vec3f(0.04 * specularFactor), albedo, metallic);
     let ndf = distGGX(n, h, rough);
     let g = geomSmith(n, v, l, rough);
     let f = fresnelSchlick(max(dot(h, v), 0.0), f0);
-    let spec = (ndf * g * f) / max(4.0 * max(dot(n, v), 0.0) * ndl, 1e-4);
+    let spec = (ndf * g * f) / max(4.0 * max(dot(n, v), 0.0) * max(ndl, 0.001), 1e-3);
     let kd = (vec3f(1.0) - f) * (1.0 - metallic);
-    return (kd * albedo / PI + spec) * rad * ndl;
+    return (kd * albedo * diffuse + spec * ndl) * rad;
 }
 /** @brief Sample shadow cascade. */
 fn sampleShadowCascade(worldPos: vec3f, cascade: i32, biasAmt: f32) -> f32 {
@@ -2399,8 +2399,8 @@ fn fs_main(in: FSIn) -> FSOut {
         let radius = max(light.posRadius.w, 1e-3);
         if (dist >= radius) { continue; }
         let l = toLight / max(dist, 1e-4);
-        var atten = 1.0 - smoothstep(radius * 0.8, radius, dist);
-        atten = atten / max(dist * dist, 1e-4);
+        var atten = clamp(1.0 - dist / radius, 0.0, 1.0);
+        atten = atten * atten;
         if (light.spot.w > 0.0) {
             let beamLen = length(light.spot.xyz);
             if (beamLen > 1e-6) {
@@ -2427,7 +2427,13 @@ fn fs_main(in: FSIn) -> FSOut {
         lo = lo + shadeLight(n, v, l, light.color.rgb * atten, albedo, metallic, roughness, specularFactor);
     }
 
-    let ambient = ubo.ambient.rgb * albedo * (1.0 - metallic) * occlusion;
+    let hemi = clamp(n.y * 0.5 + 0.5, 0.0, 1.0);
+    let skyIrr = ubo.ambient.rgb * 1.1 + ubo.lightColor.rgb * 0.12;
+    let gndIrr = ubo.ambient.rgb * vec3f(0.72, 0.62, 0.52);
+    let irr = mix(gndIrr, skyIrr, hemi);
+    var ambient = albedo * irr * (1.0 - metallic) * occlusion;
+    let wrap = max(dot(n, normalize(ubo.lightDir.xyz)) * 0.5 + 0.5, 0.0);
+    ambient = ambient + albedo * ubo.lightColor.rgb * (wrap * wrap) * 0.06 * (1.0 - metallic) * occlusion;
     out.color = vec4f(ambient + lo + emissive, 1.0);
     out.depth = hwZ;
     return out;

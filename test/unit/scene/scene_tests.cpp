@@ -102,6 +102,31 @@ TEST_CASE("scene.transform.parentChildWorldAndSpaceConversion") {
     CHECK(near(worldToLocal[2], 4.f));
 }
 
+TEST_CASE("scene.transform.dirtyScanPreservesIncrementalAndLateLegacyEdits") {
+    auto* h = host("dirty-scan-contract", node("root", {node("early"), node("late")}));
+    TransformSystem::updateHost(h);
+    auto* early       = find(h, "early");
+    auto* late        = find(h, "late");
+    early->x          = 3.f;
+    early->localDirty = early->subtreeDirty = true;
+    late->x                                 = 7.f;
+    late->localDirty                        = true;
+    // A marked subtree must not hide a later direct legacy edit.
+    TransformSystem::updateHost(h);
+    CHECK(near(early->world[3][0], 3.f));
+    CHECK(near(late->world[3][0], 7.f));
+    CHECK((!early->localDirty && !early->subtreeDirty));
+    CHECK((!late->localDirty && !late->subtreeDirty));
+    early->x          = 5.f;
+    early->localDirty = early->subtreeDirty = true;
+    TransformSystem::updateHost(h);
+    CHECK(near(early->world[3][0], 5.f));
+    CHECK(near(late->world[3][0], 7.f));
+    TransformSystem::updateHost(h);
+    CHECK(near(early->world[3][0], 5.f));
+    CHECK(near(late->world[3][0], 7.f));
+}
+
 TEST_CASE("scene.hierarchy.rejectsCyclesAndPreservesNodeOnDetach") {
     auto* h = host("hierarchy-contract", node("root", {node("a"), node("b")}));
     REQUIRE(h->setParentById("b", "a"));
@@ -213,6 +238,7 @@ TEST_CASE("scene.links.purgeDestroyedRenderableWithoutRetainingBorrowedPointer")
     REQUIRE(renderable != nullptr);
     REQUIRE(h->linkRenderable3D("mesh", renderable));
     CHECK_EQ(h->linkCount("mesh"), 1);
+    TransformSystem::updateHost(h);
     ecs::DestroyEntity(renderable);
     TransformSystem::updateHost(h);
     CHECK_EQ(h->linkCount("mesh"), 0);

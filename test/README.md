@@ -125,6 +125,27 @@ To build and run them explicitly:
 make test/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_BUILD_TEST_BENCHMARKS=ON INCLUDE_BENCHMARKS=1 LABEL_FILTER='^benchmark$'
 ```
 
+The CPU-only Crowd runner is a separate target in a Release build configured with
+`EVENGINE_PROFILE=crowd-core-only` and `EVENGINE_BUILD_PROFILE_CHECKS=ON`:
+
+```sh
+cmake --build <release-build> --target eve_crowd_benchmark
+<release-build>/eve_crowd_benchmark 1000 600 1 march 32 > march.csv
+<release-build>/eve_crowd_benchmark 1000 600 1 crossing 32 > crossing.csv
+```
+
+Arguments are agents, measured frames, workers, scene and maximum avoidance neighbors.
+`march` sends all agents in the same direction; `crossing` alternates opposing directions
+on the same deterministic grid. Both advance 120 warmup frames. Four workers require
+the `crowd-thread-core-only` profile. CSV phase timers overlap where documented by the
+Crowd step report; do not sum them as independent costs. The final validation checks
+finite motion values and seek actions, then hashes the six motion float fields outside
+the timed interval. Compare that hash and per-frame non-timing fields between variants
+on the same compiler/machine; the hash is not a cross-platform replay guarantee.
+Use at least three alternating before/after runs, without concurrent builds, and keep
+profiling separate from timing comparisons. The [recorded CPU comparison](../benchmarks/crowd/results/2026-10-31-cpu.json)
+contains build details, binary hashes, individual runs and measurement limits.
+
 On Windows, `make test/win32-debug` and `make test/win32` run CTest on a private
 background desktop by default. SDL windows remain shown and rendering normally on
 that desktop, including visibility and presentation assertions; the user's active

@@ -28,7 +28,7 @@ bool isImagePath(const std::string &path) {
            ext == ".gif" || ext == ".webp" || ext == ".exr" || ext == ".hdr";
 }
 
-class TextureReloader : public eve::caps::IAssetReloader {
+class TextureReloader final : public eve::caps::IAssetReloader {
 public:
     const char *reloadKind() const override { return "texture"; }
 
