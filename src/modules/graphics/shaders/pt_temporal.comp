@@ -1,0 +1,86 @@
+#version 460
+
+layout(local_size_x = 8, local_size_y = 8) in;
+layout(binding = 1, rgba32f) uniform readonly image2D previousColor;
+layout(binding = 2, rgba16f) uniform readonly image2D currentColor;
+layout(binding = 8, rgba32f) uniform readonly image2D currentNormal;
+layout(binding = 9, rgba16f) uniform readonly image2D currentAlbedo;
+layout(binding = 13, rgba32f) uniform writeonly image2D temporalColor;
+layout(binding = 14, rgba32f) uniform readonly image2D currentPosition;
+layout(binding = 15, rgba32f) uniform readonly image2D previousPosition;
+layout(binding = 16, rgba32f) uniform readonly image2D previousNormal;
+layout(binding = 17, rgba16f) uniform readonly image2D previousAlbedo;
+
+layout(push_constant) uniform TemporalConstants {
+    mat4 previousViewProj;
+    vec4 previousEye;
+    vec4 currentEye;
+    vec4 parameters; // position footprint multiplier, normal cosine, albedo squared distance, view cosine
+    uvec4 counts; // history flags (1 valid, 2 identical camera), samples, mode, confidence limit
+} pc;
+
+void main() {
+    ivec2 pixel = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 extent = imageSize(currentColor);
+    if (any(greaterThanEqual(pixel,extent))) return;
+    vec3 current = imageLoad(currentColor,pixel).rgb;
+    vec4 position = imageLoad(currentPosition,pixel);
+    vec3 normal = imageLoad(currentNormal,pixel).xyz;
+    vec3 albedo = imageLoad(currentAlbedo,pixel).rgb;
+    float count = min(float(pc.counts.y),float(pc.counts.w));
+    vec3 result = current;
+    if ((pc.counts.x & 3u) == 3u) {
+        // The static pixel integral includes stochastic coverage and subpixel
+        // surface changes. Rejecting these samples or clipping to one noisy
+        // neighborhood biases the integral toward repeatedly visible surfaces.
+        vec4 history = imageLoad(previousColor,pixel);
+        float retained = min(history.a,max(float(pc.counts.w)-count,0.0));
+        result = (history.rgb*retained+current*count)/(retained+count);
+        count += retained;
+    } else if ((pc.counts.x & 1u) != 0u && position.w > 0.0) {
+        vec4 clip = pc.previousViewProj * vec4(position.xyz,1.0);
+        vec3 currentView = pc.currentEye.xyz-position.xyz;
+        vec3 oldView = pc.previousEye.xyz-position.xyz;
+        if (clip.w > 0.0 && clip.z >= 0.0 && clip.z <= clip.w &&
+            dot(normalize(currentView),normalize(oldView)) >= pc.parameters.w) {
+            vec2 screen = (clip.xy/clip.w*0.5+0.5)*vec2(extent)-0.5;
+            ivec2 corner = ivec2(floor(screen));
+            vec2 fraction = fract(screen);
+            float tolerance = max(0.0001,length(currentView)*pc.parameters.x/float(min(extent.x,extent.y)));
+            vec4 history = vec4(0.0);
+            float weightSum = 0.0;
+            for (int y=0;y<2;++y) for (int x=0;x<2;++x) {
+                ivec2 q = corner+ivec2(x,y);
+                if (any(lessThan(q,ivec2(0))) || any(greaterThanEqual(q,extent))) continue;
+                vec4 oldPosition = imageLoad(previousPosition,q);
+                if (oldPosition.w != position.w || length(oldPosition.xyz-position.xyz) > tolerance) continue;
+                if (dot(imageLoad(previousNormal,q).xyz,normal) < pc.parameters.y) continue;
+                vec3 difference = imageLoad(previousAlbedo,q).rgb-albedo;
+                if (dot(difference,difference) > pc.parameters.z) continue;
+                float weight = (x == 0 ? 1.0-fraction.x : fraction.x)*(y == 0 ? 1.0-fraction.y : fraction.y);
+                history += imageLoad(previousColor,q)*weight;
+                weightSum += weight;
+            }
+            if (weightSum > 0.0) {
+                history /= weightSum;
+                vec3 mean = vec3(0.0), square = vec3(0.0);
+                float neighbors = 0.0;
+                for (int y=-1;y<=1;++y) for (int x=-1;x<=1;++x) {
+                    ivec2 q = clamp(pixel+ivec2(x,y),ivec2(0),extent-1);
+                    vec3 value = imageLoad(currentColor,q).rgb;
+                    mean += value;
+                    square += value*value;
+                    neighbors += 1.0;
+                }
+                mean /= neighbors;
+                vec3 sigma = sqrt(max(square/neighbors-mean*mean,vec3(0.0)));
+                vec3 lower = max(vec3(0.0),min(mean-3.0*sigma,current));
+                vec3 upper = max(mean+3.0*sigma,current);
+                float retained = min(history.a,max(float(pc.counts.w)-count,0.0));
+                result = (clamp(history.rgb,lower,upper)*retained+current*count)/(retained+count);
+                count += retained;
+            }
+        }
+    }
+    imageStore(temporalColor,pixel,vec4(result,count));
+}

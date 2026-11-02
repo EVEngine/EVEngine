@@ -279,6 +279,8 @@ struct GpuTexture {
     int height = 0;
     uint32_t mipLevels = 1;
     TextureSampler samplerState{};
+    /** @brief Globally unique identity of the last completed owned RGBA8 upload; zero is unavailable. */
+    uint64_t contentIdentity = 0;
     /** @brief Bindless texture-array slot (stage 0 GPU-driven path). */
     uint32_t bindlessIndex2D = kInvalidBindlessSlot;
     uint32_t bindlessIndexCube = kInvalidBindlessSlot;
@@ -755,6 +757,14 @@ public:
                                    const uint32_t *indices, int indexCount) override;
     /** @brief Return layout facts from the owned Vulkan mesh upload. */
     [[nodiscard]] eve::Result<eve::graphics::MeshBackendDescriptor> describeMesh(Mesh* mesh) const override;
+    /** @brief Return the current content identity of an owned, realized RGBA8 2D texture.
+     * @param texture Borrowed live facade; ownership is checked before inspecting its GPU handle.
+     * @return Globally unique value stable until a successful pixel write, or a structured error.
+     * @ownership No pointer is retained; releasing/replacing a texture never reuses its identity.
+     * @thread Render thread only; no callbacks or reentrancy. Does not realize deferred uploads.
+     * @cost Linear scan of owned texture registries; no GPU synchronization or pixel transfer.
+     */
+    [[nodiscard]] eve::Result<uint64_t> textureContentIdentity(const Texture *texture) const;
     bool bakeMeshMorph(Mesh *mesh) override;
     /** @brief Updates mesh vertices. */
     bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST,
@@ -1048,6 +1058,26 @@ public:
      * the same frame stream.
      */
     bool canRecordPostSceneGpuWork() const { return bool(presentRecording) && !sceneColorPassOpen; }
+    /** @brief True while the present frame command buffer is being recorded, including its render passes. */
+    bool hasOpenPresentFrame() const { return bool(presentRecording); }
+    /** @brief Actual swapchain present mode; render-thread query, valid after window initialization. */
+    vk::PresentModeKHR currentPresentMode() const { return swapchain.present_mode; }
+    /** @brief End the scene render pass before path commands; render thread, no submission or wait. */
+    void beginPathSceneOutput();
+    /** @brief Use borrowed path output for this frame's HDR resolve; valid through frame submission. */
+    void resolvePathSceneOutput(Texture *texture);
+    /** @brief Invalidate cached bindings before retiring completed path output; render thread only. */
+    void retirePathSceneOutput();
+    /** @brief Current recording identity, or zero outside a present recording.
+     * @lifetime Identities are monotonic for this Graphics lifetime; frame slots are not identities.
+     * @thread Render thread only; does not wait or submit work.
+     */
+    uint64_t recordingPresentSequence() const { return presentRecording ? presentSequence_ : 0; }
+    /** @brief Most recent successfully submitted present identity; zero before the first submission.
+     * @details Submission is not GPU completion. An abandoned recording never advances this value.
+     * @thread Render thread only; does not wait for the GPU.
+     */
+    uint64_t submittedPresentSequence() const { return submittedPresentSequence_; }
     /**
      * @brief Borrow the open present command buffer for post-scene recording.
      * @pre canRecordPostSceneGpuWork() is true.
@@ -2103,6 +2133,8 @@ private:
 
     vkb::Present presentModel;
     vkb::RecordingCmd presentRecording;
+    uint64_t               presentSequence_          = 0;
+    uint64_t               submittedPresentSequence_ = 0;
     vkb::InRenderPass swapchainPass;
     vkb::DepthStencilImage depthImage;
     vk::Format depthFormat = vk::Format::eD32Sfloat;

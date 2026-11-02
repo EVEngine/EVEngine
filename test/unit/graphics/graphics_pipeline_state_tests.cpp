@@ -485,6 +485,7 @@ TEST_CASE("graphics.clipSpace.perspectiveAndOrthographicProjectionFlipYForVulkan
 }  // namespace test_render_scene_projection
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_RenderSystem3D)
+#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
 #include "zeroerr/unittest.h"
 
@@ -492,6 +493,21 @@ TEST_CASE("graphics.clipSpace.perspectiveAndOrthographicProjectionFlipYForVulkan
 
 namespace test_render_system_3d {
 using namespace eve::graphics;
+
+
+TEST_CASE("graphics.renderControl.pathSamplesValidateWithoutProvider") {
+    RenderControl control;
+    REQUIRE(control.pathTracingSamples() == 1u);
+    auto valid = control.setPathTracingSamples(3);
+    REQUIRE(valid.ok());
+    REQUIRE(control.pathTracingSamples() == 3u);
+    auto zero = control.setPathTracingSamples(0);
+    REQUIRE(!zero.ok());
+    auto excessive = control.setPathTracingSamples(17);
+    REQUIRE(!excessive.ok());
+    REQUIRE(control.pathTracingSamples() == 3u);
+    REQUIRE(control.pathTracingFrameState() == PathTracingFrameState::Disabled);
+}
 
 TEST_CASE("graphics.camera3d.screenToRayUsesPerspectiveEyeOrOrthographicNearPlane") {
     SUB_CASE("perspective center ray starts at eye and points down normalized view direction") {

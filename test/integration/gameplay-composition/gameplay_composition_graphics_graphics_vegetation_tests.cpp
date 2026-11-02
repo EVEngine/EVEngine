@@ -65,6 +65,7 @@
 #include "zeroerr/assert.h"
 
 #include <cmath>
+#include <glm/gtc/matrix_transform.hpp>
 #include <limits>
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
@@ -95,6 +96,30 @@ TEST_CASE("graphics.authoring.bounds_use_vertices_and_clear_after_invalid_upload
     mesh.computeBounds(vertices, 3);
     mesh.computeBounds(nullptr, 0);
     REQUIRE(!mesh.localBounds().ok());
+}
+
+TEST_CASE("graphics.authoring.local_trs_projection_matches_matrix_composition") {
+    using namespace eve::graphics;
+    for (int variant = 0; variant < 5; ++variant) {
+        Renderable3D::Transform3D t;
+        t.x               = 7.f;
+        t.y               = -3.f;
+        t.z               = 2.f;
+        t.sx              = -2.f;
+        t.sy              = 0.5f;
+        t.sz              = variant == 4 ? 0.f : 3.f;
+        t.yaw             = variant == 1 ? 0.3f : 0.f;
+        t.pitch           = variant == 2 ? -0.7f : 0.f;
+        t.roll            = variant == 3 ? 1.2f : -0.f;
+        auto expected     = glm::translate(glm::mat4(1.f), glm::vec3(t.x, t.y, t.z));
+        expected          = glm::rotate(expected, t.yaw, glm::vec3(0.f, 1.f, 0.f));
+        expected          = glm::rotate(expected, t.pitch, glm::vec3(1.f, 0.f, 0.f));
+        expected          = glm::rotate(expected, t.roll, glm::vec3(0.f, 0.f, 1.f));
+        expected          = glm::scale(expected, glm::vec3(t.sx, t.sy, t.sz));
+        const auto actual = detail::modelFromTransform(t);
+        for (int c = 0; c < 4; ++c)
+            for (int r = 0; r < 4; ++r) REQUIRE(std::abs(actual[c][r] - expected[c][r]) < 1e-6f);
+    }
 }
 
 TEST_CASE("graphics.authoring.scene_link_preserves_reflection_shear_and_direct_setter_mode") {

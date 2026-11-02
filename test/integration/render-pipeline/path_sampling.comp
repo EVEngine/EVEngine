@@ -1,0 +1,53 @@
+#version 450
+#extension GL_GOOGLE_include_directive : require
+#include "pt_sampling.glsl"
+
+layout(local_size_x = 64) in;
+struct ProbeResult {
+    vec4 importance;
+    vec4 uniformIntegral;
+    vec4 moments;
+};
+layout(binding = 0, std430) writeonly buffer Results { ProbeResult results[]; };
+
+void main() {
+    uint index = gl_GlobalInvocationID.x;
+    uint configuration = index / 1024u;
+    float metallic = float(configuration & 1u);
+    float roughness = (configuration & 2u) != 0u ? 1.0 : 0.4;
+    vec3 wo = (configuration & 4u) != 0u ? normalize(vec3(0.95, 0.0, 0.2)) : vec3(0, 0, 1);
+    vec3 n = vec3(0, 0, 1);
+    vec3 color = vec3(0.8, 0.4, 0.1);
+    uint rng = ptHash(index + 451u);
+    vec3 importance = vec3(0.0);
+    vec3 reference = vec3(0.0);
+    vec4 moments = vec4(0.0);
+    float failures = 0.0;
+    for (uint i = 0u; i < 256u; ++i) {
+        vec3 wi = ptSampleBsdf(n, wo, color, metallic, roughness, rng);
+        float pdf;
+        vec3 evaluated = ptEvaluateBsdf(n, wo, wi, color, metallic, roughness, pdf);
+        if (pdf > 0.0) importance += evaluated / pdf;
+        if (any(isnan(evaluated)) || any(isinf(evaluated)) || isnan(pdf) || isinf(pdf) || pdf < 0.0)
+            failures += 1.0;
+        vec2 u = ptRandom2(rng);
+        vec3 uniformDirection = ptUniformSphere(u);
+        uniformDirection.z = abs(uniformDirection.z);
+        vec3 f = ptEvaluateBsdf(n, wo, uniformDirection, color, metallic, roughness, pdf);
+        reference += f * (2.0 * PT_PI);
+        float reversePdf;
+        vec3 reverse = ptEvaluateBsdf(n, uniformDirection, wo, color, metallic, roughness, reversePdf);
+        vec3 difference = abs(f * wo.z - reverse * uniformDirection.z);
+        if (max(difference.x, max(difference.y, difference.z)) > 1e-4) failures += 1.0;
+        vec3 cosineDirection = ptCosineHemisphere(u);
+        float directionError = max(abs(length(cosineDirection) - 1.0),
+                                   max(abs(length(uniformDirection) - 1.0), abs(length(wi) - 1.0)));
+        if (directionError > 1e-6) failures += 1.0;
+        moments += vec4(u, cosineDirection.z, directionError);
+    }
+    float complement = ptPowerHeuristic(1e30, 2e30) + ptPowerHeuristic(2e30, 1e30);
+    if (abs(complement - 1.0) > 1e-6) failures += 1.0;
+    results[index].importance = vec4(importance / 256.0, failures);
+    results[index].uniformIntegral = vec4(reference / 256.0, 0.0);
+    results[index].moments = moments / 256.0;
+}

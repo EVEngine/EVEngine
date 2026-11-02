@@ -236,6 +236,9 @@ public:
     int getColorChannelCount() const { return static_cast<int>(importedColors_.size()); }
     /** @brief True when imported tangents. */
     bool hasImportedTangents() const { return !importedTangents_.empty(); }
+    /** @brief Tangent-frame mutation identity; zero disables revision caching after exhaustion.
+     * @thread Render thread; querying does not retain resources or invoke callbacks. */
+    [[nodiscard]] uint64_t tangentFrameRevision() const { return tangentFrameRevision_; }
     /** @brief Imported uv. */
     const std::vector<float> &importedUv(int channel) const;
     /** @brief Imported color. */
@@ -246,6 +249,9 @@ public:
     const std::vector<float> &importedBitangents() const { return importedBitangents_; }
 
 private:
+    void markTangentFrameChanged() {
+        if (tangentFrameRevision_) ++tangentFrameRevision_;
+    }
     std::map<uint32_t, std::vector<float>> texcoords_;
     uint64_t                               texcoordRevision_ = 0;
 
@@ -270,6 +276,7 @@ private:
     std::vector<float>                     vegetationDeformationFactors_;
     bool gpuSkinned_ = false;
     std::vector<float> skinPalette_;
+    uint64_t                               tangentFrameRevision_ = 1;
 };
 
 }  // namespace eve::graphics

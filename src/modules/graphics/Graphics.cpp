@@ -709,6 +709,15 @@ void Graphics::expose(ssq::Table& table) {
     rctrl.addFunc("enable", &RenderControl::enable);
     rctrl.addFunc("disable", &RenderControl::disable);
     rctrl.addFunc("isEnabled", &RenderControl::isEnabled);
+    rctrl.addFunc("pathTracingDiagnostic", &RenderControl::pathTracingDiagnostic);
+    rctrl.addFunc("pathTracingFrameState", [](RenderControl* rc) -> std::string {
+        switch (rc->pathTracingFrameState()) {
+            case PathTracingFrameState::Active: return "active";
+            case PathTracingFrameState::Unavailable: return "unavailable";
+            case PathTracingFrameState::SceneRejected: return "sceneRejected";
+            default: return "disabled";
+        }
+    });
     rctrl.addFunc("setLightingMode", [](RenderControl* rc, const std::string& name) -> bool {
         if (!rc) return false;
         return rc->setLightingMode(name).ok();

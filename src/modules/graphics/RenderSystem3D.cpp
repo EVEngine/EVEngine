@@ -19,6 +19,7 @@
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
+#include "graphics/PathSceneCapture.h"
 #include "graphics/PrimitiveScene.h"
 #include "graphics/ReflectionProbeUpload.h"
 #include "graphics/RenderControl.h"
@@ -715,6 +716,63 @@ void RenderSystem3D::render(Graphics& gfx) {
 
     RenderControl* rc = gfx.getRenderControl();
     rc->ensureCompiled();
+    rc->pathTracingState_ = PathTracingFrameState::Disabled;
+    rc->pathTracingDiagnostic_.clear();
+    if (rc->isPathTracingRequested()) {
+        auto* provider = rc->pathProvider_;
+        if (!provider || !provider->isAvailable()) {
+            rc->pathTracingState_      = PathTracingFrameState::Unavailable;
+            rc->pathTracingDiagnostic_ = "Hardware path tracing is unavailable; rendering raster frame";
+        } else {
+            rc->pathTracingState_ = PathTracingFrameState::SceneRejected;
+            const auto primitives = gfx.getPrimitiveScene();
+            if (!defaultCam || defaultCam->data()->orthographic || defaultCam->data()->envMap ||
+                defaultCam->data()->dofMaxBlurPx > 0.f || !g_forwardDrawers.empty() || !g_gpuOpaqueCollectors.empty() ||
+                !g_gbufferDrawers.empty() || !g_decalDrawers.empty() || (primitives && primitives->size())) {
+                rc->pathTracingDiagnostic_ = "Path scene requires a perspective camera and supported contributors";
+            } else {
+                auto scene = preparePathWorld(*ecs::current(), gfx, *provider);
+                if (!scene.ok()) {
+                    rc->pathTracingDiagnostic_ = scene.status().describe();
+                } else {
+                    const auto width  = uint32_t(std::max(1, gfx.getPixelWidth()));
+                    const auto height = uint32_t(std::max(1, gfx.getPixelHeight()));
+                    auto       output = provider->preparePathFrame(scene.value(), width, height);
+                    if (!output.ok()) {
+                        rc->pathTracingDiagnostic_ = output.status().describe();
+                    } else {
+                        const auto    camera = defaultCam->data();
+                        PathTraceView view;
+                        view.eye              = {camera->eyeX, camera->eyeY, camera->eyeZ};
+                        const auto projection = cameraProjectionVulkanRH_ZO(
+                            false, camera->fovYDeg * 0.017453292519943295f, camera->orthoHeight,
+                            float(width) / float(height), camera->nearZ, camera->farZ);
+                        view.invViewProj = glm::inverse(
+                            projection * glm::lookAtRH(view.eye,
+                                                       glm::vec3(camera->targetX, camera->targetY, camera->targetZ),
+                                                       glm::vec3(camera->upX, camera->upY, camera->upZ)));
+                        view.environment          = {camera->ambientR, camera->ambientG, camera->ambientB};
+                        view.samples              = rc->pathSamples_;
+                        view.firstSample          = rc->pathSampleIndex_;
+                        view.resetTemporalHistory = view.firstSample == 0;
+                        rc->pathSampleIndex_      = (rc->pathSampleIndex_ + view.samples) % (1u << 24);
+                        view.denoise = rc->pathTemporalRequested_ ? PathDenoise::Temporal : PathDenoise::Spatial;
+                        gfx.gpuDrivenSetEnabled(false);
+                        gfx.setSceneExposure(std::exp2(camera->exposureEV));
+                        gfx.setSceneAutoExposure(camera->autoExposure, camera->autoExposureMinEV,
+                                                 camera->autoExposureMaxEV);
+                        gfx.setSceneBloom(camera->bloomIntensity, camera->bloomThreshold);
+                        gfx.setSceneDepthOfField(0.f, 0.f, 1.f, camera->nearZ, camera->farZ);
+                        gfx.begin3DFrame();
+                        auto recorded = provider->recordPathFrame(scene.value(), output.value(), view);
+                        if (!recorded.ok()) throw eve::Exception("%s", recorded.status().describe().c_str());
+                        rc->pathTracingState_ = PathTracingFrameState::Active;
+                        return;
+                    }
+                }
+            }
+        }
+    }
     const bool doShadow           = rc->hasPass("shadow");
     const bool doGBuffer          = rc->hasPass("gbuffer");
     const bool doDecal            = rc->hasPass("decal");
