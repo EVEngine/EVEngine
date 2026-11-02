@@ -267,11 +267,9 @@ Channel* Network::channelFor(TcpSocket* sock) const {
 
 void Network::pollSockets() {
     std::vector<TcpSocket*> tcpCopy;
-    std::vector<UdpSocket*> udpCopy;
     {
         std::lock_guard<std::mutex> lock(watchMu_);
         tcpCopy = watchedTcp_;
-        udpCopy = watchedUdp_;
     }
     for (TcpSocket* sock : tcpCopy) {
         if (!sock) continue;
@@ -322,7 +320,10 @@ void Network::pollSockets() {
             }
         }
     }
-    for (UdpSocket* sock : udpCopy) {
+    // unwatchUdp/close must wait until every borrow in this poll has retired.
+    // UDP polling only queues completions; it never invokes user callbacks.
+    std::lock_guard<std::mutex> udpLock(watchMu_);
+    for (UdpSocket* sock : watchedUdp_) {
         if (!sock || !sock->datagram()) continue;
         for (int i = 0; i < 64; ++i) {
             try {
