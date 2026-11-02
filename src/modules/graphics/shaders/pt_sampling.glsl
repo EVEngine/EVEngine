@@ -29,17 +29,22 @@ mat3 ptFrame(vec3 n) {
     return mat3(t, cross(n, t), n);
 }
 
+vec2 ptAzimuth(float u) {
+    // Vulkan sin/cos are approximations, not an exact unit-circle pair.
+    // Normalize only the azimuth so the sampled elevation and its PDF stay intact.
+    float phi = 2.0 * PT_PI * u - PT_PI;
+    return normalize(vec2(cos(phi), sin(phi)));
+}
+
 vec3 ptCosineHemisphere(vec2 u) {
     float r = sqrt(u.x);
-    float phi = 2.0 * PT_PI * u.y;
-    return vec3(r * cos(phi), r * sin(phi), sqrt(max(0.0, 1.0 - u.x)));
+    return vec3(r * ptAzimuth(u.y), sqrt(max(0.0, 1.0 - u.x)));
 }
 
 vec3 ptUniformSphere(vec2 u) {
     float z = 1.0 - 2.0 * u.x;
     float r = sqrt(max(0.0, 1.0 - z * z));
-    float phi = 2.0 * PT_PI * u.y;
-    return vec3(r * cos(phi), r * sin(phi), z);
+    return vec3(r * ptAzimuth(u.y), z);
 }
 
 float ptPowerHeuristic(float a, float b) {
@@ -101,10 +106,9 @@ vec3 ptSampleBsdf(vec3 n, vec3 wo, vec3 baseColor, float metallic,
     if (choose >= ptSpecularProbability(baseColor, metallic))
         return frame * ptCosineHemisphere(u);
     float alpha = max(roughness * roughness, 0.001);
-    float phi = 2.0 * PT_PI * u.x;
     float cosTheta = sqrt((1.0 - u.y) / (1.0 + (alpha * alpha - 1.0) * u.y));
     float sinTheta = sqrt(max(0.0, 1.0 - cosTheta * cosTheta));
-    vec3 h = frame * vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
+    vec3 h = frame * vec3(sinTheta * ptAzimuth(u.x), cosTheta);
     return reflect(-wo, h);
 }
 
