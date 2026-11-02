@@ -54,6 +54,10 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
+// SDL's native X11 declarations define Success, which collides with WebGPU enums.
+#ifdef Success
+#undef Success
+#endif
 #if defined(__APPLE__) && !defined(__EMSCRIPTEN__)
 #include <objc/message.h>
 #include <objc/runtime.h>
@@ -5203,6 +5207,7 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device& dev, wgpu::PipelineLayo
         pd.vertex.entryPoint = sv("vs_main");
     }
 
+    // The descriptor borrows these until CreateRenderPipeline returns.
     WGPUFragmentState    fs{};
     WGPUColorTargetState target{};
     if (!frag.empty()) {
@@ -5210,7 +5215,7 @@ wgpu::RenderPipeline buildPipelineFromWgsl(wgpu::Device& dev, wgpu::PipelineLayo
         fragmentModule = dev.CreateShaderModule(reinterpret_cast<const wgpu::ShaderModuleDescriptor*>(&md));
         fs.module      = fragmentModule.Get();
         fs.entryPoint  = sv("fs_main");
-        fs.targetCount = 1;
+        fs.targetCount   = 1;
         target.format    = format;
         target.writeMask = WGPUColorWriteMask_All;
         if (blend) {

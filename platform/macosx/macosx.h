@@ -33,6 +33,10 @@ std::string getExecutablePath();
  * Sets VK_ICD_FILENAMES to the bundled MoltenVK_icd.json (unless the caller
  * already set it), so a packaged eve runs without the LunarG Vulkan SDK
  * installed. Call before creating any SDL Vulkan window.
+ * On AppleParavirtDevice, selects MoltenVK discrete resource bindings before
+ * loading the ICD; an explicit MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS wins.
+ * Call on the main thread before Vulkan initialization; does not retain a Metal
+ * device. Throws std::runtime_error if required process configuration fails.
  *
  * @return directory of the bundled libvulkan.1.dylib, or empty if not found.
  **/

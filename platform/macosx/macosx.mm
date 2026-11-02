@@ -2,6 +2,7 @@
 
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
+#import <Metal/Metal.h>
 
 #include <mach-o/dyld.h>
 #include <sys/syslimits.h>
@@ -10,12 +11,33 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 
 namespace eve {
 namespace macosx {
+
+namespace {
+
+void configureMoltenVKBindings(const char *deviceClass) {
+    // Owner: graphics. https://github.com/KhronosGroup/MoltenVK/issues/2373
+    // AppleParavirtDevice advertises Tier 1 but aborts even for a one-resource
+    // argument encoder. Select MoltenVK's supported discrete-binding mode before
+    // loading the ICD, for packaged games as well as development builds. Remove
+    // this policy when the upstream virtual-device encoder works and the Intel
+    // SDK's native encoder probe and default-mode runtime acceptance both pass.
+    // Explicit application configuration remains authoritative.
+    if (!deviceClass || std::strcmp(deviceClass, "AppleParavirtDevice") != 0 ||
+        std::getenv("MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS") != nullptr)
+        return;
+    if (::setenv("MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS", "0", 0) != 0)
+        throw std::runtime_error("Cannot configure MoltenVK discrete bindings for AppleParavirtDevice");
+    std::fprintf(stderr, "EVEngine: AppleParavirtDevice uses MoltenVK discrete resource bindings\n");
+}
+
+}  // namespace
 
 std::string getResources() {
     @autoreleasepool {
@@ -63,6 +85,11 @@ std::string getExecutablePath() {
 }
 
 std::string bootstrapBundledVulkan() {
+    @autoreleasepool {
+        id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+        configureMoltenVKBindings(device ? NSStringFromClass(device.class).UTF8String : nullptr);
+        [device release];
+    }
     const std::string exe = getExecutablePath();
     if (exe.empty())
         return {};

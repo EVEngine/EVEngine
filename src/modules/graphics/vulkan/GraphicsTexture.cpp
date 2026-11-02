@@ -335,8 +335,22 @@ Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces,
     gpu->isCube = true;
     gpu->mipLevels = mipLevels;
     gpu->samplerState = info.sampler;
-    gpu->cubeImage = vkb::TextureImageCube(device, device.physical_device.memory_properties,
-                                           uint32_t(faceSize), uint32_t(faceSize), mipLevels);
+    // Optimal-tiled images cannot start in PREINITIALIZED. Uploads transition
+    // every cube face from UNDEFINED before copying the staging buffer.
+    vk::ImageCreateInfo cubeInfo{};
+    cubeInfo.flags       = vk::ImageCreateFlagBits::eCubeCompatible;
+    cubeInfo.imageType   = vk::ImageType::e2D;
+    cubeInfo.format      = vk::Format::eR8G8B8A8Unorm;
+    cubeInfo.extent      = vk::Extent3D{uint32_t(faceSize), uint32_t(faceSize), 1};
+    cubeInfo.mipLevels   = mipLevels;
+    cubeInfo.arrayLayers = 6;
+    cubeInfo.samples     = vk::SampleCountFlagBits::e1;
+    cubeInfo.tiling      = vk::ImageTiling::eOptimal;
+    cubeInfo.usage =
+        vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst;
+    cubeInfo.initialLayout = vk::ImageLayout::eUndefined;
+    gpu->cubeImage =
+        vkb::GenericImage(device, cubeInfo, vk::ImageViewType::eCube, vk::ImageAspectFlagBits::eColor, false);
 
     std::vector<uint8_t> bytes =
         (mipLevels > 1) ? buildMipChainCube(rgbaFaces, uint32_t(faceSize), mipLevels)

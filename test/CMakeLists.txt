@@ -53,7 +53,7 @@ eve_test_source_properties(physics_jolt.cpp physics_jolt_cooking.cpp physics_jol
 # Resource sharing must test the same optional validation provider as EVGraphics.
 get_target_property(_eve_graphics_definitions EVGraphics COMPILE_DEFINITIONS)
 if("EVENGINE_SPIRV_ASSET_VALIDATION=1" IN_LIST _eve_graphics_definitions)
-  eve_resolve_test_sources(_eve_validation_sources ShaderResourceSharing.cpp SkyTextureGpu.cpp
+  eve_resolve_test_sources(_eve_validation_sources ShaderResourceSharing.cpp integration/render-presentation/resource_program_descriptor_limits.cpp SkyTextureGpu.cpp
     SkyAtmospherePass.cpp SkyRuntime.cpp SkyWisps.cpp SkyScriptBindings.cpp BloomPyramid.cpp)
   set_property(SOURCE ${_eve_validation_sources} APPEND PROPERTY COMPILE_DEFINITIONS EVE_TEST_RESOURCE_VALIDATION=1)
 endif()
@@ -455,7 +455,12 @@ else()
     target_compile_definitions(onnx_engine_probe PRIVATE EVE_ONNX_ENGINE_PROVIDER POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
     target_link_libraries(onnx_engine_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
     eve_add_test_executable(onnx_gpu_contracts EXCLUDE_FROM_ALL main.cpp tensor_onnx_gpu.cpp)
-    target_compile_definitions(onnx_gpu_contracts PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+    target_compile_definitions(onnx_gpu_contracts PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX
+      EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
+      EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    target_compile_options(onnx_gpu_contracts PRIVATE
+      $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
     target_link_libraries(onnx_gpu_contracts eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
 
 
@@ -763,6 +768,21 @@ foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
 endforeach()
 endif()
 include(asset_shader/GraphicsProbe.cmake)
+if(TARGET EVTensor AND NOT EVENGINE_WEBGPU AND NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
+  # Isolate the controlled compiler double from the real Gpgpu provider.
+  eve_add_test_executable(onnx_compiler_queue_contract
+    fixtures/onnx_compiler_queue_contract.cpp
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Result.cpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Status.cpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Diagnostic.cpp")
+  target_link_libraries(onnx_compiler_queue_contract PRIVATE eve_engine_includes zeroerr)
+  target_compile_definitions(onnx_compiler_queue_contract PRIVATE
+    EVENGINE_EXPORTS_FOUNDATION EVENGINE_EXPORTS_WORLD)
+  target_compile_options(onnx_compiler_queue_contract PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  zeroerr_discover_tests(onnx_compiler_queue_contract LABEL onnx_compiler_queue_contract)
+endif()
 if(NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
   include("${CMAKE_SOURCE_DIR}/cmake/TestImpact.cmake")
   eve_enable_test_impact(TARGETS ${EVE_TEST_TARGETS})

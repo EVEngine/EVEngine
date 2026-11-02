@@ -88,13 +88,14 @@ protected:
     /** @brief Observe. */
     void observe() const noexcept { observed_ = true; }
 
-    /** @brief Assert can be overwritten. */
+    /** @brief Check the destination before a move under the caller's assertion policy. */
+    template <bool AssertionsEnabled>
     void assertCanBeOverwritten() const {
-#if !defined(ZEROERR_NO_ASSERT)
-        const bool observationSatisfied = !mustObserve_ || observed_;
-        /** @brief Ev assert. */
-        EV_DETAIL_RESULT_ASSERT(observationSatisfied, "move assignment would overwrite an unchecked Result");
-#endif
+        if constexpr (AssertionsEnabled) {
+            const bool observationSatisfied = !mustObserve_ || observed_;
+            checkResultInvariant(observationSatisfied, "!mustObserve_ || observed_", __FILE__, __LINE__,
+                                 "move assignment would overwrite an unchecked Result");
+        }
     }
 
     /** @brief Adopt observation from. */
@@ -220,12 +221,18 @@ public:
     /**
      * @brief Move-assign a result after checking the destination's old result.
      * @remarks In Debug, overwriting an unobserved destination asserts before
-     *          either result's observation responsibility is changed.
+     *          either result's observation responsibility is changed. The caller policy is
+     *          part of the operation specialization, including mixed Release/assert builds.
      */
+#if !defined(ZEROERR_NO_ASSERT)
+    template <bool AssertionsEnabled = true>
+#else
+    template <bool AssertionsEnabled = false>
+#endif
     Result& operator=(Result&& other) {
         if (this == &other) return *this;
         /** @brief Assert can be overwritten. */
-        assertCanBeOverwritten();
+        assertCanBeOverwritten<AssertionsEnabled>();
         status_ = std::move(other.status_);
         /** @brief Moves assign optional. */
         detail::moveAssignOptional(value_, std::move(other.value_));
@@ -257,12 +264,16 @@ public:
      * @brief Move-assign from a Result whose value converts to `T` by adding const.
      * @param other Source result whose value type converts to `T` by adding const.
      */
-    template <class U>
+#if !defined(ZEROERR_NO_ASSERT)
+    template <class U, bool AssertionsEnabled = true>
+#else
+    template <class U, bool AssertionsEnabled = false>
+#endif
         requires detail::ResultConstConversion<U, T>
     /** @brief Operator =. */
     Result& operator=(Result<U>&& other) {
         /** @brief Assert can be overwritten. */
-        assertCanBeOverwritten();
+        assertCanBeOverwritten<AssertionsEnabled>();
         status_ = std::move(other.status_);
         /** @brief Moves assign optional. */
         detail::moveAssignOptional(value_, std::move(other.value_));
@@ -484,10 +495,15 @@ public:
     }
 
     /** @brief Move-assign after checking the destination's old result. */
+#if !defined(ZEROERR_NO_ASSERT)
+    template <bool AssertionsEnabled = true>
+#else
+    template <bool AssertionsEnabled = false>
+#endif
     Result& operator=(Result&& other) {
         if (this == &other) return *this;
         /** @brief Assert can be overwritten. */
-        assertCanBeOverwritten();
+        assertCanBeOverwritten<AssertionsEnabled>();
         status_ = std::move(other.status_);
         /** @brief Adopt observation from. */
         adoptObservationFrom(other);

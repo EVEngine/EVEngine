@@ -29,6 +29,9 @@ class SdkReleaseArchitectureTests(unittest.TestCase):
             archive.writestr(f"{root}/TARGET_PLATFORM", target.removesuffix("-arm64").removesuffix("-x86_64"))
             if target.startswith("macosx-"):
                 archive.writestr(f"{root}/TARGET_ARCHITECTURE", architecture or target.removeprefix("macosx-"))
+            if target == "webgpu":
+                for filename in ("eve.html", "eve.js", "eve.wasm", "eve.data"):
+                    archive.writestr(f"eve-sdk/webgpu/bin/{filename}", "fixture")
         return path
 
     def complete_release(self):
@@ -63,6 +66,21 @@ class SdkReleaseArchitectureTests(unittest.TestCase):
             release.verify(self.root, "v1.2.3")
         self.write_archive("macosx-x86_64", version="0.0.1")
         with self.assertRaisesRegex(ValueError, "version/platform mismatch"):
+            release.verify(self.root, "v1.2.3")
+
+    def test_requires_webgpu_and_its_preloaded_game_data(self):
+        self.complete_release()
+        webgpu = self.root / "eve-sdk-webgpu-v1.2.3.zip"
+        webgpu.unlink()
+        with self.assertRaisesRegex(ValueError, "webgpu"):
+            release.verify(self.root, "v1.2.3")
+        self.write_archive("webgpu")
+        with zipfile.ZipFile(webgpu) as archive:
+            entries = {name: archive.read(name) for name in archive.namelist() if not name.endswith("eve.data")}
+        with zipfile.ZipFile(webgpu, "w") as archive:
+            for name, value in entries.items():
+                archive.writestr(name, value)
+        with self.assertRaisesRegex(KeyError, "eve.data"):
             release.verify(self.root, "v1.2.3")
 
     def test_sdk_targets_install_the_matching_build(self):

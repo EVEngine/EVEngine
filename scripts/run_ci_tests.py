@@ -31,7 +31,10 @@ def main():
         return subprocess.run(command, check=False).returncode
     if mode not in {"full", "selected"}:
         parser.error(f"unsupported CI_TEST_MODE: {mode}")
-    command = [os.environ.get("MAKE", "make"), "--no-print-directory", "test/" + args.platform,
+    # CI already built this target. Keep Make's canonical CTest options without
+    # re-entering its phony build prerequisite with different configure args.
+    command = [os.environ.get("MAKE", "make"), "--no-print-directory",
+               "--old-file=build/" + args.platform, "test/" + args.platform,
                "CTEST_JOBS=" + str(args.jobs), "LABEL_FILTER=" + args.label_regex]
     return subprocess.run(command, check=False).returncode
 

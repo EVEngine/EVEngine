@@ -215,11 +215,16 @@ for target in ${EVE_CROSS_TARGETS:-}; do
     "$BASE/eve-sdk-$target-$TAG.zip" || fail "cannot download $target SDK zip"
   verify_archive "$WORK/eve-sdk-$target-$TAG.zip" || fail "$target SDK checksum failed"
   extract_zip "$WORK/eve-sdk-$target-$TAG.zip" "$WORK" || fail "cannot extract $target SDK zip"
-  TARGET_SDK="$WORK/eve-sdk/$target"
-  "$EVE" package "$GAME" --sdk "$TARGET_SDK" -o "$WORK/pkg-$target" >/dev/null \
-    || fail "cross package ($target from $HOST) failed"
-  ( cd "$WORK/pkg-$target" && tar -czf "$WORK/pkg-$target.tar.gz" . ) || fail "cannot archive $target package"
-  echo "OK: cross package $target from $HOST -> $WORK/pkg-$target.tar.gz"
+  # Verified packaging now executes its candidate for 30 frames. A foreign
+  # runtime cannot execute here: transport the source archive and verified SDK
+  # to the target runner, where the canonical eve package acceptance must pass.
+  "$EVE" zip "$GAME" || fail "cannot archive game for $target"
+  transfer="$WORK/transfer-$target"
+  mkdir -p "$transfer"
+  cp "$GAME.eve" "$transfer/game.eve"
+  cp "$WORK/eve-sdk-$target-$TAG.zip" "$WORK/SHA256SUMS" "$transfer/"
+  ( cd "$transfer" && tar -czf "$WORK/pkg-$target.tar.gz" . ) || fail "cannot archive $target inputs"
+  echo "OK: transferred $target packaging inputs from $HOST -> $WORK/pkg-$target.tar.gz"
 done
 
 echo "== [consumer-test] PASS ($HOST, $TAG) =="

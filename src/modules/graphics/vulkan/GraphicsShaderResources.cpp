@@ -48,6 +48,7 @@ struct MeshShaderResources {
     std::vector<std::byte>                      constantBytes;
     std::unique_ptr<vkb::GenericBuffer>         instances;
     std::vector<std::byte>                      instanceBytes;
+    vk::UniqueDescriptorSetLayout               frameSetLayout;
     vk::UniqueDescriptorSetLayout               setLayout;
     vk::UniqueDescriptorPool                    pool;
     vk::UniquePipelineLayout                    pipelineLayout;
@@ -95,8 +96,8 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
         (!inputs.instanceMatrices.empty() &&
          (limits.maxPerStageDescriptorStorageBuffers < 2 || limits.maxDescriptorSetStorageBuffers < 2)))
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Instance matrix buffer exceeds device limits", "shader.resources"));
-    if (inputs.images.size() + 13 > limits.maxPerStageDescriptorSamplers ||
-        inputs.images.size() + 13 > limits.maxPerStageDescriptorSampledImages ||
+    if (inputs.images.size() + 2 > limits.maxPerStageDescriptorSamplers ||
+        inputs.images.size() + 2 > limits.maxPerStageDescriptorSampledImages ||
         inputs.constants.size() > limits.maxUniformBufferRange)
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "Resource program exceeds device descriptor or uniform limits", "shader.resources"));
     for (const auto& image : inputs.images) {
@@ -146,7 +147,19 @@ Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vec
         const auto setLayout = *resources.setLayout;
         candidate->resourceSet =
             device->allocateDescriptorSets(vk::DescriptorSetAllocateInfo{*resources.pool, 1, &setLayout})[0];
-        const vk::DescriptorSetLayout layouts[] = {mesh3dSetLayout, setLayout};
+        // Resource programs admit only albedo/scene-color images from set 0.
+        // Keep the two dynamic UBOs and default vertex skin palette ABI, without
+        // charging these programs for eleven unrelated material samplers.
+        vkb::DescriptorSetLayoutBuilder frameLayout;
+        resources.frameSetLayout =
+            frameLayout.buffer(0, vk::DescriptorType::eUniformBufferDynamic, stages, 1)
+                .image(1, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+                .buffer(4, vk::DescriptorType::eUniformBufferDynamic, vk::ShaderStageFlagBits::eFragment, 1)
+                .image(18, vk::DescriptorType::eCombinedImageSampler, vk::ShaderStageFlagBits::eFragment, 1)
+                .buffer(21, vk::DescriptorType::eStorageBuffer, vk::ShaderStageFlagBits::eVertex, 1)
+                .createUnique(device.instance);
+        candidate->resourceFrameLayout          = *resources.frameSetLayout;
+        const vk::DescriptorSetLayout layouts[] = {candidate->resourceFrameLayout, setLayout};
         const vk::PushConstantRange   push{stages, 0, Shader::kPushConstantBytes};
         resources.pipelineLayout =
             device->createPipelineLayoutUnique(vk::PipelineLayoutCreateInfo{{}, 2, layouts, 1, &push});
