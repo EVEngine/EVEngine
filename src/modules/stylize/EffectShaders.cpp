@@ -7,6 +7,7 @@
 #include "stylize/shaders/chromatic_post_frag_spv.inc"
 #include "stylize/shaders/dissolve_mesh_frag_spv.inc"
 #include "stylize/shaders/glitch_analog_post_frag_spv.inc"
+#include "stylize/shaders/glitch_block_post_frag_spv.inc"
 #include "stylize/shaders/grain_post_frag_spv.inc"
 #include "stylize/shaders/hologram_mesh_frag_spv.inc"
 #include "stylize/shaders/slash_mesh_frag_spv.inc"
@@ -40,6 +41,7 @@ const StyleDefinition kPostEffects[] = {
     {"chromatic", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 270},
     {"grain", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 280},
     {"glitchAnalog", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 290},
+    {"glitchBlock", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 300},
 };
 
 const StyleParameterDesc kRimParams[] = {
@@ -116,6 +118,13 @@ const StyleParameterDesc kGlitchAnalogParams[] = {
     {"colorDrift", 0.f, 0.f, 1.f},       {"time", 0.f, 0.f, 120.f},
 };
 
+// Digital block damage. intensity mirrors Kino DigitalGlitch; cell counts default
+// to the original 64×32 noise atlas. Trash history is approximated in-shader.
+const StyleParameterDesc kGlitchBlockParams[] = {
+    {"strength", 1.f, 0.f, 1.f},   {"intensity", 0.f, 0.f, 1.f}, {"time", 0.f, 0.f, 120.f},
+    {"cellCountX", 64.f, 4.f, 256.f}, {"cellCountY", 32.f, 4.f, 256.f},
+};
+
 const StyleDefinition* findMesh(const std::string& style) {
     for (const auto& d : kMeshEffects)
         if (style == d.id) return &d;
@@ -157,6 +166,7 @@ int postParamCount(const std::string& style) {
     if (style == "chromatic") return int(sizeof(kChromaticParams) / sizeof(kChromaticParams[0]));
     if (style == "grain") return int(sizeof(kGrainParams) / sizeof(kGrainParams[0]));
     if (style == "glitchAnalog") return int(sizeof(kGlitchAnalogParams) / sizeof(kGlitchAnalogParams[0]));
+    if (style == "glitchBlock") return int(sizeof(kGlitchBlockParams) / sizeof(kGlitchBlockParams[0]));
     return 0;
 }
 const StyleParameterDesc* postParamAt(const std::string& style, int index) {
@@ -164,6 +174,7 @@ const StyleParameterDesc* postParamAt(const std::string& style, int index) {
     if (style == "chromatic") return paramAt(kChromaticParams, index);
     if (style == "grain") return paramAt(kGrainParams, index);
     if (style == "glitchAnalog") return paramAt(kGlitchAnalogParams, index);
+    if (style == "glitchBlock") return paramAt(kGlitchBlockParams, index);
     return nullptr;
 }
 
@@ -254,6 +265,8 @@ graphics::Shader* createEffectPostShader(graphics::Graphics* gfx, const std::str
         frag = copySpv(grain_post_frag_spv, grain_post_frag_spv_count);
     else if (style == "glitchAnalog")
         frag = copySpv(glitch_analog_post_frag_spv, glitch_analog_post_frag_spv_count);
+    else if (style == "glitchBlock")
+        frag = copySpv(glitch_block_post_frag_spv, glitch_block_post_frag_spv_count);
     else
         throw eve::Exception("createEffectPostShader: not an effect post style '%s'", style.c_str());
 

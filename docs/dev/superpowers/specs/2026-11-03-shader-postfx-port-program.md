@@ -226,7 +226,7 @@ flowchart TB
 |----|------|------|------|
 | （infra）noise/post_common | 0 | — | 已落地 |
 | glitchAnalog | 1 | A | 已落地 |
-| glitchBlock | 1 | A | 待做 |
+| glitchBlock | 1 | A | 已落地 |
 | glitchWave | 1 | A | 待做 |
 | kuwahara | 2 | A | 待做 |
 | kuwaharaAniso | 2 | A | 待做 |

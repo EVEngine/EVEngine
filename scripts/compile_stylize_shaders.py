@@ -34,6 +34,7 @@ FRAGS = [
     "chromatic_post.frag",
     "grain_post.frag",
     "glitch_analog_post.frag",
+    "glitch_block_post.frag",
 ]
 
 # Dedicated vertex sources owned by the stylize module. Materials that reuse

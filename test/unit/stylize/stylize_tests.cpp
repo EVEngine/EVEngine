@@ -371,7 +371,7 @@ namespace test_stylize_attack_vfx_layers_unit {
 using namespace eve::stylize;
 namespace {
 const char *kMeshEffects[] = {"rim", "dissolve", "hologram", "snow", "slash", "ember", "aura"};
-const char *kPostEffects[] = {"vignette", "chromatic", "grain", "glitchAnalog"};
+const char *kPostEffects[] = {"vignette", "chromatic", "grain", "glitchAnalog", "glitchBlock"};
 }  // namespace
 
 TEST_CASE("stylize.layerEffects.spec.registryAndParameters") {
@@ -444,6 +444,25 @@ TEST_CASE("stylize.layerEffects.spec.registryAndParameters") {
         REQUIRE_EQ(effect->getFloat("strength"), 0.f);
         effect->setFloat("scanLineJitter", 2.f);
         REQUIRE_EQ(effect->getFloat("scanLineJitter"), effect->getParamMax("scanLineJitter"));
+    };
+    SUB_CASE("glitchBlock defaults -> afterTonemap with zero intensity near-identity") {
+        auto                          *mod = Stylize::create();
+        std::unique_ptr<StyleInstance> effect(mod->newInstance("glitchBlock"));
+        REQUIRE(effect != nullptr);
+        REQUIRE_EQ(effect->getStage(), std::string("afterTonemap"));
+        REQUIRE(effect->requiresInput("color"));
+        REQUIRE(!effect->requiresInput("depth"));
+        REQUIRE(effect->hasParam("strength"));
+        REQUIRE(effect->hasParam("intensity"));
+        REQUIRE(effect->hasParam("time"));
+        REQUIRE(effect->hasParam("cellCountX"));
+        REQUIRE(effect->hasParam("cellCountY"));
+        REQUIRE_EQ(effect->getFloat("strength"), 1.f);
+        REQUIRE_EQ(effect->getFloat("intensity"), 0.f);
+        REQUIRE_EQ(effect->getFloat("cellCountX"), 64.f);
+        REQUIRE_EQ(effect->getFloat("cellCountY"), 32.f);
+        effect->setFloat("intensity", 5.f);
+        REQUIRE_EQ(effect->getFloat("intensity"), effect->getParamMax("intensity"));
     };
 }
 
@@ -1252,7 +1271,7 @@ TEST_CASE("stylize.styles.spec.registryAndInstance") {
         auto *mod = Stylize::create();
         REQUIRE(mod != nullptr);
         REQUIRE_EQ(mod->getName(), std::string("Stylize"));
-        REQUIRE_EQ(mod->getStyleCount(), 19);
+        REQUIRE_EQ(mod->getStyleCount(), 20);
         REQUIRE(mod->supports("cartoon", "mesh"));
         REQUIRE(mod->supports("cartoon", "post"));
         REQUIRE(mod->supports("watercolor", "cpu"));
@@ -1263,6 +1282,8 @@ TEST_CASE("stylize.styles.spec.registryAndInstance") {
         REQUIRE(!mod->supports("vignette", "mesh"));
         REQUIRE(mod->supports("glitchAnalog", "post"));
         REQUIRE(!mod->supports("glitchAnalog", "mesh"));
+        REQUIRE(mod->supports("glitchBlock", "post"));
+        REQUIRE(!mod->supports("glitchBlock", "mesh"));
         REQUIRE(!mod->hasStyle("oil"));
         REQUIRE(mod->getStyleParamCount("pixel") > 0);
         REQUIRE_EQ(mod->getStyleParamName("pixel", 0), "pixelSize");
