@@ -165,7 +165,8 @@ function catalog() {
             forms=["Judgment", "Radiant Lance"],
             params={ intensity=1.0, width=2.0, sigil=1.5, tilt=18.0, rays=0.85, scatter=0.35, motes=1.0, feathers=1.0, glow=1.0, storm=1.0, dust=1.0, molten=1.0, lance=0.6, core="#fff4dc", color="#ffb84a" },
             ranges={ intensity=[0.0, 3.0, 0.01], width=[0.5, 4.0, 0.01], sigil=[0.6, 3.0, 0.01], tilt=[0.0, 25.0, 0.1], rays=[0.0, 1.0, 0.01], scatter=[0.0, 0.9, 0.01], motes=[0.0, 3.0, 0.01], feathers=[0.0, 3.0, 0.01], glow=[0.0, 3.0, 0.01], storm=[0.0, 1.0, 0.01], dust=[0.0, 3.0, 0.01], molten=[0.0, 3.0, 0.01], lance=[0.2, 1.5, 0.01] },
-            timing={ charge=1.3, impact=0.55, linger=3.4, sustain=2.0 },
+            // Short charge so lab / MCP captures reach the pillar quickly.
+            timing={ charge=0.35, impact=0.7, linger=4.0, sustain=2.2 },
             presets=[{ name="dawn", values={ core="#fff0e8", color="#ff8a5c", tilt=16.0, rays=0.9 } }, { name="seraphic", values={ core="#ffffff", color="#bcd4ff", intensity=1.25, feathers=2.2, scatter=0.5 } }, { name="solar flare", values={ core="#fff3c0", color="#ff9a12", width=3.2, intensity=1.5, rays=1.0, motes=1.8 } }]
         },
         {
@@ -213,7 +214,7 @@ function catalog() {
             forms=["Arcane Barrage", "Aegis"],
             params={ missiles=8.0, speed=24.0, homing=4.0, spread=1.0, weave=0.6, sparkles=1.0, intensity=1.0, shield=1.45, duration=6.0, hex=1.0, distortion=1.0, pulse=0.6, anchor="target", color="#ff4fd8", core="#ffe3fb", glow="#b347ff" },
             ranges={ missiles=[1.0, 16.0, 1.0], speed=[8.0, 45.0, 0.1], homing=[2.0, 8.0, 0.1], spread=[0.0, 2.0, 0.01], weave=[0.0, 2.0, 0.01], sparkles=[0.0, 3.0, 0.01], intensity=[0.1, 3.0, 0.01], shield=[0.8, 3.0, 0.01], duration=[1.0, 20.0, 0.1], hex=[0.0, 3.0, 0.01], distortion=[0.0, 3.0, 0.01], pulse=[0.0, 3.0, 0.01] },
-            timing={ charge=0.55, impact=0.12, linger=1.1, sustain=2.0 },
+            timing={ charge=0.35, impact=0.2, linger=6.0, sustain=2.0 },
             presets=[{ name="frost ward", values={ color="#4fc8ff", core="#e6faff", glow="#2f5bff" } }, { name="golden aegis", values={ color="#ffb54a", core="#fff4dc", glow="#ff6a1a", hex=1.4 } }, { name="void swarm", values={ color="#a35cff", core="#f1e6ff", glow="#2a0a6e", missiles=12.0, weave=1.3, homing=5.5 } }]
         },
         {
@@ -243,7 +244,7 @@ function catalog() {
         {
             id="black-flame", name="Black Flame", element="hybrid", shape="capsule",
             forms=["Black Flame"],
-            params={ size=1.0, height=1.0, intensity=1.0, absorb=1.0, embers=1.0, swirl=1.0, smoke=1.0, corruption=1.0, knockback=1.0, rim="#8a3dff", core="#efdcff" },
+            params={ size=1.0, height=1.0, intensity=1.0, absorb=1.0, embers=1.0, swirl=1.0, smoke=1.0, corruption=1.0, knockback=1.0, rim="#ff5a28", core="#1a1018" },
             ranges={ size=[0.5, 1.8, 0.01], height=[0.5, 1.8, 0.01], intensity=[0.0, 3.0, 0.01], absorb=[0.2, 2.0, 0.01], embers=[0.0, 3.0, 0.01], swirl=[0.0, 3.0, 0.01], smoke=[0.0, 3.0, 0.01], corruption=[0.0, 3.0, 0.01], knockback=[0.0, 3.0, 0.01] },
             timing={ charge=1.0, impact=3.0, linger=2.2, sustain=2.0 },
             presets=[{ name="hellmouth", values={ rim="#ff3a1e", core="#ffd9b8", embers=1.6, swirl=1.4 } }, { name="soul fire", values={ rim="#2dffc0", core="#dafff2", absorb=0.8, smoke=0.5 } }, { name="eclipse", values={ rim="#ffae3a", core="#fff3d6", absorb=1.6, intensity=1.4, height=1.25, embers=0.6 } }]

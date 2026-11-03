@@ -106,6 +106,11 @@ function createRuntime(presenter) {
         c.durations.travel = ("sustain" in T) ? T.sustain : 2.0;
         c.durations.impact = T.impact;
         c.durations.linger = T.linger;
+        // Self wards / area sustain knobs: prefer live duration when present.
+        if (form == "Aegis" && "duration" in c.params) c.durations.linger = c.params.duration;
+        if ((spell.id == "thunderstorm" || spell.id == "fire-tornado" || spell.id == "portal" || spell.id == "dust-devils")
+            && "duration" in c.params)
+            c.durations.linger = c.params.duration;
         c.data = {};
         this.presenter.acquireCast(c);
         this.enter(c, "charge");

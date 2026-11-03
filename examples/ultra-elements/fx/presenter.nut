@@ -77,30 +77,30 @@ function createPresenter(gfx, particlesMod, weatherMod) {
     local cylinder = gfx.newMeshCylinder(24, 1, true);
 
     local orbs = []; local segs = []; local spikes = []; local rings = []; local columns = [];
-    for (local i = 0; i < 64; ++i) {
+    for (local i = 0; i < 128; ++i) {
         local e = eve.Renderable3D(); e.setMesh(sphere); e.setReceiveLight(false); e.setCastShadow(false);
         e.setRoughness(0.35); hideProp(e); orbs.push(e);
     }
-    for (local i = 0; i < 48; ++i) {
+    for (local i = 0; i < 96; ++i) {
         local e = eve.Renderable3D(); e.setMesh(cube); e.setReceiveLight(false); e.setCastShadow(false);
         e.setRoughness(0.4); hideProp(e); segs.push(e);
     }
-    for (local i = 0; i < 32; ++i) {
+    for (local i = 0; i < 48; ++i) {
         local e = eve.Renderable3D(); e.setMesh(cylinder); e.setReceiveLight(true); e.setCastShadow(false);
         e.setRoughness(0.85); hideProp(e); spikes.push(e);
     }
-    for (local i = 0; i < 12; ++i) {
+    for (local i = 0; i < 28; ++i) {
         local e = eve.Renderable3D(); e.setMesh(cylinder); e.setReceiveLight(false); e.setCastShadow(false);
         e.setRoughness(0.5); hideProp(e); rings.push(e);
     }
-    for (local i = 0; i < 8; ++i) {
+    for (local i = 0; i < 24; ++i) {
         local e = eve.Renderable3D(); e.setMesh(cylinder); e.setReceiveLight(false); e.setCastShadow(false);
         e.setRoughness(0.45); hideProp(e); columns.push(e);
     }
 
     local bolts = [];
     if (weatherMod != null) {
-        for (local i = 0; i < 6; ++i) {
+        for (local i = 0; i < 8; ++i) {
             local s = eve.LightningSettings();
             s.width = 0.14; s.displacement = 0.22; s.branches = 4; s.duration = 0.55; s.seed = 20 + i * 17; s.variants = 5;
             local fx = checked(weatherMod.prepareLightning(gfx, s), "prepareLightning");
@@ -404,13 +404,112 @@ function createPresenter(gfx, particlesMod, weatherMod) {
         }
     };
 
+    // Tapered funnel (cyclone / dust devil / lava) — helix only, never a solid cake spine.
+    api.drawFunnel <- function(cx, cz, height, baseR, topR, rgb, swirl, alpha) {
+        for (local i = 0; i < 32; ++i) {
+            local u = i.tofloat() / 31.0;
+            local y = u * height;
+            local r = lerp(baseR, topR, u);
+            local a = this.time * 3.2 * swirl + u * 10.0;
+            local e = this.takeOrb();
+            if (e != null) showProp(e, cx + cos(a) * r, y, cz + sin(a) * r,
+                0.11 + 0.06 * (1.0 - u), 0.11 + 0.06 * (1.0 - u), 0.11 + 0.06 * (1.0 - u),
+                rgb[0], rgb[1], rgb[2], 0.8 + 0.15 * alpha);
+            if (i % 2 == 0) {
+                local a2 = a + 2.1;
+                local e2 = this.takeOrb();
+                if (e2 != null) showProp(e2, cx + cos(a2) * r * 0.72, y, cz + sin(a2) * r * 0.72,
+                    0.08, 0.08, 0.08, rgb[0], rgb[1], rgb[2], 0.8);
+            }
+            if (i % 3 == 0) {
+                local seg = this.takeSeg();
+                if (seg != null) showProp(seg, cx + cos(a + 0.4) * r * 0.9, y, cz + sin(a + 0.4) * r * 0.9,
+                    0.4, 0.07, 0.09, rgb[0], rgb[1], rgb[2], 0.75);
+            }
+        }
+        local ring = this.takeRing();
+        if (ring != null) showProp(ring, cx, 0.06, cz, baseR * 1.35, 0.05, baseR * 1.35, rgb[0], rgb[1], rgb[2], 0.8);
+        local ring2 = this.takeRing();
+        if (ring2 != null) showProp(ring2, cx, height * 0.92, cz, topR * 1.6, 0.04, topR * 1.6, rgb[0], rgb[1], rgb[2], 0.5);
+    };
+
+    // Thick continuous beam with tip splash (water / radiant lance).
+    api.drawThickBeam <- function(c, rgb, width, wobble) {
+        local steps = 22;
+        for (local i = 0; i < steps; ++i) {
+            local u = (i.tofloat() + 0.5) / steps.tofloat();
+            local seg = this.takeSeg();
+            if (seg == null) break;
+            local x = lerp(c.fromX, c.toX, u);
+            local y = lerp(c.fromY, c.toY, u) + sin(u * 9.0 + this.time * 7.0) * 0.04 * wobble;
+            local z = lerp(c.fromZ, c.toZ, u);
+            local thick = 0.11 * width * (0.75 + 0.35 * sin(u * 14.0 + this.time * 9.0));
+            showProp(seg, x, y, z, thick * 2.2, thick * 1.1, thick * 1.1, rgb[0], rgb[1], rgb[2], 0.98);
+        }
+        local tip = this.takeOrb();
+        if (tip != null) showProp(tip, c.toX, c.toY, c.toZ, 0.28 * width, 0.28 * width, 0.28 * width, 1.0, 1.0, 1.0, 1.0);
+        for (local i = 0; i < 8; ++i) {
+            local a = this.time * 6.0 + i * 0.8;
+            local e = this.takeOrb();
+            if (e == null) break;
+            showProp(e, c.toX + cos(a) * 0.35 * width, c.toY + sin(a * 1.4) * 0.2, c.toZ + sin(a) * 0.35 * width,
+                0.07, 0.07, 0.07, rgb[0], rgb[1], rgb[2], 0.85);
+        }
+    };
+
+    // Vertical portal / rift disc facing roughly +Z (ring of segs).
+    api.drawVerticalRing <- function(x, y, z, radius, rgb, spin, darkCore) {
+        local n = 16;
+        for (local i = 0; i < n; ++i) {
+            local a = i.tofloat() / n.tofloat() * 6.2831853 + spin;
+            local seg = this.takeSeg();
+            if (seg == null) break;
+            showProp(seg, x + cos(a) * radius, y + sin(a) * radius, z, 0.14, 0.14, 0.08, rgb[0], rgb[1], rgb[2], 0.95);
+        }
+        local rim = this.takeRing();
+        if (rim != null) showProp(rim, x, y, z, radius * 1.05, 0.1, radius * 1.05, rgb[0], rgb[1], rgb[2], 0.75);
+        if (darkCore) {
+            local core = this.takeOrb();
+            if (core != null) showProp(core, x, y, z, radius * 0.72, radius * 0.72, radius * 0.35, 0.02, 0.01, 0.04, 0.95);
+        } else {
+            local core = this.takeOrb();
+            if (core != null) showProp(core, x, y, z, radius * 0.35, radius * 0.35, radius * 0.2, rgb[0], rgb[1], rgb[2], 0.9);
+        }
+    };
+
+    // Crescent slash (wind slash).
+    api.drawCrescent <- function(c, rgb, size) {
+        local n = 14;
+        for (local i = 0; i < n; ++i) {
+            local u = i.tofloat() / (n - 1).tofloat();
+            local a = -1.1 + u * 2.2;
+            local seg = this.takeSeg();
+            if (seg == null) break;
+            local px = c.posX + cos(a) * 0.9 * size * c.dirZ + sin(a) * 0.15;
+            local py = c.posY + sin(a) * 0.85 * size;
+            local pz = c.posZ - cos(a) * 0.9 * size * c.dirX;
+            showProp(seg, px, py, pz, 0.55 * size, 0.07, 0.12, rgb[0], rgb[1], rgb[2], 0.9);
+        }
+        local tip = this.takeOrb();
+        if (tip != null) showProp(tip, c.posX, c.posY, c.posZ, 0.2 * size, 0.2 * size, 0.2 * size, 1.0, 1.0, 1.0, 1.0);
+    };
+
     api.onPhase <- function(c, phase) {
         local rgb = this.spellRgb(c);
         local intensity = ("intensity" in c.params) ? c.params.intensity : (("glow" in c.params && typeof c.params.glow != "string") ? c.params.glow : 1.0);
         if (typeof intensity != "float" && typeof intensity != "integer") intensity = 1.0;
         if (phase == "impact") {
-            local size = ("size" in c.params) ? c.params.size : (("blast" in c.params) ? c.params.blast : 1.0);
-            this.pulseBurst(c.toX, c.toY, c.toZ, intensity * size, rgb);
+            local id = c.spell.id;
+            // Skip generic white burst for spells whose silhouette is the whole read.
+            local skipBurst = (id == "black-flame" || id == "aegis" || id == "portal" || id == "thunderstorm"
+                || id == "judgment" || (id == "light" && c.form == "Judgment"));
+            if (!skipBurst) {
+                local size = ("size" in c.params) ? c.params.size : (("blast" in c.params) ? c.params.blast : 1.0);
+                local bx = (id == "aegis") ? c.fromX : c.toX;
+                local by = (id == "aegis") ? c.fromY : c.toY;
+                local bz = (id == "aegis") ? c.fromZ : c.toZ;
+                this.pulseBurst(bx, by, bz, intensity * size, rgb);
+            }
             if (c.spell.element == "lightning" || c.spell.id == "frozen-lightning" || c.spell.id == "thunderstorm") {
                 local jag = ("jag" in c.params) ? c.params.jag : 0.12;
                 local branches = ("branches" in c.params) ? c.params.branches.tointeger() : 5;
@@ -467,27 +566,65 @@ function createPresenter(gfx, particlesMod, weatherMod) {
         }
 
         if (id == "ball-lightning") {
-            if (c.phase == "travel" || c.phase == "linger") {
-                this.drawProjectile(c, rgb, size);
-                if ((c.age * 3.0).tointeger() % 2 == 0) {
-                    local a = c.seed * 0.02 + c.age;
-                    this.triggerBolt(c.posX, c.posY, c.posZ, c.posX + cos(a) * p.reach * 0.2, 0.05, c.posZ + sin(a) * p.reach * 0.2,
-                        0.08, 0.15, 3, rgb);
+            local px = (c.phase == "impact" || c.phase == "linger") ? c.toX : c.posX;
+            local py = (c.phase == "impact" || c.phase == "linger") ? c.toY : c.posY;
+            local pz = (c.phase == "impact" || c.phase == "linger") ? c.toZ : c.posZ;
+            if (c.phase != "charge") {
+                local core = this.takeOrb();
+                if (core != null) showProp(core, px, py, pz, 0.48 * size, 0.48 * size, 0.48 * size, 1.0, 1.0, 1.0, 1.0);
+                local shell = this.takeOrb();
+                if (shell != null) showProp(shell, px, py, pz, 0.85 * size, 0.85 * size, 0.85 * size, rgb[0], rgb[1], rgb[2], 0.5);
+                local boltsN = ("bolts" in p) ? fmin(p.bolts, 10.0).tointeger() : 7;
+                for (local i = 0; i < boltsN; ++i) {
+                    local a = c.seed * 0.02 + this.time * 4.0 + i * 0.9;
+                    local reach = (("reach" in p) ? p.reach : 5.5) * 0.28;
+                    local bx = px + cos(a) * reach, bz = pz + sin(a) * reach;
+                    this.triggerBolt(px, py, pz, bx, 0.05, bz, 0.11, 0.18, 4, rgb);
+                    // Persistent arc stubs (readable while paused — bolts are edge-triggered).
+                    for (local k = 0; k < 4; ++k) {
+                        local t = (k + 0.5) / 4.0;
+                        local seg = this.takeSeg();
+                        if (seg == null) break;
+                        showProp(seg, lerp(px, bx, t), lerp(py, 0.12, t) + sin(t * 8.0 + a) * 0.12,
+                            lerp(pz, bz, t), 0.1, 0.06, 0.06, rgb[0], rgb[1], rgb[2], 0.95);
+                    }
+                    local spark = this.takeOrb();
+                    if (spark != null) showProp(spark, bx, 0.15 + fabs(sin(a)) * 0.45, bz, 0.1, 0.1, 0.1, 1.0, 1.0, 1.0, 1.0);
                 }
-            } else if (c.phase == "impact") this.drawImpactBurst(c, rgb, size * p.blast);
+                if (c.phase == "impact" || c.phase == "linger") this.drawImpactBurst(c, rgb, size * (("blast" in p) ? p.blast : 1.0));
+            }
             return;
         }
 
         if (id == "thunderstorm") {
             local h = ("height" in p) ? p.height : 9.0;
-            local r = ("radius" in p) ? p.radius * 0.12 : 1.0;
-            this.drawAreaColumn(c, rgb, h * 0.35, r, ("spin" in p) ? p.spin : 1.0);
-            if (c.phase == "impact" || c.phase == "linger") {
-                if ((c.age * p.strikes * 2.0).tointeger() != ((c.age - 0.016) * p.strikes * 2.0).tointeger()) {
-                    local a = c.seed + c.age * 7.0;
-                    local tx = c.toX + cos(a) * r * 2.5, tz = c.toZ + sin(a) * r * 2.5;
-                    this.triggerBolt(tx, h * 0.5, tz, tx, 0.05, tz, 0.14, p.jag, p.branches.tointeger(), rgb);
-                }
+            local r = (("radius" in p) ? p.radius : 9.0) * 0.18;
+            // Cloud deck.
+            for (local i = 0; i < 5; ++i) {
+                local a = i * 1.25 + this.time * 0.2;
+                local col = this.takeCol();
+                if (col == null) break;
+                showProp(col, c.toX + cos(a) * r * 0.55, h * 0.42, c.toZ + sin(a) * r * 0.55,
+                    r * 0.55, 0.55, r * 0.55, 0.35, 0.4, 0.48, 0.55);
+            }
+            // Rain sheets.
+            local rain = ("rain" in p) ? p.rain : 1.0;
+            for (local i = 0; i < 18; ++i) {
+                local a = c.seed * 0.01 + i * 0.7;
+                local seg = this.takeSeg();
+                if (seg == null) break;
+                local rx = c.toX + cos(a) * r * (0.3 + (i % 5) * 0.12);
+                local rz = c.toZ + sin(a) * r * (0.3 + (i % 4) * 0.14);
+                showProp(seg, rx, h * 0.22, rz, 0.04, h * 0.35 * rain, 0.04, 0.55, 0.7, 0.95, 0.45);
+            }
+            // Persistent strikes (works while paused).
+            local strikes = ("strikes" in p) ? p.strikes : 1.0;
+            local nBolt = fmax(2.0, fmin(4.0, strikes * 3.0)).tointeger();
+            for (local i = 0; i < nBolt; ++i) {
+                local a = c.seed + i * 2.3 + (this.time * 2.0).tointeger().tofloat() * 0.1;
+                local tx = c.toX + cos(a) * r * 0.85, tz = c.toZ + sin(a) * r * 0.85;
+                this.triggerBolt(tx, h * 0.55, tz, tx, 0.05, tz, 0.14, ("jag" in p) ? p.jag : 0.12,
+                    ("branches" in p) ? p.branches.tointeger() : 7, rgb);
             }
             return;
         }
@@ -499,18 +636,57 @@ function createPresenter(gfx, particlesMod, weatherMod) {
             if (c.phase == "impact") this.drawImpactBurst(c, rgb, size);
             return;
         }
-        if (id == "fire" || id == "phoenix" || id == "solar-flare") {
-            if (c.phase == "travel") this.drawProjectile(c, rgb, size * (id == "phoenix" ? 1.35 : 1.0));
-            else if (c.phase == "impact" || c.phase == "linger") this.drawImpactBurst(c, rgb, size);
-            if (id == "phoenix" && c.phase == "travel") {
-                // Wing ribbons.
-                for (local i = 0; i < 6; ++i) {
+        if (id == "phoenix") {
+            local px = (c.phase == "impact" || c.phase == "linger") ? c.toX : c.posX;
+            local py = (c.phase == "impact" || c.phase == "linger") ? c.toY : c.posY;
+            local pz = (c.phase == "impact" || c.phase == "linger") ? c.toZ : c.posZ;
+            if (c.phase != "charge") {
+                local body = this.takeOrb();
+                if (body != null) showProp(body, px, py, pz, 0.32 * size, 0.26 * size, 0.4 * size, rgb[0], rgb[1], rgb[2], 1.0);
+                local glow = this.takeOrb();
+                if (glow != null) showProp(glow, px, py, pz, 0.55 * size, 0.45 * size, 0.6 * size, 1.0, 0.55, 0.12, 0.45);
+                local head = this.takeOrb();
+                if (head != null) showProp(head, px + c.dirX * 0.32 * size, py + 0.1, pz + c.dirZ * 0.32 * size,
+                    0.16 * size, 0.16 * size, 0.16 * size, 1.0, 0.95, 0.7, 1.0);
+                local feathers = ("feathers" in p) ? p.feathers : 1.0;
+                local flap = ("flap" in p) ? p.flap : 1.0;
+                local swing = ("swing" in p) ? p.swing : 1.0;
+                for (local i = 0; i < 16; ++i) {
                     local side = (i % 2 == 0) ? 1.0 : -1.0;
                     local seg = this.takeSeg();
                     if (seg == null) break;
-                    local flap = sin(this.time * 10.0 * p.flap + i) * 0.35 * p.swing;
-                    showProp(seg, c.posX + side * (0.25 + i * 0.08), c.posY + flap, c.posZ,
-                        0.35, 0.05, 0.12, rgb[0], rgb[1], rgb[2], 0.85);
+                    local wing = sin(this.time * 10.0 * flap + i) * 0.55 * swing;
+                    showProp(seg, px + side * (0.2 + i * 0.06) * feathers,
+                        py + wing - i * 0.015, pz - c.dirZ * i * 0.025,
+                        0.5 * size, 0.06, 0.16 * size, 1.0, 0.45 + 0.35 * (i % 3) / 3.0, 0.08, 0.95);
+                    local ember = this.takeOrb();
+                    if (ember != null) showProp(ember, px + side * (0.35 + i * 0.05) * feathers,
+                        py + wing * 0.8, pz, 0.08, 0.08, 0.08, 1.0, 0.7, 0.2, 0.9);
+                }
+                local tail = ("tail" in p) ? p.tail : 1.0;
+                for (local i = 1; i <= 12; ++i) {
+                    local t = i.tofloat() / 12.0;
+                    local e = this.takeOrb();
+                    if (e == null) break;
+                    showProp(e, px - c.dirX * t * 1.6 * tail * size, py - 0.04 * i,
+                        pz - c.dirZ * t * 1.6 * tail * size,
+                        0.14 * size * (1.0 - t * 0.55), 0.14 * size * (1.0 - t * 0.55), 0.14 * size * (1.0 - t * 0.55),
+                        1.0, 0.4 + 0.3 * (1.0 - t), 0.05, 0.95 - t * 0.45);
+                }
+            }
+            if (c.phase == "impact" || c.phase == "linger") this.drawImpactBurst(c, rgb, size * 1.35);
+            return;
+        }
+        if (id == "fire" || id == "solar-flare") {
+            if (c.phase == "travel") this.drawProjectile(c, rgb, size * (id == "solar-flare" ? 1.25 : 1.0));
+            else if (c.phase == "impact" || c.phase == "linger") this.drawImpactBurst(c, rgb, size);
+            if (id == "solar-flare" && c.phase == "travel") {
+                for (local i = 0; i < 8; ++i) {
+                    local a = this.time * 5.0 + i * 0.8;
+                    local e = this.takeOrb();
+                    if (e == null) break;
+                    showProp(e, c.posX + cos(a) * 0.35 * size, c.posY + sin(a * 1.3) * 0.2, c.posZ + sin(a) * 0.35 * size,
+                        0.08, 0.08, 0.08, 1.0, 0.9, 0.5, 0.9);
                 }
             }
             return;
@@ -526,29 +702,75 @@ function createPresenter(gfx, particlesMod, weatherMod) {
         if (id == "water") {
             if (form == "Geyser") {
                 local h = ("height" in p) ? p.height : 4.5;
-                this.drawAreaColumn(c, rgb, h * size, 0.35 * size, 0.8);
+                this.drawAreaColumn(c, rgb, h * size, 0.4 * size, 0.9);
+                for (local i = 0; i < 12; ++i) {
+                    local a = this.time * 4.0 + i * 0.55;
+                    local e = this.takeOrb();
+                    if (e == null) break;
+                    showProp(e, c.toX + cos(a) * 0.55 * size, h * size * (0.4 + 0.5 * (i % 5) / 5.0),
+                        c.toZ + sin(a) * 0.55 * size, 0.1, 0.1, 0.1, 0.85, 0.95, 1.0, 0.85);
+                }
             } else {
-                if (c.phase == "travel" || c.phase == "impact") this.drawBeam(c, rgb, size * (0.7 + 0.5 * p.whip));
+                // Tidal Lance — thick watery beam.
+                if (c.phase == "travel" || c.phase == "impact" || c.phase == "linger") {
+                    local whip = ("whip" in p) ? p.whip : 1.0;
+                    this.drawThickBeam(c, rgb, size * (1.1 + 0.6 * whip), whip);
+                }
             }
             return;
         }
         if (id == "tsunami") {
-            this.drawWave(c, rgb, p.height * 0.22, p.width * 0.12, p.speed);
+            local h = (("height" in p) ? p.height : 6.0) * 0.4;
+            local w = (("width" in p) ? p.width : 13.0) * 0.2;
+            local u = clamp01(c.age * 0.4 * (("speed" in p) ? p.speed : 1.0));
+            local frontX = lerp(c.fromX - w * 0.15, c.toX + w * 0.2, u);
+            // Curved face: stacked thinner slabs leaning forward.
+            for (local i = 0; i < 7; ++i) {
+                local col = this.takeCol();
+                if (col == null) break;
+                local layer = i.tofloat() / 6.0;
+                local yh = h * (0.35 + 0.65 * layer);
+                local lean = layer * 0.55;
+                showProp(col, frontX - lean, yh * 0.5, c.toZ, w * (1.1 - layer * 0.25), yh, 0.35 + layer * 0.25,
+                    rgb[0], rgb[1], rgb[2], 0.45 + 0.08 * i);
+            }
+            this.drawWave(c, rgb, h * 0.7, w * 0.85, ("speed" in p) ? p.speed : 1.0);
+            for (local i = 0; i < 14; ++i) {
+                local e = this.takeOrb();
+                if (e == null) break;
+                showProp(e, frontX + (i - 7) * 0.16, h * 0.95 + sin(i + this.time * 5.0) * 0.2, c.toZ + sin(i * 0.7) * 0.15,
+                    0.16, 0.16, 0.16, 0.92, 0.97, 1.0, 0.9);
+            }
             return;
         }
 
         if (id == "ice") {
             if (form == "Ice Wall") {
-                for (local i = 0; i < 7; ++i) {
+                for (local i = 0; i < 9; ++i) {
                     local sp = this.takeSpike();
                     if (sp == null) break;
-                    local side = (i - 3).tofloat() * 0.35 * size;
-                    local h = (1.2 + (i % 3) * 0.45) * size * smooth(clamp01(c.t + 0.2));
-                    showProp(sp, c.toX + side * c.dirZ, h * 0.5, c.toZ - side * c.dirX, 0.2, h, 0.2, rgb[0], rgb[1], rgb[2], 0.95);
+                    local side = (i - 4).tofloat() * 0.38 * size;
+                    local h = (1.4 + (i % 3) * 0.55) * size * smooth(clamp01(c.t + 0.25));
+                    showProp(sp, c.toX + side * c.dirZ, h * 0.5, c.toZ - side * c.dirX, 0.22, h, 0.22, rgb[0], rgb[1], rgb[2], 0.95);
                 }
             } else {
-                if (c.phase == "travel") this.drawProjectile(c, rgb, size);
-                else this.drawSpikes(c, rgb, 8.0, 1.6 * size, 0.55 * size);
+                // Glacial Spike — oversized crystal projectile + impact spikes.
+                if (c.phase == "travel") {
+                    local spike = this.takeSpike();
+                    if (spike != null) showProp(spike, c.posX, c.posY, c.posZ, 0.28 * size, 1.1 * size, 0.28 * size, rgb[0], rgb[1], rgb[2], 1.0);
+                    local core = this.takeOrb();
+                    if (core != null) showProp(core, c.posX, c.posY, c.posZ, 0.22 * size, 0.22 * size, 0.22 * size, 0.85, 0.95, 1.0, 1.0);
+                    for (local i = 1; i <= 6; ++i) {
+                        local t = i.tofloat() / 6.0;
+                        local e = this.takeOrb();
+                        if (e == null) break;
+                        showProp(e, c.posX - c.dirX * t * 0.9, c.posY - c.dirY * t * 0.9, c.posZ - c.dirZ * t * 0.9,
+                            0.1 * (1.0 - t), 0.1 * (1.0 - t), 0.1 * (1.0 - t), rgb[0], rgb[1], rgb[2], 0.8);
+                    }
+                } else {
+                    this.drawSpikes(c, rgb, ("spikes" in p) ? p.spikes : 10.0, 2.0 * size, 0.7 * size);
+                    this.drawImpactBurst(c, rgb, size * 0.9);
+                }
             }
             return;
         }
@@ -571,75 +793,261 @@ function createPresenter(gfx, particlesMod, weatherMod) {
         if (id == "earth") {
             if (form == "Upheaval") this.drawSpikes(c, rgb, ("spikes" in p) ? p.spikes : 7.0, ("height" in p) ? p.height : 2.4, 0.7 * size);
             else {
-                if (c.phase == "travel") this.drawProjectile(c, rgb, ("meteorSize" in p) ? p.meteorSize : size);
-                else this.drawImpactBurst(c, rgb, size * 1.3);
+                // Meteor — glowing rock with heat trail + crater.
+                local ms = ("meteorSize" in p) ? p.meteorSize : size;
+                if (c.phase == "travel") {
+                    local rock = this.takeOrb();
+                    if (rock != null) showProp(rock, c.posX, c.posY, c.posZ, 0.45 * ms, 0.45 * ms, 0.45 * ms, 0.55, 0.35, 0.2, 1.0);
+                    local glow = this.takeOrb();
+                    if (glow != null) showProp(glow, c.posX, c.posY, c.posZ, 0.65 * ms, 0.65 * ms, 0.65 * ms, 1.0, 0.45, 0.08, 0.55);
+                    for (local i = 1; i <= 10; ++i) {
+                        local t = i.tofloat() / 10.0;
+                        local e = this.takeOrb();
+                        if (e == null) break;
+                        showProp(e, c.posX - c.dirX * t * 1.6, c.posY - c.dirY * t * 1.6 + t * 0.2, c.posZ - c.dirZ * t * 1.6,
+                            0.2 * ms * (1.0 - t), 0.2 * ms * (1.0 - t), 0.2 * ms * (1.0 - t), 1.0, 0.4 + 0.3 * t, 0.05, 0.85 - t * 0.5);
+                    }
+                } else {
+                    this.drawImpactBurst(c, rgb, size * 1.5);
+                    this.drawSpikes(c, rgb, 6.0, 1.2 * size, 0.9 * size);
+                    local crater = this.takeRing();
+                    if (crater != null) showProp(crater, c.toX, 0.06, c.toZ, 1.4 * size, 0.08, 1.4 * size, 0.35, 0.22, 0.12, 0.85);
+                }
             }
             return;
         }
         if (id == "fissure") {
             local reach = ("reach" in p) ? p.reach : 9.0;
-            local segsN = 10;
+            local width = ("width" in p) ? p.width : 0.42;
+            local segsN = 14;
             for (local i = 0; i < segsN; ++i) {
                 local u = i.tofloat() / (segsN - 1).tofloat();
-                local appear = smooth(clamp01(c.age * 1.5 - u * 0.8));
+                local appear = smooth(clamp01(c.age * 1.8 - u * 0.65));
                 if (appear <= 0.02) continue;
-                local seg = this.takeSeg();
-                if (seg == null) break;
                 local x = lerp(c.fromX, c.fromX + c.dirX * reach, u);
                 local z = lerp(c.fromZ, c.fromZ + c.dirZ * reach, u);
-                showProp(seg, x, 0.04, z, 0.55, 0.08 * p.width * 2.0, p.width, 1.0, 0.25, 0.05, appear);
-            }
-            return;
-        }
-        if (id == "lava-geyser") {
-            this.drawAreaColumn(c, rgb, p.height * 0.45, p.width * 2.5, 1.2);
-            if (c.phase == "impact") this.drawImpactBurst(c, rgb, size);
-            return;
-        }
-
-        if (id == "wind" || id == "dust-devils" || id == "fire-tornado") {
-            local h = 3.2 * size * (("height" in p) ? p.height : 1.0);
-            local spin = ("spin" in p) ? p.spin : (("strength" in p) ? p.strength : 1.0);
-            if (form == "Wind Slash") {
-                if (c.phase == "travel") this.drawBeam(c, rgb, ("slashSize" in p) ? p.slashSize : size);
-                else this.drawImpactBurst(c, rgb, size * 0.7);
-            } else {
-                this.drawAreaColumn(c, rgb, h, 0.7 * size * strength, spin);
-                if (id == "dust-devils") {
-                    for (local k = 0; k < 3; ++k) {
-                        local a = this.time * 0.7 + k * 2.1;
-                        local ox = c.toX + cos(a) * 1.4 * (("spread" in p) ? p.spread : 1.0);
-                        local oz = c.toZ + sin(a) * 1.4 * (("spread" in p) ? p.spread : 1.0);
-                        local col = this.takeCol();
-                        if (col != null) showProp(col, ox, h * 0.35, oz, 0.35, h * 0.7, 0.35, rgb[0], rgb[1], rgb[2], 0.4);
+                local seg = this.takeSeg();
+                if (seg != null) showProp(seg, x, 0.05, z, 0.7, 0.1, width * 2.2, 1.0, 0.28, 0.05, appear);
+                // Magma glow orbs along cut.
+                local e = this.takeOrb();
+                if (e != null) showProp(e, x, 0.12, z, 0.12, 0.12, 0.12, 1.0, 0.45, 0.08, appear);
+                // Lip slabs.
+                if (i % 2 == 0) {
+                    local lip = this.takeSpike();
+                    if (lip != null) {
+                        local side = (i % 4 == 0) ? 1.0 : -1.0;
+                        local lh = (("lipHeight" in p) ? p.lipHeight : 0.4) * 2.5 * appear;
+                        showProp(lip, x + c.dirZ * side * width * 2.5, lh * 0.5, z - c.dirX * side * width * 2.5,
+                            0.2, lh, 0.35, 0.45, 0.3, 0.2, appear);
                     }
                 }
             }
             return;
         }
-
-        if (id == "void" || id == "black-flame") {
-            if (form == "Rift" || id == "black-flame") {
-                this.drawAreaColumn(c, rgb, 2.4 * size * (("height" in p) ? p.height : 1.0), 0.55 * size, 1.5);
-                local core = this.takeOrb();
-                if (core != null) showProp(core, c.toX, 1.0, c.toZ, 0.35 * size, 0.55 * size, 0.35 * size, 0.02, 0.0, 0.05, 0.95);
-            } else {
-                if (c.phase == "travel") this.drawProjectile(c, rgb, size);
-                else this.drawPortal(c, rgb, size);
+        if (id == "lava-geyser") {
+            local h = (("height" in p) ? p.height : 6.0) * 0.55;
+            local w = (("width" in p) ? p.width : 0.4) * 3.0;
+            this.drawFunnel(c.toX, c.toZ, h, w * 1.1, w * 0.35, [1.0, 0.35, 0.05], 1.4, 0.7);
+            local rim = this.takeRing();
+            if (rim != null) showProp(rim, c.toX, 0.08, c.toZ, w * 2.2, 0.1, w * 2.2, 1.0, 0.25, 0.05, 0.9);
+            for (local i = 0; i < 14; ++i) {
+                local a = this.time * 3.0 + i * 0.5;
+                local e = this.takeOrb();
+                if (e == null) break;
+                showProp(e, c.toX + cos(a) * w * 0.8, h * (0.3 + 0.6 * (i % 5) / 5.0), c.toZ + sin(a) * w * 0.8,
+                    0.12, 0.12, 0.12, 1.0, 0.55, 0.1, 0.9);
             }
             return;
         }
-        if (id == "portal") { this.drawPortal(c, rgb, size); return; }
+
+        if (id == "fire-tornado") {
+            local h = 4.2 * size * (("height" in p) ? p.height : 1.0);
+            local spin = ("spin" in p) ? p.spin : 1.0;
+            // Helix-only funnel (no solid spine) so it reads as fire swirl, not a yellow cake.
+            local ring = this.takeRing();
+            if (ring != null) showProp(ring, c.toX, 0.06, c.toZ, 1.1 * size, 0.08, 1.1 * size, 1.0, 0.4, 0.05, 0.95);
+            for (local i = 0; i < 36; ++i) {
+                local u = i.tofloat() / 35.0;
+                local a = this.time * 7.0 * spin + u * 16.0;
+                local rad = lerp(0.95, 0.16, u) * size;
+                local e = this.takeOrb();
+                if (e == null) break;
+                showProp(e, c.toX + cos(a) * rad, u * h, c.toZ + sin(a) * rad,
+                    0.14 + 0.06 * (1.0 - u), 0.14 + 0.06 * (1.0 - u), 0.14 + 0.06 * (1.0 - u),
+                    1.0, 0.45 + 0.4 * (1.0 - u), 0.06, 1.0);
+                if (i % 2 == 0) {
+                    local a2 = a + 2.4;
+                    local e2 = this.takeOrb();
+                    if (e2 != null) showProp(e2, c.toX + cos(a2) * rad * 0.7, u * h, c.toZ + sin(a2) * rad * 0.7,
+                        0.09, 0.09, 0.09, 1.0, 0.75, 0.25, 0.9);
+                }
+                if (i % 3 == 0) {
+                    local seg = this.takeSeg();
+                    if (seg != null) showProp(seg, c.toX + cos(a + 0.3) * rad * 0.85, u * h, c.toZ + sin(a + 0.3) * rad * 0.85,
+                        0.4, 0.07, 0.09, 1.0, 0.5, 0.08, 0.85);
+                }
+            }
+            return;
+        }
+
+        if (id == "wind" || id == "dust-devils") {
+            local h = 3.4 * size * (("height" in p) ? p.height : 1.0);
+            local spin = ("spin" in p) ? p.spin : strength;
+            if (form == "Wind Slash") {
+                if (c.phase == "travel") this.drawCrescent(c, rgb, (("slashSize" in p) ? p.slashSize : size) * 1.3);
+                else this.drawImpactBurst(c, [0.85, 0.95, 0.9], size * 0.9);
+            } else if (id == "dust-devils") {
+                local dustRgb = [0.72, 0.58, 0.38];
+                for (local k = 0; k < 3; ++k) {
+                    local a = this.time * 0.8 + k * 2.1;
+                    local spread = ("spread" in p) ? p.spread : 1.0;
+                    local ox = c.toX + cos(a) * 1.5 * spread;
+                    local oz = c.toZ + sin(a) * 1.5 * spread;
+                    this.drawFunnel(ox, oz, h * 0.75, 0.55 * size, 0.18 * size, dustRgb, 1.3 + k * 0.2, 0.55);
+                }
+            } else {
+                this.drawFunnel(c.toX, c.toZ, h, 0.9 * size * strength, 0.25 * size, [0.75, 0.88, 0.85], spin, 0.5);
+            }
+            return;
+        }
+
+        if (id == "black-flame") {
+            local h = 3.0 * size * (("height" in p) ? p.height : 1.0);
+            local rim = ("rim" in p && typeof p.rim == "string") ? hexRgb(p.rim) : [1.0, 0.35, 0.12];
+            // Charcoal absorbing column + hot rim helix (no white burst — skipBurst handles impact).
+            for (local i = 0; i < 5; ++i) {
+                local u = i.tofloat() / 4.0;
+                local col = this.takeCol();
+                if (col == null) break;
+                local r = lerp(0.75, 0.3, u) * size;
+                showProp(col, c.toX, h * 0.5, c.toZ, r * (1.0 - u * 0.15), h * 0.95, r * (1.0 - u * 0.15),
+                    0.05 + u * 0.02, 0.04, 0.055, 0.98);
+            }
+            for (local i = 0; i < 22; ++i) {
+                local u = i.tofloat() / 21.0;
+                local a = this.time * 4.2 + u * 12.0;
+                local e = this.takeOrb();
+                if (e == null) break;
+                local rad = lerp(0.65, 0.2, u) * size;
+                showProp(e, c.toX + cos(a) * rad, u * h, c.toZ + sin(a) * rad,
+                    0.11, 0.11, 0.11, rim[0], rim[1], rim[2], 1.0);
+                if (i % 3 == 0) {
+                    local seg = this.takeSeg();
+                    if (seg != null) showProp(seg, c.toX + cos(a + 0.5) * rad * 0.9, u * h, c.toZ + sin(a + 0.5) * rad * 0.9,
+                        0.28, 0.07, 0.07, rim[0], rim[1], rim[2], 0.85);
+                }
+            }
+            local core = this.takeOrb();
+            if (core != null) showProp(core, c.toX, h * 0.4, c.toZ, 0.4 * size, 0.55 * size, 0.4 * size, 0.01, 0.0, 0.015, 1.0);
+            local baseRing = this.takeRing();
+            if (baseRing != null) showProp(baseRing, c.toX, 0.06, c.toZ, 1.05 * size, 0.08, 1.05 * size, rim[0], rim[1], rim[2], 0.95);
+            return;
+        }
+
+        if (id == "void") {
+            if (form == "Rift") {
+                this.drawVerticalRing(c.toX, 1.4, c.toZ, 1.0 * size, rgb, this.time * 1.5, true);
+                for (local i = 0; i < 8; ++i) {
+                    local a = this.time * 2.0 + i;
+                    local seg = this.takeSeg();
+                    if (seg == null) break;
+                    showProp(seg, c.toX + cos(a) * 0.2, 0.4 + i * 0.28, c.toZ + sin(a) * 0.15,
+                        0.08, 0.35, 0.08, rgb[0], rgb[1], rgb[2], 0.7);
+                }
+            } else {
+                // Singularity — dark core + accretion disk.
+                if (c.phase == "travel") {
+                    local core = this.takeOrb();
+                    if (core != null) showProp(core, c.posX, c.posY, c.posZ, 0.28 * size, 0.28 * size, 0.28 * size, 0.02, 0.0, 0.05, 1.0);
+                    local glow = this.takeOrb();
+                    if (glow != null) showProp(glow, c.posX, c.posY, c.posZ, 0.5 * size, 0.5 * size, 0.5 * size, rgb[0], rgb[1], rgb[2], 0.45);
+                    for (local i = 0; i < 10; ++i) {
+                        local a = this.time * 4.0 + i * 0.63;
+                        local e = this.takeOrb();
+                        if (e == null) break;
+                        showProp(e, c.posX + cos(a) * 0.55 * size, c.posY + sin(a * 0.7) * 0.12, c.posZ + sin(a) * 0.55 * size,
+                            0.07, 0.07, 0.07, 1.0, 0.7, 0.35, 0.9);
+                    }
+                } else {
+                    this.drawVerticalRing(c.toX, 1.2, c.toZ, 1.15 * size, rgb, this.time * 2.2, true);
+                    this.drawImpactBurst(c, rgb, size * 0.8);
+                }
+            }
+            return;
+        }
+        if (id == "portal") {
+            this.drawVerticalRing(c.toX, 1.45, c.toZ, 1.25 * size, rgb, this.time * 2.4, true);
+            // Outer runes + swirl into the void.
+            for (local i = 0; i < 18; ++i) {
+                local a = this.time * 3.5 + i * 0.35;
+                local e = this.takeOrb();
+                if (e == null) break;
+                local rad = 1.15 * size * (0.55 + 0.45 * ((i % 3).tofloat() / 2.0));
+                showProp(e, c.toX + cos(a) * rad, 1.45 + sin(a * 1.7) * 0.4 * size, c.toZ + sin(a) * 0.2,
+                    0.08, 0.08, 0.08, rgb[0], rgb[1], rgb[2], 0.95);
+            }
+            for (local i = 0; i < 8; ++i) {
+                local a = i * 0.785 + this.time * 0.6;
+                local seg = this.takeSeg();
+                if (seg == null) break;
+                showProp(seg, c.toX + cos(a) * 1.35 * size, 1.45, c.toZ + sin(a) * 0.15,
+                    0.35, 0.08, 0.08, 0.7, 0.35, 1.0, 0.85);
+            }
+            return;
+        }
 
         if (id == "light") {
-            if (form == "Radiant Lance" || shape == "beam") this.drawBeam(c, rgb, ("lance" in p) ? p.lance * 2.0 : 1.0);
-            else {
+            if (form == "Radiant Lance" || (shape == "beam" && form != "Judgment")) {
+                local lance = ("lance" in p) ? p.lance : 0.6;
+                this.drawThickBeam(c, rgb, 1.4 + lance * 2.2, 0.6);
+            } else {
+                // Judgment — gold sky-pillar + ground sigil. Drawn from charge onward so
+                // long charges / paused MCP captures still read as Judgment.
+                local jx = c.toX - 0.35, jz = c.toZ + 0.2;
+                local build = (c.phase == "charge") ? smooth(clamp01(c.t / fmax(0.15, c.durations.charge))) : 1.0;
+                local sig = (("sigil" in p) ? p.sigil : 1.5) * (1.15 + 0.35 * intensity) * (0.55 + 0.45 * build);
+                local pillarH = 7.2 * build;
                 local ring = this.takeRing();
-                if (ring != null) {
-                    local s = (("sigil" in p) ? p.sigil : 1.5) * (0.8 + 0.4 * intensity);
-                    showProp(ring, c.toX, 0.08, c.toZ, s, 0.05, s, rgb[0], rgb[1], rgb[2], 0.9);
+                if (ring != null) showProp(ring, jx, 0.08, jz, sig, 0.1, sig, 1.0, 0.88, 0.35, 1.0);
+                local ring2 = this.takeRing();
+                if (ring2 != null) showProp(ring2, jx, 0.16, jz, sig * 0.58, 0.08, sig * 0.58, 1.0, 0.95, 0.65, 1.0);
+                // Hex spokes on ground.
+                local spokes = ("rays" in p) ? fmax(6.0, p.rays * 10.0).tointeger() : 8;
+                if (spokes > 12) spokes = 12;
+                for (local i = 0; i < spokes; ++i) {
+                    local a = i.tofloat() / spokes.tofloat() * 6.2831853 + (("tilt" in p) ? p.tilt : 0.0) * 0.01;
+                    local seg = this.takeSeg();
+                    if (seg == null) break;
+                    showProp(seg, jx + cos(a) * sig * 0.45, 0.1, jz + sin(a) * sig * 0.45,
+                        sig * 0.55, 0.06, 0.12, 1.0, 0.9, 0.4, 0.95 * build);
                 }
-                this.drawAreaColumn(c, rgb, 4.0 * intensity, 0.35, 0.4);
+                // Opaque gold core column + bright outer sheath.
+                local core = this.takeCol();
+                if (core != null) showProp(core, jx, pillarH * 0.5, jz, 0.38 * size, pillarH, 0.38 * size, 1.0, 0.92, 0.45, 1.0);
+                local sheath = this.takeCol();
+                if (sheath != null) showProp(sheath, jx, pillarH * 0.5, jz, 0.62 * size, pillarH * 0.95, 0.62 * size, 1.0, 0.78, 0.25, 0.55);
+                // Falling ray segments (readable even if columns fail).
+                for (local i = 0; i < 14; ++i) {
+                    local u = i.tofloat() / 13.0;
+                    local a = this.time * 1.2 + i * 0.55;
+                    local seg = this.takeSeg();
+                    if (seg == null) break;
+                    showProp(seg, jx + cos(a) * 0.12, pillarH * (1.0 - u) + 0.2, jz + sin(a) * 0.12,
+                        0.18, 0.65, 0.18, 1.0, 0.95, 0.7, 1.0);
+                }
+                // Impact crown + motes.
+                local crown = this.takeOrb();
+                if (crown != null) showProp(crown, jx, 0.35, jz, 0.55 * size * build, 0.35 * size * build, 0.55 * size * build, 1.0, 0.95, 0.7, 1.0);
+                local motes = ("motes" in p) ? p.motes : 1.0;
+                local nMote = fmax(8.0, motes * 12.0).tointeger();
+                if (nMote > 18) nMote = 18;
+                for (local i = 0; i < nMote; ++i) {
+                    local a = this.time * 1.8 + i * 0.7;
+                    local e = this.takeOrb();
+                    if (e == null) break;
+                    showProp(e, jx + cos(a) * sig * 0.5, 0.2 + (i % 5) * 0.45 * build, jz + sin(a) * sig * 0.5,
+                        0.11, 0.11, 0.11, 1.0, 0.95, 0.55, 1.0);
+                }
             }
             return;
         }
@@ -654,11 +1062,30 @@ function createPresenter(gfx, particlesMod, weatherMod) {
             return;
         }
         if (id == "supernova") {
-            if (c.phase == "charge" || c.age < c.durations.charge + 0.4) {
-                local s = 1.2 * size * (1.0 - clamp01(c.age * 0.4));
-                local e = this.takeOrb();
-                if (e != null) showProp(e, c.toX, 1.3, c.toZ, fmax(s, 0.15), fmax(s, 0.15), fmax(s, 0.15), rgb[0], rgb[1], rgb[2], 1.0);
-            } else this.drawImpactBurst(c, rgb, size * (("blast" in p) ? p.blast : 1.0) * 1.6);
+            local blast = (("blast" in p) ? p.blast : 1.0) * size;
+            local u = smooth(clamp01(c.age * 0.55));
+            local core = this.takeOrb();
+            if (core != null) showProp(core, c.toX, 1.3, c.toZ, 0.7 * size * (1.25 - u * 0.35), 0.7 * size * (1.25 - u * 0.35), 0.7 * size * (1.25 - u * 0.35), 1.0, 0.95, 0.75, 1.0);
+            local shell = this.takeOrb();
+            if (shell != null) {
+                local s = (0.8 + 2.8 * u) * blast;
+                showProp(shell, c.toX, 1.3, c.toZ, s, s, s, rgb[0], rgb[1], rgb[2], 0.4 * (1.0 - u * 0.45));
+            }
+            local outer = this.takeOrb();
+            if (outer != null) {
+                local s2 = (1.2 + 3.4 * u) * blast;
+                showProp(outer, c.toX, 1.3, c.toZ, s2, s2 * 0.85, s2, 1.0, 0.7, 0.35, 0.22);
+            }
+            local rays = ("rays" in p) ? p.rays : 1.0;
+            for (local i = 0; i < 16; ++i) {
+                local a = i * 0.393 + this.time * 0.5;
+                local seg = this.takeSeg();
+                if (seg == null) break;
+                local rad = (0.6 + u * 2.2) * blast;
+                showProp(seg, c.toX + cos(a) * rad, 1.3 + sin(a * 2.0) * 0.15, c.toZ + sin(a) * rad,
+                    0.75 * rays, 0.1, 0.1, 1.0, 0.85, 0.45, 0.95);
+            }
+            this.drawImpactBurst(c, rgb, blast * 1.4);
             return;
         }
 
@@ -673,14 +1100,29 @@ function createPresenter(gfx, particlesMod, weatherMod) {
 
         if (id == "arcane") {
             if (form == "Aegis") {
+                local shield = ("shield" in p) ? p.shield : 1.45;
+                // Clear magenta dome around caster (self), not the training dummy.
+                local dome = this.takeOrb();
+                if (dome != null) showProp(dome, c.fromX, 1.2, c.fromZ, shield * 0.95, shield * 0.8, shield * 0.95, rgb[0], rgb[1], rgb[2], 0.38);
+                local inner = this.takeOrb();
+                if (inner != null) showProp(inner, c.fromX, 1.2, c.fromZ, shield * 0.55, shield * 0.5, shield * 0.55, 1.0, 0.7, 1.0, 0.25);
                 local ring = this.takeRing();
-                if (ring != null) showProp(ring, c.fromX, 1.1, c.fromZ, p.shield, 0.08, p.shield, rgb[0], rgb[1], rgb[2], 0.85);
-                for (local i = 0; i < 6; ++i) {
-                    local a = this.time * 2.0 + i * 1.05;
+                if (ring != null) showProp(ring, c.fromX, 0.12, c.fromZ, shield * 1.05, 0.1, shield * 1.05, rgb[0], rgb[1], rgb[2], 1.0);
+                local ring2 = this.takeRing();
+                if (ring2 != null) showProp(ring2, c.fromX, 1.85, c.fromZ, shield * 0.7, 0.08, shield * 0.7, rgb[0], rgb[1], rgb[2], 0.95);
+                // Hex lattice on the dome surface.
+                for (local i = 0; i < 18; ++i) {
+                    local a = this.time * 1.6 + i * 0.35;
                     local e = this.takeOrb();
                     if (e == null) break;
-                    showProp(e, c.fromX + cos(a) * p.shield * 0.55, 1.1 + sin(a * 2.0) * 0.2, c.fromZ + sin(a) * p.shield * 0.55,
-                        0.08, 0.08, 0.08, rgb[0], rgb[1], rgb[2], 1.0);
+                    local y = 0.35 + fabs(sin(a * 0.85 + i)) * 1.85;
+                    showProp(e, c.fromX + cos(a) * shield * 0.82, y, c.fromZ + sin(a) * shield * 0.82,
+                        0.1, 0.1, 0.1, rgb[0], rgb[1], rgb[2], 1.0);
+                    if (i % 2 == 0) {
+                        local seg = this.takeSeg();
+                        if (seg != null) showProp(seg, c.fromX + cos(a) * shield * 0.78, y, c.fromZ + sin(a) * shield * 0.78,
+                            0.28, 0.07, 0.07, rgb[0], rgb[1], rgb[2], 0.9);
+                    }
                 }
             } else {
                 local n = ("missiles" in p) ? p.missiles.tointeger() : 8;

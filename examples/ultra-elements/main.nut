@@ -317,13 +317,14 @@ eve_update <- function(dt) {
         runtime.update(dt);
         presenter.updateBolts(dt);
         presenter.updateParticles(dt);
-        // Rebuild visuals for alive casts after tick cleared prop pool.
-        if (!hd) presenter.drawAll(runtime.list);
-        else {
-            // Still clear prop pool so stale meshes do not linger when leaving HD.
-            presenter.drawAll([]);
-        }
+    } else {
+        // Pause freezes phase clocks, but still rebuild the mesh pool so
+        // MCP cast-while-paused / mid-charge captures stay readable.
+        presenter.tick(0.0);
     }
+    // Always redraw alive casts (HD fire path clears mesh props).
+    if (!hd) presenter.drawAll(runtime.list);
+    else presenter.drawAll([]);
 
     local e = currentEntry();
     if (hd && fireHd != null) {
