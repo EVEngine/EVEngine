@@ -775,6 +775,19 @@ TEST_CASE("procgen.texture.noiseField_noisecreaterFamily_isBoundedDeterministicA
     const float deep    = tiling.warpDeep(x, y, 1.5f, 3);
     const float rotated = tiling.fbmRotated(x, y, 4);
     const float fbmS    = tiling.fbmSimplex(x, y, 3);
+    const float swiss   = tiling.swiss(x, y, 3, 2.f, 0.5f, 0.15f);
+    const float hybrid  = tiling.hybrid(x, y, 3, 2.f, 0.5f, 0.7f);
+    const float smoothW = tiling.worleySmooth(x, y, 0.3f);
+    const float hexE    = tiling.hexEdge(x, y, 0.05f, 0.02f);
+    const float gyro    = tiling.gyroid(x, y, 0.5f);
+    const float gyroF   = tiling.gyroidFbm(x, y, 0.5f, 3);
+    const float manh    = tiling.worleyF1(x, y, 1.f, WorleyMetric::Manhattan);
+    const float cheb    = tiling.worleyF1(x, y, 1.f, WorleyMetric::Chebyshev);
+    const float f2      = tiling.worleyF2(x, y);
+    const float comb    = tiling.worleyCombine(x, y);
+
+    const float cx = tiling.curlNoiseX(x, y);
+    const float cy = tiling.curlNoiseY(x, y);
 
     REQUIRE_EQ(white, replay.whiteNoise(3, 9));
     CHECK_EQ(value, replay.valueNoise(x, y));
@@ -787,6 +800,16 @@ TEST_CASE("procgen.texture.noiseField_noisecreaterFamily_isBoundedDeterministicA
     CHECK_EQ(deep, replay.warpDeep(x, y, 1.5f, 3));
     CHECK_EQ(rotated, replay.fbmRotated(x, y, 4));
     CHECK_EQ(fbmS, replay.fbmSimplex(x, y, 3));
+    CHECK_EQ(swiss, replay.swiss(x, y, 3, 2.f, 0.5f, 0.15f));
+    CHECK_EQ(hybrid, replay.hybrid(x, y, 3, 2.f, 0.5f, 0.7f));
+    CHECK_EQ(smoothW, replay.worleySmooth(x, y, 0.3f));
+    CHECK_EQ(hexE, replay.hexEdge(x, y, 0.05f, 0.02f));
+    CHECK_EQ(gyro, replay.gyroid(x, y, 0.5f));
+    CHECK_EQ(gyroF, replay.gyroidFbm(x, y, 0.5f, 3));
+    CHECK_EQ(manh, replay.worleyF1(x, y, 1.f, WorleyMetric::Manhattan));
+    CHECK_EQ(cheb, replay.worleyF1(x, y, 1.f, WorleyMetric::Chebyshev));
+    CHECK_EQ(f2, replay.worleyF2(x, y));
+    CHECK_EQ(comb, replay.worleyCombine(x, y));
 
     auto in01 = [](float v) { return v >= 0.f && v <= 1.f; };
     CHECK(in01(white));
@@ -800,6 +823,18 @@ TEST_CASE("procgen.texture.noiseField_noisecreaterFamily_isBoundedDeterministicA
     CHECK(in01(deep));
     CHECK(in01(rotated));
     CHECK(in01(fbmS));
+    CHECK(in01(swiss));
+    CHECK(in01(hybrid));
+    CHECK(in01(smoothW));
+    CHECK(in01(hexE));
+    CHECK(in01(gyro));
+    CHECK(in01(gyroF));
+    CHECK(manh >= 0.f);
+    CHECK(cheb >= 0.f);
+    CHECK(f2 >= 0.f);
+    CHECK(in01(comb));
+    CHECK(std::isfinite(cx));
+    CHECK(std::isfinite(cy));
 
     // Seamless lattice wrap: sample at period offset must match for hash-backed fields.
     CHECK_EQ(tiling.hash01(1, 2), tiling.hash01(17, 18));
@@ -809,6 +844,31 @@ TEST_CASE("procgen.texture.noiseField_noisecreaterFamily_isBoundedDeterministicA
     CHECK_EQ(tiling.perlinNoise(1.5f, 2.5f), tiling.perlinNoise(17.5f, 18.5f));
     // Worley uses sqrt; accept ulp-scale drift across the period shift.
     CHECK(std::fabs(tiling.worleyF1(1.5f, 2.5f) - tiling.worleyF1(17.5f, 18.5f)) < 1e-5f);
+}
+
+TEST_CASE("procgen.texture.noiseField3_volumeFamily_isBoundedAndDeterministic") {
+    NoiseField3 field{11, 8, 8, 8};
+    NoiseField3 replay{11, 8, 8, 8};
+    const float x = 1.25f, y = 2.5f, z = 3.75f;
+
+    REQUIRE_EQ(field.valueNoise(x, y, z), replay.valueNoise(x, y, z));
+    CHECK_EQ(field.perlinNoise(x, y, z), replay.perlinNoise(x, y, z));
+    CHECK_EQ(field.simplexNoise(x, y, z), replay.simplexNoise(x, y, z));
+    CHECK_EQ(field.worleyNoise(x, y, z), replay.worleyNoise(x, y, z));
+    CHECK_EQ(field.fbm(x, y, z, 3), replay.fbm(x, y, z, 3));
+    CHECK_EQ(field.ridged(x, y, z, 3), replay.ridged(x, y, z, 3));
+    CHECK_EQ(field.billow(x, y, z, 3), replay.billow(x, y, z, 3));
+    CHECK_EQ(field.gyroidFbm(x, y, z, 3), replay.gyroidFbm(x, y, z, 3));
+    CHECK_EQ(field.perlinWorley(x, y, z, 3), replay.perlinWorley(x, y, z, 3));
+    CHECK_EQ(field.hash01(1, 2, 3), field.hash01(9, 10, 11));
+
+    auto in01 = [](float v) { return v >= 0.f && v <= 1.f; };
+    CHECK(in01(field.valueNoise(x, y, z)));
+    CHECK(in01(field.perlinNoise(x, y, z)));
+    CHECK(in01(field.simplexNoise(x, y, z)));
+    CHECK(in01(field.worleyNoise(x, y, z)));
+    CHECK(in01(field.fbm(x, y, z, 3)));
+    CHECK(in01(field.gyroid(x, y, z)));
 }
 
 TEST_CASE("procgen.texture.registryImages_matchDimensionsFormatAndBytesOnReplay") {

@@ -338,6 +338,42 @@ public:
      */
     float warpNoise2Deep(float x, float y, float warpAmp = 1.f) const;
 
+    /** @brief Worley F2 distance (second-nearest feature). */
+    float voronoiF2_2(float x, float y) const;
+    /** @brief Worley with Manhattan metric; F1 distance. */
+    float worleyManhattan2(float x, float y) const;
+    /** @brief Worley with Chebyshev metric; F1 distance. */
+    float worleyChebyshev2(float x, float y) const;
+    /** @brief Smooth-min Worley (metaball cellular) in [0,1]. */
+    float worleySmooth2(float x, float y, float smoothness) const;
+
+    /** @brief Curl-noise X from value-noise potential (finite differences). */
+    float curlNoise2X(float x, float y, float eps) const;
+    /** @brief Curl-noise Y from value-noise potential (finite differences). */
+    float curlNoise2Y(float x, float y, float eps) const;
+
+    /** @brief Distance to nearest hex edge. */
+    float hexDistance2(float x, float y) const;
+    /** @brief Hex edge line mask in [0,1]. */
+    float hexEdge2(float x, float y, float width, float soft) const;
+
+    /** @brief Gyroid field remapped to [0,1]. */
+    float gyroid3(float x, float y, float z) const;
+    /** @brief Absolute-gyroid fBm remapped to [0,1]. */
+    float gyroidFbm3(float x, float y, float z, int octaves) const;
+
+    /** @brief Musgrave Swiss turbulence remapped to [0,1]. */
+    float swiss2(float x, float y, int octaves, float lacunarity, float gain, float warpStrength) const;
+    /** @brief Musgrave hybrid multifractal remapped to [0,1]. */
+    float hybrid2(float x, float y, int octaves, float lacunarity, float gain, float offset) const;
+
+    /** @brief Lattice white noise from floor(x,y,z) in [0,1]. */
+    float white3(float x, float y, float z) const;
+    /** @brief Smooth 3D value noise in [0,1]. */
+    float value3(float x, float y, float z) const;
+    /** @brief Texture-friendly 3D Worley clamp(1-F1). */
+    float worley3(float x, float y, float z) const;
+
     // --- bezier ---
     /** @brief 1D quadratic Bezier at t in [0,1]. */
     float bezierQuadratic(float t, float p0, float p1, float p2) const;

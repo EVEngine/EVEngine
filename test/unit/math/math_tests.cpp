@@ -164,6 +164,22 @@ TEST_CASE("math.random.reseedRepeatsSequenceAndNoiseIsPure") {
     CHECK(deep >= 0.f);
     CHECK(deep <= 1.f);
     CHECK_EQ(math.white2(.2f, .7f), math.white2(0.f, 0.f));  // floor lattice
+    CHECK(math.voronoiF2_2(.2f, .7f) >= math.voronoi2(.2f, .7f));
+    CHECK(math.worleyManhattan2(.2f, .7f) >= 0.f);
+    CHECK(math.worleyChebyshev2(.2f, .7f) >= 0.f);
+    CHECK(math.worleySmooth2(.2f, .7f, .25f) >= 0.f);
+    CHECK(math.worleySmooth2(.2f, .7f, .25f) <= 1.f);
+    CHECK(std::isfinite(math.curlNoise2X(.2f, .7f, 1e-3f)));
+    CHECK(std::isfinite(math.curlNoise2Y(.2f, .7f, 1e-3f)));
+    CHECK(math.hexEdge2(.2f, .7f, .05f, .02f) >= 0.f);
+    CHECK(math.hexEdge2(.2f, .7f, .05f, .02f) <= 1.f);
+    CHECK(math.gyroid3(.2f, .7f, .3f) >= 0.f);
+    CHECK(math.gyroidFbm3(.2f, .7f, .3f, 3) <= 1.f);
+    CHECK(math.swiss2(.2f, .7f, 3, 2.f, .5f, .15f) >= 0.f);
+    CHECK(math.hybrid2(.2f, .7f, 3, 2.f, .5f, .7f) <= 1.f);
+    CHECK(math.value3(.2f, .7f, .3f) >= 0.f);
+    CHECK(math.worley3(.2f, .7f, .3f) <= 1.f);
+    CHECK_EQ(math.white3(.2f, .7f, .3f), math.white3(0.f, 0.f, 0.f));
 }
 
 TEST_CASE("math.curves.endpointsAndLinearControlPoints") {

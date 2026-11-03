@@ -27,16 +27,19 @@ local n = math.noise2(p.getX(), p.getY());
 
 用 lerp/smoothstep/ease 做相机与 UI 插值；程序噪声适合高度图与贴图，输入坐标乘 frequency 控制尺度。Vec/Mat 对象用于变换组合，热点循环避免反复分配临时对象。
 
-噪声族对齐常见 NoiseCreator / [noisecreater.com](https://www.noisecreater.com) 原语，返回值均在 `[0,1]`（`voronoi2` / `voronoiEdge2` 为距离）：
+噪声族对齐常见 NoiseCreator / [noisecreater.com](https://www.noisecreater.com) / Musgrave 原语，返回值均在 `[0,1]`（部分 Worley API 为原始距离）：
 
 - `noise1` / `noise2` / `noise3` — Simplex（历史名；等同 `simplex1` / `simplex2` / `simplex3`）
 - `perlin2` / `perlin3` — Perlin
-- `white2` — 格点白噪声；`value2` — 平滑 Value noise
+- `white2` / `white3` — 格点白噪声；`value2` / `value3` — 平滑 Value noise
 - `fbm2` / `fbm3`、`ridged2` / `ridged3`、`turbulence2` / `billow2` — 分形
-- `voronoi2` / `voronoiEdge2` / `worley2` — Worley / 蜂窝（`worley2 = clamp(1 - F1)`）
-- `warpNoise2` — 单层域扭曲；`warpNoise2Deep` — iq 式两层域扭曲
+- `swiss2` / `hybrid2` — Musgrave Swiss / Hybrid multifractal
+- `voronoi2` / `voronoiF2_2` / `voronoiEdge2` / `worley2` / `worley3` — Worley
+- `worleyManhattan2` / `worleyChebyshev2` / `worleySmooth2` — 距离度量与平滑蜂窝
+- `warpNoise2` / `warpNoise2Deep` — 域扭曲；`curlNoise2X` / `curlNoise2Y` — 无散度 curl
+- `hexDistance2` / `hexEdge2` — 六边形边距；`gyroid3` / `gyroidFbm3` — Gyroid
 
-贴图侧无缝/可 tile 采样见 procgen `NoiseField`（另含 `simplexNoise`、`worleyNoise`、`perlinWorley`、`fbmRotated`、`warpDeep`）。
+贴图/体积侧无缝采样见 procgen `NoiseField` / `NoiseField3`。
 
 ### 山体与地形的平滑融合
 
