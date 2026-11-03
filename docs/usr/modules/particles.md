@@ -510,6 +510,9 @@ EVEngine **不**导入 Visual Effect Graph / Shader Graph / HLSL。可复用的�
 | GPU Event | `eventRoutes`（CPU sub-emitter） |
 | Timeline / Signal | effect `timeline` 或 AttackVfx `phases` + `signal` |
 | 攻击充能→释放→残留 | AttackVfx `anticipate` / `release` / `aftermath` |
+| Texture sheet / flipbook | `flipbook` + `texture`（见上文外观增强） |
+| Ribbon / Particle Strip | `renderMode: ribbon` / `ribbon` + 距离发射 |
 
-参考包：`examples/particle-effects/`（含 bonfire / portal / fireworks）。
+参考包：`examples/particle-effects/`（含 bonfire / portal / fireworks，以及
+Phase 3 的 `smoke_flipbook` / `fire_flipbook` / `ribbon_dissipate`）。
 攻击编排示例：`examples/attack-vfx/`（共享上述配方 + `aftermath_smoke`）。

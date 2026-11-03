@@ -30,9 +30,8 @@ persist avFxCones = null
 persist avFxOrbs = null
 persist avChargeRing = null
 
-// Particle URIs: Phase-1 Unity-intent shared recipes (bonfire/portal/fireworks)
-// plus a shared aftermath residual. Earth/air keep elemental burst JSON where
-// the pack has no matching shape; fire/water charge+impact reuse the pack.
+// Particle URIs: Phase-1 Unity-intent recipes + Phase-3 flipbook fidelity.
+// Earth/air keep elemental burst JSON where the pack has no matching shape.
 skins <- [
     {
         id = "skin:water", label = "WATER", title = "Water - Whip",
@@ -48,17 +47,17 @@ skins <- [
         tint = [0.72, 0.42, 0.22], meshUri = "skill:impactFlash",
         chargeParticle = "bonfire.effect.json",
         impactParticle = "earth_burst.particle.json",
-        aftermathParticle = "aftermath_smoke.effect.json",
+        aftermathParticle = "smoke_flipbook.effect.json",
         chargeIntensity = 0.45, impactIntensity = 1.3, aftermathIntensity = 1.0,
         decalR = 0.55, decalG = 0.35, decalB = 0.18
     },
     {
         id = "skin:fire", label = "FIRE", title = "Fire - Projectile Burst",
         tint = [1.0, 0.42, 0.08], meshUri = "skill:burningBody",
-        chargeParticle = "bonfire.effect.json",
+        chargeParticle = "fire_flipbook.effect.json",
         impactParticle = "fireworks.effect.json",
-        aftermathParticle = "aftermath_smoke.effect.json",
-        chargeIntensity = 0.75, impactIntensity = 1.35, aftermathIntensity = 1.1,
+        aftermathParticle = "smoke_flipbook.effect.json",
+        chargeIntensity = 0.85, impactIntensity = 1.35, aftermathIntensity = 1.15,
         decalR = 0.95, decalG = 0.28, decalB = 0.06
     },
     {

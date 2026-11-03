@@ -8,19 +8,19 @@
 当前 meshVfx / trail / distortion / prefab 多为 CPU 编排占位；**可见冲击**由脚本侧
 `Renderable3D` 演出道具 + 粒子（`particles.update` / `render`）+ decal + audio 承担。
 
-## Phase 2：共享 Unity-intent 粒子配方
+## Phase 2–3：共享 Unity-intent 粒子配方
 
-粒子层按相位引用共享 `eve.particle-effect` 资产（移植方案 Phase 1），而不是每层手写重复 burst：
+粒子层按相位引用共享 `eve.particle-effect` 资产（移植方案 Phase 1/3），而不是每层手写重复 burst：
 
 | Skin | anticipate（充能） | release（冲击） | aftermath（残留） |
 |---|---|---|---|
 | WATER | `portal.effect.json` | `water_burst.particle.json` | `aftermath_smoke.effect.json` |
-| EARTH | `bonfire.effect.json` | `earth_burst.particle.json` | `aftermath_smoke.effect.json` |
-| FIRE | `bonfire.effect.json` | `fireworks.effect.json` | `aftermath_smoke.effect.json` |
+| EARTH | `bonfire.effect.json` | `earth_burst.particle.json` | `smoke_flipbook.effect.json` |
+| FIRE | `fire_flipbook.effect.json` | `fireworks.effect.json` | `smoke_flipbook.effect.json` |
 | AIR | `portal.effect.json` | `air_burst.particle.json` | `aftermath_smoke.effect.json` |
 
-`bonfire` / `portal` / `fireworks` 与 `examples/particle-effects/` 同步（游戏 VFS 限制，本目录持副本）。
-出处与降级见该包 `SOURCES.md` 与
+`bonfire` / `portal` / `fireworks` / flipbook 配方与 `examples/particle-effects/` 同步（游戏 VFS 限制，本目录持副本与 `textures/smoke-flipbook-atlas.png`）。
+出处、降级与保真度对比见该包 `SOURCES.md` 与
 [`docs/dev/superpowers/specs/2026-11-03-unity-vfx-porting-plan.md`](../../docs/dev/superpowers/specs/2026-11-03-unity-vfx-porting-plan.md)。
 
 ## 运行
@@ -58,7 +58,9 @@ make run/<platform>-debug GAME=examples/attack-vfx
 | `config.nut` | 1100×700；stylize / stylizeAction / particles / audio / decal / model3d |
 | `hit.wav` | release 相位 one-shot 音频 |
 | `bonfire/portal/fireworks.effect.json` | Phase 1 共享配方副本 |
-| `aftermath_smoke.effect.json` | 共享残留相位 |
+| `fire_flipbook` / `smoke_flipbook.effect.json` | Phase 3 flipbook 配方副本 |
+| `textures/smoke-flipbook-atlas.png` | flipbook 图集 |
+| `aftermath_smoke.effect.json` | 共享短促残留（water/air） |
 | `*_burst.particle.json` | 元素向冲击（earth/air/water；fire 已改用 fireworks） |
 | `assets/fonts/DejaVuSans-Bold.ttf` | HUD 标题字体 |
 

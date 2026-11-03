@@ -260,13 +260,17 @@ docs/dev/superpowers/specs/…        # K：能力规格，单独 PR
 
 ### Phase 3 — 视觉保真度（C/S 增强，仍避免 K）
 
-| 工作项 | 说明 |
-|--------|------|
-| flipbook 烟/火 | 参考 `examples/smoke-flipbook`；统一进 effect 包 |
-| ribbon 消散 | Samples Ribbon Pack → 粒子 ribbon 参数预设 |
-| 轻量 MeshVfx | 仅当 2D 粒子无法表达（全息、能量盾）时新增 S 资产 |
+| 工作项 | 说明 | 状态 |
+|--------|------|------|
+| flipbook 烟/火 | 参考 `examples/smoke-flipbook`；统一进 effect 包 | 已落地：`smoke_flipbook` / `fire_flipbook` + atlas |
+| ribbon 消散 | Samples Ribbon Pack → 粒子 ribbon 参数预设 | 已落地：`ribbon_dissipate.effect.json` |
+| 轻量 MeshVfx | 仅当 2D 粒子无法表达（全息、能量盾）时新增 S 资产 | **跳过**（2D 足够） |
 
-退出：保真度对比表（意图 / 降级 / 截帧）；仍无 VFX Graph 运行时。
+退出：
+
+- [x] 保真度对比表（意图 / 降级 / 截帧）见 `examples/particle-effects/SOURCES.md`
+- [x] `unity-vfx-port-lab` / `attack-vfx` 接线
+- [x] 仍无 VFX Graph 运行时
 
 ### Phase 4 — 内核能力（K，可选，独立 PR）
 

@@ -1,0 +1,76 @@
+{
+  "type": "eve.particle-effect",
+  "version": 2,
+  "parameters": { "intensity": 1.0 },
+  "timeline": {
+    "duration": 2.4,
+    "looping": true,
+    "cues": [
+      { "time": 0.0, "action": "emit", "emitter": "puff", "count": 1 },
+      { "time": 1.15, "action": "emit", "emitter": "puff", "count": 1 }
+    ]
+  },
+  "emitters": [
+    {
+      "name": "puff",
+      "emitter": {
+        "buffer": 24,
+        "emitterLife": 2.4,
+        "looping": true,
+        "emissionRate": 0.0,
+        "particleLife": [1.95, 1.99],
+        "particleSize": [140.0, 200.0],
+        "sizes": [0.55, 1.35],
+        "sizeVariation": 0.2,
+        "speed": [6.0, 18.0],
+        "direction": -1.5707963,
+        "spread": 0.35,
+        "damping": 0.2,
+        "noise": { "strength": 8.0, "frequency": 0.05, "speed": 0.9 },
+        "blendMode": "alpha",
+        "texture": "textures/smoke-flipbook-atlas.png",
+        "flipbook": { "hframes": 6, "vframes": 6, "frameRate": 18.0, "frameRandomStart": 0.0 },
+        "colorOverLifetime": [
+          [0.0, 0.78, 0.82, 0.88, 0.0],
+          [0.12, 0.62, 0.66, 0.72, 0.55],
+          [0.7, 0.35, 0.36, 0.4, 0.28],
+          [1.0, 0.16, 0.16, 0.18, 0.0]
+        ],
+        "randomSeed": 20261131,
+        "autoRandomSeed": false,
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "size", "scale": 1.0 }
+        ]
+      }
+    },
+    {
+      "name": "wisps",
+      "offset": [0.0, -10.0],
+      "emitter": {
+        "buffer": 64,
+        "emitterLife": 2.4,
+        "looping": true,
+        "emissionRate": 6.0,
+        "particleLife": [0.8, 1.4],
+        "particleSize": [18.0, 34.0],
+        "sizes": [0.5, 1.4],
+        "speed": [10.0, 28.0],
+        "direction": -1.5707963,
+        "spread": 0.85,
+        "damping": 0.3,
+        "noise": { "strength": 14.0, "frequency": 0.08, "speed": 1.1 },
+        "blendMode": "alpha",
+        "colorOverLifetime": [
+          [0.0, 0.4, 0.4, 0.44, 0.0],
+          [0.2, 0.3, 0.3, 0.34, 0.28],
+          [1.0, 0.12, 0.12, 0.14, 0.0]
+        ],
+        "randomSeed": 20261132,
+        "autoRandomSeed": false,
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "emission", "scale": 1.0 }
+        ]
+      }
+    }
+  ]
+}

@@ -810,14 +810,24 @@ TEST_CASE("particles.reference.effectPackLoadsAndRenders") {
     REQUIRE(texture != nullptr);
 
     const std::string root    = std::string(EVENGINE_SOURCE_DIR) + "/examples/particle-effects/";
-    const char       *names[] = {"fire.effect.json",    "smoke.effect.json",     "impact.effect.json",
-                                 "trail.effect.json",   "weather.effect.json",   "bonfire.effect.json",
-                                 "portal.effect.json",  "fireworks.effect.json"};
+    const char       *names[] = {"fire.effect.json",
+                                 "smoke.effect.json",
+                                 "impact.effect.json",
+                                 "trail.effect.json",
+                                 "weather.effect.json",
+                                 "bonfire.effect.json",
+                                 "portal.effect.json",
+                                 "fireworks.effect.json",
+                                 "smoke_flipbook.effect.json",
+                                 "fire_flipbook.effect.json",
+                                 "ribbon_dissipate.effect.json"};
     std::vector<std::unique_ptr<ParticleEffect>> effects;
-    // Eight pack entries: five native + three Phase-1 Unity-intent ports.
-    // Keep +/-70 luma probes inside the 960-wide window (last center <= 880).
-    constexpr float centersX[] = {80.f, 190.f, 300.f, 410.f, 520.f, 630.f, 740.f, 850.f};
-    for (int i = 0; i < 8; ++i) {
+    // Eleven pack entries: five native + three Phase-1 + three Phase-3.
+    // Keep +/-48 luma probes inside the 960-wide window (last center <= 900).
+    constexpr float centersX[] = {70.f,  150.f, 230.f, 310.f, 390.f, 470.f,
+                                  550.f, 630.f, 710.f, 790.f, 870.f};
+    constexpr int   kPackCount = 11;
+    for (int i = 0; i < kPackCount; ++i) {
         auto parsed = ParticleEffect::tryFromText(readFile(root + names[i]), root + names[i]);
         REQUIRE(parsed.ok());
         effects.emplace_back(parsed.value());
@@ -844,6 +854,20 @@ TEST_CASE("particles.reference.effectPackLoadsAndRenders") {
             REQUIRE(effects.back()->getEmitterByName("shell") != nullptr);
             REQUIRE(effects.back()->getEmitterByName("stars") != nullptr);
             REQUIRE_EQ(effects.back()->eventRoutes().size(), 2u);
+        } else if (std::string(names[i]) == "smoke_flipbook.effect.json") {
+            REQUIRE(effects.back()->getEmitterByName("puff") != nullptr);
+            REQUIRE(effects.back()->getEmitterByName("wisps") != nullptr);
+        } else if (std::string(names[i]) == "fire_flipbook.effect.json") {
+            REQUIRE(effects.back()->getEmitterByName("tongue") != nullptr);
+            REQUIRE(effects.back()->getEmitterByName("embers") != nullptr);
+        } else if (std::string(names[i]) == "ribbon_dissipate.effect.json") {
+            REQUIRE(effects.back()->getEmitterByName("ribbon") != nullptr);
+            REQUIRE(effects.back()->getEmitterByName("mist") != nullptr);
+            REQUIRE_EQ(effects.back()->eventRoutes().size(), 1u);
+            for (int step = 0; step < 14; ++step) {
+                effects.back()->setPosition(centersX[i] + float(step) * 5.f, 270.f - float(step) * 0.5f);
+                Particles::create()->update(1.f / 60.f);
+            }
         } else if (std::string(names[i]) == "trail.effect.json") {
             // Distance emission needs motion to spawn ribbon control points.
             for (int step = 0; step < 12; ++step) {
@@ -871,7 +895,7 @@ TEST_CASE("particles.reference.effectPackLoadsAndRenders") {
     float packPeak = 0.f;
     for (float x : centersX) {
         for (int y = 140; y <= 400; y += 8) {
-            for (int sx = int(x) - 70; sx <= int(x) + 70; sx += 8) {
+            for (int sx = int(x) - 48; sx <= int(x) + 48; sx += 8) {
                 packPeak = std::max(packPeak, luma(gfx->getPixel(sx, y)));
             }
         }
