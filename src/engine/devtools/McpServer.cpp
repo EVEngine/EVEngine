@@ -13,6 +13,7 @@
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
 #include "devtools/GameWorldContext.hpp"
+#include "devtools/McpActionGuideTools.hpp"
 #include "devtools/McpArgs.hpp"
 #include "devtools/McpDevBridge.hpp"
 #include "devtools/McpFrameCapture.hpp"
@@ -1951,6 +1952,7 @@ bool McpServer::listenStdio(std::istream& in, std::ostream& out) {
     initialized_ = false;
     stdinClosed_.store(false);
     resetMcpFrameCapture();
+    resetMcpActionGuide();
     hasClient_.store(true);
     stdioIn_    = &in;
     stdioOut_   = &out;
@@ -2029,6 +2031,7 @@ void McpServer::poll() {
         for (const auto& line : batch) handleMessage(line);
         if (stdinClosed_.load() && batch.empty() && initialized_) {
             resetMcpFrameCapture();
+            resetMcpActionGuide();
             initialized_ = false;
         }
         flushPendingSceneDirectorInstall(Debugger::instance().vm());
@@ -2053,6 +2056,7 @@ void McpServer::acceptNonBlocking() {
         client_ = std::make_unique<Poco::Net::StreamSocket>(ss);
         hasClient_.store(true);
         resetMcpFrameCapture();
+        resetMcpActionGuide();
         recvBuf_.clear();
         initialized_ = false;
         AiPanel::instance().setMcpConnected(true);
@@ -2101,6 +2105,7 @@ void McpServer::readAndDispatch() {
                 AiPanel::instance().setMcpConnected(false);
                 AiPanel::instance().addLog("system", "mcp.disconnect", "client closed");
                 resetMcpFrameCapture();
+                resetMcpActionGuide();
             }
             return;
         }
@@ -2112,6 +2117,7 @@ void McpServer::readAndDispatch() {
         hasClient_.store(false);
         AiPanel::instance().setMcpConnected(false);
         resetMcpFrameCapture();
+        resetMcpActionGuide();
         return;
     } catch (...) {
         client_.reset();

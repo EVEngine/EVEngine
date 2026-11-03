@@ -10,6 +10,7 @@
     "debugger.cpp",
     "mcp_architecture_graph.cpp",
     "mcp_whitebox.cpp",
+    "mcp_action_guide.cpp",
     "frame_stats.cpp",
     "language_index.cpp",
     "language_text.cpp",
@@ -389,7 +390,91 @@ TEST_CASE("devtools.Whitebox playtest: absent live VM returns an error envelope"
     CHECK(payload->has("error"));
 }
 }  // namespace test_whitebox_contract
+#endif
 
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_action_guide)
+#include <Poco/JSON/Array.h>
+#include <Poco/JSON/Object.h>
+#include <Poco/JSON/Parser.h>
+#include "devtools/McpActionGuideTools.hpp"
+#include "devtools/McpToolFilter.hpp"
+namespace test_action_guide_contract {
+Poco::JSON::Object::Ptr guideResult(const std::string& response) {
+    Poco::JSON::Parser parser;
+    auto               envelope = parser.parse(response).extract<Poco::JSON::Object::Ptr>();
+    return parser.parse(envelope->getArray("content")->getObject(0)->getValue<std::string>("text"))
+        .extract<Poco::JSON::Object::Ptr>();
+}
+
+constexpr const char* kPack = R"json({
+  "schema": "eve.action.guide-pack",
+  "schemaVersion": 1,
+  "revision": 2,
+  "subject": {"domain": "animation.preview", "id": 1, "generation": 1},
+  "skeletonRef": "assets/guides/hero.skeleton",
+  "clipRef": "assets/guides/hero_attack.clip",
+  "rootMode": "inPlace",
+  "canvas": {"width": 100, "height": 100, "pixelsPerUnit": 50.0, "backgroundRgba": [0,0,0,0], "transparent": true},
+  "camera": {"projection": "orthographic", "fovYDegrees": 45.0, "orthoSize": 1.0, "nearPlane": 0.1, "farPlane": 50.0,
+             "eye": [0,0,5], "target": [0,0,0], "up": [0,1,0]},
+  "shots": [{"shotId": "s0", "timeSeconds": 0.0, "view": "front", "aovs": ["silhouette", "depth"], "tags": []}],
+  "actionBinding": {"abilityId": "ability:x", "clipName": "attack", "fps": 12.0, "loop": false, "phaseMarks": []},
+  "qc": {"minSilhouetteIoU": 0.8, "maxJointErrorPx": 4.0, "maxRetries": 1}
+})json";
+
+TEST_CASE("devtools.ActionGuide tools: discovery schemas and mutation flags") {
+    REQUIRE(eve::dev::isMcpActionGuideTool("eve_action_guide_pack_validate"));
+    REQUIRE(eve::dev::isMcpActionGuideTool("eve_action_guide_landmarks"));
+    CHECK(eve::dev::mcpToolMutates("eve_action_guide_pack_set"));
+    CHECK(!eve::dev::mcpToolMutates("eve_action_guide_pack_validate"));
+    CHECK(!eve::dev::mcpToolMutates("eve_action_guide_landmarks"));
+    CHECK(std::string(eve::dev::mcpActionGuideToolSchemas()).find("eve_action_guide_pack_validate") !=
+          std::string::npos);
+}
+
+TEST_CASE("devtools.ActionGuide validate set get landmarks and absent capture") {
+    eve::dev::resetMcpActionGuide();
+    Poco::JSON::Parser      parser;
+    auto                    pack         = parser.parse(kPack).extract<Poco::JSON::Object::Ptr>();
+    Poco::JSON::Object::Ptr validateArgs = new Poco::JSON::Object();
+    validateArgs->set("pack", pack);
+    auto validated = guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_pack_validate", validateArgs));
+    CHECK(validated->getValue<bool>("ok"));
+    CHECK_EQ(validated->getValue<Poco::UInt64>("revision"), Poco::UInt64{2});
+
+    Poco::JSON::Object::Ptr setArgs = new Poco::JSON::Object();
+    setArgs->set("pack", pack);
+    auto set = guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_pack_set", setArgs));
+    CHECK(set->getValue<bool>("ok"));
+
+    auto got = guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_pack_get", nullptr));
+    CHECK(got->getValue<bool>("ok"));
+    CHECK_EQ(got->getValue<Poco::UInt64>("revision"), Poco::UInt64{2});
+
+    Poco::JSON::Object::Ptr landmarkArgs = new Poco::JSON::Object();
+    Poco::JSON::Array::Ptr  bones        = new Poco::JSON::Array();
+    Poco::JSON::Object::Ptr bone         = new Poco::JSON::Object();
+    bone->set("boneId", "root");
+    Poco::JSON::Array::Ptr position = new Poco::JSON::Array();
+    position->add(0.0);
+    position->add(0.0);
+    position->add(0.0);
+    bone->set("position", position);
+    bones->add(bone);
+    landmarkArgs->set("bones", bones);
+    auto landmarks = guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_landmarks", landmarkArgs));
+    CHECK(landmarks->getValue<bool>("ok"));
+    CHECK_EQ(landmarks->getArray("landmarks")->size(), 1u);
+
+    auto capture = guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_capture", nullptr));
+    CHECK(!capture->getValue<bool>("ok"));
+    CHECK_EQ(capture->getValue<std::string>("error"), std::string("ProviderAbsent"));
+    eve::dev::resetMcpActionGuide();
+}
+}  // namespace test_action_guide_contract
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_whitebox)
 // The source catalogue groups recipe/workshop MCP tests with the whitebox origin.
 #include "devtools/McpRecipeTools.hpp"
 #include "devtools/McpTaskProfile.hpp"

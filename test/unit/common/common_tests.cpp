@@ -48,7 +48,8 @@
     "capability_owned.cpp",
     "condition.cpp",
     "sdf_field3d.cpp",
-    "ecs_view_preparation.cpp"
+    "ecs_view_preparation.cpp",
+    "action_guide_pack.cpp"
   ]
 }
 */
@@ -3866,3 +3867,159 @@ TEST_CASE("identity.audit.runtimeHandleGenerationMakesStaleReuseObservable") {
     CHECK_EQ(Handle::fromPacked(oldHandle.packed()), oldHandle);
 }
 }  // namespace test_identity_value_audit_unit
+
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_guide_pack)
+#include <array>
+#include <cmath>
+#include <string>
+#include "common/ActionGuidePack.h"
+
+namespace {
+
+eve::ActionGuidePack samplePack() {
+    eve::ActionGuidePack pack;
+    pack.revision          = 1;
+    pack.subject           = {"animation.preview", 1, 1};
+    pack.skeletonRef       = "assets/guides/hero.skeleton";
+    pack.clipRef           = "assets/guides/hero_attack.clip";
+    pack.rootMode          = eve::ActionGuideRootMode::InPlace;
+    pack.canvas            = {256, 256, 64.0, {0, 0, 0, 0}, true};
+    pack.camera.projection = eve::ActionGuideProjection::Orthographic;
+    pack.camera.orthoSize  = 1.25;
+    pack.camera.nearPlane  = 0.1;
+    pack.camera.farPlane   = 50.0;
+    pack.camera.eye        = {0.0, 1.0, 4.0};
+    pack.camera.target     = {0.0, 1.0, 0.0};
+    pack.camera.up         = {0.0, 1.0, 0.0};
+    eve::ActionGuideShot shot;
+    shot.shotId      = "attack.light.s00";
+    shot.timeSeconds = 0.0;
+    shot.view        = "front";
+    shot.aovs        = {"silhouette", "depth", "bone"};
+    shot.tags        = {"windup"};
+    pack.shots.push_back(shot);
+    pack.actionBinding.abilityId = "ability:hero.attack.light";
+    pack.actionBinding.clipName  = "attack.light";
+    pack.actionBinding.fps       = 12.0;
+    pack.actionBinding.loop      = false;
+    pack.qc                      = {0.85, 8.0, 3};
+    return pack;
+}
+
+}  // namespace
+
+TEST_CASE("common.actionGuidePack.roundTripPreservesShotsCameraAndBinding") {
+    auto source  = samplePack();
+    auto encoded = eve::encodeActionGuidePack(source);
+    REQUIRE(encoded.ok());
+    auto decoded = eve::decodeActionGuidePack(encoded.value());
+    REQUIRE(decoded.ok());
+    CHECK_EQ(decoded.value().revision, source.revision);
+    CHECK_EQ(decoded.value().subject.domain, source.subject.domain);
+    CHECK_EQ(decoded.value().shots.size(), source.shots.size());
+    CHECK_EQ(decoded.value().shots[0].shotId, source.shots[0].shotId);
+    CHECK_EQ(decoded.value().actionBinding.abilityId, source.actionBinding.abilityId);
+    CHECK_EQ(decoded.value().camera.orthoSize, source.camera.orthoSize);
+}
+
+TEST_CASE("common.actionGuidePack.rejectsUnknownFieldsFutureVersionAndBadAov") {
+    auto encoded = eve::encodeActionGuidePack(samplePack());
+    REQUIRE(encoded.ok());
+
+    auto unknown = encoded.value();
+    unknown.set("extra", true);
+    auto unknownDecoded = eve::decodeActionGuidePack(unknown);
+    REQUIRE(!unknownDecoded.ok());
+    unknownDecoded.ignore();
+
+    auto              nested     = encoded.value();
+    const eve::Value* subjectPtr = nested.find("subject");
+    REQUIRE(subjectPtr != nullptr);
+    REQUIRE(subjectPtr->isObject());
+    auto subjectObject = *subjectPtr->getIf<eve::Value::Object>();
+    subjectObject.emplace("extra", true);
+    nested.set("subject", eve::Value(std::move(subjectObject)));
+    auto nestedDecoded = eve::decodeActionGuidePack(nested);
+    REQUIRE(!nestedDecoded.ok());
+    nestedDecoded.ignore();
+
+    auto future = encoded.value();
+    future.set("schemaVersion", static_cast<std::int64_t>(999));
+    auto futureDecoded = eve::decodeActionGuidePack(future);
+    REQUIRE(!futureDecoded.ok());
+    futureDecoded.ignore();
+
+    auto badAov          = samplePack();
+    badAov.shots[0].aovs = {"silhouette", "diffuse"};
+    auto badEncoded      = eve::encodeActionGuidePack(badAov);
+    REQUIRE(!badEncoded.ok());
+    badEncoded.ignore();
+}
+
+TEST_CASE("common.actionGuidePack.exampleFixtureJsonRoundTrips") {
+    // Keep in sync with docs/dev/fixtures/eve.action.guide-pack.v1.example.json (unit tests cannot read files).
+    constexpr char kExample[] = R"json({
+  "schema": "eve.action.guide-pack",
+  "schemaVersion": 1,
+  "revision": 1,
+  "subject": {"domain": "animation.preview", "id": 1, "generation": 1},
+  "skeletonRef": "assets/guides/hero.skeleton",
+  "clipRef": "assets/guides/hero_attack.clip",
+  "rootMode": "inPlace",
+  "canvas": {"width": 256, "height": 256, "pixelsPerUnit": 64.0, "backgroundRgba": [0.0, 0.0, 0.0, 0.0], "transparent": true},
+  "camera": {"projection": "orthographic", "fovYDegrees": 45.0, "orthoSize": 1.25, "nearPlane": 0.1, "farPlane": 50.0,
+             "eye": [0.0, 1.0, 4.0], "target": [0.0, 1.0, 0.0], "up": [0.0, 1.0, 0.0]},
+  "shots": [
+    {"shotId": "attack.light.s00", "timeSeconds": 0.0, "view": "front", "aovs": ["silhouette", "depth", "bone"], "tags": ["windup"]},
+    {"shotId": "attack.light.s01", "timeSeconds": 0.0833333333, "sampleIndex": 1, "view": "front",
+     "aovs": ["silhouette", "depth", "bone"], "tags": ["active"]}
+  ],
+  "actionBinding": {"abilityId": "ability:hero.attack.light", "clipName": "attack.light", "fps": 12.0, "loop": false,
+                    "phaseMarks": [{"name": "active.start", "timeSeconds": 0.0833333333},
+                                   {"name": "recover.start", "timeSeconds": 0.25}]},
+  "qc": {"minSilhouetteIoU": 0.85, "maxJointErrorPx": 8.0, "maxRetries": 3}
+})json";
+    auto           parsed     = eve::Value::fromJson(kExample);
+    REQUIRE(parsed.ok());
+    auto decoded = eve::decodeActionGuidePack(parsed.value());
+    REQUIRE(decoded.ok());
+    CHECK_EQ(decoded.value().shots.size(), std::size_t{2});
+    auto encoded = eve::encodeActionGuidePack(decoded.value());
+    REQUIRE(encoded.ok());
+    auto again = eve::decodeActionGuidePack(encoded.value());
+    REQUIRE(again.ok());
+    CHECK_EQ(again.value().actionBinding.phaseMarks.size(), std::size_t{2});
+}
+
+TEST_CASE("common.actionGuidePack.landmarksProjectTargetToCanvasCenter") {
+    auto pack             = samplePack();
+    pack.camera.eye       = {0.0, 0.0, 5.0};
+    pack.camera.target    = {0.0, 0.0, 0.0};
+    pack.camera.up        = {0.0, 1.0, 0.0};
+    pack.camera.orthoSize = 1.0;
+    pack.canvas.width     = 200;
+    pack.canvas.height    = 100;
+
+    eve::ActionGuideBoneWorld root;
+    root.boneId   = "root";
+    root.name     = "root";
+    root.position = {0.0, 0.0, 0.0};
+    eve::ActionGuideBoneWorld child;
+    child.boneId   = "head";
+    child.name     = "head";
+    child.parentId = "root";
+    child.position = {0.0, 0.5, 0.0};
+
+    auto landmarks = eve::projectActionGuideLandmarks(pack, std::array{root, child});
+    REQUIRE(landmarks.ok());
+    REQUIRE_EQ(landmarks.value().size(), std::size_t{2});
+    CHECK(std::abs(landmarks.value()[0].x - 100.0) < 1e-6);
+    CHECK(std::abs(landmarks.value()[0].y - 50.0) < 1e-6);
+    CHECK(landmarks.value()[0].depth > 0.0);
+    CHECK(landmarks.value()[1].y < landmarks.value()[0].y);  // +Y is toward top of image
+    REQUIRE(landmarks.value()[1].parentId.has_value());
+    CHECK_EQ(*landmarks.value()[1].parentId, std::string("root"));
+}
+
+#endif
