@@ -29,9 +29,13 @@ persist casterOrb = null
 persist keyEdge = null
 persist labTime = 0.0
 
-function isFireHdActive() {
+function isVolumeHdActive() {
     local e = currentEntry();
-    return e != null && e.spell.id == "fire";
+    if (e == null) return false;
+    // Wind Slash stays on mesh presenter; Cyclone uses HD.
+    if (e.spell.id == "wind" && e.form == "Wind Slash") return false;
+    if (e.spell.id == "arcane" && e.form != "Aegis") return false;
+    return fireHdMod.spellSupportsHd(e.spell.id);
 }
 
 FOCUS <- { x = 0.0, y = 1.25, z = 0.0 };
@@ -73,7 +77,7 @@ function rebuildParamUI() {
     ui.beginWindow("ULTRA ELEMENTS", "root");
     ui.text("ULTRA ELEMENTS", "title");
     ui.text("PARAMETRIC SPELL VFX LAB", "subtitle");
-    local hdNote = (e.spell.id == "fire") ? "  [HD VOLUME ~ original]" : "";
+    local hdNote = isVolumeHdActive() ? "  [HD VOLUME]" : "";
     ui.text(e.element + "  /  " + e.name + hdNote, "spell");
     ui.beginRow("nav", 5.0);
     ui.button("Prev [Q]", "prev"); ui.button("Cast [Space]", "cast"); ui.button("Next [E]", "next");
@@ -247,7 +251,7 @@ eve_init <- function() {
     ui.setScale(0.82);
     rebuildParamUI();
 
-    print("ULTRA_ELEMENTS_READY spells=" + entries.len() + " elements=" + elements.len() + " bolts=" + presenter.bolts.len() + " fireHd=1\n");
+    print("ULTRA_ELEMENTS_READY spells=" + entries.len() + " elements=" + elements.len() + " bolts=" + presenter.bolts.len() + " volumeHd=1\n");
 };
 
 eve_update <- function(dt) {
@@ -302,7 +306,7 @@ eve_update <- function(dt) {
     }
 
     syncParamsFromUI();
-    local hd = isFireHdActive();
+    local hd = isVolumeHdActive();
     presenter.hdFireSkip = hd;
     if (!paused) {
         labTime += dt;
@@ -336,7 +340,7 @@ eve_update <- function(dt) {
     camera.setEye(eyeX, 7.0, eyeZ);
     camera.setTarget(1.4, 1.15, 0.0);
 
-    local tag = hd ? " HD~orig" : "";
+    local tag = hd ? " HD" : "";
     ui.setText("status", statusLine + " | alive=" + runtime.aliveCount() + " | " + e.name + tag);
     if (casterOrb != null) {
         local pulse = 0.16 + 0.03 * sin(labTime * 3.0);
@@ -346,7 +350,7 @@ eve_update <- function(dt) {
 
 eve_render <- function() {
     gfx.clear();
-    if (isFireHdActive() && fireHd != null) {
+    if (isVolumeHdActive() && fireHd != null) {
         fireHd.render(gfx);
     } else {
         gfx.render3D();
