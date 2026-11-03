@@ -149,6 +149,21 @@ TEST_CASE("math.random.reseedRepeatsSequenceAndNoiseIsPure") {
     const float noise = math.noise2(.2f, .7f);
     CHECK(noise >= 0.f);
     CHECK(noise <= 1.f);
+    CHECK_EQ(math.simplex2(.2f, .7f), math.noise2(.2f, .7f));
+    CHECK_EQ(math.billow2(.2f, .7f, 3), math.turbulence2(.2f, .7f, 3));
+    const float value  = math.value2(.2f, .7f);
+    const float white  = math.white2(.2f, .7f);
+    const float worley = math.worley2(.2f, .7f);
+    const float deep   = math.warpNoise2Deep(.2f, .7f, 1.f);
+    CHECK(value >= 0.f);
+    CHECK(value <= 1.f);
+    CHECK(white >= 0.f);
+    CHECK(white <= 1.f);
+    CHECK(worley >= 0.f);
+    CHECK(worley <= 1.f);
+    CHECK(deep >= 0.f);
+    CHECK(deep <= 1.f);
+    CHECK_EQ(math.white2(.2f, .7f), math.white2(0.f, 0.f));  // floor lattice
 }
 
 TEST_CASE("math.curves.endpointsAndLinearControlPoints") {

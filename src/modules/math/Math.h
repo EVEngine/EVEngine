@@ -272,17 +272,30 @@ public:
     /** @brief Deterministic 3D hash mapped to [0,1]. */
     float hash3(float x, float y, float z) const;
 
-    // --- noise [0, 1] ---
-    /** @brief Value noise in 1D, range [0,1]. */
+    // --- noise [0, 1] (noisecreater / NoiseCreator family) ---
+    /**
+     * @brief 1D Simplex noise in [0,1].
+     * Kept as `noise1` for script compatibility; prefer `simplex1` for clarity.
+     */
     float noise1(float x) const;
-    /** @brief Value noise in 2D, range [0,1]. */
+    /** @brief 2D Simplex noise in [0,1]. */
     float noise2(float x, float y) const;
-    /** @brief Value noise in 3D, range [0,1]. */
+    /** @brief 3D Simplex noise in [0,1]. */
     float noise3(float x, float y, float z) const;
+    /** @brief Alias of noise1 (explicit Simplex). */
+    float simplex1(float x) const;
+    /** @brief Alias of noise2 (explicit Simplex). */
+    float simplex2(float x, float y) const;
+    /** @brief Alias of noise3 (explicit Simplex). */
+    float simplex3(float x, float y, float z) const;
     /** @brief Perlin noise in 2D, range [0,1]. */
     float perlin2(float x, float y) const;
     /** @brief Perlin noise in 3D, range [0,1]. */
     float perlin3(float x, float y, float z) const;
+    /** @brief Lattice white noise from floor(x), floor(y) in [0,1]. */
+    float white2(float x, float y) const;
+    /** @brief Smooth 2D value noise in [0,1]. */
+    float value2(float x, float y) const;
 
     /**
      * @brief Fractal Brownian Motion / ridged / turbulence.
@@ -299,9 +312,11 @@ public:
     /** @brief 3D ridged multifractal noise. */
     float ridged3(float x, float y, float z, int octaves = 4, float lacunarity = 2.f,
                   float gain = 0.5f) const;
-    /** @brief 2D turbulence (absolute fBm). */
+    /** @brief 2D turbulence / billow (absolute fBm). */
     float turbulence2(float x, float y, int octaves = 4, float lacunarity = 2.f,
                       float gain = 0.5f) const;
+    /** @brief Alias of turbulence2 (NoiseCreator billow naming). */
+    float billow2(float x, float y, int octaves = 4, float lacunarity = 2.f, float gain = 0.5f) const;
 
     /**
      * @brief Worley / Voronoi F1 distance in [0, ~1.5] (cell size 1).
@@ -310,12 +325,18 @@ public:
     float voronoi2(float x, float y) const;
     /** @brief 2D Worley F2-F1 edge distance. */
     float voronoiEdge2(float x, float y) const;
+    /** @brief Texture-friendly Worley: clamp(1 - F1, 0, 1). */
+    float worley2(float x, float y) const;
 
     /**
      * @brief Domain warp: sample noise at (x,y) + warpAmp * (noise-0.5).
      * Useful for organic terrain / caves.
      */
     float warpNoise2(float x, float y, float warpAmp = 1.f) const;
+    /**
+     * @brief Two-pass iq-style domain warp (noisecreater DomainWarp / Smoke).
+     */
+    float warpNoise2Deep(float x, float y, float warpAmp = 1.f) const;
 
     // --- bezier ---
     /** @brief 1D quadratic Bezier at t in [0,1]. */

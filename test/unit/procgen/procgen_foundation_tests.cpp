@@ -758,6 +758,59 @@ TEST_CASE("procgen.texture.noisePeriodAndRamp_samplesAreDeterministic") {
     CHECK(ramp.sampleBanded(.1f, 3).r < ramp.sampleBanded(.9f, 3).r);
 }
 
+TEST_CASE("procgen.texture.noiseField_noisecreaterFamily_isBoundedDeterministicAndTileable") {
+    NoiseField  tiling{7, 16, 16};
+    NoiseField  replay{7, 16, 16};
+    const float x = 3.25f;
+    const float y = 9.75f;
+
+    const float white   = tiling.whiteNoise(3, 9);
+    const float value   = tiling.valueNoise(x, y);
+    const float perlin  = tiling.perlinNoise(x, y);
+    const float simplex = tiling.simplexNoise(x, y);
+    const float worley  = tiling.worleyNoise(x, y);
+    const float edge    = tiling.worleyEdge(x, y);
+    const float billow  = tiling.billow(x, y, 3);
+    const float cloud   = tiling.perlinWorley(x, y, 3);
+    const float deep    = tiling.warpDeep(x, y, 1.5f, 3);
+    const float rotated = tiling.fbmRotated(x, y, 4);
+    const float fbmS    = tiling.fbmSimplex(x, y, 3);
+
+    REQUIRE_EQ(white, replay.whiteNoise(3, 9));
+    CHECK_EQ(value, replay.valueNoise(x, y));
+    CHECK_EQ(perlin, replay.perlinNoise(x, y));
+    CHECK_EQ(simplex, replay.simplexNoise(x, y));
+    CHECK_EQ(worley, replay.worleyNoise(x, y));
+    CHECK_EQ(edge, replay.worleyEdge(x, y));
+    CHECK_EQ(billow, replay.billow(x, y, 3));
+    CHECK_EQ(cloud, replay.perlinWorley(x, y, 3));
+    CHECK_EQ(deep, replay.warpDeep(x, y, 1.5f, 3));
+    CHECK_EQ(rotated, replay.fbmRotated(x, y, 4));
+    CHECK_EQ(fbmS, replay.fbmSimplex(x, y, 3));
+
+    auto in01 = [](float v) { return v >= 0.f && v <= 1.f; };
+    CHECK(in01(white));
+    CHECK(in01(value));
+    CHECK(in01(perlin));
+    CHECK(in01(simplex));
+    CHECK(in01(worley));
+    CHECK(edge >= 0.f);
+    CHECK(in01(billow));
+    CHECK(in01(cloud));
+    CHECK(in01(deep));
+    CHECK(in01(rotated));
+    CHECK(in01(fbmS));
+
+    // Seamless lattice wrap: sample at period offset must match for hash-backed fields.
+    CHECK_EQ(tiling.hash01(1, 2), tiling.hash01(17, 18));
+    CHECK_EQ(tiling.whiteNoise(1, 2), tiling.whiteNoise(17, 18));
+    // Continuous samplers with integer period also match at +period.
+    CHECK_EQ(tiling.valueNoise(1.5f, 2.5f), tiling.valueNoise(17.5f, 18.5f));
+    CHECK_EQ(tiling.perlinNoise(1.5f, 2.5f), tiling.perlinNoise(17.5f, 18.5f));
+    // Worley uses sqrt; accept ulp-scale drift across the period shift.
+    CHECK(std::fabs(tiling.worleyF1(1.5f, 2.5f) - tiling.worleyF1(17.5f, 18.5f)) < 1e-5f);
+}
+
 TEST_CASE("procgen.texture.registryImages_matchDimensionsFormatAndBytesOnReplay") {
     auto& registry = TextureRecipeRegistry::instance();
     registry.registerBuiltins();

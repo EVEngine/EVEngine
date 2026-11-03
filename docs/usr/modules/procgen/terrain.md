@@ -618,7 +618,7 @@ RenderTexture；目标与 input 可别名，失败时不发布部分结果。
 octaves 和 warpIterations 支持 Pcg fBm 风格的分数最后一步，范围为 `[0,16]`；默认值来自包内
 PcgNoiseSettings/FbmFractalType。输出按固定扫描与固定 hash 流确定，不读取帧时钟或全局随机状态。
 
-本实现复用 EVEngine `NoiseField` 的 CPU hash/Perlin 基础，因此保留 Pcg 的五类形态、TRS、fBm 与 warp
+本实现复用 EVEngine `NoiseField` 的 CPU hash/Perlin/Value/Worley 基础，因此保留 Pcg 的五类形态、TRS、fBm 与 warp
 参数语义，但尚不声明与 Unity HLSL `sin` hash 逐像素相同；跨后端比较采用数值与形态容限。所有输入
 先验证并在私有缓冲计算，非法枚举、零 scale、非有限参数或溢出不修改目标。
 
