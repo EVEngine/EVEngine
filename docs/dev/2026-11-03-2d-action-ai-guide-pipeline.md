@@ -1,8 +1,8 @@
 # 2D 动作缺资源时的「白膜引导 → AI 成图 → 入库」管线
 
 日期：2026-11-03  
-状态：设计 + **P0–P2 已落地**（文档编解码、landmarks、MCP capture/export、Vulkan 离屏
-`IActionGuideCapture` silhouette/depth + CPU bone AOV）。clip 姿态采样与 ingest/verify 仍待后续切片。
+状态：设计 + **P0–P3 已落地**（文档编解码、landmarks、MCP capture/export、Vulkan 离屏
+AOV、候选帧 ingest → sequence + `ability.draft.json`）。verify / clip 姿态采样 / agent 编排仍待后续。
 对齐现有 Agent-Native / MCP / FrameCapture / Action / Sprite 能力。
 
 关联：
@@ -352,8 +352,8 @@ eve_action_guide_verify → 不达标则回退下一候选 / 请求改拍
 |------|------|----------|
 | **P0 · 合同** | `eve.action.guide-pack` schema + 样例 JSON + 本文接口冻结 | **已落地**：`ActionGuidePack` 编解码单测；未知字段拒绝；`docs/dev/fixtures/eve.action.guide-pack.v1.example.json` |
 | **P1 · 捕获** | landmarks + MCP validate/set/get/capture/status/export；artifact 目录布局 | **已落地** |
-| **P2 · bone AOV + GPU（本竖切）** | Vulkan 离屏 silhouette/depth + CPU `bone` AOV | **已落地**：`GraphicsGuideCapture`；render-pipeline 测相机独立；骨点来自皮肤 palette（无 clip 时黑图） |
-| **P3 · 入库** | `ingest` → SpriteSheet/Clip + ability 草稿绑定 | 序列播放；revision 冲突；失败原子性 |
+| **P2 · bone AOV + GPU** | Vulkan 离屏 silhouette/depth + CPU `bone` AOV | **已落地** |
+| **P3 · 入库（本竖切）** | `ingest` → sequence PNG + clip/ability 草稿 | **已落地**：校验 revision/尺寸/透明边；写 `frames/`+`clip.json`+`ability.draft.json`；不注册 AbilityRuntime |
 | **P4 · 验证** | IoU / 关节误差 + `eve_play` evidence | 故意错位候选被拒；正例可玩冒烟 |
 | **P5 · Agent** | `tools/action-guide-agent` dry-run + 一路真实模型可选 | dry-run 闭环；有密钥时再开真实路径 |
 

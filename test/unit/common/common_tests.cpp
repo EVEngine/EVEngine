@@ -315,9 +315,9 @@ TEST_CASE("common.protocolDispatch.hasExhaustiveStableOutcomes") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_diagnostic_storage)
-#include "PrivateTestScope.h"
 #include <zeroerr/unittest.h>
 #include <type_traits>
+#include "PrivateTestScope.h"
 #include "common/Diagnostic.h"
 #include "common/Result.h"
 // common_diagnostic_storage.cpp
@@ -377,7 +377,6 @@ TEST_CASE("common.diagnosticStorage.spec.detailOwnershipAndMoves") {
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_diagnostic_vector_instances) || \
     defined(EVE_TEST_ORIGIN_diagnostic_value)
-#include "PrivateTestScope.h"
 #include <zeroerr/assert.h>
 #include <zeroerr/unittest.h>
 #include <atomic>
@@ -385,6 +384,7 @@ TEST_CASE("common.diagnosticStorage.spec.detailOwnershipAndMoves") {
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Diagnostic.h"
 #include "common/DiagnosticValue.h"
 #include "common/StringMapInstances.h"
@@ -1234,7 +1234,6 @@ TEST_CASE("common.ecsContainers.spec.tableIsolationAndDeferredInheritance") {
 }  // namespace test_common_ecs
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_identity_version)
-#include "PrivateTestScope.h"
 #include <array>
 #include <chrono>
 #include <cstdint>
@@ -1242,6 +1241,7 @@ TEST_CASE("common.ecsContainers.spec.tableIsolationAndDeferredInheritance") {
 #include <string>
 #include <type_traits>
 #include <unordered_map>
+#include "PrivateTestScope.h"
 #include "common/EventSequence.h"
 #include "common/Generation.h"
 #include "common/Identity.h"
@@ -1360,11 +1360,11 @@ TEST_CASE("common.identity.spec.persistentLogicalContentAndVersionTypes") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_result_assertion)
-#include "PrivateTestScope.h"
 #include <zeroerr/unittest.h>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "PrivateTestScope.h"
 #include "common/Result.h"
 // common_result_assertion.cpp
 namespace test_common_result_assertion {
@@ -1784,7 +1784,7 @@ TEST_CASE("common.zeroerr.preservesAssertionCounters") {
     const auto after = _ZEROERR_TEST_CONTEXT->passed_as;
     CHECK(after == before + 1);
     auto knownFailure = [reporter = &_ZEROERR_TEST_CONTEXT->reporter] {
-        zeroerr::TestContext context(*reporter);
+        zeroerr::TestContext   context(*reporter);
         zeroerr::assert_info   info{zeroerr::assert_level::ZEROERR_WARN_l, zeroerr::assert_throw::no_throw, false};
         zeroerr::AssertionData failure(__FILE__, __LINE__, "2 == 3", info);
         failure.setResult({false, "2 == 3"});
@@ -2037,8 +2037,8 @@ TEST_CASE_FIXTURE(ZeroerrRegistrationFixture, "common.zeroerrRegistration.fixtur
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_json)
-#include "PrivateTestScope.h"
 #include <string>
+#include "PrivateTestScope.h"
 #include "common/Json.h"
 #include "common/StringMapInstances.h"
 #include "zeroerr/assert.h"
@@ -2307,10 +2307,10 @@ TEST_CASE("common.json.spec.syntaxDepthAndOwnership") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_result)
-#include "PrivateTestScope.h"
 #include <memory>
 #include <string>
 #include <type_traits>
+#include "PrivateTestScope.h"
 #include "common/Result.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -2485,11 +2485,11 @@ TEST_CASE("common.result.spec.voidAndDiagnosticStorage") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_runtime_handle)
-#include "PrivateTestScope.h"
 #include <cstdint>
 #include <limits>
 #include <type_traits>
 #include <unordered_set>
+#include "PrivateTestScope.h"
 #include "common/RuntimeHandle.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -2566,7 +2566,6 @@ TEST_CASE("common.runtimeHandle.spec.invalidGenerationAndTypeIsolation") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_compiler)
-#include "PrivateTestScope.h"
 #include <chrono>
 #include <cstdio>
 #include <cstring>
@@ -2575,6 +2574,7 @@ TEST_CASE("common.runtimeHandle.spec.invalidGenerationAndTypeIsolation") {
 #include <iterator>
 #include <memory>
 #include <string>
+#include "PrivateTestScope.h"
 #include "common/BindingContracts.h"
 #include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
@@ -2837,9 +2837,9 @@ TEST_CASE("common.scriptStructure.spec.lexingAliasScopeAndInvalidInput") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_state_value)
-#include "PrivateTestScope.h"
 #include <string>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/StateValue.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -2977,8 +2977,8 @@ TEST_CASE("common.stateValue.spec.containersPathsMergeAndEquality") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_string_instances)
-#include "PrivateTestScope.h"
 #include <zeroerr/unittest.h>
+#include "PrivateTestScope.h"
 #include "common/Result.h"
 #include "common/Value.h"
 // string_instances.cpp
@@ -3028,8 +3028,8 @@ TEST_CASE("common.stringInstances.spec.crossBoundaryOwnershipAndStatus") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_time_contract)
-#include "PrivateTestScope.h"
 #include <limits>
+#include "PrivateTestScope.h"
 #include "common/Time.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -3532,8 +3532,8 @@ TEST_CASE("Compound conditions explain failed any and negation without mutating 
     context.values.emplace("level", 2);
     context.values.emplace(tagKey("fire"), false);
     context.values.emplace(stateKey("phase"), "ready");
-    const auto before   = context.values;
-    const auto any = Condition::any({Condition::compare("level", CompareOperator::Greater, 9), tagPresent("fire")});
+    const auto before = context.values;
+    const auto any    = Condition::any({Condition::compare("level", CompareOperator::Greater, 9), tagPresent("fire")});
     const auto rejected = any.evaluate(context);
     REQUIRE(!rejected.passed());
     CHECK(rejected.reasonCode() == ConditionReasonCode::NoChildPassed);
@@ -3872,8 +3872,12 @@ TEST_CASE("identity.audit.runtimeHandleGenerationMakesStaleReuseObservable") {
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_guide_pack)
 #include <array>
 #include <cmath>
+#include <memory>
 #include <string>
+#include <vector>
+#include "common/ActionGuideIngest.h"
 #include "common/ActionGuidePack.h"
+#include "common/Diagnostic.h"
 
 namespace {
 
@@ -4020,6 +4024,48 @@ TEST_CASE("common.actionGuidePack.landmarksProjectTargetToCanvasCenter") {
     CHECK(landmarks.value()[1].y < landmarks.value()[0].y);  // +Y is toward top of image
     REQUIRE(landmarks.value()[1].parentId.has_value());
     CHECK_EQ(*landmarks.value()[1].parentId, std::string("root"));
+}
+
+TEST_CASE("common.actionGuideIngest.validateAndBuildDraft") {
+    auto pack                     = samplePack();
+    pack.actionBinding.phaseMarks = {{"active.start", 0.05}, {"recover.start", 0.12}};
+
+    auto rgba = std::make_shared<std::vector<uint8_t>>(size_t(pack.canvas.width) * pack.canvas.height * 4, uint8_t{0});
+    for (size_t i = 0; i < rgba->size(); i += 4) {
+        (*rgba)[i + 0] = 255;
+        (*rgba)[i + 1] = 255;
+        (*rgba)[i + 2] = 255;
+        (*rgba)[i + 3] = (i / 4) % 7 == 0 ? 0 : 255;
+    }
+    eve::ActionGuideCandidateFrame frame;
+    frame.meta   = {pack.revision, pack.shots[0].shotId, "test-model", 7, "hash-abc"};
+    frame.width  = static_cast<uint32_t>(pack.canvas.width);
+    frame.height = static_cast<uint32_t>(pack.canvas.height);
+    frame.rgba8  = rgba;
+
+    eve::ActionGuideIngestRequest request;
+    request.pack   = pack;
+    request.frames = {frame};
+    auto draft     = eve::buildActionGuideIngestDraft(request);
+    REQUIRE(draft.ok());
+    CHECK_EQ(draft.value().clipName, std::string("attack.light"));
+    CHECK_EQ(draft.value().frameCount, std::int64_t{1});
+    REQUIRE(draft.value().abilityDraft.find("schema") != nullptr);
+    CHECK_EQ(draft.value().abilityDraft.find("schema")->asString(), std::string(eve::kActionGuideAbilityDraftSchemaId));
+    CHECK_EQ(draft.value().abilityDraft.find("commitAbility")->asBool(), false);
+
+    auto badRevision                               = request;
+    badRevision.frames[0].meta.sourceGuideRevision = pack.revision + 1;
+    auto conflict                                  = eve::validateActionGuideCandidates(badRevision);
+    REQUIRE(!conflict.ok());
+    CHECK_EQ(conflict.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Conflict);
+    conflict.ignore();
+
+    auto meta = eve::encodeActionGuideCandidateMeta(frame.meta);
+    REQUIRE(meta.ok());
+    auto decodedMeta = eve::decodeActionGuideCandidateMeta(meta.value());
+    REQUIRE(decodedMeta.ok());
+    CHECK_EQ(decodedMeta.value().promptHash, std::string("hash-abc"));
 }
 
 #endif

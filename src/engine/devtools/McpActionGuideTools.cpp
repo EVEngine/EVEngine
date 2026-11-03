@@ -1,9 +1,11 @@
 #include "devtools/McpActionGuideTools.hpp"
 
+#include "common/ActionGuideIngest.h"
 #include "common/ActionGuidePack.h"
 #include "common/Capability.h"
 #include "common/Diagnostic.h"
 #include "devtools/ActionGuideExport.hpp"
+#include "devtools/ActionGuideIngestIO.hpp"
 #include "devtools/McpJson.hpp"
 #include "devtools/McpServer.hpp"
 #include "devtools/McpToolFamilies.hpp"
@@ -368,6 +370,101 @@ std::string exportTool(Object::Ptr args) {
     return textPayload(out);
 }
 
+std::filesystem::path resolvePathArg(const std::string& path) {
+    auto        resolved = std::filesystem::path(path);
+    const auto& root     = McpServer::instance().gameRoot();
+    if (resolved.is_relative() && !root.empty()) resolved = std::filesystem::path(root) / resolved;
+    return std::filesystem::absolute(resolved).lexically_normal();
+}
+
+std::string ingestTool(Object::Ptr args) {
+    if (!args || !args->has("candidateDir") || !args->has("outputDir"))
+        return error("InvalidArguments", "candidateDir and outputDir are required");
+    std::string candidateDir;
+    std::string outputDir;
+    try {
+        candidateDir = args->getValue<std::string>("candidateDir");
+        outputDir    = args->getValue<std::string>("outputDir");
+    } catch (...) {
+        return error("InvalidArguments", "candidateDir and outputDir must be strings");
+    }
+    if (candidateDir.empty() || outputDir.empty() || candidateDir.find('\0') != std::string::npos ||
+        outputDir.find('\0') != std::string::npos)
+        return error("InvalidExportPath");
+    if (args->has("commitAbility")) {
+        try {
+            if (args->getValue<bool>("commitAbility"))
+                return error("Unsupported",
+                             "commitAbility=true lands after verify; ingest writes ability.draft.json only");
+        } catch (...) {
+            return error("InvalidArguments", "commitAbility must be a boolean");
+        }
+    }
+
+    auto pack = resolvePack(args);
+    if (!pack) return resultError(pack.status());
+    if (args->has("expectedRevision")) {
+        try {
+            const auto expected = args->get("expectedRevision").convert<std::int64_t>();
+            if (expected < 0) return error("InvalidArguments", "expectedRevision must be >= 0");
+            if (static_cast<std::uint64_t>(expected) != pack.value().revision)
+                return error("Conflict", "expectedRevision does not match pack.revision");
+        } catch (...) {
+            return error("InvalidArguments", "expectedRevision must be an integer");
+        }
+    }
+
+    std::filesystem::path candidatePath;
+    std::filesystem::path outputPath;
+    try {
+        candidatePath = resolvePathArg(candidateDir);
+        outputPath    = resolvePathArg(outputDir);
+    } catch (const std::exception&) {
+        return error("InvalidExportPath");
+    }
+
+    auto frames = loadActionGuideCandidates(candidatePath, pack.value());
+    if (!frames) return resultError(frames.status());
+
+    ActionGuideIngestRequest request;
+    request.pack                   = pack.value();
+    request.frames                 = std::move(frames).takeValue();
+    request.requireTransparentEdge = pack.value().canvas.transparent;
+    if (args->has("clipName")) {
+        try {
+            request.outputClipName = args->getValue<std::string>("clipName");
+        } catch (...) {
+            return error("InvalidArguments", "clipName must be a string");
+        }
+    }
+
+    auto draft = buildActionGuideIngestDraft(request);
+    if (!draft) return resultError(draft.status());
+    auto written = writeActionGuideIngestPack(draft.value(), request.frames, outputPath);
+    if (!written) return resultError(written.status());
+    auto summaryJson = written.value().toJson();
+    if (!summaryJson) return resultError(summaryJson.status());
+
+    auto out = base("ready");
+    out->set("ok", true);
+    out->set("sourceGuideRevision", static_cast<Poco::UInt64>(draft.value().sourceGuideRevision));
+    out->set("frameCount", static_cast<int>(draft.value().frameCount));
+    out->set("clipName", draft.value().clipName);
+    out->set("sequencePattern", draft.value().sequencePattern);
+    out->set("sequenceFirst", static_cast<Poco::Int64>(draft.value().sequenceFirst));
+    out->set("sequenceLast", static_cast<Poco::Int64>(draft.value().sequenceLast));
+    out->set("exportRoot", outputPath.generic_string());
+    try {
+        Poco::JSON::Parser parser;
+        out->set("artifact", parser.parse(summaryJson.value()).extract<Object::Ptr>());
+        auto abilityJson = draft.value().abilityDraft.toJson();
+        if (abilityJson) out->set("abilityDraft", parser.parse(abilityJson.value()).extract<Object::Ptr>());
+    } catch (...) {
+        out->set("hint", "ingest succeeded but summary JSON could not be re-parsed");
+    }
+    return textPayload(out);
+}
+
 }  // namespace
 
 bool isMcpActionGuideTool(std::string_view name) {
@@ -387,13 +484,14 @@ std::string callMcpActionGuideTool(std::string_view name, Object::Ptr args) {
     if (name == "eve_action_guide_capture") return captureTool(args);
     if (name == "eve_action_guide_status") return statusTool(args);
     if (name == "eve_action_guide_export") return exportTool(args);
-    if (name == "eve_action_guide_ingest" || name == "eve_action_guide_verify")
-        return error("Unsupported", "Ingest/verify land in later slices after SpriteSheet binding exists");
+    if (name == "eve_action_guide_ingest") return ingestTool(args);
+    if (name == "eve_action_guide_verify")
+        return error("Unsupported", "Verify (IoU / joint / eve_play) lands in the next slice");
     return error("UnknownTool");
 }
 
 std::string_view mcpActionGuideToolSchemas() {
-    return R"json({"name":"eve_action_guide_pack_validate","description":"Decode and re-encode an eve.action.guide-pack v1 document. Rejects unknown fields and invalid cameras/shots.","inputSchema":{"type":"object","properties":{"pack":{"description":"Guide-pack object or JSON string"}},"required":["pack"]}},{"name":"eve_action_guide_pack_set","description":"Store a validated guide pack in the process-local MCP session. Optional expectedRevision detects conflicts.","inputSchema":{"type":"object","properties":{"pack":{},"expectedRevision":{"type":"integer","minimum":0}},"required":["pack"]}},{"name":"eve_action_guide_pack_get","description":"Return the process-local session guide pack.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_action_guide_landmarks","description":"Project world-space bones into guide-canvas landmarks (top-left pixels + view depth). Uses pack argument or the session pack.","inputSchema":{"type":"object","properties":{"pack":{},"bones":{"type":"array","items":{"type":"object","properties":{"boneId":{"type":"string"},"name":{"type":"string"},"position":{"type":"array","items":{"type":"number"},"minItems":3,"maxItems":3},"parentId":{"type":"string"}},"required":["boneId","position"]}}},"required":["bones"]}},{"name":"eve_action_guide_capture","description":"Queue silhouette/depth AOV capture via IActionGuideCapture. Returns ProviderAbsent when no provider is registered.","inputSchema":{"type":"object","properties":{"pack":{},"shotIds":{"type":"array","items":{"type":"string"}}}}},{"name":"eve_action_guide_status","description":"Poll a guide-capture job token without waiting on GPU.","inputSchema":{"type":"object","properties":{"token":{"type":"string"}},"required":["token"]}},{"name":"eve_action_guide_export","description":"Export a Ready guide-capture job to guide-pack/shots/NNNN/{silhouette,depth}.png + manifest.json.","inputSchema":{"type":"object","properties":{"token":{"type":"string"},"path":{"type":"string"}},"required":["token","path"]}},{"name":"eve_action_guide_ingest","description":"Ingest AI candidate frames into SpriteSheet/Clip (later slice).","inputSchema":{"type":"object","properties":{"candidateDir":{"type":"string"}},"required":["candidateDir"]}},{"name":"eve_action_guide_verify","description":"Play/verify ingested clips against silhouette/joint thresholds (later slice).","inputSchema":{"type":"object","properties":{"packRevision":{"type":"integer"}}}})json";
+    return R"json({"name":"eve_action_guide_pack_validate","description":"Decode and re-encode an eve.action.guide-pack v1 document. Rejects unknown fields and invalid cameras/shots.","inputSchema":{"type":"object","properties":{"pack":{"description":"Guide-pack object or JSON string"}},"required":["pack"]}},{"name":"eve_action_guide_pack_set","description":"Store a validated guide pack in the process-local MCP session. Optional expectedRevision detects conflicts.","inputSchema":{"type":"object","properties":{"pack":{},"expectedRevision":{"type":"integer","minimum":0}},"required":["pack"]}},{"name":"eve_action_guide_pack_get","description":"Return the process-local session guide pack.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_action_guide_landmarks","description":"Project world-space bones into guide-canvas landmarks (top-left pixels + view depth). Uses pack argument or the session pack.","inputSchema":{"type":"object","properties":{"pack":{},"bones":{"type":"array","items":{"type":"object","properties":{"boneId":{"type":"string"},"name":{"type":"string"},"position":{"type":"array","items":{"type":"number"},"minItems":3,"maxItems":3},"parentId":{"type":"string"}},"required":["boneId","position"]}}},"required":["bones"]}},{"name":"eve_action_guide_capture","description":"Queue silhouette/depth AOV capture via IActionGuideCapture. Returns ProviderAbsent when no provider is registered.","inputSchema":{"type":"object","properties":{"pack":{},"shotIds":{"type":"array","items":{"type":"string"}}}}},{"name":"eve_action_guide_status","description":"Poll a guide-capture job token without waiting on GPU.","inputSchema":{"type":"object","properties":{"token":{"type":"string"}},"required":["token"]}},{"name":"eve_action_guide_export","description":"Export a Ready guide-capture job to guide-pack/shots/NNNN/{silhouette,depth}.png + manifest.json.","inputSchema":{"type":"object","properties":{"token":{"type":"string"},"path":{"type":"string"}},"required":["token","path"]}},{"name":"eve_action_guide_ingest","description":"Validate AI candidate frames against the guide pack, write sequence PNGs + clip.json + ability.draft.json. Does not register AbilityRuntime.","inputSchema":{"type":"object","properties":{"candidateDir":{"type":"string"},"outputDir":{"type":"string"},"pack":{},"expectedRevision":{"type":"integer","minimum":0},"clipName":{"type":"string"},"commitAbility":{"type":"boolean"}},"required":["candidateDir","outputDir"]}},{"name":"eve_action_guide_verify","description":"Play/verify ingested clips against silhouette/joint thresholds (later slice).","inputSchema":{"type":"object","properties":{"packRevision":{"type":"integer"}}}})json";
 }
 
 }  // namespace eve::dev

@@ -3,13 +3,17 @@
 #include <Poco/JSON/Parser.h>
 #include <algorithm>
 #include <filesystem>
+#include "common/ActionGuideIngest.h"
 #include "common/ActionGuidePack.h"
 #include "common/Capability.h"
 #include "common/Diagnostic.h"
 #include "devtools/ActionGuideExport.hpp"
+#include "devtools/ActionGuideIngestIO.hpp"
 #include "devtools/McpActionGuideTools.hpp"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+
+#include <fstream>
 
 namespace {
 Poco::JSON::Object::Ptr guideResult(const std::string& response) {
@@ -139,5 +143,86 @@ TEST_CASE("module_composition.actionGuide.fakeCaptureExportsArtifactLayout") {
     REQUIRE(stem.ok());
     CHECK_EQ(stem.value(), std::string("depth"));
     std::filesystem::remove_all(root);
+    eve::dev::resetMcpActionGuide();
+}
+
+TEST_CASE("module_composition.actionGuide.ingestWritesClipAndAbilityDraft") {
+    using namespace eve;
+    constexpr const char* kPack  = R"json({
+      "schema":"eve.action.guide-pack","schemaVersion":1,"revision":9,
+      "subject":{"domain":"animation.preview","id":1,"generation":1},
+      "skeletonRef":"s","clipRef":"c","rootMode":"inPlace",
+      "canvas":{"width":8,"height":8,"pixelsPerUnit":1,"backgroundRgba":[0,0,0,0],"transparent":true},
+      "camera":{"projection":"orthographic","fovYDegrees":45,"orthoSize":1,"nearPlane":0.1,"farPlane":10,
+                "eye":[0,0,5],"target":[0,0,0],"up":[0,1,0]},
+      "shots":[{"shotId":"s0","timeSeconds":0,"view":"front","aovs":["silhouette"],"tags":[]}],
+      "actionBinding":{"abilityId":"ability:hero.attack.light","clipName":"attack.light","fps":12,"loop":false,
+                       "phaseMarks":[{"name":"active.start","timeSeconds":0.05},{"name":"recover.start","timeSeconds":0.1}]},
+      "qc":{"minSilhouetteIoU":0.5,"maxJointErrorPx":4,"maxRetries":1}
+    })json";
+    auto                  parsed = Value::fromJson(kPack);
+    REQUIRE(parsed.ok());
+    auto pack = decodeActionGuidePack(parsed.value());
+    REQUIRE(pack.ok());
+
+    auto rgba = std::make_shared<std::vector<uint8_t>>(8 * 8 * 4, uint8_t{255});
+    for (size_t i = 0; i < rgba->size(); i += 4) (*rgba)[i + 3] = (i / 4) % 5 == 0 ? 0 : 255;
+    ActionGuideCandidateFrame frame;
+    frame.meta   = {9, "s0", "unit-model", 1, "prompt-1"};
+    frame.width  = 8;
+    frame.height = 8;
+    frame.rgba8  = rgba;
+
+    ActionGuideIngestRequest request;
+    request.pack   = pack.value();
+    request.frames = {frame};
+    auto draft     = buildActionGuideIngestDraft(request);
+    REQUIRE(draft.ok());
+
+    const auto root = std::filesystem::temp_directory_path() / "eve-action-guide-ingest";
+    std::filesystem::remove_all(root);
+    auto written = eve::dev::writeActionGuideIngestPack(draft.value(), request.frames, root);
+    REQUIRE(written.ok());
+    CHECK(std::filesystem::exists(root / "frames/frame_0.png"));
+    CHECK(std::filesystem::exists(root / "clip.json"));
+    CHECK(std::filesystem::exists(root / "ability.draft.json"));
+    CHECK(std::filesystem::exists(root / "ingest.manifest.json"));
+
+    // Round-trip PNG decode and MCP ingest path.
+    const auto candidates = std::filesystem::temp_directory_path() / "eve-action-guide-candidates";
+    std::filesystem::remove_all(candidates);
+    std::filesystem::create_directories(candidates / "0001");
+    std::filesystem::copy_file(root / "frames/frame_0.png", candidates / "0001/frame.png");
+    auto metaJson = encodeActionGuideCandidateMeta(frame.meta);
+    REQUIRE(metaJson.ok());
+    auto metaText = metaJson.value().toJson();
+    REQUIRE(metaText.ok());
+    {
+        std::ofstream out(candidates / "0001/meta.json", std::ios::binary | std::ios::trunc);
+        out.write(metaText.value().data(), static_cast<std::streamsize>(metaText.value().size()));
+    }
+
+    eve::dev::resetMcpActionGuide();
+    Poco::JSON::Parser      parser;
+    auto                    packObj = parser.parse(kPack).extract<Poco::JSON::Object::Ptr>();
+    Poco::JSON::Object::Ptr setArgs = new Poco::JSON::Object();
+    setArgs->set("pack", packObj);
+    REQUIRE(guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_pack_set", setArgs))->getValue<bool>("ok"));
+
+    const auto outRoot = std::filesystem::temp_directory_path() / "eve-action-guide-ingest-mcp";
+    std::filesystem::remove_all(outRoot);
+    Poco::JSON::Object::Ptr ingestArgs = new Poco::JSON::Object();
+    ingestArgs->set("candidateDir", candidates.generic_string());
+    ingestArgs->set("outputDir", outRoot.generic_string());
+    ingestArgs->set("expectedRevision", 9);
+    auto ingested = guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_ingest", ingestArgs));
+    REQUIRE(ingested->getValue<bool>("ok"));
+    CHECK_EQ(ingested->getValue<std::string>("clipName"), std::string("attack.light"));
+    CHECK(std::filesystem::exists(outRoot / "ability.draft.json"));
+    CHECK(std::filesystem::exists(outRoot / "frames/frame_0.png"));
+
+    std::filesystem::remove_all(root);
+    std::filesystem::remove_all(candidates);
+    std::filesystem::remove_all(outRoot);
     eve::dev::resetMcpActionGuide();
 }
