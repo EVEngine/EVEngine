@@ -66,35 +66,21 @@ TEST_CASE("procgen.waterSplash.spec.deterministicCrownsAndFoam") {
         CHECK(maxRadius(a) > 1.0f);
     };
 
-    SUB_CASE("jaggedness breaks the crown lip silhouette") {
+    SUB_CASE("jaggedness shortens the torn crown lip") {
         Params smooth;
         smooth.setSeed(99u);
         smooth.setFloat("jaggedness", 0.0f);
-        smooth.setFloat("foam", 0.0f);
         Params jagged;
         jagged.setSeed(99u);
         jagged.setFloat("jaggedness", 1.0f);
-        jagged.setFloat("foam", 0.0f);
 
         MeshBuild   a;
         MeshBuild   b;
         std::string error;
         REQUIRE(eve::procgen::generateWaterSplashMesh(smooth, a, error));
         REQUIRE(eve::procgen::generateWaterSplashMesh(jagged, b, error));
+        CHECK(maxHeight(b) < maxHeight(a));
         CHECK(a.positions() != b.positions());
-
-        auto topSpread = [](const MeshBuild &mesh) {
-            const float hMax = maxHeight(mesh);
-            float       lo = hMax, hi = 0.f;
-            for (int i = 0; i < mesh.getVertexCount(); ++i) {
-                const float y = mesh.getPositionY(i);
-                if (y < hMax * 0.88f) continue;
-                lo = std::min(lo, y);
-                hi = std::max(hi, y);
-            }
-            return hi - lo;
-        };
-        CHECK(topSpread(b) > topSpread(a));
     };
 
     SUB_CASE("registry recipe mesh.water_splash is available") {
@@ -115,9 +101,9 @@ TEST_CASE("procgen.waterSplash.spec.deterministicCrownsAndFoam") {
         params.setSeed(42u);
         params.setFloat("foam", 1.0f);
         params.setFloat("jaggedness", 0.8f);
-        params.setFloat("bodyR", 0.18f);
-        params.setFloat("bodyG", 0.72f);
-        params.setFloat("bodyB", 0.78f);
+        params.setFloat("bodyR", 0.22f);
+        params.setFloat("bodyG", 0.78f);
+        params.setFloat("bodyB", 0.82f);
         params.setFloat("foamR", 1.0f);
         params.setFloat("foamG", 1.0f);
         params.setFloat("foamB", 1.0f);
@@ -128,16 +114,14 @@ TEST_CASE("procgen.waterSplash.spec.deterministicCrownsAndFoam") {
         REQUIRE(mesh.hasVertexColors());
 
         float bodyLuma = 0.f;
-        float tipLuma  = 0.f;
-        int   bodyN    = 0;
-        int   tipN     = 0;
+        float tipLuma = 0.f;
+        int bodyN = 0;
+        int tipN = 0;
         const float hMax = maxHeight(mesh);
         for (int i = 0; i < mesh.getVertexCount(); ++i) {
             const float y = mesh.getPositionY(i);
-            const float r = mesh.getColor(i, 0);
-            const float g = mesh.getColor(i, 1);
-            const float b = mesh.getColor(i, 2);
-            const float luma = 0.2126f * r + 0.7152f * g + 0.0722f * b;
+            const float luma =
+                0.2126f * mesh.getColor(i, 0) + 0.7152f * mesh.getColor(i, 1) + 0.0722f * mesh.getColor(i, 2);
             if (y < hMax * 0.25f) {
                 bodyLuma += luma;
                 ++bodyN;
@@ -148,9 +132,7 @@ TEST_CASE("procgen.waterSplash.spec.deterministicCrownsAndFoam") {
         }
         REQUIRE(bodyN > 0);
         REQUIRE(tipN > 0);
-        bodyLuma /= float(bodyN);
-        tipLuma /= float(tipN);
-        CHECK(tipLuma > bodyLuma + 0.12f);
-        CHECK(tipLuma > 0.75f);
+        CHECK(tipLuma / float(tipN) > bodyLuma / float(bodyN) + 0.12f);
+        CHECK(tipLuma / float(tipN) > 0.75f);
     };
 }

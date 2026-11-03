@@ -1,9 +1,9 @@
 # Water Splash VFX — procedural stylized splash (`mesh.water_splash`)
 
 Native recipe `mesh.water_splash` builds a deterministic stylized water impact:
-continuous nested flared crown sheets, a jagged torn lip, a white foam crest
-ribbon, vertical foam streaks, and spray blades on the tallest peaks. This
-example is a live parameter lab with an auto-playing staggered burst animation.
+a tall central jet plus nested outward-flaring crown shells with jagged torn
+lips and white foam vertex colors. This example is a live parameter lab with
+an auto-playing staggered burst animation.
 
 Run from the repository root:
 
@@ -38,12 +38,12 @@ rise / scale / fade curve.
 | `height` | `2.4` | overall splash height |
 | `width` | `3.2` | outer crown diameter |
 | `layers` | `4` | number of nested shells (2–4) |
-| `jaggedness` | `0.72` | torn-lip / peak strength |
-| `foam` | `1.0` | white foam crest + spray amount |
-| `flare` | `1.05` | outward crown flare scale |
+| `jaggedness` | `0.78` | torn-lip strength |
+| `foam` | `1.0` | white foam tip / crest amount |
+| `flare` | `1.0` | outward crown flare scale |
 | `onlyLayer` | `-1` | emit one layer for staggered VFX |
-| `radialSegments` | `36` | radial resolution |
-| `heightSegments` | `14` | vertical resolution |
+| `radialSegments` | `28` | radial resolution |
+| `heightSegments` | `10` | vertical resolution |
 | `bodyR/G/B` | cyan | shell body vertex color |
 | `foamR/G/B` | white | foam tip vertex color |
 
