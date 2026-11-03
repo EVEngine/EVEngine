@@ -83,9 +83,10 @@ struct ActionGuideIngestDraft {
     const ActionGuideCandidateMeta& meta);
 
 /**
- * @brief Validate candidate frames against a GuidePack contract (revision, count, size, alpha).
- * @remarks Does not write files or register abilities. Failure publishes no state.
- * @cost Linear in frame count × pixels when transparency checks are enabled.
+ * @brief Validate candidate frames against a GuidePack contract (revision, count, size, alpha edge).
+ * @remarks When `requireTransparentEdge` and the pack canvas is transparent, every 1px border
+ *          sample must have alpha below 250. Does not write files or register abilities.
+ * @cost Linear in frame count × pixels (full scan) plus O(perimeter) for the edge check.
  */
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<void> validateActionGuideCandidates(
     const ActionGuideIngestRequest& request);

@@ -131,15 +131,27 @@ Result<void> validateActionGuideCandidates(const ActionGuideIngestRequest& reque
             return invalidVoid("candidate RGBA buffer size mismatch", path + ".rgba8");
 
         bool hasOpaque = false;
-        bool hasAlpha  = false;
         for (size_t p = 0; p + 3 < frame.rgba8->size(); p += 4) {
-            const auto a = (*frame.rgba8)[p + 3];
-            if (a > 8) hasOpaque = true;
-            if (a < 250) hasAlpha = true;
+            if ((*frame.rgba8)[p + 3] > 8) hasOpaque = true;
         }
         if (!hasOpaque) return invalidVoid("candidate frame has no opaque content", path);
-        if (request.requireTransparentEdge && request.pack.canvas.transparent && !hasAlpha)
-            return invalidVoid("transparent canvas requires some alpha < 1 in candidates", path + ".alpha");
+
+        if (request.requireTransparentEdge && request.pack.canvas.transparent) {
+            // Design contract: transparent canvas candidates keep a clear 1px border so
+            // Sprite sequence import does not bake solid edges into the atlas.
+            auto alphaAt = [&](std::uint32_t x, std::uint32_t y) -> std::uint8_t {
+                return (*frame.rgba8)[(static_cast<size_t>(y) * frame.width + x) * 4 + 3];
+            };
+            bool edgeClear = true;
+            for (std::uint32_t x = 0; x < frame.width && edgeClear; ++x) {
+                if (alphaAt(x, 0) >= 250 || alphaAt(x, frame.height - 1) >= 250) edgeClear = false;
+            }
+            for (std::uint32_t y = 0; y < frame.height && edgeClear; ++y) {
+                if (alphaAt(0, y) >= 250 || alphaAt(frame.width - 1, y) >= 250) edgeClear = false;
+            }
+            if (!edgeClear)
+                return invalidVoid("transparent canvas requires a fully clear 1px border", path + ".alphaEdge");
+        }
     }
     return Result<void>::success();
 }

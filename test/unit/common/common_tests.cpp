@@ -4026,22 +4026,39 @@ TEST_CASE("common.actionGuidePack.landmarksProjectTargetToCanvasCenter") {
     CHECK_EQ(*landmarks.value()[1].parentId, std::string("root"));
 }
 
+namespace {
+
+std::shared_ptr<std::vector<uint8_t>> makeGuideCandidateRgba(uint32_t width, uint32_t height, bool clearBorder,
+                                                             bool opaqueInterior) {
+    auto rgba = std::make_shared<std::vector<uint8_t>>(size_t(width) * height * 4, uint8_t{0});
+    for (uint32_t y = 0; y < height; ++y) {
+        for (uint32_t x = 0; x < width; ++x) {
+            const size_t i    = (size_t(y) * width + x) * 4;
+            const bool   edge = x == 0 || y == 0 || x + 1 == width || y + 1 == height;
+            (*rgba)[i + 0]    = 255;
+            (*rgba)[i + 1]    = 255;
+            (*rgba)[i + 2]    = 255;
+            if (edge) {
+                (*rgba)[i + 3] = clearBorder ? 0 : 255;
+            } else {
+                (*rgba)[i + 3] = opaqueInterior ? 255 : 0;
+            }
+        }
+    }
+    return rgba;
+}
+
+}  // namespace
+
 TEST_CASE("common.actionGuideIngest.validateAndBuildDraft") {
     auto pack                     = samplePack();
     pack.actionBinding.phaseMarks = {{"active.start", 0.05}, {"recover.start", 0.12}};
 
-    auto rgba = std::make_shared<std::vector<uint8_t>>(size_t(pack.canvas.width) * pack.canvas.height * 4, uint8_t{0});
-    for (size_t i = 0; i < rgba->size(); i += 4) {
-        (*rgba)[i + 0] = 255;
-        (*rgba)[i + 1] = 255;
-        (*rgba)[i + 2] = 255;
-        (*rgba)[i + 3] = (i / 4) % 7 == 0 ? 0 : 255;
-    }
     eve::ActionGuideCandidateFrame frame;
     frame.meta   = {pack.revision, pack.shots[0].shotId, "test-model", 7, "hash-abc"};
     frame.width  = static_cast<uint32_t>(pack.canvas.width);
     frame.height = static_cast<uint32_t>(pack.canvas.height);
-    frame.rgba8  = rgba;
+    frame.rgba8  = makeGuideCandidateRgba(frame.width, frame.height, /*clearBorder=*/true, /*opaqueInterior=*/true);
 
     eve::ActionGuideIngestRequest request;
     request.pack   = pack;
@@ -4061,11 +4078,50 @@ TEST_CASE("common.actionGuideIngest.validateAndBuildDraft") {
     CHECK_EQ(conflict.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Conflict);
     conflict.ignore();
 
+    auto solidEdge            = request;
+    solidEdge.frames[0].rgba8 = makeGuideCandidateRgba(frame.width, frame.height, false, true);
+    auto rejectedEdge         = eve::validateActionGuideCandidates(solidEdge);
+    REQUIRE(!rejectedEdge.ok());
+    CHECK_EQ(rejectedEdge.status().primaryDiagnostic()->code(), eve::DiagnosticCode::InvalidArgument);
+    rejectedEdge.ignore();
+
+    auto wrongSize             = request;
+    wrongSize.frames[0].width  = frame.width / 2;
+    wrongSize.frames[0].height = frame.height / 2;
+    wrongSize.frames[0].rgba8 =
+        makeGuideCandidateRgba(wrongSize.frames[0].width, wrongSize.frames[0].height, true, true);
+    auto rejectedSize = eve::validateActionGuideCandidates(wrongSize);
+    REQUIRE(!rejectedSize.ok());
+    rejectedSize.ignore();
+
     auto meta = eve::encodeActionGuideCandidateMeta(frame.meta);
     REQUIRE(meta.ok());
     auto decodedMeta = eve::decodeActionGuideCandidateMeta(meta.value());
     REQUIRE(decodedMeta.ok());
     CHECK_EQ(decodedMeta.value().promptHash, std::string("hash-abc"));
+}
+
+TEST_CASE("common.actionGuideIngest.candidateFixtureJsonRoundTrips") {
+    // Keep in sync with docs/dev/fixtures/eve.action.guide-candidate.v1.example.json.
+    constexpr char kExample[] = R"json({
+  "schema": "eve.action.guide-candidate",
+  "schemaVersion": 1,
+  "sourceGuideRevision": 1,
+  "shotId": "attack.light.s00",
+  "model": "external.image-gen.example",
+  "seed": 42,
+  "promptHash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+})json";
+    auto           parsed     = eve::Value::fromJson(kExample);
+    REQUIRE(parsed.ok());
+    auto decoded = eve::decodeActionGuideCandidateMeta(parsed.value());
+    REQUIRE(decoded.ok());
+    CHECK_EQ(decoded.value().shotId, std::string("attack.light.s00"));
+    auto encoded = eve::encodeActionGuideCandidateMeta(decoded.value());
+    REQUIRE(encoded.ok());
+    auto again = eve::decodeActionGuideCandidateMeta(encoded.value());
+    REQUIRE(again.ok());
+    CHECK_EQ(again.value().seed, std::int64_t{42});
 }
 
 #endif

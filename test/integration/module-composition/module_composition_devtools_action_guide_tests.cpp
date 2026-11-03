@@ -165,8 +165,15 @@ TEST_CASE("module_composition.actionGuide.ingestWritesClipAndAbilityDraft") {
     auto pack = decodeActionGuidePack(parsed.value());
     REQUIRE(pack.ok());
 
-    auto rgba = std::make_shared<std::vector<uint8_t>>(8 * 8 * 4, uint8_t{255});
-    for (size_t i = 0; i < rgba->size(); i += 4) (*rgba)[i + 3] = (i / 4) % 5 == 0 ? 0 : 255;
+    auto rgba = std::make_shared<std::vector<uint8_t>>(8 * 8 * 4, uint8_t{0});
+    for (uint32_t y = 0; y < 8; ++y) {
+        for (uint32_t x = 0; x < 8; ++x) {
+            const size_t i    = (size_t(y) * 8 + x) * 4;
+            const bool   edge = x == 0 || y == 0 || x == 7 || y == 7;
+            (*rgba)[i + 0] = (*rgba)[i + 1] = (*rgba)[i + 2] = 255;
+            (*rgba)[i + 3]                                    = edge ? 0 : 255;
+        }
+    }
     ActionGuideCandidateFrame frame;
     frame.meta   = {9, "s0", "unit-model", 1, "prompt-1"};
     frame.width  = 8;

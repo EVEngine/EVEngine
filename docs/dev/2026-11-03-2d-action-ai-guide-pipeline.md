@@ -353,7 +353,7 @@ eve_action_guide_verify → 不达标则回退下一候选 / 请求改拍
 | **P0 · 合同** | `eve.action.guide-pack` schema + 样例 JSON + 本文接口冻结 | **已落地**：`ActionGuidePack` 编解码单测；未知字段拒绝；`docs/dev/fixtures/eve.action.guide-pack.v1.example.json` |
 | **P1 · 捕获** | landmarks + MCP validate/set/get/capture/status/export；artifact 目录布局 | **已落地** |
 | **P2 · bone AOV + GPU** | Vulkan 离屏 silhouette/depth + CPU `bone` AOV | **已落地** |
-| **P3 · 入库（本竖切）** | `ingest` → sequence PNG + clip/ability 草稿 | **已落地**：校验 revision/尺寸/透明边；写 `frames/`+`clip.json`+`ability.draft.json`；不注册 AbilityRuntime |
+| **P3 · 入库（本竖切）** | `ingest` → sequence PNG + clip/ability 草稿 | **已落地**：校验 revision/尺寸/**1px 透明边**；写 `frames/`+`clip.json`+`ability.draft.json`+`attribution.gen.json`；候选 fixture `docs/dev/fixtures/eve.action.guide-candidate.v1.example.json`；不注册 AbilityRuntime |
 | **P4 · 验证** | IoU / 关节误差 + `eve_play` evidence | 故意错位候选被拒；正例可玩冒烟 |
 | **P5 · Agent** | `tools/action-guide-agent` dry-run + 一路真实模型可选 | dry-run 闭环；有密钥时再开真实路径 |
 
