@@ -4,11 +4,13 @@
 local catalogMod = loadfile("fx/catalog.nut")();
 local runtimeMod = loadfile("fx/runtime.nut")();
 local presenterMod = loadfile("fx/presenter.nut")();
+local fireHdMod = loadfile("fx/fire_hd.nut")();
 
 persist camera = null
 persist particlesMod = null
 persist presenter = null
 persist runtime = null
+persist fireHd = null
 persist entries = null
 persist elements = null
 persist entryIndex = 0
@@ -26,6 +28,11 @@ persist dummy = null
 persist casterOrb = null
 persist keyEdge = null
 persist labTime = 0.0
+
+function isFireHdActive() {
+    local e = currentEntry();
+    return e != null && e.spell.id == "fire";
+}
 
 FOCUS <- { x = 0.0, y = 1.25, z = 0.0 };
 TARGET <- { x = 3.6, y = 1.15, z = 0.15 };
@@ -66,7 +73,8 @@ function rebuildParamUI() {
     ui.beginWindow("ULTRA ELEMENTS", "root");
     ui.text("ULTRA ELEMENTS", "title");
     ui.text("PARAMETRIC SPELL VFX LAB", "subtitle");
-    ui.text(e.element + "  /  " + e.name, "spell");
+    local hdNote = (e.spell.id == "fire") ? "  [HD VOLUME ~ original]" : "";
+    ui.text(e.element + "  /  " + e.name + hdNote, "spell");
     ui.beginRow("nav", 5.0);
     ui.button("Prev [Q]", "prev"); ui.button("Cast [Space]", "cast"); ui.button("Next [E]", "next");
     ui.end();
@@ -86,11 +94,11 @@ function rebuildParamUI() {
     ui.end();
     if (spell.presets.len() > 0) {
         ui.beginRow("presets", 4.0);
-        for (local i = 0; i < spell.presets.len() && i < 3; ++i) {
+        for (local i = 0; i < spell.presets.len() && i < 4; ++i) {
             ui.button(spell.presets[i].name, "preset_" + i);
         }
-        ui.button("Reset", "reset");
         ui.end();
+        ui.button("Reset", "reset");
     } else {
         ui.button("Reset params", "reset");
     }
@@ -231,13 +239,15 @@ eve_init <- function() {
     presenter = presenterMod.create(gfx, particlesMod, weatherMod);
     presenter.setScreen(config.width.tofloat(), config.height.tofloat());
     runtime = runtimeMod.create(presenter);
+    fireHd = fireHdMod.create(gfx);
+    fireHd.setScreen(config.width.tofloat(), config.height.tofloat(), 350.0);
 
     buildArena();
     ui.setTheme("dark");
     ui.setScale(0.82);
     rebuildParamUI();
 
-    print("ULTRA_ELEMENTS_READY spells=" + entries.len() + " elements=" + elements.len() + " bolts=" + presenter.bolts.len() + "\n");
+    print("ULTRA_ELEMENTS_READY spells=" + entries.len() + " elements=" + elements.len() + " bolts=" + presenter.bolts.len() + " fireHd=1\n");
 };
 
 eve_update <- function(dt) {
@@ -292,6 +302,8 @@ eve_update <- function(dt) {
     }
 
     syncParamsFromUI();
+    local hd = isFireHdActive();
+    presenter.hdFireSkip = hd;
     if (!paused) {
         labTime += dt;
         if (autoCast) {
@@ -306,7 +318,16 @@ eve_update <- function(dt) {
         presenter.updateBolts(dt);
         presenter.updateParticles(dt);
         // Rebuild visuals for alive casts after tick cleared prop pool.
-        presenter.drawAll(runtime.list);
+        if (!hd) presenter.drawAll(runtime.list);
+        else {
+            // Still clear prop pool so stale meshes do not linger when leaving HD.
+            presenter.drawAll([]);
+        }
+    }
+
+    local e = currentEntry();
+    if (hd && fireHd != null) {
+        fireHd.pickAndSync(runtime.list, e.spell, e.name, orbit, labTime);
     }
 
     local eyeX = 1.4 + cos(orbit) * 12.5;
@@ -314,8 +335,8 @@ eve_update <- function(dt) {
     camera.setEye(eyeX, 7.0, eyeZ);
     camera.setTarget(1.4, 1.15, 0.0);
 
-    local e = currentEntry();
-    ui.setText("status", statusLine + " | alive=" + runtime.aliveCount() + " | " + e.name);
+    local tag = hd ? " HD~orig" : "";
+    ui.setText("status", statusLine + " | alive=" + runtime.aliveCount() + " | " + e.name + tag);
     if (casterOrb != null) {
         local pulse = 0.16 + 0.03 * sin(labTime * 3.0);
         casterOrb.setScale(pulse, pulse, pulse);
@@ -324,6 +345,12 @@ eve_update <- function(dt) {
 
 eve_render <- function() {
     gfx.clear();
-    gfx.render3D();
-    if (presenter != null) presenter.renderParticles();
+    if (isFireHdActive() && fireHd != null) {
+        fireHd.render(gfx);
+    } else {
+        gfx.render3D();
+        if (presenter != null) presenter.renderParticles();
+    }
+    ui.select("ultra");
+    ui.beginFrameAndRender();
 };

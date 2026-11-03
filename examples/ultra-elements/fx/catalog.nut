@@ -45,7 +45,8 @@ function catalog() {
             params={ size=1.0, speed=18.0, temperature=1900.0, intensity=1.0, soot=1.0, embers=1.0, smoke=1.0, haze=1.0, scorch=1.0, height=1.0, tint="#ffffff" },
             ranges={ size=[0.3, 3.0, 0.01], speed=[4.0, 40.0, 0.1], temperature=[900.0, 6500.0, 10.0], intensity=[0.0, 3.0, 0.01], soot=[0.0, 3.0, 0.01], embers=[0.0, 3.0, 0.01], smoke=[0.0, 3.0, 0.01], haze=[0.0, 3.0, 0.01], scorch=[0.0, 2.0, 0.01], height=[0.4, 2.0, 0.01] },
             timing={ charge=0.7, impact=0.25, linger=5.0, sustain=2.6 },
-            presets=[{ name="hellfire", values={ temperature=1500.0, tint="#ff6a4a", smoke=1.6, soot=1.6, intensity=1.2 } }, { name="blue flame", values={ temperature=6500.0, tint="#8fb8ff", smoke=0.3, soot=0.15 } }, { name="soulfire", values={ temperature=2600.0, tint="#3cff9a", smoke=0.5, soot=0.5 } }]
+            // "canonical" locks the upstream default Fire look (HD volume path ≈ original).
+            presets=[{ name="canonical", values={ size=1.0, speed=18.0, temperature=1900.0, intensity=1.0, soot=1.0, embers=1.0, smoke=1.0, haze=1.0, scorch=1.0, height=1.0, tint="#ffffff" } }, { name="hellfire", values={ temperature=1500.0, tint="#ff6a4a", smoke=1.6, soot=1.6, intensity=1.2 } }, { name="blue flame", values={ temperature=6500.0, tint="#8fb8ff", smoke=0.3, soot=0.15 } }, { name="soulfire", values={ temperature=2600.0, tint="#3cff9a", smoke=0.5, soot=0.5 } }]
         },
         {
             id="phoenix", name="Phoenix", element="fire", shape="projectile",

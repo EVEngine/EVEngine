@@ -71,6 +71,7 @@ function checked(result, ctx) {
 }
 
 function createPresenter(gfx, particlesMod, weatherMod) {
+    // When true, Fire / Fireball / Inferno are drawn by fx/fire_hd.nut instead of mesh props.
     local cube = gfx.newMeshCube(1.0);
     local sphere = gfx.newMeshSphere(18, 12);
     local cylinder = gfx.newMeshCylinder(24, 1, true);
@@ -124,7 +125,9 @@ function createPresenter(gfx, particlesMod, weatherMod) {
         orbCursor = 0, segCursor = 0, spikeCursor = 0, ringCursor = 0, colCursor = 0, boltCursor = 0,
         active = {},
         time = 0.0,
-        screenW = 1280.0, screenH = 800.0
+        screenW = 1280.0, screenH = 800.0,
+        // When true, Fireball/Inferno are drawn by fx/fire_hd volumetric path.
+        hdFireSkip = false
     };
 
     api.setScreen <- function(w, h) { this.screenW = w; this.screenH = h; };
@@ -489,6 +492,7 @@ function createPresenter(gfx, particlesMod, weatherMod) {
             return;
         }
 
+        if (id == "fire" && this.hdFireSkip) return;
         if (id == "fire" && form == "Inferno") {
             local h = 2.8 * (("height" in p) ? p.height : 1.0) * size;
             this.drawAreaColumn(c, rgb, h, 0.55 * size, 1.4);
