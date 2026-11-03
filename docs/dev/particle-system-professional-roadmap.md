@@ -112,3 +112,13 @@ dependency tracking, and broader runtime/editor command parity tests.
   property of a particular frame rate or device.
 - Every rendering milestone requires a real captured frame plus focused tests;
   startup logs or successful shader compilation are insufficient.
+
+## External VFX porting
+
+Unity open-source VFX is treated as a **recipe and algorithm source**, not as a
+Visual Effect Graph compatibility layer. The systematic porting plan (content
+classes C/R/S vs kernel class K, mapping dictionary, acceptance gates, and the
+first bonfire/portal/fireworks batch) lives in
+`docs/dev/superpowers/specs/2026-11-03-unity-vfx-porting-plan.md`. Kernel gaps
+opened by that plan must land as separate PRs that cite the matching P2/P3
+items above.
