@@ -2339,6 +2339,11 @@ private:
     std::shared_ptr<InspectionService> inspectionService_;
     void                               pollEntityInspection();
     void                               destroyEntityInspection();
+    // Guide-capture service: offscreen silhouette/depth(/bone) AOVs from GuidePack cameras.
+    struct GuideCaptureService;
+    std::shared_ptr<GuideCaptureService> guideCaptureService_;
+    void                                 pollGuideCapture();
+    void                                 destroyGuideCapture();
 };
 
 }  // namespace eve::graphics::vulkan
