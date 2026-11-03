@@ -239,7 +239,7 @@ docs/dev/superpowers/specs/…        # K：能力规格，单独 PR
 
 - [x] 三份 `*.effect.json` + `SOURCES.md`  
 - [x] 可运行 `examples/unity-vfx-port-lab`（smoke PASS，`UNITY_VFX_PORT_READY`）  
-- [x] 单元夹具覆盖 fireworks `eventRoutes`；render-presentation 参考包纳入 8 个配方并断言层名  
+- [x] 单元夹具覆盖 fireworks `eventRoutes`；render-presentation 参考包纳入配方并断言层名（Phase 3 扩至 11）  
 - [x] `particles.reference.effectPackLoadsAndRenders` 出帧 `particle_p2_reference_pack.png` 
 
 ### Phase 2 — 攻击编排对齐（R）**【本批执行】**
