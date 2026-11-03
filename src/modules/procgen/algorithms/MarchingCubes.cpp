@@ -12,6 +12,7 @@
 #include "procgen/algorithms/RockMesh.h"
 #include "procgen/algorithms/SkyscraperMesh.h"
 #include "procgen/algorithms/TreeMesh.h"
+#include "procgen/algorithms/WaterSplashMesh.h"
 #include "procgen/road/BridgeGenerator.h"
 #include "procgen/road/RoadRecipes.h"
 #include "procgen/urban/UrbanOutput.h"
@@ -667,6 +668,25 @@ void MeshRecipeRegistry::registerBuiltins() {
     addAdvanced(bush,
                 ParamDescriptor::floating("twigLength", "Twig Length", 0.42f, 0.05f, 10.f, 0.01f));
     registerRecipe(std::move(bush), generateBushMesh);
+
+    RecipeDescriptor splash = mesh("mesh.water_splash", "Water Splash");
+    splash.params.push_back(ParamDescriptor::floating("height", "Height", 2.4f, 0.2f, 20.f, 0.05f));
+    splash.params.push_back(ParamDescriptor::floating("width", "Width", 3.2f, 0.3f, 30.f, 0.05f));
+    splash.params.push_back(ParamDescriptor::integer("layers", "Layers", 4, 2, 4));
+    splash.params.push_back(
+        ParamDescriptor::floating("jaggedness", "Jaggedness", 0.78f, 0.f, 1.f, 0.01f));
+    splash.params.push_back(ParamDescriptor::floating("foam", "Foam", 0.85f, 0.f, 1.f, 0.01f));
+    splash.params.push_back(ParamDescriptor::floating("flare", "Flare", 1.0f, 0.35f, 1.75f, 0.01f));
+    addAdvanced(splash, ParamDescriptor::integer("onlyLayer", "Only Layer (-1=all)", -1, -1, 3));
+    addAdvanced(splash, ParamDescriptor::integer("radialSegments", "Radial Segments", 28, 8, 64));
+    addAdvanced(splash, ParamDescriptor::integer("heightSegments", "Height Segments", 10, 3, 32));
+    addAdvanced(splash, ParamDescriptor::floating("bodyR", "Body Red", 0.22f, 0.f, 1.f, 0.01f));
+    addAdvanced(splash, ParamDescriptor::floating("bodyG", "Body Green", 0.78f, 0.f, 1.f, 0.01f));
+    addAdvanced(splash, ParamDescriptor::floating("bodyB", "Body Blue", 0.82f, 0.f, 1.f, 0.01f));
+    addAdvanced(splash, ParamDescriptor::floating("foamR", "Foam Red", 0.95f, 0.f, 1.f, 0.01f));
+    addAdvanced(splash, ParamDescriptor::floating("foamG", "Foam Green", 0.98f, 0.f, 1.f, 0.01f));
+    addAdvanced(splash, ParamDescriptor::floating("foamB", "Foam Blue", 1.0f, 0.f, 1.f, 0.01f));
+    registerRecipe(std::move(splash), generateWaterSplashMesh);
 
     RecipeDescriptor flower = mesh("mesh.flower", "Flower");
     flower.params.push_back(ParamDescriptor::floating("height", "Height", 0.55f, 0.15f, 2.5f, 0.01f));

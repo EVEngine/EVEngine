@@ -183,6 +183,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [dungeon-generator-3d](dungeon-generator-3d/README.md) | `procgen.generate("level.roguelike", ...)` 的 3D 可配置呈现 |
 | [tree-generator](tree-generator/README.md) | 确定性树木：Weber-Penn / 空间殖民两种骨架算法 |
 | [bush-generator](bush-generator/README.md) | 低多边形灌木配方（mesh.bush）与参数实时调节 |
+| [water-splash-vfx](water-splash-vfx/README.md) | 风格化程序化水花：`mesh.water_splash` 嵌套冠壳 + 锯齿泡沫与迸溅动画 |
 | [bush-fog-volumes](bush-fog-volumes/README.md) | 程序化灌木穿过全局与局部体积雾的深度、透明度和多视角检查 |
 | [rock-generator](rock-generator/README.md) | 岩石配方：变形 + 程序化石材纹理 + 自动 LOD |
 | [castle-generator](castle-generator/README.md) | 城堡配方 `mesh.castle`：同心结构、塔楼与程序化材质 |

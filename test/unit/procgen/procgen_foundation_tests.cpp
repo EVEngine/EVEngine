@@ -668,7 +668,8 @@ TEST_CASE("procgen.meshRecipes.shapeReplayParameterAndValidationContract") {
     SUB_CASE("registered shapes replay and produce valid triangle topology") {
         auto& registry = MeshRecipeRegistry::instance();
         registry.registerBuiltins();
-        const char* ids[] = {"mesh.rock", "mesh.tree", "mesh.skyscraper", "mesh.flower", "mesh.bush"};
+        const char* ids[] = {"mesh.rock", "mesh.tree", "mesh.skyscraper", "mesh.flower", "mesh.bush",
+                             "mesh.water_splash"};
         for (const char* id : ids) {
             REQUIRE(registry.has(id));
             Params params;
