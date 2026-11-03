@@ -235,6 +235,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [vortex-cloud](vortex-cloud/README.md) | 仰视天空体积漩涡：人物岩脊、巨大云墙、暖光风眼与实时调参 |
 | [tornado-lab](tornado-lab/README.md) | 参数化体积龙卷风：Shader、粒子碎屑和原生曲线轮廓 |
 | [blade-whirlwind](blade-whirlwind/README.md) | 可复用世界空间剑刃旋风：攻击触发、生命周期、深度遮挡和可替换样式 |
+| [ultra-elements](ultra-elements/README.md) | Ultra Elements 39 法术参数化 VFX 实验室：上游 params/ranges/presets + 原生粒子/闪电/网格表现 |
 | [virtual-texture-blending](virtual-texture-blending/README.md) | 虚拟纹理材质混合：常驻虚拟页 + fallback 槽与无缝 gutter |
 | [ink-combat](ink-combat/README.md) | 中国风水墨攻击：弧形刀光、飞白、墨滴与蚀散 |
 | [ink-arena](ink-arena/README.md) | GPU 表面喷墨：片元着色器向持久 RGBA8 画布绘制 |

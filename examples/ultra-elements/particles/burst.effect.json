@@ -1,0 +1,61 @@
+{
+  "type": "eve.particle-effect",
+  "version": 1,
+  "parameters": { "intensity": 1.0 },
+  "emitters": [
+    {
+      "name": "core",
+      "emitter": {
+        "buffer": 220,
+        "emitterLife": 0.9,
+        "looping": false,
+        "emissionRate": 0.0,
+        "bursts": [[0.0, 42], [0.06, 24]],
+        "particleLifetime": [0.35, 0.75],
+        "particleSize": [18.0, 36.0],
+        "sizes": [1.4, 0.15],
+        "speed": [35.0, 140.0],
+        "spread": 6.2831853,
+        "damping": 0.18,
+        "blendMode": "additive",
+        "colorOverLifetime": [
+          [0.0, 1.0, 0.95, 0.7, 1.0],
+          [0.35, 1.0, 0.55, 0.2, 0.9],
+          [1.0, 0.2, 0.08, 0.04, 0.0]
+        ],
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "size", "scale": 1.2 },
+          { "parameter": "intensity", "target": "emission", "scale": 1.0 }
+        ]
+      }
+    },
+    {
+      "name": "sparks",
+      "emitter": {
+        "buffer": 360,
+        "emitterLife": 1.0,
+        "looping": false,
+        "emissionRate": 0.0,
+        "bursts": [[0.0, 70]],
+        "particleLifetime": [0.4, 1.1],
+        "particleSize": [4.0, 12.0],
+        "sizes": [1.1, 0.1],
+        "speed": [80.0, 240.0],
+        "spread": 6.2831853,
+        "gravity": [0.0, 90.0],
+        "damping": 0.12,
+        "renderMode": "velocity",
+        "stretch": 0.08,
+        "blendMode": "additive",
+        "colorOverLifetime": [
+          [0.0, 1.0, 0.98, 0.8, 1.0],
+          [0.45, 1.0, 0.45, 0.1, 0.85],
+          [1.0, 0.2, 0.05, 0.02, 0.0]
+        ],
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "speed", "scale": 1.0 }
+        ]
+      }
+    }
+  ]
+}
