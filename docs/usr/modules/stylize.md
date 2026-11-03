@@ -179,9 +179,10 @@ mat.setShadingModel("custom");
 - `supports(style, "gbuffer")` 可查询 definition 是否要求 depth 或 normal。
 - 内置风格 id：`cartoon` / `watercolor` / `ink` / `pixel` / `xray`。
 - Mesh 风格扩展：`rim` / `dissolve` / `hologram` / `snow` / `slash` / `ember` / `aura`。
-- 全屏效果扩展：`vignette` / `chromatic` / `grain` / `glitchAnalog` / `glitchBlock`
-  （`glitchAnalog`：磁带故障 scanline/jump/shake/drift；`glitchBlock`：数字块损伤，
-  程序噪声近似原版 Noise/Trash 纹理；默认 intensity 0 接近恒等；`strength==0` 早退。
+- 全屏效果扩展：`vignette` / `chromatic` / `grain` / `glitchAnalog` / `glitchBlock` /
+  `glitchWave`
+  （`glitchAnalog`：磁带故障；`glitchBlock`：数字块损伤；`glitchWave`：XPL 波浪抖动 +
+  RGB split，`direction` 0=水平 / 1=垂直，`amount` 默认 0 接近恒等；`strength==0` 早退。
   成本约全屏 1–2 tap，与 grain 同级）。
 
 

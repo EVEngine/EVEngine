@@ -8,6 +8,7 @@
 #include "stylize/shaders/dissolve_mesh_frag_spv.inc"
 #include "stylize/shaders/glitch_analog_post_frag_spv.inc"
 #include "stylize/shaders/glitch_block_post_frag_spv.inc"
+#include "stylize/shaders/glitch_wave_post_frag_spv.inc"
 #include "stylize/shaders/grain_post_frag_spv.inc"
 #include "stylize/shaders/hologram_mesh_frag_spv.inc"
 #include "stylize/shaders/slash_mesh_frag_spv.inc"
@@ -42,6 +43,7 @@ const StyleDefinition kPostEffects[] = {
     {"grain", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 280},
     {"glitchAnalog", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 290},
     {"glitchBlock", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 300},
+    {"glitchWave", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 310},
 };
 
 const StyleParameterDesc kRimParams[] = {
@@ -125,6 +127,13 @@ const StyleParameterDesc kGlitchBlockParams[] = {
     {"cellCountX", 64.f, 4.f, 256.f}, {"cellCountY", 32.f, 4.f, 256.f},
 };
 
+// XPL WaveJitter. amount default 0 → near-identity; screenW/H appended in bind.
+const StyleParameterDesc kGlitchWaveParams[] = {
+    {"strength", 1.f, 0.f, 1.f},     {"amount", 0.f, 0.f, 2.f},      {"frequency", 5.f, 0.f, 50.f},
+    {"rgbSplit", 20.f, 0.f, 50.f},   {"speed", 0.25f, 0.f, 1.f},     {"direction", 0.f, 0.f, 1.f},
+    {"infiniteFreq", 0.f, 0.f, 1.f}, {"time", 0.f, 0.f, 120.f},
+};
+
 const StyleDefinition* findMesh(const std::string& style) {
     for (const auto& d : kMeshEffects)
         if (style == d.id) return &d;
@@ -167,6 +176,7 @@ int postParamCount(const std::string& style) {
     if (style == "grain") return int(sizeof(kGrainParams) / sizeof(kGrainParams[0]));
     if (style == "glitchAnalog") return int(sizeof(kGlitchAnalogParams) / sizeof(kGlitchAnalogParams[0]));
     if (style == "glitchBlock") return int(sizeof(kGlitchBlockParams) / sizeof(kGlitchBlockParams[0]));
+    if (style == "glitchWave") return int(sizeof(kGlitchWaveParams) / sizeof(kGlitchWaveParams[0]));
     return 0;
 }
 const StyleParameterDesc* postParamAt(const std::string& style, int index) {
@@ -175,6 +185,7 @@ const StyleParameterDesc* postParamAt(const std::string& style, int index) {
     if (style == "grain") return paramAt(kGrainParams, index);
     if (style == "glitchAnalog") return paramAt(kGlitchAnalogParams, index);
     if (style == "glitchBlock") return paramAt(kGlitchBlockParams, index);
+    if (style == "glitchWave") return paramAt(kGlitchWaveParams, index);
     return nullptr;
 }
 
@@ -240,9 +251,9 @@ const StyleParameterDesc* effectParameterAt(const std::string& style, int index)
 
 void bindEffectPostUniforms(graphics::Shader* shader, const std::string& style) {
     bindParamArray(shader, style, /*mesh=*/false);
-    // Chromatic dispersion needs the framebuffer size to keep the RGB split
-    // aspect-correct; StylePass::uploadScreenUniforms refreshes these.
-    if (style == "chromatic") {
+    // Chromatic / wave glitch need framebuffer size; StylePass::uploadScreenUniforms
+    // refreshes these each apply.
+    if (style == "chromatic" || style == "glitchWave") {
         shader->declareFloat("screenW");
         shader->declareFloat("screenH");
         shader->sendFloat("screenW", 256.f);
@@ -267,6 +278,8 @@ graphics::Shader* createEffectPostShader(graphics::Graphics* gfx, const std::str
         frag = copySpv(glitch_analog_post_frag_spv, glitch_analog_post_frag_spv_count);
     else if (style == "glitchBlock")
         frag = copySpv(glitch_block_post_frag_spv, glitch_block_post_frag_spv_count);
+    else if (style == "glitchWave")
+        frag = copySpv(glitch_wave_post_frag_spv, glitch_wave_post_frag_spv_count);
     else
         throw eve::Exception("createEffectPostShader: not an effect post style '%s'", style.c_str());
 
