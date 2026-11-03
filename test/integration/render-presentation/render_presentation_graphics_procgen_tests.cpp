@@ -810,11 +810,14 @@ TEST_CASE("particles.reference.effectPackLoadsAndRenders") {
     REQUIRE(texture != nullptr);
 
     const std::string root    = std::string(EVENGINE_SOURCE_DIR) + "/examples/particle-effects/";
-    const char       *names[] = {"fire.effect.json", "smoke.effect.json", "impact.effect.json", "trail.effect.json",
-                                 "weather.effect.json"};
+    const char       *names[] = {"fire.effect.json",    "smoke.effect.json",     "impact.effect.json",
+                                 "trail.effect.json",   "weather.effect.json",   "bonfire.effect.json",
+                                 "portal.effect.json",  "fireworks.effect.json"};
     std::vector<std::unique_ptr<ParticleEffect>> effects;
-    constexpr float                              centersX[] = {120.f, 300.f, 480.f, 660.f, 840.f};
-    for (int i = 0; i < 5; ++i) {
+    // Eight pack entries: five native + three Phase-1 Unity-intent ports.
+    // Keep +/-70 luma probes inside the 960-wide window (last center <= 880).
+    constexpr float centersX[] = {80.f, 190.f, 300.f, 410.f, 520.f, 630.f, 740.f, 850.f};
+    for (int i = 0; i < 8; ++i) {
         auto parsed = ParticleEffect::tryFromText(readFile(root + names[i]), root + names[i]);
         REQUIRE(parsed.ok());
         effects.emplace_back(parsed.value());
@@ -829,7 +832,19 @@ TEST_CASE("particles.reference.effectPackLoadsAndRenders") {
         effects.back()->setPosition(centersX[i], 270.f);
         effects.back()->setFloatParameter("intensity", 1.15f);
         effects.back()->start();
-        if (std::string(names[i]) == "trail.effect.json") {
+        if (std::string(names[i]) == "bonfire.effect.json") {
+            REQUIRE(effects.back()->getEmitterByName("core") != nullptr);
+            REQUIRE(effects.back()->getEmitterByName("embers") != nullptr);
+            REQUIRE(effects.back()->getEmitterByName("smoke") != nullptr);
+        } else if (std::string(names[i]) == "portal.effect.json") {
+            REQUIRE(effects.back()->getEmitterByName("ring") != nullptr);
+            REQUIRE(effects.back()->getEmitterByName("core") != nullptr);
+            REQUIRE(effects.back()->getEmitterByName("mist") != nullptr);
+        } else if (std::string(names[i]) == "fireworks.effect.json") {
+            REQUIRE(effects.back()->getEmitterByName("shell") != nullptr);
+            REQUIRE(effects.back()->getEmitterByName("stars") != nullptr);
+            REQUIRE_EQ(effects.back()->eventRoutes().size(), 2u);
+        } else if (std::string(names[i]) == "trail.effect.json") {
             // Distance emission needs motion to spawn ribbon control points.
             for (int step = 0; step < 12; ++step) {
                 effects.back()->setPosition(centersX[i] + float(step) * 6.f, 270.f - float(step));

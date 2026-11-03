@@ -219,27 +219,28 @@ docs/dev/superpowers/specs/…        # K：能力规格，单独 PR
 
 阶段按**仓库价值**排序，不绑定日历。每阶段结束必须有可合并产物。
 
-### Phase 0 — 基线冻结（文档，本 PR）
+### Phase 0 — 基线冻结（文档）
 
 - [x] 映射字典、分类、流水线、准入/拒绝清单  
-- [ ] `examples/particle-effects/SOURCES.md` 占位（列出已有五件套为 native，无 Unity 源）  
+- [x] `examples/particle-effects/SOURCES.md` 台账  
 - 退出：方案合入 `dev`；后续内容 PR 引用本文件
 
-### Phase 1 — 配方包扩展（纯 C，零引擎改动）
+### Phase 1 — 配方包扩展（纯 C，零引擎改动）**【本批执行】**
 
 目标：在现有 `particle-effects` 上增加 **3** 个可演示配方。
 
-| ID | 意图 | 主要参考 | 映射要点 |
-|----|------|----------|----------|
-| `bonfire` | 芯焰 + 余烬 + 烟分层循环 | VFX Graph Samples Bonfire / Kodrin | 多 emitter + intensity；烟 alpha，焰 additive |
-| `portal` | 环带 + 向内吸粒子 + 核心闪 | Samples Portal | force field 或方向锥；可能 CPU |
-| `fireworks` | 主爆 → 二级星屑 | keijiro VfxPyro | `eventRoutes` death→sparks；timeline emit |
+| ID | 意图 | 主要参考 | 映射要点 | 状态 |
+|----|------|----------|----------|------|
+| `bonfire` | 芯焰 + 余烬 + 烟分层循环 | VFX Graph Samples Bonfire / Kodrin | 多 emitter + intensity；烟 alpha，焰 additive | 已落地 |
+| `portal` | 环带 + 向内吸粒子 + 核心闪 | Samples Portal | `ring` + `radialAcceleration`（非世界力场） | 已落地 |
+| `fireworks` | 主爆 → 二级星屑 | keijiro VfxPyro | `eventRoutes` death→stars/smoke；timeline emit | 已落地 |
 
 退出：
 
-- 三份 `*.effect.json` + `SOURCES.md`  
-- 扩展或新增 example 的 smoke 通过  
-- 至少一张引擎截帧或 render-presentation 夹具覆盖新配方之一  
+- [x] 三份 `*.effect.json` + `SOURCES.md`  
+- [x] 可运行 `examples/unity-vfx-port-lab`（smoke PASS，`UNITY_VFX_PORT_READY`）  
+- [x] 单元夹具覆盖 fireworks `eventRoutes`；render-presentation 参考包纳入 8 个配方并断言层名  
+- [x] `particles.reference.effectPackLoadsAndRenders` 出帧 `particle_p2_reference_pack.png` 
 
 ### Phase 2 — 攻击编排对齐（R）
 
