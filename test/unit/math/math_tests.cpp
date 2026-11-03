@@ -177,6 +177,16 @@ TEST_CASE("math.random.reseedRepeatsSequenceAndNoiseIsPure") {
     CHECK(math.gyroidFbm3(.2f, .7f, .3f, 3) <= 1.f);
     CHECK(math.swiss2(.2f, .7f, 3, 2.f, .5f, .15f) >= 0.f);
     CHECK(math.hybrid2(.2f, .7f, 3, 2.f, .5f, .7f) <= 1.f);
+    CHECK(math.jordan2(.2f, .7f, 3, 2.f, .5f, .35f) >= 0.f);
+    CHECK(math.jordan2(.2f, .7f, 3, 2.f, .5f, .35f) <= 1.f);
+    CHECK(math.gabor2(.2f, .7f, 0.f, 0.f, 6.2831853f) >= 0.f);
+    CHECK(math.gaborFbm2(.2f, .7f, 3, 0.f, 0.f) <= 1.f);
+    CHECK(math.valueSlope2(.2f, .7f, 1e-3f) >= 0.f);
+    CHECK(math.isoLine2(.2f, .7f, 8, .04f) >= 0.f);
+    CHECK(math.isoLine2(.2f, .7f, 8, .04f) <= 1.f);
+    CHECK(math.banding2(.2f, .7f, 5) >= 0.f);
+    CHECK(math.banding2(.2f, .7f, 5) <= 1.f);
+    CHECK(math.fbmColor2(.2f, .7f, 0, 3, 2.f, .5f) != math.fbmColor2(.2f, .7f, 1, 3, 2.f, .5f));
     CHECK(math.value3(.2f, .7f, .3f) >= 0.f);
     CHECK(math.worley3(.2f, .7f, .3f) <= 1.f);
     CHECK_EQ(math.white3(.2f, .7f, .3f), math.white3(0.f, 0.f, 0.f));

@@ -479,6 +479,116 @@ float NoiseField::gyroidFbm(float x, float y, float z, int octaves) const {
     return norm > 0.f ? std::clamp(result / (norm * 1.5f), 0.f, 1.f) : 0.f;
 }
 
+float NoiseField::jordan(float x, float y, int octaves, float lacunarity, float gain, float warpStrength) const {
+    octaves             = std::max(1, octaves);
+    float           sum = 0.f, amp = 1.f, norm = 0.f, freq = 1.f;
+    float           dx = 0.f, dy = 0.f;
+    constexpr float kEps = 1e-3f;
+    for (int i = 0; i < octaves; ++i) {
+        const float px  = x * freq + dx * warpStrength;
+        const float py  = y * freq + dy * warpStrength;
+        const float n   = valueNoise(px, py) * 2.f - 1.f;
+        const float dnx = (valueNoise(px + kEps, py) - valueNoise(px - kEps, py)) / (2.f * kEps);
+        const float dny = (valueNoise(px, py + kEps) - valueNoise(px, py - kEps)) / (2.f * kEps);
+        sum += n * amp;
+        norm += amp;
+        dx += dnx * amp;
+        dy += dny * amp;
+        amp *= gain;
+        freq *= lacunarity;
+    }
+    return norm > 0.f ? remapSigned01(sum / norm) : 0.5f;
+}
+
+float NoiseField::gabor(float x, float y, float dirX, float dirY, float frequency) const {
+    // noisecreater gavoronoi3: 3×3 Gaussian-weighted cos carriers.
+    const int       ix       = int(std::floor(x));
+    const int       iy       = int(std::floor(y));
+    const float     fx       = x - float(ix);
+    const float     fy       = y - float(iy);
+    constexpr float kCellVar = 0.8f;
+    constexpr float kDirVar  = 0.4f;
+    float           va       = 0.f;
+    float           wt       = 0.f;
+    for (int j = -1; j <= 1; ++j) {
+        for (int i = -1; i <= 1; ++i) {
+            const int   cx  = ix + i;
+            const int   cy  = iy + j;
+            const float hx  = (hash01(cx, cy) - 0.5f);
+            const float hy  = (hash01(cx * 3 + 11, cy * 7 + 5) - 0.5f);
+            const float ox  = float(i) - 0.5f;
+            const float oy  = float(j) - 0.5f;
+            const float ppx = fx + ox - hx;
+            const float ppy = fy + oy - hy;
+            const float d2  = ppx * ppx + ppy * ppy;
+            const float w   = std::exp(-d2 * 4.f);
+            float       dx  = kDirVar * hx + dirX;
+            float       dy  = kDirVar * hy + dirY;
+            wt += w;
+            va += std::cos((ppx * dx + ppy * dy) * frequency / kCellVar) * w;
+        }
+    }
+    return wt > 0.f ? remapSigned01(va / wt) : 0.5f;
+}
+
+float NoiseField::gaborFbm(float x, float y, int octaves, float dirX, float dirY) const {
+    octaves   = std::max(1, std::min(octaves, 8));
+    float sum = 0.f, freq = 1.f, norm = 0.f, amp = 1.f;
+    float px = x, py = y;
+    for (int i = 0; i < octaves; ++i) {
+        const float n = gabor(px * freq, py * freq, dirX, dirY) * 2.f - 1.f;
+        sum += std::fabs(n) * amp;
+        norm += amp;
+        px += -0.01f * sum;
+        py += 0.07f * sum;
+        amp *= 0.5f;
+        freq *= 2.2f;
+    }
+    return norm > 0.f ? std::clamp(sum / norm, 0.f, 1.f) : 0.f;
+}
+
+float NoiseField::valueDx(float x, float y, float eps) const {
+    eps = std::max(eps, 1e-6f);
+    return (valueNoise(x + eps, y) - valueNoise(x - eps, y)) / (2.f * eps);
+}
+
+float NoiseField::valueDy(float x, float y, float eps) const {
+    eps = std::max(eps, 1e-6f);
+    return (valueNoise(x, y + eps) - valueNoise(x, y - eps)) / (2.f * eps);
+}
+
+float NoiseField::valueSlope(float x, float y, float eps) const {
+    const float dx = valueDx(x, y, eps);
+    const float dy = valueDy(x, y, eps);
+    return std::sqrt(dx * dx + dy * dy);
+}
+
+float NoiseField::isoLine(float x, float y, int levels, float width) const {
+    levels        = std::max(1, levels);
+    width         = std::max(1e-4f, width);
+    const float n = valueNoise(x, y);
+    // Distance to nearest contour in level space, then soft line mask.
+    const float scaled = n * float(levels);
+    const float v      = std::fabs(std::fmod(scaled + 0.5f, 1.f) - 0.5f);
+    const float t      = std::clamp(v / width, 0.f, 1.f);
+    return 1.f - (t * t * (3.f - 2.f * t));
+}
+
+float NoiseField::banding(float x, float y, int bands) const {
+    bands            = std::max(1, bands);
+    const float n    = valueNoise(x, y);
+    const float step = 1.f / float(bands);
+    return std::floor(n * float(bands)) * step;
+}
+
+float NoiseField::fbmColor(float x, float y, int channel, int octaves, float lacunarity, float gain) const {
+    // Fixed decorrelated offsets per RGB-style channel (noisecreater FBM color idea).
+    channel                       = ((channel % 3) + 3) % 3;
+    static constexpr float kOx[3] = {0.f, 19.1f, 5.2f};
+    static constexpr float kOy[3] = {0.f, 7.3f, 31.7f};
+    return fbm(x + kOx[channel], y + kOy[channel], octaves, lacunarity, gain);
+}
+
 // --- NoiseField3 -----------------------------------------------------------
 
 float NoiseField3::hash01(int ix, int iy, int iz) const {

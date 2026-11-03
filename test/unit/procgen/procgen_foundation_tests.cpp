@@ -777,6 +777,9 @@ TEST_CASE("procgen.texture.noiseField_noisecreaterFamily_isBoundedDeterministicA
     const float fbmS    = tiling.fbmSimplex(x, y, 3);
     const float swiss   = tiling.swiss(x, y, 3, 2.f, 0.5f, 0.15f);
     const float hybrid  = tiling.hybrid(x, y, 3, 2.f, 0.5f, 0.7f);
+    const float jordan  = tiling.jordan(x, y, 3, 2.f, 0.5f, 0.35f);
+    const float gabor   = tiling.gabor(x, y);
+    const float gaborF  = tiling.gaborFbm(x, y, 3);
     const float smoothW = tiling.worleySmooth(x, y, 0.3f);
     const float hexE    = tiling.hexEdge(x, y, 0.05f, 0.02f);
     const float gyro    = tiling.gyroid(x, y, 0.5f);
@@ -785,9 +788,14 @@ TEST_CASE("procgen.texture.noiseField_noisecreaterFamily_isBoundedDeterministicA
     const float cheb    = tiling.worleyF1(x, y, 1.f, WorleyMetric::Chebyshev);
     const float f2      = tiling.worleyF2(x, y);
     const float comb    = tiling.worleyCombine(x, y);
+    const float iso     = tiling.isoLine(x, y, 8, 0.04f);
+    const float bands   = tiling.banding(x, y, 5);
+    const float col0    = tiling.fbmColor(x, y, 0, 3);
+    const float col1    = tiling.fbmColor(x, y, 1, 3);
 
     const float cx = tiling.curlNoiseX(x, y);
     const float cy = tiling.curlNoiseY(x, y);
+    const float sx = tiling.valueSlope(x, y);
 
     REQUIRE_EQ(white, replay.whiteNoise(3, 9));
     CHECK_EQ(value, replay.valueNoise(x, y));
@@ -802,6 +810,9 @@ TEST_CASE("procgen.texture.noiseField_noisecreaterFamily_isBoundedDeterministicA
     CHECK_EQ(fbmS, replay.fbmSimplex(x, y, 3));
     CHECK_EQ(swiss, replay.swiss(x, y, 3, 2.f, 0.5f, 0.15f));
     CHECK_EQ(hybrid, replay.hybrid(x, y, 3, 2.f, 0.5f, 0.7f));
+    CHECK_EQ(jordan, replay.jordan(x, y, 3, 2.f, 0.5f, 0.35f));
+    CHECK_EQ(gabor, replay.gabor(x, y));
+    CHECK_EQ(gaborF, replay.gaborFbm(x, y, 3));
     CHECK_EQ(smoothW, replay.worleySmooth(x, y, 0.3f));
     CHECK_EQ(hexE, replay.hexEdge(x, y, 0.05f, 0.02f));
     CHECK_EQ(gyro, replay.gyroid(x, y, 0.5f));
@@ -810,6 +821,9 @@ TEST_CASE("procgen.texture.noiseField_noisecreaterFamily_isBoundedDeterministicA
     CHECK_EQ(cheb, replay.worleyF1(x, y, 1.f, WorleyMetric::Chebyshev));
     CHECK_EQ(f2, replay.worleyF2(x, y));
     CHECK_EQ(comb, replay.worleyCombine(x, y));
+    CHECK_EQ(iso, replay.isoLine(x, y, 8, 0.04f));
+    CHECK_EQ(bands, replay.banding(x, y, 5));
+    CHECK_EQ(col0, replay.fbmColor(x, y, 0, 3));
 
     auto in01 = [](float v) { return v >= 0.f && v <= 1.f; };
     CHECK(in01(white));
@@ -825,6 +839,9 @@ TEST_CASE("procgen.texture.noiseField_noisecreaterFamily_isBoundedDeterministicA
     CHECK(in01(fbmS));
     CHECK(in01(swiss));
     CHECK(in01(hybrid));
+    CHECK(in01(jordan));
+    CHECK(in01(gabor));
+    CHECK(in01(gaborF));
     CHECK(in01(smoothW));
     CHECK(in01(hexE));
     CHECK(in01(gyro));
@@ -833,8 +850,15 @@ TEST_CASE("procgen.texture.noiseField_noisecreaterFamily_isBoundedDeterministicA
     CHECK(cheb >= 0.f);
     CHECK(f2 >= 0.f);
     CHECK(in01(comb));
+    CHECK(in01(iso));
+    CHECK(in01(bands));
+    CHECK(in01(col0));
+    CHECK(in01(col1));
+    CHECK(col0 != col1);
     CHECK(std::isfinite(cx));
     CHECK(std::isfinite(cy));
+    CHECK(sx >= 0.f);
+    CHECK(std::isfinite(sx));
 
     // Seamless lattice wrap: sample at period offset must match for hash-backed fields.
     CHECK_EQ(tiling.hash01(1, 2), tiling.hash01(17, 18));

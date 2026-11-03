@@ -33,10 +33,13 @@ local n = math.noise2(p.getX(), p.getY());
 - `perlin2` / `perlin3` — Perlin
 - `white2` / `white3` — 格点白噪声；`value2` / `value3` — 平滑 Value noise
 - `fbm2` / `fbm3`、`ridged2` / `ridged3`、`turbulence2` / `billow2` — 分形
-- `swiss2` / `hybrid2` — Musgrave Swiss / Hybrid multifractal
+- `swiss2` / `hybrid2` / `jordan2` — Musgrave Swiss / Hybrid / Jordan
+- `gabor2` / `gaborFbm2` — Gabor / Voronoi-mix 小波
 - `voronoi2` / `voronoiF2_2` / `voronoiEdge2` / `worley2` / `worley3` — Worley
 - `worleyManhattan2` / `worleyChebyshev2` / `worleySmooth2` — 距离度量与平滑蜂窝
 - `warpNoise2` / `warpNoise2Deep` — 域扭曲；`curlNoise2X` / `curlNoise2Y` — 无散度 curl
+- `valueDx2` / `valueDy2` / `valueSlope2` — Value 导数与坡度
+- `isoLine2` / `banding2` — 等值线掩码与量化分带；`fbmColor2` — 解相关彩色通道 fBm
 - `hexDistance2` / `hexEdge2` — 六边形边距；`gyroid3` / `gyroidFbm3` — Gyroid
 
 贴图/体积侧无缝采样见 procgen `NoiseField` / `NoiseField3`。

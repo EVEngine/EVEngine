@@ -14,8 +14,9 @@ enum class WorleyMetric : uint8_t { Euclidean = 0, Manhattan = 1, Chebyshev = 2 
  *
  * Covers the common NoiseCreator / noisecreater.com / Musgrave set:
  * white, value, Perlin, Simplex, Worley (F1/F2/edge/smooth + metrics),
- * fBm / ridged / billow / swiss / hybrid, Perlin–Worley, hex, gyroid,
- * curl, and single- or multi-pass domain warp.
+ * fBm / ridged / billow / swiss / hybrid / jordan, Gabor, Perlin–Worley,
+ * hex, gyroid, curl, value derivatives / isoline / banding, color-channel
+ * fBm, and single- or multi-pass domain warp.
  *
  * When periodX/periodY > 0, lattice indices wrap for seamless tiling.
  * Continuous samplers return values in [0, 1] unless noted.
@@ -116,10 +117,56 @@ struct EVENGINE_API_DOMAINS NoiseField {
                  float offset = 0.7f) const;
 
     /**
+     * @brief Musgrave Jordan turbulence: warp by value-noise derivatives.
+     * Completes the Swiss / Hybrid / Jordan Musgrave trio. Result in [0, 1].
+     */
+    float jordan(float x, float y, int octaves = 4, float lacunarity = 2.f, float gain = 0.5f,
+                 float warpStrength = 0.35f) const;
+
+    /**
+     * @brief Gabor / Voronoi-mix wavelet (noisecreater gavoronoi 3×3), remapped to [0, 1].
+     * @param dirX / dirY Preferred wave direction bias.
+     * @param frequency Carrier frequency (typical ~2π).
+     */
+    float gabor(float x, float y, float dirX = 0.f, float dirY = 0.f, float frequency = 6.2831853f) const;
+
+    /** @brief Absolute-Gabor fBm remapped to [0, 1] (noisecreater Gabor swirl layers). */
+    float gaborFbm(float x, float y, int octaves = 4, float dirX = 0.f, float dirY = 0.f) const;
+
+    /**
      * @brief Perlin–Worley hybrid for cloud / soft cellular shapes.
      * Result is worleyNoise * fbmPerlin (NoiseCreator Cloud / Perlin-Worley).
      */
     float perlinWorley(float x, float y, int octaves = 3, float jitter = 1.f) const;
+
+    /**
+     * @brief ∂/∂x of value noise via central differences (slope / erosion helper).
+     * Not remapped to [0, 1]; magnitude depends on `eps`.
+     */
+    float valueDx(float x, float y, float eps = 1e-3f) const;
+    /** @brief ∂/∂y of value noise via central differences. */
+    float valueDy(float x, float y, float eps = 1e-3f) const;
+    /** @brief Gradient magnitude of value noise. */
+    float valueSlope(float x, float y, float eps = 1e-3f) const;
+
+    /**
+     * @brief Contour / isoline mask of value noise in [0, 1] (1 on lines).
+     * @param levels Contour count across [0, 1].
+     * @param width Half-width of each line in normalized level space.
+     */
+    float isoLine(float x, float y, int levels = 8, float width = 0.04f) const;
+
+    /**
+     * @brief Quantized banding of value noise in [0, 1].
+     * @param bands Number of discrete steps (≥ 1).
+     */
+    float banding(float x, float y, int bands = 5) const;
+
+    /**
+     * @brief Decorrelated fBm channel for RGB-style color noise (channel 0/1/2).
+     * Same shape as fbm with fixed per-channel lattice offsets.
+     */
+    float fbmColor(float x, float y, int channel, int octaves = 4, float lacunarity = 2.f, float gain = 0.5f) const;
 
     /** @brief Single-pass domain warp of value fBm. */
     float warp(float x, float y, float amp, int octaves = 3) const;

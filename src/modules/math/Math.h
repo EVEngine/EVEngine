@@ -366,6 +366,27 @@ public:
     float swiss2(float x, float y, int octaves, float lacunarity, float gain, float warpStrength) const;
     /** @brief Musgrave hybrid multifractal remapped to [0,1]. */
     float hybrid2(float x, float y, int octaves, float lacunarity, float gain, float offset) const;
+    /** @brief Musgrave Jordan turbulence remapped to [0,1]. */
+    float jordan2(float x, float y, int octaves, float lacunarity, float gain, float warpStrength) const;
+
+    /** @brief Gabor / Voronoi-mix wavelet remapped to [0,1]. */
+    float gabor2(float x, float y, float dirX, float dirY, float frequency) const;
+    /** @brief Absolute-Gabor fBm remapped to [0,1]. */
+    float gaborFbm2(float x, float y, int octaves, float dirX, float dirY) const;
+
+    /** @brief ∂/∂x of value2 via central differences. */
+    float valueDx2(float x, float y, float eps) const;
+    /** @brief ∂/∂y of value2 via central differences. */
+    float valueDy2(float x, float y, float eps) const;
+    /** @brief Gradient magnitude of value2. */
+    float valueSlope2(float x, float y, float eps) const;
+
+    /** @brief Contour mask of value2 in [0,1] (1 on lines). */
+    float isoLine2(float x, float y, int levels, float width) const;
+    /** @brief Quantized banding of value2 in [0,1]. */
+    float banding2(float x, float y, int bands) const;
+    /** @brief Decorrelated fBm color channel (0/1/2). */
+    float fbmColor2(float x, float y, int channel, int octaves, float lacunarity, float gain) const;
 
     /** @brief Lattice white noise from floor(x,y,z) in [0,1]. */
     float white3(float x, float y, float z) const;

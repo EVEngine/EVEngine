@@ -967,6 +967,114 @@ float Math::hybrid2(float x, float y, int octaves, float lacunarity, float gain,
     return norm > 0.f ? clamp01(result / (norm * (1.f + offset))) : 0.f;
 }
 
+float Math::jordan2(float x, float y, int octaves, float lacunarity, float gain, float warpStrength) const {
+    if (octaves < 1) octaves = 1;
+    if (octaves > 16) octaves = 16;
+    float           sum = 0.f, amp = 1.f, norm = 0.f, freq = 1.f;
+    float           dx = 0.f, dy = 0.f;
+    constexpr float kEps = 1e-3f;
+    for (int i = 0; i < octaves; ++i) {
+        const float px  = x * freq + dx * warpStrength;
+        const float py  = y * freq + dy * warpStrength;
+        const float n   = value2(px, py) * 2.f - 1.f;
+        const float dnx = (value2(px + kEps, py) - value2(px - kEps, py)) / (2.f * kEps);
+        const float dny = (value2(px, py + kEps) - value2(px, py - kEps)) / (2.f * kEps);
+        sum += n * amp;
+        norm += amp;
+        dx += dnx * amp;
+        dy += dny * amp;
+        amp *= gain;
+        freq *= lacunarity;
+    }
+    return norm > 0.f ? clamp01(sum / norm * 0.5f + 0.5f) : 0.5f;
+}
+
+float Math::gabor2(float x, float y, float dirX, float dirY, float frequency) const {
+    const int       ix       = int(std::floor(x));
+    const int       iy       = int(std::floor(y));
+    const float     fx       = x - float(ix);
+    const float     fy       = y - float(iy);
+    constexpr float kCellVar = 0.8f;
+    constexpr float kDirVar  = 0.4f;
+    float           va       = 0.f;
+    float           wt       = 0.f;
+    for (int j = -1; j <= 1; ++j) {
+        for (int i = -1; i <= 1; ++i) {
+            const float cx  = float(ix + i);
+            const float cy  = float(iy + j);
+            const float hx  = hash21(cx, cy) - 0.5f;
+            const float hy  = hash21(cx * 3.f + 11.f, cy * 7.f + 5.f) - 0.5f;
+            const float ox  = float(i) - 0.5f;
+            const float oy  = float(j) - 0.5f;
+            const float ppx = fx + ox - hx;
+            const float ppy = fy + oy - hy;
+            const float d2  = ppx * ppx + ppy * ppy;
+            const float w   = std::exp(-d2 * 4.f);
+            const float dx  = kDirVar * hx + dirX;
+            const float dy  = kDirVar * hy + dirY;
+            wt += w;
+            va += std::cos((ppx * dx + ppy * dy) * frequency / kCellVar) * w;
+        }
+    }
+    return wt > 0.f ? clamp01(va / wt * 0.5f + 0.5f) : 0.5f;
+}
+
+float Math::gaborFbm2(float x, float y, int octaves, float dirX, float dirY) const {
+    if (octaves < 1) octaves = 1;
+    if (octaves > 8) octaves = 8;
+    float sum = 0.f, freq = 1.f, norm = 0.f, amp = 1.f;
+    float px = x, py = y;
+    for (int i = 0; i < octaves; ++i) {
+        const float n = gabor2(px * freq, py * freq, dirX, dirY, 6.2831853f) * 2.f - 1.f;
+        sum += std::fabs(n) * amp;
+        norm += amp;
+        px += -0.01f * sum;
+        py += 0.07f * sum;
+        amp *= 0.5f;
+        freq *= 2.2f;
+    }
+    return norm > 0.f ? clamp01(sum / norm) : 0.f;
+}
+
+float Math::valueDx2(float x, float y, float eps) const {
+    eps = std::max(eps, 1e-6f);
+    return (value2(x + eps, y) - value2(x - eps, y)) / (2.f * eps);
+}
+
+float Math::valueDy2(float x, float y, float eps) const {
+    eps = std::max(eps, 1e-6f);
+    return (value2(x, y + eps) - value2(x, y - eps)) / (2.f * eps);
+}
+
+float Math::valueSlope2(float x, float y, float eps) const {
+    const float dx = valueDx2(x, y, eps);
+    const float dy = valueDy2(x, y, eps);
+    return std::sqrt(dx * dx + dy * dy);
+}
+
+float Math::isoLine2(float x, float y, int levels, float width) const {
+    if (levels < 1) levels = 1;
+    width              = std::max(1e-4f, width);
+    const float n      = value2(x, y);
+    const float scaled = n * float(levels);
+    const float v      = std::fabs(std::fmod(scaled + 0.5f, 1.f) - 0.5f);
+    const float t      = clamp01(v / width);
+    return 1.f - (t * t * (3.f - 2.f * t));
+}
+
+float Math::banding2(float x, float y, int bands) const {
+    if (bands < 1) bands = 1;
+    const float n = value2(x, y);
+    return std::floor(n * float(bands)) / float(bands);
+}
+
+float Math::fbmColor2(float x, float y, int channel, int octaves, float lacunarity, float gain) const {
+    channel                      = ((channel % 3) + 3) % 3;
+    static constexpr float ox[3] = {0.f, 19.1f, 5.2f};
+    static constexpr float oy[3] = {0.f, 7.3f, 31.7f};
+    return fbm2(x + ox[channel], y + oy[channel], octaves, lacunarity, gain);
+}
+
 float Math::white3(float x, float y, float z) const { return hash31(std::floor(x), std::floor(y), std::floor(z)); }
 
 float Math::value3(float x, float y, float z) const {
@@ -1248,6 +1356,15 @@ void Math::expose(ssq::Class &cls) {
     cls.addFunc("gyroidFbm3", &Math::gyroidFbm3);
     cls.addFunc("swiss2", &Math::swiss2);
     cls.addFunc("hybrid2", &Math::hybrid2);
+    cls.addFunc("jordan2", &Math::jordan2);
+    cls.addFunc("gabor2", &Math::gabor2);
+    cls.addFunc("gaborFbm2", &Math::gaborFbm2);
+    cls.addFunc("valueDx2", &Math::valueDx2);
+    cls.addFunc("valueDy2", &Math::valueDy2);
+    cls.addFunc("valueSlope2", &Math::valueSlope2);
+    cls.addFunc("isoLine2", &Math::isoLine2);
+    cls.addFunc("banding2", &Math::banding2);
+    cls.addFunc("fbmColor2", &Math::fbmColor2);
     cls.addFunc("white3", &Math::white3);
     cls.addFunc("value3", &Math::value3);
     cls.addFunc("worley3", &Math::worley3);
