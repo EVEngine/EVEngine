@@ -495,3 +495,21 @@ Pcg `RandomMaterialSelector` 的 `Random.Range(1, materials.Count)`，索引 0 �
 角度旋转、颜色和 atlas UV 的独立数值，不保留输入或图形资源引用。
 它不推进模拟、不调用脚本；调用期间 Config 和 Particle 必须稳定。
 录制时还必须校验输出数值并另外记录资源身份；这组基础接口尚不代表完整粒子资产录制和重放入口。
+
+## 从 Unity 开源 VFX 迁移
+
+EVEngine **不**导入 Visual Effect Graph / Shader Graph / HLSL。可复用的是效果
+**意图与编排**，重作者为 `eve.particle-effect`（及 AttackVfx 相位层），流程见
+[`docs/dev/superpowers/specs/2026-11-03-unity-vfx-porting-plan.md`](../../dev/superpowers/specs/2026-11-03-unity-vfx-porting-plan.md)。
+
+速查：
+
+| Unity / VFX Graph | EVEngine |
+|---|---|
+| 多发射器 Prefab / Graph 层 | `eve.particle-effect` 的 `emitters[]` |
+| GPU Event | `eventRoutes`（CPU sub-emitter） |
+| Timeline / Signal | effect `timeline` 或 AttackVfx `phases` + `signal` |
+| 攻击充能→释放→残留 | AttackVfx `anticipate` / `release` / `aftermath` |
+
+参考包：`examples/particle-effects/`（含 bonfire / portal / fireworks）。
+攻击编排示例：`examples/attack-vfx/`（共享上述配方 + `aftermath_smoke`）。

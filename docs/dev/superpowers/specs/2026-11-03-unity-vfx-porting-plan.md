@@ -242,17 +242,21 @@ docs/dev/superpowers/specs/…        # K：能力规格，单独 PR
 - [x] 单元夹具覆盖 fireworks `eventRoutes`；render-presentation 参考包纳入 8 个配方并断言层名  
 - [x] `particles.reference.effectPackLoadsAndRenders` 出帧 `particle_p2_reference_pack.png` 
 
-### Phase 2 — 攻击编排对齐（R）
+### Phase 2 — 攻击编排对齐（R）**【本批执行】**
 
 目标：把 Phase 1 配方挂进 AttackVfx 相位，补齐「充能→释放→残留」。
 
-| 工作项 | 说明 |
-|--------|------|
-| 元素皮肤复用 | `attack-vfx` 的 fire/water/earth/air 改为引用共享 effect URI（减少重复 JSON） |
-| aftermath 层 | 爆炸后烟/火星用 eventRoutes 或 Aftermath 相位 |
-| 文档 | `docs/usr` 增加「从 Unity 配方迁移」短节，链到本方案 |
+| 工作项 | 说明 | 状态 |
+|--------|------|------|
+| 元素皮肤复用 | fire/water/earth/air 的 charge/impact 引用共享 URI（bonfire/portal/fireworks + 元素 burst） | 已落地 |
+| aftermath 层 | 独立 `aftermath` 相位 + 共享 `aftermath_smoke.effect.json` | 已落地 |
+| 文档 | `particles.md` / `stylize_action.md` 增加 Unity 迁移短节 | 已落地 |
 
-退出：`examples/attack-vfx` smoke + `ATTACK_VFX_PASS`；无新 K 改动。
+退出：
+
+- [x] `examples/attack-vfx` 三相编排（anticipate / release / aftermath）
+- [x] smoke + `ATTACK_VFX_PASS` / `ATTACK_VFX_AFTERMATH`
+- [x] 无新 K 改动
 
 ### Phase 3 — 视觉保真度（C/S 增强，仍避免 K）
 

@@ -54,3 +54,9 @@
 - Events / Timeline: timed `emit` on shell; death → stars/smoke routes
 - Sim path: cpu (eventRoutes / sub-emitters)
 - Verification: same as bonfire
+
+## AttackVfx 复用（Phase 2）
+
+`examples/attack-vfx/` 持有本包三配方的本地副本，并新增共享
+`aftermath_smoke.effect.json`（短促 plume + sparks，供 aftermath 相位）。
+Skin 映射见该示例 `README.md`。
