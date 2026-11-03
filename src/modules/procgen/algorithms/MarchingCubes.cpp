@@ -674,17 +674,17 @@ void MeshRecipeRegistry::registerBuiltins() {
     splash.params.push_back(ParamDescriptor::floating("width", "Width", 3.2f, 0.3f, 30.f, 0.05f));
     splash.params.push_back(ParamDescriptor::integer("layers", "Layers", 4, 2, 4));
     splash.params.push_back(
-        ParamDescriptor::floating("jaggedness", "Jaggedness", 0.78f, 0.f, 1.f, 0.01f));
-    splash.params.push_back(ParamDescriptor::floating("foam", "Foam", 0.85f, 0.f, 1.f, 0.01f));
-    splash.params.push_back(ParamDescriptor::floating("flare", "Flare", 1.0f, 0.35f, 1.75f, 0.01f));
+        ParamDescriptor::floating("jaggedness", "Jaggedness", 0.72f, 0.f, 1.f, 0.01f));
+    splash.params.push_back(ParamDescriptor::floating("foam", "Foam / Spray", 1.0f, 0.f, 1.f, 0.01f));
+    splash.params.push_back(ParamDescriptor::floating("flare", "Flare", 1.05f, 0.35f, 1.75f, 0.01f));
     addAdvanced(splash, ParamDescriptor::integer("onlyLayer", "Only Layer (-1=all)", -1, -1, 3));
-    addAdvanced(splash, ParamDescriptor::integer("radialSegments", "Radial Segments", 28, 8, 64));
-    addAdvanced(splash, ParamDescriptor::integer("heightSegments", "Height Segments", 10, 3, 32));
-    addAdvanced(splash, ParamDescriptor::floating("bodyR", "Body Red", 0.22f, 0.f, 1.f, 0.01f));
-    addAdvanced(splash, ParamDescriptor::floating("bodyG", "Body Green", 0.78f, 0.f, 1.f, 0.01f));
-    addAdvanced(splash, ParamDescriptor::floating("bodyB", "Body Blue", 0.82f, 0.f, 1.f, 0.01f));
-    addAdvanced(splash, ParamDescriptor::floating("foamR", "Foam Red", 0.95f, 0.f, 1.f, 0.01f));
-    addAdvanced(splash, ParamDescriptor::floating("foamG", "Foam Green", 0.98f, 0.f, 1.f, 0.01f));
+    addAdvanced(splash, ParamDescriptor::integer("radialSegments", "Radial Segments", 36, 8, 64));
+    addAdvanced(splash, ParamDescriptor::integer("heightSegments", "Height Segments", 14, 3, 32));
+    addAdvanced(splash, ParamDescriptor::floating("bodyR", "Body Red", 0.18f, 0.f, 1.f, 0.01f));
+    addAdvanced(splash, ParamDescriptor::floating("bodyG", "Body Green", 0.72f, 0.f, 1.f, 0.01f));
+    addAdvanced(splash, ParamDescriptor::floating("bodyB", "Body Blue", 0.78f, 0.f, 1.f, 0.01f));
+    addAdvanced(splash, ParamDescriptor::floating("foamR", "Foam Red", 1.0f, 0.f, 1.f, 0.01f));
+    addAdvanced(splash, ParamDescriptor::floating("foamG", "Foam Green", 1.0f, 0.f, 1.f, 0.01f));
     addAdvanced(splash, ParamDescriptor::floating("foamB", "Foam Blue", 1.0f, 0.f, 1.f, 0.01f));
     registerRecipe(std::move(splash), generateWaterSplashMesh);
 

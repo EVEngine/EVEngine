@@ -4,11 +4,11 @@ persist splashSeed = 20261103
 persist splashHeight = 2.4
 persist splashWidth = 3.2
 persist splashLayers = 4
-persist splashJagged = 0.78
-persist splashFoam = 0.85
-persist splashFlare = 1.0
-persist splashRadial = 28
-persist splashRings = 10
+persist splashJagged = 0.72
+persist splashFoam = 1.0
+persist splashFlare = 1.05
+persist splashRadial = 36
+persist splashRings = 14
 persist splashCamera = null
 persist splashYaw = 0.35
 persist splashUiReady = false
@@ -21,6 +21,8 @@ persist splashGround = null
 persist splashGrid = null
 persist splashImpact = null
 persist splashLayersFx = null
+persist splashSpray = null
+persist splashSprayMesh = null
 persist splashSpaceWasDown = false
 
 function clamp(v, a, b) {
@@ -85,13 +87,12 @@ function ensureLayerObject(index) {
         e.setTint(1.0, 1.0, 1.0, 1.0);
         local mat = gfx.newMaterial();
         mat.setShadingModel("unlit");
-        mat.setSurfaceMode("transparent");
-        mat.setBlendMode("alpha");
-        mat.setDepthWrite(false);
+        mat.setSurfaceMode("opaque");
         mat.setDoubleSided(true);
         mat.setReceiveLight(false);
         mat.setCastShadow(false);
         mat.setReceiveShadow(false);
+        mat.setTint(1.0, 1.0, 1.0, 1.0);
         e.setMaterial(mat);
         splashLayersFx.push({ object = e, mesh = null });
     }
@@ -153,6 +154,36 @@ function buildSceneProps() {
     splashImpact.setScale(0.55, 0.02, 0.55);
     splashImpact.setTint(0.05, 0.07, 0.09, 1.0);
     splashImpact.setReceiveLight(false);
+
+    // White foam spray droplets — secondary 浪花 around the crown lips.
+    splashSprayMesh = gfx.newMeshSphere(8, 6);
+    local sprayMat = gfx.newMaterial();
+    sprayMat.setShadingModel("unlit");
+    sprayMat.setSurfaceMode("opaque");
+    sprayMat.setReceiveLight(false);
+    sprayMat.setCastShadow(false);
+    sprayMat.setTint(1.0, 1.0, 1.0, 1.0);
+    splashSpray = [];
+    for (local i = 0; i < 48; ++i) {
+        local e = eve.Renderable3D();
+        e.setMesh(splashSprayMesh);
+        e.setMaterial(sprayMat);
+        e.setReceiveLight(false);
+        e.setCastShadow(false);
+        e.setTint(1.0, 1.0, 1.0, 1.0);
+        e.setVisible(false);
+        local a = i * 2.399963;
+        local r = 0.35 + (i % 7) * 0.18;
+        splashSpray.push({
+            object = e,
+            angle = a,
+            radius = r,
+            delay = (i % 8) * 0.035,
+            life = 0.55 + (i % 5) * 0.08,
+            size = 0.035 + (i % 4) * 0.012,
+            lift = 0.55 + (i % 6) * 0.18
+        });
+    }
 }
 
 function buildSplashUi() {
@@ -161,7 +192,7 @@ function buildSplashUi() {
     ui.beginBuild();
     ui.beginWindow("Water Splash VFX", "root");
     ui.text("PROCEDURAL WATER SPLASH", "title");
-    ui.text("Nested flared crowns with jagged foam lips. Burst plays a staggered impact.", "help");
+    ui.text("Continuous flared crowns + white foam crest/spray. Burst plays a staggered impact.", "help");
     ui.beginRow("workspace", 16.0);
     ui.beginColumn("controls", 5.0);
     ui.slider("Height", splashHeight, 0.6, 5.0, "height");
@@ -198,11 +229,11 @@ function resetSplashParameters() {
     splashHeight = 2.4;
     splashWidth = 3.2;
     splashLayers = 4;
-    splashJagged = 0.78;
-    splashFoam = 0.85;
-    splashFlare = 1.0;
-    splashRadial = 28;
-    splashRings = 10;
+    splashJagged = 0.72;
+    splashFoam = 1.0;
+    splashFlare = 1.05;
+    splashRadial = 36;
+    splashRings = 14;
     ui.setValue("height", splashHeight);
     ui.setValue("width", splashWidth);
     ui.setValue("layers", splashLayers.tofloat());
@@ -291,6 +322,25 @@ function animateSplash(dt) {
         splashImpact.setScale(r, 0.02, r);
         splashImpact.setTint(0.05, 0.08, 0.10, 0.55 * fade);
         splashImpact.setVisible(fade > 0.02);
+    }
+    if (splashSpray != null) {
+        local foamScale = clamp(splashFoam, 0.0, 1.0);
+        for (local i = 0; i < splashSpray.len(); ++i) {
+            local d = splashSpray[i];
+            local t = splashAge - d.delay;
+            local alive = t >= 0.0 && t < d.life && foamScale > 0.05;
+            d.object.setVisible(alive);
+            if (!alive) continue;
+            local u = t / d.life;
+            local rise = easeOutCubic(clamp(u * 1.35, 0.0, 1.0));
+            local fade = 1.0 - easeInCubic(u);
+            local rad = (d.radius + 0.55 * rise) * (0.55 + 0.45 * splashWidth / 3.2);
+            local y = (0.25 + d.lift * rise) * (0.55 + 0.45 * splashHeight / 2.4);
+            local s = d.size * foamScale * (0.75 + 0.55 * (1.0 - u));
+            d.object.setPosition(cos(d.angle) * rad, y, sin(d.angle) * rad);
+            d.object.setScale(s, s * (1.15 + 0.35 * rise), s);
+            d.object.setTint(1.0, 1.0, 1.0, fade);
+        }
     }
 }
 
