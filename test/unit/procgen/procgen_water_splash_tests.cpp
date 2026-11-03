@@ -39,15 +39,13 @@ float maxRadius(const MeshBuild &mesh) {
 
 }  // namespace
 
-TEST_CASE("procgen.waterSplash.spec.deterministicCrownsAndFoam") {
-    SUB_CASE("same seed replays identical geometry and colors") {
+TEST_CASE("procgen.waterSplash.spec.claySheetCrowns") {
+    SUB_CASE("same seed replays identical clay-sheet geometry") {
         Params params;
         params.setSeed(20261103u);
         params.setFloat("height", 2.4f);
         params.setFloat("width", 3.2f);
         params.setInt("layers", 4);
-        params.setFloat("jaggedness", 0.8f);
-        params.setFloat("foam", 0.9f);
 
         MeshBuild   a;
         MeshBuild   b;
@@ -57,30 +55,31 @@ TEST_CASE("procgen.waterSplash.spec.deterministicCrownsAndFoam") {
         CHECK(a.getVertexCount() > 32);
         CHECK_EQ(a.getIndexCount() % 3, 0);
         CHECK(meshIndicesInRange(a));
-        CHECK(a.hasVertexColors());
+        CHECK(!a.hasVertexColors());
         CHECK_EQ(a.positions(), b.positions());
         CHECK_EQ(a.indices(), b.indices());
-        CHECK_EQ(a.colors(), b.colors());
         CHECK(a.getGroupCount() >= 4);
         CHECK(maxHeight(a) > 1.5f);
         CHECK(maxRadius(a) > 1.0f);
+        CHECK_EQ(a.getMeta("sheet", ""), std::string("clay"));
     };
 
-    SUB_CASE("jaggedness shortens the torn crown lip") {
-        Params smooth;
-        smooth.setSeed(99u);
-        smooth.setFloat("jaggedness", 0.0f);
-        Params jagged;
-        jagged.setSeed(99u);
-        jagged.setFloat("jaggedness", 1.0f);
-
-        MeshBuild   a;
-        MeshBuild   b;
+    SUB_CASE("UV.v spans the sheet for material alpha") {
+        Params params;
+        params.setSeed(7u);
+        params.setInt("layers", 1);
+        params.setInt("onlyLayer", 0);
+        MeshBuild   mesh;
         std::string error;
-        REQUIRE(eve::procgen::generateWaterSplashMesh(smooth, a, error));
-        REQUIRE(eve::procgen::generateWaterSplashMesh(jagged, b, error));
-        CHECK(maxHeight(b) < maxHeight(a));
-        CHECK(a.positions() != b.positions());
+        REQUIRE(eve::procgen::generateWaterSplashMesh(params, mesh, error));
+        float vmin = 1.f;
+        float vmax = 0.f;
+        for (int i = 0; i < mesh.getVertexCount(); ++i) {
+            vmin = std::min(vmin, mesh.getUvV(i));
+            vmax = std::max(vmax, mesh.getUvV(i));
+        }
+        CHECK(vmin <= 0.001f);
+        CHECK(vmax >= 0.999f);
     };
 
     SUB_CASE("registry recipe mesh.water_splash is available") {
@@ -93,46 +92,5 @@ TEST_CASE("procgen.waterSplash.spec.deterministicCrownsAndFoam") {
         std::string error;
         REQUIRE(registry.generate("mesh.water_splash", params, mesh, error));
         CHECK(mesh.getVertexCount() > 0);
-        CHECK(mesh.hasVertexColors());
-    };
-
-    SUB_CASE("foam tips are whiter than the lower body") {
-        Params params;
-        params.setSeed(42u);
-        params.setFloat("foam", 1.0f);
-        params.setFloat("jaggedness", 0.8f);
-        params.setFloat("bodyR", 0.22f);
-        params.setFloat("bodyG", 0.78f);
-        params.setFloat("bodyB", 0.82f);
-        params.setFloat("foamR", 1.0f);
-        params.setFloat("foamG", 1.0f);
-        params.setFloat("foamB", 1.0f);
-
-        MeshBuild   mesh;
-        std::string error;
-        REQUIRE(eve::procgen::generateWaterSplashMesh(params, mesh, error));
-        REQUIRE(mesh.hasVertexColors());
-
-        float bodyLuma = 0.f;
-        float tipLuma = 0.f;
-        int bodyN = 0;
-        int tipN = 0;
-        const float hMax = maxHeight(mesh);
-        for (int i = 0; i < mesh.getVertexCount(); ++i) {
-            const float y = mesh.getPositionY(i);
-            const float luma =
-                0.2126f * mesh.getColor(i, 0) + 0.7152f * mesh.getColor(i, 1) + 0.0722f * mesh.getColor(i, 2);
-            if (y < hMax * 0.25f) {
-                bodyLuma += luma;
-                ++bodyN;
-            } else if (y > hMax * 0.82f) {
-                tipLuma += luma;
-                ++tipN;
-            }
-        }
-        REQUIRE(bodyN > 0);
-        REQUIRE(tipN > 0);
-        CHECK(tipLuma / float(tipN) > bodyLuma / float(bodyN) + 0.12f);
-        CHECK(tipLuma / float(tipN) > 0.75f);
     };
 }

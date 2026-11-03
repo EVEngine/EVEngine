@@ -1,72 +1,44 @@
-# Water Splash VFX — procedural stylized splash (`mesh.water_splash`)
+# Water Splash VFX — clay sheets + semi-transparent noise lip
 
-Native recipe `mesh.water_splash` builds a deterministic stylized water impact:
-a tall central jet plus nested outward-flaring crown shells with jagged torn
-lips and white foam vertex colors. This example is a live parameter lab with
-an auto-playing staggered burst animation.
+Matches the common stylized splash setup:
 
-Run from the repository root:
+1. **Mesh** — nested flared “clay” sheets (`mesh.water_splash`): continuous open crowns,
+   UV.v from ground → lip. No jagged geometry in the mesh itself.
+2. **Material** — `shaders/splash.frag`: semi-transparent water. Solid cyan below a
+   **noise-carved** cut, mottled white foam near the lip, transparent above so nested
+   crowns and the burst animation stay readable.
 
-```sh
-make run/win32-debug GAME=examples/water-splash-vfx   # Windows Debug
-make run GAME=examples/water-splash-vfx               # current host debug
-```
-
-Headless smoke:
+Run:
 
 ```sh
+make run GAME=examples/water-splash-vfx
 MIN_RUN_SECONDS=2 bash scripts/smoke_examples.sh water-splash-vfx
 ```
 
-## How it works
+Regenerate SPIR-V after editing the fragment source:
 
-`procgen.generateMesh("mesh.water_splash", p, gfx)` (or `buildMesh` +
-`uploadMesh`) returns nested open shells whose silhouette matches a common
-toon-splash language: thin vertical spire, then shorter wider crowns that
-flare at the rim. Jaggedness carves the top lip per radial column; foam amount
-pushes vertex colors toward white near those peaks.
+```sh
+glslc -fshader-stage=frag shaders/splash.frag -o shaders/splash.frag.spv
+spirv-val shaders/splash.frag.spv
+```
 
-For staggered VFX playback the recipe accepts `onlyLayer` (`-1` = all, or
-`0..layers-1`) so each crown can be its own `Renderable3D` with an independent
-rise / scale / fade curve.
-
-## Parameters
+## Mesh parameters (`procgen`)
 
 | Key | Default | Meaning |
 |-----|---------|---------|
-| `seed` | (from `newParams`) | deterministic jagged pattern |
-| `height` | `2.4` | overall splash height |
-| `width` | `3.2` | outer crown diameter |
-| `layers` | `4` | number of nested shells (2–4) |
-| `jaggedness` | `0.78` | torn-lip strength |
-| `foam` | `1.0` | white foam tip / crest amount |
-| `flare` | `1.0` | outward crown flare scale |
+| `height` / `width` | `2.4` / `3.2` | overall sheet size |
+| `layers` | `4` | nested crowns (2–4) |
+| `flare` | `1.0` | outward crown flare |
 | `onlyLayer` | `-1` | emit one layer for staggered VFX |
-| `radialSegments` | `28` | radial resolution |
-| `heightSegments` | `10` | vertical resolution |
-| `bodyR/G/B` | cyan | shell body vertex color |
-| `foamR/G/B` | white | foam tip vertex color |
+| `radialSegments` / `heightSegments` | `32` / `12` | sheet resolution |
 
-## Controls
+## Look parameters (example shader uniforms)
 
-| Input | Action |
-|-------|--------|
-| Sliders | Rebuild splash geometry immediately |
-| **Burst** / Space | Replay the staggered impact animation |
-| **New seed** | Reroll jagged crown variation |
-| **Reset** | Restore authored showcase values |
+| Control | Meaning |
+|---------|---------|
+| Edge noise | jaggedness of the transparent cut |
+| Foam | white mottling strength under the cut |
+| Opacity / Soft edge | overall alpha and feather width |
 
-## Squirrel sketch
-
-```squirrel
-local paramsResult = procgen.newParams();
-if (!paramsResult.ok) throw paramsResult.status.summary;
-local p = paramsResult.value;
-p.setSeed(20261103);
-p.setFloat("height", 2.4);
-p.setFloat("width", 3.2);
-p.setFloat("jaggedness", 0.78);
-local meshResult = procgen.generateMesh("mesh.water_splash", p, gfx);
-if (!meshResult.ok) throw meshResult.status.summary;
-local mesh = meshResult.value;
-```
+Burst scrolls the noise mask upward while scaling each clay sheet, which is why the
+look stays tied to simple geometry.

@@ -1,14 +1,18 @@
-// Stylized procedural water splash — native mesh.water_splash + staggered burst.
+// Stylized water splash: clean clay-sheet crowns + semi-transparent noise material.
+// Mesh is nested flared sheets (guide geometry). Look comes from shaders/splash.frag:
+// solid cyan water below a noisy cut, white foam mottling at the lip, transparent above.
 
 persist splashSeed = 20261103
 persist splashHeight = 2.4
 persist splashWidth = 3.2
 persist splashLayers = 4
-persist splashJagged = 0.78
+persist splashJagged = 0.85
 persist splashFoam = 1.0
 persist splashFlare = 1.0
-persist splashRadial = 28
-persist splashRings = 10
+persist splashOpacity = 0.88
+persist splashSoft = 0.45
+persist splashRadial = 32
+persist splashRings = 12
 persist splashCamera = null
 persist splashYaw = 0.35
 persist splashUiReady = false
@@ -21,7 +25,9 @@ persist splashGround = null
 persist splashGrid = null
 persist splashImpact = null
 persist splashLayersFx = null
+persist splashShader = null
 persist splashSpaceWasDown = false
+persist splashTime = 0.0
 
 function clamp(v, a, b) {
     return v < a ? a : (v > b ? b : v);
@@ -43,6 +49,37 @@ function updateStatus(message) {
     ui.setText("status", message);
 }
 
+function ensureShader() {
+    if (splashShader != null) return true;
+    local loaded = gfx.loadMeshShaderSpv("", "shaders/splash.frag.spv");
+    if (!loaded.ok) {
+        updateStatus("Shader load failed: " + loaded.status.summary);
+        return false;
+    }
+    splashShader = loaded.value;
+    foreach (k in ["time", "scroll", "bodyR", "bodyG", "bodyB", "foamR", "foamG", "foamB",
+                   "jagged", "foamAmount", "opacity", "softEdge"]) {
+        splashShader.declareFloat(k);
+    }
+    splashShader.sendFloat("bodyR", 0.20);
+    splashShader.sendFloat("bodyG", 0.78);
+    splashShader.sendFloat("bodyB", 0.84);
+    splashShader.sendFloat("foamR", 1.0);
+    splashShader.sendFloat("foamG", 1.0);
+    splashShader.sendFloat("foamB", 1.0);
+    return true;
+}
+
+function pushLookUniforms(scroll) {
+    if (splashShader == null) return;
+    splashShader.sendFloat("time", splashTime);
+    splashShader.sendFloat("scroll", scroll);
+    splashShader.sendFloat("jagged", splashJagged);
+    splashShader.sendFloat("foamAmount", splashFoam);
+    splashShader.sendFloat("opacity", splashOpacity);
+    splashShader.sendFloat("softEdge", splashSoft);
+}
+
 function makeParams(onlyLayer) {
     local paramsResult = procgen.newParams();
     if (!paramsResult.ok) {
@@ -55,8 +92,6 @@ function makeParams(onlyLayer) {
     p.setFloat("width", splashWidth);
     p.setInt("layers", splashLayers);
     p.setInt("onlyLayer", onlyLayer);
-    p.setFloat("jaggedness", splashJagged);
-    p.setFloat("foam", splashFoam);
     p.setFloat("flare", splashFlare);
     p.setInt("radialSegments", splashRadial);
     p.setInt("heightSegments", splashRings);
@@ -84,8 +119,11 @@ function ensureLayerObject(index) {
         e.setMetallic(0.0);
         e.setTint(1.0, 1.0, 1.0, 1.0);
         local mat = gfx.newMaterial();
-        mat.setShadingModel("unlit");
-        mat.setSurfaceMode("opaque");
+        mat.setShadingModel("custom");
+        mat.setShader(splashShader);
+        mat.setSurfaceMode("transparent");
+        mat.setBlendMode("alpha");
+        mat.setDepthWrite(false);
         mat.setDoubleSided(true);
         mat.setReceiveLight(false);
         mat.setCastShadow(false);
@@ -98,6 +136,8 @@ function ensureLayerObject(index) {
 }
 
 function rebuildSplash() {
+    if (!ensureShader()) return;
+    pushLookUniforms(0.0);
     for (local i = 0; i < splashLayers; ++i) {
         local mesh = uploadLayer(i);
         if (mesh == null) return;
@@ -112,8 +152,7 @@ function rebuildSplash() {
         }
     }
     splashAge = 0.0;
-    updateStatus(format("seed %d  |  %d layers  |  jagged %.2f  |  SPACE / Burst", splashSeed, splashLayers,
-                        splashJagged));
+    updateStatus(format("seed %d  |  clay sheets + noise lip  |  SPACE / Burst", splashSeed));
 }
 
 function buildSceneProps() {
@@ -160,17 +199,17 @@ function buildSplashUi() {
     ui.beginBuild();
     ui.beginWindow("Water Splash VFX", "root");
     ui.text("PROCEDURAL WATER SPLASH", "title");
-    ui.text("Nested flared crowns with jagged foam lips. Burst plays a staggered impact.", "help");
+    ui.text("Clay-sheet crowns + semi-transparent noise lip (bottom water, top clear).", "help");
     ui.beginRow("workspace", 16.0);
     ui.beginColumn("controls", 5.0);
     ui.slider("Height", splashHeight, 0.6, 5.0, "height");
     ui.slider("Width", splashWidth, 0.8, 7.0, "width");
     ui.slider("Layers", splashLayers.tofloat(), 2.0, 4.0, "layers");
-    ui.slider("Jaggedness", splashJagged, 0.0, 1.0, "jagged");
-    ui.slider("Foam", splashFoam, 0.0, 1.0, "foam");
+    ui.slider("Edge noise", splashJagged, 0.0, 1.4, "jagged");
+    ui.slider("Foam", splashFoam, 0.0, 1.4, "foam");
+    ui.slider("Opacity", splashOpacity, 0.25, 1.0, "opacity");
+    ui.slider("Soft edge", splashSoft, 0.0, 1.0, "soft");
     ui.slider("Flare", splashFlare, 0.4, 1.7, "flare");
-    ui.slider("Radial segs", splashRadial.tofloat(), 12.0, 48.0, "radial");
-    ui.slider("Height segs", splashRings.tofloat(), 4.0, 18.0, "rings");
     ui.beginRow("actions", 8.0);
     ui.button("Burst", "burst");
     ui.button("New seed", "new-seed");
@@ -180,7 +219,7 @@ function buildSplashUi() {
     ui.setItemSize(260.0, 0.0);
     ui.end();
     ui.beginColumn("preview-column", 4.0);
-    ui.text("Auto-burst loops. Drag parameters to reshape the crowns.", "preview-help");
+    ui.text("Noise scrolls with the burst. Nested sheets stay visible through the lip.", "preview-help");
     ui.viewport("preview", 620.0, 560.0);
     ui.end();
     ui.end();
@@ -197,19 +236,21 @@ function resetSplashParameters() {
     splashHeight = 2.4;
     splashWidth = 3.2;
     splashLayers = 4;
-    splashJagged = 0.78;
+    splashJagged = 0.85;
     splashFoam = 1.0;
     splashFlare = 1.0;
-    splashRadial = 28;
-    splashRings = 10;
+    splashOpacity = 0.88;
+    splashSoft = 0.45;
+    splashRadial = 32;
+    splashRings = 12;
     ui.setValue("height", splashHeight);
     ui.setValue("width", splashWidth);
     ui.setValue("layers", splashLayers.tofloat());
     ui.setValue("jagged", splashJagged);
     ui.setValue("foam", splashFoam);
+    ui.setValue("opacity", splashOpacity);
+    ui.setValue("soft", splashSoft);
     ui.setValue("flare", splashFlare);
-    ui.setValue("radial", splashRadial.tofloat());
-    ui.setValue("rings", splashRings.tofloat());
 }
 
 function handleSplashUi() {
@@ -229,48 +270,54 @@ function handleSplashUi() {
         click = ui.consumeClick();
     }
     local changed = ui.consumeChange();
+    local needMesh = false;
+    local needLook = false;
     while (changed != "") {
         local slash = changed.find("/");
         local id = slash == null ? changed : changed.slice(slash + 1);
-        if (id == "height") splashHeight = ui.getValue(id);
-        else if (id == "width") splashWidth = ui.getValue(id);
-        else if (id == "layers") splashLayers = clamp(ui.getValue(id), 2.0, 4.0).tointeger();
-        else if (id == "jagged") splashJagged = ui.getValue(id);
-        else if (id == "foam") splashFoam = ui.getValue(id);
-        else if (id == "flare") splashFlare = ui.getValue(id);
-        else if (id == "radial") splashRadial = clamp(ui.getValue(id), 12.0, 48.0).tointeger();
-        else if (id == "rings") splashRings = clamp(ui.getValue(id), 4.0, 18.0).tointeger();
-        rebuildSplash();
+        if (id == "height") { splashHeight = ui.getValue(id); needMesh = true; }
+        else if (id == "width") { splashWidth = ui.getValue(id); needMesh = true; }
+        else if (id == "layers") { splashLayers = clamp(ui.getValue(id), 2.0, 4.0).tointeger(); needMesh = true; }
+        else if (id == "flare") { splashFlare = ui.getValue(id); needMesh = true; }
+        else if (id == "jagged") { splashJagged = ui.getValue(id); needLook = true; }
+        else if (id == "foam") { splashFoam = ui.getValue(id); needLook = true; }
+        else if (id == "opacity") { splashOpacity = ui.getValue(id); needLook = true; }
+        else if (id == "soft") { splashSoft = ui.getValue(id); needLook = true; }
         changed = ui.consumeChange();
     }
+    if (needMesh) rebuildSplash();
+    else if (needLook) pushLookUniforms(0.0);
 }
 
 function layerTiming(index, age) {
-    // Outer crown leads, central jet arrives last — impact then rise.
     local delay = (splashLayers - 1 - index).tofloat() * 0.06;
     local localAge = age - delay;
     local rise = 0.42;
     local hold = 0.28;
     local fade = 0.55;
-    if (localAge < 0.0) return { visible = false, scale = 0.01, alpha = 0.0, y = 0.0 };
+    if (localAge < 0.0) return { visible = false, scale = 0.01, alpha = 0.0, y = 0.0, scroll = 0.0 };
     if (localAge < rise) {
         local t = easeOutCubic(localAge / rise);
-        return { visible = true, scale = 0.15 + 0.85 * t, alpha = 0.35 + 0.65 * t, y = 0.05 * t };
+        return { visible = true, scale = 0.20 + 0.80 * t, alpha = 0.45 + 0.55 * t, y = 0.04 * t,
+                 scroll = (1.0 - t) * 0.55 };
     }
     if (localAge < rise + hold) {
-        return { visible = true, scale = 1.0, alpha = 1.0, y = 0.05 };
+        return { visible = true, scale = 1.0, alpha = 1.0, y = 0.04, scroll = 0.0 };
     }
     local t = (localAge - rise - hold) / fade;
-    if (t >= 1.0) return { visible = false, scale = 0.01, alpha = 0.0, y = 0.0 };
-    local s = 1.0 + 0.18 * easeInCubic(t);
+    if (t >= 1.0) return { visible = false, scale = 0.01, alpha = 0.0, y = 0.0, scroll = 0.8 };
+    local s = 1.0 + 0.12 * easeInCubic(t);
     local a = 1.0 - easeInCubic(t);
-    return { visible = true, scale = s, alpha = a, y = 0.05 - 0.12 * t };
+    return { visible = true, scale = s, alpha = a, y = 0.04 - 0.10 * t, scroll = t * 0.75 };
 }
 
 function animateSplash(dt) {
     splashAge += dt;
+    splashTime += dt;
     if (splashAuto && splashAge > splashCycle) splashAge = 0.0;
     if (splashLayersFx == null) return;
+    local scrollAvg = 0.0;
+    local scrollN = 0;
     for (local i = 0; i < splashLayers && i < splashLayersFx.len(); ++i) {
         local slot = splashLayersFx[i];
         local pose = layerTiming(i, splashAge);
@@ -282,7 +329,11 @@ function animateSplash(dt) {
         slot.object.setPosition(0.0, pose.y, 0.0);
         slot.object.setYaw(splashYaw * 0.15);
         slot.object.setTint(1.0, 1.0, 1.0, pose.alpha);
+        scrollAvg += pose.scroll;
+        scrollN += 1;
     }
+    local scroll = scrollN > 0 ? scrollAvg / scrollN.tofloat() : 0.0;
+    pushLookUniforms(scroll);
     if (splashImpact != null) {
         local ring = clamp(splashAge / 0.35, 0.0, 1.0);
         local fade = clamp(1.0 - (splashAge - 0.45) / 0.8, 0.0, 1.0);
@@ -306,7 +357,7 @@ eve_init = function() {
     gfx.setDirectionalLight(-0.35, -1.0, -0.45, 1.15, 1.25, 1.35);
     gfx.setBackgroundColor(0.10, 0.12, 0.14, 1.0);
     rebuildSplash();
-    print("water-splash-vfx: mesh.water_splash ready (SPACE / Burst)\n");
+    print("water-splash-vfx: clay sheets + noise splash material ready\n");
 };
 
 eve_update = function(dt) {

@@ -8,13 +8,15 @@
 namespace eve::procgen {
 
 /**
- * @brief Build a deterministic stylized water-splash mesh of nested flared crowns.
+ * @brief Build deterministic clay-sheet crowns for a stylized water splash.
  *
- * Registered as the `mesh.water_splash` recipe. Layers share one vertical axis:
- * a tall central spire plus outward-flaring crown shells with jagged top rims.
- * Foam tips are encoded as white vertex colors; the body uses cyan.
+ * Registered as `mesh.water_splash`. Layers share one vertical axis: a tall
+ * central spire plus nested outward-flaring continuous sheets (UV.v = 0 at the
+ * ground, 1 at the open lip). Jagged lips, foam, and semi-transparency belong
+ * to the material (see `examples/water-splash-vfx/shaders/splash.frag`), not
+ * the mesh.
  *
- * @param params Recipe parameters (seed, height, width, layers, jaggedness, …).
+ * @param params Recipe parameters (seed, height, width, layers, flare, …).
  * @param out Destination mesh; cleared before generation.
  * @param error Filled when generation fails.
  * @return True when `out` holds a non-empty mesh.
