@@ -636,4 +636,16 @@ Result<std::vector<ActionGuideLandmark>> projectActionGuideLandmarks(const Actio
     return Result<std::vector<ActionGuideLandmark>>::success(std::move(landmarks));
 }
 
+std::string_view actionGuideCapturePhaseName(ActionGuideCapturePhase phase) {
+    switch (phase) {
+        case ActionGuideCapturePhase::Queued: return "queued";
+        case ActionGuideCapturePhase::Rendering: return "rendering";
+        case ActionGuideCapturePhase::Ready: return "ready";
+        case ActionGuideCapturePhase::Failed: return "failed";
+        case ActionGuideCapturePhase::Cancelled: return "cancelled";
+        case ActionGuideCapturePhase::Released: return "released";
+    }
+    return "unknown";
+}
+
 }  // namespace eve

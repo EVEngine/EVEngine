@@ -3,7 +3,9 @@
 #include "common/ActionGuidePack.h"
 #include "common/Capability.h"
 #include "common/Diagnostic.h"
+#include "devtools/ActionGuideExport.hpp"
 #include "devtools/McpJson.hpp"
+#include "devtools/McpServer.hpp"
 #include "devtools/McpToolFamilies.hpp"
 
 #include <Poco/Dynamic/Var.h>
@@ -11,6 +13,7 @@
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
 
+#include <filesystem>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -227,14 +230,142 @@ std::string landmarksTool(Object::Ptr args) {
     return textPayload(out);
 }
 
-std::string captureFamilyTool(std::string_view name) {
-    auto* provider = cap::query<IActionGuideCapture>();
+IActionGuideCapture* requireProvider() { return cap::query<IActionGuideCapture>(); }
+
+Result<ActionGuidePack> resolvePack(Object::Ptr args) {
+    if (args && args->has("pack")) return packFromArgs(args);
+    if (!session().present) {
+        return Result<ActionGuidePack>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "pack or session required", "pack"));
+    }
+    return Result<ActionGuidePack>::success(session().pack);
+}
+
+std::vector<std::string> parseShotIds(Object::Ptr args) {
+    std::vector<std::string> shotIds;
+    if (!args || !args->has("shotIds")) return shotIds;
+    try {
+        auto array = args->getArray("shotIds");
+        if (!array) return shotIds;
+        shotIds.reserve(array->size());
+        for (unsigned i = 0; i < array->size(); ++i) shotIds.push_back(array->getElement<std::string>(i));
+    } catch (...) {
+        shotIds.clear();
+        shotIds.push_back("__invalid__");
+    }
+    return shotIds;
+}
+
+std::string captureTool(Object::Ptr args) {
+    auto* provider = requireProvider();
     if (!provider) {
         return error("ProviderAbsent",
                      "IActionGuideCapture is not registered in this build; validate/landmarks work without GPU");
     }
-    (void)name;
-    return error("Unsupported", "GPU guide capture provider is present but export path is not wired in this slice");
+    auto pack = resolvePack(args);
+    if (!pack) return resultError(pack.status());
+    auto encoded = encodeActionGuidePack(pack.value());
+    if (!encoded) return resultError(encoded.status());
+    auto json = encoded.value().toJson();
+    if (!json) return resultError(json.status());
+    auto shotIds = parseShotIds(args);
+    if (shotIds.size() == 1 && shotIds[0] == "__invalid__")
+        return error("InvalidArguments", "shotIds must be an array of strings");
+    auto token = provider->requestCapture(json.value(), shotIds);
+    if (!token) return resultError(token.status());
+    auto out = base("queued");
+    out->set("ok", true);
+    out->set("token", token.value());
+    out->set("revision", static_cast<Poco::UInt64>(pack.value().revision));
+    return textPayload(out);
+}
+
+std::string statusTool(Object::Ptr args) {
+    auto* provider = requireProvider();
+    if (!provider) {
+        return error("ProviderAbsent",
+                     "IActionGuideCapture is not registered in this build; validate/landmarks work without GPU");
+    }
+    if (!args || !args->has("token")) return error("InvalidArguments", "token is required");
+    std::string token;
+    try {
+        token = args->getValue<std::string>("token");
+    } catch (...) {
+        return error("InvalidArguments", "token must be a string");
+    }
+    auto snapshot = provider->captureSnapshot(token);
+    if (!snapshot) return resultError(snapshot.status());
+    const auto& snap = snapshot.value();
+    auto        out  = base(actionGuideCapturePhaseName(snap.phase));
+    out->set("ok", snap.phase == ActionGuideCapturePhase::Ready || snap.phase == ActionGuideCapturePhase::Queued ||
+                       snap.phase == ActionGuideCapturePhase::Rendering);
+    out->set("token", snap.token);
+    out->set("phase", std::string(actionGuideCapturePhaseName(snap.phase)));
+    out->set("revision", static_cast<Poco::UInt64>(snap.revision));
+    out->set("backend", snap.backend);
+    out->set("shotCount", static_cast<int>(snap.shots.size()));
+    if (!snap.reason.empty()) out->set("reason", snap.reason);
+    if (snap.phase == ActionGuideCapturePhase::Ready) {
+        Array::Ptr shots = new Array;
+        for (const auto& shot : snap.shots) {
+            Object::Ptr item = new Object;
+            item->set("shotId", shot.shotId);
+            Array::Ptr aovs = new Array;
+            for (const auto& aov : shot.aovs) aovs->add(aov.aov);
+            item->set("aovs", aovs);
+            shots->add(item);
+        }
+        out->set("shots", shots);
+    }
+    return textPayload(out);
+}
+
+std::string exportTool(Object::Ptr args) {
+    auto* provider = requireProvider();
+    if (!provider) {
+        return error("ProviderAbsent",
+                     "IActionGuideCapture is not registered in this build; validate/landmarks work without GPU");
+    }
+    if (!args || !args->has("token") || !args->has("path"))
+        return error("InvalidArguments", "token and path are required");
+    std::string token;
+    std::string path;
+    try {
+        token = args->getValue<std::string>("token");
+        path  = args->getValue<std::string>("path");
+    } catch (...) {
+        return error("InvalidArguments", "token and path must be strings");
+    }
+    if (path.empty() || path.find('\0') != std::string::npos) return error("InvalidExportPath");
+    std::filesystem::path resolved;
+    try {
+        resolved         = std::filesystem::path(path);
+        const auto& root = McpServer::instance().gameRoot();
+        if (resolved.is_relative() && !root.empty()) resolved = std::filesystem::path(root) / resolved;
+        resolved = std::filesystem::absolute(resolved).lexically_normal();
+    } catch (const std::exception&) {
+        return error("InvalidExportPath");
+    }
+    auto snapshot = provider->captureSnapshot(token);
+    if (!snapshot) return resultError(snapshot.status());
+    if (snapshot.value().phase != ActionGuideCapturePhase::Ready)
+        return error("NotReady", "Capture must reach ready before export");
+    auto written = writeActionGuideArtifactPack(snapshot.value(), resolved);
+    if (!written) return resultError(written.status());
+    auto summaryJson = written.value().toJson();
+    if (!summaryJson) return resultError(summaryJson.status());
+    auto out = base("ready");
+    out->set("ok", true);
+    out->set("token", token);
+    out->set("exportRoot", resolved.generic_string());
+    try {
+        Poco::JSON::Parser parser;
+        auto               summary = parser.parse(summaryJson.value()).extract<Object::Ptr>();
+        out->set("artifact", summary);
+    } catch (...) {
+        out->set("hint", "export succeeded but artifact summary JSON could not be re-parsed");
+    }
+    return textPayload(out);
 }
 
 }  // namespace
@@ -253,15 +384,16 @@ std::string callMcpActionGuideTool(std::string_view name, Object::Ptr args) {
     if (name == "eve_action_guide_pack_get") return getTool(args);
     if (name == "eve_action_guide_pack_set") return setTool(args);
     if (name == "eve_action_guide_landmarks") return landmarksTool(args);
-    if (name == "eve_action_guide_capture" || name == "eve_action_guide_status" || name == "eve_action_guide_export")
-        return captureFamilyTool(name);
+    if (name == "eve_action_guide_capture") return captureTool(args);
+    if (name == "eve_action_guide_status") return statusTool(args);
+    if (name == "eve_action_guide_export") return exportTool(args);
     if (name == "eve_action_guide_ingest" || name == "eve_action_guide_verify")
         return error("Unsupported", "Ingest/verify land in later slices after SpriteSheet binding exists");
     return error("UnknownTool");
 }
 
 std::string_view mcpActionGuideToolSchemas() {
-    return R"json({"name":"eve_action_guide_pack_validate","description":"Decode and re-encode an eve.action.guide-pack v1 document. Rejects unknown fields and invalid cameras/shots.","inputSchema":{"type":"object","properties":{"pack":{"description":"Guide-pack object or JSON string"}},"required":["pack"]}},{"name":"eve_action_guide_pack_set","description":"Store a validated guide pack in the process-local MCP session. Optional expectedRevision detects conflicts.","inputSchema":{"type":"object","properties":{"pack":{},"expectedRevision":{"type":"integer","minimum":0}},"required":["pack"]}},{"name":"eve_action_guide_pack_get","description":"Return the process-local session guide pack.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_action_guide_landmarks","description":"Project world-space bones into guide-canvas landmarks (top-left pixels + view depth). Uses pack argument or the session pack.","inputSchema":{"type":"object","properties":{"pack":{},"bones":{"type":"array","items":{"type":"object","properties":{"boneId":{"type":"string"},"name":{"type":"string"},"position":{"type":"array","items":{"type":"number"},"minItems":3,"maxItems":3},"parentId":{"type":"string"}},"required":["boneId","position"]}}},"required":["bones"]}},{"name":"eve_action_guide_capture","description":"Queue silhouette/depth/bone AOV capture. Returns ProviderAbsent until IActionGuideCapture is registered.","inputSchema":{"type":"object","properties":{"shotIds":{"type":"array","items":{"type":"string"}}}}},{"name":"eve_action_guide_status","description":"Poll a guide-capture job token.","inputSchema":{"type":"object","properties":{"token":{"type":"string"}},"required":["token"]}},{"name":"eve_action_guide_export","description":"Export a ready guide-capture job to disk.","inputSchema":{"type":"object","properties":{"token":{"type":"string"},"path":{"type":"string"}},"required":["token","path"]}},{"name":"eve_action_guide_ingest","description":"Ingest AI candidate frames into SpriteSheet/Clip (later slice).","inputSchema":{"type":"object","properties":{"candidateDir":{"type":"string"}},"required":["candidateDir"]}},{"name":"eve_action_guide_verify","description":"Play/verify ingested clips against silhouette/joint thresholds (later slice).","inputSchema":{"type":"object","properties":{"packRevision":{"type":"integer"}}}})json";
+    return R"json({"name":"eve_action_guide_pack_validate","description":"Decode and re-encode an eve.action.guide-pack v1 document. Rejects unknown fields and invalid cameras/shots.","inputSchema":{"type":"object","properties":{"pack":{"description":"Guide-pack object or JSON string"}},"required":["pack"]}},{"name":"eve_action_guide_pack_set","description":"Store a validated guide pack in the process-local MCP session. Optional expectedRevision detects conflicts.","inputSchema":{"type":"object","properties":{"pack":{},"expectedRevision":{"type":"integer","minimum":0}},"required":["pack"]}},{"name":"eve_action_guide_pack_get","description":"Return the process-local session guide pack.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_action_guide_landmarks","description":"Project world-space bones into guide-canvas landmarks (top-left pixels + view depth). Uses pack argument or the session pack.","inputSchema":{"type":"object","properties":{"pack":{},"bones":{"type":"array","items":{"type":"object","properties":{"boneId":{"type":"string"},"name":{"type":"string"},"position":{"type":"array","items":{"type":"number"},"minItems":3,"maxItems":3},"parentId":{"type":"string"}},"required":["boneId","position"]}}},"required":["bones"]}},{"name":"eve_action_guide_capture","description":"Queue silhouette/depth AOV capture via IActionGuideCapture. Returns ProviderAbsent when no provider is registered.","inputSchema":{"type":"object","properties":{"pack":{},"shotIds":{"type":"array","items":{"type":"string"}}}}},{"name":"eve_action_guide_status","description":"Poll a guide-capture job token without waiting on GPU.","inputSchema":{"type":"object","properties":{"token":{"type":"string"}},"required":["token"]}},{"name":"eve_action_guide_export","description":"Export a Ready guide-capture job to guide-pack/shots/NNNN/{silhouette,depth}.png + manifest.json.","inputSchema":{"type":"object","properties":{"token":{"type":"string"},"path":{"type":"string"}},"required":["token","path"]}},{"name":"eve_action_guide_ingest","description":"Ingest AI candidate frames into SpriteSheet/Clip (later slice).","inputSchema":{"type":"object","properties":{"candidateDir":{"type":"string"}},"required":["candidateDir"]}},{"name":"eve_action_guide_verify","description":"Play/verify ingested clips against silhouette/joint thresholds (later slice).","inputSchema":{"type":"object","properties":{"packRevision":{"type":"integer"}}}})json";
 }
 
 }  // namespace eve::dev

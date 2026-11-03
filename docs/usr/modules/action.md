@@ -47,7 +47,8 @@ RPG / Weapon 等域可以继续在 C++ 侧复用同一协议，也可以通过�
 
 `eve.action.guide-pack` schema v1（`schema` / `schemaVersion` 线格式）描述镜头、AOV 合同与
 Ability 绑定草稿。编解码与 CPU 骨骼投影在 `common/ActionGuidePack.h`；MCP 工具
-`eve_action_guide_pack_*` / `eve_action_guide_landmarks` 供 Agent 使用。GPU 轮廓/深度捕获走
-`IActionGuideCapture`（缺席时返回 `ProviderAbsent`）。设计见
+`eve_action_guide_pack_*` / `eve_action_guide_landmarks` / `eve_action_guide_capture` /
+`_status` / `_export` 供 Agent 使用。捕获经 `IActionGuideCapture`（缺席 → `ProviderAbsent`）；
+就绪后导出 `manifest.json` + `shots/NNNN/{silhouette,depth}.png`。设计见
 [`docs/dev/2026-11-03-2d-action-ai-guide-pipeline.md`](../../dev/2026-11-03-2d-action-ai-guide-pipeline.md)，
 样例 [`docs/dev/fixtures/eve.action.guide-pack.v1.example.json`](../../dev/fixtures/eve.action.guide-pack.v1.example.json)。

@@ -1,8 +1,9 @@
 # 2D 动作缺资源时的「白膜引导 → AI 成图 → 入库」管线
 
 日期：2026-11-03  
-状态：设计 + **P0/P1 首竖切已落地**（文档编解码、landmarks 投影、MCP validate/set/get/landmarks；
-GPU AOV capture 仍为 `IActionGuideCapture` / `ProviderAbsent`）。对齐现有 Agent-Native / MCP /
+状态：设计 + **P0/P1 合同与 MCP 导出布局已落地**（文档编解码、landmarks、
+`IActionGuideCapture` 快照合同、`eve_action_guide_capture/status/export` 接线、Fake 导出验收；
+**真实 Vulkan 离屏 AOV** 仍待 graphics 侧 provider）。对齐现有 Agent-Native / MCP /
 FrameCapture / Action / Sprite 能力。
 
 关联：
@@ -351,8 +352,8 @@ eve_action_guide_verify → 不达标则回退下一候选 / 请求改拍
 | 切片 | 交付 | 验收证据 |
 |------|------|----------|
 | **P0 · 合同** | `eve.action.guide-pack` schema + 样例 JSON + 本文接口冻结 | **已落地**：`ActionGuidePack` 编解码单测；未知字段拒绝；`docs/dev/fixtures/eve.action.guide-pack.v1.example.json` |
-| **P1 · 捕获（本竖切）** | landmarks JSON + MCP validate/set/get；capture 显式 `ProviderAbsent` | **已落地**：CPU `projectActionGuideLandmarks`；MCP `eve_action_guide_*`；GPU AOV 导出待 `IActionGuideCapture` 实现 |
-| **P2 · bone AOV** | `guide.bone` 渲染与调色板 | 固定人偶回归图 + landmarks 数值容差 |
+| **P1 · 捕获（本竖切）** | landmarks + MCP validate/set/get/capture/status/export；artifact 目录布局 | **已落地**：CPU landmarks；MCP 全族接线；`writeActionGuideArtifactPack`；缺席 `ProviderAbsent`；Fake provider 合同测；**GPU provider 待 graphics** |
+| **P2 · bone AOV + GPU** | Vulkan 离屏 silhouette/depth + `guide.bone` | 固定人偶回归图 + landmarks 数值容差；entity camera 不变 |
 | **P3 · 入库** | `ingest` → SpriteSheet/Clip + ability 草稿绑定 | 序列播放；revision 冲突；失败原子性 |
 | **P4 · 验证** | IoU / 关节误差 + `eve_play` evidence | 故意错位候选被拒；正例可玩冒烟 |
 | **P5 · Agent** | `tools/action-guide-agent` dry-run + 一路真实模型可选 | dry-run 闭环；有密钥时再开真实路径 |

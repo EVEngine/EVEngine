@@ -11,7 +11,7 @@ namespace eve::dev {
 /** @brief True for the action-guide MCP family. */
 [[nodiscard]] EVENGINE_API_FOUNDATION bool isMcpActionGuideTool(std::string_view name);
 
-/** @brief Main-thread tool dispatch for guide-pack validate/landmarks and capture stubs. */
+/** @brief Main-thread tool dispatch for guide-pack validate/landmarks/capture/export. */
 [[nodiscard]] EVENGINE_API_FOUNDATION std::string callMcpActionGuideTool(std::string_view        name,
                                                                          Poco::JSON::Object::Ptr args);
 

@@ -15,6 +15,7 @@
 
 #include <array>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <span>
 #include <string>
@@ -156,6 +157,54 @@ struct ActionGuideLandmark {
 [[nodiscard]] EVENGINE_API_FOUNDATION Result<std::vector<ActionGuideLandmark>> projectActionGuideLandmarks(
     const ActionGuidePack& pack, std::span<const ActionGuideBoneWorld> bones);
 
+/** @brief Guide-capture job progress; Ready is published only after every requested AOV exists. */
+enum class ActionGuideCapturePhase : std::uint8_t {
+    Queued,
+    Rendering,
+    Ready,
+    Failed,
+    Cancelled,
+    Released,
+};
+
+/** @brief Stable protocol spelling of a guide-capture phase. */
+[[nodiscard]] EVENGINE_API_FOUNDATION std::string_view actionGuideCapturePhaseName(ActionGuideCapturePhase phase);
+
+/**
+ * @brief One lease-owned CPU AOV buffer (always RGBA8 for PNG export).
+ * @ownership `rgba8` is immutable shared storage owned by the capture job until release.
+ */
+struct ActionGuideAovBuffer {
+    std::string                                      aov;  // pack spelling: silhouette|depth|bone|…
+    std::uint32_t                                    width  = 0;
+    std::uint32_t                                    height = 0;
+    std::shared_ptr<const std::vector<std::uint8_t>> rgba8;
+};
+
+/** @brief Per-shot artifact set for a Ready capture. */
+struct ActionGuideShotArtifact {
+    std::string                       shotId;
+    double                            timeSeconds = 0.0;
+    std::optional<std::int64_t>       sampleIndex;
+    std::string                       view = "front";
+    std::vector<std::string>          tags;
+    std::vector<ActionGuideAovBuffer> aovs;
+};
+
+/**
+ * @brief Immutable CPU snapshot for one guide-capture job.
+ * @lifetime Bytes remain valid until `releaseCapture`; never expose GPU objects.
+ */
+struct ActionGuideCaptureSnapshot {
+    std::string                          token;
+    ActionGuideCapturePhase              phase    = ActionGuideCapturePhase::Queued;
+    std::uint64_t                        revision = 0;
+    std::string                          backend;
+    std::string                          reason;
+    ActionGuidePack                      pack;
+    std::vector<ActionGuideShotArtifact> shots;
+};
+
 /**
  * @brief Optional GPU guide-capture provider (silhouette/depth/bone AOV export).
  * @thread Engine owner thread only; never wait for GPU inside request.
@@ -175,8 +224,11 @@ public:
      */
     [[nodiscard]] virtual Result<std::string> requestCapture(std::string_view             packJson,
                                                              std::span<const std::string> shotIds) = 0;
-    /** @brief Poll without waiting; Ready returns export paths / metadata JSON. */
-    [[nodiscard]] virtual Result<Value> captureStatus(std::string_view token) = 0;
+    /**
+     * @brief Poll without waiting; Ready includes lease-owned RGBA buffers for export.
+     * @cost O(1) metadata copy; buffer shared_ptrs share ownership with the job.
+     */
+    [[nodiscard]] virtual Result<ActionGuideCaptureSnapshot> captureSnapshot(std::string_view token) = 0;
     /** @brief Cancel/release; GPU resources survive until their fence completes. */
     [[nodiscard]] virtual Result<void> releaseCapture(std::string_view token) = 0;
 };
