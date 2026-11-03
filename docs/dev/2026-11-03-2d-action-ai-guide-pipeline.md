@@ -1,8 +1,9 @@
 # 2D 动作缺资源时的「白膜引导 → AI 成图 → 入库」管线
 
 日期：2026-11-03  
-状态：设计 + **P0–P3 已落地**（文档编解码、landmarks、MCP capture/export、Vulkan 离屏
-AOV、候选帧 ingest → sequence + `ability.draft.json`）。verify / clip 姿态采样 / agent 编排仍待后续。
+状态：设计 + **P0–P4 已落地**（文档编解码、landmarks、MCP capture/export、Vulkan 离屏
+AOV、候选帧 ingest → sequence + `ability.draft.json`、几何 verify IoU/关节 + evidence）。
+clip 姿态采样 / agent 编排仍待后续。
 对齐现有 Agent-Native / MCP / FrameCapture / Action / Sprite 能力。
 
 关联：
@@ -354,7 +355,7 @@ eve_action_guide_verify → 不达标则回退下一候选 / 请求改拍
 | **P1 · 捕获** | landmarks + MCP validate/set/get/capture/status/export；artifact 目录布局 | **已落地** |
 | **P2 · bone AOV + GPU** | Vulkan 离屏 silhouette/depth + CPU `bone` AOV | **已落地** |
 | **P3 · 入库（本竖切）** | `ingest` → sequence PNG + clip/ability 草稿 | **已落地**：校验 revision/尺寸/**1px 透明边**；写 `frames/`+`clip.json`+`ability.draft.json`+`attribution.gen.json`；候选 fixture `docs/dev/fixtures/eve.action.guide-candidate.v1.example.json`；不注册 AbilityRuntime |
-| **P4 · 验证** | IoU / 关节误差 + `eve_play` evidence | 故意错位候选被拒；正例可玩冒烟 |
+| **P4 · 验证** | IoU / 关节误差 + evidence | **已落地**：CPU silhouette IoU + optional joint L2 vs `qc`；MCP `eve_action_guide_verify`；`verify.evidence.json`；错位拒收 / 对齐通过；`eve_play` 冒烟仍为可选（报告里 `playSmoke=skipped`） |
 | **P5 · Agent** | `tools/action-guide-agent` dry-run + 一路真实模型可选 | dry-run 闭环；有密钥时再开真实路径 |
 
 每一切片单独 PR；禁止与无关编辑器大扫荡混提。

@@ -5,10 +5,12 @@
 #include <filesystem>
 #include "common/ActionGuideIngest.h"
 #include "common/ActionGuidePack.h"
+#include "common/ActionGuideVerify.h"
 #include "common/Capability.h"
 #include "common/Diagnostic.h"
 #include "devtools/ActionGuideExport.hpp"
 #include "devtools/ActionGuideIngestIO.hpp"
+#include "devtools/ActionGuideVerifyIO.hpp"
 #include "devtools/McpActionGuideTools.hpp"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -171,7 +173,7 @@ TEST_CASE("module_composition.actionGuide.ingestWritesClipAndAbilityDraft") {
             const size_t i    = (size_t(y) * 8 + x) * 4;
             const bool   edge = x == 0 || y == 0 || x == 7 || y == 7;
             (*rgba)[i + 0] = (*rgba)[i + 1] = (*rgba)[i + 2] = 255;
-            (*rgba)[i + 3]                                    = edge ? 0 : 255;
+            (*rgba)[i + 3]                                   = edge ? 0 : 255;
         }
     }
     ActionGuideCandidateFrame frame;
@@ -231,5 +233,136 @@ TEST_CASE("module_composition.actionGuide.ingestWritesClipAndAbilityDraft") {
     std::filesystem::remove_all(root);
     std::filesystem::remove_all(candidates);
     std::filesystem::remove_all(outRoot);
+    eve::dev::resetMcpActionGuide();
+}
+
+TEST_CASE("module_composition.actionGuide.verifyRejectsShiftedCandidate") {
+    using namespace eve;
+    constexpr const char* kPack  = R"json({
+      "schema":"eve.action.guide-pack","schemaVersion":1,"revision":3,
+      "subject":{"domain":"animation.preview","id":1,"generation":1},
+      "skeletonRef":"s","clipRef":"c","rootMode":"inPlace",
+      "canvas":{"width":16,"height":16,"pixelsPerUnit":1,"backgroundRgba":[0,0,0,0],"transparent":true},
+      "camera":{"projection":"orthographic","fovYDegrees":45,"orthoSize":1,"nearPlane":0.1,"farPlane":10,
+                "eye":[0,0,5],"target":[0,0,0],"up":[0,1,0]},
+      "shots":[{"shotId":"s0","timeSeconds":0,"view":"front","aovs":["silhouette"],"tags":[]}],
+      "actionBinding":{"abilityId":"ability:hero.attack.light","clipName":"attack.light","fps":12,"loop":false,
+                       "phaseMarks":[]},
+      "qc":{"minSilhouetteIoU":0.8,"maxJointErrorPx":4,"maxRetries":1}
+    })json";
+    auto                  parsed = Value::fromJson(kPack);
+    REQUIRE(parsed.ok());
+    auto pack = decodeActionGuidePack(parsed.value());
+    REQUIRE(pack.ok());
+
+    auto guideRgba = std::make_shared<std::vector<uint8_t>>(16 * 16 * 4, uint8_t{0});
+    auto goodCand  = std::make_shared<std::vector<uint8_t>>(16 * 16 * 4, uint8_t{0});
+    auto badCand   = std::make_shared<std::vector<uint8_t>>(16 * 16 * 4, uint8_t{0});
+    for (uint32_t y = 0; y < 16; ++y) {
+        for (uint32_t x = 0; x < 16; ++x) {
+            const size_t i       = (size_t(y) * 16 + x) * 4;
+            const int    dx      = int(x) - 8;
+            const int    dy      = int(y) - 8;
+            const bool   inside  = dx * dx + dy * dy <= 16;
+            const int    dx2     = int(x) - 13;
+            const bool   shifted = dx2 * dx2 + dy * dy <= 16;
+            (*guideRgba)[i + 0] = (*guideRgba)[i + 1] = (*guideRgba)[i + 2] = inside ? 255 : 0;
+            (*guideRgba)[i + 3]                                             = 255;
+            (*goodCand)[i + 0] = (*goodCand)[i + 1] = (*goodCand)[i + 2] = 255;
+            (*goodCand)[i + 3]                                           = inside ? 255 : 0;
+            (*badCand)[i + 0] = (*badCand)[i + 1] = (*badCand)[i + 2] = 255;
+            (*badCand)[i + 3]                                         = shifted ? 255 : 0;
+        }
+    }
+
+    // Materialize guide artifact via Fake capture export.
+    struct Fake final : IActionGuideCapture {
+        ActionGuideCaptureSnapshot snap;
+        Result<std::string>        requestCapture(std::string_view, std::span<const std::string>) override {
+            return Result<std::string>::success(snap.token);
+        }
+        Result<ActionGuideCaptureSnapshot> captureSnapshot(std::string_view) override {
+            return Result<ActionGuideCaptureSnapshot>::success(snap);
+        }
+        Result<void> releaseCapture(std::string_view) override { return Result<void>::success(); }
+    } fake;
+    struct Registration {
+        IActionGuideCapture* previous = cap::query<IActionGuideCapture>();
+        ~Registration() { cap::provide<IActionGuideCapture>(previous); }
+    } registration;
+    fake.snap.token    = "verify-guide";
+    fake.snap.phase    = ActionGuideCapturePhase::Ready;
+    fake.snap.revision = pack.value().revision;
+    fake.snap.backend  = "composition-fake";
+    fake.snap.pack     = pack.value();
+    ActionGuideShotArtifact artifact;
+    artifact.shotId = "s0";
+    artifact.view   = "front";
+    artifact.aovs.push_back(ActionGuideAovBuffer{"silhouette", 16, 16, guideRgba});
+    fake.snap.shots.push_back(std::move(artifact));
+    eve::cap::provide<IActionGuideCapture>(&fake);
+
+    const auto guideRoot = std::filesystem::temp_directory_path() / "eve-action-guide-verify-guide";
+    std::filesystem::remove_all(guideRoot);
+    auto exported = eve::dev::writeActionGuideArtifactPack(fake.snap, guideRoot);
+    REQUIRE(exported.ok());
+
+    auto writeCandidateDir = [&](const std::filesystem::path& dir, const std::shared_ptr<std::vector<uint8_t>>& rgba) {
+        std::filesystem::remove_all(dir);
+        ActionGuideCandidateFrame frame;
+        frame.meta   = {pack.value().revision, "s0", "unit", 1, "hash"};
+        frame.width  = 16;
+        frame.height = 16;
+        frame.rgba8  = rgba;
+        ActionGuideIngestRequest request;
+        request.pack                   = pack.value();
+        request.frames                 = {frame};
+        request.requireTransparentEdge = false;  // shifted masks may touch the canvas edge
+        auto draft                     = buildActionGuideIngestDraft(request);
+        REQUIRE(draft.ok());
+        const auto staging = dir / "_ingest";
+        auto       written = eve::dev::writeActionGuideIngestPack(draft.value(), request.frames, staging);
+        REQUIRE(written.ok());
+        std::filesystem::create_directories(dir / "0001");
+        std::filesystem::copy_file(staging / "frames/frame_0.png", dir / "0001/frame.png");
+        std::filesystem::remove_all(staging);
+    };
+
+    const auto goodDir = std::filesystem::temp_directory_path() / "eve-action-guide-verify-good";
+    const auto badDir  = std::filesystem::temp_directory_path() / "eve-action-guide-verify-bad";
+    const auto outDir  = std::filesystem::temp_directory_path() / "eve-action-guide-verify-out";
+    writeCandidateDir(goodDir, goodCand);
+    writeCandidateDir(badDir, badCand);
+    std::filesystem::remove_all(outDir);
+
+    eve::dev::resetMcpActionGuide();
+    Poco::JSON::Parser      parser;
+    auto                    packObj = parser.parse(kPack).extract<Poco::JSON::Object::Ptr>();
+    Poco::JSON::Object::Ptr setArgs = new Poco::JSON::Object();
+    setArgs->set("pack", packObj);
+    REQUIRE(guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_pack_set", setArgs))->getValue<bool>("ok"));
+
+    Poco::JSON::Object::Ptr passArgs = new Poco::JSON::Object();
+    passArgs->set("guideDir", guideRoot.generic_string());
+    passArgs->set("candidateDir", goodDir.generic_string());
+    passArgs->set("outputDir", outDir.generic_string());
+    passArgs->set("expectedRevision", 3);
+    auto passed = guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_verify", passArgs));
+    REQUIRE(passed->getValue<bool>("ok"));
+    CHECK(passed->getValue<bool>("passed"));
+    CHECK(std::filesystem::exists(outDir / "verify.evidence.json"));
+
+    Poco::JSON::Object::Ptr failArgs = new Poco::JSON::Object();
+    failArgs->set("guideDir", guideRoot.generic_string());
+    failArgs->set("candidateDir", badDir.generic_string());
+    failArgs->set("expectedRevision", 3);
+    auto rejected = guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_verify", failArgs));
+    CHECK(!rejected->getValue<bool>("ok"));
+    CHECK(!rejected->getValue<bool>("passed"));
+
+    std::filesystem::remove_all(guideRoot);
+    std::filesystem::remove_all(goodDir);
+    std::filesystem::remove_all(badDir);
+    std::filesystem::remove_all(outDir);
     eve::dev::resetMcpActionGuide();
 }

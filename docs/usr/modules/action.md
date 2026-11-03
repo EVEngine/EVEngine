@@ -51,6 +51,8 @@ Ability 绑定草稿。编解码与 CPU 骨骼投影在 `common/ActionGuidePack.
 `_status` / `_export` 供 Agent 使用。捕获经 `IActionGuideCapture`（缺席 → `ProviderAbsent`）；
 Vulkan 图形后端注册 `IActionGuideCapture` 后可离屏产出 silhouette/depth（及皮肤
 palette 派生的 bone）；就绪后导出 `manifest.json` + `shots/NNNN/{silhouette,depth,bone}.png`。
-`eve_action_guide_ingest` 校验候选帧并写出序列 + `ability.draft.json`（不注册正式 Ability）。设计见
+`eve_action_guide_ingest` 校验候选帧并写出序列 + `ability.draft.json`（不注册正式 Ability）。
+`eve_action_guide_verify` 用 guide `silhouette.png` 与候选帧做 silhouette IoU（及可选关节误差）对照
+`GuidePack.qc`，写出 `verify.evidence.json`。设计见
 [`docs/dev/2026-11-03-2d-action-ai-guide-pipeline.md`](../../dev/2026-11-03-2d-action-ai-guide-pipeline.md)，
 样例 [`docs/dev/fixtures/eve.action.guide-pack.v1.example.json`](../../dev/fixtures/eve.action.guide-pack.v1.example.json)。

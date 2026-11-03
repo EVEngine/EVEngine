@@ -3877,6 +3877,7 @@ TEST_CASE("identity.audit.runtimeHandleGenerationMakesStaleReuseObservable") {
 #include <vector>
 #include "common/ActionGuideIngest.h"
 #include "common/ActionGuidePack.h"
+#include "common/ActionGuideVerify.h"
 #include "common/Diagnostic.h"
 
 namespace {
@@ -4122,6 +4123,118 @@ TEST_CASE("common.actionGuideIngest.candidateFixtureJsonRoundTrips") {
     auto again = eve::decodeActionGuideCandidateMeta(encoded.value());
     REQUIRE(again.ok());
     CHECK_EQ(again.value().seed, std::int64_t{42});
+}
+
+namespace {
+
+std::shared_ptr<std::vector<uint8_t>> makeWhiteDiskGuide(uint32_t width, uint32_t height, int cx, int cy, int radius) {
+    auto rgba = std::make_shared<std::vector<uint8_t>>(size_t(width) * height * 4, uint8_t{0});
+    for (uint32_t y = 0; y < height; ++y) {
+        for (uint32_t x = 0; x < width; ++x) {
+            const size_t i      = (size_t(y) * width + x) * 4;
+            const int    dx     = int(x) - cx;
+            const int    dy     = int(y) - cy;
+            const bool   inside = dx * dx + dy * dy <= radius * radius;
+            (*rgba)[i + 0] = (*rgba)[i + 1] = (*rgba)[i + 2] = inside ? 255 : 0;
+            (*rgba)[i + 3]                                   = 255;
+        }
+    }
+    return rgba;
+}
+
+std::shared_ptr<std::vector<uint8_t>> makeAlphaDiskCandidate(uint32_t width, uint32_t height, int cx, int cy,
+                                                             int radius) {
+    auto rgba = std::make_shared<std::vector<uint8_t>>(size_t(width) * height * 4, uint8_t{0});
+    for (uint32_t y = 0; y < height; ++y) {
+        for (uint32_t x = 0; x < width; ++x) {
+            const size_t i      = (size_t(y) * width + x) * 4;
+            const int    dx     = int(x) - cx;
+            const int    dy     = int(y) - cy;
+            const bool   inside = dx * dx + dy * dy <= radius * radius;
+            (*rgba)[i + 0] = (*rgba)[i + 1] = (*rgba)[i + 2] = 255;
+            (*rgba)[i + 3]                                   = inside ? 255 : 0;
+        }
+    }
+    return rgba;
+}
+
+}  // namespace
+
+TEST_CASE("common.actionGuideVerify.iouPassAndRejectShiftedMask") {
+    auto pack                = samplePack();
+    pack.canvas.width        = 32;
+    pack.canvas.height       = 32;
+    pack.qc.minSilhouetteIoU = 0.85;
+    pack.qc.maxJointErrorPx  = 8.0;
+
+    eve::ActionGuideVerifyShotInput aligned;
+    aligned.shotId               = pack.shots[0].shotId;
+    aligned.width                = 32;
+    aligned.height               = 32;
+    aligned.guideSilhouetteRgba8 = makeWhiteDiskGuide(32, 32, 16, 16, 8);
+    aligned.candidateRgba8       = makeAlphaDiskCandidate(32, 32, 16, 16, 8);
+
+    eve::ActionGuideVerifyRequest okRequest;
+    okRequest.pack  = pack;
+    okRequest.shots = {aligned};
+    auto okReport   = eve::verifyActionGuideCandidates(okRequest);
+    REQUIRE(okReport.ok());
+    CHECK(okReport.value().passed);
+    CHECK(okReport.value().shots[0].silhouette.iou + 1e-9 >= 0.85);
+
+    eve::ActionGuideVerifyShotInput shifted = aligned;
+    shifted.candidateRgba8                  = makeAlphaDiskCandidate(32, 32, 24, 16, 8);
+    eve::ActionGuideVerifyRequest badRequest;
+    badRequest.pack  = pack;
+    badRequest.shots = {shifted};
+    auto badReport   = eve::verifyActionGuideCandidates(badRequest);
+    REQUIRE(badReport.ok());
+    CHECK(!badReport.value().passed);
+    CHECK(badReport.value().shots[0].silhouette.iou < 0.85);
+
+    auto empty = eve::compareActionGuideSilhouetteIoU(*aligned.guideSilhouetteRgba8,
+                                                      std::vector<uint8_t>(32 * 32 * 4, 0), 32, 32);
+    REQUIRE(!empty.ok());
+    empty.ignore();
+}
+
+TEST_CASE("common.actionGuideVerify.jointErrorGate") {
+    eve::ActionGuideLandmark expected;
+    expected.boneId                   = "hand";
+    expected.x                        = 10.0;
+    expected.y                        = 20.0;
+    eve::ActionGuideLandmark observed = expected;
+    observed.x                        = 12.0;
+    observed.y                        = 21.0;
+    auto ok                           = eve::compareActionGuideJointError(std::array{expected}, std::array{observed});
+    REQUIRE(ok.ok());
+    CHECK(ok.value().evaluated);
+    CHECK(ok.value().maxErrorPx < 8.0);
+
+    observed.x = 40.0;
+    auto bad   = eve::compareActionGuideJointError(std::array{expected}, std::array{observed});
+    REQUIRE(bad.ok());
+    CHECK(bad.value().maxErrorPx > 8.0);
+
+    auto pack                = samplePack();
+    pack.canvas.width        = 32;
+    pack.canvas.height       = 32;
+    pack.qc.minSilhouetteIoU = 0.5;
+    pack.qc.maxJointErrorPx  = 3.0;
+    eve::ActionGuideVerifyShotInput shot;
+    shot.shotId               = pack.shots[0].shotId;
+    shot.width                = 32;
+    shot.height               = 32;
+    shot.guideSilhouetteRgba8 = makeWhiteDiskGuide(32, 32, 16, 16, 8);
+    shot.candidateRgba8       = makeAlphaDiskCandidate(32, 32, 16, 16, 8);
+    shot.expectedJoints       = {expected};
+    shot.observedJoints       = {observed};
+    eve::ActionGuideVerifyRequest request;
+    request.pack  = pack;
+    request.shots = {shot};
+    auto report   = eve::verifyActionGuideCandidates(request);
+    REQUIRE(report.ok());
+    CHECK(!report.value().passed);
 }
 
 #endif

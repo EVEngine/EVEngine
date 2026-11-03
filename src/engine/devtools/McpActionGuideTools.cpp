@@ -2,10 +2,13 @@
 
 #include "common/ActionGuideIngest.h"
 #include "common/ActionGuidePack.h"
+#include "common/ActionGuideVerify.h"
 #include "common/Capability.h"
 #include "common/Diagnostic.h"
 #include "devtools/ActionGuideExport.hpp"
 #include "devtools/ActionGuideIngestIO.hpp"
+#include "devtools/ActionGuideVerifyIO.hpp"
+#include "devtools/AgentDevelopmentSession.hpp"
 #include "devtools/McpJson.hpp"
 #include "devtools/McpServer.hpp"
 #include "devtools/McpToolFamilies.hpp"
@@ -465,6 +468,245 @@ std::string ingestTool(Object::Ptr args) {
     return textPayload(out);
 }
 
+Result<void> applyObservedJoints(Object::Ptr args, ActionGuideVerifyRequest& request) {
+    if (!args || !args->has("joints")) return Result<void>::success();
+    Array::Ptr shotsArg;
+    try {
+        shotsArg = args->getArray("joints");
+    } catch (...) {
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "joints must be an array", "joints"));
+    }
+    if (!shotsArg)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "joints must be an array", "joints"));
+    for (unsigned i = 0; i < shotsArg->size(); ++i) {
+        Object::Ptr shotObject;
+        try {
+            shotObject = shotsArg->getObject(i);
+        } catch (...) {
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "joints[] entries must be objects", "joints"));
+        }
+        if (!shotObject || !shotObject->has("landmarks"))
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "joints[] needs landmarks", "joints"));
+        size_t index = i;
+        if (shotObject->has("shotIndex")) {
+            try {
+                const auto value = shotObject->get("shotIndex").convert<std::int64_t>();
+                if (value < 0 || static_cast<size_t>(value) >= request.shots.size())
+                    return Result<void>::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument, "shotIndex out of range", "joints"));
+                index = static_cast<size_t>(value);
+            } catch (...) {
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "shotIndex must be an integer", "joints"));
+            }
+        } else if (shotObject->has("shotId")) {
+            try {
+                const auto shotId = shotObject->getValue<std::string>("shotId");
+                bool       found  = false;
+                for (size_t s = 0; s < request.shots.size(); ++s) {
+                    if (request.shots[s].shotId == shotId) {
+                        index = s;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    return Result<void>::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument, "unknown shotId", "joints"));
+            } catch (...) {
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "shotId must be a string", "joints"));
+            }
+        }
+        Array::Ptr landmarksArg;
+        try {
+            landmarksArg = shotObject->getArray("landmarks");
+        } catch (...) {
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "landmarks must be an array", "joints"));
+        }
+        if (!landmarksArg)
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "landmarks must be an array", "joints"));
+        std::vector<ActionGuideLandmark> observed;
+        observed.reserve(landmarksArg->size());
+        for (unsigned j = 0; j < landmarksArg->size(); ++j) {
+            Object::Ptr landmarkObject;
+            try {
+                landmarkObject = landmarksArg->getObject(j);
+            } catch (...) {
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "landmark must be an object", "joints"));
+            }
+            if (!landmarkObject || !landmarkObject->has("boneId") || !landmarkObject->has("x") ||
+                !landmarkObject->has("y"))
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "landmark needs boneId,x,y", "joints"));
+            ActionGuideLandmark landmark;
+            try {
+                landmark.boneId = landmarkObject->getValue<std::string>("boneId");
+                landmark.x      = landmarkObject->get("x").convert<double>();
+                landmark.y      = landmarkObject->get("y").convert<double>();
+                if (landmarkObject->has("name")) landmark.name = landmarkObject->getValue<std::string>("name");
+            } catch (...) {
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid landmark fields", "joints"));
+            }
+            observed.push_back(std::move(landmark));
+        }
+        request.shots[index].observedJoints = std::move(observed);
+        if (shotObject->has("expected")) {
+            // Optional override of expected joints (defaults empty → joint gate skipped unless provided).
+            Array::Ptr expectedArg;
+            try {
+                expectedArg = shotObject->getArray("expected");
+            } catch (...) {
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "expected must be an array", "joints"));
+            }
+            if (!expectedArg)
+                return Result<void>::failure(
+                    Diagnostic::error(DiagnosticCode::InvalidArgument, "expected must be an array", "joints"));
+            std::vector<ActionGuideLandmark> expected;
+            expected.reserve(expectedArg->size());
+            for (unsigned j = 0; j < expectedArg->size(); ++j) {
+                Object::Ptr landmarkObject;
+                try {
+                    landmarkObject = expectedArg->getObject(j);
+                } catch (...) {
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                   "expected landmark must be object", "joints"));
+                }
+                if (!landmarkObject || !landmarkObject->has("boneId") || !landmarkObject->has("x") ||
+                    !landmarkObject->has("y"))
+                    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                   "expected landmark needs boneId,x,y", "joints"));
+                ActionGuideLandmark landmark;
+                try {
+                    landmark.boneId = landmarkObject->getValue<std::string>("boneId");
+                    landmark.x      = landmarkObject->get("x").convert<double>();
+                    landmark.y      = landmarkObject->get("y").convert<double>();
+                } catch (...) {
+                    return Result<void>::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid expected landmark", "joints"));
+                }
+                expected.push_back(std::move(landmark));
+            }
+            request.shots[index].expectedJoints = std::move(expected);
+        }
+    }
+    return Result<void>::success();
+}
+
+std::string verifyTool(Object::Ptr args) {
+    if (!args || !args->has("guideDir") || !args->has("candidateDir"))
+        return error("InvalidArguments", "guideDir and candidateDir are required");
+    std::string guideDir;
+    std::string candidateDir;
+    std::string outputDir;
+    try {
+        guideDir     = args->getValue<std::string>("guideDir");
+        candidateDir = args->getValue<std::string>("candidateDir");
+        if (args->has("outputDir")) outputDir = args->getValue<std::string>("outputDir");
+    } catch (...) {
+        return error("InvalidArguments", "guideDir/candidateDir/outputDir must be strings");
+    }
+    if (guideDir.empty() || candidateDir.empty() || guideDir.find('\0') != std::string::npos ||
+        candidateDir.find('\0') != std::string::npos || outputDir.find('\0') != std::string::npos)
+        return error("InvalidExportPath");
+
+    auto pack = resolvePack(args);
+    if (!pack) return resultError(pack.status());
+    if (args->has("expectedRevision")) {
+        try {
+            const auto expected = args->get("expectedRevision").convert<std::int64_t>();
+            if (expected < 0) return error("InvalidArguments", "expectedRevision must be >= 0");
+            if (static_cast<std::uint64_t>(expected) != pack.value().revision)
+                return error("Conflict", "expectedRevision does not match pack.revision");
+        } catch (...) {
+            return error("InvalidArguments", "expectedRevision must be an integer");
+        }
+    }
+
+    std::filesystem::path guidePath;
+    std::filesystem::path candidatePath;
+    std::filesystem::path outputPath;
+    try {
+        guidePath     = resolvePathArg(guideDir);
+        candidatePath = resolvePathArg(candidateDir);
+        if (!outputDir.empty()) outputPath = resolvePathArg(outputDir);
+    } catch (const std::exception&) {
+        return error("InvalidExportPath");
+    }
+
+    auto request = loadActionGuideVerifyRequest(pack.value(), guidePath, candidatePath);
+    if (!request) return resultError(request.status());
+    auto joints = applyObservedJoints(args, request.value());
+    if (!joints) return resultError(joints.status());
+
+    auto report = verifyActionGuideCandidates(request.value());
+    if (!report) return resultError(report.status());
+
+    Value writtenSummary;
+    if (!outputPath.empty()) {
+        auto written = writeActionGuideVerifyEvidence(report.value(), outputPath);
+        if (!written) return resultError(written.status());
+        writtenSummary = std::move(written).takeValue();
+    }
+
+    std::string evidenceStatus = "skipped";
+    if (args && args->has("recordEvidence")) {
+        bool wantRecord = false;
+        try {
+            wantRecord = args->getValue<bool>("recordEvidence");
+        } catch (...) {
+            return error("InvalidArguments", "recordEvidence must be a boolean");
+        }
+        if (wantRecord) {
+            auto& sessionRef = AgentDevelopmentSession::instance();
+            if (!sessionRef.active()) {
+                evidenceStatus = "session-absent";
+            } else {
+                AgentDevelopmentEvidence evidence;
+                evidence.criterionId =
+                    args->has("criterionId") ? args->getValue<std::string>("criterionId") : std::string("guide.verify");
+                evidence.kind    = "artifact";
+                evidence.status  = report.value().passed ? "pass" : "fail";
+                evidence.summary = report.value().passed ? "ActionGuide geometric verify passed"
+                                                         : "ActionGuide geometric verify rejected";
+                if (!outputPath.empty()) evidence.artifact = (outputPath / "verify.evidence.json").generic_string();
+                auto recorded  = sessionRef.record(sessionRef.sessionId(), std::move(evidence));
+                evidenceStatus = recorded.isAccepted() ? "recorded" : recorded.code;
+            }
+        }
+    }
+
+    auto out = base(report.value().passed ? "ready" : "rejected");
+    out->set("ok", report.value().passed);
+    out->set("passed", report.value().passed);
+    out->set("sourceGuideRevision", static_cast<Poco::UInt64>(report.value().sourceGuideRevision));
+    out->set("minSilhouetteIoU", report.value().minSilhouetteIoU);
+    out->set("maxJointErrorPx", report.value().maxJointErrorPx);
+    out->set("playSmoke", "skipped");
+    out->set("sessionEvidence", evidenceStatus);
+    try {
+        Poco::JSON::Parser parser;
+        auto               evidenceJson = report.value().evidence.toJson();
+        if (evidenceJson) out->set("report", parser.parse(evidenceJson.value()).extract<Object::Ptr>());
+        if (!writtenSummary.isNull()) {
+            auto writtenJson = writtenSummary.toJson();
+            if (writtenJson) out->set("artifact", parser.parse(writtenJson.value()).extract<Object::Ptr>());
+        }
+    } catch (...) {
+        out->set("hint", "verify finished but report JSON could not be re-parsed");
+    }
+    return textPayload(out, !report.value().passed);
+}
+
 }  // namespace
 
 bool isMcpActionGuideTool(std::string_view name) {
@@ -485,13 +727,12 @@ std::string callMcpActionGuideTool(std::string_view name, Object::Ptr args) {
     if (name == "eve_action_guide_status") return statusTool(args);
     if (name == "eve_action_guide_export") return exportTool(args);
     if (name == "eve_action_guide_ingest") return ingestTool(args);
-    if (name == "eve_action_guide_verify")
-        return error("Unsupported", "Verify (IoU / joint / eve_play) lands in the next slice");
+    if (name == "eve_action_guide_verify") return verifyTool(args);
     return error("UnknownTool");
 }
 
 std::string_view mcpActionGuideToolSchemas() {
-    return R"json({"name":"eve_action_guide_pack_validate","description":"Decode and re-encode an eve.action.guide-pack v1 document. Rejects unknown fields and invalid cameras/shots.","inputSchema":{"type":"object","properties":{"pack":{"description":"Guide-pack object or JSON string"}},"required":["pack"]}},{"name":"eve_action_guide_pack_set","description":"Store a validated guide pack in the process-local MCP session. Optional expectedRevision detects conflicts.","inputSchema":{"type":"object","properties":{"pack":{},"expectedRevision":{"type":"integer","minimum":0}},"required":["pack"]}},{"name":"eve_action_guide_pack_get","description":"Return the process-local session guide pack.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_action_guide_landmarks","description":"Project world-space bones into guide-canvas landmarks (top-left pixels + view depth). Uses pack argument or the session pack.","inputSchema":{"type":"object","properties":{"pack":{},"bones":{"type":"array","items":{"type":"object","properties":{"boneId":{"type":"string"},"name":{"type":"string"},"position":{"type":"array","items":{"type":"number"},"minItems":3,"maxItems":3},"parentId":{"type":"string"}},"required":["boneId","position"]}}},"required":["bones"]}},{"name":"eve_action_guide_capture","description":"Queue silhouette/depth AOV capture via IActionGuideCapture. Returns ProviderAbsent when no provider is registered.","inputSchema":{"type":"object","properties":{"pack":{},"shotIds":{"type":"array","items":{"type":"string"}}}}},{"name":"eve_action_guide_status","description":"Poll a guide-capture job token without waiting on GPU.","inputSchema":{"type":"object","properties":{"token":{"type":"string"}},"required":["token"]}},{"name":"eve_action_guide_export","description":"Export a Ready guide-capture job to guide-pack/shots/NNNN/{silhouette,depth}.png + manifest.json.","inputSchema":{"type":"object","properties":{"token":{"type":"string"},"path":{"type":"string"}},"required":["token","path"]}},{"name":"eve_action_guide_ingest","description":"Validate AI candidate frames against the guide pack, write sequence PNGs + clip.json + ability.draft.json. Does not register AbilityRuntime.","inputSchema":{"type":"object","properties":{"candidateDir":{"type":"string"},"outputDir":{"type":"string"},"pack":{},"expectedRevision":{"type":"integer","minimum":0},"clipName":{"type":"string"},"commitAbility":{"type":"boolean"}},"required":["candidateDir","outputDir"]}},{"name":"eve_action_guide_verify","description":"Play/verify ingested clips against silhouette/joint thresholds (later slice).","inputSchema":{"type":"object","properties":{"packRevision":{"type":"integer"}}}})json";
+    return R"json({"name":"eve_action_guide_pack_validate","description":"Decode and re-encode an eve.action.guide-pack v1 document. Rejects unknown fields and invalid cameras/shots.","inputSchema":{"type":"object","properties":{"pack":{"description":"Guide-pack object or JSON string"}},"required":["pack"]}},{"name":"eve_action_guide_pack_set","description":"Store a validated guide pack in the process-local MCP session. Optional expectedRevision detects conflicts.","inputSchema":{"type":"object","properties":{"pack":{},"expectedRevision":{"type":"integer","minimum":0}},"required":["pack"]}},{"name":"eve_action_guide_pack_get","description":"Return the process-local session guide pack.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_action_guide_landmarks","description":"Project world-space bones into guide-canvas landmarks (top-left pixels + view depth). Uses pack argument or the session pack.","inputSchema":{"type":"object","properties":{"pack":{},"bones":{"type":"array","items":{"type":"object","properties":{"boneId":{"type":"string"},"name":{"type":"string"},"position":{"type":"array","items":{"type":"number"},"minItems":3,"maxItems":3},"parentId":{"type":"string"}},"required":["boneId","position"]}}},"required":["bones"]}},{"name":"eve_action_guide_capture","description":"Queue silhouette/depth AOV capture via IActionGuideCapture. Returns ProviderAbsent when no provider is registered.","inputSchema":{"type":"object","properties":{"pack":{},"shotIds":{"type":"array","items":{"type":"string"}}}}},{"name":"eve_action_guide_status","description":"Poll a guide-capture job token without waiting on GPU.","inputSchema":{"type":"object","properties":{"token":{"type":"string"}},"required":["token"]}},{"name":"eve_action_guide_export","description":"Export a Ready guide-capture job to guide-pack/shots/NNNN/{silhouette,depth}.png + manifest.json.","inputSchema":{"type":"object","properties":{"token":{"type":"string"},"path":{"type":"string"}},"required":["token","path"]}},{"name":"eve_action_guide_ingest","description":"Validate AI candidate frames against the guide pack, write sequence PNGs + clip.json + ability.draft.json. Does not register AbilityRuntime.","inputSchema":{"type":"object","properties":{"candidateDir":{"type":"string"},"outputDir":{"type":"string"},"pack":{},"expectedRevision":{"type":"integer","minimum":0},"clipName":{"type":"string"},"commitAbility":{"type":"boolean"}},"required":["candidateDir","outputDir"]}},{"name":"eve_action_guide_verify","description":"Compare candidate frames to guide silhouette PNGs (IoU) and optional joint landmarks against GuidePack.qc. Writes verify.evidence.json when outputDir is set. Does not call AbilityRuntime; eve_play smoke remains optional.","inputSchema":{"type":"object","properties":{"guideDir":{"type":"string"},"candidateDir":{"type":"string"},"outputDir":{"type":"string"},"pack":{},"expectedRevision":{"type":"integer","minimum":0},"joints":{"type":"array","items":{"type":"object"}},"recordEvidence":{"type":"boolean"},"criterionId":{"type":"string"}},"required":["guideDir","candidateDir"]}})json";
 }
 
 }  // namespace eve::dev
