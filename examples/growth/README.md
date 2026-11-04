@@ -2,6 +2,9 @@
 
 演示 `eve.Growth()`：小麦三阶段生长与收获、两头牛成熟后产奶与繁殖。独立 ECS 实体，不绑 hex。
 
+画面左侧是农场场景（背景、谷仓、田垄、小麦阶段精灵、牛与产出上浮图标），右侧 HUD
+显示日历 / 状态 / 事件。素材清单见 `assets/ART-README.md`。
+
 ## 运行
 
 ```bash
@@ -9,8 +12,7 @@ make run/<platform>-debug GAME=examples/growth
 ```
 
 无操作键：示例每帧自动浇水/喂养并按 `secondsPerSimDay=2` 推进仿真日。
-窗口内 HUD 显示日历、小麦/牛状态与最近生命周期事件（需要 `font` 模块与
-`assets/fonts/DejaVuSans-Bold.ttf`；授权见同目录 `NOTICE.txt`）。
+需要 `font` 模块与 `assets/fonts/DejaVuSans-Bold.ttf`（授权见 `assets/fonts/NOTICE.txt`）。
 
 ## 相关
 
