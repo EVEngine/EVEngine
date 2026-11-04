@@ -10,6 +10,7 @@
 #include "stylize/shaders/glitch_block_post_frag_spv.inc"
 #include "stylize/shaders/glitch_wave_post_frag_spv.inc"
 #include "stylize/shaders/grain_post_frag_spv.inc"
+#include "stylize/shaders/kuwahara_post_frag_spv.inc"
 #include "stylize/shaders/hologram_mesh_frag_spv.inc"
 #include "stylize/shaders/slash_mesh_frag_spv.inc"
 #include "stylize/shaders/ember_mesh_frag_spv.inc"
@@ -44,6 +45,7 @@ const StyleDefinition kPostEffects[] = {
     {"glitchAnalog", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 290},
     {"glitchBlock", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 300},
     {"glitchWave", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 310},
+    {"kuwahara", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 220},
 };
 
 const StyleParameterDesc kRimParams[] = {
@@ -134,6 +136,13 @@ const StyleParameterDesc kGlitchWaveParams[] = {
     {"infiniteFreq", 0.f, 0.f, 1.f}, {"time", 0.f, 0.f, 120.f},
 };
 
+// Acerola basic Kuwahara. strength 0 → identity; texelW/H appended in bind.
+// kernelSize capped at 8 in the shader for SPIR-V loop bounds / cost.
+const StyleParameterDesc kKuwaharaParams[] = {
+    {"strength", 0.f, 0.f, 1.f},
+    {"kernelSize", 3.f, 1.f, 8.f},
+};
+
 const StyleDefinition* findMesh(const std::string& style) {
     for (const auto& d : kMeshEffects)
         if (style == d.id) return &d;
@@ -177,6 +186,7 @@ int postParamCount(const std::string& style) {
     if (style == "glitchAnalog") return int(sizeof(kGlitchAnalogParams) / sizeof(kGlitchAnalogParams[0]));
     if (style == "glitchBlock") return int(sizeof(kGlitchBlockParams) / sizeof(kGlitchBlockParams[0]));
     if (style == "glitchWave") return int(sizeof(kGlitchWaveParams) / sizeof(kGlitchWaveParams[0]));
+    if (style == "kuwahara") return int(sizeof(kKuwaharaParams) / sizeof(kKuwaharaParams[0]));
     return 0;
 }
 const StyleParameterDesc* postParamAt(const std::string& style, int index) {
@@ -186,6 +196,7 @@ const StyleParameterDesc* postParamAt(const std::string& style, int index) {
     if (style == "glitchAnalog") return paramAt(kGlitchAnalogParams, index);
     if (style == "glitchBlock") return paramAt(kGlitchBlockParams, index);
     if (style == "glitchWave") return paramAt(kGlitchWaveParams, index);
+    if (style == "kuwahara") return paramAt(kKuwaharaParams, index);
     return nullptr;
 }
 
@@ -259,6 +270,12 @@ void bindEffectPostUniforms(graphics::Shader* shader, const std::string& style) 
         shader->sendFloat("screenW", 256.f);
         shader->sendFloat("screenH", 256.f);
     }
+    if (style == "kuwahara") {
+        shader->declareFloat("texelW");
+        shader->declareFloat("texelH");
+        shader->sendFloat("texelW", 1.f / 256.f);
+        shader->sendFloat("texelH", 1.f / 256.f);
+    }
 }
 
 void bindEffectMeshUniforms(graphics::Shader* shader, const std::string& style) {
@@ -280,6 +297,8 @@ graphics::Shader* createEffectPostShader(graphics::Graphics* gfx, const std::str
         frag = copySpv(glitch_block_post_frag_spv, glitch_block_post_frag_spv_count);
     else if (style == "glitchWave")
         frag = copySpv(glitch_wave_post_frag_spv, glitch_wave_post_frag_spv_count);
+    else if (style == "kuwahara")
+        frag = copySpv(kuwahara_post_frag_spv, kuwahara_post_frag_spv_count);
     else
         throw eve::Exception("createEffectPostShader: not an effect post style '%s'", style.c_str());
 

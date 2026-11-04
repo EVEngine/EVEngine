@@ -180,10 +180,9 @@ mat.setShadingModel("custom");
 - 内置风格 id：`cartoon` / `watercolor` / `ink` / `pixel` / `xray`。
 - Mesh 风格扩展：`rim` / `dissolve` / `hologram` / `snow` / `slash` / `ember` / `aura`。
 - 全屏效果扩展：`vignette` / `chromatic` / `grain` / `glitchAnalog` / `glitchBlock` /
-  `glitchWave`
-  （`glitchAnalog`：磁带故障；`glitchBlock`：数字块损伤；`glitchWave`：XPL 波浪抖动 +
-  RGB split，`direction` 0=水平 / 1=垂直，`amount` 默认 0 接近恒等；`strength==0` 早退。
-  成本约全屏 1–2 tap，与 grain 同级）。
+  `glitchWave` / `kuwahara`
+  （glitch 系列：磁带 / 块损伤 / 波浪抖动；`kuwahara`：Acerola 基础四象限画家滤波，
+  `strength` 默认 0，`kernelSize` 1–8。kuwahara 成本约 `4*(k+1)^2` tap，远重于 grain）。
 
 
 ### Impasto 厚涂油彩

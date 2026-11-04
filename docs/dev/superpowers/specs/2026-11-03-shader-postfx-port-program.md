@@ -228,7 +228,7 @@ flowchart TB
 | glitchAnalog | 1 | A | 已落地 |
 | glitchBlock | 1 | A | 已落地 |
 | glitchWave | 1 | A | 已落地 |
-| kuwahara | 2 | A | 待做 |
+| kuwahara | 2 | A | 已落地 |
 | kuwaharaAniso | 2 | A | 待做 |
 | neonEdge | 2 | A | 待做 |
 | dog | 2 | A | 待做 |
