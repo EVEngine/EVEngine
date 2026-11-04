@@ -33,14 +33,11 @@ python3 examples/scad-mechanical/tools/bake.py                  # 有 OpenSCAD �
 python3 examples/scad-mechanical/tools/bake.py --eve /abs/path/to/eve
 ```
 
-原生导入示例：
+原生导入与普通 SCAD 相同；同目录的 `mechanism.rig.json` 会自动触发多部件编译：
 
 ```sh
 eve asset import examples/scad-mechanical/assets/mechanism.scad --from scad \
   --openscad /path/to/openscad \
-  --scad-part pedestal --scad-part slew --scad-part shoulder \
-  --scad-part elbow --scad-part wrist --scad-part tool \
-  --scad-rig examples/scad-mechanical/assets/mechanism.rig.json \
   --out mechanism.eva --package-id 018f6f22-2490-7ad2-bf58-4f1dbca31050 \
   --name mechanical.boom
 ```

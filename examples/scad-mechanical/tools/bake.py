@@ -75,32 +75,30 @@ def bake_openscad(openscad: str, parts):
             print(f"{part}: {len(vertices) // 3} triangles (OpenSCAD)", flush=True)
 
 
-def bake_eva(eve: str, openscad: str, parts):
+def bake_eva(eve: str, openscad: str):
+    # mechanism.rig.json beside mechanism.scad selects multi-part import automatically.
     source = ROOT / "assets" / "mechanism.scad"
-    rig = ROOT / "assets" / "mechanism.rig.json"
     package = str(uuid.uuid5(uuid.NAMESPACE_URL, "evengine:scad-mechanical:mechanism"))
     eva = ROOT / "assets" / "mechanism.eva"
-    cmd = [
-        eve,
-        "asset",
-        "import",
-        str(source),
-        "--from",
-        "scad",
-        "--openscad",
-        openscad,
-        "--out",
-        str(eva),
-        "--package-id",
-        package,
-        "--name",
-        "mechanical.boom",
-        "--scad-rig",
-        str(rig),
-    ]
-    for part in parts:
-        cmd.extend(["--scad-part", part])
-    subprocess.run(cmd, check=True)
+    subprocess.run(
+        [
+            eve,
+            "asset",
+            "import",
+            str(source),
+            "--from",
+            "scad",
+            "--openscad",
+            openscad,
+            "--out",
+            str(eva),
+            "--package-id",
+            package,
+            "--name",
+            "mechanical.boom",
+        ],
+        check=True,
+    )
     subprocess.run([eve, "asset", "validate", str(eva)], check=True)
     print(f"wrote {eva}", flush=True)
 
@@ -129,7 +127,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.eve:
         if not args.openscad:
             parser.error("--eve requires OpenSCAD")
-        bake_eva(str(Path(args.eve).resolve()), str(Path(args.openscad).resolve()), parts)
+        bake_eva(str(Path(args.eve).resolve()), str(Path(args.openscad).resolve()))
     return 0
 
 

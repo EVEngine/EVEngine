@@ -30,8 +30,10 @@ SCAD colours, UVs and animation are not translated from the mesh bytes.
 
 ### Rotatable mechanical parts (multi-part + ScadRig)
 
-Author each movable body as its own `part`, and describe the joint tree with an
-`eve.scad-rig/1` sidecar:
+Author each movable body as its own `part`, and place a same-stem `eve.scad-rig/1`
+sidecar beside the SCAD (`mechanism.scad` → `mechanism.rig.json`). The import command is
+unchanged from plain SCAD; when the sidecar is present the importer compiles each listed
+part with `-D part="<name>"` and attaches the joint tree:
 
 ```openscad
 part = "shoulder";
@@ -40,21 +42,19 @@ if (part == "shoulder") { /* geometry in the shoulder joint frame */ }
 
 ```sh
 eve asset import mechanism.scad --from scad --openscad /absolute/path/to/openscad \
-  --scad-part pedestal --scad-part slew --scad-part shoulder \
-  --scad-rig mechanism.rig.json \
   --out mechanism.eva --package-id 018f6f22-2490-7ad2-bf58-4f1dbca31050 \
   --name mechanical.boom
 ```
 
-`--scad-part` is repeatable and compiles with `-D part="<name>"`. The rig document must
-declare `schema=eve.scad-rig`, `schemaVersion=1`, `unknownFields=reject|preserve`, optional
-`coordinateSystem=openscad-mm-z-up`, and non-empty `joints` / `parts`. Each joint needs a
-unique `name`, `parent` (`null` for the single root), parent-space `pivot`, non-zero `axis`,
-and optional `[min,max]` angle limits in degrees. Rig part names must match the compiled
-`--scad-part` set. Successful imports expose `mesh:<part>` entrypoints plus `rig`; the
-static prefab keeps identity node TRS, so joint angles are applied by a runtime Scene /
-`Renderable3D` assembly (see `examples/scad-mechanical/`). Omitting `--scad-part` keeps the
-legacy single `"default"` mesh path.
+The sidecar must declare `schema=eve.scad-rig`, `schemaVersion=1`,
+`unknownFields=reject|preserve`, optional `coordinateSystem=openscad-mm-z-up`, and
+non-empty `joints` / `parts`. Each joint needs a unique `name`, `parent` (`null` for the
+single root), parent-space `pivot`, non-zero `axis`, and optional `[min,max]` angle limits
+in degrees. `parts[].name` is the OpenSCAD `part` switch. Successful imports expose
+`mesh:<part>` entrypoints plus `rig`; the static prefab keeps identity node TRS, so joint
+angles are applied by a runtime Scene / `Renderable3D` assembly (see
+`examples/scad-mechanical/`). Without a `.rig.json` sidecar the legacy single `"default"`
+mesh path remains.
 
 The root `.scad` text and ScadRig document are retained; external dependency closures are
 not archived automatically. Keep those files for reimport. OpenSCAD can read its ordinary

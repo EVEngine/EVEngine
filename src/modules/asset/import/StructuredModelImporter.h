@@ -58,17 +58,15 @@ struct ScadImportRequest {
 /** @brief Desktop tool request for compiling a SCAD file with an installed OpenSCAD executable.
  * The compiler may resolve include/use/import files as OpenSCAD normally does. This is a local authoring
  * operation, not a sandbox. The generated package retains the root source, not its dependency closure.
- * Non-empty `parts` compiles once per name with `-D part="<name>"` (OpenSCAD string define).
- * `rigPath` is an optional sidecar `eve.scad-rig/1` JSON document beside the SCAD source.
+ * When `<stem>.rig.json` sits beside the `.scad` input, the importer loads that `eve.scad-rig/1`
+ * sidecar, compiles each listed part with `-D part="<name>"`, and attaches the rig — no extra CLI flags.
  */
 struct ScadFileImportRequest {
-    ImportPackageIdentity    package;
-    std::string              sourcePath;
-    std::string              executable     = "openscad";
-    std::uint32_t            timeoutSeconds = 120;
-    std::vector<std::string> parts;
-    std::string              rigPath;
-    AssetImportLimits        limits;
+    ImportPackageIdentity package;
+    std::string           sourcePath;
+    std::string           executable     = "openscad";
+    std::uint32_t         timeoutSeconds = 120;
+    AssetImportLimits     limits;
 };
 
 /** @brief Compile via argument-vector process launch, then prepare without publishing.
@@ -77,6 +75,7 @@ struct ScadFileImportRequest {
  * @thread Desktop authoring worker; reentrant, uses a private temporary directory, invokes no callbacks.
  * @cost External CSG compilation is substantially more expensive than runtime loading; cook once per edit.
  * @details Mobile/browser providers return Unsupported. Runtime consumers never require OpenSCAD.
+ * A present `<stem>.rig.json` sidecar selects the multi-part mechanical path automatically.
  */
 [[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareScadFileImport(
     const ScadFileImportRequest& request);
