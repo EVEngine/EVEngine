@@ -97,7 +97,7 @@ EditorValue componentValue(const HouseKitComponentValue& value) {
     const auto&        c = value.component;
     EditorValue::Array sockets;
     for (const auto& s : c.sockets)
-        sockets.push_back(EditorValue::Object{
+        sockets.emplace_back(EditorValue::Object{
             {"direction", directionName(s.direction)}, {"type", s.type}, {"accepts", strings(s.accepts)}});
     return EditorValue::Object{{"editorId", value.id.value()},
                                {"id", c.id},

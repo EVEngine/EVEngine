@@ -61,7 +61,7 @@ Result<int> generateTerrainHeightmapCurvature(Heightmap& target, const Heightmap
     constexpr double limit = 10000.0;
     const int width = source.getWidth(), height = source.getHeight();
     const double ux = 1.0 / (width - 1.0), uy = 1.0 / (height - 1.0);
-    const auto input = source.data();
+    const auto&        input = source.data();
     std::vector<float> output(input.size());
     auto at = [width](int x, int y) { return size_t(y) * width + x; };
     auto normalized = [limit](double value) {
@@ -97,7 +97,7 @@ Result<int> generateTerrainHeightmapAspect(Heightmap& target, const Heightmap& s
         return invalid("terrain.heightmapAspect: matching finite 2D rasters and known mode required");
     const int width = source.getWidth(), height = source.getHeight();
     const double ux = 1.0 / (width - 1.0), uy = 1.0 / (height - 1.0);
-    const auto input = source.data();
+    const auto&        input = source.data();
     std::vector<float> output(input.size());
     auto at = [width](int x, int y) { return size_t(y) * width + x; };
     constexpr double radians = std::numbers::pi / 180.0;
@@ -416,7 +416,7 @@ Result<int> copyTerrainHeightmapClamped(Heightmap& target, const Heightmap& sour
 Result<int> flipTerrainHeightmap(Heightmap& target, const Heightmap& source) {
     using namespace raster_detail;
     if (!validRaster(source)) return invalid("terrain.heightmapFlip: finite source required");
-    const auto input = source.data();
+    const auto& input    = source.data();
     const int oldWidth = source.getWidth(), oldHeight = source.getHeight();
     Heightmap candidate(oldHeight, oldWidth);
     for (int x = 0; x < oldWidth; ++x)
@@ -565,7 +565,7 @@ Result<int> setTerrainHeightmapRow(Heightmap& target, int rowX, const Heightmap&
     using namespace raster_detail;
     if (!validRaster(target) || !validStrip(values, target.getHeight()) || rowX < 0 || rowX >= target.getWidth())
         return invalid("terrain.heightmapSetRow: finite target, valid X and target-height strip required");
-    const auto strip = values.data();
+    const auto& strip  = values.data();
     auto output = target.data();
     for (int y = 0; y < target.getHeight(); ++y) output[size_t(y) * target.getWidth() + rowX] = strip[size_t(y)];
     return publish(target, std::move(output));
@@ -576,7 +576,7 @@ Result<int> setTerrainHeightmapColumn(Heightmap& target, int columnZ, const Heig
     if (!validRaster(target) || !validStrip(values, target.getWidth()) || columnZ < 0 ||
         columnZ >= target.getHeight())
         return invalid("terrain.heightmapSetColumn: finite target, valid Z and target-width strip required");
-    const auto strip = values.data();
+    const auto& strip  = values.data();
     auto output = target.data();
     for (int x = 0; x < target.getWidth(); ++x) output[size_t(columnZ) * target.getWidth() + x] = strip[size_t(x)];
     return publish(target, std::move(output));

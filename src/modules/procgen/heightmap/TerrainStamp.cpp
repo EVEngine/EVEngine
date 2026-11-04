@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "procgen/heightmap/TerrainStamp.h"
 #include "common/SmoothMax.h"
 

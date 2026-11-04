@@ -3,7 +3,6 @@
 #include "common/Capability.h"
 #include "common/Exception.h"
 
-#include <Box2D/Box2D.h>
 
 #include <algorithm>
 #include <cmath>
@@ -97,10 +96,6 @@ private:
     SimulationObservation  observation_;
 };
 
-void stepBox2D(void* context, const eve::SimulationStep& step, const SimulationSettings& settings) noexcept {
-    auto* world = static_cast<b2World*>(context);
-    world->Step(static_cast<float>(step.delta.seconds()), settings.velocityIterations, settings.positionIterations);
-}
 
 eve::Diagnostic fallbackDiagnostic(SimulationBackendDomain domain, const char* reason) {
     return eve::Diagnostic::warning(eve::DiagnosticCode::Unsupported,
@@ -222,11 +217,6 @@ eve::Result<void> validateSimulationObservation(const SimulationObservation& obs
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-std::unique_ptr<ISimulationBackend> makeBox2DSimulationBackend(b2World* world) {
-    if (!world) throw eve::Exception("Physics: cannot create a simulation backend for a null world");
-    return makeCallbackSimulationBackend(world, &stepBox2D, SimulationBackendKind::Cpu,
-                                         SimulationDeterminism::ToleranceBounded);
-}
 
 std::unique_ptr<ISimulationBackend> makeCallbackSimulationBackend(void* context, SimulationStepCallback callback,
                                                                   SimulationBackendKind kind,

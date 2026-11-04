@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "probe",
+  "default": "asset-files",
+  "module": "asset_import"
+}
+*/
+// clang-format on
+
 #include "asset/AssetCooker.h"
 #include "asset/EvpackResourceReader.h"
 #include "asset/ShaderAsset.h"

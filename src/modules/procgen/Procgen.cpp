@@ -1,8 +1,27 @@
 #include "procgen/Procgen.h"
+#include "graphics/Shader.h"
+#include "procgen/Biome.h"
+#include "procgen/GridGraph.h"
+#include "procgen/MeshGraph.h"
+#include "procgen/Palette.h"
+#include "procgen/PointGraph.h"
+#include "procgen/ProcgenArtifacts.h"
 #include "procgen/ProcgenLive.h"
 #include "procgen/ProcgenOwnership.h"
+#include "procgen/ProcgenRecipes.h"
 #include "procgen/ProcgenScriptSupport.h"
+#include "procgen/ProcgenSystem.h"
+#include "procgen/RuntimeGeneration.h"
+#include "procgen/ShapeGrammar.h"
+#include "procgen/SpatialData.h"
+#include "procgen/algorithms/LSystem.h"
+#include "procgen/heightmap/Heightmap.h"
+#include "procgen/heightmap/TerrainSampler.h"
+#include "procgen/mesh/MeshModifierGraph.h"
 #include "procgen/road/BridgeGenerator.h"
+#include "procgen/spline/SplinePath.h"
+#include "procgen/texture/CloudField.h"
+#include "procgen/texture/CloudShadow.h"
 
 #include "common/Capability.h"
 #include "common/ProcgenSceneSink.h"
@@ -43,9 +62,11 @@
 #include "procgen/heightmap/TerrainFile.h"
 #include "procgen/heightmap/TerrainGrassAdapter.h"
 #include "procgen/heightmap/TerrainImageAdapter.h"
+#include "procgen/heightmap/TerrainMesh.h"
+#include "procgen/heightmap/TerrainPipeline.h"
 #include "procgen/heightmap/TerrainStampScript.h"
 #include "procgen/house/HouseGen.h"
-#include "procgen/shaders/terrain_material_compat_frag_spv.inc"
+#include "procgen/shaders/terrain_material_frag_spv.inc"
 #include "procgen/shaders/terrain_water_compat_frag_spv.inc"
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/TextureRecipe.h"
@@ -113,12 +134,13 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::pointDataHandle(ProcgenPointSe
     if (!view.isBound())
         return eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::StaleHandle, "pointData point-set handle is stale", "points", {}, "procgen.squirrel"));
-    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::fromPoints(*view)));
+    return ownership_->spatialData.emplace(std::make_unique<SpatialData>(SpatialData::fromPoints(*view)));
 }
 
 eve::Result<ProcgenSpatialDataHandleRef> Procgen::boxVolumeHandle(float minX, float minY, float minZ, float maxX,
                                                                   float maxY, float maxZ) {
-    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::box(minX, minY, minZ, maxX, maxY, maxZ)));
+    return ownership_->spatialData.emplace(
+        std::make_unique<SpatialData>(SpatialData::box(minX, minY, minZ, maxX, maxY, maxZ)));
 }
 
 eve::Result<ProcgenSpatialDataHandleRef> Procgen::sphereVolumeHandle(float x, float y, float z, float radius) {
@@ -126,7 +148,7 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::sphereVolumeHandle(float x, fl
         return eve::Result<ProcgenSpatialDataHandleRef>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "sphereVolume radius must be positive",
                                    "radius", {}, "procgen.squirrel"));
-    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::sphere(x, y, z, radius)));
+    return ownership_->spatialData.emplace(std::make_unique<SpatialData>(SpatialData::sphere(x, y, z, radius)));
 }
 
 eve::Result<ProcgenSpatialDataHandleRef> Procgen::polygonVolumeHandle(ProcgenPointSetHandleRef controlPoints,
@@ -137,7 +159,7 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::polygonVolumeHandle(ProcgenPoi
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                    "polygonVolume requires a live set with at least three points and finite heights",
                                    "controlPoints", {}, "procgen.squirrel"));
-    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::polygon(*points, minY, maxY)));
+    return ownership_->spatialData.emplace(std::make_unique<SpatialData>(SpatialData::polygon(*points, minY, maxY)));
 }
 
 eve::Result<ProcgenSpatialDataHandleRef> Procgen::splineDataHandle(ProcgenPointSetHandleRef controlPoints,
@@ -148,7 +170,7 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::splineDataHandle(ProcgenPointS
             !view.isBound() ? eve::DiagnosticCode::StaleHandle : eve::DiagnosticCode::InvalidArgument,
             "splineData requires a live set with at least two points and non-negative radius", "controlPoints", {},
             "procgen.squirrel"));
-    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::spline(*view, radius)));
+    return ownership_->spatialData.emplace(std::make_unique<SpatialData>(SpatialData::spline(*view, radius)));
 }
 
 eve::Result<ProcgenSpatialDataHandleRef> Procgen::heightfieldDataHandle(ProcgenHeightmapHandleRef heightmap,
@@ -160,7 +182,7 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::heightfieldDataHandle(ProcgenH
             !view.isBound() ? eve::DiagnosticCode::StaleHandle : eve::DiagnosticCode::InvalidArgument,
             "heightfieldData requires a live non-empty heightmap and positive cell size", "heightmap", {},
             "procgen.squirrel"));
-    return spatialData_.emplace(
+    return ownership_->spatialData.emplace(
         std::make_unique<SpatialData>(SpatialData::heightfield(*view, originX, originZ, cellSize, heightScale)));
 }
 
@@ -173,7 +195,7 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::textureMaskDataHandle(ProcgenH
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                    "textureMaskData requires a live non-empty scalar map and positive cell size",
                                    "values", {}, "procgen.squirrel"));
-    return spatialData_.emplace(std::make_unique<SpatialData>(
+    return ownership_->spatialData.emplace(std::make_unique<SpatialData>(
         SpatialData::textureMask(*view, originX, originZ, cellSize, minValue, maxValue, minY, maxY)));
 }
 
@@ -185,7 +207,7 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::meshSurfaceDataHandle(ProcgenM
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                    "meshSurfaceData requires a live triangle mesh and non-negative tolerance", "mesh",
                                    {}, "procgen.squirrel"));
-    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::meshSurface(*view, tolerance)));
+    return ownership_->spatialData.emplace(std::make_unique<SpatialData>(SpatialData::meshSurface(*view, tolerance)));
 }
 
 eve::Result<ProcgenSpatialDataHandleRef> Procgen::unionSpatialHandle(ProcgenSpatialDataHandleRef left,
@@ -195,7 +217,7 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::unionSpatialHandle(ProcgenSpat
     if (!a.isBound() || !b.isBound())
         return eve::Result<ProcgenSpatialDataHandleRef>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::StaleHandle, "unionSpatial input handle is stale", "spatial", {}, "procgen.squirrel"));
-    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::unite(*a, *b)));
+    return ownership_->spatialData.emplace(std::make_unique<SpatialData>(SpatialData::unite(*a, *b)));
 }
 
 eve::Result<ProcgenSpatialDataHandleRef> Procgen::intersectSpatialHandle(ProcgenSpatialDataHandleRef left,
@@ -206,7 +228,7 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::intersectSpatialHandle(Procgen
         return eve::Result<ProcgenSpatialDataHandleRef>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "intersectSpatial input handle is stale",
                                    "spatial", {}, "procgen.squirrel"));
-    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::intersect(*a, *b)));
+    return ownership_->spatialData.emplace(std::make_unique<SpatialData>(SpatialData::intersect(*a, *b)));
 }
 
 eve::Result<ProcgenSpatialDataHandleRef> Procgen::differenceSpatialHandle(ProcgenSpatialDataHandleRef left,
@@ -217,7 +239,7 @@ eve::Result<ProcgenSpatialDataHandleRef> Procgen::differenceSpatialHandle(Procge
         return eve::Result<ProcgenSpatialDataHandleRef>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "differenceSpatial input handle is stale",
                                    "spatial", {}, "procgen.squirrel"));
-    return spatialData_.emplace(std::make_unique<SpatialData>(SpatialData::subtract(*a, *b)));
+    return ownership_->spatialData.emplace(std::make_unique<SpatialData>(SpatialData::subtract(*a, *b)));
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::sampleSpatialHandle(ProcgenSpatialDataHandleRef spatial, float spacing,
@@ -252,110 +274,138 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::projectToSpatialHandle(ProcgenPoi
 }
 
 eve::script::Borrowed<SpatialData> Procgen::resolveSpatialData(ProcgenSpatialDataHandleRef reference) noexcept {
-    return spatialData_.resolve(reference);
+    return ownership_->spatialData.resolve(reference);
 }
 
-eve::Result<void> Procgen::release(ProcgenSpatialDataHandleRef reference) { return spatialData_.erase(reference); }
+eve::Result<void> Procgen::release(ProcgenSpatialDataHandleRef reference) {
+    return ownership_->spatialData.erase(reference);
+}
 
-bool Procgen::isStale(ProcgenSpatialDataHandleRef reference) const noexcept { return spatialData_.isStale(reference); }
+bool Procgen::isStale(ProcgenSpatialDataHandleRef reference) const noexcept {
+    return ownership_->spatialData.isStale(reference);
+}
 
 eve::Result<ProcgenRuntimeGenerationHandleRef> Procgen::newRuntimeGenerationHandle(uint32_t worldSeed) {
-    return runtimeGenerations_.emplace(std::make_unique<RuntimeGeneration>(worldSeed));
+    return ownership_->runtimeGenerations.emplace(std::make_unique<RuntimeGeneration>(worldSeed));
 }
 
 eve::Result<ProcgenLSystemHandleRef> Procgen::newLSystemHandle() {
-    return lsystems_.emplace(std::make_unique<LSystem>());
+    return ownership_->lsystems.emplace(std::make_unique<LSystem>());
 }
 
 eve::script::Borrowed<RuntimeGeneration> Procgen::resolveRuntimeGeneration(
     ProcgenRuntimeGenerationHandleRef reference) noexcept {
-    return runtimeGenerations_.resolve(reference);
+    return ownership_->runtimeGenerations.resolve(reference);
 }
 
 eve::script::Borrowed<PointGraph> Procgen::resolvePointGraph(ProcgenPointGraphHandleRef reference) noexcept {
-    return pointGraphs_.resolve(reference);
+    return ownership_->pointGraphs.resolve(reference);
 }
 
 eve::script::Borrowed<MeshModifierGraph> Procgen::resolveMeshModifierGraph(
     ProcgenMeshModifierGraphHandleRef reference) noexcept {
-    return meshModifierGraphs_.resolve(reference);
+    return ownership_->meshModifierGraphs.resolve(reference);
 }
 
 eve::script::Borrowed<MeshDeformationSession> Procgen::resolveMeshDeformationSession(
     ProcgenMeshDeformationSessionHandleRef reference) noexcept {
-    return meshDeformationSessions_.resolve(reference);
+    return ownership_->meshDeformationSessions.resolve(reference);
 }
 
 eve::script::Borrowed<DynamicMeshUvPaintSession> Procgen::resolveDynamicMeshUvPaintSession(
     ProcgenDynamicMeshUvPaintSessionHandleRef reference) noexcept {
-    return dynamicMeshUvPaintSessions_.resolve(reference);
+    return ownership_->dynamicMeshUvPaintSessions.resolve(reference);
 }
 
 eve::script::Borrowed<SplinePath> Procgen::resolveSplinePath(ProcgenSplinePathHandleRef reference) noexcept {
-    return splinePaths_.resolve(reference);
+    return ownership_->splinePaths.resolve(reference);
 }
 
 eve::script::Borrowed<GridGraph> Procgen::resolveGridGraph(ProcgenGridGraphHandleRef reference) noexcept {
-    return gridGraphs_.resolve(reference);
+    return ownership_->gridGraphs.resolve(reference);
 }
 
 eve::script::Borrowed<MeshGraph> Procgen::resolveMeshGraph(ProcgenMeshGraphHandleRef reference) noexcept {
-    return meshGraphs_.resolve(reference);
+    return ownership_->meshGraphs.resolve(reference);
 }
 
 eve::script::Borrowed<BiomeRules> Procgen::resolveBiomeRules(ProcgenBiomeRulesHandleRef reference) noexcept {
-    return biomeRules_.resolve(reference);
+    return ownership_->biomeRules.resolve(reference);
 }
 
 eve::script::Borrowed<ShapeGrammar> Procgen::resolveShapeGrammar(ProcgenShapeGrammarHandleRef reference) noexcept {
-    return shapeGrammars_.resolve(reference);
+    return ownership_->shapeGrammars.resolve(reference);
 }
 
 eve::script::Borrowed<LSystem> Procgen::resolveLSystem(ProcgenLSystemHandleRef reference) noexcept {
-    return lsystems_.resolve(reference);
+    return ownership_->lsystems.resolve(reference);
 }
 
 eve::Result<void> Procgen::release(ProcgenRuntimeGenerationHandleRef reference) {
-    return runtimeGenerations_.erase(reference);
+    return ownership_->runtimeGenerations.erase(reference);
 }
-eve::Result<void> Procgen::release(ProcgenPointGraphHandleRef reference) { return pointGraphs_.erase(reference); }
+eve::Result<void> Procgen::release(ProcgenPointGraphHandleRef reference) {
+    return ownership_->pointGraphs.erase(reference);
+}
 eve::Result<void> Procgen::release(ProcgenMeshModifierGraphHandleRef reference) {
-    return meshModifierGraphs_.erase(reference);
+    return ownership_->meshModifierGraphs.erase(reference);
 }
 eve::Result<void> Procgen::release(ProcgenMeshDeformationSessionHandleRef reference) {
-    return meshDeformationSessions_.erase(reference);
+    return ownership_->meshDeformationSessions.erase(reference);
 }
 eve::Result<void> Procgen::release(ProcgenDynamicMeshUvPaintSessionHandleRef reference) {
-    return dynamicMeshUvPaintSessions_.erase(reference);
+    return ownership_->dynamicMeshUvPaintSessions.erase(reference);
 }
-eve::Result<void> Procgen::release(ProcgenSplinePathHandleRef reference) { return splinePaths_.erase(reference); }
-eve::Result<void> Procgen::release(ProcgenGridGraphHandleRef reference) { return gridGraphs_.erase(reference); }
-eve::Result<void> Procgen::release(ProcgenMeshGraphHandleRef reference) { return meshGraphs_.erase(reference); }
-eve::Result<void> Procgen::release(ProcgenBiomeRulesHandleRef reference) { return biomeRules_.erase(reference); }
-eve::Result<void> Procgen::release(ProcgenShapeGrammarHandleRef reference) { return shapeGrammars_.erase(reference); }
-eve::Result<void> Procgen::release(ProcgenLSystemHandleRef reference) { return lsystems_.erase(reference); }
+eve::Result<void> Procgen::release(ProcgenSplinePathHandleRef reference) {
+    return ownership_->splinePaths.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenGridGraphHandleRef reference) {
+    return ownership_->gridGraphs.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenMeshGraphHandleRef reference) {
+    return ownership_->meshGraphs.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenBiomeRulesHandleRef reference) {
+    return ownership_->biomeRules.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenShapeGrammarHandleRef reference) {
+    return ownership_->shapeGrammars.erase(reference);
+}
+eve::Result<void> Procgen::release(ProcgenLSystemHandleRef reference) { return ownership_->lsystems.erase(reference); }
 
 bool Procgen::isStale(ProcgenRuntimeGenerationHandleRef reference) const noexcept {
-    return runtimeGenerations_.isStale(reference);
+    return ownership_->runtimeGenerations.isStale(reference);
 }
-bool Procgen::isStale(ProcgenPointGraphHandleRef reference) const noexcept { return pointGraphs_.isStale(reference); }
+bool Procgen::isStale(ProcgenPointGraphHandleRef reference) const noexcept {
+    return ownership_->pointGraphs.isStale(reference);
+}
 bool Procgen::isStale(ProcgenMeshModifierGraphHandleRef reference) const noexcept {
-    return meshModifierGraphs_.isStale(reference);
+    return ownership_->meshModifierGraphs.isStale(reference);
 }
 bool Procgen::isStale(ProcgenMeshDeformationSessionHandleRef reference) const noexcept {
-    return meshDeformationSessions_.isStale(reference);
+    return ownership_->meshDeformationSessions.isStale(reference);
 }
 bool Procgen::isStale(ProcgenDynamicMeshUvPaintSessionHandleRef reference) const noexcept {
-    return dynamicMeshUvPaintSessions_.isStale(reference);
+    return ownership_->dynamicMeshUvPaintSessions.isStale(reference);
 }
-bool Procgen::isStale(ProcgenSplinePathHandleRef reference) const noexcept { return splinePaths_.isStale(reference); }
-bool Procgen::isStale(ProcgenGridGraphHandleRef reference) const noexcept { return gridGraphs_.isStale(reference); }
-bool Procgen::isStale(ProcgenMeshGraphHandleRef reference) const noexcept { return meshGraphs_.isStale(reference); }
-bool Procgen::isStale(ProcgenBiomeRulesHandleRef reference) const noexcept { return biomeRules_.isStale(reference); }
+bool Procgen::isStale(ProcgenSplinePathHandleRef reference) const noexcept {
+    return ownership_->splinePaths.isStale(reference);
+}
+bool Procgen::isStale(ProcgenGridGraphHandleRef reference) const noexcept {
+    return ownership_->gridGraphs.isStale(reference);
+}
+bool Procgen::isStale(ProcgenMeshGraphHandleRef reference) const noexcept {
+    return ownership_->meshGraphs.isStale(reference);
+}
+bool Procgen::isStale(ProcgenBiomeRulesHandleRef reference) const noexcept {
+    return ownership_->biomeRules.isStale(reference);
+}
 bool Procgen::isStale(ProcgenShapeGrammarHandleRef reference) const noexcept {
-    return shapeGrammars_.isStale(reference);
+    return ownership_->shapeGrammars.isStale(reference);
 }
-bool Procgen::isStale(ProcgenLSystemHandleRef reference) const noexcept { return lsystems_.isStale(reference); }
+bool Procgen::isStale(ProcgenLSystemHandleRef reference) const noexcept {
+    return ownership_->lsystems.isStale(reference);
+}
 
 uint32_t Procgen::deriveSeed(uint32_t parent, const std::string& scope) const {
     return eve::procgen::deriveSeed(parent, scope);
@@ -363,46 +413,49 @@ uint32_t Procgen::deriveSeed(uint32_t parent, const std::string& scope) const {
 
 eve::Result<ProcgenContextHandleRef> Procgen::beginSystemHandle(const std::string& name, uint32_t seed) {
     Procgen* module = Procgen::create();
-    module->lastError_.clear();
+    module->ownership_->compatMessage.clear();
 
     if (name.empty()) {
-        module->lastError_ = "beginSystem: name is empty";
-        return eve::Result<ProcgenContextHandleRef>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, module->lastError_, "context", {}, "procgen.squirrel"));
+        module->ownership_->compatMessage = "beginSystem: name is empty";
+        return eve::Result<ProcgenContextHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, module->ownership_->compatMessage, "context",
+                                   {}, "procgen.squirrel"));
     }
     auto       context  = std::make_unique<ProcgenContext>(name, seed);
-    const auto previous = module->systems_.find(name);
-    if (previous != module->systems_.end()) context->stageCache_ = previous->second.stageCache;
-    return module->contexts_.emplace(std::move(context));
+    const auto previous = module->ownership_->systems.find(name);
+    if (previous != module->ownership_->systems.end()) context->stageCache_ = previous->second.stageCache;
+    return module->ownership_->contexts.emplace(std::move(context));
 }
 
 eve::Result<ProcgenContextHandleRef> Procgen::beginCachedSystemHandle(const std::string& name, uint32_t seed,
                                                                       const std::string& buildKey) {
     Procgen* module = Procgen::create();
-    module->lastError_.clear();
+    module->ownership_->compatMessage.clear();
     if (name.empty()) {
-        module->lastError_ = "beginCachedSystem: name is empty";
-        return eve::Result<ProcgenContextHandleRef>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, module->lastError_, "context", {}, "procgen.squirrel"));
+        module->ownership_->compatMessage = "beginCachedSystem: name is empty";
+        return eve::Result<ProcgenContextHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, module->ownership_->compatMessage, "context",
+                                   {}, "procgen.squirrel"));
     }
     if (buildKey.empty()) {
-        module->lastError_ = "beginCachedSystem: build key is empty";
-        return eve::Result<ProcgenContextHandleRef>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, module->lastError_, "buildKey", {}, "procgen.squirrel"));
+        module->ownership_->compatMessage = "beginCachedSystem: build key is empty";
+        return eve::Result<ProcgenContextHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, module->ownership_->compatMessage, "buildKey",
+                                   {}, "procgen.squirrel"));
     }
     const uint32_t normalizedSeed = seed ? seed : 1u;
-    const auto     found          = module->systems_.find(name);
-    const bool     cacheHit =
-        found != module->systems_.end() && found->second.seed == normalizedSeed && found->second.buildKey == buildKey;
+    const auto     found          = module->ownership_->systems.find(name);
+    const bool     cacheHit = found != module->ownership_->systems.end() && found->second.seed == normalizedSeed &&
+                              found->second.buildKey == buildKey;
     auto context = std::make_unique<ProcgenContext>(name, normalizedSeed, buildKey, cacheHit);
-    if (found != module->systems_.end()) context->stageCache_ = found->second.stageCache;
-    return module->contexts_.emplace(std::move(context));
+    if (found != module->ownership_->systems.end()) context->stageCache_ = found->second.stageCache;
+    return module->ownership_->contexts.emplace(std::move(context));
 }
 
 eve::script::Borrowed<ProcgenContext> Procgen::resolve(ProcgenContextHandleRef reference) noexcept {
     Procgen* module = liveProcgen();
     if (!module) return {};
-    return module->contexts_.resolve(reference);
+    return module->ownership_->contexts.resolve(reference);
 }
 
 eve::Result<void> Procgen::release(ProcgenContextHandleRef reference) {
@@ -410,13 +463,13 @@ eve::Result<void> Procgen::release(ProcgenContextHandleRef reference) {
     if (!module)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded", "context", {}, "procgen.squirrel"));
-    return module->contexts_.erase(reference);
+    return module->ownership_->contexts.erase(reference);
 }
 
 bool Procgen::isStale(ProcgenContextHandleRef reference) noexcept {
     if (!reference.isValid()) return false;
     Procgen* module = liveProcgen();
-    return !module || module->contexts_.isStale(reference);
+    return !module || module->ownership_->contexts.isStale(reference);
 }
 
 eve::Result<void> Procgen::commitSystem(ProcgenContextHandleRef reference) {
@@ -444,9 +497,9 @@ eve::Result<void> Procgen::commitSystem(ProcgenContextHandleRef reference) {
                                                                  "context", {}, "procgen.squirrel"));
     }
 
-    const auto current = systems_.find(context->name_);
-    if (current != systems_.end()) previousSystems_[context->name_] = current->second;
-    auto& snapshot            = systems_[context->name_];
+    const auto current = ownership_->systems.find(context->name_);
+    if (current != ownership_->systems.end()) ownership_->previousSystems[context->name_] = current->second;
+    auto& snapshot            = ownership_->systems[context->name_];
     snapshot.seed             = context->seed_;
     snapshot.revision         = snapshot.revision + 1u;
     snapshot.buildKey         = context->buildKey_;
@@ -473,56 +526,59 @@ eve::Result<void> Procgen::abortSystem(ProcgenContextHandleRef reference) {
 }
 
 eve::Result<void> Procgen::removeSystem(const std::string& name) {
-    previousSystems_.erase(name);
-    if (systems_.erase(name) == 0)
+    ownership_->previousSystems.erase(name);
+    if (ownership_->systems.erase(name) == 0)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::NotFound, "procgen system was not committed", "system", {}, "procgen.squirrel"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
-bool Procgen::hasSystem(const std::string& name) const { return systems_.find(name) != systems_.end(); }
+bool Procgen::hasSystem(const std::string& name) const {
+    return ownership_->systems.find(name) != ownership_->systems.end();
+}
 
 uint64_t Procgen::getSystemRevision(const std::string& name) const {
-    const auto found = systems_.find(name);
-    return found == systems_.end() ? 0u : found->second.revision;
+    const auto found = ownership_->systems.find(name);
+    return found == ownership_->systems.end() ? 0u : found->second.revision;
 }
 
 uint32_t Procgen::getSystemSeed(const std::string& name) const {
-    const auto found = systems_.find(name);
-    return found == systems_.end() ? 0u : found->second.seed;
+    const auto found = ownership_->systems.find(name);
+    return found == ownership_->systems.end() ? 0u : found->second.seed;
 }
 
 std::string Procgen::getSystemBuildKey(const std::string& name) const {
-    const auto found = systems_.find(name);
-    return found == systems_.end() ? std::string() : found->second.buildKey;
+    const auto found = ownership_->systems.find(name);
+    return found == ownership_->systems.end() ? std::string() : found->second.buildKey;
 }
 
 int Procgen::getSystemOutputCount(const std::string& name) const {
-    const auto found = systems_.find(name);
-    return found == systems_.end() ? 0 : int(found->second.outputOrder.size());
+    const auto found = ownership_->systems.find(name);
+    return found == ownership_->systems.end() ? 0 : int(found->second.outputOrder.size());
 }
 
 std::string Procgen::getSystemOutputName(const std::string& name, int index) const {
-    const auto found = systems_.find(name);
-    if (found == systems_.end() || index < 0 || index >= int(found->second.outputOrder.size())) return {};
+    const auto found = ownership_->systems.find(name);
+    if (found == ownership_->systems.end() || index < 0 || index >= int(found->second.outputOrder.size())) return {};
     return found->second.outputOrder[size_t(index)];
 }
 
 int Procgen::getSystemDebugStageCount(const std::string& name) const {
-    const auto found = systems_.find(name);
-    return found == systems_.end() ? 0 : int(found->second.debugStageOrder.size());
+    const auto found = ownership_->systems.find(name);
+    return found == ownership_->systems.end() ? 0 : int(found->second.debugStageOrder.size());
 }
 
 std::string Procgen::getSystemDebugStageName(const std::string& name, int index) const {
-    const auto found = systems_.find(name);
-    if (found == systems_.end() || index < 0 || index >= int(found->second.debugStageOrder.size())) return {};
+    const auto found = ownership_->systems.find(name);
+    if (found == ownership_->systems.end() || index < 0 || index >= int(found->second.debugStageOrder.size()))
+        return {};
     return found->second.debugStageOrder[size_t(index)];
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::getSystemOutputHandle(const std::string& name,
                                                                      const std::string& outputName) const {
-    const auto system = systems_.find(name);
-    if (system == systems_.end())
+    const auto system = ownership_->systems.find(name);
+    if (system == ownership_->systems.end())
         return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::NotFound, "procgen system is not committed", "system", {}, "procgen.squirrel"));
     const auto output = system->second.outputs.find(outputName);
@@ -534,8 +590,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::getSystemOutputHandle(const std::
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::getSystemDebugStageHandle(const std::string& name,
                                                                          const std::string& stageName) const {
-    const auto system = systems_.find(name);
-    if (system == systems_.end())
+    const auto system = ownership_->systems.find(name);
+    if (system == ownership_->systems.end())
         return eve::Result<ProcgenPointSetHandleRef>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::NotFound, "procgen system is not committed", "system", {}, "procgen.squirrel"));
     const auto stage = system->second.debugStages.find(stageName);
@@ -547,8 +603,8 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::getSystemDebugStageHandle(const s
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::getPreviousSystemDebugStageHandle(const std::string& name,
                                                                                  const std::string& stageName) const {
-    const auto system = previousSystems_.find(name);
-    if (system == previousSystems_.end())
+    const auto system = ownership_->previousSystems.find(name);
+    if (system == ownership_->previousSystems.end())
         return eve::Result<ProcgenPointSetHandleRef>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "procgen system has no previous revision", "system",
                                    {}, "procgen.squirrel"));
@@ -561,13 +617,13 @@ eve::Result<ProcgenPointSetHandleRef> Procgen::getPreviousSystemDebugStageHandle
 }
 
 uint64_t Procgen::getPreviousSystemRevision(const std::string& name) const {
-    const auto found = previousSystems_.find(name);
-    return found == previousSystems_.end() ? 0u : found->second.revision;
+    const auto found = ownership_->previousSystems.find(name);
+    return found == ownership_->previousSystems.end() ? 0u : found->second.revision;
 }
 
 std::string Procgen::getSystemDebugReport(const std::string& name) const {
-    const auto found = systems_.find(name);
-    if (found == systems_.end()) return "system '" + name + "' is not committed";
+    const auto found = ownership_->systems.find(name);
+    if (found == ownership_->systems.end()) return "system '" + name + "' is not committed";
     const auto&        snapshot = found->second;
     std::ostringstream report;
     report << name << " revision=" << snapshot.revision << " seed=" << snapshot.seed;
@@ -587,10 +643,10 @@ std::string Procgen::getSystemDebugReport(const std::string& name) const {
 }
 
 std::string Procgen::getSystemDebugDiffReport(const std::string& name) const {
-    const auto current = systems_.find(name);
-    if (current == systems_.end()) return "system '" + name + "' is not committed";
-    const auto previous = previousSystems_.find(name);
-    if (previous == previousSystems_.end()) return name + " has no previous revision";
+    const auto current = ownership_->systems.find(name);
+    if (current == ownership_->systems.end()) return "system '" + name + "' is not committed";
+    const auto previous = ownership_->previousSystems.find(name);
+    if (previous == ownership_->previousSystems.end()) return name + " has no previous revision";
 
     std::ostringstream report;
     report << name << " revision=" << previous->second.revision << " -> " << current->second.revision;
@@ -611,10 +667,10 @@ std::string Procgen::getSystemDebugDiffReport(const std::string& name) const {
 }
 
 bool Procgen::runGenerate(const std::string& algorithmId, const Params& params, Grid2D& out) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     GeneratorRegistry::instance().registerBuiltins();
-    if (!GeneratorRegistry::instance().generate(algorithmId, params, out, lastError_)) {
-        if (lastError_.empty()) lastError_ = "generate failed";
+    if (!GeneratorRegistry::instance().generate(algorithmId, params, out, ownership_->compatMessage)) {
+        if (ownership_->compatMessage.empty()) ownership_->compatMessage = "generate failed";
         return false;
     }
     return true;
@@ -629,9 +685,10 @@ eve::Result<ProcgenGridHandleRef> Procgen::generateHandle(const std::string&    
     auto grid = std::make_unique<Grid2D>();
     if (!runGenerate(algorithmId, *input, *grid))
         return eve::Result<ProcgenGridHandleRef>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::Failed, lastError_.empty() ? "generate failed" : lastError_,
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                   ownership_->compatMessage.empty() ? "generate failed" : ownership_->compatMessage,
                                    "algorithm", {}, "procgen.squirrel"));
-    return ownProcgenObject(grids_, std::move(grid));
+    return ownProcgenObject(ownership_->grids, std::move(grid));
 }
 
 eve::Result<void> Procgen::generateTo(const std::string& algorithmId, ProcgenParamsHandleRef params,
@@ -647,9 +704,10 @@ eve::Result<void> Procgen::generateTo(const std::string& algorithmId, ProcgenPar
             eve::DiagnosticCode::StaleHandle, "generateTo output handle is stale", "output", {}, "procgen.squirrel"));
     Grid2D grid;
     if (!runGenerate(algorithmId, *paramsView, grid))
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed,
-                                                                 lastError_.empty() ? "generateTo failed" : lastError_,
-                                                                 "algorithm", {}, "procgen.squirrel"));
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                   ownership_->compatMessage.empty() ? "generateTo failed" : ownership_->compatMessage,
+                                   "algorithm", {}, "procgen.squirrel"));
 
     const std::string target = outputView->getTarget();
     if (target == "grid") {
@@ -663,15 +721,15 @@ eve::Result<void> Procgen::generateTo(const std::string& algorithmId, ProcgenPar
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                      "generateTo: tilelayer target has no layer",
                                                                      "output.layer", {}, "procgen.squirrel"));
-        if (!palettes_.applyToLayer(grid, outputView->getPalette(), layer, &lastError_))
-            return eve::Result<void>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::Failed, lastError_, "output", {}, "procgen.squirrel"));
+        if (!ownership_->palettes.applyToLayer(grid, outputView->getPalette(), layer, &ownership_->compatMessage))
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, ownership_->compatMessage, "output", {}, "procgen.squirrel"));
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     if (target == "json") {
-        if (!writeGridJson(grid, outputView->getPath(), &lastError_))
-            return eve::Result<void>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::Failed, lastError_, "output.path", {}, "procgen.squirrel"));
+        if (!writeGridJson(grid, outputView->getPath(), &ownership_->compatMessage))
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, ownership_->compatMessage, "output.path", {}, "procgen.squirrel"));
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     return eve::Result<void>::failure(eve::Diagnostic::error(
@@ -684,18 +742,18 @@ eve::Result<void> Procgen::applyToLayer(ProcgenGridHandleRef grid, const std::st
     if (!view.isBound())
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::StaleHandle, "applyToLayer grid handle is stale", "grid", {}, "procgen.squirrel"));
-    if (!palettes_.applyToLayer(*view, palette, &layer, &lastError_))
-        return eve::Result<void>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::Failed, lastError_, "palette", {}, "procgen.squirrel"));
+    if (!ownership_->palettes.applyToLayer(*view, palette, &layer, &ownership_->compatMessage))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, ownership_->compatMessage,
+                                                                 "palette", {}, "procgen.squirrel"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 void Procgen::setPaletteGid(const std::string& palette, const std::string& semantic, int gid) {
-    palettes_.setGid(palette, semantic, gid);
+    ownership_->palettes.setGid(palette, semantic, gid);
 }
 
 int Procgen::getPaletteGid(const std::string& palette, const std::string& semantic) const {
-    return palettes_.getGid(palette, semantic);
+    return ownership_->palettes.getGid(palette, semantic);
 }
 
 namespace {
@@ -709,21 +767,22 @@ const ParamDescriptor* algorithmParam(const std::string& algorithmId, int index)
 }  // namespace
 
 int Procgen::getAlgorithmCount() const {
-    algorithmIdsCache_ = GeneratorRegistry::instance().list();
-    return int(algorithmIdsCache_.size());
+    ownership_->algorithmIdsCache = GeneratorRegistry::instance().list();
+    return int(ownership_->algorithmIdsCache.size());
 }
 
 std::string Procgen::getAlgorithmId(int index) const {
-    if (algorithmIdsCache_.empty()) algorithmIdsCache_ = GeneratorRegistry::instance().list();
-    if (index < 0 || index >= int(algorithmIdsCache_.size())) return {};
-    return algorithmIdsCache_[size_t(index)];
+    if (ownership_->algorithmIdsCache.empty()) ownership_->algorithmIdsCache = GeneratorRegistry::instance().list();
+    if (index < 0 || index >= int(ownership_->algorithmIdsCache.size())) return {};
+    return ownership_->algorithmIdsCache[size_t(index)];
 }
 
 bool Procgen::hasAlgorithm(const std::string& algorithmId) const {
     return GeneratorRegistry::instance().has(algorithmId);
 }
 
-eve::Result<RecipeDescriptor> Procgen::getAlgorithmSchema(const std::string& algorithmId) const {
+eve::Result<RecipeDescriptor> ProcgenRecipeOps::getAlgorithmSchema(const Procgen& /*module*/,
+                                                                   const std::string& algorithmId) {
     const RecipeDescriptor* schema = GeneratorRegistry::instance().descriptor(algorithmId);
     if (!schema)
         return eve::Result<RecipeDescriptor>::failure(eve::Diagnostic::error(
@@ -865,12 +924,13 @@ eve::Result<ProcgenImageHandleRef> Procgen::generateImageHandle(const std::strin
         return eve::Result<ProcgenImageHandleRef>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "generateImage parameters handle is stale",
                                    "params", {}, "procgen.squirrel"));
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     TextureRecipeRegistry::instance().registerBuiltins();
-    auto image = TextureRecipeRegistry::instance().generate(recipeId, *input, lastError_);
+    auto image = TextureRecipeRegistry::instance().generate(recipeId, *input, ownership_->compatMessage);
     if (!image)
         return eve::Result<ProcgenImageHandleRef>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed, lastError_.empty() ? "generateImage failed" : lastError_, "recipe", {},
+            eve::DiagnosticCode::Failed,
+            ownership_->compatMessage.empty() ? "generateImage failed" : ownership_->compatMessage, "recipe", {},
             "procgen.squirrel"));
     return ownProcgenObject(ownership_->images, std::move(image));
 }
@@ -974,17 +1034,17 @@ eve::script::Borrowed<graphics::Texture> Procgen::generateTextureBorrowed(const 
 
 int Procgen::getTextureRecipeCount() const {
     TextureRecipeRegistry::instance().registerBuiltins();
-    textureRecipeIdsCache_ = TextureRecipeRegistry::instance().list();
-    return int(textureRecipeIdsCache_.size());
+    ownership_->textureRecipeIdsCache = TextureRecipeRegistry::instance().list();
+    return int(ownership_->textureRecipeIdsCache.size());
 }
 
 std::string Procgen::getTextureRecipeId(int index) const {
-    if (textureRecipeIdsCache_.empty()) {
+    if (ownership_->textureRecipeIdsCache.empty()) {
         TextureRecipeRegistry::instance().registerBuiltins();
-        textureRecipeIdsCache_ = TextureRecipeRegistry::instance().list();
+        ownership_->textureRecipeIdsCache = TextureRecipeRegistry::instance().list();
     }
-    if (index < 0 || index >= int(textureRecipeIdsCache_.size())) return {};
-    return textureRecipeIdsCache_[size_t(index)];
+    if (index < 0 || index >= int(ownership_->textureRecipeIdsCache.size())) return {};
+    return ownership_->textureRecipeIdsCache[size_t(index)];
 }
 
 bool Procgen::hasTextureRecipe(const std::string& recipeId) const {
@@ -992,7 +1052,8 @@ bool Procgen::hasTextureRecipe(const std::string& recipeId) const {
     return TextureRecipeRegistry::instance().has(recipeId);
 }
 
-eve::Result<RecipeDescriptor> Procgen::getTextureRecipeSchema(const std::string& recipeId) const {
+eve::Result<RecipeDescriptor> ProcgenRecipeOps::getTextureRecipeSchema(const Procgen& /*module*/,
+                                                                       const std::string& recipeId) {
     TextureRecipeRegistry::instance().registerBuiltins();
     const RecipeDescriptor* schema = TextureRecipeRegistry::instance().descriptor(recipeId);
     if (!schema)
@@ -1098,12 +1159,13 @@ eve::Result<ProcgenPbrMaterialHandleRef> Procgen::generatePbrMaterialHandle(cons
         return eve::Result<ProcgenPbrMaterialHandleRef>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "generatePbrMaterial parameters handle is stale",
                                    "params", {}, "procgen.squirrel"));
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     PbrRecipeRegistry::instance().registerPbrBuiltins();
-    auto set = PbrRecipeRegistry::instance().generate(recipeId, *input, lastError_);
+    auto set = PbrRecipeRegistry::instance().generate(recipeId, *input, ownership_->compatMessage);
     if (!set)
         return eve::Result<ProcgenPbrMaterialHandleRef>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed, lastError_.empty() ? "generatePbrMaterial failed" : lastError_, "recipe", {},
+            eve::DiagnosticCode::Failed,
+            ownership_->compatMessage.empty() ? "generatePbrMaterial failed" : ownership_->compatMessage, "recipe", {},
             "procgen.squirrel"));
     return ownProcgenObject(ownership_->pbr, std::move(set));
 }
@@ -1122,17 +1184,17 @@ bool Procgen::isPbrMaterialStale(ProcgenPbrMaterialHandleRef reference) const no
 
 int Procgen::getPbrRecipeCount() const {
     PbrRecipeRegistry::instance().registerPbrBuiltins();
-    pbrRecipeIdsCache_ = PbrRecipeRegistry::instance().list();
-    return int(pbrRecipeIdsCache_.size());
+    ownership_->pbrRecipeIdsCache = PbrRecipeRegistry::instance().list();
+    return int(ownership_->pbrRecipeIdsCache.size());
 }
 
 std::string Procgen::getPbrRecipeId(int index) const {
-    if (pbrRecipeIdsCache_.empty()) {
+    if (ownership_->pbrRecipeIdsCache.empty()) {
         PbrRecipeRegistry::instance().registerPbrBuiltins();
-        pbrRecipeIdsCache_ = PbrRecipeRegistry::instance().list();
+        ownership_->pbrRecipeIdsCache = PbrRecipeRegistry::instance().list();
     }
-    if (index < 0 || index >= int(pbrRecipeIdsCache_.size())) return {};
-    return pbrRecipeIdsCache_[size_t(index)];
+    if (index < 0 || index >= int(ownership_->pbrRecipeIdsCache.size())) return {};
+    return ownership_->pbrRecipeIdsCache[size_t(index)];
 }
 
 bool Procgen::hasPbrRecipe(const std::string& recipeId) const {
@@ -1140,7 +1202,8 @@ bool Procgen::hasPbrRecipe(const std::string& recipeId) const {
     return PbrRecipeRegistry::instance().has(recipeId);
 }
 
-eve::Result<RecipeDescriptor> Procgen::getPbrRecipeSchema(const std::string& recipeId) const {
+eve::Result<RecipeDescriptor> ProcgenRecipeOps::getPbrRecipeSchema(const Procgen& /*module*/,
+                                                                   const std::string& recipeId) {
     PbrRecipeRegistry::instance().registerPbrBuiltins();
     const RecipeDescriptor* schema = PbrRecipeRegistry::instance().descriptor(recipeId);
     if (!schema)
@@ -1164,7 +1227,8 @@ eve::Result<void> Procgen::applyPbrRecipeDefaults(const std::string& recipeId, P
 
 eve::Result<ProcgenMeshBuildHandleRef> Procgen::buildMeshHandle(const std::string&     recipeId,
                                                                 ProcgenParamsHandleRef params) {
-    auto built = buildArtifact(recipeId, params, nextCompatibilityArtifactId());
+    auto built = ProcgenArtifactOps::buildArtifact(*this, recipeId, params,
+                                                   ProcgenArtifactOps::nextCompatibilityArtifactId(*this));
     if (!built)
         return eve::Result<ProcgenMeshBuildHandleRef>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Failed, built.status().describe(), "recipe", {}, "procgen.squirrel"));
@@ -1180,7 +1244,7 @@ eve::Result<ProcgenMeshBuildHandleRef> Procgen::buildMeshHandle(const std::strin
         return eve::Result<ProcgenMeshBuildHandleRef>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Failed, "generated artifact has no mesh payload", "recipe", {}, "procgen.squirrel"));
     auto              mesh = std::make_unique<MeshBuild>(*source);
-    ArtifactPublisher publisher(artifactStore_);
+    ArtifactPublisher publisher(ownership_->artifactStore);
     auto              published = publisher.publish(std::move(artifact), {});
     if (!published)
         return eve::Result<ProcgenMeshBuildHandleRef>::failure(eve::Diagnostic::error(
@@ -1201,8 +1265,8 @@ bool Procgen::isMeshBuildStale(ProcgenMeshBuildHandleRef reference) const noexce
     return reference.isValid() && ownership_->meshes.isStale(reference);
 }
 
-eve::Result<GeneratedArtifact> Procgen::buildArtifact(const std::string& recipeId, ProcgenParamsHandleRef params,
-                                                      ArtifactId id) {
+eve::Result<GeneratedArtifact> ProcgenArtifactOps::buildArtifact(Procgen& /*module*/, const std::string& recipeId,
+                                                                 ProcgenParamsHandleRef params, ArtifactId id) {
     auto view = Procgen::resolve(params);
     if (!view.isBound())
         return eve::Result<GeneratedArtifact>::failure(
@@ -1211,20 +1275,21 @@ eve::Result<GeneratedArtifact> Procgen::buildArtifact(const std::string& recipeI
     return generateMeshArtifact(recipeId, *view, id);
 }
 
-eve::Result<ArtifactPublishReceipt> Procgen::publishArtifact(const std::string& recipeId, ProcgenParamsHandleRef params,
-                                                             ArtifactId id, ArtifactPublishOptions options) {
-    auto artifact = buildArtifact(recipeId, params, id);
+eve::Result<ArtifactPublishReceipt> ProcgenArtifactOps::publishArtifact(Procgen& module, const std::string& recipeId,
+                                                                        ProcgenParamsHandleRef params, ArtifactId id,
+                                                                        ArtifactPublishOptions options) {
+    auto artifact = buildArtifact(module, recipeId, params, id);
     if (!artifact.ok()) return eve::Result<ArtifactPublishReceipt>::failure(artifact.status());
-    ArtifactPublisher publisher(artifactStore_);
+    ArtifactPublisher publisher(module.ownership_->artifactStore);
     return publisher.publish(std::move(artifact).takeValue(), options);
 }
 
-ArtifactId Procgen::nextCompatibilityArtifactId() noexcept {
+ArtifactId ProcgenArtifactOps::nextCompatibilityArtifactId(Procgen& module) noexcept {
     static const ArtifactId root = [] {
         const auto parsed = ArtifactId::parse("6bdf48e2-fca4-4f62-8a66-d952bd6af046");
         return parsed ? *parsed : ArtifactId::nil();
     }();
-    return root.child("legacy-facade-" + std::to_string(nextArtifactSequence_++));
+    return root.child("legacy-facade-" + std::to_string(module.ownership_->nextArtifactSequence++));
 }
 
 eve::script::Borrowed<graphics::Mesh> Procgen::generateMeshBorrowed(const std::string&     recipeId,
@@ -1331,17 +1396,17 @@ eve::Result<void> Procgen::configurePcgMeshLods(const PcgMeshLodSet& lods,
 
 int Procgen::getMeshRecipeCount() const {
     MeshRecipeRegistry::instance().registerBuiltins();
-    meshRecipeIdsCache_ = MeshRecipeRegistry::instance().list();
-    return int(meshRecipeIdsCache_.size());
+    ownership_->meshRecipeIdsCache = MeshRecipeRegistry::instance().list();
+    return int(ownership_->meshRecipeIdsCache.size());
 }
 
 std::string Procgen::getMeshRecipeId(int index) const {
-    if (meshRecipeIdsCache_.empty()) {
+    if (ownership_->meshRecipeIdsCache.empty()) {
         MeshRecipeRegistry::instance().registerBuiltins();
-        meshRecipeIdsCache_ = MeshRecipeRegistry::instance().list();
+        ownership_->meshRecipeIdsCache = MeshRecipeRegistry::instance().list();
     }
-    if (index < 0 || index >= int(meshRecipeIdsCache_.size())) return {};
-    return meshRecipeIdsCache_[size_t(index)];
+    if (index < 0 || index >= int(ownership_->meshRecipeIdsCache.size())) return {};
+    return ownership_->meshRecipeIdsCache[size_t(index)];
 }
 
 bool Procgen::hasMeshRecipe(const std::string& recipeId) const {
@@ -1349,7 +1414,8 @@ bool Procgen::hasMeshRecipe(const std::string& recipeId) const {
     return MeshRecipeRegistry::instance().has(recipeId);
 }
 
-eve::Result<RecipeDescriptor> Procgen::getMeshRecipeSchema(const std::string& recipeId) const {
+eve::Result<RecipeDescriptor> ProcgenRecipeOps::getMeshRecipeSchema(const Procgen& /*module*/,
+                                                                    const std::string& recipeId) {
     MeshRecipeRegistry::instance().registerBuiltins();
     const RecipeDescriptor* schema = MeshRecipeRegistry::instance().descriptor(recipeId);
     if (!schema)
@@ -1397,12 +1463,20 @@ eve::Result<ProcgenHeightmapHandleRef> Procgen::newHeightmapHandle(int width, in
     return ownProcgenObject(ownership_->heightmaps, std::make_unique<Heightmap>(width, height));
 }
 
-eve::Result<ProcgenHeightmapHandleRef> Procgen::adoptHeightmap(Heightmap heightmap) {
-    if (heightmap.getWidth() <= 0 || heightmap.getHeight() <= 0)
+eve::Result<ProcgenHeightmapHandleRef> Procgen::adoptHeightmap(std::unique_ptr<Heightmap> heightmap) {
+    if (!heightmap || heightmap->getWidth() <= 0 || heightmap->getHeight() <= 0)
         return eve::Result<ProcgenHeightmapHandleRef>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "decoded heightmap has no samples",
                                    "heightmap", {}, "procgen.squirrel"));
-    return ownProcgenObject(ownership_->heightmaps, std::make_unique<Heightmap>(std::move(heightmap)));
+    return ownProcgenObject(ownership_->heightmaps, std::move(heightmap));
+}
+
+PaletteTable& Procgen::palettes() { return ownership_->palettes; }
+
+const PaletteTable& Procgen::palettes() const { return ownership_->palettes; }
+
+const ArtifactStore& ProcgenArtifactOps::artifactStore(const Procgen& module) noexcept {
+    return module.ownership_->artifactStore;
 }
 
 eve::script::Borrowed<Heightmap> Procgen::resolveHeightmap(ProcgenHeightmapHandleRef reference) noexcept {
@@ -1445,13 +1519,13 @@ eve::Result<ProcgenGridHandleRef> Procgen::heightmapToGrid(ProcgenHeightmapHandl
         return eve::Result<ProcgenGridHandleRef>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Failed, "heightmap is empty", "heightmap", {}, "procgen.squirrel"));
     Procgen* module = Procgen::create();
-    return module->grids_.emplace(std::move(grid));
+    return module->ownership_->grids.emplace(std::move(grid));
 }
 
 bool Procgen::erodeTerrainThermal(Heightmap* heightmap, int iterations, float talus, float strength) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || heightmap->getWidth() < 2 || heightmap->getHeight() < 2) {
-        lastError_ = "erodeTerrainThermal: heightmap must be at least 2x2";
+        ownership_->compatMessage = "erodeTerrainThermal: heightmap must be at least 2x2";
         return false;
     }
     TerrainPipeline::erodeThermal(*heightmap, {iterations, talus, strength});
@@ -1460,9 +1534,9 @@ bool Procgen::erodeTerrainThermal(Heightmap* heightmap, int iterations, float ta
 
 bool Procgen::erodeTerrainHydraulic(Heightmap* heightmap, int iterations, float rainfall, float evaporation,
                                     float capacity, float erosion, float deposition) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || heightmap->getWidth() < 2 || heightmap->getHeight() < 2) {
-        lastError_ = "erodeTerrainHydraulic: heightmap must be at least 2x2";
+        ownership_->compatMessage = "erodeTerrainHydraulic: heightmap must be at least 2x2";
         return false;
     }
     TerrainPipeline::erodeHydraulic(*heightmap, {iterations, rainfall, evaporation, capacity, erosion, deposition});
@@ -1483,13 +1557,13 @@ bool Procgen::erodeTerrainFluvialAdvanced(Heightmap* heightmap, int iterations, 
 
 bool Procgen::erodeTerrainFluvialScaled(Heightmap* heightmap, int iterations, float riverThreshold, float incision,
                                         float maxDepth, float bankWidth, float maxBreachDepth, float coordinateScale) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || heightmap->getWidth() < 3 || heightmap->getHeight() < 3) {
-        lastError_ = "erodeTerrainFluvial: heightmap must be at least 3x3";
+        ownership_->compatMessage = "erodeTerrainFluvial: heightmap must be at least 3x3";
         return false;
     }
     if (!std::isfinite(coordinateScale) || coordinateScale <= 0.f) {
-        lastError_ = "erodeTerrainFluvialScaled: coordinateScale must be positive";
+        ownership_->compatMessage = "erodeTerrainFluvialScaled: coordinateScale must be positive";
         return false;
     }
     TerrainPipeline::erodeFluvial(
@@ -1500,19 +1574,19 @@ bool Procgen::erodeTerrainFluvialScaled(Heightmap* heightmap, int iterations, fl
 TerrainErosionMap* Procgen::erodeTerrainFluvialDetailed(Heightmap* heightmap, int iterations, float riverThreshold,
                                                         float incision, float maxDepth, float bankWidth,
                                                         float maxBreachDepth, float coordinateScale) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || heightmap->getWidth() < 3 || heightmap->getHeight() < 3) {
-        lastError_ = "erodeTerrainFluvialDetailed: heightmap must be at least 3x3";
+        ownership_->compatMessage = "erodeTerrainFluvialDetailed: heightmap must be at least 3x3";
         return nullptr;
     }
     if (!std::isfinite(coordinateScale) || coordinateScale <= 0.f) {
-        lastError_ = "erodeTerrainFluvialDetailed: coordinateScale must be positive";
+        ownership_->compatMessage = "erodeTerrainFluvialDetailed: coordinateScale must be positive";
         return nullptr;
     }
     TerrainErosionMap diagnostics = TerrainPipeline::erodeFluvialDetailed(
         *heightmap, {iterations, riverThreshold, incision, maxDepth, bankWidth, maxBreachDepth, coordinateScale});
     if (diagnostics.width <= 0) {
-        lastError_ = "erodeTerrainFluvialDetailed: invalid erosion settings";
+        ownership_->compatMessage = "erodeTerrainFluvialDetailed: invalid erosion settings";
         return nullptr;
     }
     return new TerrainErosionMap(std::move(diagnostics));
@@ -1524,13 +1598,13 @@ TerrainLayers* Procgen::analyzeTerrain(Heightmap* heightmap, float riverThreshol
 
 TerrainLayers* Procgen::analyzeTerrainScaled(Heightmap* heightmap, float riverThreshold, float seaLevel, float latitude,
                                              float coordinateScale) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || heightmap->getWidth() <= 0 || heightmap->getHeight() <= 0) {
-        lastError_ = "analyzeTerrain: heightmap is empty";
+        ownership_->compatMessage = "analyzeTerrain: heightmap is empty";
         return nullptr;
     }
     if (!std::isfinite(coordinateScale) || coordinateScale <= 0.f) {
-        lastError_ = "analyzeTerrainScaled: coordinateScale must be positive";
+        ownership_->compatMessage = "analyzeTerrainScaled: coordinateScale must be positive";
         return nullptr;
     }
     HydrologyMap hydrology = TerrainPipeline::buildHydrology(*heightmap, riverThreshold, seaLevel, coordinateScale);
@@ -1539,13 +1613,14 @@ TerrainLayers* Procgen::analyzeTerrainScaled(Heightmap* heightmap, float riverTh
 }
 
 data::ByteData* Procgen::bakeTerrainAsset(Heightmap* heightmap, TerrainLayers* layers, int chunkSize) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || !layers) {
-        lastError_ = "bakeTerrainAsset: heightmap and layers are required";
+        ownership_->compatMessage = "bakeTerrainAsset: heightmap and layers are required";
         return nullptr;
     }
     std::vector<uint8_t> bytes;
-    if (!TerrainAsset::bake(*heightmap, layers->hydrology(), layers->climate(), chunkSize, bytes, &lastError_))
+    if (!TerrainAsset::bake(*heightmap, layers->hydrology(), layers->climate(), chunkSize, bytes,
+                            &ownership_->compatMessage))
         return nullptr;
     return new data::ByteData(bytes.data(), bytes.size());
 }
@@ -1553,9 +1628,9 @@ data::ByteData* Procgen::bakeTerrainAsset(Heightmap* heightmap, TerrainLayers* l
 TerrainMeshChunk* Procgen::buildTerrainChunk(Heightmap* heightmap, TerrainLayers* layers, int originX, int originY,
                                              int cellsX, int cellsY, int lod, float cellSize, float heightScale,
                                              float skirtDepth) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap) {
-        lastError_ = "buildTerrainChunk: heightmap is required";
+        ownership_->compatMessage = "buildTerrainChunk: heightmap is required";
         return nullptr;
     }
     TerrainMeshSettings settings;
@@ -1568,7 +1643,7 @@ TerrainMeshChunk* Procgen::buildTerrainChunk(Heightmap* heightmap, TerrainLayers
     settings.heightScale = heightScale;
     settings.skirtDepth  = skirtDepth;
     auto* chunk          = new TerrainMeshChunk();
-    if (!TerrainMeshBuilder::build(*heightmap, layers, settings, *chunk, &lastError_)) {
+    if (!TerrainMeshBuilder::build(*heightmap, layers, settings, *chunk, &ownership_->compatMessage)) {
         delete chunk;
         return nullptr;
     }
@@ -1578,9 +1653,9 @@ TerrainMeshChunk* Procgen::buildTerrainChunk(Heightmap* heightmap, TerrainLayers
 int Procgen::selectTerrainLod(Heightmap* heightmap, int originX, int originY, int cellsX, int cellsY, int maxLod,
                               float cellSize, float heightScale, float cameraDistance, float viewportHeight,
                               float verticalFovDegrees, float targetPixelError) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap) {
-        lastError_ = "selectTerrainLod: heightmap is required";
+        ownership_->compatMessage = "selectTerrainLod: heightmap is required";
         return -1;
     }
     TerrainMeshSettings settings;
@@ -1592,14 +1667,14 @@ int Procgen::selectTerrainLod(Heightmap* heightmap, int originX, int originY, in
     settings.heightScale = heightScale;
     const int lod        = TerrainLodSelector::select(*heightmap, settings, maxLod, cameraDistance, viewportHeight,
                                                       verticalFovDegrees, targetPixelError);
-    if (lod < 0) lastError_ = "selectTerrainLod: invalid bounds or projection settings";
+    if (lod < 0) ownership_->compatMessage = "selectTerrainLod: invalid bounds or projection settings";
     return lod;
 }
 
 graphics::Mesh* Procgen::generateTerrainChunkMesh(TerrainMeshChunk* chunk, graphics::Graphics* gfx) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!chunk || !gfx || chunk->mesh().empty()) {
-        lastError_ = "generateTerrainChunkMesh: chunk and graphics are required";
+        ownership_->compatMessage = "generateTerrainChunkMesh: chunk and graphics are required";
         return nullptr;
     }
     const MeshBuild& mesh = chunk->mesh();
@@ -1620,9 +1695,9 @@ graphics::Mesh* Procgen::generateTerrainRiverMeshAdvanced(Heightmap* heightmap, 
                                                           int cellsY, float cellSize, float heightScale, float minWidth,
                                                           float maxWidth, float heightOffset, float minSurfaceSlope,
                                                           float maxSurfaceSlope) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || !layers || !gfx) {
-        lastError_ = "generateTerrainRiverMesh: heightmap, layers, and graphics are required";
+        ownership_->compatMessage = "generateTerrainRiverMesh: heightmap, layers, and graphics are required";
         return nullptr;
     }
     TerrainRiverMeshSettings settings;
@@ -1638,7 +1713,8 @@ graphics::Mesh* Procgen::generateTerrainRiverMeshAdvanced(Heightmap* heightmap, 
     settings.minSurfaceSlope = minSurfaceSlope;
     settings.maxSurfaceSlope = maxSurfaceSlope;
     MeshBuild river;
-    if (!TerrainRiverMeshBuilder::build(*heightmap, *layers, settings, river, &lastError_) || river.empty())
+    if (!TerrainRiverMeshBuilder::build(*heightmap, *layers, settings, river, &ownership_->compatMessage) ||
+        river.empty())
         return nullptr;
     return gfx->newMeshFromArrays(river.positions().data(), river.normals().data(), river.uvs().data(),
                                   river.getVertexCount(), river.indices().data(), river.getIndexCount());
@@ -1647,9 +1723,9 @@ graphics::Mesh* Procgen::generateTerrainRiverMeshAdvanced(Heightmap* heightmap, 
 graphics::Mesh* Procgen::generateTerrainLakeMesh(Heightmap* heightmap, TerrainLayers* layers, graphics::Graphics* gfx,
                                                  int originX, int originY, int cellsX, int cellsY, float cellSize,
                                                  float heightScale, float minimumDepth, float heightOffset) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || !layers || !gfx) {
-        lastError_ = "generateTerrainLakeMesh: heightmap, layers, and graphics are required";
+        ownership_->compatMessage = "generateTerrainLakeMesh: heightmap, layers, and graphics are required";
         return nullptr;
     }
     TerrainLakeMeshSettings settings;
@@ -1662,16 +1738,16 @@ graphics::Mesh* Procgen::generateTerrainLakeMesh(Heightmap* heightmap, TerrainLa
     settings.minimumDepth = minimumDepth;
     settings.heightOffset = heightOffset;
     MeshBuild lake;
-    if (!TerrainLakeMeshBuilder::build(*heightmap, *layers, settings, lake, &lastError_) || lake.empty())
+    if (!TerrainLakeMeshBuilder::build(*heightmap, *layers, settings, lake, &ownership_->compatMessage) || lake.empty())
         return nullptr;
     return gfx->newMeshFromArrays(lake.positions().data(), lake.normals().data(), lake.uvs().data(),
                                   lake.getVertexCount(), lake.indices().data(), lake.getIndexCount());
 }
 
 image::ImageData* Procgen::generateTerrainSplatMap(TerrainMeshChunk* chunk) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!chunk || chunk->getSplatWidth() <= 0 || chunk->getSplatHeight() <= 0) {
-        lastError_ = "generateTerrainSplatMap: a built terrain chunk is required";
+        ownership_->compatMessage = "generateTerrainSplatMap: a built terrain chunk is required";
         return nullptr;
     }
     auto* image  = new image::ImageData(chunk->getSplatWidth(), chunk->getSplatHeight(), "RGBA8");
@@ -1699,9 +1775,9 @@ image::ImageData* Procgen::generateTerrainSplatMap(TerrainMeshChunk* chunk) {
 }
 
 image::ImageData* Procgen::generateTerrainAlbedoMap(TerrainMeshChunk* chunk) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!chunk || chunk->getSplatWidth() <= 0 || chunk->getSplatHeight() <= 0) {
-        lastError_ = "generateTerrainAlbedoMap: a built terrain chunk is required";
+        ownership_->compatMessage = "generateTerrainAlbedoMap: a built terrain chunk is required";
         return nullptr;
     }
     static constexpr std::array<std::array<float, 3>, 4> palette{{
@@ -1792,35 +1868,35 @@ image::ImageData* erosionDiagnosticImage(TerrainErosionMap* map, float exposure,
 }  // namespace
 
 image::ImageData* Procgen::generateTerrainErosionMap(TerrainErosionMap* erosion, float exposure) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     image::ImageData* result = erosionDiagnosticImage(erosion, exposure, ErosionImageMode::Combined);
-    if (!result) lastError_ = "generateTerrainErosionMap: valid erosion diagnostics are required";
+    if (!result) ownership_->compatMessage = "generateTerrainErosionMap: valid erosion diagnostics are required";
     return result;
 }
 
 image::ImageData* Procgen::generateTerrainWearMap(TerrainErosionMap* erosion, float exposure) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     image::ImageData* result = erosionDiagnosticImage(erosion, exposure, ErosionImageMode::Wear);
-    if (!result) lastError_ = "generateTerrainWearMap: valid erosion diagnostics are required";
+    if (!result) ownership_->compatMessage = "generateTerrainWearMap: valid erosion diagnostics are required";
     return result;
 }
 
 image::ImageData* Procgen::generateTerrainDepositionMap(TerrainErosionMap* erosion, float exposure) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     image::ImageData* result = erosionDiagnosticImage(erosion, exposure, ErosionImageMode::Deposit);
-    if (!result) lastError_ = "generateTerrainDepositionMap: valid erosion diagnostics are required";
+    if (!result) ownership_->compatMessage = "generateTerrainDepositionMap: valid erosion diagnostics are required";
     return result;
 }
 
 graphics::Shader* Procgen::createTerrainMaterialShader(graphics::Graphics* gfx) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!gfx) {
-        lastError_ = "createTerrainMaterialShader: graphics is required";
+        ownership_->compatMessage = "createTerrainMaterialShader: graphics is required";
         return nullptr;
     }
     try {
-        std::vector<uint32_t> fragment(terrain_material_compat_frag_spv,
-                                       terrain_material_compat_frag_spv + terrain_material_compat_frag_spv_count);
+        std::vector<uint32_t> fragment(terrain_material_frag_spv,
+                                       terrain_material_frag_spv + terrain_material_frag_spv_count);
         auto *shader = gfx->newMeshShaderFromSpv({}, fragment);
         if (!shader) return nullptr;
         for (int slot = 0; slot < 4; ++slot)
@@ -1832,15 +1908,15 @@ graphics::Shader* Procgen::createTerrainMaterialShader(graphics::Graphics* gfx) 
         shader->declareVec4("terrainFeatures");
         return shader;
     } catch (const std::exception &e) {
-        lastError_ = std::string("createTerrainMaterialShader: ") + e.what();
+        ownership_->compatMessage = std::string("createTerrainMaterialShader: ") + e.what();
         return nullptr;
     }
 }
 
 graphics::Shader* Procgen::createTerrainWaterShader(graphics::Graphics* gfx) {
-    lastError_.clear();
+    ownership_->compatMessage.clear();
     if (!gfx) {
-        lastError_ = "createTerrainWaterShader: graphics is required";
+        ownership_->compatMessage = "createTerrainWaterShader: graphics is required";
         return nullptr;
     }
     try {
@@ -1848,7 +1924,7 @@ graphics::Shader* Procgen::createTerrainWaterShader(graphics::Graphics* gfx) {
                                        terrain_water_compat_frag_spv + terrain_water_compat_frag_spv_count);
         return gfx->newMeshShaderFromSpv({}, fragment);
     } catch (const std::exception& e) {
-        lastError_ = std::string("createTerrainWaterShader: ") + e.what();
+        ownership_->compatMessage = std::string("createTerrainWaterShader: ") + e.what();
         return nullptr;
     }
 }

@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "helper",
+  "default": "local-logic",
+  "module": "common"
+}
+*/
+// clang-format on
+
 #include "common/Export.h"
 #include "common/Module.h"
 

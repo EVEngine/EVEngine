@@ -7,7 +7,7 @@ End-to-end EVEngine example for the `modelconverter` plugin: it turns a primitiv
 ## Prerequisites
 
 1. `pip install bpy`
-2. Build the plugin against an EVEngine SDK (see `modelconverter/README.md`),
+2. Build the plugin against an EVEngine SDK (see `tools/modelconverter/README.md`),
    place the resulting `modelconverter.dll` at `build/modelconverter.dll`
    relative to this example, or set `modelconverter_plugin` in `config.nut`.
 3. If `python` on your PATH has `bpy`, leave `modelconverter_python = "python"`;

@@ -1,30 +1,142 @@
+#include <CLI11.hpp>
+#include <iostream>
 #include "cmdline.h"
-#include "zip_writer.h"
-#include "common/ScriptCompiler.h"
-#include "common/ScriptModule.h"
-#include "common/config.h"
+
+#if !defined(__EMSCRIPTEN__)
+#include <Poco/PipeStream.h>
+#include <Poco/Process.h>
+#include <Poco/UnicodeConverter.h>
 #include <algorithm>
+#include <chrono>
+#include <cwchar>
 #include <filesystem>
 #include <fstream>
 #include <map>
+#include <rang.hpp>
 #include <set>
 #include <sstream>
-#include <CLI11.hpp>
-#include <rang.hpp>
+#include <thread>
+#include "Sha256.h"
+#include "common/Runtime.h"
+#include "common/ScriptCompiler.h"
+#include "common/ScriptModule.h"
+#include "common/config.h"
+#include "zip_writer.h"
 
 #if defined(EVENGINE_WINDOWS) || defined(_WIN32)
+#include <restartmanager.h>
 #include <windows.h>
 #else
 #include <unistd.h>
 #endif
 
 using namespace std::filesystem;
+#endif
+
 using namespace std;
 
 namespace eve::cmd
 {
 
+#if !defined(__EMSCRIPTEN__)
 namespace {
+
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
+struct PackageLockOwners {
+    DWORD         status = ERROR_GEN_FAILURE;
+    vector<DWORD> processes;
+};
+PackageLockOwners diagnosePackageLocks(const path& candidate, bool verbose = true) {
+    // Read-only query: never shut down a locker. Dynamically load the OS API to keep it off the normal
+    // packaging path and avoid adding a shipped DLL dependency.
+    struct RestartManager {
+        HMODULE library = LoadLibraryExW(L"Rstrtmgr.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+        ~RestartManager() {
+            if (library) FreeLibrary(library);
+        }
+    } api;
+    if (!api.library) {
+        cerr << "Package lock diagnostics unavailable: " << GetLastError() << '\n';
+        return {};
+    }
+    auto start = reinterpret_cast<decltype(&RmStartSession)>(GetProcAddress(api.library, "RmStartSession"));
+    auto end   = reinterpret_cast<decltype(&RmEndSession)>(GetProcAddress(api.library, "RmEndSession"));
+    auto resources =
+        reinterpret_cast<decltype(&RmRegisterResources)>(GetProcAddress(api.library, "RmRegisterResources"));
+    auto list = reinterpret_cast<decltype(&RmGetList)>(GetProcAddress(api.library, "RmGetList"));
+    if (!start || !end || !resources || !list) {
+        cerr << "Package lock diagnostics API unavailable\n";
+        return {};
+    }
+    DWORD session = 0;
+    WCHAR key[CCH_RM_SESSION_KEY + 1]{};
+    DWORD status = start(&session, 0, key);
+    if (status != ERROR_SUCCESS) {
+        cerr << "Package lock diagnostics start failed: " << status << '\n';
+        return {};
+    }
+    struct Session {
+        DWORD                   handle;
+        decltype(&RmEndSession) close;
+        ~Session() {
+            const DWORD result = close(handle);
+            if (result != ERROR_SUCCESS) cerr << "Package lock diagnostics end failed: " << result << '\n';
+        }
+    } cleanup{session, end};
+    vector<wstring> names;
+    error_code      scanError;
+    for (recursive_directory_iterator it(candidate, scanError), last; !scanError && it != last;
+         it.increment(scanError)) {
+        if (it->is_regular_file(scanError)) names.push_back(absolute(it->path()).wstring());
+    }
+    if (scanError || names.empty()) {
+        cerr << "Package lock diagnostics enumeration failed or empty: " << scanError.message() << '\n';
+        return {};
+    }
+    vector<LPCWSTR> files;
+    for (const auto& name : names) files.push_back(name.c_str());
+    status       = resources(session, static_cast<UINT>(files.size()), files.data(), 0, nullptr, 0, nullptr);
+    UINT  needed = 0, count = 0;
+    DWORD reasons = 0;
+    if (status == ERROR_SUCCESS) status = list(session, &needed, &count, nullptr, &reasons);
+    vector<RM_PROCESS_INFO> processes;
+    if (status == ERROR_MORE_DATA) {
+        processes.resize(needed);
+        count  = needed;
+        status = list(session, &needed, &count, processes.data(), &reasons);
+    }
+    if (verbose) cerr << "Package lock diagnostics: status=" << status << " process_count=" << count << '\n';
+    if (status != ERROR_SUCCESS) return {};
+    PackageLockOwners owners{ERROR_SUCCESS, {}};
+    for (UINT i = 0; i < count; ++i) {
+        owners.processes.push_back(processes[i].Process.dwProcessId);
+        string name;
+        Poco::UnicodeConverter::toUTF8(wstring(processes[i].strAppName), name);
+        if (verbose)
+            cerr << "Package locker pid=" << processes[i].Process.dwProcessId << " application=" << name << '\n';
+    }
+    return owners;
+}
+
+enum class PackageLockRelease { NotExternal, Released, TimedOut, Unavailable };
+PackageLockRelease waitForExternalPackageLocks(const path& candidate, DWORD runtimePid, PackageLockOwners owners) {
+    const auto deadline     = chrono::steady_clock::now() + chrono::seconds(5);
+    const auto publisherPid = GetCurrentProcessId();
+    if (owners.status != ERROR_SUCCESS) return PackageLockRelease::Unavailable;
+    if (owners.processes.empty()) return PackageLockRelease::NotExternal;
+    for (;;) {
+        if (find(owners.processes.begin(), owners.processes.end(), publisherPid) != owners.processes.end() ||
+            find(owners.processes.begin(), owners.processes.end(), runtimePid) != owners.processes.end())
+            return PackageLockRelease::NotExternal;
+        if (chrono::steady_clock::now() >= deadline) return PackageLockRelease::TimedOut;
+        this_thread::sleep_for(chrono::milliseconds(100));
+        owners = diagnosePackageLocks(candidate, false);
+        if (owners.status != ERROR_SUCCESS) return PackageLockRelease::Unavailable;
+        if (owners.processes.empty()) return PackageLockRelease::Released;
+    }
+}
+
+#endif
 
 // Runtime binary name inside the *target* SDK's bin/. The packaged game runs on
 // the SDK's platform, which is not necessarily the host running `eve package`
@@ -82,14 +194,49 @@ bool canonicalGameModule(std::string_view importer, std::string_view specifier, 
     return true;
 }
 
+// Compilation imports must use the same snapshot as the archive, never the
+// process's current directory or an already-mounted game's filesystem service.
+class PackageScriptProvider final : public script::IScriptModuleProvider {
+public:
+    explicit PackageScriptProvider(path root) : root_(std::move(root)) {}
+    script::ScriptModuleStatus resolve(const script::ScriptModuleRequest& request, std::string& uri,
+                                       std::string& error) override {
+        return canonicalGameModule(request.importerUri, request.specifier, uri, error)
+                   ? script::ScriptModuleStatus::Found
+                   : script::ScriptModuleStatus::Error;
+    }
+    script::ScriptModuleStatus load(std::string_view uri, script::ScriptModuleSource& source,
+                                    std::string& error) override {
+        if (uri.rfind("game:/", 0) != 0) {
+            error = "non-game package module";
+            return script::ScriptModuleStatus::Error;
+        }
+        const path file = root_ / std::string(uri.substr(6));
+        ifstream   input(file, ios::binary);
+        if (!input) {
+            error = "Cannot read package module: " + file.string();
+            return script::ScriptModuleStatus::Error;
+        }
+        source.canonicalUri = std::string(uri);
+        source.utf8Source.assign(std::istreambuf_iterator<char>(input), {});
+        source.debugOrigin = file.string();
+        sdk::detail::Sha256 hash;
+        hash.update(source.utf8Source.data(), source.utf8Source.size());
+        source.contentHash = hash.finish();
+        return script::ScriptModuleStatus::Found;
+    }
+
+private:
+    path root_;
+};
+
 ScriptPackageManifest scanScriptPackage(const path& gameDir) {
     ScriptPackageManifest manifest;
     std::error_code       ec;
-    for (recursive_directory_iterator it(gameDir, directory_options::skip_permission_denied, ec), end; it != end;
-         it.increment(ec)) {
+    for (recursive_directory_iterator it(gameDir, directory_options::none, ec), end; it != end; it.increment(ec)) {
         if (ec) {
-            ec.clear();
-            continue;
+            manifest.error = "cannot enumerate scripts: " + ec.message();
+            return manifest;
         }
         if (!it->is_regular_file() || it->path().extension() != ".nut") continue;
         std::ifstream input(it->path(), std::ios::binary);
@@ -112,6 +259,11 @@ ScriptPackageManifest scanScriptPackage(const path& gameDir) {
         }
         std::sort(edges.begin(), edges.end());
         edges.erase(std::unique(edges.begin(), edges.end()), edges.end());
+    }
+
+    if (ec) {
+        manifest.error = "cannot enumerate scripts: " + ec.message();
+        return manifest;
     }
 
     for (const auto& [module, dependencies] : manifest.graph) {
@@ -146,6 +298,21 @@ ScriptPackageManifest scanScriptPackage(const path& gameDir) {
     for (const auto& [module, _] : manifest.graph) {
         if (!visit(visit, module)) return manifest;
     }
+    Runtime compiler(512, ssq::Libs::ALL);
+    if (compiler.scriptModules().registerProvider(std::make_shared<PackageScriptProvider>(gameDir), 100) == 0)
+        throw runtime_error("Cannot register package snapshot provider");
+    for (const auto& [module, _] : manifest.graph) {
+        ifstream input(gameDir / module.substr(6), ios::binary);
+        if (!input) throw runtime_error("Cannot read package script: " + module);
+        const string source(std::istreambuf_iterator<char>(input), {});
+        if (input.bad()) throw runtime_error("Cannot read complete package script: " + module);
+        try {
+            compiler.compileSource(source, module);
+        } catch (const std::exception& error) {
+            manifest.error = module + ": " + error.what();
+            return manifest;
+        }
+    }
     return manifest;
 }
 
@@ -174,10 +341,11 @@ std::string resolveSdkRoot(const std::string& sdkArg) {
 }
 
 }  // namespace
+#endif
 
 struct PackageArgs : Handler {
     string sdkPath, outputPath;
-    void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
+    void   setup(CLI::App& app, std::shared_ptr<CLI::Formatter>) override {
         auto subcmd = app.add_subcommand("package", "Package a game into a runnable game folder.");
         subcmd->allow_extras();
         subcmd->add_option("-o,--output", outputPath, "output folder path");
@@ -197,7 +365,14 @@ struct PackageArgs : Handler {
 
 CMD_REG(PackageArgs);
 
-int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) {
+#if defined(__EMSCRIPTEN__)
+int Cmdline::Package(std::string, std::string, std::string) {
+    cerr << "eve package requires a native host that can run the target SDK runtime; "
+            "desktop packaging is unavailable in the browser.\n";
+    return 8;
+}
+#else
+int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) try {
     error_code ec;
     if (!is_directory(gamePath, ec)) {
         cerr << rang::fg::red << "Not a directory: " << rang::fg::reset << gamePath << endl;
@@ -213,12 +388,11 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
         return 2;
     }
 
-    const ScriptPackageManifest scripts = scanScriptPackage(gamePath);
-    if (!scripts.error.empty()) {
-        cerr << rang::fg::red << "Script dependency scan failed: " << scripts.error << rang::fg::reset << endl;
+    gamePath = canonical(gamePath).string();
+    if (!is_regular_file(path(gamePath) / "main.nut")) {
+        cerr << "Package requires main.nut\n";
         return 5;
     }
-
     // Game folder name, trailing separators stripped.
     std::string gameName = gamePath;
     while (!gameName.empty() && (gameName.back() == '/' || gameName.back() == '\\'))
@@ -227,8 +401,37 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
         gameName = std::filesystem::path(gameName).filename().string();
     if (gameName.empty()) gameName = "game";
 
-    path outDir = output.empty() ? path(gameName + "-package") : path(output);
-    create_directories(outDir, ec);
+    const path destination    = weakly_canonical(output.empty() ? path(gameName + "-package") : path(output));
+    const auto relativeOutput = destination.lexically_relative(gamePath);
+    const auto relativeGame   = path(gamePath).lexically_relative(destination);
+    if (destination == path(gamePath) || (!relativeOutput.empty() && *relativeOutput.begin() != "..") ||
+        (!relativeGame.empty() && *relativeGame.begin() != "..")) {
+        cerr << "Package output and source must not contain one another\n";
+        return 6;
+    }
+    create_directories(destination.parent_path());
+    const path lock = destination.string() + ".package-lock";
+    if (!create_directory(lock)) {
+        cerr << "Package destination is locked: " << lock << '\n';
+        return 6;
+    }
+    struct Cleanup {
+        path directory;
+        ~Cleanup() {
+            error_code ignored;
+            remove_all(directory, ignored);
+        }
+    } cleanup{lock};
+    path outDir = lock / "candidate";
+    create_directory(outDir);
+    const path snapshot = lock / "source";
+    copy(gamePath, snapshot, copy_options::recursive);
+    const ScriptPackageManifest scripts = scanScriptPackage(snapshot);
+    if (!scripts.error.empty()) {
+        cerr << rang::fg::red << "Script dependency scan failed: " << scripts.error << rang::fg::reset << endl;
+        return 5;
+    }
+
 
     path sdkBin  = path(sdkRoot) / "bin";
     path sdkLib  = path(sdkRoot) / "lib";
@@ -314,7 +517,7 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
         if (plat == "macosx")
             copy(sdkLib, outDir / "lib",
                  copy_options::recursive | copy_options::overwrite_existing, ec);
-        ec.clear();
+        if (ec) throw filesystem_error("copy SDK libraries", sdkLib, ec);
     }
 #endif  // EVENGINE_MACOSX
 
@@ -323,22 +526,162 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
         for (const auto& entry : directory_iterator(sdkPlat, ec)) {
             copy(entry.path(), outDir / entry.path().filename(),
                  copy_options::recursive | copy_options::overwrite_existing, ec);
-            ec.clear();
+            if (ec) throw filesystem_error("copy platform template", entry.path(), ec);
         }
     }
 
     // 4. Compress the game directory into game.eve inside the package.
     path archive = outDir / "game.eve";
-    if (!cmdline::createGameArchive(gamePath, archive,
-                                    {{".eve/script-modules.manifest", scripts.serialize()}})) {
+    if (!cmdline::createGameArchive(snapshot, archive, {{".eve/script-modules.manifest", scripts.serialize()}})) {
         cerr << rang::fg::red << "Failed to package game archive." << rang::fg::reset << endl;
         return 4;
     }
 
-    cout << rang::fg::green << "Built game package -> " << rang::fg::reset << outDir.string() << endl;
-    cout << "  run: " << runtimeDst.string() << endl;
+    const auto hashFile = [](const path& file) {
+        ifstream input(file, ios::binary);
+        if (!input) throw runtime_error("Cannot hash " + file.string());
+        sdk::detail::Sha256 hash;
+        char                buffer[65536];
+        while (input.read(buffer, sizeof(buffer)) || input.gcount())
+            hash.update(buffer, static_cast<size_t>(input.gcount()));
+        if (!input.eof()) throw runtime_error("Cannot read " + file.string());
+        return hash.finish();
+    };
+    const string archiveHash = hashFile(archive);
+    const string runtimeHash = hashFile(runtimeDst);
+    // Run the exact archive and runtime that will be published, with a bounded
+    // acceptance mode. Cross-target runtimes must be executable on this host.
+    Poco::Process::Env childEnvironment;
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
+    // Unlike POSIX Poco, CreateProcess replaces the entire environment when a
+    // nonempty map is supplied. Preserve PATH, system directories and drivers.
+    struct EnvironmentBlock {
+        LPWCH value = GetEnvironmentStringsW();
+        ~EnvironmentBlock() {
+            if (value) FreeEnvironmentStringsW(value);
+        }
+    } environment;
+    if (!environment.value) throw runtime_error("Cannot read child process environment");
+    for (const wchar_t* entry = environment.value; *entry; entry += std::wcslen(entry) + 1) {
+        string utf8;
+        Poco::UnicodeConverter::toUTF8(std::wstring(entry), utf8);
+        const auto separator = utf8.find('=', 1);
+        if (separator != string::npos) childEnvironment.emplace(utf8.substr(0, separator), utf8.substr(separator + 1));
+    }
+#endif
+    childEnvironment["EVE_PACKAGE_CHECK"] = "1";
+    Poco::Pipe pipe;
+    auto process = Poco::Process::launch(absolute(runtimeDst).string(), {"run"}, absolute(outDir).string(), nullptr,
+                                         &pipe, &pipe, childEnvironment);
+    std::string log;
+    struct ChildCleanup {
+        Poco::ProcessHandle child;
+        std::thread         reader;
+        ~ChildCleanup() {
+            try {
+                if (child.tryWait() == -1) {
+                    Poco::Process::kill(child.id());
+                    child.wait();
+                }
+            } catch (...) {
+            }
+            if (reader.joinable()) reader.join();
+        }
+    } child{process, {}};
+    child.reader        = std::thread([&] {
+        Poco::PipeInputStream input(pipe);
+        char                  buffer[4096];
+        while (input.read(buffer, sizeof(buffer)) || input.gcount()) {
+            // Keep draining after the cap so a noisy candidate cannot block.
+            if (log.size() < 8 * 1024 * 1024) log.append(buffer, static_cast<size_t>(input.gcount()));
+        }
+    });
+    int        exit = -1;
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(60);
+    while ((exit = process.tryWait()) == -1 && std::chrono::steady_clock::now() < deadline)
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    if (exit == -1) {
+        Poco::Process::kill(process.id());
+        exit = process.wait();
+    }
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
+    // On Windows tryWait reads the exit code before the process object is
+    // signaled. Wait for teardown to release the candidate's directory handles.
+    exit = process.wait();
+#endif
+    child.reader.join();
+    if (exit != 0 || log.find("[package-check] passed: 30 frames") == std::string::npos) {
+        cerr << "Package runtime acceptance failed (exit " << exit << ")\n" << log;
+        return 7;
+    }
+    if (hashFile(archive) != archiveHash || hashFile(runtimeDst) != runtimeHash)
+        throw runtime_error("Candidate changed during runtime acceptance");
+    sdk::detail::Sha256 buildIdentity;
+    const string        identityInput = "eve.package-build/1\n" + archiveHash + "\n" + runtimeHash;
+    buildIdentity.update(identityInput.data(), identityInput.size());
+    ofstream record(outDir / "build-identity.manifest", ios::binary);
+    record << "schema=eve.package-build\nversion=1\n"
+           << "build_id=" << buildIdentity.finish() << "\n"
+           << "archive_sha256=" << archiveHash << "\n"
+           << "runtime_sha256=" << runtimeHash << "\n"
+           << "built_at_unix_ms="
+           << chrono::duration_cast<chrono::milliseconds>(chrono::system_clock::now().time_since_epoch()).count()
+           << "\n"
+           << "compiled_scripts=" << scripts.graph.size() << "\n"
+           << "acceptance=passed\nframes=30\n";
+    record.close();
+    if (!record) throw runtime_error("Cannot write build identity");
+    ofstream acceptance(outDir / "acceptance.log", ios::binary);
+    acceptance << log;
+    acceptance.close();
+    if (!acceptance) throw runtime_error("Cannot write acceptance log");
+
+    const path previous    = lock / "previous";
+    const bool hadPrevious = exists(destination);
+    if (hadPrevious) rename(destination, previous);
+    rename(outDir, destination, ec);
+    if (ec) {
+        cerr << "Package publish failed: code=" << ec.value() << " category=" << ec.category().name()
+             << " candidate=" << outDir << " destination=" << destination << '\n';
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
+        cerr << "Package publisher pid=" << GetCurrentProcessId() << " accepted runtime pid=" << process.id() << '\n';
+        try {
+            auto owners = diagnosePackageLocks(outDir);
+            if (ec.category() == system_category() &&
+                (ec.value() == ERROR_ACCESS_DENIED || ec.value() == ERROR_SHARING_VIOLATION) &&
+                waitForExternalPackageLocks(outDir, process.id(), std::move(owners)) == PackageLockRelease::Released) {
+                // External monitoring can borrow the accepted executable without
+                // delete-sharing. Revalidate acceptance inputs after that borrow ends.
+                if (hashFile(archive) != archiveHash || hashFile(runtimeDst) != runtimeHash)
+                    throw runtime_error("Candidate changed while waiting for external package locks");
+                cerr << "External package locks released; publishing verified candidate\n";
+                rename(outDir, destination, ec);
+            }
+        } catch (const std::exception& diagnosticError) {
+            cerr << "Package lock diagnostics failed: " << diagnosticError.what() << '\n';
+        }
+#endif
+    }
+    if (ec) {
+        if (hadPrevious) {
+            error_code restoreError;
+            rename(previous, destination, restoreError);
+            if (restoreError) {
+                // Retain recovery evidence if rollback itself fails.
+                cleanup.directory.clear();
+                cerr << "Previous package retained at " << previous << '\n';
+            }
+        }
+        throw filesystem_error("publish package", destination, ec);
+    }
+    cout << "Built verified game package -> " << destination.string() << '\n';
+    cout << "  run: " << (destination / runtimeName).string() << '\n';
     return 0;
+} catch (const std::exception& error) {
+    cerr << "Package failed: " << error.what() << '\n';
+    return 8;
 }
 
-}  // namespace eve::cmd
+#endif
 
+}  // namespace eve::cmd

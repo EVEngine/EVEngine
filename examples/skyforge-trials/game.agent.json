@@ -1,0 +1,99 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/skyforge-trials",
+  "entry": "main.nut",
+  "smoke": {
+    "scene": "course",
+    "seed": 0,
+    "maxHostFrames": 180,
+    "mustReach": [
+      "course"
+    ]
+  },
+  "clock": {
+    "defaultStep": "frame"
+  },
+  "observations": [
+    {
+      "id": "course",
+      "kind": "script-root",
+      "path": "state",
+      "fields": [
+        "phase",
+        "checkpoint",
+        "gateOpen",
+        "deaths",
+        "time",
+        "contacts",
+        "triggers",
+        "grounded",
+        "x",
+        "y",
+        "z",
+        "support",
+        "liftY",
+        "ferryZ",
+        "last",
+        "crateMoved",
+        "platformRidden",
+        "finished"
+      ]
+    }
+  ],
+  "actions": {
+    "source": "script-map",
+    "map": [
+      {
+        "id": "start",
+        "script": "game.start()"
+      },
+      {
+        "id": "overview",
+        "script": "game.overview()"
+      },
+      {
+        "id": "north",
+        "script": "game.north()"
+      },
+      {
+        "id": "south",
+        "script": "game.south()"
+      },
+      {
+        "id": "east",
+        "script": "game.east()"
+      },
+      {
+        "id": "west",
+        "script": "game.west()"
+      },
+      {
+        "id": "stop",
+        "script": "game.stop()"
+      },
+      {
+        "id": "jump",
+        "script": "game.jump()"
+      },
+      {
+        "id": "retry",
+        "script": "game.retry()"
+      },
+      {
+        "id": "reset",
+        "script": "game.reset()"
+      }
+    ]
+  },
+  "capture": {
+    "requiredFor": [
+      "visual"
+    ],
+    "backend": "engine-readback"
+  },
+  "tolerances": {
+    "screenshot": "human-or-vlm",
+    "numericAbs": 0.01
+  }
+}

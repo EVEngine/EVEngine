@@ -22,6 +22,12 @@ namespace {
 std::mutex                                       compilerRegistryMutex;
 std::unordered_map<HSQUIRRELVM, ScriptCompiler*> compilerRegistry;
 
+std::string& namedArgumentChoicesBuffer() {
+    // Keep thread storage outside the lambda of a dllexport constructor.
+    static thread_local std::string buffer;
+    return buffer;
+}
+
 std::string hashSource(std::string_view source) {
     uint64_t hash = 1469598103934665603ull;
     for (const unsigned char c : source) {
@@ -57,7 +63,7 @@ void appendUnique(std::vector<std::string>& values, std::string value) {
     if (std::find(values.begin(), values.end(), value) == values.end()) values.push_back(std::move(value));
 }
 
-std::string maskComments(std::string_view source) {
+std::string maskComments(std::string_view source, bool maskStrings = false) {
     std::string result(source);
     char        quote        = 0;
     bool        lineComment  = false;
@@ -79,12 +85,15 @@ std::string maskComments(std::string_view source) {
                 result[i] = ' ';
             }
         } else if (quote != 0) {
-            if (c == '\\')
+            if (maskStrings && c != '\n') result[i] = ' ';
+            if (c == '\\' && next != 0) {
+                if (maskStrings && next != '\n') result[i + 1] = ' ';
                 ++i;
-            else if (c == quote)
+            } else if (c == quote)
                 quote = 0;
         } else if (c == '"' || c == '\'') {
             quote = c;
+            if (maskStrings) result[i] = ' ';
         } else if (c == '/' && next == '/') {
             result[i] = result[i + 1] = ' ';
             ++i;
@@ -290,7 +299,9 @@ std::vector<std::string> splitTokens(const std::string& query) {
     std::vector<std::string> tokens;
     std::string              current;
     for (char c : query) {
-        if (std::isspace(static_cast<unsigned char>(c))) {
+        // Treat path separators like spaces so `dialogue.clear` / `dialogue/reset`
+        // tokenize into module + method for ranked search and eve_api_get suggestions.
+        if (std::isspace(static_cast<unsigned char>(c)) || c == '/' || c == '.') {
             if (!current.empty()) {
                 tokens.push_back(current);
                 current.clear();
@@ -519,7 +530,7 @@ ScriptCompiler::ScriptCompiler(ssq::VM& vm, ScriptModuleResolver& modules) : vm_
             static const char* units[] = {nullptr, "seconds", "milliseconds", "radians", "degrees", "pixels", "meters"};
             if (unit != nullptr) *unit = units[static_cast<size_t>(parameter.unit)];
             if (choices != nullptr) {
-                static thread_local std::string choiceBuffer;
+                auto& choiceBuffer = namedArgumentChoicesBuffer();
                 choiceBuffer.clear();
                 for (size_t i = 0; i < parameter.choices.size(); ++i) {
                     if (i != 0) choiceBuffer += ',';
@@ -647,7 +658,9 @@ std::vector<ScriptCompletion> ScriptCompiler::completions(std::string_view canon
             if (matches(symbol.name)) result.push_back({symbol.name, symbol.kind, symbol.erasedType, symbol.name});
         }
         for (const std::string& name : unit->get().exports) {
-            if (matches(name)) result.push_back({name, "export", "module export", name});
+            const bool described = std::any_of(result.begin(), result.end(),
+                                               [&](const ScriptCompletion& item) { return item.label == name; });
+            if (matches(name) && !described) result.push_back({name, "export", "module export", name});
         }
     }
     for (const BindingContract& contract : bindings_.snapshot()) {
@@ -807,6 +820,7 @@ ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view
     result.sourceMap.canonicalUri = result.canonicalUri;
     result.sourceMap.entries.push_back({{1, 1}, {1, 1}});
     const std::string scanned = maskComments(source);
+    const std::string code    = maskComments(source, true);
 
     static const std::regex importPattern(
         R"(\bimport\s+(?:\*\s+as\s+[A-Za-z_]\w*|\{[^}]*\})\s+from\s+[\"']([^\"']+)[\"'])");
@@ -835,7 +849,7 @@ ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view
     });
     forMatches(scanned, asyncPattern,
                [&](const std::smatch& match, size_t) { appendUnique(result.asyncFunctions, match[1].str()); });
-    forMatches(scanned, awaitPattern,
+    forMatches(code, awaitPattern,
                [&](const std::smatch&, size_t offset) { result.awaitLocations.push_back(positionAt(source, offset)); });
     forMatches(scanned, propertyPattern, [&](const std::smatch& match, size_t offset) {
         ScriptPropertyMetadata property;

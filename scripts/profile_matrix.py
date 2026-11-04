@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -48,13 +49,16 @@ PROFILES = (
     "web",
     "procgen-core-only",
     "physics-core-only",
+    "physics-bake-only",
+    "physics-bake-script-only",
+    "physics-bake-render",
     "asset-core-only",
     "crowd-core-only",
     "crowd-thread-core-only",
     "headless",
     "server",
 )
-HOSTLESS = {"procgen-core-only", "physics-core-only", "asset-core-only", "crowd-core-only", "crowd-thread-core-only", "headless", "server"}
+HOSTLESS = {"procgen-core-only", "physics-core-only", "physics-bake-only", "physics-bake-script-only", "asset-core-only", "crowd-core-only", "crowd-thread-core-only", "headless", "server"}
 RUNTIME_ONLY = {"runtime-3d"}
 _MODULE_DIRS: dict[str, str] | None = None
 
@@ -69,6 +73,8 @@ def is_editor_module(name: str) -> bool:
 CORE_SEEDS = {
     "procgen-core-only": ("common",),
     "physics-core-only": ("common", "platform_event"),
+    "physics-bake-only": ("common", "physics_backend"),
+    "physics-bake-script-only": ("common", "physics_backend"),
     "asset-core-only": ("common", "data", "asset"),
     "crowd-core-only": ("common", "crowd"),
     "crowd-thread-core-only": ("common", "crowd", "crowd_thread"),
@@ -249,7 +255,11 @@ def resolve(profile: str, declared: list[ModuleContract] | None = None) -> tuple
         wanted = []
         for module in modules:
             selection_profile = "3d" if profile == "runtime-3d" else profile
+            if profile == "physics-bake-render":
+                selection_profile = "minimal"
             enabled = module.required or profile == "full" or selection_profile in module.groups
+            if profile == "physics-bake-render" and module.name in {"physics_backend", "physics_bake_graphics", "font", "devtools"}:
+                enabled = True
             if profile in RUNTIME_ONLY and is_editor_module(module.name):
                 enabled = False
             if enabled:
@@ -277,6 +287,15 @@ def resolve(profile: str, declared: list[ModuleContract] | None = None) -> tuple
     return ordered, groups
 
 
+def module_build_text(root: Path) -> str:
+    """Compose owner settings at their actual include sites for source-only audits."""
+    text = (root / "CMakeLists.txt").read_text(encoding="utf-8")
+    return re.sub(
+        r'^include\("\$\{CMAKE_CURRENT_SOURCE_DIR\}/([\w./-]+\.cmake)"\)',
+        lambda match: (root / match[1]).read_text(encoding="utf-8"), text, flags=re.MULTILINE,
+    )
+
+
 def check_contracts() -> int:
     declarations = manifest.parse_manifest()
     errors = manifest.validate(declarations, manifest.MODULES)
@@ -289,6 +308,7 @@ def check_contracts() -> int:
     if set(PROFILES) & names:
         errors.append("profile name collides with a module name")
 
+    module_cmake = module_build_text(ROOT / "src" / "modules")
     for profile in PROFILES:
         try:
             enabled, groups = resolve(profile, module_contracts)
@@ -304,18 +324,18 @@ def check_contracts() -> int:
             leaked = sorted(enabled_set & FORBIDDEN_HOSTLESS)
             if leaked:
                 errors.append(f"{profile}: hostless profile enables {', '.join(leaked)}")
-        if profile == "procgen-core-only" and "EVProcgenCoreCheck" not in (
-            ROOT / "src" / "modules" / "CMakeLists.txt"
-        ).read_text(encoding="utf-8"):
+        if profile in {"physics-bake-only", "physics-bake-script-only"} and (enabled_set != set(CORE_SEEDS[profile]) or groups != ["squirrel"]):
+            errors.append(f"{profile}: playback closure acquired an unexpected dependency")
+        if profile == "physics-bake-render":
+            forbidden = {"physics", "physics_cloth", "physics_rope", "physics_destruction", "particles"}
+            if enabled_set & forbidden or set(groups) & {"box2d", "box3d", "jolt"}:
+                errors.append("physics-bake-render: playback acquired live simulation dependencies")
+        if profile == "procgen-core-only" and "EVProcgenCoreCheck" not in module_cmake:
             errors.append("procgen-core-only: EVProcgenCoreCheck target is not wired")
-        if profile == "physics-core-only" and "EVPhysicsCoreCheck" not in (
-            ROOT / "src" / "modules" / "CMakeLists.txt"
-        ).read_text(encoding="utf-8"):
+        if profile == "physics-core-only" and "EVPhysicsCoreCheck" not in module_cmake:
             errors.append("physics-core-only: EVPhysicsCoreCheck target is not wired")
         if profile == "physics-core-only":
-            physics_cmake = (ROOT / "src" / "modules" / "CMakeLists.txt").read_text(
-                encoding="utf-8"
-            )
+            physics_cmake = module_cmake
             missing_sources = [
                 source for source in PHYSICS_CORE_SOURCES if source not in physics_cmake
             ]
@@ -388,19 +408,30 @@ def run_command(command: list[str], cwd: Path, env: dict[str, str] | None = None
 def run_smoke(args: argparse.Namespace, profile: str) -> None:
     directory = build_directory(Path(args.build_root), profile)
     candidates: list[Path] = []
-    for stem in ("eve_capability_present_check", "eve_capability_absent_check"):
-        candidates.extend(sorted(directory.rglob(stem)))
-        candidates.extend(sorted(directory.rglob(stem + ".js")))
-    if not candidates:
-        raise RuntimeError(
-            f"{profile}: capability smoke binaries are missing; build eve_profile_smoke first"
-        )
+    stems = ["eve_capability_present_check", "eve_capability_absent_check"]
+    if profile in {"physics-bake-only", "physics-bake-script-only"}:
+        stems.append("eve_bake_playback_check")
+    if profile == "physics-bake-script-only":
+        stems.append("eve_bake_script_check")
+    for stem in stems:
+        matches: list[Path] = []
+        for suffix in ("", ".exe", ".js"):
+            matches.extend(sorted(directory.rglob(stem + suffix)))
+        if not matches:
+            raise RuntimeError(f"{profile}: {stem} is missing; build eve_profile_smoke first")
+        candidates.extend(matches)
     for candidate in candidates:
         if candidate.suffix == ".js":
             node = os.environ.get("NODE", "node")
             run_command([node, str(candidate)], ROOT)
         elif candidate.is_file() and os.access(candidate, os.X_OK):
             run_command([str(candidate)], ROOT)
+        else:
+            raise RuntimeError(f"{profile}: smoke binary is not executable: {candidate}")
+
+    if profile == "physics-bake-render":
+        run_command(["ctest", "--test-dir", str(directory), "--no-tests=error", "--output-on-failure",
+                     "-R", "^bake.render."], ROOT)
 
 
 def execute_profile(args: argparse.Namespace, profile: str) -> None:

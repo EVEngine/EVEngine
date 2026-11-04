@@ -483,3 +483,15 @@ begin/end 事件传给此函数。组件启用时先调用 `emitter.stop()`；�
 `count()` 返回数量；`selectAndApply(emitter,seed)` 使用显式 seed 确定性选择并应用到粒子发射器。为忠实对应
 Pcg `RandomMaterialSelector` 的 `Random.Range(1, materials.Count)`，索引 0 被保留且永不选择；因此至少
 需要两个非空候选。失败返回标准 `Result`，不会修改 emitter 原有纹理。
+
+### CPU 烘焙录制的身份与外观基础
+
+`Particle::birthSerial` 在所属 `Sim` 生命周期内唯一，随存活粒子压缩移动；
+停止、重启和重置不重置计数。0 表示未出生或计数耗尽，耗尽后拒绝新出生。
+不同 Sim 的编号不具有全局唯一性，录制资产必须同时记录发射器/录制会话身份。
+此合同仅适用于 CPU 粒子，不能据此读取 GPU resident 状态。
+
+原生 `evaluateParticleAppearance` 与实时 sprite 渲染共用外观计算，返回像素矩形、
+角度旋转、颜色和 atlas UV 的独立数值，不保留输入或图形资源引用。
+它不推进模拟、不调用脚本；调用期间 Config 和 Particle 必须稳定。
+录制时还必须校验输出数值并另外记录资源身份；这组基础接口尚不代表完整粒子资产录制和重放入口。

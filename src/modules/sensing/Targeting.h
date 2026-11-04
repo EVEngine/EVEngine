@@ -33,14 +33,6 @@
 
 namespace eve::sensing {
 
-/** @brief Coordinate spaces are not interchangeable, even when dimensions match. */
-enum class CoordinateSpace : std::uint8_t {
-    World2D,
-    World3D,
-    Grid2D,
-    Grid3D,
-};
-
 /** @brief Returns the stable protocol name for a coordinate space. */
 [[nodiscard]] EVENGINE_API_PLATFORM std::string_view coordinateSpaceName(CoordinateSpace space) noexcept;
 
@@ -514,7 +506,7 @@ using FactionRelationFn =
 /**
  * @brief ISensingCandidateProvider adapter over a SensingWorld fact mirror.
  *
- * Supports World2D queries only. Grid constraints remain Unsupported. Zone
+ * Supports World2D and World3D queries only. Grid constraints remain Unsupported. Zone
  * filters use mirrored subject zone membership (`SensingWorld::setZones`).
  * Domain filters require an injected FactionRelationFn.
  *

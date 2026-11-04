@@ -1,4 +1,5 @@
 #include "definitions/Definitions.h"
+#include "common/ValueRead.h"
 
 #include "common/SquirrelBinding.h"
 #include "schema/SchemaRegistry.h"
@@ -122,10 +123,9 @@ const eve::Value* field(const eve::Value::Object& object, std::string_view name)
 }
 
 bool readString(const eve::Value::Object& object, std::string_view name, std::string& output) {
-    const auto* value = field(object, name);
-    const auto* text  = value ? value->getIf<std::string>() : nullptr;
+    auto text = eve::readStringMember(object, name);
     if (!text) return false;
-    output = *text;
+    output = std::move(text.value());
     return true;
 }
 
@@ -137,10 +137,10 @@ bool readPositiveSchemaVersion(const eve::Value& value, eve::SchemaVersion& outp
 }
 
 bool readUint64String(const eve::Value& value, std::uint64_t& output) {
-    const auto* text = value.getIf<std::string>();
-    if (!text || text->empty()) return false;
-    const auto [end, error] = std::from_chars(text->data(), text->data() + text->size(), output);
-    return error == std::errc{} && end == text->data() + text->size();
+    auto parsed = eve::scanUnsignedStringValue(value);
+    if (!parsed) return false;
+    output = parsed.value().value;
+    return parsed.value().consumed == parsed.value().size;
 }
 
 eve::Value parseStoredJson(std::string_view text) {

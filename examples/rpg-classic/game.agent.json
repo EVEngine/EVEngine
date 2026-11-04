@@ -1,0 +1,33 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/rpg-classic",
+  "entry": "main.nut",
+  "smoke": {
+    "scene": "default",
+    "seed": 1,
+    "maxHostFrames": 240,
+    "mustReach": ["rpg-alive"]
+  },
+  "clock": { "defaultStep": "frame" },
+  "observations": [
+    {
+      "id": "rpg-alive",
+      "kind": "script-root",
+      "path": "gameState",
+      "fields": ["mode", "screen", "state", "gold", "kills", "playerHp", "inBattle", "worldMapId"]
+    }
+  ],
+  "actions": {
+    "source": "script-map",
+    "map": []
+  },
+  "capture": {
+    "requiredFor": ["visual"],
+    "backend": "engine-readback"
+  },
+  "tolerances": {
+    "screenshot": "human-or-vlm",
+    "numericAbs": 0.0001
+  }
+}

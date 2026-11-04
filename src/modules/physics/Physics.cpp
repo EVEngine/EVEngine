@@ -15,6 +15,8 @@
 #include "physics/TerrainLoadGravity.h"
 #include "physics/World.h"
 #include "physics/World3D.h"
+#include "physics/backend/bake/script/PhysicsBake.h"
+#include "physics/bake_recording/PhysicsBakeRecording.h"
 #include "physics/forces/ForceBindings.h"
 #include "physics/mechanics/Coupling3DBindings.h"
 #include "physics/mechanics/Joint2DBindings.h"
@@ -23,6 +25,7 @@
 
 #include "common/Exception.h"
 #include "common/SquirrelBinding.h"
+#include "physics/WorldSphereSweepScript.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -59,11 +62,15 @@ SoftBody3DRenderer* Physics::newSoftBody3DRenderer(SoftBody3D* body) { return ne
 Fluid2D *Physics::newFluid2D(int capacity) { return new Fluid2D(capacity); }
 
 void Physics::expose(ssq::Table &table) {
+    PhysicsBake::expose(table);
+    PhysicsBakeRecording::expose(table);
     exposeForceBindings(table);
     exposeJoint2DBindings(table);
     exposeCoupling3DBindings(table);
     auto cls = table.addClass(name, Physics::create, false);
     expose(cls);
+    cls.addFunc("bake", [](Physics*) { return PhysicsBake::create(); });
+    cls.addFunc("bakeRecording", [](Physics*) { return PhysicsBakeRecording::create(); });
     auto terrainLoadState = table.addClass<TerrainLoadGravityState>("TerrainLoadGravityState");
     terrainLoadState.addFunc("isMonitoring", &TerrainLoadGravityState::isMonitoring);
     terrainLoadState.addFunc("isActivationScheduled", &TerrainLoadGravityState::isActivationScheduled);
@@ -139,6 +146,10 @@ void Physics::expose(ssq::Table &table) {
     auto world3 =
         table.addClass<World3D>("World3D", std::function<World3D*()>([]() -> World3D* { return nullptr; }), true);
     world3.addFunc("queryToken", &World3D::queryToken);
+    world3.addFunc("applySweepContactImpulse",
+                   [](World3D* self, ssq::Object event, float ix, float iy, float iz, float px, float py, float pz) {
+                       return projectSweepContactImpulse(self, event, {ix, iy, iz}, {px, py, pz});
+                   });
     world3.addFunc("update", &World3D::update);
     world3.addFunc("updateFull", &World3D::updateFull);
     world3.addFunc("setGravity", &World3D::setGravity);

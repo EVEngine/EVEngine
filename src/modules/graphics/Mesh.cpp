@@ -7,7 +7,11 @@
 #include <algorithm>
 #include <atomic>
 #include <cmath>
+#include <cstring>
 #include <limits>
+
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 
 namespace eve::graphics {
 Result<void> Mesh::setTexcoordSet(uint32_t set, std::span<const float> values) {
@@ -87,8 +91,16 @@ Result<void> Mesh::setSkinPalette(const float* matrices, int matrixCount) {
         if (!std::isfinite(matrices[i]))
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::InvalidArgument, "Non-finite skin palette matrix"));
-    std::vector<float> replacement(matrices, matrices + count);
-    skinPalette_.swap(replacement);
+    // Validate before mutation. A valid aliased input can only fit within the
+    // current size; copy it before shrinking so overlapping subranges work.
+    if (count <= skinPalette_.size()) {
+        std::memmove(skinPalette_.data(), matrices, count * sizeof(float));
+        skinPalette_.resize(count);
+    } else {
+        // float resize preserves the previous palette if allocation fails.
+        skinPalette_.resize(count);
+        std::memcpy(skinPalette_.data(), matrices, count * sizeof(float));
+    }
     return Result<void>::success();
 }
 
@@ -148,7 +160,7 @@ Result<std::array<float, 6>> Mesh::localBounds() const {
     return Result<std::array<float, 6>>::success(localBounds_);
 }
 
-void Mesh::drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const {
+void Mesh::drawOcclusion(Graphics* gfx, const glm::mat4& matrix) const {
     if (!gfx || !getCastOcclusion()) return;
     const float x = matrix[3][0];
     const float y = matrix[3][1];

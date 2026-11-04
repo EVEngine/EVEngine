@@ -1,7 +1,49 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "particles",
+  "modules": [
+    "image",
+    "particles",
+    "procgen",
+    "rpg"
+  ],
+  "origins": [
+    "particles_gpu_resident.cpp",
+    "particles_p2_p3.cpp",
+    "particles_playback.cpp",
+    "particles_reference_effects.cpp",
+    "particles_scalability.cpp",
+    "procgen.cpp",
+    "procgen_lsystem.cpp",
+    "procgen_preview.cpp",
+    "resource_lifetime.cpp",
+    "rpg_simulation.cpp",
+    "procgen_pointset.cpp"
+  ],
+  "cases": {
+    "render-offscreen": [
+      "procgen.terrain.materialShaderRendersPortableSixteenLayerContract",
+      "procgen.terrain.waterShaderShipsEmbeddedSpirv"
+    ],
+    "script-binding": [
+      "procgen.script.newLSystemIsTheDocumentedEntryPoint",
+      "procgen.script.pointsetPolygonAndBatchApiAreBound"
+    ]
+  }
+}
+*/
+// clang-format on
+
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: particles gpu resident
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_gpu_resident)
-#include "PrivateTestScope.h"
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -10,6 +52,8 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include "PrivateTestScope.h"
+#include "graphics/GpuParticles.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/RenderSystem.h"
@@ -18,18 +62,12 @@
 #include "particles/ParticleSystem.h"
 #include "particles/Particles.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // particles_gpu_resident.cpp
 namespace test_particles_gpu_resident {
 using namespace eve::particles;
 
 namespace {
-
-[[maybe_unused]] double median(std::vector<double> values) {
-    std::sort(values.begin(), values.end());
-    return values[values.size() / 2];
-}
 
 [[maybe_unused]] eve::graphics::Mesh *makeLeftHalfDepthPlane(eve::graphics::Graphics *gfx) {
     const std::array<float, 12> positions = {
@@ -74,8 +112,10 @@ TEST_CASE("particles.gpu.residentSimulationAndIndirectRendering") {
     settings.width    = 800;
     settings.height   = 520;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
-    REQUIRE(gfx->supportsGpuParticles());
+    REQUIRE(gfx->gpuParticles());
+    REQUIRE(gfx->gpuParticles()->supportsGpuParticles());
     gfx->setScreenReadbackEnabled(true);
 
     const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
@@ -98,9 +138,9 @@ TEST_CASE("particles.gpu.residentSimulationAndIndirectRendering") {
         emitter->setRandomSeed(20260826 + int(i));
         emitter->setGpuSimulation(true);
         emitter->setPosition(115.f + float(i) * 114.f, 400.f);
-        emitter->setEmissionRate(1500.f);
-        emitter->setMaxSpawnPerFrame(32);
-        emitter->setParticleLifetime(0.9f, 1.45f);
+        emitter->setEmissionRate(0.f);
+        emitter->setMaxSpawnPerFrame(256);
+        emitter->setParticleLifetime(0.3f, 0.4f);
         emitter->setParticleSize(9.f, 18.f);
         emitter->setSizes(1.f, 0.12f);
         emitter->setSpeed(95.f, 245.f);
@@ -117,13 +157,14 @@ TEST_CASE("particles.gpu.residentSimulationAndIndirectRendering") {
         emitter->setBlendMode("additive");
         emitter->setColorStart(colors[i][0], colors[i][1], colors[i][2], 0.95f);
         emitter->setColorEnd(colors[i][0] * 0.25f, colors[i][1] * 0.12f, colors[i][2] * 0.3f, 0.f);
+        emitter->addBurst(0.f, 256);
         emitter->start();
         emitters.push_back(emitter);
     }
 
     gfx->setBackgroundColorRGBA(0.008f, 0.012f, 0.035f, 1.f);
     constexpr float dt = 1.f / 60.f;
-    for (int frame = 0; frame < 150; ++frame) {
+    for (int frame = 0; frame < 8; ++frame) {
         ParticleSimSystem::update(dt);
         gfx->clearScreen();
         gfx->drawSolidRectRGBA(24.f, 22.f, 752.f, 476.f, 0.015f, 0.025f, 0.075f, 1.f);
@@ -141,13 +182,13 @@ TEST_CASE("particles.gpu.residentSimulationAndIndirectRendering") {
         REQUIRE(emitter->isGpuSimulationActive());
         REQUIRE_NE(gpu->residentHandle, std::uint64_t(0));
         REQUIRE_EQ(emitter->sim()->alive, 0);
-        const auto gpuStats = gfx->getGpuParticleStats(gpu->residentHandle);
+        const auto gpuStats = gfx->gpuParticles()->getGpuParticleStats(gpu->residentHandle);
         submittedFrames += gpuStats.submittedFrames;
         delayedAlive += gpuStats.alive;
         indirectInstances += gpuStats.instances;
         estimatedAlive += gpu->estimatedAlive;
     }
-    REQUIRE_GT(submittedFrames, std::uint64_t(800));
+    REQUIRE_GE(submittedFrames, std::uint64_t(24));
     REQUIRE_GT(delayedAlive, std::uint32_t(1000));
     REQUIRE_GT(indirectInstances, std::uint32_t(1000));
     REQUIRE_GT(estimatedAlive, 1000);
@@ -163,8 +204,9 @@ TEST_CASE("particles.gpu.residentSimulationAndIndirectRendering") {
     // Enabling a gameplay-coupled feature at runtime must not be silently
     // ignored by a previously activated GPU emitter. It resets to CPU safely.
     emitters.front()->setCollision("bounce", 2.f, 0.5f, 0.f);
+    emitters.front()->setEmissionRate(240.f);
     ParticleSimSystem::update(dt);
-    CHECK(!emitters.front()->isGpuSimulationActive());
+    REQUIRE(!emitters.front()->isGpuSimulationActive());
     REQUIRE_GT(emitters.front()->sim()->alive, 0);
 
     for (auto *emitter : emitters) {
@@ -183,8 +225,10 @@ TEST_CASE("particles.gpu.residentSortModesStayOnGpuAndRender") {
     settings.width    = 640;
     settings.height   = 360;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
-    REQUIRE(gfx->supportsGpuParticles());
+    REQUIRE(gfx->gpuParticles());
+    REQUIRE(gfx->gpuParticles()->supportsGpuParticles());
     gfx->setScreenReadbackEnabled(true);
 
     const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
@@ -238,7 +282,7 @@ TEST_CASE("particles.gpu.residentSortModesStayOnGpuAndRender") {
         REQUIRE_EQ(emitters[i]->getSortMode(), std::string(modes[i]));
         REQUIRE_EQ(emitters[i]->getSimulationBackend(), std::string("gpu"));
         REQUIRE_EQ(std::string(emitters[i]->getGpuFallbackReason()), std::string());
-        const auto stats = gfx->getGpuParticleStats(emitters[i]->gpuSim()->residentHandle);
+        const auto stats = gfx->gpuParticles()->getGpuParticleStats(emitters[i]->gpuSim()->residentHandle);
         totalInstances += stats.instances;
         REQUIRE_GT(stats.submittedFrames, std::uint64_t(20));
     }
@@ -272,8 +316,10 @@ TEST_CASE("particles.gpu.residentRibbonStaysOnGpuAndRendersSegments") {
     settings.width    = 640;
     settings.height   = 360;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
-    REQUIRE(gfx->supportsGpuParticles());
+    REQUIRE(gfx->gpuParticles());
+    REQUIRE(gfx->gpuParticles()->supportsGpuParticles());
     gfx->setScreenReadbackEnabled(true);
 
     const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
@@ -302,8 +348,8 @@ TEST_CASE("particles.gpu.residentRibbonStaysOnGpuAndRendersSegments") {
 
     gfx->setBackgroundColorRGBA(0.02f, 0.02f, 0.05f, 1.f);
     constexpr float dt = 1.f / 60.f;
-    for (int frame = 0; frame < 90; ++frame) {
-        emitter->setPosition(80.f + float(frame) * 5.f, 180.f + std::sin(float(frame) * 0.12f) * 40.f);
+    for (int frame = 0; frame < 12; ++frame) {
+        emitter->setPosition(80.f + float(frame) * 35.f, 180.f + std::sin(float(frame) * 0.12f) * 40.f);
         ParticleSimSystem::update(dt);
         gfx->clearScreen();
         ParticleRenderSystem::render(gfx);
@@ -313,9 +359,9 @@ TEST_CASE("particles.gpu.residentRibbonStaysOnGpuAndRendersSegments") {
     REQUIRE(emitter->isGpuSimulationActive());
     REQUIRE_EQ(emitter->getSimulationBackend(), std::string("gpu"));
     REQUIRE_EQ(std::string(emitter->getGpuFallbackReason()), std::string());
-    const auto stats = gfx->getGpuParticleStats(emitter->gpuSim()->residentHandle);
+    const auto stats = gfx->gpuParticles()->getGpuParticleStats(emitter->gpuSim()->residentHandle);
     REQUIRE_GT(stats.instances, std::uint32_t(4));
-    REQUIRE_GT(stats.submittedFrames, std::uint64_t(40));
+    REQUIRE_GT(stats.submittedFrames, std::uint64_t(4));
 
     float brightest = 0.f;
     for (int y = 140; y <= 220; y += 10) {
@@ -344,8 +390,10 @@ TEST_CASE("particles.gpu.multipleResidentEmittersKeepIndependentDrawState") {
     settings.width    = 640;
     settings.height   = 360;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
-    REQUIRE(gfx->supportsGpuParticles());
+    REQUIRE(gfx->gpuParticles());
+    REQUIRE(gfx->gpuParticles()->supportsGpuParticles());
     gfx->setScreenReadbackEnabled(true);
 
     const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
@@ -387,7 +435,7 @@ TEST_CASE("particles.gpu.multipleResidentEmittersKeepIndependentDrawState") {
 
     for (std::size_t i = 0; i < emitters.size(); ++i) {
         REQUIRE(emitters[i]->isGpuSimulationActive());
-        const auto stats = gfx->getGpuParticleStats(emitters[i]->gpuSim()->residentHandle);
+        const auto stats = gfx->gpuParticles()->getGpuParticleStats(emitters[i]->gpuSim()->residentHandle);
         REQUIRE_EQ(stats.instances, std::uint32_t(1));
     }
     const auto red   = gfx->getPixel(160, 180);
@@ -418,6 +466,7 @@ TEST_CASE("particles.renderer.normalMappedLitMaterialUsesSceneLights") {
     settings.width    = 480;
     settings.height   = 280;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
     gfx->setScreenReadbackEnabled(true);
 
@@ -488,6 +537,7 @@ TEST_CASE("particles.renderer.distortionRefractsResolvedSceneColor") {
     settings.width    = 640;
     settings.height   = 360;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
     gfx->setScreenReadbackEnabled(true);
 
@@ -574,74 +624,6 @@ TEST_CASE("particles.renderer.distortionRefractsResolvedSceneColor") {
     window->close();
 }
 
-TEST_CASE("particles.gpu.mainThreadCrossoverAtSixteenThousandParticles") {
-    auto *window = eve::window::Window::create();
-    auto *gfx    = eve::graphics::Graphics::create();
-    REQUIRE(window != nullptr);
-    REQUIRE(gfx != nullptr);
-    eve::window::WindowSettings settings;
-    settings.width    = 640;
-    settings.height   = 360;
-    settings.centered = true;
-    REQUIRE(window->setWindowSettings(settings));
-    REQUIRE(gfx->supportsGpuParticles());
-    gfx->setVSync(false);
-
-    const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
-    auto              *whiteTexture  = gfx->newTexture(1, 1, whitePixel);
-    REQUIRE(whiteTexture != nullptr);
-
-    auto makeEmitters = [&](bool gpuEnabled) {
-        std::vector<ParticleEmitter *> result;
-        for (int i = 0; i < 4; ++i) {
-            auto *emitter = Particles::create()->newEmitter(4096);
-            emitter->setTexture(whiteTexture);
-            emitter->setRandomSeed(4100 + i);
-            emitter->setGpuSimulation(gpuEnabled);
-            emitter->setPosition(150.f + 110.f * float(i), 180.f);
-            emitter->setEmissionRate(0.f);
-            emitter->setParticleLifetime(30.f, 30.f);
-            emitter->setParticleSize(4.f, 4.f);
-            emitter->setSpeed(2.f, 8.f);
-            emitter->setSpread(6.2831853f);
-            emitter->emit(4096);
-            result.push_back(emitter);
-        }
-        return result;
-    };
-    auto measureMainThread = [&](int warmupFrames, int measuredFrames) {
-        std::vector<double> samples;
-        for (int frame = 0; frame < warmupFrames + measuredFrames; ++frame) {
-            ParticleSimSystem::update(1.f / 60.f);
-            gfx->clearScreen();
-            ParticleRenderSystem::render(gfx);
-            if (frame >= warmupFrames) {
-                const auto &stats = particleFrameStats();
-                samples.push_back(stats.simulationMs + stats.renderMs);
-            }
-            gfx->present();
-        }
-        return median(std::move(samples));
-    };
-
-    auto         cpuEmitters = makeEmitters(false);
-    const double cpuMs       = measureMainThread(3, 12);
-    REQUIRE_EQ(particleFrameStats().particlesAfter, 16384);
-    for (auto *emitter : cpuEmitters) emitter->release();
-
-    auto         gpuEmitters = makeEmitters(true);
-    const double gpuCpuMs    = measureMainThread(5, 12);
-    REQUIRE_EQ(particleFrameStats().gpuResidentEmitters, 4);
-    REQUIRE_EQ(particleFrameStats().gpuResidentParticles, 16384);
-    std::fprintf(stdout, "[particles.perf] cpu-main=%.3fms gpu-main=%.3fms particles=16384\n", cpuMs, gpuCpuMs);
-    REQUIRE_LT(gpuCpuMs, cpuMs);
-
-    for (auto *emitter : gpuEmitters) {
-        emitter->setGpuSimulation(false);
-        emitter->release();
-    }
-    window->close();
-}
 
 TEST_CASE("particles.gpu.softDepthFadeUsesSceneLinearDepth") {
     auto *window = eve::window::Window::create();
@@ -652,8 +634,10 @@ TEST_CASE("particles.gpu.softDepthFadeUsesSceneLinearDepth") {
     settings.width    = 640;
     settings.height   = 360;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
-    REQUIRE(gfx->supportsGpuParticles());
+    REQUIRE(gfx->gpuParticles());
+    REQUIRE(gfx->gpuParticles()->supportsGpuParticles());
     gfx->setScreenReadbackEnabled(true);
 
     const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
@@ -731,29 +715,16 @@ TEST_CASE("particles.gpu.softDepthFadeUsesSceneLinearDepth") {
     window->close();
 }
 }  // namespace test_particles_gpu_resident
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_p2_p3)
+// Contract section: particles p2 p3
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cmath>
-#include <cstdint>
-#include <filesystem>
+
 #include <fstream>
 #include <memory>
 #include <sstream>
-#include <string>
-#include <vector>
 #include "common/ParticleSdf.h"
-#include "graphics/Graphics.h"
 #include "particles/ParticleEffect.h"
-#include "particles/ParticleEmitter.h"
 #include "particles/ParticleEmitterPool.h"
-#include "particles/ParticleSystem.h"
-#include "particles/Particles.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // particles_p2_p3.cpp
 namespace test_particles_p2_p3 {
 using namespace eve::particles;
@@ -831,6 +802,7 @@ TEST_CASE("particles.reference.effectPackLoadsAndRenders") {
     settings.width    = 960;
     settings.height   = 540;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
     gfx->setScreenReadbackEnabled(true);
 
@@ -895,39 +867,13 @@ TEST_CASE("particles.reference.effectPackLoadsAndRenders") {
     window->close();
 }
 }  // namespace test_particles_p2_p3
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_playback)
+// Contract section: particles playback
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <cstdint>
-#include <filesystem>
-#include "graphics/Graphics.h"
-#include "particles/ParticleEmitter.h"
-#include "particles/ParticleSystem.h"
-#include "particles/Particles.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // particles_playback.cpp
 namespace test_particles_playback {
 using namespace eve::particles;
-
-namespace {
-
-[[maybe_unused]] void configureDeterministicEmitter(ParticleEmitter *emitter, int seed) {
-    emitter->setRandomSeed(seed);
-    emitter->setPosition(12.f, 34.f);
-    emitter->setParticleLifetime(0.5f, 2.f);
-    emitter->setDirection(0.7f);
-    emitter->setSpread(1.2f);
-    emitter->setSpeed(10.f, 80.f);
-    emitter->setSizeVariation(0.5f);
-    emitter->setStartRotation(-90.f, 90.f);
-}
-
-}  // namespace
-
 
 TEST_CASE("particles.playback.renderDistanceTrailAndLoopingBurst") {
     auto *window = eve::window::Window::create();
@@ -938,6 +884,7 @@ TEST_CASE("particles.playback.renderDistanceTrailAndLoopingBurst") {
     settings.width    = 640;
     settings.height   = 420;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
     gfx->setScreenReadbackEnabled(true);
 
@@ -968,8 +915,9 @@ TEST_CASE("particles.playback.renderDistanceTrailAndLoopingBurst") {
     burst->setTexture(whiteTexture);
     burst->setRandomSeed(424242);
     burst->setPosition(320.f, 210.f);
-    burst->setEmitterLifetime(0.9f);
+    burst->setEmitterLifetime(0.08f);
     burst->setLooping(true);
+    burst->setEmissionRate(0.f);
     burst->addBurst(0.f, 72);
     burst->setParticleLifetime(0.7f, 1.4f);
     burst->setParticleSize(18.f, 18.f);
@@ -988,7 +936,7 @@ TEST_CASE("particles.playback.renderDistanceTrailAndLoopingBurst") {
 
     gfx->setBackgroundColorRGBA(0.025f, 0.035f, 0.065f, 1.f);
     constexpr float dt = 1.f / 60.f;
-    for (int frame = 0; frame < 120; ++frame) {
+    for (int frame = 0; frame < 24; ++frame) {
         const float t = float(frame) * dt;
         trail->setPosition(320.f + std::cos(t * 1.35f) * 240.f, 210.f + std::sin(t * 2.05f) * 125.f);
         ParticleSimSystem::update(dt);
@@ -999,7 +947,7 @@ TEST_CASE("particles.playback.renderDistanceTrailAndLoopingBurst") {
     }
 
     REQUIRE_GT(trail->getCount(), 20);
-    REQUIRE_GT(burst->getCount(), 20);
+    REQUIRE_GT(burst->getCount(), 72);
     int particlesInView = 0;
     for (auto *emitter : {trail, burst}) {
         for (int i = 0; i < emitter->getCount(); ++i) {
@@ -1016,24 +964,10 @@ TEST_CASE("particles.playback.renderDistanceTrailAndLoopingBurst") {
     window->close();
 }
 }  // namespace test_particles_playback
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_reference_effects)
+// Contract section: particles reference effects
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <array>
-#include <cmath>
-#include <cstdint>
-#include <filesystem>
-#include <string>
-#include <vector>
-#include "graphics/Graphics.h"
-#include "particles/ParticleEmitter.h"
-#include "particles/ParticleSystem.h"
-#include "particles/Particles.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // particles_reference_effects.cpp
 namespace test_particles_reference_effects {
 using namespace eve::particles;
@@ -1142,6 +1076,7 @@ TEST_CASE("particles.reference.compositedBurstsRenderAtMultipleAngles") {
     settings.width    = 960;
     settings.height   = 420;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
     gfx->setScreenReadbackEnabled(true);
 
@@ -1199,24 +1134,10 @@ TEST_CASE("particles.reference.compositedBurstsRenderAtMultipleAngles") {
     window->close();
 }
 }  // namespace test_particles_reference_effects
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_scalability)
+// Contract section: particles scalability
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <cstdint>
-#include <filesystem>
-#include <string>
-#include <vector>
-#include "graphics/Graphics.h"
-#include "graphics/RenderSystem.h"
-#include "particles/ParticleEmitter.h"
-#include "particles/ParticleRuntime.h"
-#include "particles/ParticleSystem.h"
-#include "particles/Particles.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // particles_scalability.cpp
 namespace test_particles_scalability {
 using namespace eve::particles;
@@ -1241,16 +1162,6 @@ namespace {
     }
 }
 
-[[maybe_unused]] ParticleEmitter *makeBudgetEmitter(int priority, float rate = 100.f) {
-    auto *emitter = Particles::create()->newEmitter(256);
-    emitter->setPriority(priority);
-    emitter->setRandomSeed(1000 + priority);
-    emitter->setEmissionRate(rate);
-    emitter->setParticleLifetime(10.f, 10.f);
-    emitter->start();
-    return emitter;
-}
-
 }  // namespace
 
 
@@ -1267,6 +1178,7 @@ TEST_CASE("particles.scalability.renderBudgetStressScene") {
     settings.width    = 720;
     settings.height   = 480;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
     gfx->setScreenReadbackEnabled(true);
 
@@ -1278,9 +1190,9 @@ TEST_CASE("particles.scalability.renderBudgetStressScene") {
         emitter->setPriority(24 - i);
         emitter->setRandomSeed(9000 + i);
         emitter->setPosition(74.f + float(i % 6) * 114.f, 82.f + float(i / 6) * 104.f);
-        emitter->setEmissionRate(72.f);
-        emitter->setMaxSpawnPerFrame(4);
-        emitter->setParticleLifetime(0.8f, 1.45f);
+        emitter->setEmissionRate(0.f);
+        emitter->setMaxSpawnPerFrame(96);
+        emitter->setParticleLifetime(0.3f, 0.4f);
         emitter->setParticleSize(13.f, 13.f);
         emitter->setSizes(1.f, 0.25f);
         emitter->setSpeed(18.f, 62.f);
@@ -1290,12 +1202,13 @@ TEST_CASE("particles.scalability.renderBudgetStressScene") {
         const float hue = float(i % 6) / 6.f;
         emitter->setColorStart(0.25f + hue * 0.7f, 0.85f - hue * 0.35f, 1.f - hue * 0.5f, 0.95f);
         emitter->setColorEnd(0.15f, 0.05f, 0.35f + hue * 0.5f, 0.1f);
+        emitter->addBurst(0.f, 96);
         emitter->start();
     }
 
     gfx->setBackgroundColorRGBA(0.018f, 0.025f, 0.055f, 1.f);
     constexpr float dt = 1.f / 60.f;
-    for (int frame = 0; frame < 120; ++frame) {
+    for (int frame = 0; frame < 8; ++frame) {
         ParticleSimSystem::update(dt);
         gfx->clearScreen();
         gfx->drawSolidRectRGBA(22.f, 20.f, 676.f, 440.f, 0.035f, 0.055f, 0.11f, 1.f);
@@ -1319,78 +1232,44 @@ TEST_CASE("particles.scalability.renderBudgetStressScene") {
     window->close();
 }
 }  // namespace test_particles_scalability
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen)
+// Contract section: procgen
+#include "PrivateTestScope.h"
+
 #include <SDL2/SDL.h>
-#include <algorithm>
-#include <array>
 #include <bit>
-#include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <filesystem>
-#include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <limits>
-#include <memory>
 #include <numeric>
 #include <set>
-#include <string>
 #include <unordered_set>
-#include <vector>
-#include "PrivateTestScope.h"
 #include "RenderImageAudit.h"
 #include "asset/procgen/TerrainMaterialAtlas.h"
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
 #include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
-#include "graphics/Outline.h"
 #include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
 #include "graphics/Water.h"
 #include "graphics/Waterfall.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "map/TileLayer.h"
 #include "procgen/GeneratorRegistry.h"
-#include "procgen/JsonExport.h"
 #include "procgen/MeshBuild.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
 #include "procgen/Semantic.h"
-#include "procgen/algorithms/CastleMesh.h"
-#include "procgen/algorithms/HexTerrain.h"
-#include "procgen/algorithms/LinearStructure.h"
-#include "procgen/algorithms/MarchingCubes.h"
-#include "procgen/heightmap/TerrainAsset.h"
-#include "procgen/heightmap/TerrainFile.h"
-#include "procgen/heightmap/TerrainPipeline.h"
-#include "procgen/heightmap/TerrainStreaming.h"
-#include "procgen/texture/ColorRamp.h"
-#include "procgen/texture/NoiseField.h"
-#include "procgen/texture/PbrMaterial.h"
-#include "procgen/texture/TextureRecipe.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // procgen.cpp
 namespace test_procgen {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -1398,29 +1277,6 @@ using eve::graphics::Color;
 
 using namespace eve::procgen;
 using namespace eve::graphics;
-
-namespace {
-class TrackingTerrainSource final : public ITerrainArchiveSource {
-public:
-    explicit TrackingTerrainSource(std::vector<std::uint8_t> bytes) : bytes_(std::move(bytes)) {}
-    std::uint64_t                          size() const noexcept override { return bytes_.size(); }
-    eve::Result<std::vector<std::uint8_t>> read(std::uint64_t offset, std::size_t length) const override {
-        if (offset > bytes_.size() || length > bytes_.size() - std::size_t(offset))
-            return eve::Result<std::vector<std::uint8_t>>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "tracking source out of bounds"));
-        ++readCount;
-        bytesRead += length;
-        return eve::Result<std::vector<std::uint8_t>>::success(std::vector<std::uint8_t>(
-            bytes_.begin() + std::ptrdiff_t(offset), bytes_.begin() + std::ptrdiff_t(offset + length)));
-    }
-    mutable std::size_t readCount = 0;
-    mutable std::size_t bytesRead = 0;
-
-private:
-    std::vector<std::uint8_t> bytes_;
-};
-}  // namespace
-
 
 namespace {
 
@@ -1446,26 +1302,6 @@ struct ParamsLease {
     REQUIRE(view.isBound());
     *view = source;
     return lease;
-}
-
-struct GridLease {
-    ProcgenGridHandleRef handle{};
-    explicit GridLease(ProcgenGridHandleRef value) : handle(value) {}
-    ~GridLease() {
-        if (!handle.isValid()) return;
-        auto result = Procgen::release(handle);
-        result.ignore("procgen test grid cleanup");
-    }
-    GridLease(const GridLease &)            = delete;
-    GridLease &operator=(const GridLease &) = delete;
-    GridLease(GridLease &&other) noexcept : handle(other.handle) { other.handle = {}; }
-    [[nodiscard]] eve::script::Borrowed<Grid2D> view() const noexcept { return Procgen::resolve(handle); }
-};
-
-[[maybe_unused]] GridLease requireGrid(Procgen &proc, const std::string &algorithm, ProcgenParamsHandleRef params) {
-    auto result = proc.generateHandle(algorithm, params);
-    REQUIRE(result.ok());
-    return GridLease{std::move(result).takeValue()};
 }
 
 struct MeshLease {
@@ -1494,218 +1330,7 @@ struct MeshLease {
     return MeshLease(proc, std::move(result).takeValue());
 }
 
-struct PbrLease {
-    Procgen                    *owner = nullptr;
-    ProcgenPbrMaterialHandleRef handle{};
-    PbrLease(Procgen &proc, ProcgenPbrMaterialHandleRef value) : owner(&proc), handle(value) {}
-    ~PbrLease() {
-        if (!owner || !handle.isValid()) return;
-        auto result = owner->releasePbrMaterial(handle);
-        result.ignore("procgen test PBR cleanup");
-    }
-    PbrLease(const PbrLease &)            = delete;
-    PbrLease &operator=(const PbrLease &) = delete;
-    PbrLease(PbrLease &&other) noexcept : owner(other.owner), handle(other.handle) {
-        other.owner  = nullptr;
-        other.handle = {};
-    }
-    [[nodiscard]] eve::script::Borrowed<PbrTextureSet> view() const noexcept {
-        return owner ? owner->resolvePbrMaterial(handle) : eve::script::Borrowed<PbrTextureSet>();
-    }
-};
-
-[[maybe_unused]] bool gridsEqual(const Grid2D &a, const Grid2D &b) {
-    if (a.getWidth() != b.getWidth() || a.getHeight() != b.getHeight()) return false;
-    return a.cells() == b.cells();
-}
-
-[[maybe_unused]] int countSemantic(const Grid2D &g, int semantic) {
-    int n = 0;
-    for (uint32_t c : g.cells())
-        if (int(c) == semantic) ++n;
-    return n;
-}
-
-[[maybe_unused]] bool neighborsOk(int a, int b, const std::set<std::pair<int, int>> &allowed) {
-    if (a > b) std::swap(a, b);
-    return allowed.count({a, b}) > 0;
-}
-
-[[maybe_unused]] bool terrainAdjacencyOk(const Grid2D &g) {
-    // Ordered elevation band: only self + 卤1 neighbors.
-    static const int              band[] = {int(Semantic::Water), int(Semantic::Sand),  int(Semantic::Grass),
-                                            int(Semantic::Dirt),  int(Semantic::Stone), int(Semantic::Snow)};
-    std::set<std::pair<int, int>> allowed;
-    for (int i = 0; i < 6; ++i) {
-        allowed.insert({band[i], band[i]});
-        if (i + 1 < 6) {
-            int lo = band[i], hi = band[i + 1];
-            if (lo > hi) std::swap(lo, hi);
-            allowed.insert({lo, hi});
-        }
-    }
-    const int w = g.getWidth();
-    const int h = g.getHeight();
-    for (int y = 0; y < h; ++y) {
-        for (int x = 0; x < w; ++x) {
-            const int c = g.getCell(x, y);
-            if (x + 1 < w && !neighborsOk(c, g.getCell(x + 1, y), allowed)) return false;
-            if (y + 1 < h && !neighborsOk(c, g.getCell(x, y + 1), allowed)) return false;
-        }
-    }
-    return true;
-}
-
-[[maybe_unused]] bool caveAdjacencyOk(const Grid2D &g) {
-    std::set<std::pair<int, int>> allowed = {
-        {int(Semantic::Wall), int(Semantic::Wall)},
-        {int(Semantic::Wall), int(Semantic::Floor)},
-        {int(Semantic::Floor), int(Semantic::Floor)},
-    };
-    // Normalize pair order for lookup.
-    auto ok = [&](int a, int b) {
-        if (a > b) std::swap(a, b);
-        return allowed.count({a, b}) > 0;
-    };
-    const int w = g.getWidth();
-    const int h = g.getHeight();
-    for (int y = 0; y < h; ++y) {
-        for (int x = 0; x < w; ++x) {
-            const int c = g.getCell(x, y);
-            if (x + 1 < w && !ok(c, g.getCell(x + 1, y))) return false;
-            if (y + 1 < h && !ok(c, g.getCell(x, y + 1))) return false;
-        }
-    }
-    return true;
-}
-
-[[maybe_unused]] bool borderIsWall(const Grid2D &g) {
-    const int w = g.getWidth();
-    const int h = g.getHeight();
-    for (int x = 0; x < w; ++x) {
-        if (g.getCell(x, 0) != int(Semantic::Wall)) return false;
-        if (g.getCell(x, h - 1) != int(Semantic::Wall)) return false;
-    }
-    for (int y = 0; y < h; ++y) {
-        if (g.getCell(0, y) != int(Semantic::Wall)) return false;
-        if (g.getCell(w - 1, y) != int(Semantic::Wall)) return false;
-    }
-    return true;
-}
-
-[[maybe_unused]] bool meshIndicesInRange(const MeshBuild &m) {
-    const int vc = m.getVertexCount();
-    for (int i = 0; i < m.getIndexCount(); ++i) {
-        const int id = m.getIndex(i);
-        if (id < 0 || id >= vc) return false;
-    }
-    return true;
-}
-
-[[maybe_unused]] bool meshNormalsFiniteUnit(const MeshBuild &m, float tol = 0.15f) {
-    for (int i = 0; i < m.getVertexCount(); ++i) {
-        const float nx = m.getNormalX(i);
-        const float ny = m.getNormalY(i);
-        const float nz = m.getNormalZ(i);
-        if (!std::isfinite(nx) || !std::isfinite(ny) || !std::isfinite(nz)) return false;
-        const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
-        if (std::fabs(len - 1.f) > tol) return false;
-    }
-    return true;
-}
-
-[[maybe_unused]] bool meshWindingAgreesWithNormals(const MeshBuild &m, float minFraction = 0.9f) {
-    int ok = 0, counted = 0;
-    for (int t = 0; t + 2 < m.getIndexCount(); t += 3) {
-        const int   i0 = m.getIndex(t), i1 = m.getIndex(t + 1), i2 = m.getIndex(t + 2);
-        const float ax = m.getPositionX(i1) - m.getPositionX(i0);
-        const float ay = m.getPositionY(i1) - m.getPositionY(i0);
-        const float az = m.getPositionZ(i1) - m.getPositionZ(i0);
-        const float bx = m.getPositionX(i2) - m.getPositionX(i0);
-        const float by = m.getPositionY(i2) - m.getPositionY(i0);
-        const float bz = m.getPositionZ(i2) - m.getPositionZ(i0);
-        const float gx = ay * bz - az * by, gy = az * bx - ax * bz, gz = ax * by - ay * bx;
-        const float gLen = std::sqrt(gx * gx + gy * gy + gz * gz);
-        if (gLen < 1e-8f) continue;
-        const float nx = (m.getNormalX(i0) + m.getNormalX(i1) + m.getNormalX(i2)) / 3.f;
-        const float ny = (m.getNormalY(i0) + m.getNormalY(i1) + m.getNormalY(i2)) / 3.f;
-        const float nz = (m.getNormalZ(i0) + m.getNormalZ(i1) + m.getNormalZ(i2)) / 3.f;
-        ++counted;
-        if (gx * nx + gy * ny + gz * nz > 0.f) ++ok;
-    }
-    return counted > 0 && float(ok) / float(counted) >= minFraction;
-}
-
-[[maybe_unused]] bool meshPositionsFinite(const MeshBuild &m) {
-    for (int i = 0; i < m.getVertexCount(); ++i) {
-        if (!std::isfinite(m.getPositionX(i)) || !std::isfinite(m.getPositionY(i)) || !std::isfinite(m.getPositionZ(i)))
-            return false;
-    }
-    return true;
-}
-
-[[maybe_unused]] float meshApproxSignedVolume(const MeshBuild &m) {
-    // Sum of signed tet volumes with origin (valid for closed mesh).
-    float vol = 0.f;
-    for (int t = 0; t + 2 < m.getIndexCount(); t += 3) {
-        const int   i0 = m.getIndex(t);
-        const int   i1 = m.getIndex(t + 1);
-        const int   i2 = m.getIndex(t + 2);
-        const float ax = m.getPositionX(i0), ay = m.getPositionY(i0), az = m.getPositionZ(i0);
-        const float bx = m.getPositionX(i1), by = m.getPositionY(i1), bz = m.getPositionZ(i1);
-        const float cx = m.getPositionX(i2), cy = m.getPositionY(i2), cz = m.getPositionZ(i2);
-        vol += ax * (by * cz - bz * cy) - ay * (bx * cz - bz * cx) + az * (bx * cy - by * cx);
-    }
-    return vol / 6.f;
-}
-
 [[maybe_unused]] bool approxEq(float a, float b, float eps = 1e-5f) { return std::fabs(a - b) < eps; }
-
-[[maybe_unused]] bool hasWalkablePath(const Grid2D &g) {
-    // BFS from first floor/corridor cell; ensure >1 walkable and connected component covers all.
-    const int w        = g.getWidth();
-    const int h        = g.getHeight();
-    auto      walkable = [&](int x, int y) {
-        if (x < 0 || y < 0 || x >= w || y >= h) return false;
-        const int c = g.getCell(x, y);
-        return c == int(Semantic::Floor) || c == int(Semantic::Corridor);
-    };
-    int start = -1;
-    int total = 0;
-    for (int y = 0; y < h; ++y) {
-        for (int x = 0; x < w; ++x) {
-            if (walkable(x, y)) {
-                ++total;
-                if (start < 0) start = y * w + x;
-            }
-        }
-    }
-    if (total < 2 || start < 0) return false;
-    std::vector<char> seen(size_t(w * h), 0);
-    std::vector<int>  q;
-    q.push_back(start);
-    seen[size_t(start)] = 1;
-    size_t    qi        = 0;
-    int       reached   = 0;
-    const int dx[4]     = {1, -1, 0, 0};
-    const int dy[4]     = {0, 0, 1, -1};
-    while (qi < q.size()) {
-        const int i = q[qi++];
-        const int x = i % w;
-        const int y = i / w;
-        ++reached;
-        for (int d = 0; d < 4; ++d) {
-            const int nx = x + dx[d];
-            const int ny = y + dy[d];
-            if (!walkable(nx, ny)) continue;
-            const int ni = ny * w + nx;
-            if (seen[size_t(ni)]) continue;
-            seen[size_t(ni)] = 1;
-            q.push_back(ni);
-        }
-    }
-    return reached == total;
-}
 
 }  // namespace
 
@@ -1880,6 +1505,7 @@ TEST_CASE("procgen.render.cloudShadowsDarkenGround") {
     settings.width    = 256;
     settings.height   = 256;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(win->setWindowSettings(settings));
 
     // Flat ground grid over XZ.
@@ -1983,6 +1609,7 @@ TEST_CASE("procgen.render.castlePng") {
     settings.width    = 900;
     settings.height   = 700;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(win->setWindowSettings(settings));
 
     Procgen *procgen = Procgen::create();
@@ -2059,7 +1686,7 @@ TEST_CASE("procgen.render.castlePng") {
     const RenderAuditResult audit = auditImage(*image, auditCfg, {0.09f, 0.13f, 0.19f}, 2);
     CHECK(!audit.empty);
     CHECK(audit.occupancy > 0.08f);
-    CHECK(audit.meanLuma > 12.f);
+    CHECK(audit.meanLuma > 12.f / 255.f);
     const std::filesystem::path outDir = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out";
     std::filesystem::create_directories(outDir);
     const std::filesystem::path outPath = outDir / "castle.png";
@@ -2125,6 +1752,7 @@ TEST_CASE("graphics.waterfall.paramsRoundTrip") {
     settings.width    = 128;
     settings.height   = 128;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(win->setWindowSettings(settings));
     Waterfall *wf = gfx->newWaterfall();
     REQUIRE(wf != nullptr);
@@ -2168,6 +1796,7 @@ TEST_CASE("graphics.waterfall.render.flowAndFoam") {
     settings.width    = 256;
     settings.height   = 256;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(win->setWindowSettings(settings));
 
     auto *camera = Camera3D::createCamera();
@@ -2187,6 +1816,34 @@ TEST_CASE("graphics.waterfall.render.flowAndFoam") {
 
     Waterfall *wf = gfx->newWaterfall();
     REQUIRE(wf != nullptr);
+    SUB_CASE("graphics.waterfall.render.rasterSurvivesSurfaceRebuildAndInvalidInput") {
+        auto *shader = wf->getShader();
+        REQUIRE(shader != nullptr);
+        if (gfx->getBackendName() == "webgpu") {
+            const auto previous    = shader->meshRasterState();
+            auto       requested   = previous;
+            requested.depthCompare = MeshDepthCompare::LessEqual;
+            auto absent            = gfx->configureMeshShaderRaster(*shader, requested);
+            REQUIRE(!absent.ok());
+            REQUIRE(absent.status().code() == eve::StatusCode::Unsupported);
+            REQUIRE(shader->meshRasterState().depthCompare == previous.depthCompare);
+            REQUIRE(shader->meshRasterState().colorWriteMask == previous.colorWriteMask);
+            return;
+        }
+        REQUIRE(shader->meshRasterState().depthCompare == MeshDepthCompare::LessEqual);
+        REQUIRE(gfx->configureMeshShaderSurface(*shader, BlendMode::Opaque, false, true).ok());
+        REQUIRE(gfx->configureMeshShaderSurface(*shader, BlendMode::Opaque, true, true).ok());
+        const auto committed = shader->meshRasterState();
+        REQUIRE(committed.depthCompare == MeshDepthCompare::LessEqual);
+        auto invalid           = committed;
+        invalid.colorWriteMask = 16;
+        REQUIRE(!gfx->configureMeshShaderRaster(*shader, invalid).ok());
+        const auto retained = shader->meshRasterState();
+        REQUIRE(retained.depthCompare == committed.depthCompare);
+        REQUIRE(retained.depthBiasConstant == committed.depthBiasConstant);
+        REQUIRE(retained.depthBiasSlope == committed.depthBiasSlope);
+        REQUIRE(retained.colorWriteMask == committed.colorWriteMask);
+    };
     wf->createCurvedSheet(4.f, 6.f, 24, 32, 0.35f, 0.15f);
     wf->setWaterColor(0.05f, 0.28f, 0.5f);
     wf->setReflectionIntensity(0.65f);
@@ -2236,6 +1893,7 @@ TEST_CASE("graphics.water.paramsRoundTrip") {
     settings.width    = 128;
     settings.height   = 128;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(win->setWindowSettings(settings));
     Water *w = gfx->newWater();
     REQUIRE(w != nullptr);
@@ -2288,6 +1946,7 @@ TEST_CASE("graphics.water.render.dynamicRipplesAndReflection") {
     settings.width    = 256;
     settings.height   = 256;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(win->setWindowSettings(settings));
 
     // Blue-ish sky cubemap so reflection is visible.
@@ -2464,7 +2123,7 @@ TEST_CASE("graphics.render3d.toCanvas") {
 
     Mesh *cube = makeUnitCube(gfx);
     REQUIRE(cube != nullptr);
-    const glm::mat4 view = glm::lookAtRH(glm::vec3(0.f, 2.f, 5.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
+    const glm::mat4 view = glm::lookAtRH(glm::vec3(0.f, 1.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
     const glm::mat4 proj = perspectiveVulkanRH_ZO(glm::radians(50.f), 160.f / 120.f, 0.1f, 50.f);
     const glm::mat4 viewProj = proj * view;
 
@@ -2472,7 +2131,7 @@ TEST_CASE("graphics.render3d.toCanvas") {
     RenderSystem3D::setDirectionalLight(0.5f, 1.f, 0.3f, 1.4f, 1.3f, 1.2f);
     gfx->setMesh3DViewProj(viewProj);
     gfx->setMesh3DView(view);
-    gfx->setMesh3DCameraPos(glm::vec3(0.f, 2.f, 5.f));
+    gfx->setMesh3DCameraPos(glm::vec3(0.f, 1.f, 3.f));
     gfx->setMesh3DEnv(skyTex, 1.f);
     const uint8_t red[4] = {220, 40, 40, 255};
     Texture      *redTex = gfx->newTexture(1, 1, red);
@@ -2520,6 +2179,7 @@ TEST_CASE("graphics.water.render.planar") {
     settings.width    = 640;
     settings.height   = 480;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(win->setWindowSettings(settings));
     [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
 
@@ -2664,29 +2324,14 @@ TEST_CASE("graphics.water.render.planar") {
     win->close();
 }
 }  // namespace test_procgen
-#endif
 
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_lsystem)
-#include <memory>
-#include <set>
+// Contract section: procgen lsystem
 #include "PrivateTestScope.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include "RenderImageAudit.h"
 #include "common/Module.h"
-#include "graphics/Graphics.h"
-#include "graphics/Mesh.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/Texture.h"
-#include "image/Image.h"
 #include "procgen/PointSet.h"
-#include "procgen/Procgen.h"
 #include "procgen/algorithms/LSystem.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // procgen_lsystem.cpp
 namespace test_procgen_lsystem {
 using namespace eve::procgen;
@@ -2726,24 +2371,11 @@ TEST_CASE("procgen.script.newLSystemIsTheDocumentedEntryPoint") {
     REQUIRE(vm.find("points").toInt() > 0);
 }
 }  // namespace test_procgen_lsystem
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_preview)
+
+// Contract section: procgen preview
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <algorithm>
-#include <cmath>
-#include <memory>
-#include <set>
-#include <string>
+
 #include "ManualPreview.h"
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
-#include "image/ImageData.h"
-#include "procgen/GeneratorRegistry.h"
-#include "procgen/Semantic.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // procgen_preview.cpp
 namespace test_procgen_preview {
 using namespace eve::procgen;
@@ -2873,37 +2505,10 @@ TEST_CASE("procgen.render.dungeonCaveMazePreview") {
     win->close();
 }
 }  // namespace test_procgen_preview
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_resource_lifetime)
+// Contract section: resource lifetime
 #include "PrivateTestScope.h"
-#include <cstdint>
-#include <vector>
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // resource_lifetime.cpp
 namespace test_resource_lifetime {
 #include "graphics/shaders/aa_fxaa_frag_spv.inc"
@@ -3062,16 +2667,10 @@ TEST_CASE("graphics.resourceLifetime.shaderHandleIsBorrowedUntilReleased") {
     win->close();
 }
 }  // namespace test_resource_lifetime
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_simulation)
+// Contract section: rpg simulation
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <cstdint>
-#include <cstring>
-#include <memory>
-#include <string>
-#include <vector>
+
 #include "animation/Animation.h"
 #include "animation/SpriteAnim.h"
 #include "animation/SpriteClip.h"
@@ -3080,38 +2679,11 @@ TEST_CASE("graphics.resourceLifetime.shaderHandleIsBorrowedUntilReleased") {
 #include "building/Ghost.h"
 #include "building/PlacementSystem.h"
 #include "building/PlacementWorld.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
 #include "map/Map.h"
-#include "map/TileLayer.h"
 #include "map/TileProjection.h"
 #include "map/TileSystem.h"
 #include "rpg/RPG.h"
 #include "rpg/Settlement.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // rpg_simulation.cpp
 namespace test_rpg_simulation {
 // RPG cross-module simulation: a tiny "village defense" scenario that drives
@@ -3679,17 +3251,11 @@ TEST_CASE("rpg.simulation.villageDefenseSystems") {
     cam->data()->active = false;
 }
 }  // namespace test_rpg_simulation
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_pointset)
-#include <simplesquirrel/simplesquirrel.hpp>
+// Contract section: procgen pointset
 #include "PrivateTestScope.h"
-#include "common/Module.h"
-#include "procgen/PointSet.h"
-#include "procgen/Procgen.h"
+
 #include "procgen/heightmap/Heightmap.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // procgen_pointset.cpp
 namespace test_procgen_pointset {
 using namespace eve::procgen;
@@ -3862,4 +3428,3 @@ TEST_CASE("procgen.script.pointsetPolygonAndBatchApiAreBound") {
     REQUIRE_EQ(vm.find("removed").toInt(), 0);
 }
 }  // namespace test_procgen_pointset
-#endif

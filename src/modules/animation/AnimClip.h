@@ -332,6 +332,7 @@ public:
     void collectEvents(float previousTime, float currentTime, bool loop, std::vector<std::string>& out) const;
 
 private:
+    friend class AnimInspectionBuilder;
     friend class AnimPlayer;
     friend class MotionDatabase;
     friend class AnimClipBinaryAccess;

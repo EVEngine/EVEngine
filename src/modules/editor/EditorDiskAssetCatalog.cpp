@@ -7,6 +7,7 @@
 #include <iterator>
 #include <set>
 #include <sstream>
+#include <utility>
 
 namespace eve::editor {
 namespace {
@@ -32,7 +33,7 @@ DiskAssetCatalog::DiskAssetCatalog(std::filesystem::path projectRoot, MemoryAsse
 
 std::filesystem::path DiskAssetCatalog::resolveContent(const std::filesystem::path& relative) const {
     if (contentRoot_.empty() || relative.empty() || relative.is_absolute()) return {};
-    const auto candidate = (contentRoot_ / relative).lexically_normal();
+    auto       candidate = (contentRoot_ / relative).lexically_normal();
     const auto scoped    = candidate.lexically_relative(contentRoot_);
     if (scoped.empty()) return {};
     for (const auto& part : scoped)
@@ -89,7 +90,7 @@ Result<DiskAssetScanResult> DiskAssetCatalog::scan() {
         const std::string json{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
         auto              parsed   = editorValueFromJson(json);
         const auto*       metadata = parsed.ok() ? parsed.value().getIf<EditorValue::Object>() : nullptr;
-        const AssetGuid   guid(metadata ? textMember(*metadata, "guid") : std::string{});
+        AssetGuid         guid(metadata ? textMember(*metadata, "guid") : std::string{});
         const std::string type = metadata ? textMember(*metadata, "type") : std::string{};
         if (!parsed.ok() || !metadata || guid.empty() || type.empty()) {
             result.diagnostics.push_back(editing::ruleDiagnostic(
@@ -115,7 +116,14 @@ Result<DiskAssetScanResult> DiskAssetCatalog::scan() {
         }
         const auto        relative    = source.lexically_relative(contentRoot_);
         const std::string hash        = fileHash(source);
-        const std::string fingerprint = relative.generic_string() + ":" + hash + ":" + json;
+        std::string       fingerprint = relative.generic_string();
+        fingerprint.push_back(':');
+        fingerprint.append(hash);
+        fingerprint.push_back(':');
+        const auto previous = fingerprints_.find(guid);
+        const bool changed  = previous == fingerprints_.end() || !previous->second.starts_with(fingerprint) ||
+                              previous->second.compare(fingerprint.size(), std::string::npos, json) != 0;
+        if (changed) fingerprint.append(json);
         AssetRecord       record;
         record.guid          = guid;
         record.logicalUri    = "content://" + relative.generic_string();
@@ -130,9 +138,10 @@ Result<DiskAssetScanResult> DiskAssetCatalog::scan() {
             continue;
         }
         ++result.indexed;
-        const auto previous = fingerprints_.find(guid);
-        if (previous == fingerprints_.end() || previous->second != fingerprint) ++result.changed;
-        fingerprints_.insert_or_assign(guid, fingerprint);
+        if (changed) {
+            ++result.changed;
+            fingerprints_.insert_or_assign(std::move(guid), std::move(fingerprint));
+        }
     }
     if (ec) return scanError(EditorStatus::Failed, "editor.asset.scan-failed", ec.message());
     auto diagnostics = result.diagnostics;

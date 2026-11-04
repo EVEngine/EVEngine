@@ -4,4 +4,6 @@ config = {
     title = "EVEngine Climbing + Motion Matching"
     debug = true
     hotReload = true
+    contactLab = 0
+    contactLabAutoAdvance = false
 };

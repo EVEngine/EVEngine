@@ -2,6 +2,7 @@
 #include "common/Profile.h"
 
 #include <algorithm>
+#include <glm/vec3.hpp>
 #include <string>
 #include <utility>
 #include <vector>

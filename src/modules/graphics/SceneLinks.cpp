@@ -24,7 +24,9 @@ using eve::scene::SceneNode;
 
 void pushRenderable3D(const SceneNode &n, void *target) {
     auto *r = static_cast<Renderable3D *>(target);
-    auto t = r->transform();
+    // Borrow only for this synchronous update; no structural mutations or
+    // callbacks occur while the component is in use.
+    auto            *t = r->transform().operator->();
     const glm::mat4 &w = n.world;
     t->linkedWorld     = w;
     t->hasLinkedWorld  = true;

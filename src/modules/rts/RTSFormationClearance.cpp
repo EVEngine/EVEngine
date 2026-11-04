@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "map/Pathfinder.h"
 #include "rts/RTSSystemMovementInternal.h"
 

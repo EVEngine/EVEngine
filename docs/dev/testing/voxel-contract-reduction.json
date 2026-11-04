@@ -1,0 +1,2589 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-25",
+  "baseline_revision": "20394d720951b2aa13f035dd9b16104c3de3096e",
+  "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+  "configuration": {
+    "platform": "Windows x64 / MSVC Debug SHARED",
+    "jobs": 4,
+    "timeout_seconds": 120,
+    "environment": {
+      "EVENGINE_VIEW_SECONDS": "0.3",
+      "EVENGINE_PERF_FRAMES": "30"
+    },
+    "execution": "Independent process per CTest registration; no bundle, mocks or simulation-step reduction in retained algorithms"
+  },
+  "method": "Three sequential before rounds then three after rounds; all samples retained, no warmup discarded. Compile, discovery, negative controls and direct subcase verification excluded. Different parent counts are intentional scope reduction. Not ABBA or a cross-platform performance guarantee.",
+  "shape": {
+    "cpp_count_before": 1,
+    "cpp_count_after": 1,
+    "file_parent_cases_before": 100,
+    "file_parent_cases_after": 43,
+    "voxel_parent_cases_before": 63,
+    "voxel_parent_cases_after": 10,
+    "voxel_literal_subcases": 21,
+    "voxel_historical_retirements": 47,
+    "preview_retirements": 4,
+    "unchanged_nonvoxel_survivors": 32,
+    "lines_before": 4437,
+    "lines_after": 2579,
+    "include_directives_before": 121,
+    "include_directives_after": 93
+  },
+  "metrics": {
+    "wall_seconds": {
+      "before_median": 32.96747780009173,
+      "after_median": 13.269101500045508,
+      "observed_change_percent": -59.75093520800494
+    },
+    "case_sum_seconds": {
+      "before_median": 128.692768,
+      "after_median": 50.3198925,
+      "observed_change_percent": -60.89920724993654
+    },
+    "voxel_sum_seconds": {
+      "before_median": 72.545037,
+      "after_median": 11.768324,
+      "observed_change_percent": -83.77790613022914
+    }
+  },
+  "before": {
+    "manifest": {
+      "executable": "C:\\Users\\xiaofans\\.codex\\worktrees\\b069\\EVEngine\\build\\win32-debug\\test\\unit_test_graphics.exe",
+      "sha256": "62e7a3a7daad7fbcb05d788f70f95ddc6580ab591264798e62334c2655c18360",
+      "cases": [
+        "graphics.Shader.customSpvOnSprite",
+        "graphics.Shader.newShaderGlslc",
+        "graphics.Shader.newShaderCompilesCustomVertexStage",
+        "graphics.shaderReload.successKeepsStableFacade",
+        "graphics.shaderReload.failureKeepsLastGoodPipeline",
+        "graphics.shaderReload.rejectsForeignFacade",
+        "graphics.shaderReload.glslFailureKeepsLastGoodPipeline",
+        "graphics.shaderReload.vulkan.rebuildsEveryPipelineOfTheShader",
+        "graphics.shaderReload.vulkan.meshShaderKeepsItsSurfacePipelines",
+        "softbody.cloth.collidesWithWorld",
+        "softbody.cloth.momentumExchangeScalesWithMass",
+        "softbody.cloth3d.collidesWithWorld3D",
+        "softbody.cloth3d.momentumExchangeScalesWithMass",
+        "softbody.fluid.emitAndSettle",
+        "softbody.fluid.interactRepels",
+        "softbody.render.clothAndFluid2DPreview",
+        "softbody.render.cloth3DPreview",
+        "softbody.gpu.clothFallsAndPinsHold",
+        "softbody.gpu.clothBoundsAndInteract",
+        "softbody.gpu.clothSelfCollisionSeparates",
+        "softbody.gpu.clothLargeSelfCollision",
+        "softbody.gpu.renderClothPreview",
+        "spatial.quadtree.queryPreview",
+        "stylize.api.passFromShaderAndChain",
+        "stylize.gpu.postPassAndMeshShader",
+        "stylize.render.cylinderStyleGallery",
+        "stylize.anime.realGpuPipeline",
+        "stylize.meshVfx.gpuRibbonSubmission",
+        "stylize.meshVfx.gpuBatchQueueSubmission",
+        "UI.textureBridge.viewportPixelsReachSwapchain",
+        "UI.textureBridge.preservesPainterOrderAndClipping",
+        "voxel.render.smokeDrawVisibleProducesPixels",
+        "voxel.render.invalidFaceDirThrows",
+        "voxel.render.faceCullChangesCoverage",
+        "voxel.render.outOfRangeDrawsNothingBright",
+        "voxel.render.faceDirAliasesDraw",
+        "voxel.render.farChunkOrigin",
+        "voxel.render.depthNearOccludesFar",
+        "voxel.render.allSixFacesFromOrbit",
+        "voxel.render.singleFaceManualDraw",
+        "voxel.render.posXWallFromSide",
+        "voxel.render.clearColorWhenCulled",
+        "voxel.render.posYFromAbove",
+        "voxel.render.faceCullRectCountAboutHalf",
+        "voxel.render.chunkSeamDoubleFaceStillDraws",
+        "voxel.render.negYFromBelow",
+        "voxel.render.posZWallFromFront",
+        "voxel.render.zeroCountAfterLargeDraw",
+        "voxel.render.rangeCullDarkensDistant",
+        "voxel.render.fullChunkSixFacesOrbitPixel",
+        "voxel.render.thinRectanglesAcrossAxes",
+        "voxel.render.negXWallFromLeft",
+        "voxel.render.frustumCulledChunkDark",
+        "voxel.render.carveHoleDarkensCenter",
+        "voxel.render.nearPlaneOccludesFarDifferentColor",
+        "voxel.render.fullLayerTopFromAbove",
+        "voxel.render.chunkOriginNegativeDraw",
+        "voxel.render.sceneHillsIsland",
+        "voxel.render.sceneWalledTown",
+        "voxel.render.registryMultiFaceTex",
+        "voxel.render.vertexAoDarkensPixels",
+        "voxel.render.atlasTexIndexTintVisible",
+        "voxel.render.nullAtlasUsesWhite",
+        "voxel.render.tilesPerRowAtlasSample",
+        "voxel.render.alternatingAtlasFrames",
+        "voxel.render.tilesPerRowZeroClamped",
+        "voxel.render.atlas4x4_eachPaletteChannel",
+        "voxel.render.atlas8x8_highTexIndex",
+        "voxel.render.atlas16x8_tex63",
+        "voxel.render.swapTexIdChangesAtlasColor",
+        "voxel.render.multiTexStripesDoNotMerge",
+        "voxel.render.manualDrawDifferentTexIndices",
+        "voxel.render.atlasBoundaryIndices",
+        "voxel.render.fourTexBlocksSameFrame",
+        "voxel.render.atlasYellowThenMagentaSwap",
+        "voxel.render.twoChunksDifferentAtlasTiles",
+        "voxel.render.multiFrameAtlasSwapStable",
+        "voxel.render.sparsePillarsMultiTex",
+        "voxel.render.tilesPerRowMismatchStillDraws",
+        "voxel.render.emptyInstanceInputsAreNoOps",
+        "voxel.render.multiBatchSameFrame",
+        "voxel.render.drawVisibleMatchesManualBatches",
+        "voxel.render.requiresBegin3DFrame",
+        "voxel.render.largeInstanceCount",
+        "voxel.render.multiFrameSlotReuse",
+        "voxel.render.editRemeshChangesPixels",
+        "voxel.render.emptyWorldDrawVisible",
+        "voxel.render.manyChunksBatched",
+        "voxel.render.instanceCountGrowth",
+        "voxel.render.twoOriginsSameFrame",
+        "voxel.render.removeVoxelsDarkens",
+        "voxel.render.stressHundredsOfInstances",
+        "voxel.render.manualAllSixDirsOneFrame",
+        "voxel.render.remeshIncreasesThenDecreasesRects",
+        "graphics.WaterGradient.bakesAndPreservesTextureOnFailure",
+        "graphics.waterReflectionMasker.bindsRealVm",
+        "graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents",
+        "graphics.WaterUnderwaterFog.appliesAndRestoresVolumetricProvider",
+        "weather.backendShaderInitialization",
+        "weather.pcgInteriorVolumeControlsRealPrecipitationRenderables"
+      ],
+      "jobs": 4,
+      "environment": {
+        "EVENGINE_VIEW_SECONDS": "0.3",
+        "EVENGINE_PERF_FRAMES": "30"
+      },
+      "source_cases": 100,
+      "voxel_parents": 63
+    },
+    "rounds": [
+      {
+        "round": 1,
+        "wall_seconds": 35.49108860013075,
+        "case_sum_seconds": 138.3750282,
+        "voxel_sum_seconds": 84.512416,
+        "counts": {
+          "passed": 100
+        },
+        "cases": [
+          {
+            "name": "graphics.Shader.customSpvOnSprite",
+            "seconds": 0.798528,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.Shader.newShaderGlslc",
+            "seconds": 1.54805,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.Shader.newShaderCompilesCustomVertexStage",
+            "seconds": 1.68464,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.successKeepsStableFacade",
+            "seconds": 0.879888,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.failureKeepsLastGoodPipeline",
+            "seconds": 0.788635,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.rejectsForeignFacade",
+            "seconds": 0.833837,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.glslFailureKeepsLastGoodPipeline",
+            "seconds": 1.90128,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.vulkan.rebuildsEveryPipelineOfTheShader",
+            "seconds": 0.876821,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.vulkan.meshShaderKeepsItsSurfacePipelines",
+            "seconds": 0.823071,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth.collidesWithWorld",
+            "seconds": 0.111672,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth.momentumExchangeScalesWithMass",
+            "seconds": 0.119408,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth3d.collidesWithWorld3D",
+            "seconds": 4.28592,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth3d.momentumExchangeScalesWithMass",
+            "seconds": 3.30206,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.fluid.emitAndSettle",
+            "seconds": 0.117232,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.fluid.interactRepels",
+            "seconds": 0.0965497,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.render.clothAndFluid2DPreview",
+            "seconds": 3.07416,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.render.cloth3DPreview",
+            "seconds": 7.30471,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothFallsAndPinsHold",
+            "seconds": 1.65608,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothBoundsAndInteract",
+            "seconds": 2.11667,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothSelfCollisionSeparates",
+            "seconds": 2.08901,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothLargeSelfCollision",
+            "seconds": 1.92573,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.renderClothPreview",
+            "seconds": 2.46733,
+            "status": "passed"
+          },
+          {
+            "name": "spatial.quadtree.queryPreview",
+            "seconds": 2.75114,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.api.passFromShaderAndChain",
+            "seconds": 0.79057,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.gpu.postPassAndMeshShader",
+            "seconds": 0.907722,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.render.cylinderStyleGallery",
+            "seconds": 1.53795,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.anime.realGpuPipeline",
+            "seconds": 0.825436,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.meshVfx.gpuRibbonSubmission",
+            "seconds": 0.77925,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.meshVfx.gpuBatchQueueSubmission",
+            "seconds": 0.789212,
+            "status": "passed"
+          },
+          {
+            "name": "UI.textureBridge.viewportPixelsReachSwapchain",
+            "seconds": 1.89697,
+            "status": "passed"
+          },
+          {
+            "name": "UI.textureBridge.preservesPainterOrderAndClipping",
+            "seconds": 1.31022,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.smokeDrawVisibleProducesPixels",
+            "seconds": 1.53499,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.invalidFaceDirThrows",
+            "seconds": 0.992181,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.faceCullChangesCoverage",
+            "seconds": 1.27783,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.outOfRangeDrawsNothingBright",
+            "seconds": 1.85171,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.faceDirAliasesDraw",
+            "seconds": 1.46708,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.farChunkOrigin",
+            "seconds": 1.46108,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.depthNearOccludesFar",
+            "seconds": 1.68509,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.allSixFacesFromOrbit",
+            "seconds": 1.18654,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.singleFaceManualDraw",
+            "seconds": 1.28577,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.posXWallFromSide",
+            "seconds": 1.22051,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.clearColorWhenCulled",
+            "seconds": 1.5446,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.posYFromAbove",
+            "seconds": 1.52354,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.faceCullRectCountAboutHalf",
+            "seconds": 0.762597,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.chunkSeamDoubleFaceStillDraws",
+            "seconds": 1.4192,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.negYFromBelow",
+            "seconds": 1.01763,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.posZWallFromFront",
+            "seconds": 1.35226,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.zeroCountAfterLargeDraw",
+            "seconds": 1.20679,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.rangeCullDarkensDistant",
+            "seconds": 1.1916,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.fullChunkSixFacesOrbitPixel",
+            "seconds": 0.98766,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.thinRectanglesAcrossAxes",
+            "seconds": 2.20302,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.negXWallFromLeft",
+            "seconds": 1.14225,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.frustumCulledChunkDark",
+            "seconds": 1.08252,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.carveHoleDarkensCenter",
+            "seconds": 1.18788,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.nearPlaneOccludesFarDifferentColor",
+            "seconds": 1.36524,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.fullLayerTopFromAbove",
+            "seconds": 1.14954,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.chunkOriginNegativeDraw",
+            "seconds": 0.982307,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.sceneHillsIsland",
+            "seconds": 1.70101,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.sceneWalledTown",
+            "seconds": 1.26064,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.registryMultiFaceTex",
+            "seconds": 1.29308,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.vertexAoDarkensPixels",
+            "seconds": 1.26263,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlasTexIndexTintVisible",
+            "seconds": 1.62538,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.nullAtlasUsesWhite",
+            "seconds": 1.10611,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.tilesPerRowAtlasSample",
+            "seconds": 1.29997,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.alternatingAtlasFrames",
+            "seconds": 1.24483,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.tilesPerRowZeroClamped",
+            "seconds": 1.21323,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlas4x4_eachPaletteChannel",
+            "seconds": 1.53621,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlas8x8_highTexIndex",
+            "seconds": 2.74544,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlas16x8_tex63",
+            "seconds": 1.13731,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.swapTexIdChangesAtlasColor",
+            "seconds": 1.74609,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.multiTexStripesDoNotMerge",
+            "seconds": 1.29646,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.manualDrawDifferentTexIndices",
+            "seconds": 1.26096,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlasBoundaryIndices",
+            "seconds": 1.11214,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.fourTexBlocksSameFrame",
+            "seconds": 1.28507,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlasYellowThenMagentaSwap",
+            "seconds": 1.33541,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.twoChunksDifferentAtlasTiles",
+            "seconds": 1.80361,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.multiFrameAtlasSwapStable",
+            "seconds": 1.04991,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.sparsePillarsMultiTex",
+            "seconds": 1.40148,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.tilesPerRowMismatchStillDraws",
+            "seconds": 1.62462,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.emptyInstanceInputsAreNoOps",
+            "seconds": 1.53013,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.multiBatchSameFrame",
+            "seconds": 1.25908,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.drawVisibleMatchesManualBatches",
+            "seconds": 1.37324,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.requiresBegin3DFrame",
+            "seconds": 0.854711,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.largeInstanceCount",
+            "seconds": 1.05729,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.multiFrameSlotReuse",
+            "seconds": 1.22075,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.editRemeshChangesPixels",
+            "seconds": 1.0876,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.emptyWorldDrawVisible",
+            "seconds": 1.76771,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.manyChunksBatched",
+            "seconds": 1.44532,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.instanceCountGrowth",
+            "seconds": 1.00371,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.twoOriginsSameFrame",
+            "seconds": 1.13262,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.removeVoxelsDarkens",
+            "seconds": 1.38196,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.stressHundredsOfInstances",
+            "seconds": 1.66451,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.manualAllSixDirsOneFrame",
+            "seconds": 1.22166,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.remeshIncreasesThenDecreasesRects",
+            "seconds": 1.08912,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterGradient.bakesAndPreservesTextureOnFailure",
+            "seconds": 0.774101,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.waterReflectionMasker.bindsRealVm",
+            "seconds": 0.0981889,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents",
+            "seconds": 0.0976886,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterUnderwaterFog.appliesAndRestoresVolumetricProvider",
+            "seconds": 0.841988,
+            "status": "passed"
+          },
+          {
+            "name": "weather.backendShaderInitialization",
+            "seconds": 0.809468,
+            "status": "passed"
+          },
+          {
+            "name": "weather.pcgInteriorVolumeControlsRealPrecipitationRenderables",
+            "seconds": 0.851426,
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "wall_seconds": 29.963621499948204,
+        "case_sum_seconds": 116.6737443,
+        "voxel_sum_seconds": 65.428483,
+        "counts": {
+          "passed": 100
+        },
+        "cases": [
+          {
+            "name": "graphics.Shader.customSpvOnSprite",
+            "seconds": 0.973796,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.Shader.newShaderGlslc",
+            "seconds": 1.49943,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.Shader.newShaderCompilesCustomVertexStage",
+            "seconds": 1.41795,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.successKeepsStableFacade",
+            "seconds": 1.09792,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.failureKeepsLastGoodPipeline",
+            "seconds": 0.756642,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.rejectsForeignFacade",
+            "seconds": 0.814933,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.glslFailureKeepsLastGoodPipeline",
+            "seconds": 1.63421,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.vulkan.rebuildsEveryPipelineOfTheShader",
+            "seconds": 0.866016,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.vulkan.meshShaderKeepsItsSurfacePipelines",
+            "seconds": 0.86618,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth.collidesWithWorld",
+            "seconds": 0.308628,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth.momentumExchangeScalesWithMass",
+            "seconds": 0.126336,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth3d.collidesWithWorld3D",
+            "seconds": 3.90448,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth3d.momentumExchangeScalesWithMass",
+            "seconds": 2.97878,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.fluid.emitAndSettle",
+            "seconds": 0.127545,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.fluid.interactRepels",
+            "seconds": 0.100724,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.render.clothAndFluid2DPreview",
+            "seconds": 2.98056,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.render.cloth3DPreview",
+            "seconds": 6.14759,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothFallsAndPinsHold",
+            "seconds": 1.4141,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothBoundsAndInteract",
+            "seconds": 1.51325,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothSelfCollisionSeparates",
+            "seconds": 1.57163,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothLargeSelfCollision",
+            "seconds": 1.74797,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.renderClothPreview",
+            "seconds": 2.21455,
+            "status": "passed"
+          },
+          {
+            "name": "spatial.quadtree.queryPreview",
+            "seconds": 2.70782,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.api.passFromShaderAndChain",
+            "seconds": 0.881484,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.gpu.postPassAndMeshShader",
+            "seconds": 0.960522,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.render.cylinderStyleGallery",
+            "seconds": 1.59118,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.anime.realGpuPipeline",
+            "seconds": 1.08802,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.meshVfx.gpuRibbonSubmission",
+            "seconds": 0.90672,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.meshVfx.gpuBatchQueueSubmission",
+            "seconds": 0.924483,
+            "status": "passed"
+          },
+          {
+            "name": "UI.textureBridge.viewportPixelsReachSwapchain",
+            "seconds": 1.50347,
+            "status": "passed"
+          },
+          {
+            "name": "UI.textureBridge.preservesPainterOrderAndClipping",
+            "seconds": 1.55011,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.smokeDrawVisibleProducesPixels",
+            "seconds": 0.995472,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.invalidFaceDirThrows",
+            "seconds": 1.1012,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.faceCullChangesCoverage",
+            "seconds": 0.937026,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.outOfRangeDrawsNothingBright",
+            "seconds": 1.06829,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.faceDirAliasesDraw",
+            "seconds": 1.17233,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.farChunkOrigin",
+            "seconds": 0.858883,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.depthNearOccludesFar",
+            "seconds": 1.04605,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.allSixFacesFromOrbit",
+            "seconds": 1.11646,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.singleFaceManualDraw",
+            "seconds": 0.935052,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.posXWallFromSide",
+            "seconds": 0.978187,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.clearColorWhenCulled",
+            "seconds": 0.926618,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.posYFromAbove",
+            "seconds": 1.06947,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.faceCullRectCountAboutHalf",
+            "seconds": 0.942063,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.chunkSeamDoubleFaceStillDraws",
+            "seconds": 1.06125,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.negYFromBelow",
+            "seconds": 1.08205,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.posZWallFromFront",
+            "seconds": 0.898751,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.zeroCountAfterLargeDraw",
+            "seconds": 1.1417,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.rangeCullDarkensDistant",
+            "seconds": 0.939886,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.fullChunkSixFacesOrbitPixel",
+            "seconds": 1.11821,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.thinRectanglesAcrossAxes",
+            "seconds": 1.03135,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.negXWallFromLeft",
+            "seconds": 1.13463,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.frustumCulledChunkDark",
+            "seconds": 0.965869,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.carveHoleDarkensCenter",
+            "seconds": 1.09379,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.nearPlaneOccludesFarDifferentColor",
+            "seconds": 1.0606,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.fullLayerTopFromAbove",
+            "seconds": 1.42415,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.chunkOriginNegativeDraw",
+            "seconds": 0.991756,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.sceneHillsIsland",
+            "seconds": 1.26022,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.sceneWalledTown",
+            "seconds": 1.23689,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.registryMultiFaceTex",
+            "seconds": 1.04162,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.vertexAoDarkensPixels",
+            "seconds": 1.01924,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlasTexIndexTintVisible",
+            "seconds": 1.06119,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.nullAtlasUsesWhite",
+            "seconds": 0.991131,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.tilesPerRowAtlasSample",
+            "seconds": 0.964996,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.alternatingAtlasFrames",
+            "seconds": 0.945677,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.tilesPerRowZeroClamped",
+            "seconds": 1.14579,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlas4x4_eachPaletteChannel",
+            "seconds": 0.996889,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlas8x8_highTexIndex",
+            "seconds": 1.02923,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlas16x8_tex63",
+            "seconds": 1.09612,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.swapTexIdChangesAtlasColor",
+            "seconds": 0.987972,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.multiTexStripesDoNotMerge",
+            "seconds": 1.17632,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.manualDrawDifferentTexIndices",
+            "seconds": 1.01739,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlasBoundaryIndices",
+            "seconds": 0.97739,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.fourTexBlocksSameFrame",
+            "seconds": 0.988922,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlasYellowThenMagentaSwap",
+            "seconds": 0.912006,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.twoChunksDifferentAtlasTiles",
+            "seconds": 0.942346,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.multiFrameAtlasSwapStable",
+            "seconds": 0.98619,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.sparsePillarsMultiTex",
+            "seconds": 0.950529,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.tilesPerRowMismatchStillDraws",
+            "seconds": 1.0295,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.emptyInstanceInputsAreNoOps",
+            "seconds": 1.13493,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.multiBatchSameFrame",
+            "seconds": 1.03934,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.drawVisibleMatchesManualBatches",
+            "seconds": 1.01285,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.requiresBegin3DFrame",
+            "seconds": 0.859963,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.largeInstanceCount",
+            "seconds": 0.987531,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.multiFrameSlotReuse",
+            "seconds": 1.22701,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.editRemeshChangesPixels",
+            "seconds": 1.11546,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.emptyWorldDrawVisible",
+            "seconds": 1.21891,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.manyChunksBatched",
+            "seconds": 0.979423,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.instanceCountGrowth",
+            "seconds": 1.0673,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.twoOriginsSameFrame",
+            "seconds": 1.17235,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.removeVoxelsDarkens",
+            "seconds": 0.972606,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.stressHundredsOfInstances",
+            "seconds": 0.909877,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.manualAllSixDirsOneFrame",
+            "seconds": 0.936615,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.remeshIncreasesThenDecreasesRects",
+            "seconds": 0.945667,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterGradient.bakesAndPreservesTextureOnFailure",
+            "seconds": 0.940468,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.waterReflectionMasker.bindsRealVm",
+            "seconds": 0.0945816,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents",
+            "seconds": 0.0968417,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterUnderwaterFog.appliesAndRestoresVolumetricProvider",
+            "seconds": 0.99006,
+            "status": "passed"
+          },
+          {
+            "name": "weather.backendShaderInitialization",
+            "seconds": 0.960931,
+            "status": "passed"
+          },
+          {
+            "name": "weather.pcgInteriorVolumeControlsRealPrecipitationRenderables",
+            "seconds": 0.98535,
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "wall_seconds": 32.96747780009173,
+        "case_sum_seconds": 128.692768,
+        "voxel_sum_seconds": 72.545037,
+        "counts": {
+          "passed": 100
+        },
+        "cases": [
+          {
+            "name": "graphics.Shader.customSpvOnSprite",
+            "seconds": 1.22056,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.Shader.newShaderGlslc",
+            "seconds": 1.64891,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.Shader.newShaderCompilesCustomVertexStage",
+            "seconds": 1.53281,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.successKeepsStableFacade",
+            "seconds": 1.08462,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.failureKeepsLastGoodPipeline",
+            "seconds": 1.05706,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.rejectsForeignFacade",
+            "seconds": 0.974823,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.glslFailureKeepsLastGoodPipeline",
+            "seconds": 1.27581,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.vulkan.rebuildsEveryPipelineOfTheShader",
+            "seconds": 1.18579,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.vulkan.meshShaderKeepsItsSurfacePipelines",
+            "seconds": 0.989582,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth.collidesWithWorld",
+            "seconds": 0.142732,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth.momentumExchangeScalesWithMass",
+            "seconds": 0.311315,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth3d.collidesWithWorld3D",
+            "seconds": 3.94968,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth3d.momentumExchangeScalesWithMass",
+            "seconds": 2.99727,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.fluid.emitAndSettle",
+            "seconds": 0.285276,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.fluid.interactRepels",
+            "seconds": 0.108913,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.render.clothAndFluid2DPreview",
+            "seconds": 2.86739,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.render.cloth3DPreview",
+            "seconds": 6.42782,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothFallsAndPinsHold",
+            "seconds": 1.57134,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothBoundsAndInteract",
+            "seconds": 1.67014,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothSelfCollisionSeparates",
+            "seconds": 1.65599,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothLargeSelfCollision",
+            "seconds": 1.43861,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.renderClothPreview",
+            "seconds": 2.45187,
+            "status": "passed"
+          },
+          {
+            "name": "spatial.quadtree.queryPreview",
+            "seconds": 2.52361,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.api.passFromShaderAndChain",
+            "seconds": 0.887585,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.gpu.postPassAndMeshShader",
+            "seconds": 1.09052,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.render.cylinderStyleGallery",
+            "seconds": 1.73897,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.anime.realGpuPipeline",
+            "seconds": 1.09438,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.meshVfx.gpuRibbonSubmission",
+            "seconds": 1.36613,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.meshVfx.gpuBatchQueueSubmission",
+            "seconds": 1.47859,
+            "status": "passed"
+          },
+          {
+            "name": "UI.textureBridge.viewportPixelsReachSwapchain",
+            "seconds": 1.59467,
+            "status": "passed"
+          },
+          {
+            "name": "UI.textureBridge.preservesPainterOrderAndClipping",
+            "seconds": 1.64657,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.smokeDrawVisibleProducesPixels",
+            "seconds": 1.27595,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.invalidFaceDirThrows",
+            "seconds": 1.17627,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.faceCullChangesCoverage",
+            "seconds": 1.18982,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.outOfRangeDrawsNothingBright",
+            "seconds": 0.85007,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.faceDirAliasesDraw",
+            "seconds": 1.23154,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.farChunkOrigin",
+            "seconds": 1.23902,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.depthNearOccludesFar",
+            "seconds": 0.869869,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.allSixFacesFromOrbit",
+            "seconds": 1.20213,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.singleFaceManualDraw",
+            "seconds": 1.09752,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.posXWallFromSide",
+            "seconds": 1.57167,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.clearColorWhenCulled",
+            "seconds": 1.19805,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.posYFromAbove",
+            "seconds": 1.0331,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.faceCullRectCountAboutHalf",
+            "seconds": 0.992729,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.chunkSeamDoubleFaceStillDraws",
+            "seconds": 0.97386,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.negYFromBelow",
+            "seconds": 1.21469,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.posZWallFromFront",
+            "seconds": 1.23931,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.zeroCountAfterLargeDraw",
+            "seconds": 0.982168,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.rangeCullDarkensDistant",
+            "seconds": 1.18538,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.fullChunkSixFacesOrbitPixel",
+            "seconds": 1.20485,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.thinRectanglesAcrossAxes",
+            "seconds": 1.1554,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.negXWallFromLeft",
+            "seconds": 1.09639,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.frustumCulledChunkDark",
+            "seconds": 1.02577,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.carveHoleDarkensCenter",
+            "seconds": 1.40302,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.nearPlaneOccludesFarDifferentColor",
+            "seconds": 1.32744,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.fullLayerTopFromAbove",
+            "seconds": 1.05964,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.chunkOriginNegativeDraw",
+            "seconds": 1.06773,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.sceneHillsIsland",
+            "seconds": 1.49906,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.sceneWalledTown",
+            "seconds": 1.44212,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.registryMultiFaceTex",
+            "seconds": 1.09539,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.vertexAoDarkensPixels",
+            "seconds": 1.09849,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlasTexIndexTintVisible",
+            "seconds": 1.02991,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.nullAtlasUsesWhite",
+            "seconds": 1.05821,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.tilesPerRowAtlasSample",
+            "seconds": 1.40763,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.alternatingAtlasFrames",
+            "seconds": 1.08519,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.tilesPerRowZeroClamped",
+            "seconds": 1.11444,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlas4x4_eachPaletteChannel",
+            "seconds": 1.24926,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlas8x8_highTexIndex",
+            "seconds": 0.908022,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlas16x8_tex63",
+            "seconds": 1.01615,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.swapTexIdChangesAtlasColor",
+            "seconds": 1.11453,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.multiTexStripesDoNotMerge",
+            "seconds": 1.38457,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.manualDrawDifferentTexIndices",
+            "seconds": 1.0913,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlasBoundaryIndices",
+            "seconds": 1.10831,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.fourTexBlocksSameFrame",
+            "seconds": 1.09634,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlasYellowThenMagentaSwap",
+            "seconds": 1.11978,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.twoChunksDifferentAtlasTiles",
+            "seconds": 1.17932,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.multiFrameAtlasSwapStable",
+            "seconds": 1.06225,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.sparsePillarsMultiTex",
+            "seconds": 1.14129,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.tilesPerRowMismatchStillDraws",
+            "seconds": 0.88101,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.emptyInstanceInputsAreNoOps",
+            "seconds": 1.27759,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.multiBatchSameFrame",
+            "seconds": 1.08574,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.drawVisibleMatchesManualBatches",
+            "seconds": 1.19797,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.requiresBegin3DFrame",
+            "seconds": 1.15718,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.largeInstanceCount",
+            "seconds": 1.44173,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.multiFrameSlotReuse",
+            "seconds": 1.27286,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.editRemeshChangesPixels",
+            "seconds": 1.14921,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.emptyWorldDrawVisible",
+            "seconds": 1.1776,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.manyChunksBatched",
+            "seconds": 1.09867,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.instanceCountGrowth",
+            "seconds": 1.24081,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.twoOriginsSameFrame",
+            "seconds": 1.05116,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.removeVoxelsDarkens",
+            "seconds": 1.04516,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.stressHundredsOfInstances",
+            "seconds": 0.947469,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.manualAllSixDirsOneFrame",
+            "seconds": 1.00106,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.remeshIncreasesThenDecreasesRects",
+            "seconds": 1.35487,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterGradient.bakesAndPreservesTextureOnFailure",
+            "seconds": 1.37809,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.waterReflectionMasker.bindsRealVm",
+            "seconds": 0.305211,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents",
+            "seconds": 0.227764,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterUnderwaterFog.appliesAndRestoresVolumetricProvider",
+            "seconds": 1.27041,
+            "status": "passed"
+          },
+          {
+            "name": "weather.backendShaderInitialization",
+            "seconds": 1.17784,
+            "status": "passed"
+          },
+          {
+            "name": "weather.pcgInteriorVolumeControlsRealPrecipitationRenderables",
+            "seconds": 1.51908,
+            "status": "passed"
+          }
+        ]
+      }
+    ],
+    "median_wall_seconds": 32.96747780009173,
+    "median_case_sum_seconds": 128.692768,
+    "median_voxel_sum_seconds": 72.545037
+  },
+  "after": {
+    "manifest": {
+      "executable": "C:\\Users\\xiaofans\\.codex\\worktrees\\b069\\EVEngine\\build\\win32-debug\\test\\unit_test_graphics.exe",
+      "sha256": "b4f83a55d428e075b6440788d6a87194b05b68f45fc90facafb62eee428e6ba0",
+      "cases": [
+        "graphics.Shader.customSpvOnSprite",
+        "graphics.Shader.newShaderGlslc",
+        "graphics.Shader.newShaderCompilesCustomVertexStage",
+        "graphics.shaderReload.successKeepsStableFacade",
+        "graphics.shaderReload.failureKeepsLastGoodPipeline",
+        "graphics.shaderReload.rejectsForeignFacade",
+        "graphics.shaderReload.glslFailureKeepsLastGoodPipeline",
+        "graphics.shaderReload.vulkan.rebuildsEveryPipelineOfTheShader",
+        "graphics.shaderReload.vulkan.meshShaderKeepsItsSurfacePipelines",
+        "softbody.cloth.collidesWithWorld",
+        "softbody.cloth.momentumExchangeScalesWithMass",
+        "softbody.cloth3d.collidesWithWorld3D",
+        "softbody.cloth3d.momentumExchangeScalesWithMass",
+        "softbody.fluid.emitAndSettle",
+        "softbody.fluid.interactRepels",
+        "softbody.gpu.clothFallsAndPinsHold",
+        "softbody.gpu.clothBoundsAndInteract",
+        "softbody.gpu.clothSelfCollisionSeparates",
+        "softbody.gpu.clothLargeSelfCollision",
+        "stylize.api.passFromShaderAndChain",
+        "stylize.gpu.postPassAndMeshShader",
+        "stylize.render.cylinderStyleGallery",
+        "stylize.anime.realGpuPipeline",
+        "stylize.meshVfx.gpuRibbonSubmission",
+        "stylize.meshVfx.gpuBatchQueueSubmission",
+        "UI.textureBridge.viewportPixelsReachSwapchain",
+        "UI.textureBridge.preservesPainterOrderAndClipping",
+        "voxel.render.faceDirAliasesDraw",
+        "voxel.render.visibleWorldSubmission",
+        "voxel.render.depthNearOccludesFar",
+        "voxel.render.atlasBoundaryIndices",
+        "voxel.render.sameFrameBatchIsolation",
+        "voxel.render.frameSlotAtlasUpdates",
+        "voxel.render.instanceBufferGrowth",
+        "voxel.render.remeshPublication",
+        "voxel.render.vertexAoDarkensPixels",
+        "voxel.render.submissionValidationAndRecovery",
+        "graphics.WaterGradient.bakesAndPreservesTextureOnFailure",
+        "graphics.waterReflectionMasker.bindsRealVm",
+        "graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents",
+        "graphics.WaterUnderwaterFog.appliesAndRestoresVolumetricProvider",
+        "weather.backendShaderInitialization",
+        "weather.pcgInteriorVolumeControlsRealPrecipitationRenderables"
+      ],
+      "jobs": 4,
+      "environment": {
+        "EVENGINE_VIEW_SECONDS": "0.3",
+        "EVENGINE_PERF_FRAMES": "30"
+      },
+      "source_cases": 43,
+      "voxel_parents": 10,
+      "source_sha256": "c039b683672d53da898b7353967c952d0064a204ee1235187044a441d43c8da2"
+    },
+    "rounds": [
+      {
+        "round": 1,
+        "wall_seconds": 13.635213200002909,
+        "case_sum_seconds": 50.680074,
+        "voxel_sum_seconds": 11.809768,
+        "counts": {
+          "passed": 43
+        },
+        "cases": [
+          {
+            "name": "graphics.Shader.customSpvOnSprite",
+            "seconds": 1.01317,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.Shader.newShaderGlslc",
+            "seconds": 1.50597,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.Shader.newShaderCompilesCustomVertexStage",
+            "seconds": 1.56545,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.successKeepsStableFacade",
+            "seconds": 1.1145,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.failureKeepsLastGoodPipeline",
+            "seconds": 0.876243,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.rejectsForeignFacade",
+            "seconds": 0.803184,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.glslFailureKeepsLastGoodPipeline",
+            "seconds": 1.67905,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.vulkan.rebuildsEveryPipelineOfTheShader",
+            "seconds": 0.915782,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.vulkan.meshShaderKeepsItsSurfacePipelines",
+            "seconds": 0.891908,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth.collidesWithWorld",
+            "seconds": 0.114183,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth.momentumExchangeScalesWithMass",
+            "seconds": 0.115181,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth3d.collidesWithWorld3D",
+            "seconds": 4.21852,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth3d.momentumExchangeScalesWithMass",
+            "seconds": 3.28125,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.fluid.emitAndSettle",
+            "seconds": 0.120383,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.fluid.interactRepels",
+            "seconds": 0.0981687,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothFallsAndPinsHold",
+            "seconds": 1.49334,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothBoundsAndInteract",
+            "seconds": 1.70625,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothSelfCollisionSeparates",
+            "seconds": 1.63477,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothLargeSelfCollision",
+            "seconds": 1.52756,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.api.passFromShaderAndChain",
+            "seconds": 1.02487,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.gpu.postPassAndMeshShader",
+            "seconds": 0.846552,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.render.cylinderStyleGallery",
+            "seconds": 1.86132,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.anime.realGpuPipeline",
+            "seconds": 0.822768,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.meshVfx.gpuRibbonSubmission",
+            "seconds": 1.00781,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.meshVfx.gpuBatchQueueSubmission",
+            "seconds": 0.868022,
+            "status": "passed"
+          },
+          {
+            "name": "UI.textureBridge.viewportPixelsReachSwapchain",
+            "seconds": 1.74984,
+            "status": "passed"
+          },
+          {
+            "name": "UI.textureBridge.preservesPainterOrderAndClipping",
+            "seconds": 1.48192,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.faceDirAliasesDraw",
+            "seconds": 1.45974,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.visibleWorldSubmission",
+            "seconds": 1.21638,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.depthNearOccludesFar",
+            "seconds": 0.895464,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlasBoundaryIndices",
+            "seconds": 1.09907,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.sameFrameBatchIsolation",
+            "seconds": 0.995814,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.frameSlotAtlasUpdates",
+            "seconds": 1.22258,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.instanceBufferGrowth",
+            "seconds": 1.22466,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.remeshPublication",
+            "seconds": 1.31029,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.vertexAoDarkensPixels",
+            "seconds": 1.18129,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.submissionValidationAndRecovery",
+            "seconds": 1.20448,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterGradient.bakesAndPreservesTextureOnFailure",
+            "seconds": 0.964092,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.waterReflectionMasker.bindsRealVm",
+            "seconds": 0.0966818,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents",
+            "seconds": 0.0904835,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterUnderwaterFog.appliesAndRestoresVolumetricProvider",
+            "seconds": 0.950444,
+            "status": "passed"
+          },
+          {
+            "name": "weather.backendShaderInitialization",
+            "seconds": 1.262,
+            "status": "passed"
+          },
+          {
+            "name": "weather.pcgInteriorVolumeControlsRealPrecipitationRenderables",
+            "seconds": 1.16864,
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "wall_seconds": 12.722472900059074,
+        "case_sum_seconds": 47.9067521,
+        "voxel_sum_seconds": 11.044319,
+        "counts": {
+          "passed": 43
+        },
+        "cases": [
+          {
+            "name": "graphics.Shader.customSpvOnSprite",
+            "seconds": 0.892471,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.Shader.newShaderGlslc",
+            "seconds": 1.29028,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.Shader.newShaderCompilesCustomVertexStage",
+            "seconds": 1.38349,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.successKeepsStableFacade",
+            "seconds": 0.951637,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.failureKeepsLastGoodPipeline",
+            "seconds": 0.954646,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.rejectsForeignFacade",
+            "seconds": 0.711724,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.glslFailureKeepsLastGoodPipeline",
+            "seconds": 1.51814,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.vulkan.rebuildsEveryPipelineOfTheShader",
+            "seconds": 0.85598,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.vulkan.meshShaderKeepsItsSurfacePipelines",
+            "seconds": 0.985235,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth.collidesWithWorld",
+            "seconds": 0.116158,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth.momentumExchangeScalesWithMass",
+            "seconds": 0.11499,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth3d.collidesWithWorld3D",
+            "seconds": 4.15383,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth3d.momentumExchangeScalesWithMass",
+            "seconds": 3.07696,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.fluid.emitAndSettle",
+            "seconds": 0.12142,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.fluid.interactRepels",
+            "seconds": 0.093654,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothFallsAndPinsHold",
+            "seconds": 1.44006,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothBoundsAndInteract",
+            "seconds": 1.43337,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothSelfCollisionSeparates",
+            "seconds": 1.49019,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothLargeSelfCollision",
+            "seconds": 1.49601,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.api.passFromShaderAndChain",
+            "seconds": 0.919762,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.gpu.postPassAndMeshShader",
+            "seconds": 0.968941,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.render.cylinderStyleGallery",
+            "seconds": 1.5606,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.anime.realGpuPipeline",
+            "seconds": 0.946542,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.meshVfx.gpuRibbonSubmission",
+            "seconds": 0.878169,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.meshVfx.gpuBatchQueueSubmission",
+            "seconds": 1.07357,
+            "status": "passed"
+          },
+          {
+            "name": "UI.textureBridge.viewportPixelsReachSwapchain",
+            "seconds": 1.49447,
+            "status": "passed"
+          },
+          {
+            "name": "UI.textureBridge.preservesPainterOrderAndClipping",
+            "seconds": 1.34124,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.faceDirAliasesDraw",
+            "seconds": 1.25063,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.visibleWorldSubmission",
+            "seconds": 1.12342,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.depthNearOccludesFar",
+            "seconds": 0.837923,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlasBoundaryIndices",
+            "seconds": 1.06336,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.sameFrameBatchIsolation",
+            "seconds": 0.904616,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.frameSlotAtlasUpdates",
+            "seconds": 1.08024,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.instanceBufferGrowth",
+            "seconds": 1.18072,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.remeshPublication",
+            "seconds": 1.11416,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.vertexAoDarkensPixels",
+            "seconds": 1.01274,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.submissionValidationAndRecovery",
+            "seconds": 1.47651,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterGradient.bakesAndPreservesTextureOnFailure",
+            "seconds": 1.07208,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.waterReflectionMasker.bindsRealVm",
+            "seconds": 0.08947,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents",
+            "seconds": 0.0926841,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterUnderwaterFog.appliesAndRestoresVolumetricProvider",
+            "seconds": 1.09498,
+            "status": "passed"
+          },
+          {
+            "name": "weather.backendShaderInitialization",
+            "seconds": 1.03023,
+            "status": "passed"
+          },
+          {
+            "name": "weather.pcgInteriorVolumeControlsRealPrecipitationRenderables",
+            "seconds": 1.21945,
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "wall_seconds": 13.269101500045508,
+        "case_sum_seconds": 50.3198925,
+        "voxel_sum_seconds": 11.768324,
+        "counts": {
+          "passed": 43
+        },
+        "cases": [
+          {
+            "name": "graphics.Shader.customSpvOnSprite",
+            "seconds": 0.90012,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.Shader.newShaderGlslc",
+            "seconds": 1.35127,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.Shader.newShaderCompilesCustomVertexStage",
+            "seconds": 1.81775,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.successKeepsStableFacade",
+            "seconds": 1.04195,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.failureKeepsLastGoodPipeline",
+            "seconds": 0.982422,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.rejectsForeignFacade",
+            "seconds": 0.84916,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.glslFailureKeepsLastGoodPipeline",
+            "seconds": 1.37808,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.vulkan.rebuildsEveryPipelineOfTheShader",
+            "seconds": 0.981541,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.shaderReload.vulkan.meshShaderKeepsItsSurfacePipelines",
+            "seconds": 1.09948,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth.collidesWithWorld",
+            "seconds": 0.119872,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth.momentumExchangeScalesWithMass",
+            "seconds": 0.116291,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth3d.collidesWithWorld3D",
+            "seconds": 4.01193,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.cloth3d.momentumExchangeScalesWithMass",
+            "seconds": 3.08362,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.fluid.emitAndSettle",
+            "seconds": 0.125817,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.fluid.interactRepels",
+            "seconds": 0.109804,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothFallsAndPinsHold",
+            "seconds": 1.6118,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothBoundsAndInteract",
+            "seconds": 1.41877,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothSelfCollisionSeparates",
+            "seconds": 1.46602,
+            "status": "passed"
+          },
+          {
+            "name": "softbody.gpu.clothLargeSelfCollision",
+            "seconds": 1.37088,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.api.passFromShaderAndChain",
+            "seconds": 1.08797,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.gpu.postPassAndMeshShader",
+            "seconds": 0.917813,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.render.cylinderStyleGallery",
+            "seconds": 1.3692,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.anime.realGpuPipeline",
+            "seconds": 1.00795,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.meshVfx.gpuRibbonSubmission",
+            "seconds": 1.08168,
+            "status": "passed"
+          },
+          {
+            "name": "stylize.meshVfx.gpuBatchQueueSubmission",
+            "seconds": 1.05892,
+            "status": "passed"
+          },
+          {
+            "name": "UI.textureBridge.viewportPixelsReachSwapchain",
+            "seconds": 1.66412,
+            "status": "passed"
+          },
+          {
+            "name": "UI.textureBridge.preservesPainterOrderAndClipping",
+            "seconds": 1.57802,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.faceDirAliasesDraw",
+            "seconds": 1.16608,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.visibleWorldSubmission",
+            "seconds": 1.3629,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.depthNearOccludesFar",
+            "seconds": 1.34608,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.atlasBoundaryIndices",
+            "seconds": 1.04745,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.sameFrameBatchIsolation",
+            "seconds": 1.13125,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.frameSlotAtlasUpdates",
+            "seconds": 1.04959,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.instanceBufferGrowth",
+            "seconds": 1.34821,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.remeshPublication",
+            "seconds": 0.857694,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.vertexAoDarkensPixels",
+            "seconds": 1.06425,
+            "status": "passed"
+          },
+          {
+            "name": "voxel.render.submissionValidationAndRecovery",
+            "seconds": 1.39482,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterGradient.bakesAndPreservesTextureOnFailure",
+            "seconds": 1.14416,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.waterReflectionMasker.bindsRealVm",
+            "seconds": 0.102197,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents",
+            "seconds": 0.0986915,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.WaterUnderwaterFog.appliesAndRestoresVolumetricProvider",
+            "seconds": 1.08285,
+            "status": "passed"
+          },
+          {
+            "name": "weather.backendShaderInitialization",
+            "seconds": 1.30989,
+            "status": "passed"
+          },
+          {
+            "name": "weather.pcgInteriorVolumeControlsRealPrecipitationRenderables",
+            "seconds": 1.21153,
+            "status": "passed"
+          }
+        ]
+      }
+    ],
+    "median_wall_seconds": 13.269101500045508,
+    "median_case_sum_seconds": 50.3198925,
+    "median_voxel_sum_seconds": 11.768324
+  },
+  "source_sha256": "c039b683672d53da898b7353967c952d0064a204ee1235187044a441d43c8da2",
+  "negative_controls": [
+    {
+      "tag": "fixture-context",
+      "exit_code": 1,
+      "seconds": 0.09125500009395182,
+      "expected_failure": true
+    },
+    {
+      "tag": "pixel-helper-context",
+      "exit_code": 1,
+      "seconds": 0.8490436999127269,
+      "expected_failure": true
+    }
+  ],
+  "subcase_execution": {
+    "expected": [
+      "+X",
+      "-X",
+      "+Y",
+      "-Y",
+      "+Z",
+      "-Z",
+      "voxel.render.faceCullChangesCoverage",
+      "voxel.render.rangeCullDarkensDistant",
+      "voxel.render.frustumCulledChunkDark",
+      "voxel.render.farChunkOrigin",
+      "voxel.render.chunkOriginNegativeDraw",
+      "voxel.render.drawVisibleMatchesManualBatches",
+      "first packed index",
+      "wide atlas row edge",
+      "maximum packed index",
+      "voxel.render.registryMultiFaceTex",
+      "voxel.render.requiresBegin3DFrame",
+      "voxel.render.invalidFaceDirThrows",
+      "voxel.render.emptyInstanceInputsAreNoOps",
+      "voxel.render.nullAtlasUsesWhite",
+      "voxel.render.tilesPerRowZeroClamped"
+    ],
+    "observed": [
+      "+X",
+      "-X",
+      "+Y",
+      "-Y",
+      "+Z",
+      "-Z",
+      "first packed index",
+      "wide atlas row edge",
+      "maximum packed index",
+      "voxel.render.registryMultiFaceTex",
+      "voxel.render.faceCullChangesCoverage",
+      "voxel.render.rangeCullDarkensDistant",
+      "voxel.render.frustumCulledChunkDark",
+      "voxel.render.farChunkOrigin",
+      "voxel.render.chunkOriginNegativeDraw",
+      "voxel.render.drawVisibleMatchesManualBatches",
+      "voxel.render.requiresBegin3DFrame",
+      "voxel.render.invalidFaceDirThrows",
+      "voxel.render.emptyInstanceInputsAreNoOps",
+      "voxel.render.nullAtlasUsesWhite",
+      "voxel.render.tilesPerRowZeroClamped"
+    ]
+  },
+  "retirements": [
+    {
+      "to": null,
+      "case_names": [
+        "voxel.render.allSixFacesFromOrbit",
+        "voxel.render.alternatingAtlasFrames",
+        "voxel.render.atlas16x8_tex63",
+        "voxel.render.atlas4x4_eachPaletteChannel",
+        "voxel.render.atlas8x8_highTexIndex",
+        "voxel.render.atlasTexIndexTintVisible",
+        "voxel.render.atlasYellowThenMagentaSwap",
+        "voxel.render.carveHoleDarkensCenter",
+        "voxel.render.chunkSeamDoubleFaceStillDraws",
+        "voxel.render.clearColorWhenCulled",
+        "voxel.render.editRemeshChangesPixels",
+        "voxel.render.emptyWorldDrawVisible",
+        "voxel.render.faceCullRectCountAboutHalf",
+        "voxel.render.fourTexBlocksSameFrame",
+        "voxel.render.fullChunkSixFacesOrbitPixel",
+        "voxel.render.fullLayerTopFromAbove",
+        "voxel.render.instanceCountGrowth",
+        "voxel.render.largeInstanceCount",
+        "voxel.render.manualAllSixDirsOneFrame",
+        "voxel.render.manualDrawDifferentTexIndices",
+        "voxel.render.manyChunksBatched",
+        "voxel.render.multiBatchSameFrame",
+        "voxel.render.multiFrameAtlasSwapStable",
+        "voxel.render.multiFrameSlotReuse",
+        "voxel.render.multiTexStripesDoNotMerge",
+        "voxel.render.nearPlaneOccludesFarDifferentColor",
+        "voxel.render.negXWallFromLeft",
+        "voxel.render.negYFromBelow",
+        "voxel.render.outOfRangeDrawsNothingBright",
+        "voxel.render.posXWallFromSide",
+        "voxel.render.posYFromAbove",
+        "voxel.render.posZWallFromFront",
+        "voxel.render.remeshIncreasesThenDecreasesRects",
+        "voxel.render.removeVoxelsDarkens",
+        "voxel.render.sceneHillsIsland",
+        "voxel.render.sceneWalledTown",
+        "voxel.render.singleFaceManualDraw",
+        "voxel.render.smokeDrawVisibleProducesPixels",
+        "voxel.render.sparsePillarsMultiTex",
+        "voxel.render.stressHundredsOfInstances",
+        "voxel.render.swapTexIdChangesAtlasColor",
+        "voxel.render.thinRectanglesAcrossAxes",
+        "voxel.render.tilesPerRowAtlasSample",
+        "voxel.render.tilesPerRowMismatchStillDraws",
+        "voxel.render.twoChunksDifferentAtlasTiles",
+        "voxel.render.twoOriginsSameFrame",
+        "voxel.render.zeroCountAfterLargeDraw"
+      ],
+      "reason": "Retired after contract-driven voxel integration consolidation (2026-10-25): represented by ten real GPU contracts with shared setup, not retained as exhaustive scene/palette/geometry variants. No claim of identical per-scenario coverage. See docs/dev/testing/voxel-contract-reduction.md."
+    },
+    {
+      "to": null,
+      "case_names": [
+        "softbody.render.clothAndFluid2DPreview",
+        "softbody.render.cloth3DPreview",
+        "softbody.gpu.renderClothPreview",
+        "spatial.quadtree.queryPreview"
+      ],
+      "reason": "Retired presentation-only preview: final assertions observe simulation coordinates/counts or query hit counts, not rendered pixels, upload or resource lifetime; drawing could be removed without changing the oracle. Simulation/query contracts remain in existing tests, but accidental Cloth3D/ClothGPU draw no-crash coverage is deliberately reduced, not claimed equivalent. See docs/dev/testing/voxel-contract-reduction.md."
+    }
+  ],
+  "verification": {
+    "full_build": "make build/win32-debug JOBS=4 passed before final six-face/context refinement",
+    "final_graphics_build": "cmake/with-msvc.cmd cmake --build build/win32-debug --target unit_test_graphics -j 4 passed",
+    "focused_runs": "All 43 retained file cases passed in each of three rounds",
+    "source_quality": {
+      "status": "passed",
+      "exit_code": 0,
+      "command": "cmake/with-msvc.cmd make check CI_BASE=20394d720951b2aa13f035dd9b16104c3de3096e",
+      "script_tests_run": 511,
+      "script_tests_skipped": 3,
+      "script_test_failures": 0,
+      "assertion_baseline_expanded": false
+    },
+    "historical_audit_unresolved": 0,
+    "runtime_platform": "Windows x64 / Vulkan; WebGPU and other platforms not executed"
+  }
+}

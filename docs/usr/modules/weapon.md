@@ -408,3 +408,70 @@ world/body 代次投影及池拥有的穿透历史；E4 为拥有型物理命中
 
 扫掠的初始重叠策略：只报告新穿越；`fraction=0` 的初始重叠／贴面不作为新命中，两个后端使用同一规则。
 这也避免反弹后的贴面被重复触发。它不承担穿透恢复／解重叠；生成点应位于障碍外。
+
+### 可选组合扩展：物理命中映射与显式冲量
+
+`weapon/WorldHitProbe.h` 提供可复用的 `WorldHitProbe`，接收调用者拥有并移交的
+`IWorldSphereSweep` 查询会话。原有 `bindWorld3D` 使用同一适配器，不复制接触转换逻辑。
+C++ 调用者可额外传入拥有型 `IWorldHitTargetMapper` 策略，将物理接触映射为玩法实体。
+策略必须每次验证实体 generation：空值表示场景几何；Result 失败或抛异常会使弹道帧失败并保持原状态。
+适配器不创建实体、不维护第二份物理状态，也不自动应用伤害。
+
+```cpp
+auto session = physics::worldSphereSweepFactory().bind(world.queryToken(), {0.1f});
+if (!session) return Result<void>::failure(session.status());
+weapon::WorldHitProbe probe(std::move(session).takeValue());
+// 如需实体映射，用双参数构造函数移交项目自己的 IWorldHitTargetMapper。
+auto frame = carriers.update(dt, nullptr, nullptr, nullptr, &probe);
+if (!frame) return Result<void>::failure(frame.status());
+for (const auto& event : frame.value().events) {
+    if (event.trigger != weapon::CarrierTriggerKind::OnHit ||
+        event.impact != weapon::CarrierImpactKind::EmitTrigger || !event.worldContact) continue;
+    // 项目自行选择响应事件种类、冲量与作用点，且只消费一次。
+    auto applied = world.applySweepContactImpulse(*event.worldContact, impulse, worldPoint);
+    if (!applied) return Result<void>::failure(applied.status());
+}
+```
+
+`World3D::applySweepContactImpulse(contact, impulse, worldPoint)` 是显式命令，单位为 N·s 和米。
+它验证 world/body generation、世界恢复代次、有限输入和 dynamic 刚体类型，再传播真实后端结果。
+错误世界、已销毁／替换的刚体、恢复前接触、static/kinematic 目标均明确失败。
+它不会从伤害值推算冲量，不会注册事件监听器，不会被 `update`、`emitHit` 或 `emitTrigger` 自动调用。
+事件带 `worldEpoch`（进程内恢复代次）；该值不是存档标识。
+
+Squirrel 的同名方法接受七个参数并返回标准 Result：
+
+```squirrel
+local frame = checked(pool.update(dt));
+foreach (event in frame.events) {
+    if (event.trigger == "onHit" && event.impact == "emitTrigger") {
+        checked(world.applySweepContactImpulse(event, ix, iy, iz, px, py, pz));
+    }
+}
+```
+
+调用者必须明确选择一类事件，避免同一接触同时发出多个 impact 事件时重复施力。
+`px/py/pz` 必须由游戏指定；接触的 `x/y/z` 是球心，不能自动当成障碍表面位置。
+先步进物理、再更新弹道、最后消费成功帧的命令，冲量影响下一次物理步进。
+逐命令提交：后一个命令失败不会撤销弹道帧或前一个冲量；不要在探针／映射回调中施力。
+接口不保证高速移动目标的相对运动连续检测；曲线仍以子步弦线近似。
+
+这些都是按需接线的扩展能力。未构造适配器、未绑定世界、未主动调用冲量命令时，
+原来的普通几何探针、无碰撞配方与物理步进不增加这条协作流程。
+运行独立示例：[projectile-physics-composition](../../../examples/projectile-physics-composition/README.md)。
+
+module-interface 补充（weapon / physics）：E1/E2 复用已有可选扫掠工厂，无新增 capability
+注册或硬链接边；映射策略由 weapon 消费方声明、由项目注入。E3 查询会话与 mapper 由适配器独占，
+物理状态仍由 World3D 独占，实体状态仍由 ECS 独占；任一世界先销毁时由句柄／项目 mapper 拒绝陈旧引用。
+恢复时重建会话和项目映射，不序列化这些策略。E4 命中只返回拥有型事件，提交后由调用者选择反馈；
+E5 增加 World3D.applySweepContactImpulse(event, ix, iy, iz, px, py, pz)，E6 无改动。
+四轴选择为单个已知 provider、逐段高频查询、弹道帧原子发布，因此用注入窄接口；
+反馈为已知 owner 的低频显式命令，不使用默认广播或自动系统。无新增 ECS System、持久格式或随机源。
+
+本次边界规则适用说明：R-BOUND-1..4 以 `carrier_probe_absent` 的真实无物理链接／运行
+及符号检查作为适配器的 L2/L4 证据，不外推完整引擎裁剪。R-COHESION-1/4/6 将接触投影
+收敛到 weapon owner 的一个实现，映射策略仍由项目拥有；R-COHESION-2/3/5 未增加注册机制或新领域。
+R-FACE-1..5 以以上六面说明、代码与 present/absent 测试为准，不恢复平行 JSON。
+R-MECH-1..6 采用已知 provider 的注入接口和显式命令，无新增运行时服务查找或模块内裁剪开关。
+R-COST-1..5 查询返回拥有型接触并标注逐段成本；命令是轻量同步操作，没有昂贵默认参数分支。
+未改变 ECS 模型、持久格式或模拟时钟；无架构例外。

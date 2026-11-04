@@ -1,6 +1,7 @@
 #include "devtools/McpToolFilter.hpp"
 
 #include "devtools/McpJson.hpp"
+#include "devtools/McpTaskProfile.hpp"
 
 #include <Poco/Dynamic/Var.h>
 #include <Poco/JSON/Array.h>
@@ -10,6 +11,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <unordered_set>
@@ -47,15 +49,15 @@ struct FilterConfig {
     std::unordered_set<std::string> exclude;
 };
 
-std::mutex    g_mu;
-FilterConfig  g_cfg;
-bool          g_loaded = false;
+std::mutex   g_mu;
+FilterConfig g_cfg;
+bool         g_loaded = false;
 
 void loadConfigUnlocked() {
     g_cfg = FilterConfig{};
     if (const char* toolset = std::getenv("EVE_MCP_TOOLSET")) {
         const auto parts = splitComma(toolset);
-        g_cfg.all          = parts.empty();
+        g_cfg.all        = parts.empty();
         for (const auto& part : parts) {
             if (part == "all") {
                 g_cfg.all = true;
@@ -68,8 +70,7 @@ void loadConfigUnlocked() {
     }
     if (const char* ro = std::getenv("EVE_MCP_READONLY")) {
         const std::string value = toLower(ro);
-        g_cfg.readOnly =
-            !(value.empty() || value == "0" || value == "false" || value == "off" || value == "no");
+        g_cfg.readOnly = !(value.empty() || value == "0" || value == "false" || value == "off" || value == "no");
     }
     if (const char* exclude = std::getenv("EVE_MCP_EXCLUDE")) {
         for (auto& name : splitComma(exclude)) g_cfg.exclude.insert(std::move(name));
@@ -97,8 +98,15 @@ bool equalsAny(std::string_view value, std::initializer_list<const char*> names)
 }  // namespace
 
 void mcpToolFilterReloadForTest() {
-    std::lock_guard lock(g_mu);
-    loadConfigUnlocked();
+    {
+        std::lock_guard lock(g_mu);
+        loadConfigUnlocked();
+    }
+    // Re-read EVE_MCP_PROFILE into the process overlay for EnvGuard tests.
+    if (const char* raw = std::getenv("EVE_MCP_PROFILE"))
+        mcpSetProcessProfile(raw);
+    else
+        mcpSetProcessProfile({});
 }
 
 std::vector<std::string> mcpToolTags(std::string_view name) {
@@ -124,6 +132,17 @@ std::vector<std::string> mcpToolTags(std::string_view name) {
         add("scene");
         return tags;
     }
+    if (startsWith(name, "eve_recipe_")) {
+        add("scene");
+        add("agent");
+        return tags;
+    }
+    if (name == "eve_workshop") {
+        add("play");
+        add("scene");
+        add("agent");
+        return tags;
+    }
     if (startsWith(name, "eve_agent_")) {
         add("agent");
         return tags;
@@ -144,11 +163,26 @@ std::vector<std::string> mcpToolTags(std::string_view name) {
         add("scene");
         return tags;
     }
-    if (equalsAny(name, {"eve_eval", "eve_run_script", "eve_pause", "eve_continue", "eve_step_in", "eve_step_over",
-                          "eve_step_out", "eve_stack", "eve_locals", "eve_set_breakpoint", "eve_clear_breakpoint",
-                          "eve_list_breakpoints", "eve_watch_add", "eve_watch_list", "eve_snapshot_capture",
-                          "eve_snapshot_restore", "eve_snapshot_save", "eve_snapshot_load", "eve_error_slice",
-                          "eve_skeleton_inspect"})) {
+    if (equalsAny(name, {"eve_eval",
+                         "eve_run_script",
+                         "eve_pause",
+                         "eve_continue",
+                         "eve_step_in",
+                         "eve_step_over",
+                         "eve_step_out",
+                         "eve_stack",
+                         "eve_locals",
+                         "eve_set_breakpoint",
+                         "eve_clear_breakpoint",
+                         "eve_list_breakpoints",
+                         "eve_watch_add",
+                         "eve_watch_list",
+                         "eve_snapshot_capture",
+                         "eve_snapshot_restore",
+                         "eve_snapshot_save",
+                         "eve_snapshot_load",
+                         "eve_error_slice",
+                         "eve_skeleton_inspect"})) {
         add("debug");
         return tags;
     }
@@ -173,8 +207,9 @@ bool mcpToolMutates(std::string_view name) {
     if (name == "eve_ui_click" || name == "eve_play" || name == "eve_gameplay") return true;
     if (name == "eve_scene_modify" || name == "eve_scene_batch" || name == "eve_scene_reset" ||
         name == "eve_scene_node_set" || name == "set_camera_pose" || name == "eve_camera_generate" ||
-        name == "eve_whitebox_playtest")
+        name == "eve_whitebox_playtest" || name == "eve_recipe_apply")
         return true;
+    if (name == "eve_workshop") return true;
     if (startsWith(name, "eve_editor_") &&
         (name.find("execute") != std::string_view::npos || name.find("commit") != std::string_view::npos ||
          name.find("plan") != std::string_view::npos || name.find("create") != std::string_view::npos ||
@@ -208,12 +243,22 @@ bool mcpToolAllowed(std::string_view name) {
     const FilterConfig& cfg = config();
     if (cfg.exclude.count(toLower(name)) != 0) return false;
     if (cfg.readOnly && mcpToolMutates(name)) return false;
-    if (cfg.all) return true;
-    const auto tags = mcpToolTags(name);
-    for (const auto& tag : tags) {
-        if (cfg.tags.count(tag) != 0) return true;
+    if (!cfg.all) {
+        const auto tags = mcpToolTags(name);
+        bool       hit  = false;
+        for (const auto& tag : tags) {
+            if (cfg.tags.count(tag) != 0) {
+                hit = true;
+                break;
+            }
+        }
+        if (!hit) return false;
     }
-    return false;
+    const std::string processProfile = mcpProcessProfile();
+    if (!mcpProfileAllowsTool(processProfile, name)) return false;
+    const std::string sessionProfile = mcpSessionProfile();
+    if (!mcpProfileAllowsTool(sessionProfile, name)) return false;
+    return true;
 }
 
 std::string filterMcpToolsBody(std::string_view toolsBody) {
@@ -240,17 +285,46 @@ std::string filterMcpToolsBody(std::string_view toolsBody) {
 }
 
 std::string mcpToolFilteredPayload(std::string_view name) {
-    Poco::JSON::Object::Ptr out = mcpFailureObject(
-        "tool '" + std::string(name) + "' is hidden by EVE_MCP_TOOLSET / EVE_MCP_READONLY / EVE_MCP_EXCLUDE",
-        "Adjust env filters or call eve_status; use EVE_MCP_TOOLSET=all to advertise every tool", false,
-        {"eve_status"});
+    const std::string processProfile = mcpProcessProfile();
+    const std::string sessionProfile = mcpSessionProfile();
+    const std::string activeProfile  = !sessionProfile.empty() ? sessionProfile : processProfile;
+
+    std::string error = "tool '" + std::string(name) +
+                        "' is hidden by EVE_MCP_TOOLSET / EVE_MCP_READONLY / EVE_MCP_EXCLUDE / EVE_MCP_PROFILE";
+    std::string hint  = "Adjust env filters or call eve_status; use EVE_MCP_TOOLSET=all to advertise every tool";
+    std::vector<std::string>          next = {"eve_status"};
+    std::optional<McpProfileEscalate> escalate;
+    if (!activeProfile.empty() && !mcpProfileAllowsTool(activeProfile, name)) {
+        error = "tool '" + std::string(name) + "' is outside task profile '" + activeProfile + "'";
+        hint = "Call eve_agent_session_escalate with an allowed target, or start a new session with the needed profile";
+        next = {"eve_agent_session_status", "eve_agent_session_escalate"};
+        escalate = mcpProfileEscalateHint(activeProfile, name);
+        if (escalate) {
+            hint = "Escalate to profile '" + escalate->to + "': " + escalate->reason;
+            next = {"eve_agent_session_escalate", "eve_agent_session_status"};
+        }
+    }
+
+    Poco::JSON::Object::Ptr out = mcpFailureObject(error, hint, false, next);
     out->set("filtered", true);
     out->set("tool", std::string(name));
+    if (!activeProfile.empty()) out->set("profile", activeProfile);
+    if (!sessionProfile.empty()) out->set("sessionProfile", sessionProfile);
+    if (!processProfile.empty()) out->set("processProfile", processProfile);
+    if (escalate) {
+        Poco::JSON::Object::Ptr esc(new Poco::JSON::Object());
+        esc->set("to", escalate->to);
+        esc->set("reason", escalate->reason);
+        esc->set("errorCode", escalate->errorCode);
+        out->set("escalate", esc);
+    }
     Poco::JSON::Array::Ptr tags = Poco::JSON::Array::Ptr(new Poco::JSON::Array());
     for (const auto& tag : mcpToolTags(name)) tags->add(tag);
     out->set("tags", tags);
     out->set("mutates", mcpToolMutates(name));
-    return mcpStringify(Poco::Dynamic::Var(out));
+    const std::string payload = mcpStringify(Poco::Dynamic::Var(out));
+    mcpFilterNoteCall(false, payload.size(), escalate.has_value());
+    return payload;
 }
 
 }  // namespace eve::dev

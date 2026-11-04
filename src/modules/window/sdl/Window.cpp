@@ -550,7 +550,14 @@ bool Window::createWindowAndContext(int x, int y, int w, int h, Uint32 windowfla
     }
 #endif
 
-    window = SDL_CreateWindow(title.c_str(), x, y, w, h, windowflags);
+    for (int attempt = 0; attempt < 4; ++attempt) {
+        window = SDL_CreateWindow(title.c_str(), x, y, w, h, windowflags);
+        if (window || SDL_strcmp(SDL_GetError(),
+                                 "Getting Vulkan extensions failed: vkEnumerateInstanceExtensionProperties returned "
+                                 "VK_INCOMPLETE(5)") != 0) {
+            break;
+        }
+    }
 
     if (!window) {
         throw Exception("Window Create Failed: %s", SDL_GetError());

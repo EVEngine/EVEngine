@@ -1,7 +1,8 @@
 #include "graphics/WaterUnderwaterEffects.h"
 #include "graphics/Graphics.h"
-#include "graphics/Volumetric.h"
+#include "graphics/GraphicsRgb.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Volumetric.h"
 
 #include <algorithm>
 #include <cmath>
@@ -277,17 +278,22 @@ Result<void> applyWaterUnderwaterPostFx(Graphics* graphics, Camera3D* camera,
     const bool transitionActive = output.isUnderwater && output.transitionFx;
     camera->setExposure(postActive ? output.postExposure : surface.exposureEv);
     const glm::vec3 baseColor = postActive ? output.postColor : surface.color;
-    graphics->setSceneColorFilter(baseColor *
-                                  (transitionActive ? output.transitionColorFilter : glm::vec3(1.0F)));
+    {
+        const glm::vec3 filtered = baseColor * (transitionActive ? output.transitionColorFilter : glm::vec3(1.0F));
+        graphics->setSceneColorFilter(RgbF{filtered.r, filtered.g, filtered.b});
+    }
     graphics->setSceneTransitionFx(
         transitionActive ? output.transitionVignette : surface.vignette,
         transitionActive ? output.transitionVignetteSmoothness : surface.vignetteSmoothness,
         transitionActive ? output.transitionLensDistortion : surface.lensDistortion,
         transitionActive ? output.transitionLensScale : surface.lensScale);
-    graphics->setSceneLiftGammaGain(
-        transitionActive ? output.transitionLift : surface.lift,
-        transitionActive ? output.transitionInverseGamma : surface.inverseGamma,
-        transitionActive ? output.transitionGain : surface.gain);
+    {
+        const glm::vec3 lift = transitionActive ? output.transitionLift : surface.lift;
+        const glm::vec3 invG = transitionActive ? output.transitionInverseGamma : surface.inverseGamma;
+        const glm::vec3 gain = transitionActive ? output.transitionGain : surface.gain;
+        graphics->setSceneLiftGammaGain(RgbF{lift.r, lift.g, lift.b}, RgbF{invG.r, invG.g, invG.b},
+                                        RgbF{gain.r, gain.g, gain.b});
+    }
     return Result<void>::success();
 }
 

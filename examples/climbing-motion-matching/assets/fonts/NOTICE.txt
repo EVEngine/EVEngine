@@ -1,0 +1,4 @@
+DejaVu Fonts — Bitstream Vera Fonts Copyright, with reserved font names
+DejaVu Sans / DejaVu Serif / DejaVu Sans Mono. See the upstream DejaVu license
+(Arev / Bitstream Vera license family). Used here only as a HUD typeface for
+the layered-animation example.

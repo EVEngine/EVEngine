@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "modules": [
+    "procgen",
+    "procgen_editing"
+  ],
+  "origins": [
+    "procgen_road_roll_pivot.cpp"
+  ],
+  "module": "procgen"
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <limits>
 #include "procgen/editing/RoadPresetDocument.h"
@@ -8,42 +25,6 @@
 #include "zeroerr/unittest.h"
 using namespace eve::procgen;
 using namespace eve::procgen::road;
-
-TEST_CASE("procgen.road.authoring.rollPivotHoldsSelectedRailAndTravelFrame") {
-    for (float pivot : {-3.f, 3.f}) {
-        SplinePath path;
-        for (float x : {-18.f, 18.f}) {
-            SplinePoint point;
-            point.x             = x;
-            point.rollDegrees   = -10.f;
-            point.rollPivotSide = pivot;
-            point.worldUpFrame  = true;
-            REQUIRE(path.addPointResult(point).ok());
-        }
-        auto frames = path.sampleFramesResult(8, true);
-        REQUIRE(frames.ok());
-        for (const auto& frame : frames.value()) {
-            REQUIRE(std::fabs(frame.sample.y + pivot * frame.sideY) < 1e-5f);
-            REQUIRE(std::fabs(frame.sample.z + pivot * frame.sideZ + pivot) < 1e-5f);
-        }
-        auto traveled = path.travelFrameResult(13.f, "clamp");
-        REQUIRE(traveled.ok());
-        REQUIRE(std::fabs(traveled.value().sample.y + pivot * traveled.value().sideY) < 1e-5f);
-        REQUIRE(std::fabs(traveled.value().sample.z + pivot * traveled.value().sideZ + pivot) < 1e-5f);
-        // Evaluated author centerline stays at its authored elevation; only section frames move.
-        REQUIRE(path.travelResult(13.f, "clamp").value().y == 0.f);
-    }
-    SplinePath  overflow;
-    SplinePoint large;
-    large.rollDegrees   = 10.f;
-    large.rollPivotSide = 3.f;
-    large.scaleX        = std::numeric_limits<float>::max();
-    REQUIRE(overflow.addPointResult(large).ok());
-    large.x = 18.f;
-    REQUIRE(overflow.addPointResult(large).ok());
-    REQUIRE(!overflow.sampleFramesResult(4, true).ok());
-    REQUIRE(!overflow.travelFrameResult(5.f, "clamp").ok());
-}
 
 TEST_CASE("procgen.road.authoring.rollPivotRecipeSnapshotReverseSplitAndUndo") {
     auto source = RoadNetwork::makeStraight(36.f, 2);

@@ -72,13 +72,13 @@ Vec3 hangingFeet(const ResolvedClimbingAnchorNode& node, const ClimbingActionDef
 
 eve::Result<void> validatePath(physics::World3D& world, Vec3 start, const ClimbingCandidate& candidate,
                                const ClimbingActionDefinition& action, const ClimbingProfileDefinition& profile,
-                               std::uint32_t& queryCount) {
+                               std::uint32_t& queryCount, Vec3 sourceNormal) {
     physics::QueryFilter3D filter = profile.queryFilter;
     filter.ignoredBodyId = candidate.ignoredBodyId;
     Vec3 current = start;
     for (std::uint32_t segment = 1; segment <= profile.pathValidationSegments; ++segment) {
         const float t = static_cast<float>(segment) / static_cast<float>(profile.pathValidationSegments);
-        const Vec3 target = detail::trajectoryPoint(start, candidate, action, profile, t);
+        const Vec3  target  = detail::trajectoryPoint(start, candidate, action, profile, t, sourceNormal);
         const Vec3 desired = subtract(target, current);
         const float lowerY = current.y + profile.capsuleRadius;
         const float upperY = current.y + profile.capsuleHeight - profile.capsuleRadius;
@@ -154,6 +154,7 @@ eve::Result<void> ClimbingRuntime::releaseAnchorReservation() {
         execution_->anchorReservation = {};
         execution_->anchorGraph = {};
         execution_->anchorNode = {};
+        execution_->sourceAnchorNode.reset();
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::StaleHandle, "anchor graph instance is stale while releasing occupancy",
             "execution.anchorGraph", {}, "climbing.anchor_execution"));
@@ -166,6 +167,7 @@ eve::Result<void> ClimbingRuntime::releaseAnchorReservation() {
         execution_->anchorReservation = {};
         execution_->anchorGraph = {};
         execution_->anchorNode = {};
+        execution_->sourceAnchorNode.reset();
     }
     if (!released && released.error() && released.error()->code() == eve::DiagnosticCode::Conflict)
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
@@ -219,7 +221,8 @@ eve::Result<ClimbingCandidate> ClimbingRuntime::tryBeginAnchor(
         return eve::Result<ClimbingCandidate>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::PreconditionViolation, "anchor approach lies outside the action geometry range",
             "action.height", {}, "climbing.anchor_execution"));
-    auto path = validatePath(world, pose.feet, candidate.value(), *action, profile_, lastQueryCount_);
+    auto path = validatePath(world, pose.feet, candidate.value(), *action, profile_, lastQueryCount_,
+                             scale(pose.forward, -1.f));
     if (!path) return eve::Result<ClimbingCandidate>::failure(path.status());
     auto eventCapacity = requireEventCapacity(1, tick);
     if (!eventCapacity) return eve::Result<ClimbingCandidate>::failure(eventCapacity.status());
@@ -311,7 +314,8 @@ eve::Result<void> ClimbingRuntime::transitionAnchor(physics::World3D& world,
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::PreconditionViolation, "anchor transition lies outside the action geometry range",
             "action.height", {}, "climbing.anchor_execution"));
-    auto path = validatePath(world, execution_->currentFeet, candidate.value(), *action, profile_, lastQueryCount_);
+    auto path = validatePath(world, execution_->currentFeet, candidate.value(), *action, profile_, lastQueryCount_,
+                             execution_->candidate.surfaceNormal);
     if (!path) return eve::Result<void>::failure(path.status());
     auto eventCapacity = requireEventCapacity(1, tick);
     if (!eventCapacity) return eventCapacity;
@@ -341,6 +345,7 @@ eve::Result<void> ClimbingRuntime::transitionAnchor(physics::World3D& world,
     execution_->landContactReleased = false;
     execution_->compactCollisionActive = false;
     execution_->branchWindowOpen = false;
+    execution_->sourceAnchorNode       = execution_->anchorNode;
     execution_->anchorNode = target;
     execution_->anchorReservation = std::move(nextReservation).takeValue();
     phase_ = ClimbingPhase::Launching;

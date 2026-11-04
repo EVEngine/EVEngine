@@ -1,79 +1,59 @@
 #include "ik/Skeleton2D.h"
-#include "common/Exception.h"
 #include "ik/Skeleton3D.h"
+#include "ik/detail/SkeletonImpl.h"
 
-// Skeleton2D.cpp
+#include "common/Exception.h"
+
+#include <utility>
+
 namespace eve::ik {
 
-Skeleton2D::Skeleton2D() {
-    ensureSorted();
-    ensureStateSize();
+Skeleton2D::Skeleton2D() : impl_(std::make_unique<Impl>()) {
+    impl_->ensureSorted();
+    impl_->ensureStateSize();
 }
 
-void Skeleton2D::ensureSorted() {
-    if (sk_.bones().empty()) {
-        sk_.topologicalSort();
-    }
-}
-
-void Skeleton2D::ensureStateSize() {
-    ensureSorted();
-    const unsigned n = static_cast<unsigned>(sk_.bones().size());
-    if (state_.size() < n) {
-        // Grow in place so existing joint poses survive createBone().
-        state_.position_.resize(n);
-        state_.orientation_.resize(n);
-        state_.scale_.resize(n);
-        state_.rotation_.resize(n);
-    }
-}
-
-::ik::bone2d *Skeleton2D::boneAt(int boneId) const {
-    if (boneId < 0) return nullptr;
-    const auto &bones = sk_.bones();
-    if (static_cast<size_t>(boneId) >= bones.size()) return nullptr;
-    return bones[static_cast<size_t>(boneId)];
-}
+Skeleton2D::~Skeleton2D() = default;
 
 void Skeleton2D::requireBone(int boneId) const {
-    if (!boneAt(boneId)) {
+    if (!impl_->boneAt(boneId)) {
         throw Exception("Skeleton2D: invalid bone id %d", boneId);
     }
 }
 
 int Skeleton2D::createBone(int parentId, float length) {
-    ensureSorted();
+    impl_->ensureSorted();
     requireBone(parentId);
     if (length <= 0.f) {
         throw Exception("Skeleton2D.createBone: length must be > 0");
     }
-    ::ik::bone2d *parent = boneAt(parentId);
+    ::ik::bone2d *parent = impl_->boneAt(parentId);
     ::ik::bone2d *child  = parent->createBone(length);
-    sk_.topologicalSort();
-    ensureStateSize();
+    impl_->sk.topologicalSort();
+    impl_->ensureStateSize();
     return static_cast<int>(child->id);
 }
 
 int Skeleton2D::getBoneCount() const {
-    const_cast<Skeleton2D *>(this)->ensureSorted();
-    return static_cast<int>(sk_.bones().size());
+    const_cast<Skeleton2D *>(this)->impl_->ensureSorted();
+    return static_cast<int>(impl_->sk.bones().size());
 }
 
 int Skeleton2D::getParent(int boneId) const {
     requireBone(boneId);
-    ::ik::bone2d *b = boneAt(boneId);
+    ::ik::bone2d *b = impl_->boneAt(boneId);
     if (!b->parent) return -1;
     return static_cast<int>(b->parent->id);
 }
 
 int Skeleton2D::getChildCount(int boneId) const {
     requireBone(boneId);
-    return static_cast<int>(boneAt(boneId)->children.size());
+    return static_cast<int>(impl_->boneAt(boneId)->children.size());
 }
 
 int Skeleton2D::getChild(int boneId, int childIndex) const {
     requireBone(boneId);
-    ::ik::bone2d *b = boneAt(boneId);
+    ::ik::bone2d *b = impl_->boneAt(boneId);
     if (childIndex < 0 || static_cast<size_t>(childIndex) >= b->children.size()) {
         throw Exception("Skeleton2D.getChild: childIndex out of range");
     }
@@ -82,7 +62,7 @@ int Skeleton2D::getChild(int boneId, int childIndex) const {
 
 float Skeleton2D::getLength(int boneId) const {
     requireBone(boneId);
-    return boneAt(boneId)->length;
+    return impl_->boneAt(boneId)->length;
 }
 
 void Skeleton2D::setLength(int boneId, float length) {
@@ -93,55 +73,55 @@ void Skeleton2D::setLength(int boneId, float length) {
     if (length <= 0.f) {
         throw Exception("Skeleton2D.setLength: length must be > 0");
     }
-    boneAt(boneId)->setLength(length);
+    impl_->boneAt(boneId)->setLength(length);
 }
 
 void Skeleton2D::setPosition(int boneId, float x, float y) {
     requireBone(boneId);
-    ensureStateSize();
-    boneAt(boneId)->position(state_) = {x, y};
+    impl_->ensureStateSize();
+    impl_->boneAt(boneId)->position(impl_->state) = {x, y};
 }
 
 float Skeleton2D::getX(int boneId) const {
     requireBone(boneId);
-    const_cast<Skeleton2D *>(this)->ensureStateSize();
-    return boneAt(boneId)->position(state_)[0];
+    const_cast<Skeleton2D *>(this)->impl_->ensureStateSize();
+    return impl_->boneAt(boneId)->position(impl_->state)[0];
 }
 
 float Skeleton2D::getY(int boneId) const {
     requireBone(boneId);
-    const_cast<Skeleton2D *>(this)->ensureStateSize();
-    return boneAt(boneId)->position(state_)[1];
+    const_cast<Skeleton2D *>(this)->impl_->ensureStateSize();
+    return impl_->boneAt(boneId)->position(impl_->state)[1];
 }
 
 void Skeleton2D::setOrientation(int boneId, float x, float y) {
     requireBone(boneId);
-    ensureStateSize();
-    boneAt(boneId)->orientation(state_) = {x, y};
+    impl_->ensureStateSize();
+    impl_->boneAt(boneId)->orientation(impl_->state) = {x, y};
 }
 
 float Skeleton2D::getOrientationX(int boneId) const {
     requireBone(boneId);
-    const_cast<Skeleton2D *>(this)->ensureStateSize();
-    return boneAt(boneId)->orientation(state_)[0];
+    const_cast<Skeleton2D *>(this)->impl_->ensureStateSize();
+    return impl_->boneAt(boneId)->orientation(impl_->state)[0];
 }
 
 float Skeleton2D::getOrientationY(int boneId) const {
     requireBone(boneId);
-    const_cast<Skeleton2D *>(this)->ensureStateSize();
-    return boneAt(boneId)->orientation(state_)[1];
+    const_cast<Skeleton2D *>(this)->impl_->ensureStateSize();
+    return impl_->boneAt(boneId)->orientation(impl_->state)[1];
 }
 
 void Skeleton2D::setRotation(int boneId, float angle) {
     requireBone(boneId);
-    ensureStateSize();
-    boneAt(boneId)->rotation(state_) = {angle};
+    impl_->ensureStateSize();
+    impl_->boneAt(boneId)->rotation(impl_->state) = {angle};
 }
 
 float Skeleton2D::getRotation(int boneId) const {
     requireBone(boneId);
-    const_cast<Skeleton2D *>(this)->ensureStateSize();
-    return boneAt(boneId)->rotation(state_)[0];
+    const_cast<Skeleton2D *>(this)->impl_->ensureStateSize();
+    return impl_->boneAt(boneId)->rotation(impl_->state)[0];
 }
 
 void Skeleton2D::setConstraints(int boneId, float minAngle, float maxAngle) {
@@ -149,122 +129,98 @@ void Skeleton2D::setConstraints(int boneId, float minAngle, float maxAngle) {
     if (minAngle > maxAngle) {
         throw Exception("Skeleton2D.setConstraints: minAngle must be <= maxAngle");
     }
-    boneAt(boneId)->setConstraints(::ik::vec<float, 1>{minAngle}, ::ik::vec<float, 1>{maxAngle});
+    impl_->boneAt(boneId)->setConstraints(::ik::vec<float, 1>{minAngle}, ::ik::vec<float, 1>{maxAngle});
 }
 
 void Skeleton2D::clearConstraints(int boneId) {
     requireBone(boneId);
-    boneAt(boneId)->clearConstraints();
+    impl_->boneAt(boneId)->clearConstraints();
 }
 
 bool Skeleton2D::hasConstraints(int boneId) const {
     requireBone(boneId);
-    return boneAt(boneId)->constrained;
+    return impl_->boneAt(boneId)->constrained;
 }
 
 void Skeleton2D::initStraightPose(float rootX, float rootY) {
-    ensureSorted();
-    ensureStateSize();
-    sk_.init_straight_pose(state_, ::ik::vec2{rootX, rootY});
+    impl_->ensureSorted();
+    impl_->ensureStateSize();
+    impl_->sk.init_straight_pose(impl_->state, ::ik::vec2{rootX, rootY});
 }
 
 void Skeleton2D::bind() {
-    ensureSorted();
-    ensureStateSize();
-    sk_.bind(state_);
+    impl_->ensureSorted();
+    impl_->ensureStateSize();
+    impl_->sk.bind(impl_->state);
 }
 
 void Skeleton2D::forwardKinematics() {
-    ensureSorted();
-    ensureStateSize();
-    sk_.forward_kinematics(state_);
+    impl_->ensureSorted();
+    impl_->ensureStateSize();
+    impl_->sk.forward_kinematics(impl_->state);
 }
 
 void Skeleton2D::updateRotations() {
-    ensureSorted();
-    ensureStateSize();
-    sk_.update_rotations(state_);
+    impl_->ensureSorted();
+    impl_->ensureStateSize();
+    impl_->sk.update_rotations(impl_->state);
 }
 
 float Skeleton2D::totalLengthTo(int boneId) const {
     requireBone(boneId);
-    return sk_.total_length_to(boneAt(boneId));
+    return impl_->sk.total_length_to(impl_->boneAt(boneId));
 }
 
-}  // namespace eve::ik
+// ---------------------------------------------------------------------------
+// Skeleton3D
+// ---------------------------------------------------------------------------
 
-// Skeleton3D.cpp
-namespace eve::ik {
-
-Skeleton3D::Skeleton3D() {
-    ensureSorted();
-    ensureStateSize();
+Skeleton3D::Skeleton3D() : impl_(std::make_unique<Impl>()) {
+    impl_->ensureSorted();
+    impl_->ensureStateSize();
 }
 
-void Skeleton3D::ensureSorted() {
-    if (sk_.bones().empty()) {
-        sk_.topologicalSort();
-    }
-}
-
-void Skeleton3D::ensureStateSize() {
-    ensureSorted();
-    const unsigned n = static_cast<unsigned>(sk_.bones().size());
-    if (state_.size() < n) {
-        // Grow in place so existing joint poses survive createBone().
-        state_.position_.resize(n);
-        state_.orientation_.resize(n);
-        state_.scale_.resize(n);
-        state_.rotation_.resize(n);
-    }
-}
-
-::ik::bone3d *Skeleton3D::boneAt(int boneId) const {
-    if (boneId < 0) return nullptr;
-    const auto &bones = sk_.bones();
-    if (static_cast<size_t>(boneId) >= bones.size()) return nullptr;
-    return bones[static_cast<size_t>(boneId)];
-}
+Skeleton3D::~Skeleton3D() = default;
 
 void Skeleton3D::requireBone(int boneId) const {
-    if (!boneAt(boneId)) {
+    if (!impl_->boneAt(boneId)) {
         throw Exception("Skeleton3D: invalid bone id %d", boneId);
     }
 }
 
 int Skeleton3D::createBone(int parentId, float length) {
-    ensureSorted();
+    impl_->ensureSorted();
     requireBone(parentId);
     if (length <= 0.f) {
         throw Exception("Skeleton3D.createBone: length must be > 0");
     }
-    ::ik::bone3d *parent = boneAt(parentId);
+    ::ik::bone3d *parent = impl_->boneAt(parentId);
     ::ik::bone3d *child  = parent->createBone(length);
-    sk_.topologicalSort();
-    ensureStateSize();
+    impl_->sk.topologicalSort();
+    impl_->ensureStateSize();
     return static_cast<int>(child->id);
 }
 
 int Skeleton3D::getBoneCount() const {
-    const_cast<Skeleton3D *>(this)->ensureSorted();
-    return static_cast<int>(sk_.bones().size());
+    const_cast<Skeleton3D *>(this)->impl_->ensureSorted();
+    return static_cast<int>(impl_->sk.bones().size());
 }
 
 int Skeleton3D::getParent(int boneId) const {
     requireBone(boneId);
-    ::ik::bone3d *b = boneAt(boneId);
+    ::ik::bone3d *b = impl_->boneAt(boneId);
     if (!b->parent) return -1;
     return static_cast<int>(b->parent->id);
 }
 
 int Skeleton3D::getChildCount(int boneId) const {
     requireBone(boneId);
-    return static_cast<int>(boneAt(boneId)->children.size());
+    return static_cast<int>(impl_->boneAt(boneId)->children.size());
 }
 
 int Skeleton3D::getChild(int boneId, int childIndex) const {
     requireBone(boneId);
-    ::ik::bone3d *b = boneAt(boneId);
+    ::ik::bone3d *b = impl_->boneAt(boneId);
     if (childIndex < 0 || static_cast<size_t>(childIndex) >= b->children.size()) {
         throw Exception("Skeleton3D.getChild: childIndex out of range");
     }
@@ -273,7 +229,7 @@ int Skeleton3D::getChild(int boneId, int childIndex) const {
 
 float Skeleton3D::getLength(int boneId) const {
     requireBone(boneId);
-    return boneAt(boneId)->length;
+    return impl_->boneAt(boneId)->length;
 }
 
 void Skeleton3D::setLength(int boneId, float length) {
@@ -284,73 +240,73 @@ void Skeleton3D::setLength(int boneId, float length) {
     if (length <= 0.f) {
         throw Exception("Skeleton3D.setLength: length must be > 0");
     }
-    boneAt(boneId)->setLength(length);
+    impl_->boneAt(boneId)->setLength(length);
 }
 
 void Skeleton3D::setPosition(int boneId, float x, float y, float z) {
     requireBone(boneId);
-    ensureStateSize();
-    boneAt(boneId)->position(state_) = {x, y, z};
+    impl_->ensureStateSize();
+    impl_->boneAt(boneId)->position(impl_->state) = {x, y, z};
 }
 
 float Skeleton3D::getX(int boneId) const {
     requireBone(boneId);
-    const_cast<Skeleton3D *>(this)->ensureStateSize();
-    return boneAt(boneId)->position(state_)[0];
+    const_cast<Skeleton3D *>(this)->impl_->ensureStateSize();
+    return impl_->boneAt(boneId)->position(impl_->state)[0];
 }
 
 float Skeleton3D::getY(int boneId) const {
     requireBone(boneId);
-    const_cast<Skeleton3D *>(this)->ensureStateSize();
-    return boneAt(boneId)->position(state_)[1];
+    const_cast<Skeleton3D *>(this)->impl_->ensureStateSize();
+    return impl_->boneAt(boneId)->position(impl_->state)[1];
 }
 
 float Skeleton3D::getZ(int boneId) const {
     requireBone(boneId);
-    const_cast<Skeleton3D *>(this)->ensureStateSize();
-    return boneAt(boneId)->position(state_)[2];
+    const_cast<Skeleton3D *>(this)->impl_->ensureStateSize();
+    return impl_->boneAt(boneId)->position(impl_->state)[2];
 }
 
 void Skeleton3D::setOrientation(int boneId, float x, float y, float z) {
     requireBone(boneId);
-    ensureStateSize();
-    boneAt(boneId)->orientation(state_) = {x, y, z};
+    impl_->ensureStateSize();
+    impl_->boneAt(boneId)->orientation(impl_->state) = {x, y, z};
 }
 
 float Skeleton3D::getOrientationX(int boneId) const {
     requireBone(boneId);
-    const_cast<Skeleton3D *>(this)->ensureStateSize();
-    return boneAt(boneId)->orientation(state_)[0];
+    const_cast<Skeleton3D *>(this)->impl_->ensureStateSize();
+    return impl_->boneAt(boneId)->orientation(impl_->state)[0];
 }
 
 float Skeleton3D::getOrientationY(int boneId) const {
     requireBone(boneId);
-    const_cast<Skeleton3D *>(this)->ensureStateSize();
-    return boneAt(boneId)->orientation(state_)[1];
+    const_cast<Skeleton3D *>(this)->impl_->ensureStateSize();
+    return impl_->boneAt(boneId)->orientation(impl_->state)[1];
 }
 
 float Skeleton3D::getOrientationZ(int boneId) const {
     requireBone(boneId);
-    const_cast<Skeleton3D *>(this)->ensureStateSize();
-    return boneAt(boneId)->orientation(state_)[2];
+    const_cast<Skeleton3D *>(this)->impl_->ensureStateSize();
+    return impl_->boneAt(boneId)->orientation(impl_->state)[2];
 }
 
 void Skeleton3D::setRotation(int boneId, float yaw, float pitch) {
     requireBone(boneId);
-    ensureStateSize();
-    boneAt(boneId)->rotation(state_) = {yaw, pitch};
+    impl_->ensureStateSize();
+    impl_->boneAt(boneId)->rotation(impl_->state) = {yaw, pitch};
 }
 
 float Skeleton3D::getRotationYaw(int boneId) const {
     requireBone(boneId);
-    const_cast<Skeleton3D *>(this)->ensureStateSize();
-    return boneAt(boneId)->rotation(state_)[0];
+    const_cast<Skeleton3D *>(this)->impl_->ensureStateSize();
+    return impl_->boneAt(boneId)->rotation(impl_->state)[0];
 }
 
 float Skeleton3D::getRotationPitch(int boneId) const {
     requireBone(boneId);
-    const_cast<Skeleton3D *>(this)->ensureStateSize();
-    return boneAt(boneId)->rotation(state_)[1];
+    const_cast<Skeleton3D *>(this)->impl_->ensureStateSize();
+    return impl_->boneAt(boneId)->rotation(impl_->state)[1];
 }
 
 void Skeleton3D::setConstraints(int boneId, float minYaw, float minPitch, float maxYaw, float maxPitch) {
@@ -358,46 +314,46 @@ void Skeleton3D::setConstraints(int boneId, float minYaw, float minPitch, float 
     if (minYaw > maxYaw || minPitch > maxPitch) {
         throw Exception("Skeleton3D.setConstraints: min must be <= max per axis");
     }
-    boneAt(boneId)->setConstraints(::ik::vec2{minYaw, minPitch}, ::ik::vec2{maxYaw, maxPitch});
+    impl_->boneAt(boneId)->setConstraints(::ik::vec2{minYaw, minPitch}, ::ik::vec2{maxYaw, maxPitch});
 }
 
 void Skeleton3D::clearConstraints(int boneId) {
     requireBone(boneId);
-    boneAt(boneId)->clearConstraints();
+    impl_->boneAt(boneId)->clearConstraints();
 }
 
 bool Skeleton3D::hasConstraints(int boneId) const {
     requireBone(boneId);
-    return boneAt(boneId)->constrained;
+    return impl_->boneAt(boneId)->constrained;
 }
 
 void Skeleton3D::initStraightPose(float rootX, float rootY, float rootZ) {
-    ensureSorted();
-    ensureStateSize();
-    sk_.init_straight_pose(state_, ::ik::vec3{rootX, rootY, rootZ});
+    impl_->ensureSorted();
+    impl_->ensureStateSize();
+    impl_->sk.init_straight_pose(impl_->state, ::ik::vec3{rootX, rootY, rootZ});
 }
 
 void Skeleton3D::bind() {
-    ensureSorted();
-    ensureStateSize();
-    sk_.bind(state_);
+    impl_->ensureSorted();
+    impl_->ensureStateSize();
+    impl_->sk.bind(impl_->state);
 }
 
 void Skeleton3D::forwardKinematics() {
-    ensureSorted();
-    ensureStateSize();
-    sk_.forward_kinematics(state_);
+    impl_->ensureSorted();
+    impl_->ensureStateSize();
+    impl_->sk.forward_kinematics(impl_->state);
 }
 
 void Skeleton3D::updateRotations() {
-    ensureSorted();
-    ensureStateSize();
-    sk_.update_rotations(state_);
+    impl_->ensureSorted();
+    impl_->ensureStateSize();
+    impl_->sk.update_rotations(impl_->state);
 }
 
 float Skeleton3D::totalLengthTo(int boneId) const {
     requireBone(boneId);
-    return sk_.total_length_to(boneAt(boneId));
+    return impl_->sk.total_length_to(impl_->boneAt(boneId));
 }
 
 }  // namespace eve::ik

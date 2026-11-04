@@ -30,7 +30,14 @@ ResultRef<Texture> Graphics::requestFileTexture(const std::string& filename) {
             return ResultRef<Texture>::failure(Diagnostic::error(DiagnosticCode::NotFound,
                                                                  "file texture source is absent: " + filename, {}, {},
                                                                  "graphics.texture.request"));
+#if defined(__EMSCRIPTEN__)
+        // Browser frames run on the main thread. Decode packaged file pixels
+        // before returning so present() never waits on a pthread there.
+        auto decoded = eve::ResourceManager::getInstance().waitFor(key);
+        if (!decoded.ok()) return ResultRef<Texture>::failure(decoded.status());
+#else
         requestFileImageDecode(key);
+#endif
         auto texture = std::make_unique<Texture>();
         texture->markDeferredFilePixels(this);
         Texture*            raw = texture.get();

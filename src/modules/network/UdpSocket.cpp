@@ -9,7 +9,15 @@
 
 namespace eve::network {
 
-UdpSocket::UdpSocket(Network* net) : net_(net) {}
+// The socket and queued jobs share only this cancellation record. Access to the
+// observer is scoped by the mutex; close invalidates it before destruction.
+struct UdpSocket::SendState {
+    explicit SendState(UdpSocket* owner) : socket(owner) {}
+    std::mutex mutex;
+    UdpSocket* socket;
+};
+
+UdpSocket::UdpSocket(Network* net) : sendState_(std::make_shared<SendState>(this)), net_(net) {}
 
 UdpSocket::~UdpSocket() {
     close();
@@ -20,6 +28,8 @@ Poco::Net::DatagramSocket* UdpSocket::datagram() {
 }
 
 bool UdpSocket::bind(uint16_t port) {
+    close();
+    sendState_ = std::make_shared<SendState>(this);
     try {
         sock_ = std::make_unique<Poco::Net::DatagramSocket>();
         sock_->bind(Poco::Net::SocketAddress(port), true);
@@ -45,6 +55,12 @@ bool UdpSocket::bind(uint16_t port) {
 }
 
 bool UdpSocket::connect(std::string host, uint16_t port) {
+    if (net_) net_->unwatchUdp(this);
+    {
+        std::lock_guard<std::mutex> lock(sendState_->mutex);
+        sendState_->socket = nullptr;
+    }
+    sendState_ = std::make_shared<SendState>(this);
     try {
         if (!sock_) sock_ = std::make_unique<Poco::Net::DatagramSocket>();
         sock_->connect(Poco::Net::SocketAddress(host, port));
@@ -55,6 +71,7 @@ bool UdpSocket::connect(std::string host, uint16_t port) {
         if (net_) net_->watchUdp(this);
         return true;
     } catch (...) {
+        if (net_ && bound_ && sock_) net_->watchUdp(this);
         if (net_) {
             NetCompletion c;
             c.type   = NetEvType::Err;
@@ -73,8 +90,10 @@ bool UdpSocket::sendTo(eve::data::ByteData* data, std::string host, uint16_t por
     auto buf = std::make_shared<std::vector<char>>(
         static_cast<char*>(data->getData()),
         static_cast<char*>(data->getData()) + n);
-    auto* self = this;
-    net_->worker()->submit([self, buf, host, port]() {
+    net_->worker()->submit([state = sendState_, buf, host, port]() {
+        std::lock_guard<std::mutex> lock(state->mutex);
+        auto*                       self = state->socket;
+        if (!self) return;
         try {
             if (!self->sock_) return;
             if (self->connected_) {
@@ -98,7 +117,7 @@ bool UdpSocket::sendTo(eve::data::ByteData* data, std::string host, uint16_t por
 bool UdpSocket::sendToString(std::string s, std::string host, uint16_t port) {
     if (s.empty()) return false;
     eve::data::ByteData data(s.data(), s.size());
-    return sendTo(&data, host, port);
+    return sendTo(&data, std::move(host), port);
 }
 
 bool UdpSocket::send(eve::data::ByteData* data) {
@@ -107,8 +126,10 @@ bool UdpSocket::send(eve::data::ByteData* data) {
     auto buf = std::make_shared<std::vector<char>>(
         static_cast<char*>(data->getData()),
         static_cast<char*>(data->getData()) + n);
-    auto* self = this;
-    net_->worker()->submit([self, buf]() {
+    net_->worker()->submit([state = sendState_, buf]() {
+        std::lock_guard<std::mutex> lock(state->mutex);
+        auto*                       self = state->socket;
+        if (!self) return;
         try {
             if (!self->sock_) return;
             self->sock_->sendBytes(buf->data(), static_cast<int>(buf->size()));
@@ -133,6 +154,8 @@ bool UdpSocket::sendString(std::string s) {
 
 void UdpSocket::close() {
     if (net_) net_->unwatchUdp(this);
+    std::lock_guard<std::mutex> lock(sendState_->mutex);
+    sendState_->socket = nullptr;
     bound_ = false;
     connected_ = false;
     try {

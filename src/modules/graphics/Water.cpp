@@ -12,6 +12,7 @@
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
 #include "graphics/WaterPlanarReflection.h"
 #include "graphics/WaterReflectionMasker.h"
 #include "graphics/shaders/WaterWgsl.h"

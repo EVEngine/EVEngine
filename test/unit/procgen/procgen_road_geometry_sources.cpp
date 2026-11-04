@@ -1,98 +1,141 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_road_geometry_sources.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "common/Value.h"
 #include "procgen/road/RoadBake.h"
 #include "procgen/road/RoadGeometrySources.h"
 #include "procgen/road/RoadRecipes.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+
+#include <cstdint>
+#include <utility>
+
 using namespace eve::procgen;
 using namespace eve::procgen::road;
-TEST_CASE("procgen.road.geometrySources.partitionCoversEdgesJunctionAndDerivedTriangles") {
-    auto network = RoadNetwork::makeCross(48, 2);
+
+namespace {
+MeshBuild bakedStraight() {
+    auto network = RoadNetwork::makeStraight();
+    REQUIRE(network.ok());
+    auto baked = bakeRoadNetwork(network.value());
+    REQUIRE(baked.ok());
+    return std::move(baked.value().mesh);
+}
+
+eve::Value sourceDocument(const MeshBuild& mesh) {
+    auto parsed = eve::Value::fromJson(mesh.getMeta("road.geometrySources", ""));
+    REQUIRE(parsed.ok());
+    return parsed.value();
+}
+
+void setSourceDocument(MeshBuild& mesh, const eve::Value& document) {
+    auto json = document.toJson();
+    REQUIRE(json.ok());
+    mesh.setMeta("road.geometrySources", json.value());
+}
+}  // namespace
+
+TEST_CASE("procgen.road.sources.bakedPartitionIsContiguousAndNamesAuthorObjects") {
+    auto network = RoadNetwork::makeCross(48.f, 2);
     REQUIRE(network.ok());
     auto baked = bakeRoadNetwork(network.value());
     REQUIRE(baked.ok());
     auto prepared = PreparedRoadGeometrySources::prepare(baked.value().mesh);
     REQUIRE(prepared.ok());
-    std::uint32_t cursor = 0;
+    std::uint32_t next  = 0;
     int           edges = 0, junctions = 0, derived = 0;
-    for (std::size_t i = 0; i < prepared.value().spans().size(); ++i) {
-        const auto& s = prepared.value().spans()[i];
-        REQUIRE_EQ(s.firstTriangle, cursor);
-        REQUIRE(s.triangleCount > 0);
-        cursor += s.triangleCount;
-        if (s.kind == RoadGeometrySourceKind::Edge) {
-            ++edges;
-            REQUIRE(network.value().edgeResult(s.id).ok());
-        } else if (s.kind == RoadGeometrySourceKind::Junction) {
-            ++junctions;
-            REQUIRE(network.value().nodeResult(s.id).ok());
-        } else {
-            ++derived;
-            REQUIRE_EQ(s.id, 0u);
+    for (const auto& span : prepared.value().spans()) {
+        REQUIRE(span.firstTriangle == next);
+        REQUIRE(span.triangleCount > 0);
+        next += span.triangleCount;
+        switch (span.kind) {
+            case RoadGeometrySourceKind::Edge:
+                REQUIRE(network.value().edgeResult(span.id).ok());
+                ++edges;
+                break;
+            case RoadGeometrySourceKind::Junction:
+                REQUIRE(network.value().nodeResult(span.id).ok());
+                ++junctions;
+                break;
+            case RoadGeometrySourceKind::NetworkDerived:
+                REQUIRE(span.id == 0);
+                ++derived;
+                break;
         }
     }
+    REQUIRE(next == baked.value().mesh.getIndexCount() / 3);
     REQUIRE(edges > 0);
     REQUIRE(junctions > 0);
     REQUIRE(derived > 0);
-    REQUIRE_EQ(cursor, static_cast<std::uint32_t>(baked.value().mesh.getIndexCount() / 3));
-    const auto size = prepared.value().spans().size();
-    baked.value().mesh.positions()[0] += .25f;
-    auto stale = PreparedRoadGeometrySources::prepare(baked.value().mesh);
+}
+
+TEST_CASE("procgen.road.sources.preparedSnapshotOwnsIntervalsAfterMeshMutation") {
+    auto mesh     = bakedStraight();
+    auto prepared = PreparedRoadGeometrySources::prepare(mesh);
+    REQUIRE(prepared.ok());
+    const auto count = prepared.value().spans().size();
+    REQUIRE(count > 0);
+    mesh.positions()[0] += .25f;
+    auto stale = PreparedRoadGeometrySources::prepare(mesh);
     REQUIRE(!stale.ok());
     REQUIRE(stale.status().diagnostics().front().code() == eve::DiagnosticCode::StaleHandle);
-    baked.value().mesh.clear();
-    REQUIRE_EQ(prepared.value().spans().size(), size);
+    mesh.clear();
+    REQUIRE(prepared.value().spans().size() == count);
 }
-TEST_CASE("procgen.road.geometrySources.schemaAndPartitionRejectBeforePublication") {
-    auto network = RoadNetwork::makeStraight();
-    REQUIRE(network.ok());
-    auto baked = bakeRoadNetwork(network.value());
-    REQUIRE(baked.ok());
-    const auto original = baked.value().mesh.getMeta("road.geometrySources", "");
-    auto       parsed   = eve::Value::fromJson(original);
-    REQUIRE(parsed.ok());
-    for (int mode = 0; mode < 5; ++mode) {
-        auto  root  = parsed.value();
-        auto* spans = root.find("spans")->getIf<eve::Value::Array>();
+
+TEST_CASE("procgen.road.sources.schemaRejectsMalformedIntervalsWithoutChangingMetadata") {
+    auto mesh     = bakedStraight();
+    auto original = sourceDocument(mesh);
+    for (int mode = 0; mode < 6; ++mode) {
+        auto  document = original;
+        auto* spans    = document.find("spans")->getIf<eve::Value::Array>();
         REQUIRE(spans != nullptr);
         REQUIRE(!spans->empty());
-        if (mode == 0) root.set("version", 2);
+        if (mode == 0) document.set("version", 2);
         if (mode == 1) spans->front().set("first", 1);
         if (mode == 2) spans->front().set("id", 0);
         if (mode == 3) spans->front().set("count", 0);
         if (mode == 4) spans->front().set("kind", 99);
-        auto json = root.toJson();
-        REQUIRE(json.ok());
-        baked.value().mesh.setMeta("road.geometrySources", json.value());
-        REQUIRE(!PreparedRoadGeometrySources::prepare(baked.value().mesh).ok());
-        REQUIRE_EQ(baked.value().mesh.getMeta("road.geometrySources", ""), json.value());
+        if (mode == 5) document.set("triangles", 0);
+        setSourceDocument(mesh, document);
+        const auto encoded = mesh.getMeta("road.geometrySources", "");
+        REQUIRE(!PreparedRoadGeometrySources::prepare(mesh).ok());
+        REQUIRE(mesh.getMeta("road.geometrySources", "") == encoded);
     }
-    auto root = parsed.value();
-    root.set("futureField", 17);
-    auto json = root.toJson();
-    REQUIRE(json.ok());
-    baked.value().mesh.setMeta("road.geometrySources", json.value());
-    REQUIRE(PreparedRoadGeometrySources::prepare(baked.value().mesh).ok());
-    auto group = baked.value().mesh.copyGroup(0);
-    REQUIRE(group != nullptr);
+}
+
+TEST_CASE("procgen.road.sources.unknownFieldsAreAllowedButMissingMetadataIsUnsupported") {
+    auto mesh     = bakedStraight();
+    auto document = sourceDocument(mesh);
+    document.set("futureField", 17);
+    setSourceDocument(mesh, document);
+    REQUIRE(PreparedRoadGeometrySources::prepare(mesh).ok());
+    auto group = mesh.copyGroup(0);
+    REQUIRE(group);
     REQUIRE(!PreparedRoadGeometrySources::prepare(*group).ok());
-    MeshBuild old;
-    auto      missing = PreparedRoadGeometrySources::prepare(old);
+    MeshBuild bare;
+    auto      missing = PreparedRoadGeometrySources::prepare(bare);
     REQUIRE(!missing.ok());
     REQUIRE(missing.status().diagnostics().front().code() == eve::DiagnosticCode::Unsupported);
 }
-TEST_CASE("procgen.road.geometrySources.recipeMeshPreservesPortableAttribution") {
+
+TEST_CASE("procgen.road.sources.recipeAttributionSurvivesMeshCopyAndDetectsBadIndices") {
     Params params;
     params.setString("scene", "straight");
     params.setBool("navigation", false);
     auto recipe = bakeRoadNetworkRecipe(params);
     REQUIRE(recipe.ok());
-    auto json = eve::Value::fromJson(recipe.value().mesh.getMeta("road.geometrySources", ""));
-    REQUIRE(json.ok());
-    auto encoded = json.value().toJson();
-    REQUIRE(encoded.ok());
-    MeshBuild copy = recipe.value().mesh;
-    copy.setMeta("road.geometrySources", encoded.value());
+    MeshBuild copy     = recipe.value().mesh;
     auto prepared = PreparedRoadGeometrySources::prepare(copy);
     REQUIRE(prepared.ok());
     REQUIRE(!prepared.value().spans().empty());

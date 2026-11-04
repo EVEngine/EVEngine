@@ -430,7 +430,7 @@ bool VirtualGeometryBuilder::build(const MeshInput &in, const Options &opt,
             std::uint32_t pid = static_cast<std::uint32_t>(clusters.size() + groupIndex);
             std::size_t hi = std::min(current.size(), g + mergeF);
             for (std::size_t k = g; k < hi; ++k) {
-                current[k].parent = pid;
+                clusters[baseId + k].parent         = pid;
                 parents[groupIndex].children[k - g] = baseId + static_cast<std::uint32_t>(k);
             }
         }

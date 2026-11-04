@@ -4,10 +4,21 @@
 #include <optional>
 #include <stdexcept>
 #include <unordered_map>
+#include <utility>
 #include "tensor/OnnxByteStorage.h"
 #include "tensor/OnnxModel.h"
 
 namespace eve::tensor::onnx_detail {
+/**
+ * @brief Transfers one owned runtime tensor into an output list.
+ * @cost One small container allocation per output list; tensor shape and storage are moved.
+ */
+inline std::vector<RuntimeTensor> single(RuntimeTensor x) {
+    std::vector<RuntimeTensor> result;
+    result.reserve(1);
+    result.emplace_back(std::move(x));
+    return result;
+}
 /** @brief Failure public API. */
 struct Failure : std::runtime_error {
     DiagnosticCode code;
@@ -131,7 +142,8 @@ inline int64_t attr(const Node& n, const char* key, int64_t fallback) {
 /** @brief Attrs. */
 inline std::vector<int64_t> attrs(const Node& n, const char* key, std::vector<int64_t> fallback) {
     auto it = n.attrs.find(key);
-    return it == n.attrs.end() ? fallback : it->second.integers;
+    if (it == n.attrs.end()) return fallback;
+    return it->second.integers;
 }
 /** @brief Required. */
 inline const RuntimeTensor& required(const std::vector<const RuntimeTensor*>& in, size_t i) {

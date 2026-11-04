@@ -1,5 +1,7 @@
 #include "graphics/VirtualTextureStreaming.h"
 
+#include <utility>
+
 #include "graphics/Graphics.h"
 #include "graphics/Material.h"
 #include "graphics/Texture.h"
@@ -14,10 +16,12 @@ namespace eve::graphics {
 namespace {
 
 eve::Diagnostic invalid(std::string message) {
-    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message);
+    return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message));
 }
 
-eve::Diagnostic failed(std::string message) { return eve::Diagnostic::error(eve::DiagnosticCode::Failed, message); }
+eve::Diagnostic failed(std::string message) {
+    return eve::Diagnostic::error(eve::DiagnosticCode::Failed, std::move(message));
+}
 
 float wrap01(float value) {
     value -= std::floor(value);

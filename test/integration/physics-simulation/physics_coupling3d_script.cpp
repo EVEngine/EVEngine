@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "physics-backend",
+  "cases": {
+    "script-binding": [
+      "physics.coupling3d.scriptOwnershipAndTypeSafety",
+      "physics.coupling3d.scriptWorldFirstInvalidation"
+    ]
+  },
+  "module": "physics"
+}
+*/
+// clang-format on
+
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "physics/Body3D.h"

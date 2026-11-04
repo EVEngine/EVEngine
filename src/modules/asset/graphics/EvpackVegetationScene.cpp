@@ -1,4 +1,5 @@
 #include "asset/graphics/EvpackVegetationScene.h"
+#include "common/ValueRead.h"
 
 #include "asset/RuntimeDefinition.h"
 #include "asset/EvpackImageDecoder.h"
@@ -23,12 +24,9 @@ bool exact(const Value::Object& object, std::initializer_list<std::string_view> 
 }
 
 bool numeric(const Value& value, float& result) {
-    if (!value.isNumeric()) return false;
-    const double decoded = value.isInt64() ? double(value.asInt()) : value.asDouble();
-    if (!std::isfinite(decoded) || decoded < -std::numeric_limits<float>::max() ||
-        decoded > std::numeric_limits<float>::max())
-        return false;
-    result = float(decoded);
+    auto parsed = eve::readFiniteFloatValue(value);
+    if (!parsed) return false;
+    result = parsed.value();
     return true;
 }
 

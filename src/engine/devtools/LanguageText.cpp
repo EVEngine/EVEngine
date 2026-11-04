@@ -145,7 +145,9 @@ size_t offsetAt(std::string_view source, Position position) noexcept {
         if (newline == std::string_view::npos) return source.size();
         offset = newline + 1;
     }
-    return std::min(offset + position.character, source.size());
+    const size_t newline = source.find('\n', offset);
+    const size_t end     = newline == std::string_view::npos ? source.size() : newline;
+    return offset + std::min(position.character, end - offset);
 }
 
 Range documentRange(std::string_view source) noexcept {

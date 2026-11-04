@@ -1,3 +1,4 @@
+// eve-hot-path
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
@@ -9,6 +10,13 @@
 #include "physics/box3d/Box3DWorldInternal.h"
 namespace eve::physics::box3d {
 using namespace world3d_detail;
+
+namespace {
+int sourceTriangleIndex(b3ShapeId shapeId, int backendIndex) {
+    const b3ShapeType type = b3Shape_GetType(shapeId);
+    return type == b3_meshShape || type == b3_heightShape ? backendIndex : -1;
+}
+}  // namespace
 
 bool WorldBackend::do_sphereCast(float x1, float y1, float z1, float x2, float y2, float z2, float radius,
                                  uint64_t maskBits, int ignoredBodyId, CameraSphereHit3D *out) const {
@@ -101,7 +109,7 @@ eve::Result<RayHit3D> WorldBackend::do_rayCastOwned(float x1, float y1, float z1
                 candidate.shapeId       = shape->getId();
                 candidate.shapeTag      = shape->getTag();
                 candidate.materialId    = static_cast<int>(static_cast<std::uint32_t>(materialId));
-                candidate.triangleIndex = triangleIndex;
+                candidate.triangleIndex = sourceTriangleIndex(shapeId, triangleIndex);
                 candidate.x             = static_cast<float>(point.x);
                 candidate.y             = static_cast<float>(point.y);
                 candidate.z             = static_cast<float>(point.z);
@@ -194,7 +202,7 @@ int WorldBackend::do_rayCastAllInternal(float x1, float y1, float z1, float x2, 
                                 shape->getId(),
                                 shape->getTag(),
                                 static_cast<int>(static_cast<uint32_t>(materialId)),
-                                triangleIndex,
+                                sourceTriangleIndex(shapeId, triangleIndex),
                                 static_cast<float>(point.x),
                                 static_cast<float>(point.y),
                                 static_cast<float>(point.z),
@@ -499,7 +507,7 @@ int WorldBackend::do_castProxyAll(b3Pos origin, const b3ShapeProxy &proxy, b3Vec
                                       shape->getId(),
                                       shape->getTag(),
                                       static_cast<int>(static_cast<uint32_t>(materialId)),
-                                      triangleIndex,
+                                      sourceTriangleIndex(shapeId, triangleIndex),
                                       static_cast<float>(point.x),
                                       static_cast<float>(point.y),
                                       static_cast<float>(point.z),

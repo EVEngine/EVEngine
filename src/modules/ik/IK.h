@@ -10,11 +10,12 @@ class Solver2D;
 class Solver3D;
 
 /**
- * @brief Inverse Kinematics module — wraps header-only sunxfancy/ik.hpp (FABRIK).
+ * @brief Inverse Kinematics module — thin script facade over sunxfancy/ik.hpp (FABRIK).
  * Script: `ik <- eve.IK();`
  *
- * Provides 2D/3D skeleton + solver factories. No overloads: use Skeleton2D /
- * Skeleton3D and Solver2D / Solver3D explicitly.
+ * Provides 2D/3D skeleton + solver factories. ik.hpp types stay behind Pimpl in
+ * Skeleton and Solver translation units; public headers do not include ik.hpp.
+ * No overloads: use Skeleton2D / Skeleton3D and Solver2D / Solver3D explicitly.
  */
 class EVENGINE_API_FOUNDATION IK : public Module {
 public:
@@ -29,9 +30,9 @@ public:
     /** @brief Creates an empty 3D skeleton. @ownership Caller deletes. */
     Skeleton3D *newSkeleton3D();
     /** @brief Creates a 2D FABRIK solver. @ownership Caller deletes. */
-    Solver2D   *newSolver2D();
+    Solver2D *newSolver2D();
     /** @brief Creates a 3D FABRIK solver. @ownership Caller deletes. */
-    Solver3D   *newSolver3D();
+    Solver3D *newSolver3D();
 };
 
 }  // namespace eve::ik

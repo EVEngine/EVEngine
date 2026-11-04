@@ -232,7 +232,8 @@ Result<PreparedAssetImport> prepareUnityVegetationConversionBatch(const UnityVeg
                 batch.manifest.dependencies.push_back(std::move(dependency));
             for (auto& entry : item.value().entries) {
                 if (entry.path == "reports/import.json") continue;
-                auto [found, inserted] = uniqueEntries.emplace(entry.path, entry.bytes);
+                // Duplicate keys leave both arguments intact for the content/conflict check.
+                auto [found, inserted] = uniqueEntries.try_emplace(std::move(entry.path), std::move(entry.bytes));
                 if (!inserted && found->second != entry.bytes)
                     return Result<PreparedAssetImport>::failure(
                         Diagnostic::error(DiagnosticCode::Conflict, "vegetation batch entry collision", entry.path, {},
@@ -256,7 +257,11 @@ Result<PreparedAssetImport> prepareUnityVegetationConversionBatch(const UnityVeg
                     Diagnostic::error(DiagnosticCode::InvalidArgument, "vegetation batch asset count exceeds budget",
                                       {}, {}, "asset.import.vegetation-preset.batch"));
         }
-        for (auto& [path, content] : uniqueEntries) batch.entries.push_back({std::move(path), std::move(content)});
+        batch.entries.reserve(uniqueEntries.size());
+        while (!uniqueEntries.empty()) {
+            auto entry = uniqueEntries.extract(uniqueEntries.begin());
+            batch.entries.push_back({std::move(entry.key()), std::move(entry.mapped())});
+        }
         auto report = detail::finalizeImportReport(batch, request.package, "unity", "tve-12.6-conversion-batch",
                                                    {{"objectCount", std::int64_t(request.objects.size())}});
         if (!report) return Result<PreparedAssetImport>::failure(report.status());

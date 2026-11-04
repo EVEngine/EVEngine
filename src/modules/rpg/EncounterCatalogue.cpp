@@ -28,9 +28,8 @@ bool validId(const std::string &value, bool allowEmpty = false) {
 }
 
 eve::Result<int> failure(std::string message, std::string path) {
-    return eve::Result<int>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, message, path, {},
-        "rpg.encounter-catalogue"));
+    return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message),
+                                                            std::move(path), {}, "rpg.encounter-catalogue"));
 }
 
 const std::unordered_set<std::string> &knownFields() {
@@ -99,9 +98,10 @@ eve::Result<int> EncounterCatalogue::replaceFromJsonStrict(const std::string &js
         const auto notifyTarget = object.get("notifyTarget");
         const auto defeatCounterId = object.get("defeatCounterId");
         const auto levelPointAttributeId = object.get("levelPointAttributeId");
-        if (!requiredQuestId.isString() || !validId(requiredQuestId.asString()) ||
-            !QuestRegistry::find(requiredQuestId.asString()))
-            return failure("requiredQuestId must reference a registered quest", path + ".requiredQuestId");
+        if (!requiredQuestId.isString() ||
+            (!requiredQuestId.asString().empty() &&
+             (!validId(requiredQuestId.asString()) || !QuestRegistry::find(requiredQuestId.asString()))))
+            return failure("requiredQuestId must be empty or reference a registered quest", path + ".requiredQuestId");
         if (!notifyTopic.isString() || !validId(notifyTopic.asString()) ||
             !notifyTarget.isString() || !validId(notifyTarget.asString()) ||
             !defeatCounterId.isString() || !validId(defeatCounterId.asString()) ||

@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "hexmap/HexSphereTopology.h"
 #include <algorithm>
 #include <cmath>
@@ -394,7 +395,8 @@ namespace eve::hexmap {
 namespace {
 
 [[nodiscard]] [[nodiscard]] Result<HexTerrainBake> invalidBake(std::string message) {
-    return Result<HexTerrainBake>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, "hexmap"));
+    return Result<HexTerrainBake>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), "hexmap"));
 }
 
 void writeU32LE(unsigned char* bytes, std::uint32_t value) noexcept {

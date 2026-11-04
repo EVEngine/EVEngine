@@ -1,4 +1,5 @@
 #include "building/PlacementWorld.h"
+#include "building/BuildingAssemblyInternal.h"
 #include "building/Ghost.h"
 #include "building/PlacementSystem.h"
 #include "data/DataModule.h"
@@ -15,6 +16,8 @@
 namespace eve::building {
 
 PlacementWorld::PlacementWorld(int width, int height, float cellSize) {
+    assemblyState_        = std::make_unique<AssemblyState>();
+    assemblyState_->epoch = assembly_detail::nextEpoch();
     width_ = width > 0 ? width : 1;
     height_ = height > 0 ? height : 1;
     grid_ = std::make_unique<grid::GridConfig>();
@@ -741,6 +744,8 @@ void PlacementWorld::clearBuildings() { PlacementSystem::clearBuildings(this); }
 std::unique_ptr<PlacementWorld> PlacementWorld::cloneState() const {
     auto copy = std::make_unique<PlacementWorld>(width_, height_, getCellSize());
     copy->id_ = id_;
+    *copy->assemblyState_         = *assemblyState_;
+    copy->instanceCounter_        = instanceCounter_;
     *copy->grid_ = *grid_;
     copy->snapMode_ = snapMode_;
     copy->validateRule_ = validateRule_;
@@ -781,6 +786,8 @@ int PlacementWorld::removeBuildingCascade(int instanceId) {
 void PlacementWorld::swapState(PlacementWorld& candidate) noexcept {
     using std::swap;
     swap(id_, candidate.id_);
+    swap(assemblyState_, candidate.assemblyState_);
+    swap(instanceCounter_, candidate.instanceCounter_);
     swap(width_, candidate.width_);
     swap(height_, candidate.height_);
     swap(grid_, candidate.grid_);

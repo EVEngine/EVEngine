@@ -15,7 +15,9 @@
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
 #include "graphics/Material.h"
+#include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
 

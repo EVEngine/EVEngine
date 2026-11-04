@@ -1,8 +1,15 @@
 #include "common/Diagnostic.h"
 
+#include <ostream>
+
 namespace eve {
+
+std::ostream& operator<<(std::ostream& stream, Severity severity) { return stream << severityName(severity); }
+
+std::ostream& operator<<(std::ostream& stream, DiagnosticCode code) { return stream << diagnosticCodeName(code); }
+
 Diagnostic::Diagnostic() noexcept                              = default;
-Diagnostic::~Diagnostic()                                      = default;
+Diagnostic::~Diagnostic() noexcept                             = default;
 Diagnostic::Diagnostic(const Diagnostic& other)                = default;
 Diagnostic::Diagnostic(Diagnostic&& other) noexcept            = default;
 Diagnostic& Diagnostic::operator=(const Diagnostic& other)     = default;

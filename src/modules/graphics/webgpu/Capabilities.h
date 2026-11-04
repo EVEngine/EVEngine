@@ -51,6 +51,9 @@ public:
     /** @brief Maximum sampled textures visible to one shader stage. */
     uint32_t maxSampledTexturesPerShaderStage() const { return maxSampledTexturesPerShaderStage_; }
 
+    /** @brief True when the granted device limit supports five RGBA8 GBuffer targets. */
+    bool supportsFiveTargetGBuffer() const { return maxColorAttachmentBytesPerSample_ >= 40; }
+
     /** @brief Maximum samplers visible to one shader stage. */
     uint32_t maxSamplersPerShaderStage() const { return maxSamplersPerShaderStage_; }
 
@@ -64,6 +67,7 @@ private:
     uint32_t maxBindGroups_ = 4;
     uint32_t maxDynamicUniformBuffers_ = 8;
     uint32_t maxSampledTexturesPerShaderStage_ = 16;
+    uint32_t maxColorAttachmentBytesPerSample_ = 32;
     uint32_t maxSamplersPerShaderStage_ = 16;
     float maxAnisotropy_ = 16.f;
     uint32_t maxSampleCount_ = 4;

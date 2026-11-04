@@ -1,3 +1,14 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "module": "procgen"
+}
+*/
+// clang-format on
+
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "procgen/texture/EverydayMaterials.h"
 #include "procgen/texture/PbrMaterialScript.h"

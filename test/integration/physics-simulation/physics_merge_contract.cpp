@@ -1,3 +1,14 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "physics-backend",
+  "module": "physics"
+}
+*/
+// clang-format on
+
 #include <memory>
 #include "physics/Body.h"
 #include "physics/Body3D.h"

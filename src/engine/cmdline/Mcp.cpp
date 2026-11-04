@@ -1,3 +1,4 @@
+#include "McpSupervisor.h"
 #include "cmdline.h"
 
 #include "common/Capability.h"
@@ -8,6 +9,7 @@
 #include "filesystem/Filesystem.h"
 #include "filesystem/HotReload.h"
 #include "filesystem/physfs/FileApi.h"
+#include "scripts.h"
 
 #if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
 #include "devtools/DevTool.hpp"
@@ -57,11 +59,16 @@ bool isEditorHostResource(const std::string& path) {
 struct McpArgs : Handler {
     std::string root_path;
     int         port = 0;
+    int         timeoutMs = 2000;
+    bool        worker    = false;
 
     void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
         auto mcp = app.add_subcommand(
             "mcp", "Run a headless MCP host for AI agents (stdio by default; --port for TCP)");
         mcp->allow_extras()->formatter(formatter);
+        mcp->add_option("--timeout-ms", timeoutMs, "Worker response budget in milliseconds (stdio)")
+            ->check(CLI::Range(1, 3600000));
+        mcp->add_flag("--worker", worker, "Internal unsupervised worker")->group("");
         mcp->add_option("--port", port,
                         "Listen on this TCP port instead of stdio (Codex uses stdio)");
         mcp->add_option("-r,--root", root_path, "Project root directory (default: current dir)");
@@ -72,6 +79,9 @@ struct McpArgs : Handler {
         if (mcp->parsed()) {
             std::string current_path = cmd.get_remaining(mcp);
             if (!root_path.empty()) current_path = root_path;
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
+            if (port == 0 && !worker) return detail::runMcpSupervisor(current_path, timeoutMs);
+#endif
             return cmd.McpHost(current_path, port);
         }
         return -1;
@@ -140,10 +150,19 @@ int Cmdline::McpHost(std::string path, int port) {
         dt.attach(runtime, /*sampleLocals=*/false);
         dt.exposeScriptApi(runtime.vm());
 
-        // The headless host never runs load.nut, so registered modules are not
-        // instantiated automatically and their capability providers
-        // (IEditorHost, IRenderCapture, ISceneQuery, ...) are absent. Mirror
-        // load.nut's binding loop so the host exposes the full tool surface.
+        // Match load.nut's manifest order: requireAll() alone iterates an
+        // unordered registry and can construct editor consumers before their
+        // command/capability providers. Reuse the existing generated script
+        // manifest instead of maintaining a second native dependency list.
+        const auto moduleBootstrap = runtime.compileSource(std::string(module_list_content) + R"(
+                if (eve._bindAllNativeClasses() < 0)
+                    throw "failed to bind native module classes";
+                foreach (entry in eve_modules) eve[entry.cls]();
+            )",
+                                                           "mcp_modules.nut");
+        runtime.execute(moduleBootstrap);
+        // Registered native-only modules have no script slot in the manifest.
+
         eve::ModuleManager::requireAll();
 
         // Editor host: JSON Views <-> Squirrel ViewModel binding + window/render.

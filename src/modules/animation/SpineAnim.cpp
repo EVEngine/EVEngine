@@ -324,7 +324,12 @@ void SpineAnim::rebuildDrawSlots() {
 
     for (int si = 0; si < skeleton_->getSlotCount(); ++si) {
         const auto *att = skeleton_->getSlotRegion(si);
-        if (!att) continue;
+        if (!att) {
+            const auto name = skeleton_->getSlotAttachmentName(si);
+            if (name.empty()) continue; // Explicitly hidden slot.
+            throw Exception("SpineAnim: attachment '%s' not found for slot '%s' (skin/default fallback)",
+                            name.c_str(), skeleton_->getData()->getSlotName(si).c_str());
+        }
         int boneIndex = skeleton_->getData()->slot(si).bone;
         const auto &bone = skeleton_->bones_[static_cast<size_t>(boneIndex)];
 
@@ -335,9 +340,13 @@ void SpineAnim::rebuildDrawSlots() {
         int  regionIndex = -1;
         float regionW = att->width, regionH = att->height;
         float origW = att->width, origH = att->height;
+        float offsetX = 0.f, offsetY = 0.f;
         bool  rotated = false;
         if (atlas_) {
             regionIndex = atlas_->findRegion(ds.regionName);
+            if (regionIndex < 0)
+                throw Exception("SpineAnim: atlas region '%s' not found for slot '%s'",
+                                ds.regionName.c_str(), skeleton_->getData()->getSlotName(si).c_str());
             ds.region   = regionIndex;
             if (regionIndex >= 0) {
                 ds.page    = atlas_->getRegionPage(regionIndex);
@@ -347,6 +356,8 @@ void SpineAnim::rebuildDrawSlots() {
                 regionH    = static_cast<float>(atlas_->getRegionHeight(regionIndex));
                 origW      = static_cast<float>(atlas_->getRegionOriginalWidth(regionIndex));
                 origH      = static_cast<float>(atlas_->getRegionOriginalHeight(regionIndex));
+                offsetX = static_cast<float>(atlas_->getRegionOffsetX(regionIndex));
+                offsetY = static_cast<float>(atlas_->getRegionOffsetY(regionIndex));
                 int tw = atlas_->getPageWidth(ds.page);
                 int th = atlas_->getPageHeight(ds.page);
                 auto *tex = getPageTexture(ds.page);
@@ -362,15 +373,15 @@ void SpineAnim::rebuildDrawSlots() {
         if (origH <= 0.f) origH = att->height;
 
         // Official spine RegionAttachment: scale the attachment rect to the
-        // atlas region's PACKED size (regionWidth/regionHeight; for a rotated
-        // region these already span origH×origW), rotate the corner offsets
+        // atlas region's trimmed size and offset in the original image, then
+        // rotate the corner offsets
         // around the BONE ORIGIN by the attachment rotation, then translate by
         // the attachment anchor (x, y) and map through the bone matrix.
         const float regionScaleX = (origW > 0.f) ? (att->width / origW) * att->scaleX : att->scaleX;
         const float regionScaleY = (origH > 0.f) ? (att->height / origH) * att->scaleY : att->scaleY;
 
-        const float localX  = -att->width * 0.5f * att->scaleX;
-        const float localY  = -att->height * 0.5f * att->scaleY;
+        const float localX  = -att->width * 0.5f * att->scaleX + offsetX * regionScaleX;
+        const float localY  = -att->height * 0.5f * att->scaleY + offsetY * regionScaleY;
         const float localX2 = localX + regionW * regionScaleX;
         const float localY2 = localY + regionH * regionScaleY;
 
@@ -489,3 +500,4 @@ std::string SpineAnim::getDrawSlotRegion(int index) const {
 }
 
 }  // namespace eve::animation
+

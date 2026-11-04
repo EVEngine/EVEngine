@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "sensing/EnvironmentQuery.h"
 
 #include <algorithm>

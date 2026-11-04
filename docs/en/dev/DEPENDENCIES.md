@@ -7,7 +7,7 @@ Dependencies have distinct responsibilities:
 - Squirrel: scripting; SimpleSquirrel: C++ bindings.
 - VKBuilder: Vulkan integration combining features of vk-bootstrap and Vookoo; submodule `external/VKBuilder`.
 - ECS.hpp: class-enabled ECS for entities/declarative rendering; `external/ECS.hpp`.
-- ik.hpp: header-only FABRIK/joint constraints exposed by the `ik` module; `external/ik.hpp`.
+- ik.hpp: header-only FABRIK/joint constraints (including chain `solveChain`, pole, influence, tip rotation) exposed by the `ik` module; `external/ik.hpp`.
 - zeroerr: tests, assertions and logging; `external/zeroerr`.
 - Poco: networking, database support and filesystem watching.
 - medialoader and its codecs: image/audio loading extracted for standalone use.

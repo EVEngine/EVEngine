@@ -140,6 +140,7 @@ Result<void> AudioEffectChainTarget::commitDomainState(
 }
 std::vector<AudioEffectRecord> AudioEffectChainTarget::effects() const {
     std::vector<AudioEffectRecord> result;
+    result.reserve(order_.size());
     for (const auto& id : order_) result.push_back(effects_.at(id));
     return result;
 }

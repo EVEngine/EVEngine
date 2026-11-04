@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "modules": [
+    "procgen",
+    "procgen_editing"
+  ],
+  "origins": [
+    "procgen_road_noop.cpp"
+  ],
+  "module": "procgen"
+}
+*/
+// clang-format on
+
 #include <unordered_map>
 #include "procgen/editing/RoadNetworkEditTarget.h"
 #include "procgen/road/RoadNetworkCodec.h"

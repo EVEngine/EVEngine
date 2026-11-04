@@ -39,8 +39,7 @@ CTest 还会用引擎真实的 `EcsDefaultTable.cpp` / `EcsContainerInstances.cp
 另有严格 C++17 的无组件 View 编译/运行检查，防止依赖 GCC 的零长度数组扩展。
 
 无 CMake 时可直接构建相同源文件；此方式的 revision 元数据为 unknown，须另外记录 Git SHA：
-先通过上述 CMake configure 应用引擎补丁，或用仓库 `patch_third_party.cmake` 显式应用，避免
-误将未打补丁的上游头文件当作当前引擎实现。
+直接使用 third-party 固定的原生 ECS 头文件，不再应用引擎侧补丁或生成覆盖头文件。
 
 ```sh
 mkdir -p build/ecs-benchmark

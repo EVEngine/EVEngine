@@ -6,6 +6,7 @@
 #include "common/RenderTypes.h"
 #include "common/Time.h"
 #include "particles/ParticleCurve.h"
+#include "particles/ParticleEventJournal.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -45,6 +46,10 @@ using eve::Color;
 
 /** @brief Single live particle (CPU simulation). */
 struct Particle {
+    /** @brief Nonzero CPU birth identity within its owning Sim lifetime; moves with the particle during compaction.
+     * @remarks Zero means no recorded birth. Never use a container slot as persistent playback identity.
+     */
+    std::uint64_t birthSerial = 0;
     float x = 0.f;
     float y = 0.f;
     float vx = 0.f;
@@ -266,6 +271,17 @@ public:
     };
 
     struct Sim {
+        /** @brief Optional bounded recording owner; disabled by default, independent of emitter looping/reset age. */
+        ParticleEventJournal recording;
+        /** @brief Explicit accumulated executed simulation dt since recording preparation. */
+        double recordingSeconds = 0;
+
+        /** @brief Sole CPU birth counter; reset/start/stop preserve it. Zero means exhausted, never wrap to a reused
+         * ID.
+         * @remarks New Sim ownership starts a new identity scope; recorders must use a separate emitter/session
+         * identity.
+         */
+        std::uint64_t         nextBirthSerial = 1;
         std::vector<Particle> particles;
         int alive = 0;
         float emitAccum = 0.f;

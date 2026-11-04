@@ -1,3 +1,14 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "physics-backend",
+  "module": "fluids"
+}
+*/
+// clang-format on
+
 #include "common/CameraObstruction.h"
 #include "common/ProcgenWorldQuery.h"
 #include "fluids/OceanBoat.h"

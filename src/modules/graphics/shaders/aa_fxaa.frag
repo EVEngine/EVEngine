@@ -15,6 +15,10 @@ layout(push_constant) uniform Externals { float data[32]; } u;
 
 float luma(vec3 c) { return dot(c, vec3(0.299, 0.587, 0.114)); }
 
+// Frame targets have one mip. The edge search diverges between fragments, so
+// implicit texture derivatives are undefined after its conditional branches.
+vec3 sampleColor(vec2 uv) { return textureLod(MainTex, uv, 0.0).rgb; }
+
 void main() {
   vec2 texel = vec2(u.data[0], u.data[1]);
   float edgeThreshold = max(u.data[2], 1e-4);
@@ -22,13 +26,13 @@ void main() {
   float subpix = clamp(u.data[4], 0.0, 1.0);
   int quality = int(clamp(u.data[5], 0.0, 2.0));
 
-  vec3 rgbM = texture(MainTex, fragUV).rgb;
+  vec3 rgbM = sampleColor(fragUV);
   float lumaM = luma(rgbM);
 
-  float lumaN = luma(texture(MainTex, fragUV + vec2(0.0, -texel.y)).rgb);
-  float lumaS = luma(texture(MainTex, fragUV + vec2(0.0,  texel.y)).rgb);
-  float lumaE = luma(texture(MainTex, fragUV + vec2( texel.x, 0.0)).rgb);
-  float lumaW = luma(texture(MainTex, fragUV + vec2(-texel.x, 0.0)).rgb);
+  float lumaN = luma(sampleColor(fragUV + vec2(0.0, -texel.y)));
+  float lumaS = luma(sampleColor(fragUV + vec2(0.0,  texel.y)));
+  float lumaE = luma(sampleColor(fragUV + vec2( texel.x, 0.0)));
+  float lumaW = luma(sampleColor(fragUV + vec2(-texel.x, 0.0)));
 
   float lumaMin = min(lumaM, min(min(lumaN, lumaS), min(lumaE, lumaW)));
   float lumaMax = max(lumaM, max(max(lumaN, lumaS), max(lumaE, lumaW)));
@@ -39,10 +43,10 @@ void main() {
     return;
   }
 
-  float lumaNW = luma(texture(MainTex, fragUV + vec2(-texel.x, -texel.y)).rgb);
-  float lumaNE = luma(texture(MainTex, fragUV + vec2( texel.x, -texel.y)).rgb);
-  float lumaSW = luma(texture(MainTex, fragUV + vec2(-texel.x,  texel.y)).rgb);
-  float lumaSE = luma(texture(MainTex, fragUV + vec2( texel.x,  texel.y)).rgb);
+  float lumaNW = luma(sampleColor(fragUV + vec2(-texel.x, -texel.y)));
+  float lumaNE = luma(sampleColor(fragUV + vec2( texel.x, -texel.y)));
+  float lumaSW = luma(sampleColor(fragUV + vec2(-texel.x,  texel.y)));
+  float lumaSE = luma(sampleColor(fragUV + vec2( texel.x,  texel.y)));
 
   float lumaNS = lumaN + lumaS;
   float lumaWE = lumaW + lumaE;
@@ -78,7 +82,7 @@ void main() {
     if (i >= maxSteps) break;
     if (!done1) {
       pos1 -= offset;
-      float l = luma(texture(MainTex, pos1).rgb) - lumaLocalAvg;
+      float l = luma(sampleColor(pos1)) - lumaLocalAvg;
       if (abs(l) >= gradient * 0.25) {
         end1 = horzSpan ? (pos1.x - fragUV.x) : (pos1.y - fragUV.y);
         done1 = true;
@@ -86,7 +90,7 @@ void main() {
     }
     if (!done2) {
       pos2 += offset;
-      float l = luma(texture(MainTex, pos2).rgb) - lumaLocalAvg;
+      float l = luma(sampleColor(pos2)) - lumaLocalAvg;
       if (abs(l) >= gradient * 0.25) {
         end2 = horzSpan ? (pos2.x - fragUV.x) : (pos2.y - fragUV.y);
         done2 = true;
@@ -117,6 +121,6 @@ void main() {
   if (horzSpan) uvAA.y += aaOffset * stepLength;
   else uvAA.x += aaOffset * stepLength;
 
-  vec3 rgbAA = texture(MainTex, uvAA).rgb;
+  vec3 rgbAA = sampleColor(uvAA);
   outColor = vec4(rgbAA * fragColor.rgb, 1.0);
 }

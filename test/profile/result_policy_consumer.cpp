@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "tests",
+  "default": "module-composition",
+  "module": "common"
+}
+*/
+// clang-format on
+
 #include "common/Result.h"
 #include "zeroerr/unittest.h"
 namespace result_policy_test {

@@ -19,6 +19,13 @@ float Cloth3D::getCollisionFriction() const { return collisionFriction_; }
 float Cloth3D::getCollisionRestitution() const { return collisionRestitution_; }
 uint64_t Cloth3D::getCollisionCategoryBits() const { return collisionCategoryBits_; }
 uint64_t Cloth3D::getCollisionMaskBits() const { return collisionMaskBits_; }
+eve::Result<std::vector<std::uint32_t>> Cloth3D::captureTriangleIndices() const {
+    std::vector<std::uint32_t> indices;
+    indices.reserve(triangles_.size() * 3);
+    for (const auto& triangle : triangles_)
+        for (int vertex : triangle.v) indices.push_back(static_cast<std::uint32_t>(vertex));
+    return eve::Result<std::vector<std::uint32_t>>::success(std::move(indices));
+}
 int Cloth3D::getTriangleCount() const { return static_cast<int>(triangles_.size()); }
 int Cloth3D::getDistanceConstraintCount() const { return static_cast<int>(links_.size()); }
 int Cloth3D::getTetherConstraintCount() const { return static_cast<int>(tethers_.size()); }

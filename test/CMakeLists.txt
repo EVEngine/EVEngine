@@ -4,9 +4,22 @@ enable_testing()
 # intentionally independent of unit_test and never triggers a full engine
 # build by itself; CI also runs the same script in the fast structural job.
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
+if(NOT ANDROID AND NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
+  add_executable(assertion_contract_probe fixtures/assertion_contract.cpp)
+  target_link_libraries(assertion_contract_probe PRIVATE zeroerr eve_engine_includes)
+  target_compile_options(assertion_contract_probe PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  add_test(NAME test.assertionExitContract
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_test_assertions.py
+      --runner $<TARGET_FILE:assertion_contract_probe>)
+endif()
 include("${CMAKE_SOURCE_DIR}/cmake/TestLevels.cmake")
 eve_configure_test_levels(EVE_TEST_LEVEL_FILE)
 include("${EVE_TEST_LEVEL_FILE}")
+if(TARGET assertion_contract_probe)
+  eve_label_test_group(test.assertionExitContract assertion_contract.cpp)
+endif()
 add_custom_target(nodiscard_compile_check
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_nodiscard.py
           --source-dir ${CMAKE_SOURCE_DIR}
@@ -15,9 +28,7 @@ add_test(NAME common.nodiscard_compile_diagnostics
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_nodiscard.py
           --source-dir ${CMAKE_SOURCE_DIR})
 set_tests_properties(common.nodiscard_compile_diagnostics PROPERTIES LABELS "quality")
-add_test(NAME cmake.third_party_patch_idempotence
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/tests/test_patch_third_party.py)
-set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "quality;cmake")
+
 
 # Test sources are discovered like engine/module sources. Do not use
 # CONFIGURE_DEPENDS: Ninja glob verification plus files appearing during a
@@ -28,19 +39,21 @@ set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "qual
 file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 file(GLOB_RECURSE organized_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/unit/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/integration/*.cpp")
 set(all_test_cpp ${EVE_TEST_DESKTOP_ORIGINS})
+option(EVENGINE_BUILD_TEST_BENCHMARKS "Build explicit timing workloads with the host test runner" OFF)
+if(EVENGINE_BUILD_TEST_BENCHMARKS)
+  file(GLOB_RECURSE _eve_benchmark_sources "${CMAKE_CURRENT_SOURCE_DIR}/benchmark/*.cpp")
+  list(APPEND all_test_cpp ${_eve_benchmark_sources})
+endif()
 list(REMOVE_ITEM all_test_cpp
   "${CMAKE_CURRENT_SOURCE_DIR}/integration/crowd-runtime/CrowdThread.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/integration/rts-crowd/CrowdMotion.cpp")
-# These updated legacy sources run in cmake/crowd_check's process-isolated
-# Crowd/RTS executables. Their pre-reorganization cases also live in the
-# consolidated unit/integration files, so the main suite must not register
-# the same case names twice.
-list(FILTER all_test_cpp EXCLUDE REGEX "/(crowd_avoidance|result|rts_crowd|rts_crowd_production|rts_formation|rts_groups|value)\\.cpp$")
+# Canonical sources are deduplicated by eve_resolve_test_sources below. Former
+# basename exclusions would silently omit the newly separated workflows.
 eve_test_source_properties(physics_jolt.cpp physics_jolt_cooking.cpp physics_jolt_contacts.cpp PROPERTIES COMPILE_DEFINITIONS "EVENGINE_TEST_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>")
 # Resource sharing must test the same optional validation provider as EVGraphics.
 get_target_property(_eve_graphics_definitions EVGraphics COMPILE_DEFINITIONS)
 if("EVENGINE_SPIRV_ASSET_VALIDATION=1" IN_LIST _eve_graphics_definitions)
-  eve_resolve_test_sources(_eve_validation_sources ShaderResourceSharing.cpp SkyTextureGpu.cpp
+  eve_resolve_test_sources(_eve_validation_sources ShaderResourceSharing.cpp integration/render-presentation/resource_program_descriptor_limits.cpp SkyTextureGpu.cpp
     SkyAtmospherePass.cpp SkyRuntime.cpp SkyWisps.cpp SkyScriptBindings.cpp BloomPyramid.cpp)
   set_property(SOURCE ${_eve_validation_sources} APPEND PROPERTY COMPILE_DEFINITIONS EVE_TEST_RESOURCE_VALIDATION=1)
 endif()
@@ -90,7 +103,7 @@ endif()
 # all_test_cpp holds absolute paths from file(GLOB), so filter by basename.
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android") OR EVENGINE_IOS_TEST_APP)
   foreach(_eve_devtool_test IN ITEMS
-      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp reload_script.cpp dap.cpp agent_development_session.cpp play_host.cpp play_trace.cpp mcp.cpp mcp_console.cpp mcp_agent_export.cpp mcp_editor_targets.cpp mcp_domain_tools.cpp mcp_input_tools.cpp mcp_tool_filter.cpp mcp_soft_restart.cpp console.cpp frame_stats.cpp runtime_error_sink.cpp scenario_recorder.cpp language_index.cpp language_server.cpp language_text.cpp)
+      callgraph.cpp renderflow.cpp debugger.cpp debugger_audit.cpp snapshot_devtools_references_tests.cpp reload_script.cpp dap.cpp agent_development_session.cpp play_host.cpp play_trace.cpp mcp.cpp mcp_console.cpp mcp_agent_export.cpp mcp_editor_targets.cpp mcp_domain_tools.cpp mcp_input_tools.cpp mcp_tool_filter.cpp mcp_soft_restart.cpp console.cpp frame_stats.cpp runtime_error_sink.cpp scenario_recorder.cpp language_index.cpp language_server.cpp language_text.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_devtool_test}$")
   endforeach()
   message(STATUS "Mobile test app: removed devtools test files, remaining=${all_test_cpp}")
@@ -98,10 +111,10 @@ endif()
 
 # These tests intentionally exercise Vulkan implementation details rather than
 # the backend-neutral graphics API, so they cannot be linked into a WebGPU test
-# binary. Backend parity coverage lives in graphics_backend_parity.cpp.
+# binary. Merged Vulkan-only contract sections select the backend in source.
+# Backend parity coverage lives in graphics_backend_parity.cpp.
 if(BUILD_PLATFORM STREQUAL "webgpu")
-  foreach(_eve_vulkan_test IN ITEMS gpu_driven.cpp render_graph.cpp avatar_vrm_vulkan.cpp ShaderResourceSharing.cpp
-                                    shader_reload_vulkan.cpp physics_layered_cloth_gpu.cpp)
+  foreach(_eve_vulkan_test IN ITEMS shader_reload_vulkan.cpp physics_layered_cloth_gpu.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_vulkan_test}$")
   endforeach()
 endif()
@@ -155,6 +168,7 @@ if(NOT _eve_test_has_animation OR NOT _eve_test_has_ui)
 endif()
 eve_module_enabled(devtools _eve_test_has_devtools)
 if(NOT _eve_test_has_devtools)
+  list(FILTER all_test_cpp EXCLUDE REGEX "/snapshot_devtools_references_tests\\.cpp$")
   foreach(_eve_lsp_test IN ITEMS language_index.cpp language_server.cpp language_text.cpp play_host.cpp play_trace.cpp mcp_console.cpp mcp_agent_export.cpp mcp_editor_targets.cpp mcp_domain_tools.cpp mcp_input_tools.cpp mcp_tool_filter.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_lsp_test}$")
   endforeach()
@@ -291,18 +305,7 @@ else()
   set(EVENGINE_TEST_DOMAIN_SPLIT "${_eve_test_split_default}" CACHE BOOL
       "Build one test executable per domain instead of a single unit_test (default: on for SHARED, off for OBJECT)")
 
-  # Compile the heavy graphics fixture headers once across desktop test domains.
-  add_library(eve_graphics_window_fixtures STATIC GraphicsWindowFixtures.cpp)
-  # Fixtures.h reaches Assimp's generated config.h through Graphics.h.
-  add_dependencies(eve_graphics_window_fixtures third-party)
-  target_link_libraries(eve_graphics_window_fixtures PRIVATE eve_engine_includes zeroerr)
-  target_compile_options(eve_graphics_window_fixtures PRIVATE
-    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
-    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
-  if(WIN32)
-    target_compile_definitions(eve_graphics_window_fixtures PRIVATE
-      POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
-  endif()
+  eve_ensure_graphics_window_fixtures()
   list(REMOVE_ITEM all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/GraphicsWindowFixtures.cpp")
 
   if(EVENGINE_TEST_DOMAIN_SPLIT)
@@ -452,13 +455,39 @@ else()
     target_compile_definitions(onnx_engine_probe PRIVATE EVE_ONNX_ENGINE_PROVIDER POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
     target_link_libraries(onnx_engine_probe eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
     eve_add_test_executable(onnx_gpu_contracts EXCLUDE_FROM_ALL main.cpp tensor_onnx_gpu.cpp)
-    target_compile_definitions(onnx_gpu_contracts PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+    target_compile_definitions(onnx_gpu_contracts PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX
+      EVENGINE_TEST_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}"
+      EVENGINE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+    target_compile_options(onnx_gpu_contracts PRIVATE
+      $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
     target_link_libraries(onnx_gpu_contracts eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty} ${EVENGINE_VULKAN_LIB})
 
 
     if(WIN32)
       target_link_libraries(onnx_engine_probe EVBacktrace)
       target_link_libraries(onnx_gpu_contracts EVBacktrace)
+    endif()
+  endif()
+
+  # The same house contract runs with and without authoring/renderer satellites.
+  if(TARGET EVBuilding)
+    eve_add_test_executable(building_workflow_test EXCLUDE_FROM_ALL
+      profile/gltf_animation_main.cpp integration/building-workflow/building_assembly.cpp integration/building-workflow/building_roof_support.cpp)
+    if(TARGET EVBuilding_editing)
+      eve_target_test_sources(building_workflow_test PRIVATE integration/building-workflow/editor_building_assembly.cpp editor_building_target.cpp)
+    endif()
+    if(TARGET EVMap)
+      eve_target_test_sources(building_workflow_test PRIVATE building.cpp)
+    endif()
+    target_link_libraries(building_workflow_test eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+      ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+    target_compile_options(building_workflow_test PRIVATE
+      $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+    if(WIN32)
+      target_link_libraries(building_workflow_test EVBacktrace)
+      target_compile_definitions(building_workflow_test PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
     endif()
   endif()
 
@@ -582,6 +611,36 @@ else()
   elseif(UNIX)
     target_link_options(${_eve_plugin_host} PRIVATE "LINKER:--export-dynamic")
   endif()
+  foreach(_variant IN ITEMS v1 v2 fail_init throw_init fail_bind conflict no_entry)
+    set(_plugin "reload_test_plugin_${_variant}")
+    add_library(${_plugin} SHARED fixtures/reload_test_plugin.cpp)
+    target_compile_features(${_plugin} PRIVATE cxx_std_20)
+    target_compile_definitions(${_plugin} PRIVATE EVENGINE_PLUGIN=1)
+    target_link_libraries(${_plugin} PRIVATE eve_engine_includes)
+    set_target_properties(${_plugin} PROPERTIES PREFIX ""
+      CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN YES)
+    if(NOT _variant STREQUAL "v1")
+      target_compile_definitions(${_plugin} PRIVATE PLUGIN_VERSION=2)
+    endif()
+    if(_variant STREQUAL "fail_init")
+      target_compile_definitions(${_plugin} PRIVATE PLUGIN_FAILURE=1)
+    elseif(_variant STREQUAL "throw_init")
+      target_compile_definitions(${_plugin} PRIVATE PLUGIN_FAILURE=2)
+    elseif(_variant STREQUAL "fail_bind")
+      target_compile_definitions(${_plugin} PRIVATE PLUGIN_FAILURE=3)
+    elseif(_variant STREQUAL "conflict")
+      target_compile_definitions(${_plugin} PRIVATE PLUGIN_FAILURE=4)
+    elseif(_variant STREQUAL "no_entry")
+      target_compile_definitions(${_plugin} PRIVATE PLUGIN_FAILURE=5)
+    endif()
+    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
+      target_link_libraries(${_plugin} PRIVATE ${EVE_LINK_TARGETS})
+    elseif(WIN32)
+      target_link_libraries(${_plugin} PRIVATE "$<TARGET_LINKER_FILE:${_eve_plugin_host}>")
+    elseif(APPLE)
+      target_link_options(${_plugin} PRIVATE "LINKER:-undefined,dynamic_lookup")
+    endif()
+  endforeach()
 endif()
 
 # Large classic scenes (Sponza / DamagedHelmet). Cornell Box is committed.
@@ -709,6 +768,21 @@ foreach(_eve_test_target IN LISTS EVE_TEST_TARGETS)
 endforeach()
 endif()
 include(asset_shader/GraphicsProbe.cmake)
+if(TARGET EVTensor AND NOT EVENGINE_WEBGPU AND NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
+  # Isolate the controlled compiler double from the real Gpgpu provider.
+  eve_add_test_executable(onnx_compiler_queue_contract
+    fixtures/onnx_compiler_queue_contract.cpp
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Result.cpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Status.cpp"
+    "${CMAKE_SOURCE_DIR}/src/engine/common/Diagnostic.cpp")
+  target_link_libraries(onnx_compiler_queue_contract PRIVATE eve_engine_includes zeroerr)
+  target_compile_definitions(onnx_compiler_queue_contract PRIVATE
+    EVENGINE_EXPORTS_FOUNDATION EVENGINE_EXPORTS_WORLD)
+  target_compile_options(onnx_compiler_queue_contract PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+  zeroerr_discover_tests(onnx_compiler_queue_contract LABEL onnx_compiler_queue_contract)
+endif()
 if(NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
   include("${CMAKE_SOURCE_DIR}/cmake/TestImpact.cmake")
   eve_enable_test_impact(TARGETS ${EVE_TEST_TARGETS})

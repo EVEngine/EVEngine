@@ -30,18 +30,18 @@ public:
     /** @brief Vertex count of the GPU buffer (morph CPU base may be empty). */
     int gpuVertexCount = 0;
     /** @brief True after joint and weight data has been uploaded for GPU skinning. */
-    bool hasGpuSkinning() const { return gpuSkinned_; }
+    bool hasGpuSkinning() const noexcept { return gpuSkinned_; }
     /** @brief Number of matrices in the current skinning palette. */
-    int getSkinPaletteCount() const { return static_cast<int>(skinPalette_.size() / 16u); }
+    int getSkinPaletteCount() const noexcept { return static_cast<int>(skinPalette_.size() / 16u); }
     /** @brief Copy a dynamically sized column-major palette on the render thread.
      * Invalid/non-finite input leaves the previous palette unchanged. No borrowed
      * pointer survives this call. GPU uploads enforce device storage-buffer limits.
      * @return Success or InvalidArgument; allocation failure leaves state unchanged. */
     [[nodiscard]] Result<void> setSkinPalette(const float* matrices, int matrixCount);
     /** @brief Packed column-major matrix palette used by graphics backends. */
-    const std::vector<float> &skinPalette() const { return skinPalette_; }
+    const std::vector<float> &skinPalette() const noexcept { return skinPalette_; }
     /** @brief Mark whether the backend vertex stream contains skin attributes. */
-    void markGpuSkinned(bool value) { gpuSkinned_ = value; }
+    void markGpuSkinned(bool value) noexcept { gpuSkinned_ = value; }
 
     /** @brief Copy one packed ST channel; finite values/count are checked atomically.
      * Render-thread only, no callbacks. Input is borrowed only during this call.
@@ -85,13 +85,13 @@ private:
 
 public:
     /** @brief Draws . */
-    void draw(Graphics * /*gfx*/, const glm::mat4 & /*matrix*/) const override {}
+    void draw(Graphics* /*gfx*/, const glm::mat4& /*matrix*/) const override {}
     /**
      * @brief Screen-space black proxy for volumetric occlusion.
      * Interprets matrix as 2D affine (translation + scale) and fills a solid rect —
      * callers should pass a pixel-space placement (e.g. projected AABB).
      */
-    void drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const override;
+    void drawOcclusion(Graphics* gfx, const glm::mat4& matrix) const override;
 
     // ---- morph targets (CPU) ----
     /** @brief Clears morph data. */

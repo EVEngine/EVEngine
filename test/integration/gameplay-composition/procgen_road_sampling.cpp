@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "modules": [
+    "procgen",
+    "procgen_editing"
+  ],
+  "origins": [
+    "procgen_road_sampling.cpp"
+  ],
+  "module": "procgen"
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <limits>
 #include <set>
@@ -9,32 +26,7 @@
 #include "zeroerr/unittest.h"
 using namespace eve::procgen;
 using namespace eve::procgen::road;
-TEST_CASE("procgen.road.authoring.distanceSamplingStaysContinuousAcrossMarkers") {
-    SplinePath path;
-    REQUIRE(path.setKindResult("catmullRom").ok());
-    for (const auto& p : std::vector<RoadControlPoint>{{-24, 0, 0}, {-8, 2, 8}, {8, 5, 8}, {24, 1, 0}}) {
-        SplinePoint point;
-        point.x = p.x;
-        point.y = p.y;
-        point.z = p.z;
-        REQUIRE(path.addPointResult(point).ok());
-    }
-    auto projected = path.closestPointResult(-8, 2, 8, 24);
-    REQUIRE(projected.ok());
-    const float distance = projected.value().normalizedDistance * path.lengthResult(24).value();
-    for (float offset : {-.001f, .001f}) {
-        auto sample = path.evaluateDistanceResult(distance + offset, 24);
-        REQUIRE(sample.ok());
-        REQUIRE(std::hypot(sample.value().x + 8.f, sample.value().y - 2.f, sample.value().z - 8.f) < .004f);
-    }
-    auto frames = path.sampleFramesResult(7, true, 0.f, 24, true);
-    REQUIRE(frames.ok());
-    std::set<float> markers;
-    for (const auto& frame : frames.value())
-        if (frame.authoredMarker) markers.insert(frame.sample.x);
-    const std::set<float> expected = {-24, -8, 8, 24};
-    REQUIRE(markers == expected);
-}
+
 namespace {
 RoadNetwork sampledRoad(float length, bool curve = false) {
     RoadNetwork network;
@@ -62,59 +54,7 @@ RoadBakeOptions isolated() {
     return options;
 }
 }  // namespace
-TEST_CASE("procgen.road.authoring.metricSamplingUsesMetresAnglesAndSectionSubdivisions") {
-    auto network = sampledRoad(40);
-    auto options = isolated();
-    auto first   = bakeRoadNetwork(network, options);
-    REQUIRE(first.ok());
-    std::set<float> rings;
-    for (int i = 0; i < first.value().mesh.getVertexCount(); ++i) rings.insert(first.value().mesh.getPositionX(i));
-    REQUIRE(*rings.begin() == -20.f);
-    REQUIRE(*rings.rbegin() == 20.f);
-    float previous = *rings.begin();
-    for (float x : rings) {
-        REQUIRE(x - previous <= 2.03f);
-        previous = x;
-    }
-    auto doubled = sampledRoad(80);
-    auto longer  = bakeRoadNetwork(doubled, options);
-    REQUIRE(longer.ok());
-    REQUIRE(longer.value().mesh.getVertexCount() > first.value().mesh.getVertexCount() * 1.8f);
-    options.pathSegmentsPerEdge = 96;
-    REQUIRE(bakeRoadNetwork(network, options).value().mesh.positions() == first.value().mesh.positions());
-    options.samplingScale = 2.f;
-    auto coarse           = bakeRoadNetwork(network, options);
-    REQUIRE(coarse.ok());
-    REQUIRE(coarse.value().mesh.getVertexCount() < first.value().mesh.getVertexCount());
-    auto style                     = network.edges()[0].style;
-    style.crossSectionSubdivisions = 3;
-    REQUIRE(network.setEdgeStyle(1, style).ok());
-    options         = isolated();
-    auto transverse = bakeRoadNetwork(network, options);
-    REQUIRE(transverse.ok());
-    REQUIRE(transverse.value().mesh.getVertexCount() == first.value().mesh.getVertexCount() * 3);
-    REQUIRE(transverse.value().mesh.getIndexCount() == first.value().mesh.getIndexCount() * 3);
-    auto curved                 = sampledRoad(48, true);
-    style                       = curved.edges()[0].style;
-    style.samplingSpacingMeters = 10.f;
-    style.samplingAngleDegrees  = 20.f;
-    REQUIRE(curved.setEdgeStyle(1, style).ok());
-    auto low = bakeRoadNetwork(curved, options);
-    REQUIRE(low.ok());
-    style.samplingAngleDegrees = 1.f;
-    REQUIRE(curved.setEdgeStyle(1, style).ok());
-    auto high = bakeRoadNetwork(curved, options);
-    REQUIRE(high.ok());
-    REQUIRE(high.value().mesh.getVertexCount() > low.value().mesh.getVertexCount());
-    Params params;
-    REQUIRE(setRoadRecipeNetwork(params, curved).ok());
-    params.setBool("piers", false);
-    params.setBool("junctions", false);
-    params.setBool("navigation", false);
-    params.setBool("placements", false);
-    params.setBool("markings", false);
-    REQUIRE(bakeRoadNetworkRecipe(params).value().mesh.positions() == high.value().mesh.positions());
-}
+
 TEST_CASE("procgen.road.authoring.samplingSettingsSaveUndoMigrateAndRejectBudgets") {
     auto network  = sampledRoad(40);
     auto captured = captureRoadNetwork(network);

@@ -5,15 +5,16 @@
 // VirtualGeometry hardware-raster integration. Kept in its own TU (matching
 // dev's split-graphics-backend layout) so the feature stays reviewable.
 
-#include "graphics/vulkan/Graphics.h"
-#include "graphics/vulkan/GraphicsInternal.h"
-#include "graphics/vulkan/Canvas.h"
 #include "common/Assert.h"
 #include "graphics/IndirectBuilder.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
+#include "graphics/ReflectionProbeUpload.h"
 #include "graphics/RenderControl.h"
 #include "graphics/Shadow.h"
+#include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/Graphics.h"
+#include "graphics/vulkan/GraphicsInternal.h"
 
 #include <SDL2/SDL.h>
 
@@ -164,11 +165,15 @@ void Graphics::createGpuDrivenVisResources(int width, int height) {
 // ---- GPU-driven (stage 0): bindless set + per-frame arena + tables ----
 
 FrameArena &Graphics::currentFrameArena() {
-    if (frameArenas_.empty()) {
-        static FrameArena fallback;  // never used for recording; guards odd call order
-        return fallback;
-    }
-    return frameArenas_[currentFrameSlot() % frameArenas_.size()];
+    // Ordinary post-processing records immutable vertices here too, including
+    // devices without bindless/GPU-driven support. Keep that storage in the
+    // Graphics owner and behind the same per-slot fences as every other draw.
+    auto &arena = currentSlot(frameArenas_, frameSlotCount(), currentFrameSlot());
+    if (!arena.ensure(device, 8u << 20,
+                      vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eStorageBuffer |
+                          vk::BufferUsageFlagBits::eIndirectBuffer | vk::BufferUsageFlagBits::eTransferDst))
+        throw Exception("Frame arena unavailable");
+    return arena;
 }
 
 void Graphics::createBindlessSet() {
@@ -763,6 +768,8 @@ GpuMaterialRecord Graphics::buildMaterialRecord(Material *material) {
                             material->getTexCellBombRotation(), 0.f);
     rec.parallax = glm::vec4(material->getParallaxScale(), material->getParallaxMinLayers(),
                              material->getParallaxMaxLayers(), 0.f);
+    rec.surface =
+        glm::vec4(material->getAlphaCutoff(), material->surfaceMode() == SurfaceMode::Masked ? 1.f : 0.f, 0.f, 0.f);
     auto slotOf = [](Texture *t) {
         if (!t || !t->gpuHandle) return kInvalidBindlessSlot;
         return static_cast<GpuTexture *>(t->gpuHandle)->bindlessIndex2D;
@@ -777,6 +784,7 @@ GpuMaterialRecord Graphics::buildMaterialRecord(Material *material) {
                                                                   : 0u;
     if (material->getCastShadow()) rec.flags |= 1u;
     if (material->getCastOcclusion()) rec.flags |= 2u;
+    if (material->getCameraFacing()) rec.flags |= 4u;
     return rec;
 }
 
@@ -1595,8 +1603,8 @@ Graphics::GpuDrivenFrameSet0 Graphics::gpuDrivenFrameSet0() {
                               ? &sceneColorSlots[completedSceneColorSlot].colorGpu
                               : static_cast<GpuTexture *>(whiteTexture->gpuHandle);
     uploadSkinPalette(nullptr, fslots);
-    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, gpuSceneColor,
-                                         gpuDecalAlb, gpuDecalNrm, gpuDecalPrm, fslots);
+    vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, gpuSceneColor, gpuDecalAlb,
+                                         gpuDecalNrm, gpuDecalPrm, fslots, {});
     return {set, uboOffset, shadowOffset};
 }
 

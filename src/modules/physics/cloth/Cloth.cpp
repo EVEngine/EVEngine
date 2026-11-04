@@ -560,7 +560,10 @@ void Cloth::updateSubsteps(float dt, int substeps) {
         collideBounds();
         if (grabIndex_ >= 0) {
             Particle &p = particles_[static_cast<size_t>(grabIndex_)];
-            // Preserve grab target set by moveGrab (px/py already synced there).
+            // Fold/collision passes run after distance constraints and can move
+            // the grabbed particle. Its kinematic target remains authoritative.
+            p.x  = grabX_;
+            p.y  = grabY_;
             p.px = p.x;
             p.py = p.y;
         }

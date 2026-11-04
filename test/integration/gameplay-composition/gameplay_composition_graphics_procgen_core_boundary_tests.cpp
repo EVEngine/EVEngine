@@ -1,9 +1,65 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "particles",
+  "modules": [
+    "camera",
+    "daynight",
+    "particles",
+    "physics_backend",
+    "physics_destruction_graphics",
+    "physics_editor",
+    "physics_softbody",
+    "pixelworld_editor",
+    "procgen"
+  ],
+  "origins": [
+    "particles_dynamic_bones.cpp",
+    "particles_effect_asset.cpp",
+    "pcg_car_camera.cpp",
+    "pcg_photo_mode_apply.cpp",
+    "physics_accelerator_domains.cpp",
+    "physics_destruction_graphics.cpp",
+    "physics_editor_boot.cpp",
+    "physics_simulation_backend_satellites.cpp",
+    "pixelworld_editor.cpp",
+    "procgen_artifact_publish.cpp",
+    "procgen_core_boundary.cpp"
+  ],
+  "cases": {
+    "asset-files": [
+      "particles.effectAsset.playbackLabAssetIsConsumable"
+    ],
+    "physics-backend": [
+      "physics_destruction_graphics.staleWorldRejectsDraw"
+    ],
+    "render-offscreen": [
+      "graphics.pcgMeshLod.speedTreeFadeUsesComplementaryOpaqueCoverage"
+    ],
+    "render-window": [
+      "physics_destruction_graphics.drawsActiveAndBatchesSleepingBones"
+    ],
+    "script-binding": [
+      "procgen.pcgMeshLod.realVmBuildsAndCopiesLevel",
+      "ui.pcgPhotoModeApply.scriptProviderAnswersTheSinkThroughTheSeam",
+      "ui.pcgPhotoModeApply.scriptRefusalDrivesThePlanRollback"
+    ]
+  }
+}
+*/
+// clang-format on
+
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: particles dynamic bones
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_dynamic_bones)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <memory>
+#include <numbers>
 #include <string>
 #include <vector>
 #include "animation/AnimPose.h"
@@ -19,7 +75,6 @@
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleSystem.h"
 #include "particles/Particles.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // particles_dynamic_bones.cpp
 namespace test_particles_dynamic_bones {
@@ -27,9 +82,6 @@ using namespace eve::particles;
 using namespace eve::animation;
 using namespace eve::ik;
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
 
 namespace {
 
@@ -157,7 +209,7 @@ TEST_CASE("particles.attach.spineFollowRotation") {
     ParticleEmitter* e   = mod->newEmitter(4);
     e->setFollowBoneRotation(true);
     e->attachToSpineBone(spine.get(), body);
-    CHECK(std::fabs(e->getDirection() - float(M_PI * 0.5)) < 0.05f);
+    CHECK(std::fabs(e->getDirection() - float(std::numbers::pi_v<double> * 0.5)) < 0.05f);
     e->detach();
 }
 
@@ -168,7 +220,7 @@ TEST_CASE("particles.attach.ik2dBoneEmit") {
     sk->setPosition(0, 100.f, 200.f);
     sk->setRotation(0, 0.f);
     sk->setRotation(b1, 0.f);
-    sk->setRotation(tip, float(M_PI / 2.0));
+    sk->setRotation(tip, float(std::numbers::pi_v<double> / 2.0));
     sk->forwardKinematics();
 
     auto*            mod = Particles::create();
@@ -457,6 +509,8 @@ TEST_CASE("particles.attach.ik3dSolverMovesEmitter") {
     e->setAttachPlane("xy");
     e->setAttachScale(1.f);
     e->attachToSkeleton3D(sk.get(), tip);
+    e->setEmissionRate(0.f);
+    e->start();
     const float x0 = e->getX();
     const float y0 = e->getY();
 
@@ -622,16 +676,12 @@ TEST_CASE("particles.attach.skinTakesPriorityOverBoneOrigin") {
     e->detach();
 }
 }  // namespace test_particles_dynamic_bones
-#undef M_PI
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_effect_asset)
+// Contract section: particles effect asset
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include <fstream>
-#include <memory>
 #include <sstream>
-#include <string>
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/ActionPreview.h"
@@ -640,13 +690,9 @@ TEST_CASE("particles.attach.skinTakesPriorityOverBoneOrigin") {
 #include "common/Capability.h"
 #include "filesystem/Filesystem.h"
 #include "particles/ParticleEffect.h"
-#include "particles/ParticleEmitter.h"
-#include "particles/Particles.h"
 #include "scene/NodeDesc.h"
 #include "scene/Scene.h"
 #include "scene/SceneObject.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // particles_effect_asset.cpp
 namespace test_particles_effect_asset {
 using namespace eve::particles;
@@ -854,19 +900,17 @@ TEST_CASE("particles.actionPreviewRetainsScrubsRebuildsAndCleansVfx") {
     CHECK_EQ(particles->getEmitterCount(), before);
 }
 }  // namespace test_particles_effect_asset
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pcg_car_camera)
+// Contract section: pcg car camera
 #include "PrivateTestScope.h"
+
 #include <zeroerr/unittest.h>
-#include <cmath>
 #include <limits>
-#include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "camera/CameraController.h"
 #include "camera/PcgCarCameraSetup.h"
 #include "camera/PcgFreeCamera.h"
-#include "common/Capability.h"
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
@@ -876,10 +920,11 @@ TEST_CASE("particles.actionPreviewRetainsScrubsRebuildsAndCleansVfx") {
 #include "procgen/PcgMeshLod.h"
 #include "procgen/PcgMeshLodBackup.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
+#include "procgen/heightmap/Heightmap.h"
 #include "scene/Scene.h"
 #include "scene/SceneNodeRef.h"
 #include "ui/PcgPhotoModeApplyPlan.h"
-#include "zeroerr/unittest.h"
 // pcg_car_camera.cpp
 namespace test_pcg_car_camera {
 // pcg_car_camera.cpp
@@ -1327,17 +1372,14 @@ TEST_CASE("graphics.pcgWaterPhotoMode.authorityLeaseRevokesOnDestruction") {
     CHECK(!plan.executeRegistered().ok());
 }
 }  // namespace test_pcg_car_camera
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pcg_photo_mode_apply)
-#include <chrono>
-#include <vector>
-#include "GraphicsParitySupport.h"
+// Contract section: pcg photo mode apply
 #include "PrivateTestScope.h"
+
+#include <chrono>
+#include "GraphicsParitySupport.h"
 #include "ScriptTest.h"
-#include "camera/CameraController.h"
 #include "common/AudioQuery.h"
-#include "common/Capability.h"
 #include "common/FramePresentation.h"
 #include "common/ScriptProvider.h"
 #include "common/Status.h"
@@ -1348,21 +1390,17 @@ TEST_CASE("graphics.pcgWaterPhotoMode.authorityLeaseRevokesOnDestruction") {
 #include "daynight/PcgLightingSunPhotoMode.h"
 #include "daynight/PcgLightingTimePhotoMode.h"
 #include "graphics/AntiAliasing.h"
-#include "graphics/Graphics.h"
 #include "graphics/PcgGraphicsPhotoMode.h"
 #include "graphics/RenderControl.h"
-#include "graphics/RenderSystem3D.h"
 #include "graphics/ShadowScheme.h"
 #include "graphics/Volumetric.h"
 #include "os/OS.h"
 #include "procgen/heightmap/PcgTerrainPhotoMode.h"
 #include "procgen/heightmap/PcgTerrainStreaming.h"
 #include "procgen/heightmap/TerrainPipeline.h"
-#include "ui/PcgPhotoModeApplyPlan.h"
 #include "ui/PcgPhotoModeApplySeam.h"
 #include "ui/PcgPhotoModePhoto.h"
 #include "weather/Weather.h"
-#include "zeroerr/unittest.h"
 // pcg_photo_mode_apply.cpp
 namespace test_pcg_photo_mode_apply {
 using namespace eve;
@@ -1407,7 +1445,7 @@ PcgPhotoModeValues changed() {
     PcgPhotoModeValues v;
     v.setFloat("m_fieldOfView", 75).value();
     v.setBool("m_pcgWeatherRain", true).value();
-    v.setFloat("m_pcgUnderwaterVolume", 0.2f).value();
+    v.setFloat("m_globalVolume", 0.2f).value();
     v.setFloat("m_globalGrassDistance", 350).value();
     return v;
 }
@@ -1636,7 +1674,7 @@ TEST_CASE("ui.pcgPhotoModeApply.cameraAuthorityProjectsAllPostFxFieldsToFinalCom
     CHECK(camera->data()->dofMaxBlurPx > 0.f);
     CHECK_EQ(camera->data()->dofFocusDistance, 24.f);
     CHECK_EQ(camera->data()->dofFocusRange, 60.f);
-    CHECK_EQ(camera->data()->dofMaxBlurPx, 12.f);
+    CHECK_EQ(camera->data()->dofMaxBlurPx, 18.f);  // radius 2 * URP 1.5 * HDRP 1.5 * kernel 4
     CHECK_EQ(camera->getAperture(), 5.6f);
     CHECK_EQ(camera->getFocalLength(), 85.f);
 }
@@ -1772,6 +1810,8 @@ TEST_CASE("ui.pcgPhotoModeApply.framePacingAuthorityAppliesVSyncAndRealFrameCap"
     REQUIRE(plan.executeRegistered().ok());
     CHECK_EQ(presentation.count, 2);
     CHECK_EQ(os.getTargetFramesPerSecond(), 120);
+    // The software cap is active when presentation VSync is disabled.
+    REQUIRE(os.setVerticalSyncCount(0).ok());
     os.limitFrame();
     const auto start = std::chrono::steady_clock::now();
     os.limitFrame();
@@ -2225,16 +2265,12 @@ TEST_CASE_FIXTURE(ScriptPhotoModeApplyTest, "ui.pcgPhotoModeApply.scriptRefusalD
     CHECK(plan.getRollbackComplete());
 }
 }  // namespace test_pcg_photo_mode_apply
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_accelerator_domains)
+
+// Contract section: physics accelerator domains
 #include "PrivateTestScope.h"
+
 #include <array>
-#include <memory>
-#include <string>
-#include "common/Capability.h"
 #include "physics/backend/SimulationBackend.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_accelerator_domains.cpp
 namespace test_physics_accelerator_domains {
 namespace {
@@ -2515,13 +2551,11 @@ TEST_CASE("physics.accelerator.registryPreservesLegacySingleProviderCompatibilit
     CHECK_EQ(legacy.createCount, 1);
 }
 }  // namespace test_physics_accelerator_domains
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_destruction_graphics)
+// Contract section: physics destruction graphics
 #include "PrivateTestScope.h"
+
 #include <SDL2/SDL.h>
-#include <memory>
-#include "graphics/Graphics.h"
 #include "physics/Body3D.h"
 #include "physics/Physics.h"
 #include "physics/World3D.h"
@@ -2532,8 +2566,6 @@ TEST_CASE("physics.accelerator.registryPreservesLegacySingleProviderCompatibilit
 #include "physics/destruction/editing/FractureRecipeSchema.h"
 #include "physics/destruction/graphics/GeometryCollectionRenderer.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_destruction_graphics.cpp
 namespace test_physics_destruction_graphics {
 using eve::physics::BoneRuntimeState;
@@ -2660,17 +2692,14 @@ TEST_CASE("physics_destruction_graphics.staleWorldRejectsDraw") {
     REQUIRE(!drawn.ok());
 }
 }  // namespace test_physics_destruction_graphics
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_editor_boot)
+// Contract section: physics editor boot
 #include "PrivateTestScope.h"
-#include <string>
+
 #include "common/Module.h"
 #include "editor/Editor.h"
 #include "physics/editing/PhysicsEditingProvider.h"
 #include "physics/editor/PhysicsEditorModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_editor_boot.cpp
 namespace test_physics_editor_boot {
 TEST_CASE("physics.editor.bootPublishesEditingFactory") {
@@ -2690,21 +2719,17 @@ TEST_CASE("physics.editor.bootPublishesEditingFactory") {
     CHECK_EQ(target->targetId().value(), std::string("boot.collider"));
 }
 }  // namespace test_physics_editor_boot
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_simulation_backend_satellites)
+// Contract section: physics simulation backend satellites
 #include "PrivateTestScope.h"
+
 #include <cstdint>
-#include <memory>
 #include <utility>
 #include "fluids/Fluids.h"
-#include "physics/backend/SimulationBackend.h"
 #include "physics/cloth/Cloth.h"
 #include "physics/cloth/Cloth3D.h"
 #include "physics/rope/Rope3D.h"
 #include "physics/softbody/SoftBody3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_simulation_backend_satellites.cpp
 namespace test_physics_simulation_backend_satellites {
 namespace {
@@ -2773,17 +2798,14 @@ TEST_CASE("physics.backend.cpuSurfaceFluidConforms") {
     checkCpuSatelliteContract(fluid);
 }
 }  // namespace test_physics_simulation_backend_satellites
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pixelworld_editor)
+// Contract section: pixelworld editor
 #include "PrivateTestScope.h"
-#include <string>
+
 #include "pixelworld/PixelMaterialCatalogCodec.h"
 #include "pixelworld/PixelWorld.h"
 #include "pixelworld/editor/PixelWorldCatalogPanel.h"
 #include "ui/UIHost.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // pixelworld_editor.cpp
 namespace test_pixelworld_editor {
 using namespace eve::pixelworld;
@@ -2914,22 +2936,14 @@ TEST_CASE("pixelworld_editor_apply_reuses_paused_authority_and_fingerprint_guard
     CHECK(!panel.apply(control, worldId, expected).ok());
 }
 }  // namespace test_pixelworld_editor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_artifact_publish)
+// Contract section: procgen artifact publish
 #include "PrivateTestScope.h"
-#include <array>
-#include <cstdint>
-#include <memory>
-#include <string>
+
 #include <string_view>
-#include <vector>
-#include "common/Capability.h"
 #include "graphics/ArtifactProvider.h"
 #include "procgen/ArtifactPublish.h"
 #include "transaction/Transaction.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // procgen_artifact_publish.cpp
 namespace test_procgen_artifact_publish {
 using namespace eve::procgen;
@@ -3201,32 +3215,18 @@ TEST_CASE("procgen.artifactPublish.webGpuDescriptorParityUsesCommonMeshView") {
     CHECK_NE(descriptor->checksum, std::uint64_t(0));
 }
 }  // namespace test_procgen_artifact_publish
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_core_boundary)
+// Contract section: procgen core boundary
 #include "PrivateTestScope.h"
-#include <zeroerr/unittest.h>
-#include <array>
-#include <cmath>
-#include <cstdint>
+
 #include <cstring>
-#include <memory>
 #include <span>
-#include <string>
-#include <string_view>
 #include <type_traits>
-#include <utility>
-#include <vector>
-#include "common/Capability.h"
 #include "common/Snapshot.h"
-#include "graphics/ArtifactProvider.h"
-#include "image/ImageData.h"
 #include "map/ArtifactProvider.h"
 #include "physics/ArtifactProvider.h"
-#include "procgen/ArtifactPublish.h"
 #include "procgen/GeneratedArtifact.h"
 #include "procgen/Params.h"
-#include "procgen/Procgen.h"
 #include "procgen/core/ProcgenCore.h"
 #include "procgen/mesh/DynamicMeshUvPaintSession.h"
 #include "procgen/mesh/GeometryStroke.h"
@@ -3235,8 +3235,6 @@ TEST_CASE("procgen.artifactPublish.webGpuDescriptorParityUsesCommonMeshView") {
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/TextureRecipe.h"
 #include "scene/ArtifactProvider.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // procgen_core_boundary.cpp
 namespace test_procgen_core_boundary {
 // procgen_core_boundary.cpp
@@ -4169,4 +4167,3 @@ TEST_CASE("procgen.geometryStroke.supportsPlanarSpacingUndoAndAtomicValidation")
     CHECK(!stroke.undoResult().ok());
 }
 }  // namespace test_procgen_core_boundary
-#endif

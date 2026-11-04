@@ -34,7 +34,7 @@ struct Visible { counter: atomic<u32>, ids: array<u32> };
 @group(0) @binding(5) var<storage, read_write> u: U;
 @group(0) @binding(6) var<storage, read_write> stats: array<atomic<u32>>;
 fn center(id:u32)->vec3f { let v=cl[id*4u]; return vec3f(bitcast<f32>(v.x),bitcast<f32>(v.y),bitcast<f32>(v.z)); }
-fn err(id:u32)->f32 { return bitcast<f32>(cl[id*4u+2u].y); }
+fn err(id:u32)->f32 { return bitcast<f32>(cl[id*4u+2u].x)*u.params.z; }
 @compute @workgroup_size(64)
 fn main(@builtin(global_invocation_id) gid:vec3u) {
  let id=gid.x; if(id>=u32(u.misc.x)){return;}

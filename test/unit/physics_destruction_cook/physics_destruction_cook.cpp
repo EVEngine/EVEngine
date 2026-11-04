@@ -1,6 +1,15 @@
-#include "zeroerr/assert.h"
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "physics_destruction_cook.cpp"
+  ]
+}
+*/
+// clang-format on
 
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include "asset/CanonicalMesh.h"
@@ -10,6 +19,7 @@
 #include "schema/SchemaRegistry.h"
 
 #include <cmath>
+#include <cstdint>
 
 using eve::asset::CanonicalMeshData;
 using eve::physics::FractureMode;
@@ -19,156 +29,144 @@ using eve::physics::destruction_cook::cookGeometryCollection;
 
 namespace {
 
-CanonicalMeshData unitCubeMesh() {
+CanonicalMeshData cube() {
     CanonicalMeshData mesh;
-    // 8 cube corners around the origin, edge length 2.
-    const float p[] = {
-        -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1,
-    };
-    mesh.positions.assign(p, p + 24);
-    const std::uint32_t idx[] = {
-        0, 1, 2, 0, 2, 3, 4, 6, 5, 4, 7, 6, 0, 4, 5, 0, 5, 1, 1, 5, 6, 1, 6, 2, 2, 6, 7, 2, 7, 3, 3, 7, 4, 3, 4, 0,
-    };
-    mesh.indices.assign(idx, idx + 36);
+    mesh.positions = {-1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1};
+    mesh.indices   = {0, 1, 2, 0, 2, 3, 4, 6, 5, 4, 7, 6, 0, 4, 5, 0, 5, 1,
+                      1, 5, 6, 1, 6, 2, 2, 6, 7, 2, 7, 3, 3, 7, 4, 3, 4, 0};
     return mesh;
+}
+
+FractureRecipe fixedSites(int count, std::uint64_t seed = 1) {
+    FractureRecipe recipe;
+    recipe.mode             = FractureMode::UniformVoronoi;
+    recipe.siteCountMin     = count;
+    recipe.siteCountMax     = count;
+    recipe.seed             = seed;
+    recipe.minimumThickness = 0.05f;
+    return recipe;
 }
 
 }  // namespace
 
-TEST_CASE("physics_destruction_cook.recipeRoundTrip") {
-    FractureRecipe recipe;
-    recipe.mode         = FractureMode::UniformVoronoi;
-    recipe.siteCountMin = 3;
-    recipe.siteCountMax = 5;
-    recipe.seed         = 42;
-    auto encoded        = recipe.toValue();
+TEST_CASE("physics.destruction.cook recipe serializes a versioned deterministic definition") {
+    auto input   = fixedSites(5, 42);
+    auto encoded = input.toValue();
     REQUIRE(encoded.ok());
     auto decoded = FractureRecipe::fromValue(encoded.value());
     REQUIRE(decoded.ok());
-    REQUIRE(decoded.value().mode == FractureMode::UniformVoronoi);
-    REQUIRE_EQ(decoded.value().siteCountMin, 3);
-    REQUIRE_EQ(decoded.value().siteCountMax, 5);
-    REQUIRE_EQ(decoded.value().seed, 42u);
+    CHECK(decoded.value().mode == FractureMode::UniformVoronoi);
+    CHECK_EQ(decoded.value().siteCountMin, 5);
+    CHECK_EQ(decoded.value().siteCountMax, 5);
+    CHECK_EQ(decoded.value().seed, std::uint64_t{42});
+    CHECK_EQ(decoded.value().randomStreamName, input.randomStreamName);
     REQUIRE(FractureRecipe::ensureSchemaRegistered().ok());
-    REQUIRE(eve::schema::SchemaRegistry::resolve(std::string(FractureRecipe::SchemaId), 1) != nullptr);
+    CHECK(eve::schema::SchemaRegistry::resolve(std::string(FractureRecipe::SchemaId), FractureRecipe::SchemaVersion) !=
+          nullptr);
 }
 
-TEST_CASE("physics_destruction_cook.uniformVoronoiIsBitExactForSeed") {
-    FractureRecipe recipe;
-    recipe.mode             = FractureMode::UniformVoronoi;
-    recipe.siteCountMin     = 4;
-    recipe.siteCountMax     = 4;
-    recipe.seed             = 20260929;
-    recipe.randomStreamName = "destruction.fracture";
-    recipe.minimumThickness = 0.05f;
-    auto a                  = cookGeometryCollection(unitCubeMesh(), recipe);
-    auto b                  = cookGeometryCollection(unitCubeMesh(), recipe);
-    REQUIRE(a.ok());
-    REQUIRE(b.ok());
-    REQUIRE_EQ(a.value().bones.size(), b.value().bones.size());
-    REQUIRE_EQ(a.value().edges.size(), b.value().edges.size());
-    for (std::size_t i = 0; i < a.value().bones.size(); ++i) {
-        REQUIRE_EQ(a.value().bones[i].localX, b.value().bones[i].localX);
-        REQUIRE_EQ(a.value().bones[i].localY, b.value().bones[i].localY);
-        REQUIRE_EQ(a.value().bones[i].localZ, b.value().bones[i].localZ);
-        REQUIRE_EQ(a.value().bones[i].halfExtentX, b.value().bones[i].halfExtentX);
+TEST_CASE("physics.destruction.cook fixed seed and stream give identical owning assets") {
+    const auto input  = cube();
+    const auto recipe = fixedSites(4, 20260929);
+    auto       first  = cookGeometryCollection(input, recipe);
+    auto       second = cookGeometryCollection(input, recipe);
+    REQUIRE(first.ok());
+    REQUIRE(second.ok());
+    CHECK_EQ(first.value().bones.size(), std::size_t{4});
+    CHECK_EQ(first.value().bones.size(), second.value().bones.size());
+    CHECK_EQ(first.value().edges.size(), second.value().edges.size());
+    for (std::size_t i = 0; i < first.value().bones.size(); ++i) {
+        const auto& a = first.value().bones[i];
+        const auto& b = second.value().bones[i];
+        CHECK_EQ(a.localX, b.localX);
+        CHECK_EQ(a.localY, b.localY);
+        CHECK_EQ(a.localZ, b.localZ);
+        CHECK_EQ(a.halfExtentX, b.halfExtentX);
+        CHECK_EQ(a.mass, b.mass);
+        CHECK_EQ(a.fractureLevel, 0);
     }
-    for (std::size_t i = 0; i < a.value().edges.size(); ++i) {
-        REQUIRE_EQ(a.value().edges[i].boneA, b.value().edges[i].boneA);
-        REQUIRE_EQ(a.value().edges[i].boneB, b.value().edges[i].boneB);
-        REQUIRE_EQ(a.value().edges[i].strainThreshold, b.value().edges[i].strainThreshold);
+    for (std::size_t i = 0; i < first.value().edges.size(); ++i) {
+        CHECK_EQ(first.value().edges[i].boneA, second.value().edges[i].boneA);
+        CHECK_EQ(first.value().edges[i].boneB, second.value().edges[i].boneB);
+        CHECK_EQ(first.value().edges[i].strainThreshold, second.value().edges[i].strainThreshold);
     }
-    auto encoded = a.value().toValue();
-    REQUIRE(encoded.ok());
+    REQUIRE(first.value().validate().ok());
+    REQUIRE(first.value().toValue().ok());
 }
 
-TEST_CASE("physics_destruction_cook.seedChangeChangesTopology") {
-    FractureRecipe recipe;
-    recipe.mode         = FractureMode::UniformVoronoi;
-    recipe.siteCountMin = 5;
-    recipe.siteCountMax = 5;
-    recipe.seed         = 1;
-    auto a              = cookGeometryCollection(unitCubeMesh(), recipe);
-    recipe.seed         = 2;
-    auto b              = cookGeometryCollection(unitCubeMesh(), recipe);
-    REQUIRE(a.ok());
-    REQUIRE(b.ok());
-    bool differ = a.value().bones.size() != b.value().bones.size();
-    if (!differ) {
-        for (std::size_t i = 0; i < a.value().bones.size(); ++i) {
-            if (a.value().bones[i].localX != b.value().bones[i].localX ||
-                a.value().bones[i].localY != b.value().bones[i].localY ||
-                a.value().bones[i].localZ != b.value().bones[i].localZ) {
-                differ = true;
-                break;
-            }
-        }
+TEST_CASE("physics.destruction.cook seed changes site placement while count stays fixed") {
+    const auto input  = cube();
+    auto       recipe = fixedSites(5, 1);
+    auto       first  = cookGeometryCollection(input, recipe);
+    recipe.seed       = 2;
+    auto second       = cookGeometryCollection(input, recipe);
+    REQUIRE(first.ok());
+    REQUIRE(second.ok());
+    REQUIRE_EQ(first.value().bones.size(), std::size_t{5});
+    REQUIRE_EQ(second.value().bones.size(), std::size_t{5});
+    bool changed = false;
+    for (std::size_t i = 0; i < first.value().bones.size(); ++i) {
+        const auto& a = first.value().bones[i];
+        const auto& b = second.value().bones[i];
+        if (a.localX != b.localX || a.localY != b.localY || a.localZ != b.localZ) changed = true;
     }
-    REQUIRE(differ);
+    CHECK(changed);
 }
 
-TEST_CASE("physics_destruction_cook.planarAndRadialProduceBones") {
+TEST_CASE("physics.destruction.cook planar and radial recipes both produce valid fragments") {
     FractureRecipe planar;
-    planar.mode             = FractureMode::Planar;
-    planar.planeNormals     = {1.f, 0.f, 0.f, 0.f, 1.f, 0.f};
-    planar.planeOffsets     = {0.f, 0.f};
-    planar.minimumThickness = 0.05f;
-    auto planarAsset        = cookGeometryCollection(unitCubeMesh(), planar);
+    planar.mode         = FractureMode::Planar;
+    planar.planeNormals = {1.f, 0.f, 0.f, 0.f, 1.f, 0.f};
+    planar.planeOffsets = {0.f, 0.f};
+    auto planarAsset    = cookGeometryCollection(cube(), planar);
     REQUIRE(planarAsset.ok());
-    REQUIRE(planarAsset.value().bones.size() >= 2u);
+    CHECK(planarAsset.value().bones.size() >= 2u);
+    CHECK(planarAsset.value().validate().ok());
 
     FractureRecipe radial;
-    radial.mode             = FractureMode::Radial;
-    radial.radialSpokes     = 4;
-    radial.radialPlanes     = 1;
-    radial.minimumThickness = 0.05f;
-    auto radialAsset        = cookGeometryCollection(unitCubeMesh(), radial);
+    radial.mode         = FractureMode::Radial;
+    radial.radialSpokes = 4;
+    radial.radialPlanes = 1;
+    auto radialAsset    = cookGeometryCollection(cube(), radial);
     REQUIRE(radialAsset.ok());
-    REQUIRE(radialAsset.value().bones.size() >= 2u);
+    CHECK(radialAsset.value().bones.size() >= 2u);
+    CHECK(radialAsset.value().validate().ok());
 }
 
-TEST_CASE("physics_destruction_cook.clusteredVoronoiUsesDualThresholds") {
-    FractureRecipe recipe;
+TEST_CASE("physics.destruction.cook clustered recipe assigns groups and two bond strengths") {
+    auto recipe                   = fixedSites(6, 7);
     recipe.mode                   = FractureMode::ClusteredVoronoi;
-    recipe.siteCountMin           = 6;
-    recipe.siteCountMax           = 6;
     recipe.clusterCount           = 2;
     recipe.clusterRadius          = 0.4f;
-    recipe.seed                   = 7;
     recipe.defaultStrainThreshold = 1.f;
-    auto asset                    = cookGeometryCollection(unitCubeMesh(), recipe);
+    auto asset                    = cookGeometryCollection(cube(), recipe);
     REQUIRE(asset.ok());
-    REQUIRE(asset.value().bones.size() == 6u);
-    bool sawStrong = false;
-    bool sawWeak   = false;
-    for (const auto& edge : asset.value().edges) {
-        if (std::fabs(edge.strainThreshold - 2.f) < 1e-5f) sawStrong = true;
-        if (std::fabs(edge.strainThreshold - 0.5f) < 1e-5f) sawWeak = true;
-    }
-    REQUIRE(sawStrong);
-    REQUIRE(sawWeak);
-    bool sawCluster0 = false;
-    bool sawCluster1 = false;
+    REQUIRE_EQ(asset.value().bones.size(), std::size_t{6});
+    bool group0 = false, group1 = false, strong = false, weak = false;
     for (const auto& bone : asset.value().bones) {
-        if (bone.clusterId == 0) sawCluster0 = true;
-        if (bone.clusterId == 1) sawCluster1 = true;
-        REQUIRE(bone.clusterId >= 0);
-        REQUIRE(bone.clusterId < 2);
-        REQUIRE_EQ(bone.fractureLevel, 0);
+        group0 = group0 || bone.clusterId == 0;
+        group1 = group1 || bone.clusterId == 1;
+        CHECK(bone.clusterId >= 0);
+        CHECK(bone.clusterId < 2);
     }
-    REQUIRE(sawCluster0);
-    REQUIRE(sawCluster1);
+    for (const auto& edge : asset.value().edges) {
+        strong = strong || std::fabs(edge.strainThreshold - 2.f) < 1e-5f;
+        weak   = weak || std::fabs(edge.strainThreshold - 0.5f) < 1e-5f;
+    }
+    CHECK(group0);
+    CHECK(group1);
+    CHECK(strong);
+    CHECK(weak);
 }
 
-TEST_CASE("physics_destruction_cook.rejectsThinMesh") {
+TEST_CASE("physics.destruction.cook rejects thin meshes and excessive output budgets") {
     CanonicalMeshData flat;
-    flat.positions = {-1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1};
-    flat.indices   = {0, 1, 2, 0, 2, 3};
-    FractureRecipe recipe;
-    recipe.mode             = FractureMode::UniformVoronoi;
-    recipe.siteCountMin     = 2;
-    recipe.siteCountMax     = 2;
+    flat.positions          = {-1, 0, -1, 1, 0, -1, 1, 0, 1, -1, 0, 1};
+    flat.indices            = {0, 1, 2, 0, 2, 3};
+    auto recipe             = fixedSites(2);
     recipe.minimumThickness = 0.2f;
-    auto cooked             = cookGeometryCollection(flat, recipe);
-    REQUIRE(!cooked.ok());
+    CHECK(!cookGeometryCollection(flat, recipe).ok());
+    recipe              = fixedSites(5);
+    recipe.maximumBones = 4;
+    REQUIRE(!cookGeometryCollection(cube(), recipe).ok());
 }

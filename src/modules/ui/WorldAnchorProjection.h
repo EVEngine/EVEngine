@@ -4,7 +4,8 @@
 
 #include "ui/UIHost.h"
 
-#include <glm/mat4x4.hpp>
+// Incomplete glm::mat4 is enough for const-reference parameters.
+#include <glm/fwd.hpp>
 
 #include <cstddef>
 #include <vector>

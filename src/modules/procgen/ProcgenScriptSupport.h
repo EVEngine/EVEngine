@@ -174,6 +174,7 @@ ssq::Table makeOwnedNativeProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Re
 
     auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", value);
+    eve::script::markResultHasValue(result);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
     result.set("handle", static_cast<std::int64_t>(ref.packed()));
@@ -190,6 +191,7 @@ ssq::Table projectBorrowedResult(HSQUIRRELVM vm, eve::script::Borrowed<T> borrow
                     .status());
     auto result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", borrowed.get());
+    eve::script::markResultHasValue(result);
     result.set("ownership", std::string("borrowed"));
     return result;
 }
@@ -208,6 +210,7 @@ ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&
     ssq::Object owned = std::move(object).takeValue();
     auto        result = eve::script::projectStatusResult(vm, eve::Status::success(eve::StatusCode::Applied));
     result.set("value", owned);
+    eve::script::markResultHasValue(result);
     result.set("ownership", std::string("owned"));
     result.set("ownerEpoch", static_cast<std::int64_t>(ref.ownerEpoch));
     result.set("handle", static_cast<std::int64_t>(ref.packed()));

@@ -1,5 +1,7 @@
 # EVEngine 示例总览
 
+- [pcm-2a03](pcm-2a03/README.md)：通用 PCM 流式播放，脚本合成 2A03 风格跳跃、金币和受伤音效，实时波形与缓冲计数。
+
 - [stylized-meadow](stylized-meadow/README.md)：三阶卡通草坪，可调蓝噪声覆盖、GPU 实例化、两组四帧摇曳、同帧阴影取色与稀疏蓝噪声变色。
 
 - [modern-battlefield](modern-battlefield/README.md)：现代陆空动态战场，24 类独立细化资源与逐件检视截图、可转炮塔/炮管、射击弹道、直升机旋翼与飞行编队。
@@ -27,7 +29,7 @@ make run/<platform>-debug GAME=examples/<name>
 2. **`config.nut` 必须赋值 `config` 表**：引擎先给默认 `config`，再 `dofile("config.nut")`。
    自造的 `window_title` / `window_width` 之类全局不会被读取，窗口会静默退回默认 800×600。
 3. **每个示例目录都要有 `README.md`**：说明演示内容、运行命令、操作方式与相关文件。
-4. **每个示例都要登记在本文件的表格中**：不允许出现指向不存在目录的死链接。
+4. **新增示例无需编辑本文件**：示例由目录自动发现；本页列表在文档维护时集中整理，已有链接仍须有效。
 5. **至少运行 2 秒不报错**：`scripts/smoke_examples.sh` 逐个启动可运行示例，`MIN_RUN_SECONDS`
    （默认 2 秒，CI 同为 2 秒；每个示例实际观察 `RUN_SECONDS`，默认 6 秒）之后进程必须
    仍然存活，且日志中不得出现 `frame error`、
@@ -50,12 +52,16 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [building_village](building_village/README.md) | 3D/平面房屋工坊、蓝图、村镇复制、独立改造与存档 |
+| [terrain-navigation-lab](terrain-navigation-lab/README.md) | Real Cesium Man, configurable slope costs, A*/flow-field and capsule terrain traversal; full-map and character cameras. |
 | [advanced-ballistics](advanced-ballistics/README.md) | 12 格高级弹道实验室：预瞄追踪、环绕、随机游走、变速、反弹和组合触发 |
 | [world-sweep-ballistics](world-sweep-ballistics/README.md) | World3D sphere sweeps, optional collision, ricochet, trigger-only contacts and custom-function piercing |
 | [ground-fissure](ground-fissure/README.md) | 参数化地裂：Voronoi 地块、分支传播、碎石扬尘、三种预设、调参与重播 |
+| [meteor-impact](meteor-impact/README.md) | 陨石雨范围攻击、随机落点、错峰爆炸与弹道碎块 |
 | [explosion-lab](explosion-lab/README.md) | 3D 爆炸物理、火球、上升烟雾、火星与冲击环 |
 | [ember-guard](ember-guard/README.md) | 焰卫：六枚环绕火球自主索敌、命中爆燃、返回护卫的俯视角特效场景 |
 | [game-tutorial](game-tutorial/README.md) | EveScript import、输入与碰撞、程序纹理、HUD、热重载及严格版本化存档 |
+| [physics-bake-replay](physics-bake-replay/README.md) | 刚体、布料、绳索、粒子真实录制与持久化，源停用后双实例独立重放 |
 | [railgun-3d](railgun-3d/README.md) | 超电磁炮 3D：瞬闪光束、黄红冷却弹道、等距烟圈与白蓝飘散粒子 |
 | [physics-workshop](physics-workshop/README.md) | 3D 悬索、气动布帆、双配重滑轮与共享阵风场综合模拟 |
 | [physics-force-lab](physics-force-lab/README.md) | 2D/3D 场效果、排水浮力、机翼升阻力与轮胎转动 |
@@ -63,6 +69,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [ai-game](ai-game/README.md) | AI 驾驶真实游戏：Agent 通过 MCP 读状态 / 改数值 / 截图 / 快照复位（含一键复现脚本 `agent_demo.py`） |
 | [ai-editor](ai-editor/README.md) | AI 现场生成项目专属编辑器：`eve mcp` 无头主机 + JSON View + ViewModel 双向绑定（含 `editor_demo.py`） |
 | [inspector-demo](inspector-demo/README.md) | DevTools 属性检视器：自动扫描脚本类及其属性并渲染为可编辑面板（MVVM） |
+| [hud-gallery](hud-gallery/README.md) | 游戏 HUD：设计画布、安全边距、纹理血条、受伤拖尾、技能冷却与输入穿透 |
 | [editor-ui-gallery](editor-ui-gallery/README.md) | 可复用编辑器 UI 套件展示：图标字体、菜单栏、工具栏、搜索侧栏、分屏、卡片、表单控件与游戏内 HUD 共存 |
 | [editor-workspace-shell](editor-workspace-shell/README.md) | 固定 IDE 布局壳：AppFrame / DockArea / PanelFrame / TabContainer + WorkspaceLayoutShell，替代可任意拖动的多 Panel |
 | [editor-host-world](editor-host-world/README.md) | EditorHost 金样例：Action+Voxel Package autoMount + Mode A MCP attach（&lt;30 行胶水） |
@@ -119,6 +126,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 |---|---|
 | [camera-controllers](camera-controllers/README.md) | 第三人称相机：follow / orbit / topdown / firstperson / cinematic |
 | [character-motion-lab](character-motion-lab/README.md) | 三个人物、八种免费动作、跨骨架重定向、同步播放与逐帧观察 |
+| [control-rig-editor](control-rig-editor/README.md) | 原生 Control Rig 制作：控制器拖动、FK/Aim/IK 求解图、关键帧、事务撤销与 AnimClip 烘焙 |
 | [layered-animation](layered-animation/README.md) | 真实 CC0 KayKit 动作叠加：三段动作单独播放 + `AnimLayerMixer`（走路基底 + 脊柱遮罩攻击覆盖 + 受击叠加） |
 | [climbing-motion-matching](climbing-motion-matching/README.md) | 攀爬与动作匹配演示（从示例目录内直接运行） |
 | [building-3d](building-3d/README.md) | 3D 地面放置：射线求交、网格吸附、鬼影与放置会话 |
@@ -194,6 +202,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [terrain-gallery](terrain-gallery/README.md) | 三个固定 seed 在相同生成参数、光照与材质下的并排对比 |
 | [mesh-modifier-lab](mesh-modifier-lab/README.md) | 13 种网格变形变体并排对照：类型化修饰图（bend / twist / FFD / 切面 / 样条 / 声波）、雕刻笔刷、粘液回弹、Mesh Fit、顶点编辑器 |
 | [mesh-contact-fusion](mesh-contact-fusion/README.md) | 接触带融合：静态 `mergeStaticMeshes`（默认关 / 可选开）与实时 `MeshAdhereLive` 并排对照 |
+| [pipe-generator](pipe-generator/README.md) | 交互式样条管道工具：控制点编辑、局部粗细、封盖、闭合与网格精度 |
 | [spline-tube-lab](spline-tube-lab/README.md) | 无源网格生成：样条路径驱动管道 / 带状体 / 自定义截面挤出，含开放与闭合回路、分块、分布采样与行进帧 |
 | [night-city](night-city/README.md) | 自动街区与新版路网结合的夜间都市：SCAD 高楼、发光窗户、路灯、信号灯与人行道 |
 | [automatic-bridge](automatic-bridge/README.md) | 自动桥梁：十种桥型共用起终点、尺寸与可编辑构件计划，含桥墩、护栏、缆索和桁架（`mesh.autoBridge`） |
@@ -285,6 +294,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 想理解这些示例在证明引擎的哪些设计主张，见根目录 [Readme.md](../Readme.md) 的「设计思路」状态表；
 开发者体验类的设计价值（热重载、快照、暂停调试、AI/MCP）集中在 `devlab` 与 `ai-stage` 中体现。
 
+| [impact-arena](impact-arena/README.md) | 三波动作竞技场：通用战斗结算、轻重攻击、闪避与伤害飘字 |
 | [house-collapse](house-collapse/README.md) | Voronoi 房屋预破碎、分阶段坍塌、保存播放与体积烟尘 |
 
 ## Scenes migrated from screenshot tests

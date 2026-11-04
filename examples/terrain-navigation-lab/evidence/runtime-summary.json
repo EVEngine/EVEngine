@@ -1,0 +1,13 @@
+{
+  "durationSeconds": 120.09,
+  "checks": {
+    "survived": true,
+    "ready": true,
+    "bothArrived": true,
+    "progress": true,
+    "noDiagnostics": true
+  },
+  "passed": true,
+  "errors": [],
+  "rssGrowthKiB": 7580
+}

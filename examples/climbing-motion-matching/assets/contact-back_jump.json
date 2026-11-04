@@ -1,0 +1,90 @@
+{
+  "schemaId": "evengine.climbing-anchor-graph",
+  "schemaVersion": 2,
+  "id": "contact:back_jump",
+  "sourceGeometryContentId": "contact:back_jump:v1",
+  "buildSettingsHash": "contact-lab:v1",
+  "nodes": [
+    {
+      "id": "start",
+      "kind": "ledge",
+      "localPosition": [
+        0,
+        1.5,
+        -0.25
+      ],
+      "localNormal": [
+        0,
+        0,
+        -1
+      ],
+      "localTangent": [
+        1,
+        0,
+        0
+      ],
+      "leftHandSocket": [
+        -0.21,
+        1.5,
+        -0.25
+      ],
+      "rightHandSocket": [
+        0.21,
+        1.5,
+        -0.25
+      ],
+      "feetSocket": [
+        0,
+        0.3,
+        -0.25
+      ],
+      "occupancySlots": 1,
+      "tags": []
+    },
+    {
+      "id": "next",
+      "kind": "ledge",
+      "localPosition": [
+        0,
+        1.5,
+        -2.75
+      ],
+      "localNormal": [
+        0,
+        0,
+        1
+      ],
+      "localTangent": [
+        -1,
+        0,
+        0
+      ],
+      "leftHandSocket": [
+        0.21,
+        1.5,
+        -2.75
+      ],
+      "rightHandSocket": [
+        -0.21,
+        1.5,
+        -2.75
+      ],
+      "feetSocket": [
+        0,
+        0.3,
+        -2.75
+      ],
+      "occupancySlots": 1,
+      "tags": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "start",
+      "to": "next",
+      "kind": "jump",
+      "bidirectional": false,
+      "requiredTags": []
+    }
+  ]
+}

@@ -252,7 +252,31 @@ player.setSpeedCurveLoop(true);
 可用 `getSpriteSequenceCacheCount/Bytes` 查看数量与估算显存。
 
 Aseprite 与 TexturePacker 的 JSON Hash 格式可通过
-`newSpriteSheetFromAtlasJson(gfx, texturePath, jsonPath)` 导入；当前明确拒绝 rotated frame。
+`newSpriteSheetFromAtlasJson(gfx, texturePath, jsonPath)` 导入。
+
+### 旋转打包帧
+
+支持 TexturePacker JSON Hash 的 `rotated=true`：表示像素在图集中顺时针旋转
+90°，`frame.w/h` 仍为还原后的内容宽高，实际纹理占用为 `h × w`。
+导入时逆时针还原像素并生成带一像素边缘扩展的运行时图集；混合旋转与未旋转帧可共存。
+使用返回的 `sheet.getTexture()`，不要继续绑定输入 PNG：运行时帧坐标可能已变化。
+未包含旋转帧的图集继续直接加载原纹理。
+
+`sourceSize` 与 `spriteSourceSize` 始终按未旋转的原始画布解释，保持原始尺寸和裁剪偏移；
+`player.bindSprite(sprite)` 同步布局，自定义锚点继续通过 `sprite.setAnchor(x, y)` 设置。
+JSON 的自定义 `pivot` 暂不读取。旋转方向不是顺时针 90° 的其他格式需先转换。
+非法裁剪布局和越出纹理的旋转打包矩形会报出文件及帧名。
+
+归一化只在加载阶段执行，增加一次 CPU 像素复制和纹理上传。运行时图集采用等大小网格，
+内存占用可能高于离线紧密打包结果；任一边超过 16384 像素会明确报错，需拆分图集。
+不需要归一化时也可使用可选的禁用旋转预设：
+
+```sh
+python3 scripts/export_sprite_atlas.py path/to/source-sprites path/to/output/hero
+```
+
+该预设需要 TexturePacker CLI，固定 `--format json --disable-rotation --trim-mode Trim --extrude 1`。
+不要只修改 JSON 中的 `rotated` 标志而不重新打包纹理。
 
 ## 基本用法（Spine region）
 

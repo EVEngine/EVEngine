@@ -22,3 +22,9 @@ Controls:
 
 The preview tone is generated in C++ (`asset://preview/tone.sine`) so the example
 does not need a bundled clip.
+
+The shared `EditorWorkspacePresenter` mounts the workspace and generates Inspector fields from the native presentation schema. It routes history, shortcuts and diagnostics through the domain editor. Numeric drags commit once on release; Escape, focus loss and close cancel the draft. See [framework migration](../../docs/dev/2026-10-23-editor-ui-migration.md).
+
+Audio output is disabled by default: the example uses the silent clock transport and starts stopped. Play/Pause advances only the visual playhead.
+
+预览在后台生成，由 `update()` 发布；等待期间保留上一份有效结果。Inspector 显示预览状态，关闭共享 presenter 会取消待处理结果。provider 重绑及 generation 契约见 `docs/dev/2026-10-24-async-editor-preview.md`。

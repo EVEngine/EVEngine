@@ -92,3 +92,8 @@ eve_declare_module(NAME physics_destruction_dust DIR physics/destruction/fx
 # L7 -- physics
 eve_declare_module(NAME physics_editor LAYER 7 DEPS asset editor physics_editing
                    SCRIPT PhysicsEditorModule SLOT physicsEditor GROUP 3d web)
+
+# L4 -- Presentation alone crosses the rendering boundary; capture belongs to source modules.
+eve_declare_module(NAME physics_bake_graphics DIR physics/bake_graphics LIB EVPhysicsBakeGraphics LAYER 4
+                   SCRIPT PhysicsBakeGraphics SLOT physicsBakeGraphics
+                   DEPS graphics physics_backend GROUP 2d 3d web)

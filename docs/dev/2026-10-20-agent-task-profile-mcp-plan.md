@@ -1,7 +1,8 @@
 # Agent 任务剖面（Task Profile）与少 Token 内容面 — 修改方案
 
 日期：2026-10-20  
-状态：设计提案（本文只定合同与落地顺序，不代表代码已实现）  
+状态：A–E 已落地于同一分支（剖面 + 合同/defer + rpg gameplay publish + recipe/workshop facade + rpg-classic observe/EM12）；EA2/EA6 地图刷仍为 `Unsupported` 显式拒绝（见 `examples/rpg-classic/WORKSHOP_DEBT.md`）  
+
 来源：会话结论（按任务主动裁切工作面 / recipe+约束 / 少写脚本）+ Godot MCP 实探与 EVEngine atelier/bench 问题汇总  
 相关：[`AI知识补偿.md`](AI知识补偿.md)、[`Agent游戏开发范式.md`](Agent游戏开发范式.md)、[`2026-09-05-play-verify-evolve.md`](2026-09-05-play-verify-evolve.md)、[`AI与MCP支持.md`](AI与MCP支持.md)、[`AI场景导演.md`](AI场景导演.md)、[`2026-08-29-agent-native-engine-architecture.md`](2026-08-29-agent-native-engine-architecture.md)
 
@@ -270,7 +271,7 @@ eve_workshop
 
 ### Slice E — 工坊质量债（可并行，非门禁）
 
-EA2/EA5/EA6/EQ* 按 FINDINGS 另开 PR；不得阻断 A–D。
+本 PR 已收口：`examples/rpg-classic` 的 EM12 / EM4 / EA5 模式键与 EQ4 observe smoke；EA2/EA6 仍见 `WORKSHOP_DEBT.md`（`eve_workshop` `map.brush` → Unsupported）。
 
 ## 11. 验收标准
 

@@ -7,8 +7,8 @@
 #include "graphics/fog/FogProfile.h"
 #include "graphics/fog/FogTypes.h"
 
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
+// Incomplete glm types are enough for const-reference parameters.
+#include <glm/fwd.hpp>
 
 namespace eve::graphics {
 class AtmosphereVolume;

@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "animation",
+  "modules": [
+    "action",
+    "animation"
+  ],
+  "origins": [
+    "action_upper_body_orientation.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "action/ActionTimeline.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimLayerMixer.h"
@@ -109,7 +126,7 @@ TEST_CASE("actionMontage.upperBodyCompensationObservesProviderMaskAndFullBodyPol
     auto corrected = coordinator.compose(base);
     REQUIRE(corrected.ok());
     CHECK_EQ(coordinator.upperBodyOrientationStatus(), eve::animation::UpperBodyOrientationStatus::Applied);
-    CHECK(std::fabs(corrected.value().get().world(2).qy - std::sin(0.2f)) < 1e-5f);
+    CHECK(std::fabs(corrected.value().get().world(2).qy - std::sin(0.2f * 0.5f)) < 1e-5f);
 
     REQUIRE(coordinator.setLayerBoneMask(0, upperMask).ok());
     REQUIRE(coordinator.compose(base).ok());
@@ -161,7 +178,7 @@ TEST_CASE("actionMontage.upperBodyCompensationRunsBeforeAdditiveLayersDeterminis
     auto first = coordinator.compose(base);
     REQUIRE(first.ok());
     const float qy = first.value().get().world(2).qy;
-    CHECK(std::fabs(qy - std::sin(0.3f)) < 1e-5f);
+    CHECK(std::fabs(qy - std::sin((0.2f + 0.1f) * 0.5f)) < 1e-5f);
     auto second = coordinator.compose(base);
     REQUIRE(second.ok());
     CHECK_EQ(second.value().get().world(2).qy, qy);

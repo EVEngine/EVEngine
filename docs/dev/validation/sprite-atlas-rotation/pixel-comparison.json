@@ -1,0 +1,33 @@
+{
+  "comparison.png": {
+    "different_pixels": 105,
+    "pixels_above_1": 0,
+    "max_channel_delta": 1,
+    "mean_channel_delta": [
+      0.00013846153846153847,
+      0.0001353846153846154,
+      0.0001446153846153846
+    ]
+  },
+  "animation-a.png": {
+    "different_pixels": 105,
+    "pixels_above_1": 0,
+    "max_channel_delta": 1,
+    "mean_channel_delta": [
+      0.00013846153846153847,
+      0.0001353846153846154,
+      0.0001446153846153846
+    ]
+  },
+  "animation-b.png": {
+    "different_pixels": 123,
+    "pixels_above_1": 1,
+    "max_channel_delta": 2,
+    "mean_channel_delta": [
+      0.00012923076923076923,
+      0.00016307692307692307,
+      0.00016
+    ]
+  },
+  "animation_changed_pixels": 157808
+}

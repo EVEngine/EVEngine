@@ -10,7 +10,7 @@
 
 1. **删除** `scripts/architecture_contracts.json` 与 `scripts/architecture_contracts/*.json`（约 8k 行双写登记表）。
 2. **重写** `check_architecture_contracts.py`：只做改动行代码 lint，不再加载 / 校验 catalogue。
-3. **保留**：api-shape、裸指针 `@ownership`/`@lifetime`、G-3（`HOT_PATH_GLOBS` 内嵌于脚本）、G-4、G-5。
+3. **保留**：api-shape、裸指针 `@ownership`/`@lifetime`、G-3（源码或目录声明热路径）、G-4、G-5。
 4. **废除**：G-1/G-2 对 JSON `provides`/`requires` 的交叉登记；新 Link/System 的 catalogue coverage。
 5. `sort_architecture_contracts.py` 改为退役 stub（exit 2）。
 6. `module_boundary_audit.load_catalogue()` 返回空列表（报告工具，不 gate）。
@@ -23,7 +23,7 @@ ARCHITECTURE_BASE=<pr-base> make check/architecture-contracts
 python3 scripts/check_architecture_contracts.py --base origin/dev
 ```
 
-标记新热路径：编辑 `HOT_PATH_GLOBS` in `scripts/check_architecture_contracts.py`（不要新建 JSON）。
+标记新热路径：在源码前导注释写 `// eve-hot-path`；整目录 CPP 可用本地 `.eve-hot-path`，内容为 `eve.hot-path-directory/v1:*.cpp`（不要维护中央列表）。
 
 ## 不再要求
 

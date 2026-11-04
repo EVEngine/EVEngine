@@ -260,10 +260,15 @@ Result<DomainOperation> UiDocumentTarget::makeSetContent(const ObjectId&       i
         std::any_of(std::begin(colors), std::end(colors),
                     [](double value) { return !std::isfinite(value) || value < 0.0 || value > 1.0; }) ||
         !aligns.contains(content.horizontalAlign) || !aligns.contains(content.verticalAlign) ||
-        !fits.contains(content.imageFit))
+        !fits.contains(content.imageFit) || !std::isfinite(content.value) || content.value < 0.0 ||
+        content.value > 1.0 || !std::isfinite(content.fillInnerRadius) || content.fillInnerRadius < 0.0 ||
+        content.fillInnerRadius > 1.0 || !std::isfinite(content.fillStartDegrees) ||
+        std::abs(content.fillStartDegrees) > 360000.0 ||
+        (content.fillDirection != "right" && content.fillDirection != "left" && content.fillDirection != "down" &&
+         content.fillDirection != "up"))
         return eve::editing::failed<DomainOperation>(
             EditorStatus::Rejected, RuleId("editor.ui.invalid-content"),
-            "UI content contains an invalid font size, color, alignment or image fit");
+            "UI content contains invalid font size, color, alignment, image fit or fill settings");
     UiWidgetSnapshot changed = current.value();
     changed.content          = content;
     return makeReplace(current.value(), std::move(changed), "content");

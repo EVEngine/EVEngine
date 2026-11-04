@@ -118,6 +118,8 @@ struct EVENGINE_API_PLATFORM PropertySchema {
     std::string                            typeId;
     std::uint32_t                          version = 1;
     std::vector<PropertyDescriptor>        properties;
+    /** @brief Owned complete JSON Schema for nested documents; mutually exclusive with properties. */
+    Value documentSchema;
     /** @brief Finds find. */
     [[nodiscard]] PropertyDescriptorLookup find(const PropertyPath& path) const;
 };

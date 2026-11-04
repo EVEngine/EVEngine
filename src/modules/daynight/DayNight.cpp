@@ -278,12 +278,31 @@ struct DayNight::Impl {
     graphics::Light3D *moonLight = nullptr;
     graphics::Light3D *fireLight = nullptr;
     std::vector<graphics::Light3D *> flyLights;
+
+    void refreshSun() {
+        const float fraction = (timeOfDay - 6.f) / 12.f;
+        elevDeg              = kMaxElevationDeg * std::sin(kPi * fraction);
+        azimDeg              = (timeOfDay / 24.f) * 360.f;
+        if (manualSun.enabled) {
+            const float pitch    = deg2rad(manualSun.pitchDegrees);
+            const float rotation = deg2rad(manualSun.rotationDegrees);
+            sunDir[0]            = -std::cos(pitch) * std::sin(rotation);
+            sunDir[1]            = std::sin(pitch);
+            sunDir[2]            = -std::cos(pitch) * std::cos(rotation);
+            elevDeg              = std::asin(std::clamp(sunDir[1], -1.f, 1.f)) * 180.f / kPi;
+            azimDeg              = std::atan2(sunDir[0], sunDir[2]) * 180.f / kPi;
+            if (azimDeg < 0.f) azimDeg += 360.f;
+        } else {
+            sunDirection(elevDeg, azimDeg, sunDir[0], sunDir[1], sunDir[2]);
+        }
+        sunEnergy = manualSun.enabled ? manualSun.intensity : std::clamp((elevDeg + 6.f) / 14.f, 0.f, 1.f);
+    }
 };
 
 const char *const DayNight::kNamedLights[] = {"moonlight", "starlight", "fire", "fireflies"};
 const int DayNight::kNamedLightCount = 4;
 
-DayNight::DayNight() : impl_(new Impl()) {}
+DayNight::DayNight() : impl_(new Impl()) { impl_->refreshSun(); }
 DayNight::~DayNight() { delete impl_; }
 
 // ---------------------------------------------------------------------------
@@ -294,6 +313,7 @@ void DayNight::setTimeOfDay(float hours) {
     float h = std::fmod(hours, 24.f);
     if (h < 0.f) h += 24.f;
     impl_->timeOfDay = h;
+    impl_->refreshSun();
 }
 float DayNight::getTimeOfDay() const { return impl_->timeOfDay; }
 
@@ -357,6 +377,7 @@ Result<void> DayNight::setPcgManualSun(const PcgManualSunState &state) {
             "daynight.pcgManualSun"));
     }
     impl_->manualSun = state;
+    impl_->refreshSun();
     impl_->lastSkyBucket = -1;
     return Result<void>::success();
 }
@@ -739,32 +760,9 @@ void DayNight::update(float dt, graphics::Graphics *gfx) {
         impl_->timeOfDay = std::fmod(impl_->timeOfDay, 24.f);
         if (impl_->timeOfDay < 0.f) impl_->timeOfDay += 24.f;
     }
-    const float hours = impl_->timeOfDay;
-
-    // Solar elevation: sine curve peaking at noon (hours=12).
-    const float frac = (hours - 6.f) / 12.f;  // -1 at 6h, 0 at 12h, +1 at 18h
-    float elevDeg = kMaxElevationDeg * std::sin(kPi * frac);
-    float azimDeg = (hours / 24.f) * 360.f;  // full rotation per day
-    if (impl_->manualSun.enabled) {
-        const float pitch = deg2rad(impl_->manualSun.pitchDegrees);
-        const float rotation = deg2rad(impl_->manualSun.rotationDegrees);
-        impl_->sunDir[0] = -std::cos(pitch) * std::sin(rotation);
-        impl_->sunDir[1] = std::sin(pitch);
-        impl_->sunDir[2] = -std::cos(pitch) * std::cos(rotation);
-        elevDeg = std::asin(std::clamp(impl_->sunDir[1], -1.f, 1.f)) * 180.f / kPi;
-        azimDeg = std::atan2(impl_->sunDir[0], impl_->sunDir[2]) * 180.f / kPi;
-        if (azimDeg < 0.f) azimDeg += 360.f;
-    } else {
-        sunDirection(elevDeg, azimDeg, impl_->sunDir[0], impl_->sunDir[1],
-                     impl_->sunDir[2]);
-    }
-    impl_->elevDeg = elevDeg;
-    impl_->azimDeg = azimDeg;
-
-    // Sun energy: ramps up a few degrees above the horizon.
-    impl_->sunEnergy = impl_->manualSun.enabled
-                           ? impl_->manualSun.intensity
-                           : std::clamp((elevDeg + 6.f) / 14.f, 0.f, 1.f);
+    impl_->refreshSun();
+    const float elevDeg     = impl_->elevDeg;
+    const float azimDeg     = impl_->azimDeg;
     const float nightAmount = std::clamp((-elevDeg) / 12.f, 0.f, 1.f);
 
     // Push the directional sun (replaces the legacy directional when no other

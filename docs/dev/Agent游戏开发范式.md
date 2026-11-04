@@ -30,6 +30,8 @@ Agent 首先调用 `eve_agent_session_start`，传入 objective 和稳定 criter
 ```json
 {
   "objective": "实现并验证可玩的冲刺技能",
+  "taskKind": "verify",
+  "profile": "verify.play",
   "criteria": [
     {"id": "gameplay", "description": "玩家可触发冲刺且冷却生效"},
     {"id": "visual", "description": "冲刺反馈在截图中清晰可见"},
@@ -38,7 +40,9 @@ Agent 首先调用 `eve_agent_session_start`，传入 objective 和稳定 criter
 }
 ```
 
-会话返回 `schema: eve.agent-development-session`、`schemaVersion: 1` 和进程内 `sessionId`。
+会话返回 `schema: eve.agent-development-session`、`schemaVersion: 2` 和进程内 `sessionId`。
+省略 `taskKind` / `profile` 时默认 `verify` / `verify.play`（最窄可玩验证面，不是全工具）。
+越权 `tools/call` 返回 `filtered` 与可选 `escalate`；合法换面用 `eve_agent_session_escalate`。
 `eve_agent_session_advance` 强制阶段图；跳过 Run/Observe 直接宣称 Verify 会返回
 `invalid-transition`。`eve_agent_session_evidence` 追加带单调 sequence 的不可变 receipt；后续 fail
 会撤销同一 criterion 的通过状态，新的 pass 可再次满足它。`manual` 可保存设计判断或待办，但不会

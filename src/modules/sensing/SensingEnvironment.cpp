@@ -13,7 +13,9 @@ Result<EnvironmentRequest> SensingWorld::environmentInput(const QueryOrigin& ori
     std::sort(candidates.begin(), candidates.end(), [](const auto& a, const auto& b) { return a.id < b.id; });
     EnvironmentRequest request;
     for (const auto& candidate : candidates) {
-        auto location = WorldPoint::world2D(candidate.x, candidate.y);
+        auto location = candidate.space == CoordinateSpace::World3D
+                            ? WorldPoint::world3D(candidate.x, candidate.y, candidate.z)
+                            : WorldPoint::world2D(candidate.x, candidate.y);
         if (!location) return Result<EnvironmentRequest>::failure(location.status());
         request.input.push_back({request.input.size(), TargetLocation{location.value()}, candidate.id});
     }

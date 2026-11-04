@@ -1,5 +1,7 @@
 #include "graphics/VegetationField.h"
 
+#include <utility>
+
 #include <algorithm>
 #include <cmath>
 #include <glm/common.hpp>
@@ -16,7 +18,7 @@ bool layersValid(std::array<uint8_t, 4> layers) {
     return std::all_of(layers.begin(), layers.end(), [](uint8_t layer) { return layer <= 8; });
 }
 Diagnostic invalid(std::string message) {
-    return Diagnostic::error(DiagnosticCode::InvalidArgument, message, {}, {}, "graphics.vegetation");
+    return Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), {}, {}, "graphics.vegetation");
 }
 Diagnostic exhausted() {
     return Diagnostic::error(DiagnosticCode::Failed, "vegetation allocation failed", {}, {}, "graphics.vegetation");

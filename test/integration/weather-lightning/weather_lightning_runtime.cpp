@@ -1,3 +1,14 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "weather"
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <limits>
 #include "graphics/Graphics.h"

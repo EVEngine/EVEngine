@@ -1,17 +1,16 @@
 #pragma once
 
-#include "graphics/Shader.h"
+#include "common/Export.h"
 
 #include <cstdint>
 #include <string>
 #include <vector>
 
-#include <glm/glm.hpp>
-
 namespace eve::graphics {
 
 class Graphics;
 class Mesh;
+class Shader;
 class Texture;
 
 /**

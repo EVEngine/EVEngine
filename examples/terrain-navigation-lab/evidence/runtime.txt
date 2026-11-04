@@ -1,0 +1,109 @@
+[startup] static-init -> main(): 0.1 ms
+[startup] process clock() at main(): 9.2 ms
+[startup] Run() begins at process clock 10.4 ms
+[startup]   vulkan: instance (warmup thread): 18.1 ms
+[startup] runtime: ModuleManager::expose: 0.1 ms
+[startup] load.nut begins at process clock 298.4 ms
+[startup] load.nut in scripts begins at process clock 652.797 ms
+
+Failed to create /home/agent/.cache/mesa_shader_cache for shader cache (Read-only file system)---disabling.
+Failed to create /home/agent/.cache/mesa_shader_cache_db for shader cache (Read-only file system)---disabling.
+[startup] module Window took 54.805 ms
+
+[startup] all modules instantiated: 110.612 ms
+
+[startup] window: SDL_CreateWindow: 0.8 ms
+[startup]   vulkan: wait instance warmup: 0.0 ms
+[startup]   vulkan: surface: 0.2 ms
+Failed to create /home/agent/.cache/mesa_shader_cache for shader cache (Read-only file system)---disabling.
+Failed to create /home/agent/.cache/mesa_shader_cache_db for shader cache (Read-only file system)---disabling.
+[startup]   vulkan: physical device + device: 24.5 ms
+[startup]   vulkan: depth image: 19.6 ms
+[startup]   vulkan: swapchain + solid pipelines: 38.0 ms
+[startup]   vulkan: textured/lit2d pipelines: 56.3 ms
+[startup]   vulkan: mesh3d pipeline: 1117.0 ms
+[startup]   vulkan: clustered pipeline: 36.6 ms
+[startup]   vulkan: voxel pipeline: 1.2 ms
+[startup]   vulkan: shadow resources (3x2048^2 maps + pipelines): 179.4 ms
+[startup]   vulkan: white texture: 63.7 ms
+[startup]   vulkan: gpu-driven bindless set + pipeline: 65.5 ms
+[startup] graphics: initWithWindow (total): 1583.2 ms
+[startup] window: graphics initWithWindow: 1583.2 ms
+[startup] window created + vulkan initialized: 1840.77 ms
+
+[startup] async runtime loaded: 1878.21 ms
+
+[startup] game script loaded: 1990.85 ms
+
+[startup] hotreload: watchTree (recursive walk + register watches): 0.6 ms
+hot-reload: watching 5 path(s)
+
+[startup] hot reload watch registered: 1992 ms
+
+[startup] eve_init start: 1992 ms
+
+terrain-lab route limit=35 nodes=115
+
+terrain-lab route limit=75 nodes=49
+
+terrain-lab READY
+
+[startup] eve_init done: 4261.45 ms
+
+[startup] first frame begins: 4261.47 ms
+
+[startup]   ui: font load + atlas upload: 1328.1 ms
+[startup] ui: ImGui backend init (first frame): 1330.2 ms
+[startup] first present - window shows content: 8380.78 ms
+
+terrain-lab PROGRESS steps=61 arrivals=0
+
+terrain-lab PROGRESS steps=361 arrivals=0
+
+terrain-lab PROGRESS steps=661 arrivals=0
+
+terrain-lab PROGRESS steps=960 arrivals=0
+
+terrain-lab PROGRESS steps=1260 arrivals=0
+
+terrain-lab ARRIVED 75
+
+terrain-lab PROGRESS steps=1561 arrivals=1
+
+terrain-lab PROGRESS steps=1861 arrivals=1
+
+terrain-lab ARRIVED 35
+
+terrain-lab PROGRESS steps=2158 arrivals=2
+
+terrain-lab PROGRESS steps=2457 arrivals=2
+
+terrain-lab PROGRESS steps=2757 arrivals=2
+
+terrain-lab PROGRESS steps=3057 arrivals=2
+
+terrain-lab PROGRESS steps=3358 arrivals=2
+
+terrain-lab PROGRESS steps=3655 arrivals=2
+
+terrain-lab PROGRESS steps=3956 arrivals=2
+
+terrain-lab PROGRESS steps=4257 arrivals=2
+
+terrain-lab PROGRESS steps=4556 arrivals=2
+
+terrain-lab PROGRESS steps=4856 arrivals=2
+
+terrain-lab PROGRESS steps=5158 arrivals=2
+
+terrain-lab PROGRESS steps=5457 arrivals=2
+
+terrain-lab PROGRESS steps=5757 arrivals=2
+
+terrain-lab PROGRESS steps=6056 arrivals=2
+
+terrain-lab PROGRESS steps=6353 arrivals=2
+
+terrain-lab PROGRESS steps=6654 arrivals=2
+
+X connection to :99 broken (explicit kill or server shutdown).

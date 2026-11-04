@@ -15,12 +15,13 @@
 #include "common/b64.h"
 #include "filesystem/FileData.h"
 #include "graphics/ClipSpace.h"
-#include "graphics/Graphics.h"
-#include "graphics/Mesh.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ReflectionProbeCapture.h"
 #include "graphics/DiffuseLightProbeRegistry.h"
+#include "graphics/Graphics.h"
+#include "graphics/GraphicsVisibility.h"
+#include "graphics/Mesh.h"
+#include "graphics/ReflectionProbeCapture.h"
 #include "graphics/ReflectionProbeRegistry.h"
+#include "graphics/RenderSystem3D.h"
 #include "image/ImageData.h"
 #include "scene/SceneHost.h"
 #include "scene/TransformSystem.h"
@@ -308,7 +309,7 @@ public:
             float(vw) / float(vh), d->nearZ, d->farZ);
         const glm::mat4 viewProj = projM * viewM;
 
-        std::vector<Graphics::EntityIdDraw> draws;
+        std::vector<EntityIdDraw> draws;
         int id = 1;
         std::string entities;
         scene::TransformSystem::updateAll();
@@ -327,7 +328,7 @@ public:
                     auto mr = r->meshRenderer();
                     Mesh *mesh = mr->mesh;
                     if (!mesh || !mesh->gpuHandle) return;
-                    Graphics::EntityIdDraw draw;
+                    EntityIdDraw draw;
                     draw.mesh = mesh;
                     draw.model = node.world;
                     const uint32_t packed = uint32_t(id);
@@ -343,7 +344,9 @@ public:
                 });
             }
         }
-        image::ImageData *img = g->renderEntityIdMask(draws, viewProj, vw, vh);
+        auto* capture = g->visibilityCapture();
+        if (!capture) return {};
+        image::ImageData* img = capture->renderEntityIdMask(draws, viewProj, vw, vh);
         if (!img) return "{\"error\":\"id mask unsupported\"}";
         delete img;
         if (ok) *ok = true;
@@ -378,7 +381,7 @@ public:
             d->orthographic, degToRad(d->fovYDeg), d->orthoHeight,
             float(vw) / float(vh), d->nearZ, d->farZ);
         const glm::mat4 viewProj = projM * viewM;
-        std::vector<Graphics::EntityIdDraw> draws;
+        std::vector<EntityIdDraw> draws;
         int id = 1;
         scene::TransformSystem::updateAll();
         if (ecs::current()->getManager<scene::SceneHost>() != nullptr) {
@@ -396,7 +399,7 @@ public:
                     auto mr = r->meshRenderer();
                     Mesh *mesh = mr->mesh;
                     if (!mesh || !mesh->gpuHandle) return;
-                    Graphics::EntityIdDraw draw;
+                    EntityIdDraw draw;
                     draw.mesh = mesh;
                     draw.model = node.world;
                     const uint32_t packed = uint32_t(id);
@@ -408,7 +411,12 @@ public:
                 });
             }
         }
-        image::ImageData *img = g->renderEntityIdMask(draws, viewProj, vw, vh);
+        auto* capture = g->visibilityCapture();
+        if (!capture) {
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "id mask unsupported", "id_mask"));
+        }
+        image::ImageData* img = capture->renderEntityIdMask(draws, viewProj, vw, vh);
         if (!img) {
             return eve::Result<void>::failure(
                 eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "id mask unsupported", "id_mask"));

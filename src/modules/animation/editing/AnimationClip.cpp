@@ -1,4 +1,5 @@
 #include "animation/editing/AnimationClip.h"
+#include "editing/EditingValueRead.h"
 
 #include <algorithm>
 #include <cctype>
@@ -23,17 +24,12 @@ const std::string* stringField(const EditorValue& value, const char* key) {
 }
 
 bool readNumber(const EditorValue& value, const char* key, double& out) {
-    const EditorValue* entry = field(value, key);
+    const auto* entry = field(value, key);
     if (!entry) return false;
-    if (const auto* real = entry->getIf<double>()) {
-        out = *real;
-        return true;
-    }
-    if (const auto* integer = entry->getIf<std::int64_t>()) {
-        out = static_cast<double>(*integer);
-        return true;
-    }
-    return false;
+    auto number = editing::numericValue(*entry);
+    if (!number) return false;
+    out = number.value();
+    return true;
 }
 
 EditorValue keyValue(const AnimationTransformKey& key) {
@@ -133,6 +129,8 @@ DomainOperation operation(const char* type, const char* inverseType, const std::
 }
 
 std::string normalized(std::string name) {
+    const auto separator = name.find_last_of(":|/");
+    if (separator != std::string::npos) name.erase(0, separator + 1);
     std::string result;
     for (unsigned char c : name)
         if (std::isalnum(c)) result.push_back(static_cast<char>(std::tolower(c)));
@@ -365,7 +363,9 @@ AnimationRetargetPreview AnimationClipDocumentTarget::previewRetarget(const std:
 EditorValue AnimationClipDocumentTarget::snapshotValue() const {
     EditorValue::Array tracks; for (const auto& [id, track] : tracks_) { static_cast<void>(id); tracks.push_back(trackValue(track)); }
     EditorValue::Array events; for (const auto& event : this->events()) events.push_back(eventValue(event));
-    EditorValue::Array masks; for (const auto& [bone, weight] : mask_) masks.push_back(EditorValue::Object{{"bone", bone}, {"weight", weight}});
+    EditorValue::Array masks;
+    for (const auto& [bone, weight] : mask_)
+        masks.emplace_back(EditorValue::Object{{"bone", bone}, {"weight", weight}});
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"settings", settingsValue(duration_, sampleRate_, loop_)}, {"tracks", std::move(tracks)}, {"events", std::move(events)}, {"masks", std::move(masks)}};
 }
 

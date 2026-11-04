@@ -1,3 +1,19 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "physics-backend",
+  "cases": {
+    "script-binding": [
+      "physics.snapshot3d.scriptReferencesDoNotRetargetAfterRestore"
+    ]
+  },
+  "module": "physics"
+}
+*/
+// clang-format on
+
 #include <box3d/box3d.h>
 #include <cmath>
 #include <memory>

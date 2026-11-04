@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "physics/WorldSphereSweep.h"
 #include <charconv>
 #include <cmath>

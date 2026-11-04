@@ -313,8 +313,7 @@ void addTop(MeshBuild& out, float cx, float cz, float y, float radius, const Cel
         out.addVertex(cx + std::cos(a) * radius, y, cz + std::sin(a) * radius,
                       0.f, 1.f, 0.f, u, v);
     }
-    for (int k = 0; k < 6; ++k)
-        out.addTriangle(center, center + 1u + uint32_t(k), center + 1u + uint32_t((k + 1) % 6));
+    for (int k = 0; k < 6; ++k) out.addTriangle(center, center + 1u + uint32_t((k + 1) % 6), center + 1u + uint32_t(k));
 }
 
 void addCliff(MeshBuild& out, float cx, float cz, float radius, int edge, float top, float bottom,

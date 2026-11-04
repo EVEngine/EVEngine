@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -169,6 +170,44 @@ namespace eve {
 class Value;
 
 namespace json {
+
+/** @brief JSON control-character spelling; UnicodeBackspaceFormFeed preserves legacy wire bytes. */
+enum class StringEscapeStyle { Canonical, UnicodeBackspaceFormFeed };
+
+/**
+ * @brief Encode an owning JSON string using the canonical serializer's escaping implementation.
+ * @param value Borrowed bytes, used only during this synchronous call; UTF-8 bytes are preserved.
+ * @param style Explicit spelling of backspace and form feed; both styles encode every control byte.
+ * @return Independent JSON string including quotes; allocation failures propagate as exceptions.
+ * @cost Linear in input bytes, with one output allocation amortized over the string.
+ * @note Callable on any thread with stable input; retains no borrows and invokes no callbacks.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION std::string quoteString(std::string_view value, StringEscapeStyle style);
+
+/** @brief Integer token syntax; LegacyStoull is compatibility-only and retains whitespace/sign acceptance. */
+enum class UnsignedIntegerSyntax { Decimal, LegacyStoull };
+
+/** @brief Owning scanned integer prefix; callers must check consumed against the full input length. */
+struct UnsignedIntegerScan {
+    /** @brief Value of the successfully scanned prefix. */
+    std::uint64_t value = 0;
+    /** @brief Number of input bytes consumed, including legacy leading whitespace/sign. */
+    std::size_t consumed = 0;
+    /** @brief Full original input length, including any unconsumed suffix. */
+    std::size_t size = 0;
+};
+
+/**
+ * @brief Scan an unsigned integer prefix without mutating caller state.
+ * @param text Borrowed input used synchronously; never retained.
+ * @param syntax Decimal uses from_chars; LegacyStoull preserves the old decimal stoull contract.
+ * @return Owning prefix and consumed length, or ParseError for no conversion or overflow.
+ * @remarks Trailing bytes are reported through consumed, allowing compatibility adapters to preserve
+ *          their historical output assignment before rejecting trailing input. Embedded NUL is trailing input.
+ * @note Runs on the caller thread; no callbacks. LegacyStoull uses the process C locale as stoull did.
+ */
+[[nodiscard]] EVENGINE_API_FOUNDATION Result<UnsignedIntegerScan> scanUnsignedInteger(std::string_view      text,
+                                                                                      UnsignedIntegerSyntax syntax);
 
 /**
  * @brief Serialize the canonical owning Value as deterministic compact JSON.

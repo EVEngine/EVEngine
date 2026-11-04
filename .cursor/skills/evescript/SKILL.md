@@ -74,3 +74,4 @@ eve_render <- function() {
 - Observe/act through `eve_play` when `game.agent.json` exists. Do **not** teach `eve_eval` to change HP or skip puzzles.
 - Screenshots: engine MCP (`eve_screenshot` / play capture), never the desktop/Xvfb framebuffer.
 - Evidence: `eve_agent_session_*` — no verbal "done".
+- Task profiles: pass `taskKind` / `profile` to `eve_agent_session_start` (default `verify` / `verify.play`, not all tools). Escalate with `eve_agent_session_escalate`. Connection-time: `EVE_MCP_PROFILE` or `eve-mcp --profile=verify.play`.

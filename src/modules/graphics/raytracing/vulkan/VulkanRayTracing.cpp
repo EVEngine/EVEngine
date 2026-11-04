@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "graphics/raytracing/vulkan/VulkanRayTracing.h"
 
 #include "common/Capability.h"

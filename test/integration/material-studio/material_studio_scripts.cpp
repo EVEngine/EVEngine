@@ -1,3 +1,14 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "module": "material_editor"
+}
+*/
+// clang-format on
+
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "common/Module.h"
 #include "graphics/material/editor/MaterialEditor.h"

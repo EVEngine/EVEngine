@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "fuzz",
+  "default": "fuzz-property",
+  "module": "common"
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include "zeroerr/fuzztest.h"
 

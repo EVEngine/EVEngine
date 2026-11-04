@@ -1,5 +1,8 @@
 #include "npc_ai/NpcAiModule.h"
 
+#include <array>
+#include "common/CrashLog.h"
+#include "common/ScriptProvider.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
 #include "npc_ai/NpcAi.h"
@@ -312,6 +315,97 @@ Result<AgentHandle> parseAgentHandle(std::int64_t packed) {
     return Result<AgentHandle>::success(AgentHandle::fromPacked(static_cast<std::uint64_t>(packed)));
 }
 
+class ScriptTaskService final : public ITaskService {
+public:
+    ScriptTaskService(ScriptProviderHandle provider, std::shared_ptr<bool> active)
+        : provider_(std::move(provider)), active_(std::move(active)) {}
+    Result<void> start(const TaskContext& context, const TaskSpec& spec, std::string& memory) override {
+        auto result = invoke("start", context, spec, memory, {});
+        if (!result) return Result<void>::failure(result.status());
+        if (result.value() != TaskStatus::Running)
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "task start must return running", "state", {}, "npc_ai.script"));
+        return Result<void>::success();
+    }
+    Result<TaskStatus> tick(const TaskContext& context, const TaskSpec& spec, std::string& memory) override {
+        return invoke("tick", context, spec, memory, {});
+    }
+    void stop(const TaskContext& context, const TaskSpec& spec, StopReason reason,
+              std::string_view memory) noexcept override {
+        static constexpr std::array names{"completed", "transition", "startupRollback", "agentDestroyed",
+                                          "definitionReplaced"};
+        try {
+            std::string owned(memory);
+            auto        result = invoke("stop", context, spec, owned, names.at(static_cast<std::size_t>(reason)));
+            if (!result) recordLogEvent("error", "npc_ai script task stop failed: " + result.status().describe());
+        } catch (...) {
+            // Teardown must release native task ownership even when user script throws.
+        }
+    }
+
+private:
+    Result<TaskStatus> invoke(std::string_view method, const TaskContext& context, const TaskSpec& spec,
+                              std::string& memory, std::string_view reason) {
+        if (*active_)
+            return Result<TaskStatus>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "recursive NPC task callback", {}, {}, "npc_ai.script"));
+        struct Guard {
+            bool& active;
+            explicit Guard(bool& value) : active(value) { active = true; }
+            ~Guard() { active = false; }
+        } guard(*active_);
+        Value::Object data;
+        data["agent"]          = static_cast<std::int64_t>(context.agent.packed());
+        data["state"]          = std::string(context.stateId);
+        data["tick"]           = static_cast<std::int64_t>(context.simulationTick);
+        data["dt"]             = context.deltaSeconds;
+        data["task"]           = spec.id;
+        data["parametersJson"] = spec.parametersJson;
+        data["memoryJson"]     = memory;
+        data["stopReason"]     = std::string(reason);
+        Value::Object board;
+        for (const auto& [key, value] : context.blackboard) board[key] = blackboardValueToValue(value);
+        data["blackboard"] = std::move(board);
+        Value::Array perception;
+        for (const auto& fact : context.perception) {
+            Value::Object item;
+            item["subject"]          = fact.subject;
+            item["sense"]            = fact.sense;
+            item["confidence"]       = fact.confidence;
+            item["payloadJson"]      = fact.payloadJson;
+            item["observedTick"]     = static_cast<std::int64_t>(fact.observedTick);
+            item["forgetAfterTicks"] = static_cast<std::int64_t>(fact.forgetAfterTicks);
+            perception.emplace_back(std::move(item));
+        }
+        data["perception"] = std::move(perception);
+        const std::array args{ScriptArg::fromTable(std::move(data))};
+        auto             response = ScriptProviderRegistry::instance().callValue(provider_, method, args);
+        if (!response) return Result<TaskStatus>::failure(response.status());
+        if (method == "stop") return Result<TaskStatus>::success(TaskStatus::Succeeded);
+        const auto* stateValue = response.value().find("state");
+        const auto* state      = stateValue ? stateValue->getIf<std::string>() : nullptr;
+        if (!state || (*state != "running" && *state != "succeeded" && *state != "failed"))
+            return Result<TaskStatus>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                 "task must return state running/succeeded/failed",
+                                                                 "state", {}, "npc_ai.script"));
+        if (const auto* field = response.value().find("memoryJson")) {
+            const auto* text = field->getIf<std::string>();
+            if (!text)
+                return Result<TaskStatus>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                     "task memoryJson must be a JSON string",
+                                                                     "memoryJson", {}, "npc_ai.script"));
+            auto parsed = Value::fromJson(*text);
+            if (!parsed) return Result<TaskStatus>::failure(parsed.status());
+            memory = *text;
+        }
+        return Result<TaskStatus>::success(*state == "running"     ? TaskStatus::Running
+                                           : *state == "succeeded" ? TaskStatus::Succeeded
+                                                                   : TaskStatus::Failed);
+    }
+    ScriptProviderHandle  provider_;
+    std::shared_ptr<bool> active_;
+};
+
 class ScriptNpcAiWorld {
 public:
     explicit ScriptNpcAiWorld(std::int64_t traceCapacity, std::int64_t maxMemoriesPerAgent) {
@@ -320,6 +414,18 @@ public:
         // Zero disables perception memory in the core world; only negative keeps the default.
         if (maxMemoriesPerAgent >= 0) config.maxMemoriesPerAgent = static_cast<std::size_t>(maxMemoriesPerAgent);
         world_ = std::make_unique<NpcAiWorld>(config);
+    }
+
+    bool          inCallback() const noexcept { return *callbackActive_; }
+    Result<Value> registerTaskProvider(const std::string& type, const std::string& name) {
+        const auto generation = ScriptProviderRegistry::instance().generationOf(name);
+        if (generation == 0)
+            return Result<Value>::failure(Diagnostic::error(
+                DiagnosticCode::NotFound, "script task provider is not published", "provider", {}, "npc_ai.script"));
+        auto registered = world_->registerTaskService(
+            type, std::make_unique<ScriptTaskService>(ScriptProviderHandle{name, generation}, callbackActive_));
+        if (!registered) return Result<Value>::failure(registered.status());
+        return Result<Value>::success(Value(true), registered.status());
     }
 
     Result<Value> registerBehavior(const std::string& definitionJson) {
@@ -491,6 +597,7 @@ private:
         return Result<Value>::success(Value(true), Status::success(StatusCode::Applied));
     }
 
+    std::shared_ptr<bool>       callbackActive_ = std::make_shared<bool>(false);
     std::unique_ptr<NpcAiWorld> world_;
 };
 
@@ -502,6 +609,13 @@ ssq::Table nullWorld(HSQUIRRELVM vm) {
     return project(vm, Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                                 "npc_ai world must not be null", "world", {},
                                                                 "npc_ai.squirrel")));
+}
+
+ssq::Table unavailableWorld(HSQUIRRELVM vm, ScriptNpcAiWorld* self) {
+    if (!self) return nullWorld(vm);
+    return project(vm, Result<Value>::failure(Diagnostic::error(DiagnosticCode::Conflict,
+                                                                "NPC world cannot be re-entered from a task callback",
+                                                                {}, {}, "npc_ai.script")));
 }
 
 ssq::Table newWorld(HSQUIRRELVM vm, std::int64_t traceCapacity, std::int64_t maxMemoriesPerAgent) {
@@ -523,61 +637,72 @@ void NpcAi::expose(ssq::Table& table) {
     auto              world = table.addClass<ScriptNpcAiWorld>(
         "NpcAiWorld", std::function<ScriptNpcAiWorld*()>([] { return nullptr; }), true);
     world.addFunc("ownership", [](ScriptNpcAiWorld*) { return std::string("owned"); });
+    world.addFunc("registerTaskProvider",
+                  [vm](ScriptNpcAiWorld* self, const std::string& type, const std::string& provider) {
+                      return self && !self->inCallback() ? project(vm, self->registerTaskProvider(type, provider))
+                                                         : unavailableWorld(vm, self);
+                  });
     world.addFunc("registerBehavior", [vm](ScriptNpcAiWorld* self, const std::string& json) {
-        return self ? project(vm, self->registerBehavior(json)) : nullWorld(vm);
+        return self && !self->inCallback() ? project(vm, self->registerBehavior(json)) : unavailableWorld(vm, self);
     });
     world.addFunc("validateBehavior", [vm](ScriptNpcAiWorld* self, const std::string& json) {
-        return self ? project(vm, self->validateBehavior(json)) : nullWorld(vm);
+        return self && !self->inCallback() ? project(vm, self->validateBehavior(json)) : unavailableWorld(vm, self);
     });
     world.addFunc("createAgent", [vm](ScriptNpcAiWorld* self, const std::string& behaviorId) {
-        return self ? project(vm, self->createAgent(behaviorId)) : nullWorld(vm);
+        return self && !self->inCallback() ? project(vm, self->createAgent(behaviorId)) : unavailableWorld(vm, self);
     });
     world.addFunc("destroyAgent", [vm](ScriptNpcAiWorld* self, std::int64_t agent) {
-        return self ? project(vm, self->destroyAgent(agent)) : nullWorld(vm);
+        return self && !self->inCallback() ? project(vm, self->destroyAgent(agent)) : unavailableWorld(vm, self);
     });
     world.addFunc("isAgentStale", [](ScriptNpcAiWorld* self, std::int64_t agent) {
         return !self || self->isAgentStale(agent);
     });
     world.addFunc("setBlackboardBool",
                   [vm](ScriptNpcAiWorld* self, std::int64_t agent, const std::string& key, bool value) {
-                      return self ? project(vm, self->setBlackboardBool(agent, key, value)) : nullWorld(vm);
+                      return self && !self->inCallback() ? project(vm, self->setBlackboardBool(agent, key, value))
+                                                         : unavailableWorld(vm, self);
                   });
     world.addFunc("setBlackboardInt",
                   [vm](ScriptNpcAiWorld* self, std::int64_t agent, const std::string& key, std::int64_t value) {
-                      return self ? project(vm, self->setBlackboardInt(agent, key, value)) : nullWorld(vm);
+                      return self && !self->inCallback() ? project(vm, self->setBlackboardInt(agent, key, value))
+                                                         : unavailableWorld(vm, self);
                   });
     world.addFunc("setBlackboardNumber",
                   [vm](ScriptNpcAiWorld* self, std::int64_t agent, const std::string& key, float value) {
-                      return self ? project(vm, self->setBlackboardNumber(agent, key, value)) : nullWorld(vm);
+                      return self && !self->inCallback() ? project(vm, self->setBlackboardNumber(agent, key, value))
+                                                         : unavailableWorld(vm, self);
                   });
     world.addFunc("setBlackboardString",
                   [vm](ScriptNpcAiWorld* self, std::int64_t agent, const std::string& key, const std::string& value) {
-                      return self ? project(vm, self->setBlackboardString(agent, key, value)) : nullWorld(vm);
+                      return self && !self->inCallback() ? project(vm, self->setBlackboardString(agent, key, value))
+                                                         : unavailableWorld(vm, self);
                   });
     world.addFunc("signal", [vm](ScriptNpcAiWorld* self, std::int64_t agent, const std::string& signalName) {
-        return self ? project(vm, self->signal(agent, signalName)) : nullWorld(vm);
+        return self && !self->inCallback() ? project(vm, self->signal(agent, signalName)) : unavailableWorld(vm, self);
     });
     world.addFunc("remember", [vm](ScriptNpcAiWorld* self, std::int64_t agent, const std::string& subject,
                                    const std::string& sense, float confidence, std::int64_t observedTick,
                                    std::int64_t forgetAfterTicks, const std::string& payloadJson) {
-        return self ? project(vm, self->remember(agent, subject, sense, confidence, observedTick, forgetAfterTicks,
-                                                 payloadJson))
-                    : nullWorld(vm);
+        return self && !self->inCallback() ? project(vm, self->remember(agent, subject, sense, confidence, observedTick,
+                                                                        forgetAfterTicks, payloadJson))
+                                           : unavailableWorld(vm, self);
     });
     world.addFunc("forget", [vm](ScriptNpcAiWorld* self, std::int64_t agent, const std::string& subject,
                                  const std::string& sense) {
-        return self ? project(vm, self->forget(agent, subject, sense)) : nullWorld(vm);
+        return self && !self->inCallback() ? project(vm, self->forget(agent, subject, sense))
+                                           : unavailableWorld(vm, self);
     });
     world.addFunc("tick", [vm](ScriptNpcAiWorld* self, std::int64_t simulationTick, float deltaSeconds,
                                std::int64_t maxAgents, std::int64_t maxTransitionsPerAgent) {
-        return self ? project(vm, self->tick(simulationTick, deltaSeconds, maxAgents, maxTransitionsPerAgent))
-                    : nullWorld(vm);
+        return self && !self->inCallback()
+                   ? project(vm, self->tick(simulationTick, deltaSeconds, maxAgents, maxTransitionsPerAgent))
+                   : unavailableWorld(vm, self);
     });
     world.addFunc("snapshot", [vm](ScriptNpcAiWorld* self, std::int64_t agent) {
-        return self ? project(vm, self->snapshotValue(agent)) : nullWorld(vm);
+        return self && !self->inCallback() ? project(vm, self->snapshotValue(agent)) : unavailableWorld(vm, self);
     });
     world.addFunc("snapshotJson", [vm](ScriptNpcAiWorld* self, std::int64_t agent) {
-        return self ? project(vm, self->snapshotJson(agent)) : nullWorld(vm);
+        return self && !self->inCallback() ? project(vm, self->snapshotJson(agent)) : unavailableWorld(vm, self);
     });
 
     auto module = table.addClass(name, NpcAi::create, false);

@@ -896,6 +896,14 @@ std::size_t mcpCallgraphStackDepth() {
     return DevTool::instance().graph().currentStack().size();
 }
 
+void DevTool::recordMcpSnippetError(std::string report) {
+    lastError_  = report;
+    lastReport_ = std::move(report);
+    lastSlice_  = {};
+}
+
+void mcpRecordSnippetError(std::string report) { DevTool::instance().recordMcpSnippetError(std::move(report)); }
+
 const std::string& mcpLastReport() { return DevTool::instance().lastReport(); }
 
 std::string mcpFormatError(const std::string& message) {

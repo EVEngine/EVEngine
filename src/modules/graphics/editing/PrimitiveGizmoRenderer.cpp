@@ -1,5 +1,7 @@
 #include "graphics/editing/PrimitiveGizmoRenderer.h"
 
+#include <utility>
+
 #include "graphics/IGraphics3D.h"
 #include "graphics/PrimitiveDrawList.h"
 
@@ -14,7 +16,7 @@ namespace {
 
 eve::Result<graphics::PrimitiveDrawStatistics> failure(std::string message, std::string path) {
     return eve::Result<graphics::PrimitiveDrawStatistics>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path, {},
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path), {},
                                "graphics_editing.primitive_gizmo"));
 }
 

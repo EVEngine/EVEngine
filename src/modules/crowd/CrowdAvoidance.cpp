@@ -1,6 +1,8 @@
+// eve-hot-path
 #include "common/Profile.h"
 #include "crowd/CrowdInternal.h"
 
+#include <array>
 #include <exception>
 #include <limits>
 
@@ -129,7 +131,6 @@ void Crowd::Impl::selectAvoidanceVelocity(size_t i, float dt, float& vx, float& 
     const float speed      = maxSpeeds[i];
     const float preferredX = preferredVxs[i], preferredY = preferredVys[i];
     const float preferredLength = std::hypot(preferredX, preferredY);
-    const float baseAngle       = preferredLength > 1e-5f ? std::atan2(preferredY, preferredX) : headings[i];
     const float acceleration    = maxAccels[i] * dt;
     const auto  reachable       = [&](float& x, float& y) {
         const float changeX = x - vxs[i], changeY = y - vys[i];
@@ -204,10 +205,17 @@ void Crowd::Impl::selectAvoidanceVelocity(size_t i, float dt, float& vx, float& 
     consider(0.f, 0.f);
     consider(vxs[i], vys[i]);
     const float samplingSpeed = std::max(preferredLength, speed * 0.25f);
+    // Fractions reuse the same directions. Preserve the original trig arguments,
+    // multiplication order and candidate order, but evaluate each direction only once.
+    const float baseAngle = preferredLength > 1e-5f ? std::atan2(preferredY, preferredX) : headings[i];
+    std::array<float, std::size(predictionAngles)> sampleXs, sampleYs;
+    for (size_t angle = 0; angle < std::size(predictionAngles); ++angle) {
+        sampleXs[angle] = std::cos(baseAngle + predictionAngles[angle]) * samplingSpeed;
+        sampleYs[angle] = std::sin(baseAngle + predictionAngles[angle]) * samplingSpeed;
+    }
     for (float fraction : predictionFractions)
-        for (float angle : predictionAngles)
-            consider(std::cos(baseAngle + angle) * samplingSpeed * fraction,
-                     std::sin(baseAngle + angle) * samplingSpeed * fraction);
+        for (size_t angle = 0; angle < std::size(predictionAngles); ++angle)
+            consider(sampleXs[angle] * fraction, sampleYs[angle] * fraction);
 }
 
 }  // namespace eve::crowd

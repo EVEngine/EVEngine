@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <glm/mat4x4.hpp>
 
 namespace eve::graphics {
 

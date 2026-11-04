@@ -4,7 +4,13 @@ This local process polls GitHub for opted-in EVEngine PR repair requests and dis
 
 ## Repository setup
 
-Merge the `Agent repair router` workflow into the default branch, then create these PR labels:
+Automatic repair routing is disabled. Its workflow is archived at
+`.github/disabled-workflows/agent-repair-router.yml`, outside GitHub Actions'
+workflow discovery directory, so CI completion, PR updates, and reviews do not
+start the router. Restoring it requires an explicit repository change moving the
+file back to `.github/workflows/` on the default branch.
+
+If routing is deliberately restored, create these PR labels:
 
 - `agent:auto-fix` — explicit opt-in
 - exactly one `agent:owner:<name>` — the relay owner

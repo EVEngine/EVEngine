@@ -1,4 +1,5 @@
 #include "card/CardDefinitionRuntime.h"
+#include "common/ValueRead.h"
 
 #include "common/Value.h"
 
@@ -25,12 +26,11 @@ const eve::Value* field(const eve::Value::Object& object, const char* name) {
 
 bool readInt(const eve::Value::Object& object, const char* name, int& output) {
     const auto* value = field(object, name);
-    if (const auto* integer = value ? value->getIf<std::int64_t>() : nullptr) {
-        if (*integer < std::numeric_limits<int>::min() || *integer > std::numeric_limits<int>::max()) return false;
-        output = static_cast<int>(*integer);
-        return true;
-    }
-    return false;
+    if (!value) return false;
+    auto parsed = eve::readIntValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
+    return true;
 }
 
 eve::Result<CardRuntimeState> parseState(const eve::definitions::Definition& definition,

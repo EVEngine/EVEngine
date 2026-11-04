@@ -568,6 +568,64 @@ session.execute();                     // place 放置 / remove 拆除
   `setPatternSubdivisions`、`getPatternPreviewX`、`getPatternPreviewY`、
   `getPatternPreviewAxis`、`getPatternPreviewAccepted`、`getPatternPreviewReason`。
 
+## 房屋蓝图与村镇实例（schema v1）
+
+`eve.buildingHouseRequest(world, request)` 是运行时脚本入口，返回通用
+`{ok, code, diagnostics, value}` Result 表，必须检查 `ok`。请求包含 `version = 1`。
+不依赖 `building_editing`、`buildingfx` 或 editor；零件仍由 PlacementWorld 权威持有。
+
+| op | 请求字段 | 成功 value |
+| --- | --- | --- |
+| `capture` | `blueprintId` UUID、`members` 实例 ID 数组、`pose` | 蓝图 owning 表 |
+| `preview` / `place` | `blueprint`、`assemblyId` UUID、`pose` | 预览零件 / before-after receipt |
+| `members` | `assemblyId` | 当前成员完整快照 |
+| `remodel` | `assemblyId`、完整目标 `members` | receipt；新增零件标记 `new = true` |
+| `move` / `remove` | `assemblyId`；move 还需 `pose` | receipt |
+| `snapshot` / `restore` | restore 需要 `state` | 完整世界快照 / 空表 |
+| `applyReceipt` | `expected`、目标 `state` | 空表；状态不匹配拒绝 |
+| `encode` / `decode` | `value` / `json` | JSON 文本 / owning 表 |
+
+`pose = {x, y, level, quarterTurns, elevation}` 以逻辑网格顶点为原点；
+quarterTurns 为 0..3，方向遵循现有格子 footprint 旋转约定。
+蓝图只接受无 gap 的正方形矩形网格（XY/XZ）；放置目标必须具有相同格宽、层高。
+使用 `fs.writeTextAtomic` 保存 encode 得到的文本，并检查其兼容状态返回值。
+
+C++ 使用 `AssemblyService::capture/preparePlacement/prepareMove/prepareRemodel/prepareRemoval`，
+准备成功后读取 `PreparedAssembly::preview()`，再用 `commit` 消费 token。
+取消只需销毁 token；prepare 不改变真实世界、ID 分配器或事件。
+prepare 的候选世界先完成占用，再检查完整终态的邻接与支撑；部分失败不安装任何成员。
+准备和快照需要复制世界/零件；完整验证中的自由碰撞和曲线匹配最坏需要成对检查，
+应在交互姿态变化或手势边界调用，不能按帧频无条件重算。
+脚本 preview 是显示数据，place 重新走完整 prepare/commit；不能把 preview 当授权凭证。
+
+世界拥有房屋记录和真实零件；记录只维护蓝图身份、参考坐标系与成员映射。
+`AssemblyId` 是持久 UUID，`AssemblyHandle` 是 owner epoch + slot 的进程内句柄。
+每次整组提交、撤销或恢复都会使旧运行时句柄失效；使用持久 UUID 重新查询。
+删除零件同步更新归属，删除最后一个零件会删除空房屋记录。删除后本地 part key 不复用。
+准备 token 不保留世界裸指针；不能向另一个世界或已经恢复的世界提交。
+
+`eve.building.blueprint` 与 `eve.building.world` 是独立 v1 schema，共享运行时零件/曲线 codec。
+未知版本拒绝；v1 没有虚构的旧版迁移。世界恢复在独立候选中完成，成功才交换状态。
+保存定义的完整契约值；缺失或变更时拒绝恢复/提交。蓝图复制省略驻军和任意 properties，
+避免复制外部身份；世界保存完整保留这些状态。平面曲线保留精确离散边，不重新采样；
+部分曲线选区和 surface-attached 曲线复制明确拒绝，需要回到相应 provider 重新采样。
+
+定义可设置 `edgeThicknessCells` 和家具的 `blockedByEdgeChannels`。
+例如墙为 `{channel:"wall", edgeThicknessCells:0.12}`，家具为
+`{blockedByEdgeChannels:["wall"]}`；同层家具 footprint 与墙厚度相交时，
+单体放置、移动、整栋提交及恢复都会拒绝，地板与家具仍可共存。
+这属于分层逻辑阻挡，不宣称自动创建导航、门逻辑或物理碰撞体。
+
+事务观察事件 `action = "reset"` 在完整状态安装后发布，消费者应重新同步投影。
+校验回调必须纯读；change hook 应只观察或排队后续命令。调用者线程串行访问世界和注册表。
+`BuildingAssemblyTarget` 把同一 runtime receipt 适配为一个编辑事务，支持候选提交和撤销重做。
+既有 `BuildingPlacementTarget` 的兼容快照仍供旧工具读取；完整世界持久化使用上述 runtime schema。
+
+可运行示例见 `examples/building_village/README.md`，包括零件工坊、村镇复制、独立改造和磁盘存档。
+
+`validateBlueprint` 对已解析的 `blueprint` 做格式与定义一致性校验，返回规范蓝图；它不受村镇当前占地影响。
+
+脚本协议的回执限制为 100000 个 Value 节点、64 层嵌套；放置/移动/改造在发布前检查完整回执容量，超限返回错误且不改变世界。大世界请使用原生 API，并按文档的完整世界复制成本预算。
 ## 补充绑定参考
 
 参数与接收者见 [源码生成参考](building/api-reference.md)，使用前先确认本章的前置条件与生命周期。

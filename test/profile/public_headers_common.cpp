@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "compile-contract",
+  "default": "module-composition",
+  "module": "common"
+}
+*/
+// clang-format on
+
 // Each public header group is compiled in its own translation unit.  This is
 // intentionally outside test/CMakeLists.txt: it is a compile contract, not a
 // zeroerr case and must remain usable without the full unit-test executable.

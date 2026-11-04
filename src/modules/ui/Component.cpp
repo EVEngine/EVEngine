@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "ui/Component.h"
 #include <vector>
 

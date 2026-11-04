@@ -128,8 +128,7 @@ eve::Result<void> WeaponAttributeAdapter::consumeTriggerResource(WeaponEntity& w
         return eve::Result<void>::failure(
         eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "weapon does not have enough mana or stamina", "resource", {}, "weapon.attributes"));
     if (resource.infinite) return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
-    auto changed = weapon.attributes()->values.setBase(
-        currentName, std::max(0.0, current.value() - static_cast<double>(resource.cost)));
+    auto changed = weapon.attributes()->values.modifyBase(currentName, -static_cast<double>(resource.cost));
     if (!changed) return changed;
     return project(weapon);
 }

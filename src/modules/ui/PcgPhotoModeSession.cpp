@@ -39,7 +39,7 @@ Result<void> PcgPhotoModeSession::begin(const std::string& capturedJson, const s
     }
 
     captured_                   = std::move(captured);
-    working_                    = working;
+    working_                    = std::move(working);
     output_                     = working_;
     loadDecision_               = decision;
     active_                     = true;

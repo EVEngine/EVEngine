@@ -1552,6 +1552,20 @@ void exposeHeightmap(ssq::Table& table) {
                                                             [](int n) { return eve::Value(n); });
                       });
 
+    auto traversal = table.addClass("TerrainTraversalSettings", ssq::Class::Ctor<TerrainTraversalSettings()>());
+    traversal.addVar("spacingX", &TerrainTraversalSettings::spacingX);
+    traversal.addVar("spacingZ", &TerrainTraversalSettings::spacingZ);
+    traversal.addVar("heightScale", &TerrainTraversalSettings::heightScale);
+    traversal.addVar("maxSlopeDegrees", &TerrainTraversalSettings::maxSlopeDegrees);
+    traversal.addVar("slopeCost", &TerrainTraversalSettings::slopeCost);
+    heightmap.addFunc("traversalCosts",
+                      [vm = table.getHandle()](Heightmap* target, const Heightmap* heights, const Heightmap* baseCosts,
+                                               const TerrainTraversalSettings* settings) {
+                          auto result = target && heights && baseCosts && settings
+                                            ? generateTerrainTraversalCosts(*target, *heights, *baseCosts, *settings)
+                                            : missingRaster();
+                          return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
+                      });
     auto concavity = table.addClass("TerrainConcavitySettings", ssq::Class::Ctor<TerrainConcavitySettings()>());
     concavity.addVar("featureSize", &TerrainConcavitySettings::featureSize);
     concavity.addVar("concavity", &TerrainConcavitySettings::concavity);

@@ -1,0 +1,25 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/impact-arena",
+  "entry": "main.nut",
+  "smoke": {"scene": "arena", "seed": 0, "maxHostFrames": 180, "mustReach": ["arena"]},
+  "clock": {"defaultStep": "frame"},
+  "observations": [{"id": "arena", "kind": "script-root", "path": "gameState", "fields": [
+    "tick", "wave", "phase", "playerHealth", "enemyCount", "hits", "kills", "criticals",
+    "dodges", "avoided", "popupCount", "lastApplied", "lastRequested", "lastStages", "demo"]}],
+  "actions": {"source": "script-map", "map": [
+    {"id": "reset", "script": "game.reset()"},
+    {"id": "demo", "script": "game.demo()"},
+    {"id": "attack", "script": "game.attack()"},
+    {"id": "heavy", "script": "game.heavy()"},
+    {"id": "dodge", "script": "game.dodge()"},
+    {"id": "right", "script": "game.right()"},
+    {"id": "left", "script": "game.left()"},
+    {"id": "up", "script": "game.up()"},
+    {"id": "down", "script": "game.down()"},
+    {"id": "stop", "script": "game.stop()"}
+  ]},
+  "capture": {"requiredFor": ["visual"], "backend": "engine-readback"},
+  "tolerances": {"screenshot": "human-or-vlm", "numericAbs": 0.0001}
+}

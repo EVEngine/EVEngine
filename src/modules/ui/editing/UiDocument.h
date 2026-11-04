@@ -6,6 +6,8 @@
 #include "editing/EditingProperty.h"
 #include "editing/EditingTargetOperations.h"
 
+#include <cstdint>
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -33,13 +35,13 @@ using editing::PropertyReadState;
 using editing::PropertySchema;
 using editing::PropertySetMode;
 using editing::PropertyType;
+using editing::Result;
 using editing::Revision;
 using editing::RuleId;
 using editing::SelectionItem;
 using editing::SelectionSnapshot;
 using editing::TargetDescriptor;
 using editing::TargetId;
-using editing::Result;
 using EditorStatus     = editing::Status;
 using EditorValue      = editing::Value;
 using EditorDiagnostic = editing::Diagnostic;
@@ -83,8 +85,14 @@ struct UiContentValue {
     std::string horizontalAlign = "start";
     std::string verticalAlign   = "start";
     std::string textureAsset;
-    std::string imageFit = "stretch";
-    bool        clip     = true;
+    std::string imageFit         = "stretch";
+    bool        clip             = true;
+    double      value            = 0.0;
+    std::string fillDirection    = "right";
+    bool        fillStretch      = false;
+    double      fillStartDegrees = -90.0;
+    bool        fillClockwise    = true;
+    double      fillInnerRadius  = 0.0;
 
     /** @brief Operator <=>. */
     auto operator<=>(const UiContentValue&) const = default;
@@ -263,11 +271,25 @@ public:
                                           const ObjectId& widget) const;
 };
 
+/** @brief Resolves authored texture asset keys to existing UI backend registrations.
+ * @ownership Caller owns textures and registrations; keep them alive while the published tree uses them.
+ * @thread UI thread only. @reentrancy Must not mutate the document, host or backend during resolution.
+ * @note Return a nonzero registered id or a diagnostic; publishing never allocates or unregisters textures.
+ */
+using UiTextureResolver = std::function<Result<std::uint64_t>(const std::string&)>;
+
 /** @brief Optional bridge publishing a UI document into a real runtime UIHost. */
-class UiDocumentRuntimeBridge {
+class EVENGINE_API_DOMAINS UiDocumentRuntimeBridge {
 public:
-    /** @brief Reconcile a document subtree into a runtime host. */
-    Result<void> publish(const UiDocumentTarget& document, const ObjectId& root, ui::UIHost* host) const;
+    /**
+     * @brief Reconciles a document subtree atomically; unsupported content leaves the host unchanged.
+     * @ownership Borrows host only for this call; the UI ECS owns it.
+     * @lifetime Host must remain live during publication; no pointer is retained.
+     * @thread UI thread. @reentrancy Calls the optional resolver once per distinct asset key before changing the tree.
+     * @cost Builds descriptions proportional to subtree size; publish only when the document changes.
+     */
+    Result<void> publish(const UiDocumentTarget& document, const ObjectId& root, ui::UIHost* host,
+                         const UiTextureResolver& textures = {}) const;
 };
 
 }  // namespace eve::ui_editing

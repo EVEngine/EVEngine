@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "compile-contract",
+  "default": "module-composition",
+  "module": "physics_backend"
+}
+*/
+// clang-format on
+
 // Domain facades are checked for standalone include hygiene.  No module target
 // or unit-test runner is linked here; this catches accidental transitive-header
 // dependencies before a profile attempts a real build.

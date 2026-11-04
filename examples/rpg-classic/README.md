@@ -9,7 +9,11 @@
 ```sh
 make run/win32-debug GAME=examples/rpg-classic
 # 或对应平台： run/linux-debug / run/macosx-debug
+# Agent：eve run --debug --mcp-port=7529 examples/rpg-classic
+# 观察根见 game.agent.json（`gameState`）；战斗记录 persist 为 battleLog（UI id 仍为 log）
 ```
+
+工坊债与 observe 合同见 [`WORKSHOP_DEBT.md`](WORKSHOP_DEBT.md)。
 
 ## 玩法
 

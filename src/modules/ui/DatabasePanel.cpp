@@ -3,9 +3,10 @@
 #include "common/Module.h"
 #include "ui/UIHost.h"
 
+#include <squirrel.h>
 #include <algorithm>
 #include <cstdlib>
-#include <squirrel.h>
+#include <utility>
 
 namespace eve::ui {
 namespace {
@@ -266,8 +267,12 @@ WidgetDesc DatabasePanel::build() {
 
         // Header row: one label per reflected member.
         std::vector<WidgetDesc> header;
-        for (const ReflectedMember& member : members_)
-            header.push_back(text(member.name, "db_hdr_" + member.name).withSize(kCellWidth, 0.f));
+        header.reserve(members_.size());
+        for (const ReflectedMember& member : members_) {
+            auto label = text(member.name, "db_hdr_" + member.name);
+            label.withSize(kCellWidth, 0.f);
+            header.push_back(std::move(label));
+        }
         children.push_back(row(std::move(header), "db_header"));
 
         // Body: one row per instance, cells bound to the live objects.

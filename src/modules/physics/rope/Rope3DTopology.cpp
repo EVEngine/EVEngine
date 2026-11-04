@@ -4,6 +4,17 @@
 #include <cmath>
 
 namespace eve::physics {
+eve::Result<std::vector<std::uint32_t>> Rope3D::captureSegmentIndices() const {
+    std::vector<std::uint32_t> indices;
+    indices.reserve(elements_.size() * 2);
+    for (const auto& element : elements_) {
+        if (!element.active) continue;
+        indices.push_back(static_cast<std::uint32_t>(element.a));
+        indices.push_back(static_cast<std::uint32_t>(element.b));
+    }
+    return eve::Result<std::vector<std::uint32_t>>::success(std::move(indices));
+}
+
 namespace {
 Rope3D::Vec3 subtract(Rope3D::Vec3 a, Rope3D::Vec3 b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
 Rope3D::Vec3 addScaled(Rope3D::Vec3 a, Rope3D::Vec3 direction, float scale) {

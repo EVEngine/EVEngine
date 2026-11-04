@@ -111,7 +111,14 @@ public:
     SpriteSheet *newSpriteSheetFromSequence(eve::graphics::Graphics *gfx,
                                              const std::string &pattern, int first,
                                              int last, int columns = 0);
-    /** @brief Import Aseprite/TexturePacker JSON frame metadata and its atlas texture. */
+    /**
+     * @brief Import Aseprite/TexturePacker JSON Hash frames and their atlas texture.
+     * Clockwise-packed frames are normalized to upright pixels; frame.w/h are
+     * logical dimensions. Use the returned sheet's texture and frame coordinates.
+     * Original canvas sizes and trim offsets are preserved; JSON pivot is ignored.
+     * @cost With rotated frames, copies all frame pixels and uploads a padded grid
+     * once per import; reuse the returned sheet across animation instances.
+     */
     SpriteSheet *newSpriteSheetFromAtlasJson(eve::graphics::Graphics *gfx,
                                               const std::string &texturePath,
                                               const std::string &jsonPath);

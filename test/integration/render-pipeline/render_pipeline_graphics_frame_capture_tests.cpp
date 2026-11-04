@@ -1,3 +1,14 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "graphics"
+}
+*/
+// clang-format on
+
 #include "common/config.h"
 #ifndef EVENGINE_WEBGPU
 #include "graphics/vulkan/Graphics.h"

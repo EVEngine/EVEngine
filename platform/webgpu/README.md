@@ -10,6 +10,11 @@ that targets the standard `webgpu.h` API, and can be produced two ways:
 - **Native desktop**: links Google Dawn (`dawn::webgpu_dawn`), which accepts WGSL (and
   SPIR-V) and runs on top of Vulkan/Metal/D3D12.
 
+Native builds store app data in an absolute `appdata` path under the launch
+directory by default. Set `EVENGINE_WEBGPU_APPDATA` to select another directory;
+relative values are resolved against the launch directory. Browser builds keep
+their `/persist` path.
+
 ## Prerequisites
 
 - **Emscripten** (`emsdk`, `emcmake`) with WebGPU support. Emscripten ships the
@@ -42,6 +47,7 @@ module delete list.
 
 - **Skipped third-party groups** (see `cmake/thirdparty_libs.cmake`): Poco,
   OpenAL-soft, Assimp / `medialoader_model`, audio codecs / `medialoader_sound`.
+  Browser audio uses Emscripten's OpenAL implementation and Web Audio decoding.
   SDL2, zlib and FreeType come from Emscripten ports (`-sUSE_SDL=2`, `-sUSE_ZLIB`,
   `-sUSE_FREETYPE=1`). Kept from the vendored aggregate: squirrel/simplesquirrel,
   physfs, lz4, Box2D/box3d, xxHash, imgui, and `medialoader_image` (stb/lodepng/dds/
@@ -52,7 +58,7 @@ module delete list.
   `font` (FreeType port). Interactive `Snow` drops when `procgen` is absent;
   `spritestack.sliceModel` drops when `model3d` is absent.
 - **Still outside `web`**: `model3d` / `animation` / `sceneloader` / `avatar`
-  (Assimp), `audio` / `sound`, `network` / `database` / `plugins` / `devtools`,
+  (Assimp), `network` / `database` / `plugins` / `devtools`,
   `particles` (Poco JSON + animation), `procgen` / `map` / `voxel` / `hd2d`
   (map→Poco; voxel embeds procgen types in its public header), and shells that
   need those (`rpg`, `dialogue`, `building`, …).
@@ -65,6 +71,11 @@ module delete list.
   available for the Thread module, and **all TUs are compiled with `-matomics
   -mbulk-memory`** (engine and third-party). The page must still be served
   with COOP/COEP headers so `SharedArrayBuffer` is available.
+
+- **C++ exceptions**: engine and dependency C++ compilation, as well as the host
+  link, enable `-fexceptions`. A link-only exception setting cannot restore catch
+  blocks removed during compilation; recoverable parser or binding failures would
+  otherwise escape into JavaScript and interrupt startup.
 
 ### Serving + browser verification
 
@@ -80,6 +91,18 @@ Open `http://127.0.0.1:8090/eve.html` in Chrome/Edge (WebGPU enabled). The page
 is the **online playground** — see the next section. Its status bar prints
 `crossOriginIsolated` and the resolved WebGPU adapter, so init failures are
 visible without DevTools.
+
+The CI browser check uses Playwright with the installed Chrome and captures
+only the WebGPU canvas for the default 3D, 2D sprite, and textured 3D demos:
+
+```sh
+python3 -m pip install pillow playwright
+python3 scripts/check_webgpu_browser.py --output build/webgpu-web/src/engine/browser-captures
+```
+
+Run it while `scripts/serve_webgpu.py` is serving the WASM build.
+On Windows, pass `--browser "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"`
+if Edge is not on `PATH`.
 
 ## Playground (online script editor)
 
@@ -183,6 +206,6 @@ when not running from the game directory itself.
 - ImGui overlays use `imgui_impl_wgpu.cpp` (compiled by the EVUI module scan;
   `imgui_impl_wgpu.cpp` includes `common/config.h` **before** its
   `#if defined(EVENGINE_WEBGPU)` guard so the platform define is visible).
-- Poco / OpenAL / Assimp are not linked on WASM; FreeType is the Emscripten
+- Poco / OpenAL Soft / Assimp are not linked on WASM; Emscripten OpenAL supplies browser audio. FreeType is the Emscripten
   port. Module membership follows the `web` profile (see above). Native Dawn
   still builds the full third-party set.

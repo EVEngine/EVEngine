@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "procgen/heightmap/TerrainMeshStamp.h"
 
 #include "procgen/MeshBuild.h"

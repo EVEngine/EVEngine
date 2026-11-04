@@ -147,6 +147,12 @@ eve::Result<std::vector<TerrainCollisionContour>> extractTerrainContours(
             if (!solid(x, y + 1)) edges.push_back({{x + 1, y + 1}, {x, y + 1}});
             if (!solid(x - 1, y)) edges.push_back({{x, y + 1}, {x, y}});
         }
+    // A contour crossing a chunk boundary is open. Start at its incoming-free
+    // endpoint before visiting interior edges, otherwise reverse-facing runs
+    // are split into one fixture per cell.
+    std::set<GridPoint> incoming;
+    for (const auto& edge : edges) incoming.insert(edge.to);
+    std::stable_partition(edges.begin(), edges.end(), [&](const auto& edge) { return !incoming.contains(edge.from); });
     std::map<GridPoint, std::vector<std::size_t>> outgoing;
     for (std::size_t index = 0; index < edges.size(); ++index)
         outgoing[edges[index].from].push_back(index);

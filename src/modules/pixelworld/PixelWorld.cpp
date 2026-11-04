@@ -70,8 +70,8 @@ struct Chunk {
 };
 
 eve::Status malformed(std::string message) {
-    return eve::Status::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::SerializationError, message, "snapshot", {}, "pixelworld"));
+    return eve::Status::failure(eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, std::move(message),
+                                                       "snapshot", {}, "pixelworld"));
 }
 
 template <class T>
@@ -416,8 +416,8 @@ std::uint32_t PixelWorld::materialDisplayRgba(MaterialId material) const noexcep
 eve::Result<PixelCatalogReloadReceipt> PixelWorld::reloadMaterialCatalog(
     MaterialCatalog catalog, std::uint64_t expectedFingerprint) {
     const auto reject = [](eve::DiagnosticCode code, std::string message, std::string path) {
-        return eve::Result<PixelCatalogReloadReceipt>::failure(eve::Diagnostic::error(
-            code, message, path, {}, "pixelworld.catalog-reload"));
+        return eve::Result<PixelCatalogReloadReceipt>::failure(
+            eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "pixelworld.catalog-reload"));
     };
     if (!impl_->paused)
         return reject(eve::DiagnosticCode::PreconditionViolation,
@@ -519,8 +519,7 @@ eve::Result<std::size_t> PixelWorld::paintCircleChecked(int centerX, int centerY
 eve::Result<PixelEditReceipt> PixelWorld::applyEdit(const PixelEditCommand& command) {
     const auto reject = [](std::string message, std::string path) {
         return eve::Result<PixelEditReceipt>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::PreconditionViolation, message, path, {},
-            "pixelworld.edit"));
+            eve::DiagnosticCode::PreconditionViolation, std::move(message), std::move(path), {}, "pixelworld.edit"));
     };
     if (command.sequence != impl_->lastEditSequence + 1)
         return reject("edit sequence must be exactly previous sequence + 1", "sequence");
@@ -618,8 +617,8 @@ PixelEditReceipt PixelWorld::explode(int centerX, int centerY, int radius, int s
 eve::Result<std::vector<PixelFragment>> PixelWorld::extractUnsupportedFragments(
     PixelRegion region, int supportY, std::uint32_t minimumCells) {
     const auto reject = [](eve::DiagnosticCode code, std::string message, std::string path) {
-        return eve::Result<std::vector<PixelFragment>>::failure(eve::Diagnostic::error(
-            code, message, path, {}, "pixelworld.fragment.extract"));
+        return eve::Result<std::vector<PixelFragment>>::failure(
+            eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "pixelworld.fragment.extract"));
     };
     const std::int64_t width = std::int64_t(region.maxX) - region.minX + 1;
     const std::int64_t height = std::int64_t(region.maxY) - region.minY + 1;
@@ -704,8 +703,8 @@ eve::Result<std::vector<PixelFragment>> PixelWorld::extractUnsupportedFragments(
 eve::Result<PixelFragmentRasterReceipt> PixelWorld::rasterizeFragment(
     const PixelFragment& fragment, int originX, int originY) {
     const auto reject = [](eve::DiagnosticCode code, std::string message, std::string path) {
-        return eve::Result<PixelFragmentRasterReceipt>::failure(eve::Diagnostic::error(
-            code, message, path, {}, "pixelworld.fragment.rasterize"));
+        return eve::Result<PixelFragmentRasterReceipt>::failure(
+            eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "pixelworld.fragment.rasterize"));
     };
     if (fragment.source != worldLink())
         return reject(eve::DiagnosticCode::StaleHandle,
@@ -1440,8 +1439,8 @@ eve::Result<std::vector<PixelChunkDiagnostic>> PixelWorld::chunkDiagnostics(
 eve::Result<PixelChunkApplyReceipt> PixelWorld::applyChunkBatch(
     const PixelChunkBatch& batch, std::uint64_t expectedRevision) {
     const auto reject = [](eve::DiagnosticCode code, std::string message, std::string path) {
-        return eve::Result<PixelChunkApplyReceipt>::failure(eve::Diagnostic::error(
-            code, message, path, {}, "pixelworld.chunk-batch"));
+        return eve::Result<PixelChunkApplyReceipt>::failure(
+            eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "pixelworld.chunk-batch"));
     };
     if (impl_->revision != expectedRevision)
         return reject(eve::DiagnosticCode::Conflict, "local world revision is stale", "expectedRevision");
@@ -1492,6 +1491,7 @@ eve::Result<PixelChunkApplyReceipt> PixelWorld::applyChunkBatch(
     }
 
     Impl candidate = batch.fullResync ? Impl(impl_->catalog) : *impl_;
+    candidate.seed = batch.sourceSeed;
     if (batch.fullResync) {
         candidate.worldId = impl_->worldId;
         candidate.epoch = impl_->epoch;

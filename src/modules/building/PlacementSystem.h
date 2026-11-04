@@ -507,9 +507,10 @@ public:
     static void clearEvents();
     static const std::vector<BuildingChangeEvent> &events();
 
-    static int nextInstanceId();
 
 private:
+    friend class AssemblyService;
+    static int nextInstanceId(PlacementWorld &world);
     [[nodiscard]] static eve::Result<EdgePathPlacement>
     commitEdgePath(PlacementWorld *world, EdgePathPreview preview,
                    const std::vector<EdgeCurvePoint> *curveControls = nullptr,
@@ -556,8 +557,7 @@ private:
     static std::unordered_map<std::string, SurfaceFn> &surfaces();
     static std::unordered_map<std::string, SurfaceProviderFn> &surfaceProviders();
     static float &planeSurfaceHeight();
-    static std::vector<BuildingChangeEvent> &eventQueue();
-    static int &instanceCounter();
+    static std::vector<BuildingChangeEvent>                   &eventQueue();
     static bool &builtinsReady();
 
     PlacementSystem() = default;
@@ -570,8 +570,7 @@ private:
     std::unordered_map<std::string, ChangeHook> changeHooks_;
     std::unordered_map<std::string, SurfaceFn> surfaces_;
     std::unordered_map<std::string, SurfaceProviderFn> surfaceProviders_;
-    std::vector<BuildingChangeEvent> eventQueue_;
-    int instanceCounter_ = 0;
+    std::vector<BuildingChangeEvent>                   eventQueue_;
     bool builtinsReady_ = false;
     float planeSurfaceHeight_ = 0.f;
 };

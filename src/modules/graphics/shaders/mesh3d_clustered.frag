@@ -44,6 +44,9 @@ layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
 layout(set = 0, binding = 2) uniform sampler2D normalSampler;
 layout(set = 0, binding = 3) uniform samplerCube envSampler;
 layout(set = 0, binding = 9) uniform sampler2D heightSampler;
+layout(set = 0, binding = 10) uniform sampler2D decalAlbedoSampler;
+layout(set = 0, binding = 11) uniform sampler2D decalNormalSampler;
+layout(set = 0, binding = 12) uniform sampler2D decalParamsSampler;
 layout(set = 0, binding = 18) uniform samplerCube reflectionProbe0;
 layout(set = 0, binding = 19) uniform samplerCube reflectionProbe1;
 
@@ -78,30 +81,7 @@ layout(set = 0, binding = 20) uniform sampler2DArray shadowMapRaw;
 
 layout(location = 0) out vec4 outColor;
 
-const float PI = 3.14159265359;
-
-float DistributionGGX(vec3 N, vec3 H, float roughness) {
-    float a = max(roughness * roughness, 0.002);
-    float a2 = a * a;
-    float NdotH = max(dot(N, H), 0.0);
-    float denom = (NdotH * NdotH * (a2 - 1.0) + 1.0);
-    return a2 / max(PI * denom * denom, 1e-4);
-}
-
-float GeometrySchlickGGX(float NdotV, float roughness) {
-    float r = roughness + 1.0;
-    float k = (r * r) / 8.0;
-    return NdotV / max(NdotV * (1.0 - k) + k, 1e-4);
-}
-
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
-    return GeometrySchlickGGX(max(dot(N, V), 0.0), roughness) *
-           GeometrySchlickGGX(max(dot(N, L), 0.0), roughness);
-}
-
-vec3 fresnelSchlick(float cosTheta, vec3 F0) {
-    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
-}
+#include "core_pbr_lighting.glsl"
 
 vec3 boxProjectedEnv(vec3 direction, vec3 worldPos) {
     vec3 extent = ubo.envProbeExtent.xyz;
@@ -171,16 +151,7 @@ vec3 applyNormalMap(vec3 N, vec3 mapSample, vec3 worldPos, vec2 uv) {
 }
 
 vec3 shadeLight(vec3 N, vec3 V, vec3 albedo, float metallic, float roughness, vec3 L, vec3 radiance) {
-    float NdotL = max(dot(N, L), 0.0);
-    float diffuse = mix(NdotL, NdotL * 0.5 + 0.5, 0.25);
-    vec3 H = normalize(V + L);
-    vec3 F0 = mix(vec3(0.04), albedo, metallic);
-    float NDF = DistributionGGX(N, H, roughness);
-    float G = GeometrySmith(N, V, L, roughness);
-    vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-    vec3 specular = (NDF * G * F) / max(4.0 * max(dot(N, V), 0.0) * max(NdotL, 0.001), 1e-3);
-    vec3 kD = (vec3(1.0) - F) * (1.0 - metallic);
-    return (kD * albedo * diffuse + specular * NdotL) * radiance;
+    return eveCoreShadeLight(N, V, albedo, metallic, roughness, L, radiance, 1.0);
 }
 
 #include "shadow_cascade_uv.glsl"
@@ -368,6 +339,28 @@ void main() {
     }
     if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
         N = applyNormalMap(N, nSample, vWorldPos, uv);
+    // The clustered ForwardPlus overwrite path consumes the same decal layer
+    // as packed lighting; disabled decals bind zero-coverage placeholders.
+    vec3 emissive = vec3(0.0);
+    vec2 decalUV = gl_FragCoord.xy / vec2(textureSize(decalAlbedoSampler, 0));
+    vec4 decalA = texture(decalAlbedoSampler, decalUV);
+    float decalCov = clamp(decalA.a, 0.0, 1.0);
+    if (decalCov > 0.001) {
+        albedo = mix(albedo, decalA.rgb, decalCov);
+        vec4 decalN = texture(decalNormalSampler, decalUV);
+        float nWeight = clamp(decalN.a, 0.0, 1.0);
+        if (nWeight > 0.001) {
+            vec3 decalNormal = normalize(decalN.rgb * 2.0 - 1.0);
+            N = normalize(mix(N, decalNormal, nWeight));
+        }
+        vec4 decalP = texture(decalParamsSampler, decalUV);
+        float pWeight = clamp(decalP.a, 0.0, 1.0);
+        if (pWeight > 0.001) {
+            roughness = mix(roughness, decalP.r, pWeight);
+            metallic = mix(metallic, decalP.g, pWeight);
+            emissive += decalA.rgb * decalP.b;
+        }
+    }
     vec3 Lo = vec3(0.0);
     vec3 primaryL = normalize(ubo.lightDir.xyz);
     float shadowVis = sampleShadowPCF(vWorldPos, N, max(-vViewPos.z, 0.0), max(dot(N, primaryL), 0.0));
@@ -406,13 +399,8 @@ void main() {
     }
 
     // Hemispheric GI: sky vs ground bounce, plus a cheap wrap fill into umbra.
-    float hemi = clamp(N.y * 0.5 + 0.5, 0.0, 1.0);
-    vec3 skyIrr = ubo.ambient.rgb * 1.1 + ubo.lightColor.rgb * 0.12;
-    vec3 gndIrr = ubo.ambient.rgb * vec3(0.72, 0.62, 0.52);
-    vec3 irr = mix(gndIrr, skyIrr, hemi);
-    vec3 gi = albedo * irr * (1.0 - metallic) * terrainAo;
-    float wrap = max(dot(N, primaryL) * 0.5 + 0.5, 0.0);
-    gi += albedo * ubo.lightColor.rgb * (wrap * wrap) * 0.06 * (1.0 - metallic) * terrainAo;
+    vec3 irr = eveHemisphereIrradiance(N, ubo.ambient.rgb, ubo.lightColor.rgb);
+    vec3 gi = eveCoreIndirect(N, primaryL, ubo.lightColor.rgb, albedo, metallic, terrainAo, irr);
     vec3 color = gi + Lo;
 
     float envIntensity = ubo.lightColor.w;
@@ -464,5 +452,6 @@ void main() {
     }
 
 
+    color += emissive;
     outColor = vec4(color, 1.0);
 }

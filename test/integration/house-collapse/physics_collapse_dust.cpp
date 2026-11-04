@@ -1,8 +1,23 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "physics_destruction_dust",
+  "origins": [
+    "physics_collapse_dust.cpp"
+  ]
+}
+*/
+// clang-format on
+
+#include <barrier>
 #include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iterator>
 #include <limits>
 #include <thread>
 #include "fluids/VolumeFluid.h"
@@ -11,6 +26,7 @@
 #include "graphics/RenderSystem3D.h"
 #include "physics/World3D.h"
 #include "physics/destruction/CollapseAnimation.h"
+#include "physics/destruction/GeometryCollectionInstance.h"
 #include "physics/destruction/cook/AssemblyFractureSettings.h"
 #include "physics/destruction/cook/VoronoiCook.h"
 #include "physics/destruction/fx/CollapseDust.h"
@@ -48,13 +64,71 @@ TEST_CASE("physics_collapse_dust.savedGasOutlivesSolverAndRejectsPartialLoad") {
     REQUIRE(!clip.present(*target, std::numeric_limits<float>::quiet_NaN()).ok());
     auto path = std::filesystem::temp_directory_path() / "eve-collapse-dust-test.evedust";
     std::filesystem::remove(path);
+    auto missing = clip.load(path.string());
+    REQUIRE(!missing.ok());
+    REQUIRE(missing.status().primaryDiagnostic()->code() == eve::DiagnosticCode::NotFound);
+    REQUIRE(clip.frameCount() == 2);
+    REQUIRE(!clip.load(std::string_view("invalid\0path", 12)).ok());
+    REQUIRE(clip.frameCount() == 2);
+    REQUIRE(!clip.save(std::string_view("invalid\0path", 12)).ok());
     REQUIRE(clip.save(path.string()).ok());
-    REQUIRE(!clip.save(path.string()).ok());
+    auto duplicate = clip.save(path.string());
+    REQUIRE(!duplicate.ok());
+    REQUIRE(duplicate.status().code() == eve::StatusCode::Conflict);
+    const auto raced = path.string() + ".race";
+    std::filesystem::remove(raced);
+    std::barrier                   start(2);
+    std::array<eve::StatusCode, 2> outcomes{};
+    auto                           publish = [&](int index) {
+        start.arrive_and_wait();
+        auto result     = clip.save(raced);
+        outcomes[index] = result.status().code();
+    };
+    std::thread first(publish, 0), second(publish, 1);
+    first.join();
+    second.join();
+    const bool oneWinner = (outcomes[0] == eve::StatusCode::Ok && outcomes[1] == eve::StatusCode::Conflict) ||
+                           (outcomes[1] == eve::StatusCode::Ok && outcomes[0] == eve::StatusCode::Conflict);
+    REQUIRE(oneWinner);
+    CollapseDust raceWinner;
+    REQUIRE(raceWinner.load(raced).ok());
+    REQUIRE(raceWinner.frameCount() == 2);
+    std::filesystem::remove(raced);
     CollapseDust loaded;
     REQUIRE(loaded.load(path.string()).ok());
     REQUIRE(loaded.frameCount() == 2);
     REQUIRE(loaded.present(*target, 99).ok());
     REQUIRE(target->particleView()[0].position.y == raised);
+    auto readBytes = [](const std::filesystem::path& input) {
+        std::ifstream in(input, std::ios::binary);
+        return std::string(std::istreambuf_iterator<char>(in), {});
+    };
+    auto writeBytes = [&](const std::filesystem::path& output, const std::string& bytes) {
+        std::ofstream out(output, std::ios::binary | std::ios::trunc);
+        out.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
+        out.close();
+        REQUIRE(static_cast<bool>(out));
+    };
+    const auto original = readBytes(path);
+    REQUIRE(original[8] == 2);
+    auto corrupted = original;
+    corrupted[28] ^= 1;  // A finite particle-position mutation must fail integrity validation.
+    writeBytes(path, corrupted);
+    auto integrity = loaded.load(path.string());
+    REQUIRE(!integrity.ok());
+    REQUIRE(integrity.status().primaryDiagnostic()->code() == eve::DiagnosticCode::HashMismatch);
+    REQUIRE(loaded.frameCount() == 2);
+    auto legacy = original.substr(0, original.size() - 32);
+    legacy[8]   = 1;
+    writeBytes(path, legacy);
+    CollapseDust migrated;
+    REQUIRE(migrated.load(path.string()).ok());
+    const auto migratedPath = path.string() + ".migrated";
+    std::filesystem::remove(migratedPath);
+    REQUIRE(migrated.save(migratedPath).ok());
+    REQUIRE(readBytes(migratedPath) == original);
+    std::filesystem::remove(migratedPath);
+    writeBytes(path, original);
     {
         std::ofstream out(path, std::ios::binary | std::ios::app);
         out.put('x');
@@ -78,6 +152,11 @@ TEST_CASE("physics_collapse_dust.savedGasOutlivesSolverAndRejectsPartialLoad") {
         file.seekp(mutation.first);
         for (int byte = 0; byte < 4; ++byte) file.put(static_cast<char>((mutation.second >> (byte * 8)) & 255u));
         file.close();
+        // Preserve integrity so malformed payload tests still exercise structural admission.
+        auto malformed = readBytes(path);
+        malformed.resize(malformed.size() - 32);
+        malformed += CollapseAnimation::contentKey(malformed);
+        writeBytes(path, malformed);
         REQUIRE(!loaded.load(path.string()).ok());
         REQUIRE(loaded.frameCount() == 2);
     }

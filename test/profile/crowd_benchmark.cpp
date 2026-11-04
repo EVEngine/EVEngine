@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "compile-contract",
+  "default": "performance",
+  "module": "crowd"
+}
+*/
+// clang-format on
+
 #include "common/CrashHandler.h"
 #include "crowd/Crowd.h"
 #include "crowd/CrowdWorkScheduler.h"
@@ -7,6 +19,7 @@
 #endif
 
 #include <algorithm>
+#include <bit>
 #include <charconv>
 #include <chrono>
 #include <cmath>
@@ -29,11 +42,14 @@ int main(int argc, char** argv) {
 #if defined(_WIN32)
     eve::installCrashHandler();
 #endif
-    int count = 1000, frames = 3600, workers = 1;
-    if (argc > 4 || (argc > 1 && !positiveInteger(argv[1], count)) || (argc > 2 && !positiveInteger(argv[2], frames)) ||
+    int                    count = 1000, frames = 3600, workers = 1, maxNeighbors = 32;
+    const std::string_view scene = argc > 4 ? argv[4] : "march";
+    if (argc > 6 || (argc > 1 && !positiveInteger(argv[1], count)) || (argc > 2 && !positiveInteger(argv[2], frames)) ||
         (argc > 3 && !positiveInteger(argv[3], workers)) || (workers != 1 && workers != 4) ||
-        count > 100000 || frames > 36000) {
-        std::cerr << "usage: eve_crowd_benchmark [agents:1..100000] [frames:1..36000] [workers:1|4]\n";
+        (argc > 5 && !positiveInteger(argv[5], maxNeighbors)) || maxNeighbors > 128 ||
+        (scene != "march" && scene != "crossing") || count > 100000 || frames > 36000) {
+        std::cerr << "usage: eve_crowd_benchmark [agents:1..100000] [frames:1..36000] [workers:1|4] "
+                     "[scene:march|crossing] [maxNeighbors:1..128]\n";
         return 2;
     }
     eve::crowd::Crowd crowd;
@@ -51,7 +67,7 @@ int main(int argc, char** argv) {
     crowd.setDefaultSpeed(2.f);
     crowd.setSeparationWeight(0.f);
     crowd.setArriveRadius(0.5f);
-    auto configured = crowd.configureAvoidance({true, 2.f, 0.1f, 32});
+    auto configured = crowd.configureAvoidance({true, 2.f, 0.1f, maxNeighbors});
     if (!configured.ok()) {
         std::cerr << "avoidance configuration rejected\n";
         return 1;
@@ -61,7 +77,9 @@ int main(int argc, char** argv) {
     for (int index = 0; index < count; ++index) {
         const float x = float(index % columns) * spacing, y = float(index / columns) * spacing;
         const int   slot = crowd.addAgent(x, y, 0.f, 0.5f);
-        if (slot < 0 || !crowd.setAgentAction(slot, "seek") || !crowd.setAgentTarget(slot, x + 10000.f, y)) {
+        const float direction = scene == "crossing" && index % 2 ? -1.f : 1.f;
+        if (slot < 0 || !crowd.setAgentAction(slot, "seek") ||
+            !crowd.setAgentTarget(slot, x + direction * 10000.f, y)) {
             std::cerr << "agent setup rejected\n";
             return 1;
         }
@@ -76,10 +94,11 @@ int main(int argc, char** argv) {
     }
     std::vector<double> elapsed;
     elapsed.reserve(static_cast<std::size_t>(frames));
-    std::cout << "# path=core-motion,scene=parallel-march,layout=deterministic-grid,seed=none"
+    std::cout << "# path=core-motion,scene=" << scene << ",layout=deterministic-grid,seed=none"
               << ",agents=" << count << ",spacing=" << spacing << ",radius=0.5,speed=2,dt=" << dt
               << ",warmup=" << warmup << ",frames=" << frames
-              << ",avoidance=velocity-sampling,maxNeighbors=32,horizon=2,margin=0.1,workers=1"
+              << ",avoidance=velocity-sampling,maxNeighbors=" << maxNeighbors
+              << ",horizon=2,margin=0.1,workers=" << workers
               << ",separationRadius=28,perceptionRadius=64,resolveOverlaps=true,maxContactPasses=12\n";
     std::cout << "frame,total_ns,grid_ns,motion_ns,contact_ns,wall_ns,residual_ns,grid_builds,peak_cells,"
                  "cells_visited,candidates_visited,pairs_checked,contact_passes,predictions,truncations,"
@@ -107,5 +126,17 @@ int main(int argc, char** argv) {
     std::cout << "# total_ms_p50=" << percentile(elapsed, 0.50) / 1000000.0
               << ",p95=" << percentile(elapsed, 0.95) / 1000000.0 << ",p99=" << percentile(elapsed, 0.99) / 1000000.0
               << '\n';
+    // Outside the measured interval; hash fields explicitly, never struct padding.
+    std::uint64_t checksum = 14695981039346656037ull;
+    for (int slot = 0; slot < count; ++slot) {
+        const auto state = crowd.getAgentState(slot);
+        if (state.action != 2) return 1;
+        for (float value : {state.x, state.y, state.heading, state.speed, state.vx, state.vy}) {
+            if (!std::isfinite(value)) return 1;
+            checksum ^= std::bit_cast<std::uint32_t>(value);
+            checksum *= 1099511628211ull;
+        }
+    }
+    std::cout << "# validation=passed,state_checksum=" << checksum << '\n';
     return 0;
 }

@@ -76,5 +76,7 @@ yaw/pitch（对应 Godot `override_tip_basis` 与 Unity 的 Target Rotation Weig
 - 模块对象和它创建的资源对象应保存在全局或实体状态中，不要在每帧重复创建。
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
 
+求解内核在 [`external/ik.hpp`](../../../external/ik.hpp/)；引擎模块只做校验与脚本绑定，公开头文件不包含 `ik.hpp`。
+
 **源码：** [`src/modules/ik/`](../../../src/modules/ik/)
 **相关测试：** 在 [`test/`](../../../test/) 中搜索 `ik`。

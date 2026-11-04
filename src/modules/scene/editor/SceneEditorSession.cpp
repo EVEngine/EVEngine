@@ -390,10 +390,7 @@ editing::Result<void> SceneEditorSession::removePhysicsPlacementHull(const editi
         return editing::failed<void>(editing::Status::Rejected,
                                      editing::RuleId("scene.physics-placement.hull-cache-object"),
                                      "Cached hull removal requires an object id");
-    if (impl_->placementHulls.erase(object.value()) == 0)
-        return editing::failed<void>(editing::Status::NoOp,
-                                     editing::RuleId("scene.physics-placement.hull-cache-missing"),
-                                     "The object has no cached automatic placement hull");
+    if (impl_->placementHulls.erase(object.value()) == 0) return editing::noOp();
     return editing::applied<void>();
 }
 
@@ -803,9 +800,7 @@ editing::Result<editing::TransactionReceipt> SceneEditorSession::commitPhysicsPl
 }
 
 editing::Result<void> SceneEditorSession::cancelPhysicsPlacement() {
-    if (!impl_->placement)
-        return editing::failed<void>(editing::Status::NoOp, editing::RuleId("scene.physics-placement.inactive"),
-                                     "No physics placement preview is active");
+    if (!impl_->placement) return editing::noOp();
     impl_->visibilityRequest.reset();
     impl_->visibilityProof.reset();
     impl_->placement.reset();

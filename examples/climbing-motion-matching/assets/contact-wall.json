@@ -1,0 +1,90 @@
+{
+  "schemaId": "evengine.climbing-anchor-graph",
+  "schemaVersion": 2,
+  "id": "contact:wall",
+  "sourceGeometryContentId": "contact:wall:v1",
+  "buildSettingsHash": "contact-lab:v1",
+  "nodes": [
+    {
+      "id": "start",
+      "kind": "ledge",
+      "localPosition": [
+        0.0,
+        1.5,
+        -0.25
+      ],
+      "localNormal": [
+        0,
+        0,
+        -1
+      ],
+      "localTangent": [
+        1,
+        0,
+        0
+      ],
+      "leftHandSocket": [
+        -0.21,
+        1.5,
+        -0.25
+      ],
+      "rightHandSocket": [
+        0.21,
+        1.5,
+        -0.25
+      ],
+      "feetSocket": [
+        0.0,
+        0.30000000000000004,
+        -0.25
+      ],
+      "occupancySlots": 1,
+      "tags": []
+    },
+    {
+      "id": "next",
+      "kind": "ledge",
+      "localPosition": [
+        0.6,
+        1.5,
+        -0.25
+      ],
+      "localNormal": [
+        0,
+        0,
+        -1
+      ],
+      "localTangent": [
+        1,
+        0,
+        0
+      ],
+      "leftHandSocket": [
+        0.39,
+        1.5,
+        -0.25
+      ],
+      "rightHandSocket": [
+        0.8099999999999999,
+        1.5,
+        -0.25
+      ],
+      "feetSocket": [
+        0.6,
+        0.30000000000000004,
+        -0.25
+      ],
+      "occupancySlots": 1,
+      "tags": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "start",
+      "to": "next",
+      "kind": "shimmy",
+      "bidirectional": false,
+      "requiredTags": []
+    }
+  ]
+}

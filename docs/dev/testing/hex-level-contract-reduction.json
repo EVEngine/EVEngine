@@ -1,0 +1,844 @@
+{
+  "baseline": {
+    "source": "previous complete integration measurement",
+    "file_seconds": 84.6488637,
+    "hex_case_count": 35,
+    "hex_case_sum_seconds": 56.771926,
+    "hex_cases": [
+      {
+        "name": "hex.level.01.procgenPath",
+        "seconds": 2.28749,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.02.dynamicFov",
+        "seconds": 1.60354,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.03.dynamicLight",
+        "seconds": 1.87762,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.04.pickupCollision",
+        "seconds": 1.86025,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.05.particles",
+        "seconds": 1.85854,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.pipeline.dungeonCrawl",
+        "seconds": 0.269904,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.06.flowFieldSwarm",
+        "seconds": 2.01361,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.07.cellCostDetour",
+        "seconds": 1.61603,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.08.multiRevealerPerception",
+        "seconds": 2.05881,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.09.fowMaskAndAlgos",
+        "seconds": 1.81414,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.10.cameraPick",
+        "seconds": 1.75853,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.11.dualGridHex",
+        "seconds": 1.69001,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.12.procgenVariants",
+        "seconds": 1.89315,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.13.spatialCull",
+        "seconds": 1.81062,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.14.multiLight",
+        "seconds": 1.86884,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.15.particleStashTransfer",
+        "seconds": 1.72407,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.pipeline.fogRaid",
+        "seconds": 0.129909,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.16.facingConeFov",
+        "seconds": 1.66536,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.17.flowPlusCellCost",
+        "seconds": 1.71147,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.18.seedReproducible",
+        "seconds": 1.96333,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.19.cornerPeekToggle",
+        "seconds": 1.56602,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.20.equipmentLootEquip",
+        "seconds": 1.75974,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.pipeline.torchEscort",
+        "seconds": 0.239217,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.pipeline.catalogRaid",
+        "seconds": 0.300792,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.21.hexWorldTileRoundtrip",
+        "seconds": 1.73279,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.22.fovExploredMemoryClear",
+        "seconds": 1.86558,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.23.findGroupPathHex",
+        "seconds": 1.96316,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.24.fovAlgoVisibilitySmoke",
+        "seconds": 1.72757,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.25.blockedCellSyncPath",
+        "seconds": 1.55293,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.pipeline.costlyFogPickup",
+        "seconds": 0.310684,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.26.drunkardCaveHex",
+        "seconds": 2.14655,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.27.mazeHexPath",
+        "seconds": 2.01262,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.28.wfcDungeonHex",
+        "seconds": 1.88405,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.29.mistParticleScene",
+        "seconds": 1.8295,
+        "status": "passed"
+      },
+      {
+        "name": "hex.level.30.raidComboPipeline",
+        "seconds": 2.4055,
+        "status": "passed"
+      }
+    ]
+  },
+  "after_file_case_count": 37,
+  "after_hex_case_count": 1,
+  "rounds": [
+    {
+      "round": 1,
+      "wall_seconds": 8.691120800096542,
+      "case_sum_seconds": 32.112543,
+      "hex_seconds": 1.34346,
+      "counts": {
+        "passed": 37
+      },
+      "cases": [
+        {
+          "name": "hd2d.tilemap.buildMeshBoxCounts",
+          "seconds": 0.710945,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.heightRaisesBoxes",
+          "seconds": 0.872036,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.emptyLayerYieldsNullMesh",
+          "seconds": 0.744426,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.buildRenderableDraws",
+          "seconds": 1.0922,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.scene.tilemapPlusBillboard",
+          "seconds": 1.26792,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.frameGridAnimation",
+          "seconds": 0.848494,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.flipPreservesSelectedAtlasRegion",
+          "seconds": 0.774598,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.renderAsBillboard",
+          "seconds": 1.2455,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.quadMeshSharedUpload",
+          "seconds": 0.768427,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.gridReplacementStopsOldClip",
+          "seconds": 0.0925425,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.invalidTimeDoesNotPoisonWalkClock",
+          "seconds": 0.0996622,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.largeTimeRemainsInClip",
+          "seconds": 0.0953712,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.look.miniatureWritesCameraDofAndBloom",
+          "seconds": 0.0960513,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.look.rejectsInvalidFocusRange",
+          "seconds": 0.0983533,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.dopFixMaterialDefaults",
+          "seconds": 0.0980631,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.screenAlignedUnderCameraPitchAndRoll",
+          "seconds": 1.03882,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.footprintMatchesMapCoordinates",
+          "seconds": 0.829774,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.imageOrientationAndTransparentCorners",
+          "seconds": 1.18623,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.flatOverlayHasOnlyTopFace",
+          "seconds": 0.701673,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.tiledFlipFlagsPreserveAtlasOrientation",
+          "seconds": 1.20944,
+          "status": "passed"
+        },
+        {
+          "name": "hex.level.30.raidComboPipeline",
+          "seconds": 1.34346,
+          "status": "passed"
+        },
+        {
+          "name": "hexmap.module.rejectedGridSizeKeepsTheLiveGridAndItsMeshes",
+          "seconds": 0.525461,
+          "status": "passed"
+        },
+        {
+          "name": "hexmap.module.rejectedSphereShapeKeepsTheLiveMeshes",
+          "seconds": 0.44346,
+          "status": "passed"
+        },
+        {
+          "name": "hexmap.module.applyTerrainRebuildsFromAProcgenBake",
+          "seconds": 0.683311,
+          "status": "passed"
+        },
+        {
+          "name": "hexmap.module.applySphereTerrainRebuildsMeshes",
+          "seconds": 0.566947,
+          "status": "passed"
+        },
+        {
+          "name": "housegen.renderPreview",
+          "seconds": 1.38973,
+          "status": "passed"
+        },
+        {
+          "name": "housegen.materialPreview",
+          "seconds": 1.4354,
+          "status": "passed"
+        },
+        {
+          "name": "ik.solver2d.armReachPreview",
+          "seconds": 3.47513,
+          "status": "passed"
+        },
+        {
+          "name": "inventory.bag.uiPreview",
+          "seconds": 3.42298,
+          "status": "passed"
+        },
+        {
+          "name": "map.fov.gpuMaskTexture",
+          "seconds": 0.76939,
+          "status": "passed"
+        },
+        {
+          "name": "map.path.astar.routePreview",
+          "seconds": 2.99376,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.isCursorSupported",
+          "seconds": 0.096097,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.positionRoundTrip",
+          "seconds": 0.268837,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.visibleRoundTrip",
+          "seconds": 0.246957,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.isDownEmptySafe",
+          "seconds": 0.0946544,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.getSystemCursorKnown",
+          "seconds": 0.241285,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.getSystemCursorInvalid",
+          "seconds": 0.245157,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "wall_seconds": 8.854711699998006,
+      "case_sum_seconds": 32.3066117,
+      "hex_seconds": 0.991604,
+      "counts": {
+        "passed": 37
+      },
+      "cases": [
+        {
+          "name": "hd2d.tilemap.buildMeshBoxCounts",
+          "seconds": 0.864025,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.heightRaisesBoxes",
+          "seconds": 0.769716,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.emptyLayerYieldsNullMesh",
+          "seconds": 0.940851,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.buildRenderableDraws",
+          "seconds": 1.28625,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.scene.tilemapPlusBillboard",
+          "seconds": 1.16709,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.frameGridAnimation",
+          "seconds": 0.758956,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.flipPreservesSelectedAtlasRegion",
+          "seconds": 0.758995,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.renderAsBillboard",
+          "seconds": 1.21251,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.quadMeshSharedUpload",
+          "seconds": 0.742253,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.gridReplacementStopsOldClip",
+          "seconds": 0.101681,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.invalidTimeDoesNotPoisonWalkClock",
+          "seconds": 0.0921948,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.largeTimeRemainsInClip",
+          "seconds": 0.104392,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.look.miniatureWritesCameraDofAndBloom",
+          "seconds": 0.21704,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.look.rejectsInvalidFocusRange",
+          "seconds": 0.241128,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.dopFixMaterialDefaults",
+          "seconds": 0.089364,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.screenAlignedUnderCameraPitchAndRoll",
+          "seconds": 1.23355,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.footprintMatchesMapCoordinates",
+          "seconds": 0.955933,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.imageOrientationAndTransparentCorners",
+          "seconds": 1.14241,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.flatOverlayHasOnlyTopFace",
+          "seconds": 0.943041,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.tiledFlipFlagsPreserveAtlasOrientation",
+          "seconds": 1.26616,
+          "status": "passed"
+        },
+        {
+          "name": "hex.level.30.raidComboPipeline",
+          "seconds": 0.991604,
+          "status": "passed"
+        },
+        {
+          "name": "hexmap.module.rejectedGridSizeKeepsTheLiveGridAndItsMeshes",
+          "seconds": 0.770158,
+          "status": "passed"
+        },
+        {
+          "name": "hexmap.module.rejectedSphereShapeKeepsTheLiveMeshes",
+          "seconds": 0.546215,
+          "status": "passed"
+        },
+        {
+          "name": "hexmap.module.applyTerrainRebuildsFromAProcgenBake",
+          "seconds": 0.633494,
+          "status": "passed"
+        },
+        {
+          "name": "hexmap.module.applySphereTerrainRebuildsMeshes",
+          "seconds": 0.460934,
+          "status": "passed"
+        },
+        {
+          "name": "housegen.renderPreview",
+          "seconds": 1.27319,
+          "status": "passed"
+        },
+        {
+          "name": "housegen.materialPreview",
+          "seconds": 1.29009,
+          "status": "passed"
+        },
+        {
+          "name": "ik.solver2d.armReachPreview",
+          "seconds": 3.20558,
+          "status": "passed"
+        },
+        {
+          "name": "inventory.bag.uiPreview",
+          "seconds": 3.22052,
+          "status": "passed"
+        },
+        {
+          "name": "map.fov.gpuMaskTexture",
+          "seconds": 0.75258,
+          "status": "passed"
+        },
+        {
+          "name": "map.path.astar.routePreview",
+          "seconds": 2.7627,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.isCursorSupported",
+          "seconds": 0.292916,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.positionRoundTrip",
+          "seconds": 0.386968,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.visibleRoundTrip",
+          "seconds": 0.234497,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.isDownEmptySafe",
+          "seconds": 0.0950139,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.getSystemCursorKnown",
+          "seconds": 0.254564,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.getSystemCursorInvalid",
+          "seconds": 0.248048,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "wall_seconds": 8.542554800165817,
+      "case_sum_seconds": 31.3375084,
+      "hex_seconds": 0.87826,
+      "counts": {
+        "passed": 37
+      },
+      "cases": [
+        {
+          "name": "hd2d.tilemap.buildMeshBoxCounts",
+          "seconds": 0.84726,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.heightRaisesBoxes",
+          "seconds": 0.781697,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.emptyLayerYieldsNullMesh",
+          "seconds": 0.809069,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.buildRenderableDraws",
+          "seconds": 1.19709,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.scene.tilemapPlusBillboard",
+          "seconds": 1.02991,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.frameGridAnimation",
+          "seconds": 0.87556,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.flipPreservesSelectedAtlasRegion",
+          "seconds": 0.831326,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.renderAsBillboard",
+          "seconds": 1.41717,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.quadMeshSharedUpload",
+          "seconds": 0.73634,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.gridReplacementStopsOldClip",
+          "seconds": 0.0874016,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.invalidTimeDoesNotPoisonWalkClock",
+          "seconds": 0.0964465,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.largeTimeRemainsInClip",
+          "seconds": 0.0954363,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.look.miniatureWritesCameraDofAndBloom",
+          "seconds": 0.0939028,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.look.rejectsInvalidFocusRange",
+          "seconds": 0.0998865,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.dopFixMaterialDefaults",
+          "seconds": 0.094988,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.screenAlignedUnderCameraPitchAndRoll",
+          "seconds": 1.25623,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.footprintMatchesMapCoordinates",
+          "seconds": 0.964122,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.sprite.imageOrientationAndTransparentCorners",
+          "seconds": 1.12802,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.flatOverlayHasOnlyTopFace",
+          "seconds": 0.74163,
+          "status": "passed"
+        },
+        {
+          "name": "hd2d.tilemap.tiledFlipFlagsPreserveAtlasOrientation",
+          "seconds": 1.36091,
+          "status": "passed"
+        },
+        {
+          "name": "hex.level.30.raidComboPipeline",
+          "seconds": 0.87826,
+          "status": "passed"
+        },
+        {
+          "name": "hexmap.module.rejectedGridSizeKeepsTheLiveGridAndItsMeshes",
+          "seconds": 0.602893,
+          "status": "passed"
+        },
+        {
+          "name": "hexmap.module.rejectedSphereShapeKeepsTheLiveMeshes",
+          "seconds": 0.529763,
+          "status": "passed"
+        },
+        {
+          "name": "hexmap.module.applyTerrainRebuildsFromAProcgenBake",
+          "seconds": 0.686167,
+          "status": "passed"
+        },
+        {
+          "name": "hexmap.module.applySphereTerrainRebuildsMeshes",
+          "seconds": 0.456118,
+          "status": "passed"
+        },
+        {
+          "name": "housegen.renderPreview",
+          "seconds": 1.33031,
+          "status": "passed"
+        },
+        {
+          "name": "housegen.materialPreview",
+          "seconds": 1.23187,
+          "status": "passed"
+        },
+        {
+          "name": "ik.solver2d.armReachPreview",
+          "seconds": 3.03387,
+          "status": "passed"
+        },
+        {
+          "name": "inventory.bag.uiPreview",
+          "seconds": 3.22784,
+          "status": "passed"
+        },
+        {
+          "name": "map.fov.gpuMaskTexture",
+          "seconds": 0.704395,
+          "status": "passed"
+        },
+        {
+          "name": "map.path.astar.routePreview",
+          "seconds": 2.78794,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.isCursorSupported",
+          "seconds": 0.0961907,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.positionRoundTrip",
+          "seconds": 0.246972,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.visibleRoundTrip",
+          "seconds": 0.376937,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.isDownEmptySafe",
+          "seconds": 0.096747,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.getSystemCursorKnown",
+          "seconds": 0.25677,
+          "status": "passed"
+        },
+        {
+          "name": "mouse.getSystemCursorInvalid",
+          "seconds": 0.25007,
+          "status": "passed"
+        }
+      ]
+    }
+  ],
+  "median_after_file_case_sum_seconds": 32.112543,
+  "median_after_hex_seconds": 0.991604,
+  "median_after_wall_seconds": 8.691120800096542,
+  "method": "Previous complete integration round vs three focused post-change rounds; same Debug SHARED configuration and j4, different concurrent workload/order. Descriptive cost reduction, not an ABBA speedup experiment.",
+  "date": "2026-10-25",
+  "source": "test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp",
+  "removed_cases": [
+    "hex.level.01.procgenPath",
+    "hex.level.02.dynamicFov",
+    "hex.level.03.dynamicLight",
+    "hex.level.04.pickupCollision",
+    "hex.level.05.particles",
+    "hex.level.06.flowFieldSwarm",
+    "hex.level.07.cellCostDetour",
+    "hex.level.08.multiRevealerPerception",
+    "hex.level.09.fowMaskAndAlgos",
+    "hex.level.10.cameraPick",
+    "hex.level.11.dualGridHex",
+    "hex.level.12.procgenVariants",
+    "hex.level.13.spatialCull",
+    "hex.level.14.multiLight",
+    "hex.level.15.particleStashTransfer",
+    "hex.level.16.facingConeFov",
+    "hex.level.17.flowPlusCellCost",
+    "hex.level.18.seedReproducible",
+    "hex.level.19.cornerPeekToggle",
+    "hex.level.20.equipmentLootEquip",
+    "hex.level.21.hexWorldTileRoundtrip",
+    "hex.level.22.fovExploredMemoryClear",
+    "hex.level.23.findGroupPathHex",
+    "hex.level.24.fovAlgoVisibilitySmoke",
+    "hex.level.25.blockedCellSyncPath",
+    "hex.level.26.drunkardCaveHex",
+    "hex.level.27.mazeHexPath",
+    "hex.level.28.wfcDungeonHex",
+    "hex.level.29.mistParticleScene",
+    "hex.level.pipeline.catalogRaid",
+    "hex.level.pipeline.costlyFogPickup",
+    "hex.level.pipeline.dungeonCrawl",
+    "hex.level.pipeline.fogRaid",
+    "hex.level.pipeline.torchEscort"
+  ],
+  "verification": {
+    "build": "make build/win32-debug JOBS=4 passed",
+    "discovery": "37 file cases, exactly one hex.level. case, all 34 retired names absent",
+    "unrelated_case_bodies": "36 unchanged",
+    "line_count_before": 4285,
+    "line_count_after": 2121,
+    "include_count_before": 105,
+    "include_count_after": 83,
+    "source_quality": {
+      "base": "20394d720951b2aa13f035dd9b16104c3de3096e",
+      "static_checks": "passed",
+      "full_script_run": {
+        "ran": 511,
+        "skipped": 3,
+        "failures": 10,
+        "reason": "Dawn CMake checks could not find nmake outside MSVC environment"
+      },
+      "affected_group_retest": {
+        "command": "cmake/with-msvc.cmd python -X utf8 -m unittest discover -s scripts/tests -p test_dawn_spirv_headers.py -v",
+        "ran": 8,
+        "status": "passed"
+      },
+      "full_gate_rerun_after_environment_fix": false
+    }
+  }
+}

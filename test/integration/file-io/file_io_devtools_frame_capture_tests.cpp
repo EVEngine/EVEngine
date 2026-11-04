@@ -1,3 +1,14 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "platform-file",
+  "module": "devtools"
+}
+*/
+// clang-format on
+
 #include <Poco/InflatingStream.h>
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Parser.h>

@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "compile-contract",
+  "default": "module-composition",
+  "module": "common"
+}
+*/
+// clang-format on
+
 #include "common/Capability.h"
 
 namespace {

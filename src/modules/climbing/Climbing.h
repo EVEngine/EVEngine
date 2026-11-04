@@ -338,7 +338,7 @@ public:
      * @brief Consider a candidate while reusing slot-owned action-id storage on the production probe path.
      * @param actionId Stable definition id borrowed only for this synchronous call.
      */
-    void considerWithActionId(ClimbingCandidate candidate, std::string_view actionId);
+    void considerWithActionId(const ClimbingCandidate& candidate, std::string_view actionId);
     /** @brief Sort by canonical deterministic selection key and clamp to a validated limit. */
     void sortAndLimit(std::size_t limit);
     /** @brief Exchange complete owning slot storage without allocating. */
@@ -594,6 +594,12 @@ struct ClimbingAdvance {
     Vec3                       terminalVelocity;
     /** @brief Whether terminalVelocity must replace velocity derived from this tick's displacement. */
     bool                       hasTerminalVelocity = false;
+    /** @brief Owning world-space foot targets, resolved for this tick only. */
+    Vec3 leftFootAnchor;
+    Vec3 rightFootAnchor;
+    /** @brief Whether a supported foot target exists; weights alone never imply a target. */
+    bool hasLeftFootAnchor  = false;
+    bool hasRightFootAnchor = false;
 };
 
 /** @brief Runtime policy controlling optional owning diagnostic capture. */
@@ -655,7 +661,7 @@ public:
     /** @brief Stable schema id for owning runtime snapshots. */
     static constexpr std::string_view SnapshotSchemaId = "evengine.climbing-runtime";
     /** @brief Current runtime snapshot version; v3 is N-1 and historical v2/v1/v0 remain migratable. */
-    static constexpr std::int64_t SnapshotSchemaVersion = 4;
+    static constexpr std::int64_t SnapshotSchemaVersion = 5;
     /** @brief Hard bound for undelivered post-simulation events owned by one runtime. */
     static constexpr std::size_t PendingEventCapacity = 64;
 
@@ -747,6 +753,8 @@ public:
      * @brief Advances the active trajectory through the world's capsule mover.
      * @param world Borrowed for this synchronous owner-thread call only; never retained.
      * @param step Injected deterministic simulation step; duplicate/non-increasing ticks are rejected.
+     * @cost More expensive than reading the current pose: bounded capsule queries and up to two foot rays
+     *       per active simulation step; reuse the owning result for all presentation consumers that tick.
      */
     [[nodiscard]] eve::Result<ClimbingAdvance> advance(physics::World3D& world, eve::SimulationStep step);
     /** @brief Advances with an authored root-motion delta before warp and capsule collision. */
@@ -847,6 +855,8 @@ private:
         bool                     branchWindowOpen = false;
         ClimbingAnchorGraphHandleRef anchorGraph;
         ClimbingAnchorNodeRef        anchorNode;
+        /** @brief Observed source for this transition; target reservation remains the sole occupancy owner. */
+        std::optional<ClimbingAnchorNodeRef> sourceAnchorNode;
         ClimbingAnchorReservation    anchorReservation;
     };
 
@@ -867,6 +877,7 @@ private:
     std::optional<Execution>               execution_;
     mutable std::vector<ClimbingCandidate> lastCandidates_;
     mutable ClimbingCandidateSet            probeScratch_;
+    mutable ClimbingCandidate                      probeCandidate_;
     mutable std::uint32_t                  lastQueryCount_ = 0;
     mutable ClimbingRuntimeCounters         lastCounters_;
     mutable ClimbingTelemetryBuffer         telemetry_;
@@ -879,6 +890,7 @@ private:
     std::string                            previousActionId_;
     std::uint64_t                          nextExecutionId_ = 1;
     std::uint64_t                          definitionGeneration_ = 1;
+    mutable std::optional<std::uint64_t>           validatedProfileGeneration_;
     std::vector<ClimbingEvent>             pendingEvents_;
 };
 

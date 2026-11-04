@@ -2,7 +2,10 @@
 
 #include "common/Json.h"
 #include "inventory/Bag.h"
+#include "inventory/InventorySystem.h"
 
+#include <cmath>
+#include <limits>
 #include <unordered_map>
 
 namespace eve::rpg {
@@ -67,21 +70,52 @@ void LootSystem::clear() { lootTables().clear(); }
 
 int LootSystem::count() { return int(lootTables().size()); }
 
+namespace {
+eve::Result<int> rollAtomic(const LootTableDefinition &definition, inventory::Bag &bag, std::mt19937 &rng) {
+    // Snapshot before inventory policy/hook callbacks can reload the registry.
+    const auto entries = definition.entries;
+    if (entries.size() > static_cast<std::size_t>(std::numeric_limits<int>::max()))
+        return eve::Result<int>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Too many loot entries"));
+    for (const auto &entry : entries) {
+        if (entry.itemId.empty() || !std::isfinite(entry.chance) || entry.chance < 0.0 || entry.chance > 1.0 ||
+            entry.minQty <= 0 || entry.maxQty < entry.minQty)
+            return eve::Result<int>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "Invalid loot entry", entry.itemId));
+    }
+    auto                                       candidateRng = rng;
+    std::uniform_real_distribution<double> chanceDist(0.0, 1.0);
+    std::vector<inventory::InventoryItemGrant> grants;
+    for (const auto &entry : entries) {
+        if (chanceDist(candidateRng) >= entry.chance) continue;
+        std::uniform_int_distribution<int> qtyDist(entry.minQty, entry.maxQty);
+        grants.push_back({entry.itemId, qtyDist(candidateRng)});
+    }
+    if (grants.empty()) {
+        rng = candidateRng;
+        return eve::Result<int>::success(0);
+    }
+    auto prepared = inventory::InventorySystem::prepareAddBatch(&bag, grants);
+    if (!prepared) return eve::Result<int>::failure(prepared.status());
+    const auto before = rng;
+    // Publish the random stream before inventory's post-commit hooks run.
+    rng            = candidateRng;
+    auto committed = inventory::InventorySystem::commitAddBatch(std::move(prepared).takeValue());
+    if (!committed) {
+        rng = before;
+        return eve::Result<int>::failure(committed.status());
+    }
+    return eve::Result<int>::success(static_cast<int>(grants.size()));
+}
+}  // namespace
+
 int LootSystem::roll(const std::string &tableId, eve::inventory::Bag *bag, std::mt19937 &rng) {
     if (!bag) return 0;
-    const LootTableDefinition *def = find(tableId);
-    if (!def) return 0;
-    std::uniform_real_distribution<double> chanceDist(0.0, 1.0);
-    int drops = 0;
-    for (const auto &entry : def->entries) {
-        if (chanceDist(rng) >= entry.chance) continue;
-        std::uniform_int_distribution<int> qtyDist(entry.minQty, entry.maxQty);
-        const int qty = qtyDist(rng);
-        if (qty <= 0) continue;
-        bag->addItem(entry.itemId, qty);
-        ++drops;
-    }
-    return drops;
+    const auto *definition = find(tableId);
+    if (!definition) return 0;
+    auto result = rollAtomic(*definition, *bag, rng);
+    if (!result) return 0;
+    return result.value();
 }
 
 }  // namespace eve::rpg

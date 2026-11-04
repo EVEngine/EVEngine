@@ -49,15 +49,20 @@ if [ -z "$CHANGED_FILES" ]; then
     exit 0
 fi
 
+EXISTING_FILES=()
 for file in $CHANGED_FILES; do
     if ! git cat-file -e "$MERGE_BASE:$file" 2>/dev/null; then
         echo "warning: new file '$file' is not checked (format it by hand)"
         continue
     fi
-    # --diff exits non-zero when differences are found; keep going so we can
-    # print the diff as the failure message.
-    git clang-format --quiet --diff "$MERGE_BASE" -- "$file" >>"$DIFF_FILE" || true
+    EXISTING_FILES+=("$file")
 done
+
+# One invocation preserves changed-line semantics while avoiding a fresh Git
+# temporary index and Python startup for every file in a mechanical migration.
+if [ "${#EXISTING_FILES[@]}" -gt 0 ]; then
+    git clang-format --quiet --diff "$MERGE_BASE" -- "${EXISTING_FILES[@]}" >"$DIFF_FILE" || true
+fi
 
 if [ -s "$DIFF_FILE" ]; then
     echo "error: changed lines are not clang-format clean (see .clang-format):" >&2

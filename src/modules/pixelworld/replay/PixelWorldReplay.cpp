@@ -1,5 +1,7 @@
 #include "pixelworld/replay/PixelWorldReplay.h"
 
+#include <utility>
+
 #include <algorithm>
 #include <charconv>
 #include <cstddef>
@@ -54,7 +56,7 @@ eve::Result<int> integer(const eve::Value& value, std::string path) {
     const auto* number = value.getIf<std::int64_t>();
     if (!number || *number < std::numeric_limits<int>::min() || *number > std::numeric_limits<int>::max())
         return eve::Result<int>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::ParseError, "expected in-range integer", path, {}, "pixelworld.replay"));
+            eve::DiagnosticCode::ParseError, "expected in-range integer", std::move(path), {}, "pixelworld.replay"));
     return eve::Result<int>::success(static_cast<int>(*number));
 }
 

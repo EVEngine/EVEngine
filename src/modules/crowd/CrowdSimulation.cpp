@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "crowd/CrowdInternal.h"
 
 namespace eve::crowd {

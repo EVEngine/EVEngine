@@ -1,0 +1,41 @@
+name: Native ARM64 software Vulkan
+description: Select Lavapipe on Linux or build a pinned native SwiftShader on Windows
+runs:
+  using: composite
+  steps:
+    - name: Restore native Windows loader
+      if: runner.os == 'Windows'
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: build/arm64-vulkan-loader
+        key: vulkan-loader-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.github/scripts/setup-arm64-vulkan-loader.ps1') }}
+    - name: Build and select native Windows loader
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: .github/scripts/setup-arm64-vulkan-loader.ps1
+    - name: Restore native Windows ICD
+      if: runner.os == 'Windows'
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: build/arm64-swiftshader-runtime
+        key: swiftshader-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.github/scripts/setup-arm64-vulkan.ps1') }}
+    - name: Build and select native Windows ICD
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: .github/scripts/setup-arm64-vulkan.ps1
+    - name: Select native Linux ICD
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        test "$(uname -m)" = aarch64
+        icd=/usr/share/vulkan/icd.d/lvp_icd.aarch64.json
+        if [ ! -f "$icd" ]; then icd=/usr/share/vulkan/icd.d/lvp_icd.json; fi
+        test -f "$icd"
+        echo "VK_ICD_FILENAMES=$icd" >> "$GITHUB_ENV"
+        # Mesa 25.2's Lavapipe radix-sort BVH kernels require eight lanes
+        # (subgroup_size_log2=3); AArch64 defaults to four 32-bit lanes.
+        # LLVM legalizes this logical vector width to native ARM instructions.
+        echo "LP_NATIVE_VECTOR_WIDTH=256" >> "$GITHUB_ENV"
+        mkdir -p "$RUNNER_TEMP/eve-xdg"
+        chmod 700 "$RUNNER_TEMP/eve-xdg"
+        echo "XDG_RUNTIME_DIR=$RUNNER_TEMP/eve-xdg" >> "$GITHUB_ENV"

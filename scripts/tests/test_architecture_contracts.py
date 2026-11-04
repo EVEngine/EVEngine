@@ -99,7 +99,7 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn("missing-cost-annotation", codes)
 
     def test_runtime_lookup_and_hot_path_and_cost_without_catalogue(self):
-        # Keyboard EventSink is in HOT_PATH_GLOBS; any module runtime path bans getModInst.
+        # Keyboard EventSink declares a hot source; runtime paths ban getModInst.
         lines = [
             contracts.SourceLine(
                 "src/modules/keyboard/sdl/EventSink.cpp",
@@ -123,8 +123,24 @@ class ArchitectureContractTests(unittest.TestCase):
         self.assertIn("runtime-convenience-lookup", codes)
         self.assertIn("missing-cost-annotation", codes)
 
-    def test_hot_path_list_is_non_empty(self):
-        self.assertGreater(len(contracts.HOT_PATH_GLOBS), 10)
+    def test_source_and_directory_declarations_cover_hot_paths(self):
+        self.assertTrue(contracts._is_hot_path("src/modules/keyboard/sdl/EventSink.cpp"))
+        self.assertTrue(contracts._is_hot_path("src/modules/physics/forces/FutureForce.cpp"))
+        self.assertFalse(contracts._is_hot_path("src/modules/physics/forces/FutureForce.h"))
+        self.assertFalse(contracts._is_hot_path("src/modules/fixture/Runtime.cpp"))
+
+    def test_local_hot_path_marker_and_false_literal(self):
+        import tempfile
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "New.cpp"
+            with patch.object(contracts, "ROOT", root):
+                source.write_text('// eve-hot-path\nvoid tick() {}', encoding="utf-8")
+                self.assertTrue(contracts._is_hot_path("New.cpp"))
+                source.write_text('const char* s = R"x(\n// eve-hot-path\n)x";', encoding="utf-8")
+                self.assertFalse(contracts._is_hot_path("New.cpp"))
+                self.assertFalse(contracts._is_hot_path("../outside.cpp"))
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@
 #include "common/ScriptCompiler.h"
 #include "devtools/McpJson.hpp"
 #include "devtools/McpProjectIndexTools.hpp"
+#include "devtools/McpToolFamilies.hpp"
 
 namespace eve::dev {
 namespace {
@@ -238,4 +239,8 @@ std::string_view mcpArchitectureToolSchemas() {
     }();
     return schemas;
 }
+}  // namespace eve::dev
+
+namespace eve::dev {
+EVE_MCP_TOOL_FAMILY(Architecture, mcpArchitectureToolSchemas, callMcpArchitectureTool, ContentEnvelope)
 }  // namespace eve::dev

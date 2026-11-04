@@ -1,3 +1,4 @@
+// eve-hot-path
 #include <algorithm>
 #include <cfloat>
 #include <cmath>

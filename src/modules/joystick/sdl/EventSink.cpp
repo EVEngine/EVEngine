@@ -1,3 +1,4 @@
+// eve-hot-path
 // Translates SDL joystick and game-controller events into engine messages, and
 // keeps the module's device table in sync on hotplug.
 //

@@ -2,9 +2,10 @@
 #include "common/Export.h"
 
 
-#include <string>
 #include <functional>
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "common/Module.h"
 namespace CLI
@@ -107,7 +108,7 @@ struct Register {
     /** @brief Constructs a Register. */
     Register(std::function<Handler*()> handler) {
         /** @brief Registers cmd. */
-        Cmdline::registerCmd(handler);
+        Cmdline::registerCmd(std::move(handler));
     }
 };
 

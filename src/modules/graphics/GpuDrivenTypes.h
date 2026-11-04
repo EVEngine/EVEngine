@@ -1,58 +1,25 @@
 #pragma once
 
-#include "common/GpuResidentBufferView.h"
+#include "graphics/GpuDrivenApi.h"
 
 #include <cstdint>
-#include <glm/glm.hpp>
+// Prefer narrow GLM headers over <glm/glm.hpp> (that pull pulls AVX512 intrinsics).
+#include <glm/ext/vector_uint4.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec4.hpp>
 
 namespace eve::graphics {
 
 /**
- * @brief GPU-driven rendering shared constants + std430 GPU layouts.
+ * @brief GPU-driven rendering std430 GPU layouts.
  *
  * These layouts are mirrored by the GLSL shaders that consume the bindless
  * table (mesh3d_gpudriven.*) and by the compute passes (stage 2+). They live
  * in the backend-independent graphics namespace so RenderSystem3D can build
  * them without depending on the Vulkan backend.
+ *
+ * Constants / batch descriptors without GLM live in `GpuDrivenApi.h`.
  */
-
-constexpr uint32_t kInvalidGpuDrivenSlot = 0xFFFFFFFFu;
-constexpr uint32_t kMaxGpuDrivenTextures = 1024;  // sampler2D array slots (desktop limit)
-constexpr uint32_t kMaxGpuDrivenCubemaps = 64;    // samplerCube array slots
-
-using eve::GpuResidentBackend;
-using eve::GpuResidentBufferView;
-using eve::kGpuResidentStorageOffsetAlignment;
-
-/** @brief One contiguous mesh/material bucket in a sorted resident instance buffer. */
-struct GpuResidentInstanceBucket {
-    uint32_t firstInstance = 0;
-    uint32_t instanceCount = 0;
-    uint32_t meshId        = kInvalidGpuDrivenSlot;
-    uint32_t materialId    = kInvalidGpuDrivenSlot;
-};
-
-/**
- * @brief Direct-render description for a GPU-authored array of GpuInstance records.
- * @ownership buckets and buffer are borrowed for this call; the native buffer remains
- * caller-owned through the frame fence as required by GpuResidentBufferView.
- */
-struct GpuResidentInstanceBatch {
-    GpuResidentBufferView            buffer;
-    const GpuResidentInstanceBucket* buckets       = nullptr;
-    uint32_t                         bucketCount   = 0;
-    uint32_t                         instanceCount = 0;
-};
-
-/** @brief Structured result for direct resident-instance submission. */
-enum class GpuResidentSubmitStatus : uint8_t {
-    Submitted,
-    Unsupported,
-    InvalidArgument,
-    BackendMismatch,
-    ResourceUnavailable,
-    CapacityExceeded,
-};
 
 /// @brief GPU mesh table record (std430). Mirrors GLSL GpuMeshRecord.
 /** @brief GpuMeshRecord public API. */

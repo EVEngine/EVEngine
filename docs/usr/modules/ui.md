@@ -556,6 +556,72 @@ C++ `Component::markDirty()` / `setState()` 将组件加入一次性弱注册队
 
 Getter 不构建树。`rebuild(forceFull)` 保留为兼容的显式同步入口，其成本是完整描述树构建；常规代码只修改状态。组件不可复制或移动，不允许在其 `build()` 回调中销毁自己。
 
+## 游戏 HUD 画布与填充
+
+完整示例见 [`examples/hud-gallery`](../../../examples/hud-gallery/README.md)。
+
+挂载或选中 Host 后调用 `setHostHudCanvas(referenceWidth, referenceHeight, userScale)`，
+将该 Host 的尺寸、偏移和控件布局输入视为设计单位，按当前视口等比缩放。
+`setHostAnchor` 仍以可用安全区域为基准，因此超宽屏会扩展锚点之间的距离，不拉伸图标。
+`setHostSafeArea(left, top, right, bottom)` 的边距单位是显示逻辑像素，不是 framebuffer 像素。
+`clearHostHudCanvas()` 恢复原来的像素布局。世界锚点 Host 继续走世界投影，不重复应用画布缩放。
+当前只提供 fit 策略和调用方设置的安全边距；平台安全区域自动采集与按宽高权重适配尚未接入。
+
+画布适配不调用全局 `setScale`：DPI 由后端处理，HUD 大小用每个 Host 的 userScale 调节。
+位置/尺寸动画继续写逻辑值；测量、布局和交互使用同一份缩放后的尺寸，绘制结束恢复逻辑输入。
+
+```squirrel
+ui.beginBuild()
+ui.beginWindow("HUD", "root")
+ui.resourceBar("hp", 360.0, 28.0, 0.75)
+ui.end()
+if (!ui.mountBuildAs("hud")) throw "Could not mount HUD"
+ui.setHostOverlay(true)
+ui.setHostOverlayAlpha(0.0)
+ui.setHostInputTransparent(true)
+ui.setHostHudCanvas(1920.0, 1080.0, 1.0)
+ui.setHostSafeArea(24.0, 24.0, 24.0, 24.0)
+ui.setHostAnchor(0.0, 0.0)
+ui.setHostPos(16.0, 16.0, 0.0, 0.0)
+ui.setValue("hp/value", 0.5)
+ui.setText("hp/label", "HP 50 / 100")
+```
+
+- `filledImage(id, width, height, fraction)`：纯色或纹理填充，零值时保留完整布局盒。
+  在构建时紧接 `setItemFillDirection("right"|"left"|"down"|"up", stretch)`。
+  默认裁剪源 UV；stretch 为 true 时缩放完整图片。边框应使用独立九宫格，填充节点不应用九宫格边框。
+- `radialFill(id, width, height, fraction)`：纯色椭圆扇形/圆环，不支持纹理采样。
+  紧接 `setItemRadialFill(startDegrees, clockwise, innerRadius)`；零度向右、默认 -90 度向上，
+  innerRadius 是 [0,1] 的半径比例。最多 64 段，无每帧网格堆分配。
+- `resourceBar(id, width, height, fraction)`：组合底板、拖尾、当前值和标签。
+  通过 `id + "/value"`、`"/trail"`、`"/label"` 更新。拖尾时间由调用方注入 dt 管理。
+- `skillSlot(id, size, iconTextureId, cooldownFraction, key)`：组合图标按钮、冷却遮罩和按键标签。
+  点击事件是 `host/id/activate`，冷却显示值写入 `id + "/cooldown"`；禁用状态由玩法代码设置。
+- `setHostInputTransparent(true)`：整个 Host 不参与鼠标或键盘输入。仅透明背景不会开启穿透；
+  交互控件应放到独立、大小贴合内容的 Host。当前不支持单个全屏 Host 内按空白区域穿透到后方窗口。
+
+运行时控件树 JSON 写出版本 5，兼容读取版本 1–4，保留填充与文字样式；纹理注册 ID 不持久化。
+UI 文档快照现在写出 schemaVersion 3，兼容加载 1/2；缺省填充字段迁移为零进度。
+`content.value`、`fillDirection`、`fillStretch`、`fillStartDegrees`、`fillClockwise`、`fillInnerRadius`
+可经属性操作、撤销和快照往返；未知快照版本拒绝，未知对象字段沿用忽略策略。
+运行时桥接支持 progress/filled-image/radial-fill，以及默认字体的字号、颜色和文字对齐。
+字体资产、纹理资产和非 stretch imageFit 尚未接入运行时资源解析，发布时返回 Unsupported，
+且保留原 Host 的控件树。脚本构建的纹理控件继续使用 registerTexture/setImageTextureId。
+
+### HUD 数值过渡与节点句柄
+
+`ui.animateItemValue(id, value, durationMs [, ease [, delayMs]])` 将选中 Host 的控件数值平滑过渡到 `[0,1]` 内的目标，适用于血条缓降和径向冷却。重复调用会从当前显示值重新开始；请在目标变化时调用，而不是每帧重启。业务层继续持有真实生命值或冷却时间。
+
+```squirrel
+ui.select("resources")
+ui.setValue("hp/value", hp)
+ui.animateItemValue("hp/trail", hp, 450.0, "outQuad", 350.0)
+```
+
+C++ 可用 `UIHost::nodeHandle(id)` 查找一次，再通过 `UIHost::resolveNode(token)` 常数时间访问。句柄不拥有节点；仅在 UI 线程解析，返回的引用不可跨帧保存。属性协调保留句柄，整树替换或 Host 销毁使其失效。补间内部使用同样的检查，重建后的同名节点不会继承旧动画。
+
+文档发布可向 `UiDocumentRuntimeBridge::publish` 传入 `UiTextureResolver`，将 `textureAsset` 映射为已有的非零 UI 纹理注册 ID。支持 image、image-button、filled-image 和 nine-patch；每次发布对同一资源只解析一次。调用方负责注册和纹理的生命周期，后端重建后须重新注册并发布。解析失败保留旧树；字体资源及非 stretch 图片适配暂不支持。
+
 ## 工具界面的文本与提示
 
 版本 5 增加 `link`、`helpText`、`disabledReason`、`multiline`、`readOnly` 和

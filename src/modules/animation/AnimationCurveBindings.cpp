@@ -30,7 +30,7 @@ void exposeAnimCurveLibraryBindings(ssq::Table& table) {
         try {
             auto* fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
             if (!fs) throw std::runtime_error("filesystem unavailable");
-            auto* raw = fs->read(path);
+            auto* raw = fs->read(std::move(path));
             if (!raw) throw std::runtime_error("animation curve file unavailable");
             Owned<eve::filesystem::FileData> data(raw);
             return script::projectResult(bind.vm(),

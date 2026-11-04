@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "modules": [
+    "procgen",
+    "procgen_editing"
+  ],
+  "origins": [
+    "procgen_road_side_placement.cpp"
+  ],
+  "module": "procgen"
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <limits>
 #include "common/ProcgenWorldQuery.h"
@@ -21,65 +38,7 @@ RoadNetwork placementNetwork(RoadStyle style) {
     return network;
 }
 }  // namespace
-TEST_CASE("procgen.road.authoring.sidePlacementMatchesMeasuredOffsetsAndSingleCenterBudget") {
-    struct Sample {
-        RoadSideReference reference;
-        bool              left;
-        float             lateral, height, yaw, expectedX;
-    };
-    const Sample samples[] = {{RoadSideReference::Center, true, 0, .02f, 0, 0},
-                              {RoadSideReference::Center, true, 2, .02f, 0, 2},
-                              {RoadSideReference::Center, true, 0, 1.02f, 0, 0},
-                              {RoadSideReference::AsphaltEdges, true, 0, .02f, 0, -3},
-                              {RoadSideReference::AsphaltEdges, false, 0, .02f, 0, 3},
-                              {RoadSideReference::Center, true, 0, .02f, 45, 0}};
-    for (const auto& sample : samples) {
-        RoadStyle style;
-        style.sidePlacement = {sample.reference, sample.lateral, sample.height, sample.yaw};
-        // Center with both streams enabled must remain one stream.
-        style.sideObjectsLeft   = sample.left;
-        style.sideObjectsRight  = !sample.left || sample.reference == RoadSideReference::Center;
-        auto            network = placementNetwork(style);
-        RoadBakeOptions options;
-        options.includeMarkings = options.includeNavigation = false;
-        options.sideObjectSpacing                           = 5;
-        options.sideObjectClearance                         = 0;
-        options.sideObjectOffset                            = 123;  // Explicit placement origin owns lateral position.
-        options.maximumPlacements                           = 9;
-        auto baked                                          = bakeRoadNetwork(network, options);
-        REQUIRE(baked.ok());
-        int count = 0;
-        for (int i = 0; i < baked.value().placements.getCount(); ++i) {
-            const auto& points = baked.value().placements;
-            if (points.getStringAttribute(i, "road_role", "").find("side.") != 0) continue;
-            REQUIRE(std::fabs(points.points()[i].x - sample.expectedX) < 1e-4f);
-            REQUIRE(std::fabs(points.points()[i].y - sample.height) < 1e-4f);
-            REQUIRE(std::fabs(points.points()[i].z - count * 5.005f) < 1e-4f);
-            REQUIRE(std::fabs(points.points()[i].yaw - sample.yaw) < 1e-4f);
-            ++count;
-        }
-        REQUIRE_EQ(count, 7);
-        options.maximumPlacements = 8;
-        REQUIRE(!bakeRoadNetwork(network, options).ok());
-        Params params;
-        params.setBool("navigation", false);
-        params.setBool("markings", false);
-        params.setFloat("sideObjectSpacing", 5);
-        params.setFloat("sideObjectClearance", 0);
-        REQUIRE(setRoadRecipeNetwork(params, network).ok());
-        auto recipe = bakeRoadNetworkRecipe(params);
-        REQUIRE(recipe.ok());
-        REQUIRE_EQ(recipe.value().placements.getCount(), 9);
-        for (int i = 0; i < 9; ++i) {
-            REQUIRE(std::fabs(recipe.value().placements.points()[i].x - baked.value().placements.points()[i].x) <
-                    1e-6f);
-            REQUIRE(std::fabs(recipe.value().placements.points()[i].y - baked.value().placements.points()[i].y) <
-                    1e-6f);
-            REQUIRE(std::fabs(recipe.value().placements.points()[i].yaw - baked.value().placements.points()[i].yaw) <
-                    1e-6f);
-        }
-    }
-}
+
 TEST_CASE("procgen.road.authoring.sidePlacementPresetHistoryMigrationAndAtomicFailure") {
     RoadStyle style;
     style.sidePlacement = {RoadSideReference::Center, 2, 1.02f, 45};

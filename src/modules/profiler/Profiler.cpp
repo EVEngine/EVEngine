@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "profiler/Profiler.h"
 
 #include "common/GpuTimer.h"

@@ -5,6 +5,7 @@
 /** @file Damage.h @brief Deterministic damage, poise, hit-reaction and knockback resolution. */
 
 #include "action/Action.h"
+#include "common/BorrowedRef.h"
 #include "common/Result.h"
 #include "common/SubjectRef.h"
 #include "settlement/Settlement.h"
@@ -58,6 +59,10 @@ struct DamageRequest {
     /** @brief Shield balance available to this transaction; the caller commits reported consumption. */
     double                                   availableShield = 0.0;
     Impulse3                                 knockback;
+    /** @brief Injected simulation tick recorded by the canonical settlement. */
+    SimulationTick tick = SimulationTick::zero();
+    /** @brief Presentation flag; healthDamage already includes any critical multiplier. */
+    bool critical = false;
 
     /** @brief Validate target, canonical gameplay-tag damage type and finite amounts. */
     [[nodiscard]] Result<void> validate() const;
@@ -150,6 +155,17 @@ public:
                                                           const DamageRequest& request) const;
     /** @brief Resolve and atomically commit one damage request. */
     [[nodiscard]] Result<DamageOutcome> apply(CombatState& target, const DamageRequest& request) const;
+    /**
+     * @brief Settle through an explicit pipeline with an optional transactional event log.
+     * @param target Borrowed authority for this synchronous owner-thread call.
+     * @param request Borrowed input, never retained.
+     * @param pipeline Borrowed pipeline; callbacks must not mutate target or reenter this runtime.
+     * @param events Borrowed log; append failure rolls back health and poise.
+     * @return Owning outcome or failure without committed changes.
+     */
+    [[nodiscard]] Result<DamageOutcome> apply(CombatState& target, const DamageRequest& request,
+                                              const settlement::SettlementPipeline& pipeline,
+                                              OptionalRef<game_event::GameEventLog> events = {}) const;
     /**
      * @brief Resolve and atomically commit health restoration through the configured settlement pipeline.
      * @param target Authoritative combat state to restore.

@@ -1,7 +1,54 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "stylize_action",
+  "modules": [
+    "animation",
+    "stylize",
+    "stylize_action",
+    "tactics",
+    "ui",
+    "vehicle"
+  ],
+  "origins": [
+    "stylize_attack_vfx_audio_decal.cpp",
+    "stylize_attack_vfx_layers.cpp",
+    "tactics_action.cpp",
+    "tactics_rpg_integration.cpp",
+    "tactics_settlement.cpp",
+    "time_subscription_consumers.cpp",
+    "ui_motion_bind.cpp",
+    "ui_presentation.cpp",
+    "vehicle_physics.cpp"
+  ],
+  "cases": {
+    "physics-backend": [
+      "vehicle.physics2d.trackRotatesInPlace",
+      "vehicle.physics2d.wheelDrivesAndSteers",
+      "vehicle.physics3d.suspensionDrives"
+    ],
+    "render-offscreen": [
+      "stylize.ysa.skinnedMeshFollowsPalette",
+      "stylize.ysa.vertexColorFeedsMaterialColor"
+    ],
+    "render-window": [
+      "stylize.effects.gpu.meshShaders",
+      "stylize.effects.gpu.postPasses",
+      "stylize.ysa.realGpuPipeline"
+    ]
+  }
+}
+*/
+// clang-format on
+
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: stylize attack vfx audio decal
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_stylize_attack_vfx_audio_decal)
-#include "PrivateTestScope.h"
 #include <string_view>
 #include "common/Capability.h"
 #include "decal/Decal.h"
@@ -10,7 +57,6 @@
 #include "stylize/AttackVfxRuntime.h"
 #include "stylize/Stylize.h"
 #include "stylize/action/StylizeAction.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // stylize_attack_vfx_audio_decal.cpp
 namespace test_stylize_attack_vfx_audio_decal {
@@ -171,19 +217,17 @@ TEST_CASE("stylize.attack_vfx.layers multi role recipe soft skips missing audio"
     REQUIRE_EQ(runtime.activeCount(), 0u);
 }
 }  // namespace test_stylize_attack_vfx_audio_decal
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_stylize_attack_vfx_layers)
+// Contract section: stylize attack vfx layers
 #include "PrivateTestScope.h"
+
 #include <SDL2/SDL.h>
 #include <array>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
 #include <string>
-#include <string_view>
 #include <vector>
-#include "common/Capability.h"
 #include "common/Exception.h"
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
@@ -192,17 +236,11 @@ TEST_CASE("stylize.attack_vfx.layers multi role recipe soft skips missing audio"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "image/ImageData.h"
-#include "stylize/AttackVfxLayerExecutor.h"
-#include "stylize/AttackVfxRecipe.h"
-#include "stylize/AttackVfxRuntime.h"
 #include "stylize/MotionEchoEffect.h"
 #include "stylize/StyleInstance.h"
 #include "stylize/StylePass.h"
 #include "stylize/StyleShaders.h"
-#include "stylize/Stylize.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // stylize_attack_vfx_layers.cpp
 namespace test_stylize_attack_vfx_layers {
 // stylize_attack_vfx_layers.cpp
@@ -587,16 +625,14 @@ TEST_CASE("stylize.ysa.vertexColorFeedsMaterialColor") {
     REQUIRE(totalLuma(whiteFrame) > totalLuma(greyFrame));
 }
 }  // namespace test_stylize_attack_vfx_layers
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tactics_action)
+// Contract section: tactics action
 #include "PrivateTestScope.h"
+
 #include "action/Action.h"
 #include "common/ECS.h"
 #include "tactics/Tactics.h"
 #include "tactics/TacticsAction.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // tactics_action.cpp
 namespace test_tactics_action {
 namespace {
@@ -758,15 +794,11 @@ TEST_CASE("tactics.moveActionRejectsStaleExpectedRevision") {
     CHECK_EQ(battle->board()->value.position(actor).value(), (eve::tactics::Cell{0, 0, 0}));
 }
 }  // namespace test_tactics_action
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tactics_rpg_integration)
+// Contract section: tactics rpg integration
 #include "PrivateTestScope.h"
-#include "common/ECS.h"
-#include "tactics/Tactics.h"
+
 #include "tactics/TacticsSettlement.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // tactics_rpg_integration.cpp
 namespace test_tactics_rpg_integration {
 namespace {
@@ -876,14 +908,10 @@ TEST_CASE("tactics.rpgSettlementOutcomeDefeatsUnitAndCompletesObjective") {
     CHECK_EQ(static_cast<int>(status.value()), static_cast<int>(eve::tactics::BattleStatus::Ended));
 }
 }  // namespace test_tactics_rpg_integration
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tactics_settlement)
+// Contract section: tactics settlement
 #include "PrivateTestScope.h"
-#include <array>
-#include "tactics/TacticsSettlement.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // tactics_settlement.cpp
 namespace test_tactics_settlement {
 namespace {
@@ -1014,15 +1042,12 @@ TEST_CASE("tactics.settlement.areaAbilityUsesAtomicBatchAndRollsBackAllTargets")
     CHECK_EQ(secondHealth, 85.0);
 }
 }  // namespace test_tactics_settlement
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_time_subscription_consumers)
+// Contract section: time subscription consumers
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include <cstdint>
-#include <memory>
 #include <stdexcept>
-#include <string>
 #include <utility>
 #include "animation/AnimClipRegistry.h"
 #include "animation/AnimTrail.h"
@@ -1035,8 +1060,6 @@ TEST_CASE("tactics.settlement.areaAbilityUsesAtomicBatchAndRollsBackAllTargets")
 #include "particles/ParticleSystem.h"
 #include "particles/Particles.h"
 #include "platform_event/PlatformEvent.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // time_subscription_consumers.cpp
 namespace test_time_subscription_consumers {
 namespace {
@@ -1238,21 +1261,15 @@ TEST_CASE("subscription.animClipReload.supportsAbsentProviderAndReentrancy") {
     replacement.dispose();
 }
 }  // namespace test_time_subscription_consumers
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ui_motion_bind)
+// Contract section: ui motion bind
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <string>
-#include "animation/Animation.h"
-#include "common/Time.h"
+
 #include "ui/UI.h"
 #include "ui/UIHost.h"
 #include "ui/UiMotionSinks.h"
 #include "ui/UiTween.h"
 #include "ui/Widget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // ui_motion_bind.cpp
 namespace test_ui_motion_bind {
 namespace ui = eve::ui;
@@ -1403,20 +1420,14 @@ TEST_CASE("UI.motion.bindHostSizeOverlayAndItemPos") {
     CHECK(std::abs(go->get().posY - 40.f) < 1e-3f);
 }
 }  // namespace test_ui_motion_bind
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ui_presentation)
+// Contract section: ui presentation
 #include "PrivateTestScope.h"
-#include <cstdint>
+
 #include <optional>
-#include <string>
-#include <vector>
 #include "TestPropertyAccess.h"
 #include "property_access/PropertyAccess.h"
 #include "ui/PropertyView.h"
-#include "ui/UIHost.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // ui_presentation.cpp
 namespace test_ui_presentation {
 using namespace eve::property_access;
@@ -1627,21 +1638,16 @@ TEST_CASE("ui.presentation.component_tracks_model_revision") {
     CHECK(!component.isDirty());
 }
 }  // namespace test_ui_presentation
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_vehicle_physics)
+// Contract section: vehicle physics
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <memory>
-#include <string>
+
 #include "physics/Body.h"
 #include "physics/Body3D.h"
 #include "physics/Physics.h"
 #include "physics/World.h"
 #include "physics/World3D.h"
 #include "vehicle/Vehicle.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // vehicle_physics.cpp
 namespace test_vehicle_physics {
 using namespace eve::vehicle;
@@ -1874,4 +1880,3 @@ TEST_CASE("vehicle.physicsLink.vehicleFirstDestructionReleasesBody3D") {
     delete world;
 }
 }  // namespace test_vehicle_physics
-#endif

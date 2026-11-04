@@ -6,10 +6,16 @@
 
 `RenderControl` 用字符串特性开关，再 `compile()` 成有序 Pass（默认：shadow → forward → hair）：
 
+显式请求 GBuffer 相关效果时使用 `requestFeature(name, true)`，并检查返回的
+`Result`。WebGPU 设备的颜色附件预算不足 40 字节/采样时，该方法返回
+`Unsupported`；`enable`/`disable` 是不报告失败的兼容接口。低能力设备仍可
+运行前向渲染，`isEnabled` 对不可用的 GBuffer 相关效果返回 `false`，
+`compile()` 不会安排 GBuffer、decal 或延迟光照。
+
 ```squirrel
 local rc = gfx.getRenderControl();
-rc.enable("gbuffer");      // 额外填充可采样深度/法线
-rc.enable("gbufferAlbedo");
+local gbufferRequest = rc.requestFeature("gbuffer", true);
+if (gbufferRequest.ok) rc.requestFeature("gbufferAlbedo", true).ignore();
 rc.compile();
 gfx.render3D();
 local gb = rc.getGBuffer();

@@ -10,7 +10,9 @@
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
 #include "physics/destruction/CollapseAnimation.h"
+#include "physics/destruction/CollapsePlayback.h"
 #include "physics/destruction/FractureGeometry.h"
+#include "physics/destruction/GeometryCollectionInstance.h"
 #include "physics/destruction/graphics/GeometryCollectionRenderer.h"
 namespace eve::physics {
 eve::Result<void> GeometryCollectionRenderer::setGroupExteriorColor(int groupId, float r, float g, float b, float a) {
@@ -186,8 +188,12 @@ eve::Result<void> GeometryCollectionRenderer::prepareGeometry(std::shared_ptr<co
     boneMatrices_     = std::move(matrices);
     return eve::Result<void>::success();
 }
-eve::Result<void> GeometryCollectionRenderer::submitAnimation(const CollapseAnimation& animation, float seconds,
-                                                              float x, float y, float z) {
+eve::Result<void> GeometryCollectionRenderer::preparePlayback(const CollapsePlayback& player,
+                                                              graphics::Graphics*     graphics) {
+    return prepareAnimation(*player.animation(), graphics);
+}
+eve::Result<void> GeometryCollectionRenderer::beginAnimationSubmission(const CollapseAnimation& animation) {
+    submitted_          = false;
     const auto geometry = animation.fragmentGeometry();
     if (!geometry)
         return eve::Result<void>::failure(eve::Diagnostic::error(
@@ -199,12 +205,27 @@ eve::Result<void> GeometryCollectionRenderer::submitAnimation(const CollapseAnim
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
                                                                  "prepareAnimation is required before scene submission",
                                                                  "geometry"));
+    poseScratch_.clear();
+    return eve::Result<void>::success();
+}
+eve::Result<void> GeometryCollectionRenderer::submitPlayback(const CollapsePlayback& player) {
+    const auto animation = player.animation();
+    auto       ready     = beginAnimationSubmission(*animation);
+    if (!ready) return ready;
+    for (int i = 0; i < animation->boneCount(); ++i) {
+        auto pose = player.sample(i);
+        if (!pose) return eve::Result<void>::failure(pose.status());
+        poseScratch_.push_back(pose.value());
+    }
+    return finishAnimationSubmission();
+}
+eve::Result<void> GeometryCollectionRenderer::submitAnimation(const CollapseAnimation& animation, float seconds,
+                                                              float x, float y, float z) {
+    auto ready = beginAnimationSubmission(animation);
+    if (!ready) return ready;
     if (!std::isfinite(seconds) || !std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
         return eve::Result<void>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "submission values must be finite", "time"));
-    auto depth = registerDepthContribution();
-    if (!depth) return depth;
-    poseScratch_.clear();
     for (int i = 0; i < animation.boneCount(); ++i) {
         auto pose = animation.sample(seconds, i);
         if (!pose) return eve::Result<void>::failure(pose.status());
@@ -214,7 +235,11 @@ eve::Result<void> GeometryCollectionRenderer::submitAnimation(const CollapseAnim
         p.worldZ += z;
         poseScratch_.push_back(p);
     }
-    submitted_   = false;
+    return finishAnimationSubmission();
+}
+eve::Result<void> GeometryCollectionRenderer::finishAnimationSubmission() {
+    auto depth = registerDepthContribution();
+    if (!depth) return depth;
     auto updated = updateGeometry(*meshOwner_);
     if (!updated) return updated;
     submitted_ = true;

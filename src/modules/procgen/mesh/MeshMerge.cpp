@@ -61,6 +61,7 @@ Result<MeshBuild> weldMeshLocal(const MeshBuild& input, float tolerance,
         assignments.push_back(input.getTriangleGroup(i / 3));
     }
     std::vector<std::string> names;
+    names.reserve(static_cast<std::size_t>(input.getGroupCount()));
     for (int i = 0; i < input.getGroupCount(); ++i) names.push_back(input.getGroupName(i));
     auto restored = output.restoreGroupData(std::move(names), std::move(assignments), -1);
     if (!restored.ok()) return Result<MeshBuild>::failure(restored.status());

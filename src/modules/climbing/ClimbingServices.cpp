@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "climbing/ClimbingServices.h"
 
 #include "climbing/ClimbingEventValue.h"

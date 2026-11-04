@@ -80,7 +80,7 @@ namespace {
 eve::Result<void> cardLifecycleConflict(std::string message) {
     return eve::Result<void>::failure(
         eve::Status::failure(eve::StatusCode::Conflict,
-                             eve::Diagnostic::error(eve::DiagnosticCode::Conflict, message, "card.play")));
+                             eve::Diagnostic::error(eve::DiagnosticCode::Conflict, std::move(message), "card.play")));
 }
 
 class CardTransferParticipant final : public eve::transaction::ITransactionParticipant {

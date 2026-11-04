@@ -13,6 +13,8 @@
 
 namespace eve::building {
 class PlacementWorld;
+struct BuildingGarrisonMemberRecord;
+struct BuildingInstanceSnapshot;
 }
 
 namespace eve::building_editing {
@@ -24,67 +26,8 @@ using IDomainOperationTarget=editing::IDomainOperationTarget; using IEditableTar
 using Revision=editing::Revision; using RuleId=editing::RuleId;
 using TargetDescriptor=editing::TargetDescriptor; using TargetId=editing::TargetId;
 
-/** @brief Persistent garrison member copied through building editor undo. */
-struct BuildingGarrisonMemberRecord {
-    std::string id;
-    std::string type;
-    std::vector<std::string> tags;
-};
-
-/** @brief Complete runtime-neutral placed-building snapshot. */
-struct BuildingInstanceSnapshot {
-    int instanceId = 0;
-    std::string buildingId;
-    /** @brief Placement coordinate domain: `cell`, `edge`, `corner`, or `free`. */
-    std::string placementKind = "cell";
-    /** @brief Canonical edge origin when placementKind is `edge`. */
-    int edgeX = 0;
-    int edgeY = 0;
-    /** @brief Canonical edge axis: `horizontal` or `vertical`. */
-    std::string edgeAxis = "horizontal";
-    /** @brief Grid vertex address when placementKind is `corner`. */
-    int cornerX = 0;
-    int cornerY = 0;
-    /** @brief Committed free-domain collision radius in world-plane units. */
-    double freeRadius = 0.0;
-    /** @brief Committed free-domain OBB half width; zero denotes circular collision. */
-    double freeHalfWidth = 0.0;
-    /** @brief Committed free-domain OBB half height; zero denotes circular collision. */
-    double freeHalfHeight = 0.0;
-    /** @brief Committed convex local polygon as world-plane x/y pairs. */
-    std::vector<double> freeFootprintVertices;
-    int cellX = 0;
-    int cellY = 0;
-    /** @brief Authoritative discrete floor coordinate. */
-    int level = 0;
-    double worldX = 0.0;
-    double worldY = 0.0;
-    double elevation = 0.0;
-    /** @brief Stable surface provider identity captured at placement time. */
-    std::string surfaceId;
-    /** @brief Surface provider revision captured at placement time. */
-    std::uint64_t surfaceRevision = 0;
-    /** @brief Captured unit surface normal. */
-    double surfaceNormalX = 0.0;
-    double surfaceNormalY = 1.0;
-    double surfaceNormalZ = 0.0;
-    /** @brief Captured unit surface tangent. */
-    double surfaceTangentX = 1.0;
-    double surfaceTangentY = 0.0;
-    double surfaceTangentZ = 0.0;
-    /** @brief Number of footprint surface samples represented by this snapshot. */
-    int surfaceSampleCount = 0;
-    /** @brief Maximum sampled footprint slope in degrees. */
-    double surfaceMaxSlopeDegrees = 0.0;
-    /** @brief Sampled footprint height range. */
-    double surfaceHeightDelta = 0.0;
-    double rotationDegrees = 0.0;
-    std::string channel;
-    std::map<std::string, std::string> properties;
-    std::vector<std::string> tags;
-    std::vector<BuildingGarrisonMemberRecord> garrison;
-    std::uint64_t garrisonRevision = 0;
-};
+using BuildingGarrisonMemberRecord = building::BuildingGarrisonMemberRecord;
+using BuildingInstanceSnapshot     = building::BuildingInstanceSnapshot;
 
 /** @brief One occupied or rejected footprint cell in a placement preview. */
 struct BuildingFootprintCell {

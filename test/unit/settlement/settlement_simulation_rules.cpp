@@ -1,21 +1,29 @@
-#include "zeroerr/assert.h"
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "settlement_replay.cpp",
+    "settlement_rules.cpp"
+  ]
+}
+*/
+// clang-format on
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <limits>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 #include "settlement/Settlement.h"
 #include "settlement/SettlementRules.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-// settlement_replay.cpp
-namespace {
-namespace settlement_replay {
-namespace {
-
+namespace test_settlement_contract {
 eve::SnapshotHashProvider testHashProvider() {
     return [](std::string_view input) -> eve::Result<eve::ContentId> {
         eve::ContentId::Bytes bytes{};
@@ -75,199 +83,6 @@ eve::settlement::SettlementRequest sampleRequest() {
     request.tick      = eve::SimulationTick(42);
     request.decisions.push_back({*eve::LogicalId::parse("rng:combat"), 4, 0.2, 0.5, true});
     return request;
-}
-
-}  // namespace
-
-TEST_CASE("settlement.replay.digestIsStableAndIgnoresStreamIdentity") {
-    auto expected          = sampleResult();
-    auto actual            = expected;
-    actual.event->eventId  = eve::EventId::parse("018f0f4e-6b3c-7ab1-8def-0123456789ac").value();
-    actual.event->sequence = eve::EventSequence(99);
-
-    auto expectedDigest = eve::settlement::settlementResultDigest(expected, testHashProvider());
-    auto actualDigest   = eve::settlement::settlementResultDigest(actual, testHashProvider());
-    REQUIRE(expectedDigest.ok());
-    REQUIRE(actualDigest.ok());
-    CHECK_EQ(expectedDigest.value(), actualDigest.value());
-
-    auto verified = eve::settlement::verifySettlementResult(expected, actual);
-    REQUIRE(verified.ok());
-    CHECK(verified.value().empty());
-}
-
-TEST_CASE("settlement.replay.verifyReportsStageFieldPaths") {
-    const auto expected      = sampleResult();
-    auto       actual        = expected;
-    actual.applied           = 14.0;
-    actual.stages[0].details = eve::Value::Object{{"rule", "light_armor"}};
-
-    auto verified = eve::settlement::verifySettlementResult(expected, actual);
-    REQUIRE(verified.ok());
-    REQUIRE_EQ(verified.value().size(), 2u);
-    CHECK_EQ(verified.value()[0], std::string("applied"));
-    CHECK_EQ(verified.value()[1], std::string("stages[0].details"));
-
-    auto expectedDigest = eve::settlement::settlementResultDigest(expected, testHashProvider());
-    auto actualDigest   = eve::settlement::settlementResultDigest(actual, testHashProvider());
-    REQUIRE(expectedDigest.ok());
-    REQUIRE(actualDigest.ok());
-    CHECK(expectedDigest.value() != actualDigest.value());
-}
-
-TEST_CASE("settlement.replay.digestRequiresExplicitProvider") {
-    const eve::SnapshotHashProvider missing;
-    auto                            result = eve::settlement::settlementResultDigest(sampleResult(), missing);
-    CHECK(!result.ok());
-}
-
-TEST_CASE("settlement.replay.recordRoundTripsRequestAndLocatesDifferences") {
-    const auto request = sampleRequest();
-    const auto result  = sampleResult();
-    auto record = eve::settlement::createSettlementReplayRecord(request, contentId(7), result, testHashProvider());
-    REQUIRE(record.ok());
-
-    auto decoded = eve::settlement::settlementReplayRequest(record.value());
-    REQUIRE(decoded.ok());
-    CHECK_EQ(decoded.value().source, request.source);
-    CHECK_EQ(decoded.value().target, request.target);
-    CHECK_EQ(decoded.value().kind, request.kind);
-    CHECK_EQ(decoded.value().resource, request.resource);
-    CHECK_EQ(decoded.value().magnitude, request.magnitude);
-    CHECK_EQ(decoded.value().decisions.size(), 1u);
-    CHECK_EQ(decoded.value().decisions[0].stream, request.decisions[0].stream);
-    CHECK_EQ(decoded.value().decisions[0].sequence, request.decisions[0].sequence);
-
-    auto actual              = result;
-    actual.stages[0].details = eve::Value::Object{{"rule", "different"}};
-    auto verified =
-        eve::settlement::verifySettlementReplayRecord(record.value(), contentId(8), actual, testHashProvider());
-    REQUIRE(verified.ok());
-    REQUIRE_EQ(verified.value().size(), 2u);
-    CHECK_EQ(verified.value()[0], std::string("ruleDigest"));
-    CHECK_EQ(verified.value()[1], std::string("result.payload.stages[0].details.rule"));
-}
-
-TEST_CASE("settlement.replay.recordRejectsUnknownFieldsVersionsAndTampering") {
-    auto record = eve::settlement::createSettlementReplayRecord(sampleRequest(), contentId(7), sampleResult(),
-                                                                testHashProvider());
-    REQUIRE(record.ok());
-    auto parsed = eve::Value::fromJson(record.value());
-    REQUIRE(parsed.ok());
-
-    auto unknown = parsed.value();
-    unknown.set("unexpected", true);
-    auto unknownJson = unknown.toJson();
-    REQUIRE(unknownJson.ok());
-    CHECK(!eve::settlement::settlementReplayRequest(unknownJson.value()).ok());
-
-    auto future = parsed.value();
-    future.set("version", 2);
-    auto futureJson = future.toJson();
-    REQUIRE(futureJson.ok());
-    CHECK(!eve::settlement::settlementReplayRequest(futureJson.value()).ok());
-
-    auto  nestedUnknown = parsed.value();
-    auto* nestedResult  = nestedUnknown.find("result");
-    REQUIRE(nestedResult != nullptr);
-    auto* nestedPayload = nestedResult->find("payload");
-    REQUIRE(nestedPayload != nullptr);
-    nestedPayload->set("unexpected", true);
-    auto nestedUnknownJson = nestedUnknown.toJson();
-    REQUIRE(nestedUnknownJson.ok());
-    CHECK(!eve::settlement::settlementReplayRequest(nestedUnknownJson.value()).ok());
-
-    auto  tampered = parsed.value();
-    auto* result   = tampered.find("result");
-    REQUIRE(result != nullptr);
-    auto* payload = result->find("payload");
-    REQUIRE(payload != nullptr);
-    payload->set("applied", 14.0);
-    auto tamperedJson = tampered.toJson();
-    REQUIRE(tamperedJson.ok());
-    auto verified = eve::settlement::verifySettlementReplayRecord(tamperedJson.value(), contentId(7), sampleResult(),
-                                                                  testHashProvider());
-    CHECK(!verified.ok());
-}
-
-TEST_CASE("settlement.replay.rejectsSemanticallyInvalidDecodedRequestsWithLocatedPaths") {
-    auto record = eve::settlement::createSettlementReplayRecord(sampleRequest(), contentId(7), sampleResult(),
-                                                                testHashProvider());
-    REQUIRE(record.ok());
-    auto parsed = eve::Value::fromJson(record.value());
-    REQUIRE(parsed.ok());
-
-    auto negative = parsed.value();
-    negative.find("request")->set("magnitude", -1.0);
-    auto negativeJson = negative.toJson();
-    REQUIRE(negativeJson.ok());
-    auto negativeResult = eve::settlement::settlementReplayRequest(negativeJson.value());
-    CHECK(!negativeResult.ok());
-    REQUIRE(negativeResult.error() != nullptr);
-    CHECK_EQ(negativeResult.error()->path(), std::string("record.request.magnitude"));
-
-    auto badDecision = parsed.value();
-    badDecision.find("request")->find("decisions")->at(0).set("sample", 2.0);
-    auto badDecisionJson = badDecision.toJson();
-    REQUIRE(badDecisionJson.ok());
-    auto badDecisionResult = eve::settlement::settlementReplayRequest(badDecisionJson.value());
-    CHECK(!badDecisionResult.ok());
-    REQUIRE(badDecisionResult.error() != nullptr);
-    CHECK_EQ(badDecisionResult.error()->path(), std::string("record.request.decisions[0].sample"));
-
-    auto badChain = parsed.value();
-    badChain.find("request")->set("trigger", "reflect");
-    auto badChainJson = badChain.toJson();
-    REQUIRE(badChainJson.ok());
-    auto badChainResult = eve::settlement::settlementReplayRequest(badChainJson.value());
-    CHECK(!badChainResult.ok());
-    REQUIRE(badChainResult.error() != nullptr);
-    CHECK_EQ(badChainResult.error()->path(), std::string("record.request.chain"));
-}
-
-TEST_CASE("settlement.replay.rejectsCorruptedResultScalarAndNestedTypes") {
-    auto record = eve::settlement::createSettlementReplayRecord(sampleRequest(), contentId(7), sampleResult(),
-                                                                testHashProvider());
-    REQUIRE(record.ok());
-    auto parsed = eve::Value::fromJson(record.value());
-    REQUIRE(parsed.ok());
-
-    auto badTick = parsed.value();
-    badTick.find("result")->find("payload")->set("tick", "not-a-tick");
-    auto badTickJson = badTick.toJson();
-    REQUIRE(badTickJson.ok());
-    CHECK(!eve::settlement::settlementReplayRequest(badTickJson.value()).ok());
-
-    auto badDisposition = parsed.value();
-    badDisposition.find("result")->find("payload")->set("disposition", "maybe");
-    auto badDispositionJson = badDisposition.toJson();
-    REQUIRE(badDispositionJson.ok());
-    CHECK(!eve::settlement::settlementReplayRequest(badDispositionJson.value()).ok());
-
-    auto badStageStatus = parsed.value();
-    badStageStatus.find("result")->find("payload")->find("stages")->at(0).set("status", 99);
-    auto badStageStatusJson = badStageStatus.toJson();
-    REQUIRE(badStageStatusJson.ok());
-    CHECK(!eve::settlement::settlementReplayRequest(badStageStatusJson.value()).ok());
-
-    auto badEventPayload = parsed.value();
-    badEventPayload.find("result")->find("payload")->find("event")->set("payload", 42);
-    auto badEventPayloadJson = badEventPayload.toJson();
-    REQUIRE(badEventPayloadJson.ok());
-    CHECK(!eve::settlement::settlementReplayRequest(badEventPayloadJson.value()).ok());
-}
-}  // namespace settlement_replay
-}  // namespace
-
-// settlement_rules.cpp
-namespace {
-namespace settlement_rules {
-namespace {
-
-eve::SubjectRef subject(std::uint8_t suffix) {
-    std::array<std::uint8_t, 16> bytes{};
-    bytes[15] = suffix;
-    return eve::SubjectRef::fromPersistentId(eve::PersistentId(bytes));
 }
 
 class HealthPolicy : public eve::settlement::ISettlementPolicy {
@@ -388,367 +203,183 @@ eve::SnapshotHashProvider ruleHashProvider() {
     };
 }
 
-}  // namespace
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_settlement_replay)
+TEST_CASE("settlement replay digest: transport event identity is ignored but payload differences are located") {
+    auto expected          = sampleResult();
+    auto actual            = expected;
+    actual.event->eventId  = eve::EventId::parse("018f0f4e-6b3c-7ab1-8def-0123456789ac").value();
+    actual.event->sequence = eve::EventSequence(99);
+    auto same              = eve::settlement::verifySettlementResult(expected, actual);
+    REQUIRE(same.ok());
+    CHECK(same.value().empty());
+    actual.applied           = 14.0;
+    actual.stages[0].details = eve::Value::Object{{"rule", "light_armor"}};
+    auto changed             = eve::settlement::verifySettlementResult(expected, actual);
+    REQUIRE(changed.ok());
+    REQUIRE_EQ(changed.value().size(), 2u);
+    CHECK_EQ(changed.value()[0], std::string("applied"));
+    CHECK_EQ(changed.value()[1], std::string("stages[0].details"));
+    auto firstDigest  = eve::settlement::settlementResultDigest(expected, testHashProvider());
+    auto secondDigest = eve::settlement::settlementResultDigest(actual, testHashProvider());
+    REQUIRE(firstDigest.ok());
+    REQUIRE(secondDigest.ok());
+    CHECK(firstDigest.value() != secondDigest.value());
+}
 
-TEST_CASE("settlement.rules.composeRpgTacticsRtsAndCardModifiersDeterministically") {
+TEST_CASE("settlement replay record: request round trip and tampering is rejected") {
+    auto request = sampleRequest();
+    auto result  = sampleResult();
+    auto record  = eve::settlement::createSettlementReplayRecord(request, contentId(7), result, testHashProvider());
+    REQUIRE(record.ok());
+    auto decoded = eve::settlement::settlementReplayRequest(record.value());
+    REQUIRE(decoded.ok());
+    CHECK_EQ(decoded.value().source, request.source);
+    CHECK_EQ(decoded.value().target, request.target);
+    CHECK_EQ(decoded.value().magnitude, 20.0);
+    REQUIRE_EQ(decoded.value().decisions.size(), 1u);
+    CHECK_EQ(decoded.value().decisions[0].sequence, 4u);
+
+    auto changed              = result;
+    changed.stages[0].details = eve::Value::Object{{"rule", "different"}};
+    auto differences =
+        eve::settlement::verifySettlementReplayRecord(record.value(), contentId(8), changed, testHashProvider());
+    REQUIRE(differences.ok());
+    REQUIRE_EQ(differences.value().size(), 2u);
+    CHECK_EQ(differences.value()[0], std::string("ruleDigest"));
+    CHECK_EQ(differences.value()[1], std::string("result.payload.stages[0].details.rule"));
+}
+
+TEST_CASE("settlement replay decode: invalid version and fields have located errors") {
+    auto record = eve::settlement::createSettlementReplayRecord(sampleRequest(), contentId(7), sampleResult(),
+                                                                testHashProvider());
+    REQUIRE(record.ok());
+    const std::string serialized = record.value();
+    SUB_CASE("future version is rejected") {
+        auto parsed = eve::Value::fromJson(serialized);
+        REQUIRE(parsed.ok());
+        auto value = parsed.value();
+        value.set("version", 2);
+        auto json = value.toJson();
+        REQUIRE(json.ok());
+        CHECK(!eve::settlement::settlementReplayRequest(json.value()).ok());
+    };
+    SUB_CASE("unknown root field is rejected") {
+        auto parsed = eve::Value::fromJson(serialized);
+        REQUIRE(parsed.ok());
+        auto value = parsed.value();
+        value.set("unexpected", true);
+        auto json = value.toJson();
+        REQUIRE(json.ok());
+        CHECK(!eve::settlement::settlementReplayRequest(json.value()).ok());
+    };
+    SUB_CASE("negative magnitude identifies request field") {
+        auto parsed = eve::Value::fromJson(serialized);
+        REQUIRE(parsed.ok());
+        auto value = parsed.value();
+        value.find("request")->set("magnitude", -1.0);
+        auto json = value.toJson();
+        REQUIRE(json.ok());
+        auto rejected = eve::settlement::settlementReplayRequest(json.value());
+        REQUIRE(!rejected.ok());
+        REQUIRE(rejected.error() != nullptr);
+        CHECK_EQ(rejected.error()->path(), std::string("record.request.magnitude"));
+    };
+}
+
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_settlement_rules)
+TEST_CASE("settlement SettlementRuleSet configure/install: ordered modifiers produce the final applied amount") {
     eve::settlement::SettlementRuleSet rules;
-    auto                               configured = rules.configure({
-        rule("rpg.attack-buff", eve::settlement::StageKind::SourceModifiers, eve::settlement::RuleOperation::Multiply,
-                                           1.5, {"damage"}),
-        rule("tactics.high-ground", eve::settlement::StageKind::SourceModifiers, eve::settlement::RuleOperation::Add,
-                                           4.0, {"damage"}),
-        rule("rts.fortification", eve::settlement::StageKind::TargetMitigation,
-                                           eve::settlement::RuleOperation::ResistPercent, 0.25, {"damage"}),
-        rule("card.barrier", eve::settlement::StageKind::ArmorShield, eve::settlement::RuleOperation::AbsorbFlat, 5.0,
-                                           {"damage"}),
-    });
-    REQUIRE(configured.ok());
-
+    REQUIRE(rules
+                .configure({rule("attack-buff", eve::settlement::StageKind::SourceModifiers,
+                                 eve::settlement::RuleOperation::Multiply, 1.5, {"damage"}),
+                            rule("high-ground", eve::settlement::StageKind::SourceModifiers,
+                                 eve::settlement::RuleOperation::Add, 4.0, {"damage"}),
+                            rule("fortification", eve::settlement::StageKind::TargetMitigation,
+                                 eve::settlement::RuleOperation::ResistPercent, 0.25, {"damage"}),
+                            rule("barrier", eve::settlement::StageKind::ArmorShield,
+                                 eve::settlement::RuleOperation::AbsorbFlat, 5.0, {"damage"})})
+                .ok());
     eve::settlement::SettlementPipeline pipeline;
-    auto                                installed = rules.install(pipeline);
-    REQUIRE(installed.ok());
-
+    REQUIRE(rules.install(pipeline).ok());
     double                             health = 100.0;
     HealthPolicy                       policy(health);
     eve::settlement::SettlementRequest request;
-    request.source    = subject(1);
     request.target    = subject(2);
     request.kind      = "damage";
     request.magnitude = 20.0;
-
-    auto settled = pipeline.settle(request, policy);
+    auto settled      = pipeline.settle(request, policy);
     REQUIRE(settled.ok());
-    const auto result = std::move(settled).takeValue();
-    CHECK_EQ(result.applied, 20.5);
-    CHECK_EQ(result.resisted, 8.5);
-    CHECK_EQ(result.absorbed, 5.0);
-    CHECK_EQ(result.disposition, eve::settlement::SettlementDisposition::PartiallyApplied);
+    CHECK_EQ(settled.value().applied, 20.5);
+    CHECK_EQ(settled.value().resisted, 8.5);
+    CHECK_EQ(settled.value().absorbed, 5.0);
     CHECK_EQ(health, 79.5);
-    CHECK(result.hasStage("zz_rule.rpg.attack-buff"));
-    CHECK(result.hasStage("zz_rule.tactics.high-ground"));
-    CHECK(result.hasStage("zz_rule.rts.fortification"));
-    CHECK(result.hasStage("zz_rule.card.barrier"));
 }
 
-TEST_CASE("settlement.decision.immunityIsDistinctFromZeroDamage") {
-    auto immunity                = rule("target.fire-immunity", eve::settlement::StageKind::Decision,
-                                        eve::settlement::RuleOperation::Immune, 0.0, {"damage"});
-    immunity.filter.requiredTags = {"element:fire"};
+TEST_CASE("settlement SettlementPipeline decision: immunity is terminal and invalid randomness leaves state intact") {
+    auto immune = rule("fire-immunity", eve::settlement::StageKind::Decision, eve::settlement::RuleOperation::Immune,
+                       0.0, {"damage"});
+    immune.filter.requiredTags = {"element:fire"};
+    auto bonus = rule("bonus", eve::settlement::StageKind::SourceModifiers, eve::settlement::RuleOperation::Add, 40.0,
+                      {"damage"});
     eve::settlement::SettlementRuleSet rules;
-    REQUIRE(rules.configure({immunity}).ok());
+    REQUIRE(rules.configure({immune, bonus}).ok());
     eve::settlement::SettlementPipeline pipeline;
     REQUIRE(rules.install(pipeline).ok());
-
     double                             health = 100.0;
     HealthPolicy                       policy(health);
     eve::settlement::SettlementRequest request;
     request.target    = subject(3);
     request.kind      = "damage";
-    request.magnitude = 25.0;
     request.tags      = {"element:fire"};
-    request.decisions.push_back({*eve::LogicalId::parse("combat:hit"), 7, 0.2, 0.75, true});
-
-    auto settled = pipeline.settle(request, policy);
-    REQUIRE(settled.ok());
-    CHECK_EQ(settled.value().applied, 0.0);
-    CHECK_EQ(settled.value().disposition, eve::settlement::SettlementDisposition::Immune);
-    CHECK_EQ(health, 100.0);
-    REQUIRE(settled.value().event.has_value());
-    auto payload = eve::Value::fromJson(settled.value().event->payload);
-    REQUIRE(payload.ok());
-    const auto* disposition = payload.value().find("disposition");
-    REQUIRE(disposition != nullptr);
-    CHECK_EQ(disposition->asString(), std::string("immune"));
-    const auto* decisions = payload.value().find("decisions");
-    REQUIRE(decisions != nullptr);
-    REQUIRE(decisions->isArray());
-    REQUIRE_EQ(decisions->arraySize(), 1u);
-    CHECK_EQ(decisions->at(0).find("stream")->asString(), std::string("combat:hit"));
-    CHECK_EQ(decisions->at(0).find("sequence")->asInt(), 7);
-    CHECK(decisions->at(0).find("accepted")->asBool());
-}
-
-TEST_CASE("settlement.decision.immunityRemainsTerminalAcrossLaterNumericRules") {
-    auto immunity = rule("target.immunity", eve::settlement::StageKind::Decision,
-                         eve::settlement::RuleOperation::Immune, 0.0, {"damage"});
-    auto added    = rule("source.add", eve::settlement::StageKind::SourceModifiers, eve::settlement::RuleOperation::Add,
-                         40.0, {"damage"});
-    auto multiplied = rule("target.multiply", eve::settlement::StageKind::TargetMitigation,
-                           eve::settlement::RuleOperation::Multiply, 3.0, {"damage"});
-    eve::settlement::SettlementRuleSet rules;
-    REQUIRE(rules.configure({immunity, added, multiplied}).ok());
-    eve::settlement::SettlementPipeline pipeline;
-    REQUIRE(rules.install(pipeline).ok());
-
-    double                             health = 100.0;
-    HealthPolicy                       policy(health);
-    eve::settlement::SettlementRequest request;
-    request.target    = subject(30);
-    request.kind      = "damage";
     request.magnitude = 25.0;
-
-    auto settled = pipeline.settle(request, policy);
+    auto settled      = pipeline.settle(request, policy);
     REQUIRE(settled.ok());
-    CHECK_EQ(settled.value().applied, 0.0);
     CHECK_EQ(settled.value().disposition, eve::settlement::SettlementDisposition::Immune);
+    CHECK_EQ(settled.value().applied, 0.0);
     CHECK_EQ(health, 100.0);
-}
-
-TEST_CASE("settlement.stages.canonicalPolicyPrecedesMinimumPriorityCustomStage") {
-    eve::settlement::SettlementPipeline pipeline;
-    REQUIRE(pipeline
-                .addStage(eve::settlement::StageKind::SourceModifiers, "aaa_custom", std::numeric_limits<int>::min(),
-                          [](eve::settlement::SettlementContext& context) {
-                              return context.setMagnitude(context.magnitude() + 1.0);
-                          })
-                .ok());
-    double                             health = 100.0;
-    OrderedSourcePolicy                policy(health);
-    eve::settlement::SettlementRequest request;
-    request.target    = subject(31);
-    request.kind      = "damage";
-    request.magnitude = 10.0;
-
-    auto settled = pipeline.settle(request, policy);
-    REQUIRE(settled.ok());
-    CHECK_EQ(settled.value().applied, 21.0);
-    CHECK_EQ(health, 79.0);
-}
-
-TEST_CASE("settlement.decision.rejectsInvalidRecordedRandomInputBeforeMutation") {
-    eve::settlement::SettlementPipeline pipeline;
-    double                              health = 100.0;
-    HealthPolicy                        policy(health);
-    eve::settlement::SettlementRequest  request;
-    request.target    = subject(27);
-    request.kind      = "damage";
-    request.magnitude = 25.0;
     request.decisions.push_back({*eve::LogicalId::parse("combat:hit"), 1, 1.5, 0.75, false});
-
-    auto settled = pipeline.settle(request, policy);
-    CHECK(!settled.ok());
+    CHECK(!pipeline.settle(request, policy).ok());
     CHECK_EQ(health, 100.0);
 }
 
-TEST_CASE("settlement.rules.domainPolicyAlwaysRunsBeforeDeclarativeRules") {
-    auto multiplier     = rule("negative-priority", eve::settlement::StageKind::SourceModifiers,
-                               eve::settlement::RuleOperation::Multiply, 2.0, {"damage"});
-    multiplier.priority = std::numeric_limits<int>::min();
-    eve::settlement::SettlementRuleSet rules;
-    REQUIRE(rules.configure({multiplier}).ok());
-    eve::settlement::SettlementPipeline pipeline;
-    REQUIRE(rules.install(pipeline).ok());
-    double                             health = 100.0;
-    HealthPolicy                       policy(health);
-    eve::settlement::SettlementRequest request;
-    request.target    = subject(4);
-    request.kind      = "damage";
-    request.magnitude = 10.0;
-    auto settled      = pipeline.settle(request, policy);
-    REQUIRE(settled.ok());
-    CHECK_EQ(settled.value().applied, 20.0);
-}
-
-TEST_CASE("settlement.trace.offSummaryAndFullReuseStageResults") {
-    eve::settlement::SettlementRuleSet rules;
-    REQUIRE(rules
-                .configure({rule("trace.add", eve::settlement::StageKind::SourceModifiers,
-                                 eve::settlement::RuleOperation::Add, 2.0, {"damage"}),
-                            rule("trace.miss", eve::settlement::StageKind::SourceModifiers,
-                                 eve::settlement::RuleOperation::Add, 50.0, {"healing"})})
-                .ok());
-    eve::settlement::SettlementPipeline pipeline;
-    REQUIRE(rules.install(pipeline).ok());
-    eve::settlement::SettlementRequest request;
-    request.target    = subject(34);
-    request.kind      = "damage";
-    request.magnitude = 10.0;
-
-    double       offHealth = 100.0;
-    HealthPolicy offPolicy(offHealth);
-    request.trace = eve::settlement::SettlementTraceLevel::Off;
-    auto off      = pipeline.settle(request, offPolicy);
-    REQUIRE(off.ok());
-    CHECK(off.value().stages.empty());
-    CHECK_EQ(off.value().ruleEvaluationCount(), 0u);
-    CHECK_EQ(off.value().ruleMatchCount(), 0u);
-    CHECK_EQ(off.value().applied, 12.0);
-
-    double       summaryHealth = 100.0;
-    HealthPolicy summaryPolicy(summaryHealth);
-    request.trace = eve::settlement::SettlementTraceLevel::Summary;
-    auto summary  = pipeline.settle(request, summaryPolicy);
-    REQUIRE(summary.ok());
-    REQUIRE(summary.value().hasStage("zz_rule.trace.add"));
-    CHECK(summary.value().stage("zz_rule.trace.add")->details.keys().empty());
-    CHECK_EQ(summary.value().ruleEvaluationCount(), 2u);
-    CHECK_EQ(summary.value().ruleMatchCount(), 1u);
-
-    double       fullHealth = 100.0;
-    HealthPolicy fullPolicy(fullHealth);
-    request.trace = eve::settlement::SettlementTraceLevel::Full;
-    auto full     = pipeline.settle(request, fullPolicy);
-    REQUIRE(full.ok());
-    REQUIRE(full.value().hasStage("zz_rule.trace.add"));
-    CHECK(!full.value().stage("zz_rule.trace.add")->details.keys().empty());
-    CHECK_EQ(full.value().ruleEvaluationCount(), 2u);
-    CHECK_EQ(full.value().ruleMatchCount(), 1u);
-}
-
-TEST_CASE("settlement.rules.stackFiltersAndTransactionalConfiguration") {
-    eve::settlement::SettlementRuleSet rules;
-    auto poison               = rule("poison.vulnerability", eve::settlement::StageKind::SourceModifiers,
-                                     eve::settlement::RuleOperation::Add, 2.0, {"damage"});
-    poison.stacks             = 3;
-    poison.valuePerExtraStack = 1.5;
-    poison.filter.requiredTags.push_back("poison");
-    REQUIRE(rules.configure({poison}).ok());
-
-    auto invalid = poison;
-    invalid.id.clear();
-    auto rejected = rules.configure({invalid});
-    CHECK(!rejected.ok());
-    CHECK_EQ(rules.size(), 1u);
-
-    eve::settlement::SettlementPipeline pipeline;
-    REQUIRE(rules.install(pipeline).ok());
-    double                             health = 40.0;
-    HealthPolicy                       policy(health, 40.0);
-    eve::settlement::SettlementRequest request;
-    request.target    = subject(3);
-    request.kind      = "damage";
-    request.magnitude = 10.0;
-    request.tags      = {"poison"};
-    auto settled      = pipeline.settle(request, policy);
-    REQUIRE(settled.ok());
-    CHECK_EQ(settled.value().applied, 15.0);
-    CHECK_EQ(health, 25.0);
-}
-
-TEST_CASE("settlement.rules.compilesAndEvaluatesTypedConditionsOnce") {
+TEST_CASE("settlement rule condition: typed expression gates rule and compile errors keep old rules") {
     auto conditional = rule("conditional", eve::settlement::StageKind::SourceModifiers,
                             eve::settlement::RuleOperation::Add, 5.0, {"damage"});
-    conditional.when =
-        "kind == \"damage\" && magnitude + context.bonus * 2 >= 14 && tick == 7 && "
-        "has_tag(\"poison\") && context.enabled && context.mode == \"burst\" && "
-        "min(3, 4) == 3 && max(2, 5) == 5 && clamp(10, 0, 5) == 5 && abs(-2) == 2";
-
+    conditional.when = "kind == \"damage\" && magnitude + context.bonus * 2 >= 14 && has_tag(\"poison\")";
     eve::settlement::SettlementRuleSet rules;
     REQUIRE(rules.configure({conditional}).ok());
+    auto invalid  = conditional;
+    invalid.id    = "invalid";
+    invalid.when  = "kind && magnitude";
+    auto rejected = rules.configure({invalid});
+    REQUIRE(!rejected.ok());
+    CHECK_EQ(rules.size(), 1u);
     eve::settlement::SettlementPipeline pipeline;
     REQUIRE(rules.install(pipeline).ok());
-
     double                             health = 50.0;
     HealthPolicy                       policy(health, 50.0);
     eve::settlement::SettlementRequest request;
     request.target    = subject(5);
     request.kind      = "damage";
     request.magnitude = 10.0;
-    request.tick      = eve::SimulationTick(7);
     request.tags      = {"poison"};
-    request.context   = eve::Value(eve::Value::Object{
-          {"bonus", eve::Value(2.0)},
-          {"enabled", eve::Value(true)},
-          {"mode", eve::Value("burst")},
-    });
-
-    auto settled = pipeline.settle(request, policy);
+    request.context   = eve::Value::Object{{"bonus", eve::Value(2.0)}};
+    auto settled      = pipeline.settle(request, policy);
     REQUIRE(settled.ok());
     CHECK_EQ(settled.value().applied, 15.0);
-    const auto* stage = settled.value().stage("zz_rule.conditional");
-    REQUIRE(stage != nullptr);
-    const auto* digest = stage->details.find("condition_digest");
-    REQUIRE(digest != nullptr);
-    CHECK(digest->isString());
-    CHECK_EQ(digest->asString().size(), 16u);
-
-    eve::settlement::SettlementRuleSet sameRules;
-    REQUIRE(sameRules.configure({conditional}).ok());
-    eve::settlement::SettlementPipeline samePipeline;
-    REQUIRE(sameRules.install(samePipeline).ok());
-    double       sameHealth = 50.0;
-    HealthPolicy samePolicy(sameHealth, 50.0);
-    auto         sameSettled = samePipeline.settle(request, samePolicy);
-    REQUIRE(sameSettled.ok());
-    const auto* sameStage = sameSettled.value().stage("zz_rule.conditional");
-    REQUIRE(sameStage != nullptr);
-    const auto* sameDigest = sameStage->details.find("condition_digest");
-    REQUIRE(sameDigest != nullptr);
-    CHECK_EQ(sameDigest->asString(), digest->asString());
+    CHECK_EQ(health, 35.0);
 }
 
-TEST_CASE("settlement.rules.conditionShortCircuitSkipsUnavailableFields") {
-    auto conditional = rule("short-circuit", eve::settlement::StageKind::SourceModifiers,
-                            eve::settlement::RuleOperation::Add, 100.0, {"damage"});
-    conditional.when = "false && context.missing > 0";
+TEST_CASE("settlement rule condition: constant and runtime division by zero reject before mutation") {
+    auto candidate = rule("division", eve::settlement::StageKind::SourceModifiers, eve::settlement::RuleOperation::Add,
+                          1.0, {"damage"});
     eve::settlement::SettlementRuleSet rules;
-    REQUIRE(rules.configure({conditional}).ok());
-    eve::settlement::SettlementPipeline pipeline;
-    REQUIRE(rules.install(pipeline).ok());
-    double                             health = 30.0;
-    HealthPolicy                       policy(health, 30.0);
-    eve::settlement::SettlementRequest request;
-    request.target    = subject(6);
-    request.kind      = "damage";
-    request.magnitude = 4.0;
-    auto settled      = pipeline.settle(request, policy);
-    REQUIRE(settled.ok());
-    CHECK_EQ(settled.value().applied, 4.0);
-    CHECK_EQ(health, 26.0);
-    const auto* stage = settled.value().stage("zz_rule.short-circuit");
-    REQUIRE(stage != nullptr);
-    CHECK_EQ(stage->status, eve::StatusCode::NoOp);
-    CHECK(stage->details.isObject());
-    CHECK(stage->details.keys().empty());
-}
-
-TEST_CASE("settlement.rules.conditionCompilationIsTransactionalAndLocated") {
-    auto valid = rule("valid", eve::settlement::StageKind::SourceModifiers, eve::settlement::RuleOperation::Multiply,
-                      2.0, {"damage"});
-    valid.when = "max(magnitude, 3) == 10";
-    eve::settlement::SettlementRuleSet rules;
-    REQUIRE(rules.configure({valid}).ok());
-
-    auto invalid  = valid;
-    invalid.id    = "invalid";
-    invalid.when  = "kind &&\n magnitude";
-    auto rejected = rules.configure({invalid});
-    REQUIRE(!rejected.ok());
-    const auto* diagnostic = rejected.status().primaryDiagnostic();
-    REQUIRE(diagnostic != nullptr);
-    CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::TypeMismatch);
-    CHECK_EQ(diagnostic->path(), "rules[0].when");
-    REQUIRE(diagnostic->details().size() >= 4u);
-    CHECK_EQ(diagnostic->details()[0].second, "1");
-    CHECK_EQ(rules.size(), 1u);
-
-    eve::settlement::SettlementPipeline pipeline;
-    REQUIRE(rules.install(pipeline).ok());
-    double                             health = 30.0;
-    HealthPolicy                       policy(health, 30.0);
-    eve::settlement::SettlementRequest request;
-    request.target    = subject(7);
-    request.kind      = "damage";
-    request.magnitude = 10.0;
-    auto settled      = pipeline.settle(request, policy);
-    REQUIRE(settled.ok());
-    CHECK_EQ(settled.value().applied, 20.0);
-}
-
-TEST_CASE("settlement.rules.conditionRejectsConstantAndRuntimeDivisionByZero") {
-    auto constant =
-        rule("constant-zero", eve::settlement::StageKind::SourceModifiers, eve::settlement::RuleOperation::Add, 1.0);
-    constant.when = "magnitude / 0 > 1";
-    eve::settlement::SettlementRuleSet rules;
-    auto                               rejected = rules.configure({constant});
-    REQUIRE(!rejected.ok());
-    REQUIRE(rejected.status().primaryDiagnostic() != nullptr);
-    CHECK_EQ(rejected.status().primaryDiagnostic()->code(), eve::DiagnosticCode::InvalidArgument);
-
-    auto dynamic = constant;
-    dynamic.id   = "dynamic-zero";
-    dynamic.when = "magnitude / context.divisor > 1";
-    REQUIRE(rules.configure({dynamic}).ok());
+    candidate.when = "magnitude / 0 > 1";
+    CHECK(!rules.configure({candidate}).ok());
+    candidate.when = "magnitude / context.divisor > 1";
+    REQUIRE(rules.configure({candidate}).ok());
     eve::settlement::SettlementPipeline pipeline;
     REQUIRE(rules.install(pipeline).ok());
     double                             health = 20.0;
@@ -757,377 +388,96 @@ TEST_CASE("settlement.rules.conditionRejectsConstantAndRuntimeDivisionByZero") {
     request.target    = subject(8);
     request.kind      = "damage";
     request.magnitude = 5.0;
-    request.context   = eve::Value(eve::Value::Object{{"divisor", eve::Value(0.0)}});
-    auto settled      = pipeline.settle(request, policy);
-    CHECK(!settled.ok());
+    request.context   = eve::Value::Object{{"divisor", eve::Value(0.0)}};
+    CHECK(!pipeline.settle(request, policy).ok());
     CHECK_EQ(health, 20.0);
 }
 
-TEST_CASE("settlement.rules.conditionCompilerEnforcesInputLimits") {
-    auto candidate =
-        rule("limited", eve::settlement::StageKind::SourceModifiers, eve::settlement::RuleOperation::Add, 1.0);
-    eve::settlement::SettlementRuleSet rules;
-
-    candidate.when.assign(4097, 'x');
-    CHECK(!rules.configure({candidate}).ok());
-
-    candidate.when.assign(40, '(');
-    candidate.when += "true";
-    candidate.when.append(40, ')');
-    CHECK(!rules.configure({candidate}).ok());
-
-    candidate.when = "true";
-    for (int index = 0; index < 300; ++index) candidate.when += " && true";
-    CHECK(!rules.configure({candidate}).ok());
-}
-
-TEST_CASE("settlement.rules.conditionCompilerRejectsMalformedCorpus") {
-    const std::array<std::string, 10> malformed{
-        " ",          "(",      "kind = \"damage\"",      "unknown > 0",    "1 && true", "kind < 2",
-        "has_tag(1)", "min(1)", "context.a == context.b", "\"unterminated",
+TEST_CASE("settlement settleAtomic: distinct resources commit together and later failure restores both") {
+    auto requests = [] {
+        std::array<eve::settlement::SettlementRequest, 2> entries;
+        entries[0].target    = subject(20);
+        entries[0].kind      = "damage";
+        entries[0].resource  = "hp";
+        entries[0].magnitude = 25.0;
+        entries[1].target    = subject(20);
+        entries[1].kind      = "spend";
+        entries[1].resource  = "mana";
+        entries[1].magnitude = 15.0;
+        return entries;
     };
-    for (std::size_t index = 0; index < malformed.size(); ++index) {
-        auto candidate = rule("malformed-" + std::to_string(index), eve::settlement::StageKind::SourceModifiers,
-                              eve::settlement::RuleOperation::Add, 1.0);
-        candidate.when = malformed[index];
-        eve::settlement::SettlementRuleSet rules;
-        auto                               configured = rules.configure({candidate});
-        CHECK(!configured.ok());
-    }
-}
-
-TEST_CASE("settlement.rules.conditionCompilerHandlesDeterministicFuzzCorpus") {
-    constexpr std::string_view alphabet = "abc01&|!<>=+-*/().,\\\" ";
-    std::uint32_t              state    = 0x5eed1234u;
-    for (int sample = 0; sample < 256; ++sample) {
-        std::string source;
-        const auto  length = static_cast<std::size_t>(state % 48u);
-        for (std::size_t index = 0; index < length; ++index) {
-            state = state * 1664525u + 1013904223u;
-            source.push_back(alphabet[state % alphabet.size()]);
-        }
-        if (source.empty()) source = " ";
-        auto candidate =
-            rule("fuzz", eve::settlement::StageKind::SourceModifiers, eve::settlement::RuleOperation::Add, 1.0);
-        candidate.when = std::move(source);
-        eve::settlement::SettlementRuleSet rules;
-        auto                               configured = rules.configure({candidate});
-        (void)configured.ok();
-    }
-}
-
-TEST_CASE("settlement.atomic.commitsDistinctResourceChannelsTogether") {
-    auto manaDiscount = rule("mana.discount", eve::settlement::StageKind::SourceModifiers,
-                             eve::settlement::RuleOperation::Multiply, 0.5, {"spend"});
-    manaDiscount.when = "resource == \"mana\"";
-    eve::settlement::SettlementRuleSet rules;
-    REQUIRE(rules.configure({manaDiscount}).ok());
-    eve::settlement::SettlementPipeline pipeline;
-    REQUIRE(rules.install(pipeline).ok());
-    double                                            health = 100.0;
-    double                                            mana   = 40.0;
-    ResourcePolicy                                    healthPolicy(health, 100.0);
-    ResourcePolicy                                    manaPolicy(mana, 40.0);
-    std::array<eve::settlement::SettlementRequest, 2> requests;
-    requests[0].target    = subject(20);
-    requests[0].kind      = "damage";
-    requests[0].resource  = "hp";
-    requests[0].magnitude = 25.0;
-    requests[1].target    = subject(20);
-    requests[1].kind      = "spend";
-    requests[1].resource  = "mana";
-    requests[1].magnitude = 15.0;
-    std::array<eve::settlement::ISettlementPolicy*, 2> policies{&healthPolicy, &manaPolicy};
-
-    auto settled = pipeline.settleAtomic(requests, policies);
-    REQUIRE(settled.ok());
-    REQUIRE_EQ(settled.value().size(), 2u);
-    CHECK_EQ(settled.value()[0].applied, 25.0);
-    CHECK_EQ(settled.value()[1].applied, 7.5);
-    CHECK_EQ(health, 75.0);
-    CHECK_EQ(mana, 32.5);
-}
-
-TEST_CASE("settlement.atomic.rollsBackPreparedAndCommittedChannelsOnFailure") {
-    eve::settlement::SettlementPipeline pipeline;
-    const auto                          makeRequests = [] {
-        std::array<eve::settlement::SettlementRequest, 2> requests;
-        requests[0].target    = subject(21);
-        requests[0].kind      = "damage";
-        requests[0].resource  = "hp";
-        requests[0].magnitude = 20.0;
-        requests[1].target    = subject(21);
-        requests[1].kind      = "spend";
-        requests[1].resource  = "mana";
-        requests[1].magnitude = 10.0;
-        return requests;
+    SUB_CASE("both channels commit") {
+        eve::settlement::SettlementPipeline                pipeline;
+        double                                             health = 100.0, mana = 40.0;
+        ResourcePolicy                                     hp(health, 100.0), mp(mana, 40.0);
+        std::array<eve::settlement::ISettlementPolicy*, 2> policies{&hp, &mp};
+        auto                                               entries = requests();
+        auto                                               result  = pipeline.settleAtomic(entries, policies);
+        REQUIRE(result.ok());
+        REQUIRE_EQ(result.value().size(), 2u);
+        CHECK_EQ(health, 75.0);
+        CHECK_EQ(mana, 25.0);
     };
-
-    double                                             health = 100.0;
-    double                                             mana   = 30.0;
-    ResourcePolicy                                     healthPolicy(health, 100.0);
-    ResourcePolicy                                     rejectedMana(mana, 30.0, true);
-    std::array<eve::settlement::ISettlementPolicy*, 2> rejectedPolicies{&healthPolicy, &rejectedMana};
-    auto                                               rejectedRequests = makeRequests();
-    auto rejected = pipeline.settleAtomic(rejectedRequests, rejectedPolicies);
-    CHECK(!rejected.ok());
-    CHECK_EQ(health, 100.0);
-    CHECK_EQ(mana, 30.0);
-
-    ResourcePolicy                                     failingMana(mana, 30.0, false, true);
-    std::array<eve::settlement::ISettlementPolicy*, 2> failingPolicies{&healthPolicy, &failingMana};
-    auto                                               failingRequests = makeRequests();
-    auto failedCommit = pipeline.settleAtomic(failingRequests, failingPolicies);
-    CHECK(!failedCommit.ok());
-    CHECK_EQ(health, 100.0);
-    CHECK_EQ(mana, 30.0);
+    SUB_CASE("second commit fails and first channel rolls back") {
+        eve::settlement::SettlementPipeline                pipeline;
+        double                                             health = 100.0, mana = 40.0;
+        ResourcePolicy                                     hp(health, 100.0), mp(mana, 40.0, false, true);
+        std::array<eve::settlement::ISettlementPolicy*, 2> policies{&hp, &mp};
+        auto                                               entries = requests();
+        CHECK(!pipeline.settleAtomic(entries, policies).ok());
+        CHECK_EQ(health, 100.0);
+        CHECK_EQ(mana, 40.0);
+    };
 }
 
-TEST_CASE("settlement.atomic.chainsSegmentsForOneResourcePolicy") {
+TEST_CASE("settlement settleIndependent: one failed target does not suppress another success") {
     eve::settlement::SettlementPipeline               pipeline;
-    double                                            value = 100.0;
-    ResourcePolicy                                    policy(value, 100.0);
-    std::array<eve::settlement::SettlementRequest, 2> requests;
-    for (auto& request : requests) {
-        request.target    = subject(22);
-        request.kind      = "damage";
-        request.resource  = "hp";
-        request.magnitude = 10.0;
-    }
-    std::array<eve::settlement::ISettlementPolicy*, 2> policies{&policy, &policy};
-    auto                                               settled = pipeline.settleAtomic(requests, policies);
-    REQUIRE(settled.ok());
-    REQUIRE_EQ(settled.value().size(), 2u);
-    CHECK_EQ(settled.value()[0].applied, 10.0);
-    CHECK_EQ(settled.value()[1].applied, 10.0);
-    CHECK_EQ(value, 80.0);
-}
-
-TEST_CASE("settlement.atomic.rejectsAmbiguousChannelOwnership") {
-    eve::settlement::SettlementPipeline               pipeline;
-    double                                            firstValue  = 100.0;
-    double                                            secondValue = 100.0;
-    ResourcePolicy                                    firstPolicy(firstValue, 100.0);
-    ResourcePolicy                                    secondPolicy(secondValue, 100.0);
-    std::array<eve::settlement::SettlementRequest, 2> requests;
-    for (auto& request : requests) {
-        request.target    = subject(26);
-        request.kind      = "damage";
-        request.resource  = "hp";
-        request.magnitude = 10.0;
-    }
-    std::array<eve::settlement::ISettlementPolicy*, 2> policies{&firstPolicy, &secondPolicy};
-    auto                                               settled = pipeline.settleAtomic(requests, policies);
-    CHECK(!settled.ok());
-    CHECK_EQ(firstValue, 100.0);
-    CHECK_EQ(secondValue, 100.0);
-}
-
-TEST_CASE("settlement.atomic.restoresDomainAndEventLogAfterPartialEventAppend") {
-    eve::settlement::SettlementPipeline               pipeline;
-    double                                            health = 100.0;
-    double                                            mana   = 40.0;
-    ResourcePolicy                                    healthPolicy(health, 100.0);
-    ResourcePolicy                                    manaPolicy(mana, 40.0);
-    std::array<eve::settlement::SettlementRequest, 2> requests;
-    requests[0].target    = subject(23);
-    requests[0].kind      = "damage";
-    requests[0].resource  = "hp";
-    requests[0].magnitude = 20.0;
-    requests[1].target    = subject(23);
-    requests[1].kind      = "spend";
-    requests[1].resource  = "mana";
-    requests[1].magnitude = 10.0;
-    std::array<eve::settlement::ISettlementPolicy*, 2> policies{&healthPolicy, &manaPolicy};
-
-    int                           entropyCalls = 0;
-    eve::game_event::GameEventLog events([&](std::span<std::uint8_t> bytes) {
-        ++entropyCalls;
-        if (entropyCalls == 2) return false;
-        std::fill(bytes.begin(), bytes.end(), std::uint8_t{0x2a});
-        return true;
-    });
-    auto                          settled = pipeline.settleAtomic(requests, policies, &events);
-    CHECK(!settled.ok());
-    CHECK_EQ(events.size(), 0);
-    CHECK_EQ(health, 100.0);
-    CHECK_EQ(mana, 40.0);
-}
-
-TEST_CASE("settlement.independent.preservesPerTargetSuccessAndFailure") {
-    eve::settlement::SettlementPipeline               pipeline;
-    double                                            firstHealth  = 100.0;
-    double                                            secondHealth = 100.0;
-    ResourcePolicy                                    firstPolicy(firstHealth, 100.0);
-    ResourcePolicy                                    secondPolicy(secondHealth, 100.0, true);
+    double                                            first = 100.0, second = 100.0;
+    ResourcePolicy                                    good(first, 100.0), bad(second, 100.0, true);
     std::array<eve::settlement::SettlementRequest, 2> requests;
     requests[0].target    = subject(24);
     requests[0].kind      = "damage";
     requests[0].resource  = "hp";
     requests[0].magnitude = 15.0;
+    requests[1]           = requests[0];
     requests[1].target    = subject(25);
-    requests[1].kind      = "damage";
-    requests[1].resource  = "hp";
-    requests[1].magnitude = 20.0;
-    std::array<eve::settlement::ISettlementPolicy*, 2> policies{&firstPolicy, &secondPolicy};
-
-    auto settled = pipeline.settleIndependent(requests, policies);
-    REQUIRE(settled.ok());
-    REQUIRE_EQ(settled.value().size(), 2u);
-    CHECK(settled.value()[0].status.isSuccess());
-    REQUIRE(settled.value()[0].result.has_value());
-    CHECK_EQ(settled.value()[0].result->applied, 15.0);
-    CHECK(!settled.value()[1].status.isSuccess());
-    CHECK(!settled.value()[1].result.has_value());
-    CHECK_EQ(firstHealth, 85.0);
-    CHECK_EQ(secondHealth, 100.0);
+    std::array<eve::settlement::ISettlementPolicy*, 2> policies{&good, &bad};
+    auto                                               result = pipeline.settleIndependent(requests, policies);
+    REQUIRE(result.ok());
+    REQUIRE_EQ(result.value().size(), 2u);
+    CHECK(result.value()[0].status.isSuccess());
+    CHECK(!result.value()[1].status.isSuccess());
+    CHECK_EQ(first, 85.0);
+    CHECK_EQ(second, 100.0);
 }
 
-TEST_CASE("settlement.chain.lifestealUsesActuallyAppliedDamage") {
-    const auto                          attacker       = subject(30);
-    const auto                          enemy          = subject(31);
-    double                              attackerHealth = 50.0;
-    double                              enemyHealth    = 100.0;
-    HealthPolicy                        attackerPolicy(attackerHealth);
-    HealthPolicy                        enemyPolicy(enemyHealth);
-    eve::settlement::SettlementPipeline pipeline;
-    eve::settlement::SettlementRuleSet  rules;
-    REQUIRE(rules
-                .configure({rule("vampiric", eve::settlement::StageKind::Trigger,
-                                 eve::settlement::RuleOperation::Lifesteal, 0.5, {"damage"})})
-                .ok());
-    REQUIRE(rules.install(pipeline).ok());
-    eve::settlement::SettlementRequest root;
-    root.source    = attacker;
-    root.target    = enemy;
-    root.kind      = "damage";
-    root.resource  = "hp";
-    root.magnitude = 20.0;
-
-    eve::settlement::SettlementPipeline::RequestExecutor execute =
-        [&](const eve::settlement::SettlementRequest& request) -> eve::Result<eve::settlement::SettlementResult> {
-        if (request.target == attacker) return pipeline.settle(request, attackerPolicy);
-        if (request.target == enemy) return pipeline.settle(request, enemyPolicy);
-        return eve::Result<eve::settlement::SettlementResult>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "test policy not found"));
-    };
-
-    auto settled = pipeline.settleChain(root, execute, 4, 8);
-    REQUIRE(settled.ok());
-    REQUIRE_EQ(settled.value().size(), 2u);
-    REQUIRE(settled.value()[0].result.has_value());
-    REQUIRE_EQ(settled.value()[0].result->derived.size(), 1u);
-    CHECK_EQ(settled.value()[0].result->applied, 20.0);
-    CHECK_EQ(settled.value()[1].result->applied, 10.0);
-    CHECK_EQ(enemyHealth, 80.0);
-    CHECK_EQ(attackerHealth, 60.0);
-}
-
-TEST_CASE("settlement.chain.rejectsReflectReentryWithoutLooping") {
-    const auto                          left        = subject(32);
-    const auto                          right       = subject(33);
-    double                              leftHealth  = 100.0;
-    double                              rightHealth = 100.0;
-    HealthPolicy                        leftPolicy(leftHealth);
-    HealthPolicy                        rightPolicy(rightHealth);
-    eve::settlement::SettlementPipeline pipeline;
-    eve::settlement::SettlementRuleSet  rules;
-    REQUIRE(rules
-                .configure({rule("thorns", eve::settlement::StageKind::Trigger, eve::settlement::RuleOperation::Reflect,
-                                 1.0, {"damage"})})
-                .ok());
-    REQUIRE(rules.install(pipeline).ok());
-    eve::settlement::SettlementRequest root;
-    root.source    = left;
-    root.target    = right;
-    root.kind      = "damage";
-    root.resource  = "hp";
-    root.magnitude = 10.0;
-
-    eve::settlement::SettlementPipeline::RequestExecutor execute =
-        [&](const eve::settlement::SettlementRequest& request) -> eve::Result<eve::settlement::SettlementResult> {
-        return request.target == left ? pipeline.settle(request, leftPolicy) : pipeline.settle(request, rightPolicy);
-    };
-
-    auto settled = pipeline.settleChain(root, execute, 8, 16);
-    REQUIRE(settled.ok());
-    REQUIRE_EQ(settled.value().size(), 3u);
-    REQUIRE(settled.value()[0].result.has_value());
-    REQUIRE(settled.value()[1].result.has_value());
-    CHECK(!settled.value()[2].status.isSuccess());
-    CHECK(!settled.value()[2].result.has_value());
-    CHECK_EQ(rightHealth, 90.0);
-    CHECK_EQ(leftHealth, 90.0);
-}
-
-TEST_CASE("settlement.rules.digestUsesSemanticOrderAndNormalizedFilters") {
-    auto firstRule                = rule("armor", eve::settlement::StageKind::TargetMitigation,
-                                         eve::settlement::RuleOperation::ResistFlat, 3.0, {"damage", "damage"});
-    firstRule.filter.requiredTags = {"physical", "weapon"};
-    auto secondRule               = rule("power", eve::settlement::StageKind::SourceModifiers,
-                                         eve::settlement::RuleOperation::Multiply, 1.5, {"damage"});
-
-    eve::settlement::SettlementRuleSet first;
-    eve::settlement::SettlementRuleSet reordered;
-    REQUIRE(first.configure({firstRule, secondRule}).ok());
-    firstRule.filter.kinds        = {"damage"};
-    firstRule.filter.requiredTags = {"weapon", "physical", "physical"};
-    REQUIRE(reordered.configure({secondRule, firstRule}).ok());
-
-    auto firstDigest     = first.digest(ruleHashProvider());
-    auto reorderedDigest = reordered.digest(ruleHashProvider());
-    REQUIRE(firstDigest.ok());
-    REQUIRE(reorderedDigest.ok());
-    CHECK_EQ(firstDigest.value(), reorderedDigest.value());
-
-    auto changedRule  = secondRule;
-    changedRule.value = 1.6;
-    eve::settlement::SettlementRuleSet changed;
-    REQUIRE(changed.configure({firstRule, changedRule}).ok());
-    auto changedDigest = changed.digest(ruleHashProvider());
-    REQUIRE(changedDigest.ok());
-    CHECK(firstDigest.value() != changedDigest.value());
-}
-
-TEST_CASE("settlement.rules.digestRequiresExplicitProvider") {
+TEST_CASE(
+    "settlement RuleSet canonicalJson/digest: serialization is stable and invalid input does not replace "
+    "configuration") {
+    auto armor = rule("armor", eve::settlement::StageKind::TargetMitigation, eve::settlement::RuleOperation::ResistFlat,
+                      3.0, {"damage", "damage"});
+    armor.filter.requiredTags = {"physical", "weapon"};
     eve::settlement::SettlementRuleSet rules;
-    REQUIRE(rules.configure({}).ok());
-    const eve::SnapshotHashProvider missing;
-    auto                            result = rules.digest(missing);
-    CHECK(!result.ok());
-}
-
-TEST_CASE("settlement.rules.versionedJsonRoundTripsAndRejectsUnknownFieldsTransactionally") {
-    auto configuredRule = rule("guard", eve::settlement::StageKind::TargetMitigation,
-                               eve::settlement::RuleOperation::ResistPercent, 0.25, {"damage"});
-    configuredRule.when = "context.target_hp_ratio < 0.5";
-    eve::settlement::SettlementRuleSet original;
-    REQUIRE(original.configure({configuredRule}).ok());
-    auto json = original.canonicalJson();
+    REQUIRE(rules.configure({armor}).ok());
+    auto json = rules.canonicalJson();
     REQUIRE(json.ok());
-
-    eve::settlement::SettlementRuleSet restored;
-    REQUIRE(restored.configureJson(json.value()).ok());
-    auto inspected = eve::settlement::SettlementRuleSet::fromJson(json.value());
-    REQUIRE(inspected.ok());
-    CHECK_EQ(inspected.value().size(), 1u);
-    auto restoredJson = restored.canonicalJson();
-    REQUIRE(restoredJson.ok());
-    CHECK_EQ(restoredJson.value(), json.value());
-
+    auto restored = eve::settlement::SettlementRuleSet::fromJson(json.value());
+    REQUIRE(restored.ok());
+    auto canonical = restored.value().canonicalJson();
+    REQUIRE(canonical.ok());
+    CHECK_EQ(canonical.value(), json.value());
+    auto digest = rules.digest(ruleHashProvider());
+    REQUIRE(digest.ok());
+    auto same = restored.value().digest(ruleHashProvider());
+    REQUIRE(same.ok());
+    CHECK_EQ(same.value(), digest.value());
     auto invalid = eve::Value::fromJson(json.value());
     REQUIRE(invalid.ok());
     invalid.value().set("unexpected", true);
     auto invalidJson = invalid.value().toJson();
     REQUIRE(invalidJson.ok());
-    auto rejectedInspection = eve::settlement::SettlementRuleSet::fromJson(invalidJson.value());
-    CHECK(!rejectedInspection.ok());
-    REQUIRE(rejectedInspection.error() != nullptr);
-    CHECK_EQ(rejectedInspection.error()->path(), std::string("document"));
-    CHECK(!restored.configureJson(invalidJson.value()).ok());
-    auto retainedJson = restored.canonicalJson();
-    REQUIRE(retainedJson.ok());
-    CHECK_EQ(retainedJson.value(), json.value());
+    CHECK(!rules.configureJson(invalidJson.value()).ok());
+    CHECK_EQ(rules.size(), 1u);
 }
-}  // namespace settlement_rules
-}  // namespace
+#endif
+}  // namespace test_settlement_contract

@@ -1026,6 +1026,22 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 
 - 反射链、HDR 与探针相关 API 位于 `GraphicsEditorModule`：`getCenterX` `getCenterY`/`getCenterZ` `getColorB` `getColorG`/`getColorR` `getLineCount` `getLineEnd`/`getLineStart` `getStatusLabel` `createReflectionProbeVisualizer`/`setExtents`
 
+### 共用领域编辑器 UI
+
+AudioSourceEditor 和 AnimationClipEditor 通过同一 `EditorWorkspacePresenter` 装配 UI。
+传入 `ui`、已 configure 的 workspace 和领域 editor，然后调用 `mount(panelBuilders)`；
+Inspector 根据 schema 自动生成，其余面板由项目配方提供。
+每帧调用 `update(keyboard, mouse.isDown(1), win.hasFocus())`，退出时调用 `close()`。
+
+两个领域类共用 `presentationState()`、`presentationSnapshot()`、
+`presentationEdit(path, value, staged)`、`presentationCommit()`、`presentationCancel()`、
+`presentationAction(id)`，以及取消草稿和待发布预览的 `presentationClose()`。除 cancel/close 外均返回公共 Result 表；snapshot 的 value 含 revision、
+context、canUndo/canRedo、playing、rows。数值拖动只暂存草稿，释放提交一次历史；
+Esc、失焦和关闭取消，revision/selection 冲突拒绝覆盖。action 的 undo/redo 使用领域原历史。
+完整接入与验证见 [迁移说明](../../dev/2026-10-23-editor-ui-migration.md)。
+
+Audio / Animation 的预览默认异步：编辑或 seek 成功后，显示可能暂时保留上一份有效预览；主循环 `update()` 在新结果就绪时发布。共享 Inspector 显示预览状态。provider 被取消、替换或关闭后，旧结果不会覆盖当前预览。音频示例保持静音。开发接口及生命周期见 `docs/dev/2026-10-24-async-editor-preview.md`。
+
 ## 补充绑定参考
 
 参数与接收者见 [源码生成参考](editor/api-reference.md)，使用前先确认本章的前置条件与生命周期。

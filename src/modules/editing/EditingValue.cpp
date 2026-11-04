@@ -1,8 +1,16 @@
 #include "editing/EditingValue.h"
+#include "editing/EditingValueRead.h"
 
 #include <type_traits>
 
 namespace eve::editing {
+
+Result<double> numericValue(const Value& value) {
+    if (const auto* real = value.getIf<double>()) return Result<double>::success(*real);
+    if (const auto* integer = value.getIf<std::int64_t>())
+        return Result<double>::success(static_cast<double>(*integer));
+    return Result<double>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, "expected Integer or Number"));
+}
 
 Value::Value() noexcept                                                               = default;
 Value::~Value() noexcept                                                              = default;

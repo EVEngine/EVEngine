@@ -131,7 +131,8 @@ ui_editing::Result<void> UiThemeEditor::createFromPreset(std::string id, std::st
         return editorError(ui_editing::EditorStatus::Rejected, "editor.ui-theme.preset-source",
                            "New themes must be created from dark or light");
     auto created =
-        commit(target_.makeCreateFromPreset(ui_editing::ObjectId(id), name, presetFromName(preset)), "Create theme");
+        commit(target_.makeCreateFromPreset(ui_editing::ObjectId(id), std::move(name), presetFromName(preset)),
+               "Create theme");
     if (!created.ok()) return created;
     selectedId_ = std::move(id);
     return refreshPreview();

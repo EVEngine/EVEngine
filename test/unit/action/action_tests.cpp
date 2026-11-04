@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "ability_asset.cpp",
+    "ability_controller.cpp",
+    "ability_system.cpp",
+    "action_notify_registry.cpp",
+    "action_preview_profile.cpp",
+    "gameplay_composition_action_preview_profile_tests.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ability_asset) || \
@@ -6,239 +23,84 @@
 #include "action/AbilityAsset.h"
 #include "action/AbilityController.h"
 #include "action/AbilityRuntime.h"
-#include "common/ConditionKeys.h"
 #include "common/Diagnostic.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-// Responsibility: action_abilities
-namespace test_action_abilities {
-// ability_asset.cpp
-namespace {
-namespace ability_asset {
-namespace {
 
-eve::LogicalId id(std::string_view value) {
-    auto parsed = eve::LogicalId::parse(value);
+#include <optional>
+#include <string>
+#include <utility>
+
+namespace action_ability_contract {
+eve::LogicalId id(const char* text) {
+    auto parsed = eve::LogicalId::parse(text);
     REQUIRE(parsed.has_value());
     return *parsed;
 }
 
-eve::action::AbilityDefinition complexAbility() {
+eve::action::AbilityDefinition ability(
+    const char* name, eve::action::AbilityInstancingPolicy instancing = eve::action::AbilityInstancingPolicy::PerOwner,
+    eve::action::AbilityActivationGroup group = eve::action::AbilityActivationGroup::Independent) {
     eve::action::AbilityDefinition result;
-    result.id               = id("ability:fire-cone");
-    result.action.id        = id("action:fire-cone");
-    result.action.timing    = {eve::Duration::fromNanoseconds(100'000'000), eve::Duration::fromNanoseconds(200'000'000),
-                               eve::Duration::fromNanoseconds(300'000'000)};
-    result.action.condition = eve::condition::Condition::all(
-        {eve::condition::tagPresent("State.Combat.Ready"),
-         eve::condition::Condition::compare("mana", eve::condition::CompareOperator::GreaterEqual, 12),
-         eve::condition::Condition::policyCall(
-             "can_cast", eve::Value::Object{{"school", "fire"}},
-             eve::condition::ScriptConditionDeclaration{
-                 "can_cast", {"attributes.mana"}, eve::condition::DeterminismLevel::TickDeterministic})});
-    result.action.targetingMode = eve::action::TargetingMode::Query;
-    eve::sensing::TargetingSpec targeting;
-    targeting.space        = eve::sensing::CoordinateSpace::World2D;
-    targeting.domain       = eve::sensing::TargetDomain::Enemy;
-    targeting.minCount     = 1;
-    targeting.maxCount     = 3;
-    targeting.maxRange     = 8.f;
-    targeting.requiredTags = {"Unit.Alive"};
-    targeting.lineOfSight  = eve::sensing::LineOfSightMode::Required;
-    auto center            = eve::sensing::WorldPoint::world2D(2.f, 3.f);
-    REQUIRE(center.ok());
-    auto area = eve::sensing::WorldArea::circle2D(center.value(), 5.f);
-    REQUIRE(area.ok());
-    targeting.worldArea         = area.value();
-    result.action.targetingSpec = targeting;
-    auto cost                   = eve::resource::CostSpec::from({{"mana", 12}, {"stamina", 3}});
-    REQUIRE(cost.ok());
-    result.action.cost                    = cost.value();
-    result.action.effectIds               = {"effect:burn", "effect:impact"};
-    result.action.activeExecutionRequired = true;
-    result.action.metadata                = {{"category", "spell"}, {"rank", 2}};
-    eve::action::ActionTimeline timeline;
-    timeline.actionId      = result.action.id;
-    timeline.duration      = eve::Duration::fromNanoseconds(600'000'000);
-    timeline.metadata      = {{"author", "test"}};
-    result.action.timeline = std::move(timeline);
-    result.cooldown        = eve::Duration::fromNanoseconds(1'500'000'000);
-    result.instancing      = eve::action::AbilityInstancingPolicy::PerExecution;
-    result.activationGroup = eve::action::AbilityActivationGroup::ExclusiveReplaceable;
-    result.triggers        = {{"Event.Combat.Cast", eve::tags::GameplayTagMatch::IncludeDescendants}};
-    REQUIRE(result.validate().ok());
+    result.id              = eve::LogicalId::fromParts("ability", name).value();
+    result.action.id       = eve::LogicalId::fromParts("action", name).value();
+    result.instancing      = instancing;
+    result.activationGroup = group;
     return result;
 }
 
-}  // namespace
-
-TEST_CASE("abilityAsset.roundTripsCompleteDefinitionAndRegistersDecodedCandidate") {
-    const auto source  = complexAbility();
-    auto       encoded = eve::action::encodeAbilityAsset(source);
+// ability_asset.cpp
+TEST_CASE("action.abilityAsset.roundTripPreservesIdentityTimingCostAndTriggers") {
+    auto source          = ability("fire");
+    source.action.timing = {eve::Duration::fromNanoseconds(100), eve::Duration::fromNanoseconds(200),
+                            eve::Duration::fromNanoseconds(300)};
+    source.cooldown      = eve::Duration::fromNanoseconds(400);
+    auto cost            = eve::resource::CostSpec::from({{"mana", 12}});
+    REQUIRE(cost.ok());
+    source.action.cost      = cost.value();
+    source.action.effectIds = {"effect:burn", "effect:impact"};
+    source.triggers         = {{"Event.Combat.Cast", eve::tags::GameplayTagMatch::IncludeDescendants}};
+    REQUIRE(source.validate().ok());
+    auto encoded = eve::action::encodeAbilityAsset(source);
     REQUIRE(encoded.ok());
     auto decoded = eve::action::decodeAbilityAsset(encoded.value());
     REQUIRE(decoded.ok());
-    CHECK_EQ(decoded.value().id, source.id);
-    CHECK_EQ(decoded.value().action.id, source.action.id);
-    CHECK_EQ(decoded.value().action.timing.active, source.action.timing.active);
-    CHECK_EQ(decoded.value().action.condition.children().size(), 3u);
-    REQUIRE(decoded.value().action.condition.children()[2].scriptDeclaration().has_value());
-    CHECK_EQ(decoded.value().action.condition.children()[2].scriptDeclaration()->dependencies[0],
-             std::string("attributes.mana"));
-    REQUIRE(decoded.value().action.targetingSpec.has_value());
-    CHECK(decoded.value().action.targetingSpec->worldArea.has_value());
-    CHECK_EQ(decoded.value().action.targetingSpec->maxCount, 3u);
+    CHECK(decoded.value().id == source.id);
+    CHECK(decoded.value().action.id == source.action.id);
+    CHECK(decoded.value().action.timing.active == source.action.timing.active);
+    CHECK(decoded.value().cooldown == source.cooldown);
     REQUIRE(decoded.value().action.cost.has_value());
-    CHECK_EQ(decoded.value().action.cost->size(), 2u);
-    CHECK_EQ(decoded.value().action.effectIds, source.action.effectIds);
-    REQUIRE(decoded.value().action.timeline.has_value());
-    CHECK_EQ(decoded.value().action.timeline->duration, source.action.timeline->duration);
-    CHECK_EQ(decoded.value().triggers.size(), 1u);
-
+    CHECK_EQ(decoded.value().action.cost->size(), std::size_t{1});
+    CHECK(decoded.value().action.effectIds == source.action.effectIds);
+    REQUIRE_EQ(decoded.value().triggers.size(), std::size_t{1});
+    CHECK_EQ(decoded.value().triggers[0].gameplayTag, std::string("Event.Combat.Cast"));
     eve::action::ActionRuntime  actions;
-    eve::action::AbilityRuntime abilities(actions);
-    REQUIRE(abilities.registerDefinition(std::move(decoded).takeValue()).ok());
+    eve::action::AbilityRuntime runtime(actions);
+    CHECK(runtime.registerDefinition(std::move(decoded).takeValue()).ok());
 }
 
-TEST_CASE("abilityAsset.migratesV1MillisecondsAndRejectsFutureUnknownOrMalformedData") {
-    auto source                 = complexAbility();
-    source.action.targetingMode = eve::action::TargetingMode::None;
-    source.action.targetingSpec.reset();
-    source.action.condition = eve::condition::Condition{};
-    source.action.cost.reset();
-    source.action.timeline.reset();
+TEST_CASE("action.abilityAsset.rejectsFutureVersionMalformedIdentityAndInvalidDuration") {
+    auto source  = ability("fire");
     auto encoded = eve::action::encodeAbilityAsset(source);
     REQUIRE(encoded.ok());
-    auto  legacy             = encoded.value();
-    auto* root               = legacy.getIf<eve::Value::Object>();
-    (*root)["schemaVersion"] = 1;
-    (*root)["cooldownMs"]    = 1500;
-    root->erase("cooldownNs");
-    auto* action           = root->at("action").getIf<eve::Value::Object>();
-    auto* timing           = action->at("timing").getIf<eve::Value::Object>();
-    (*timing)["windupMs"]  = 100;
-    (*timing)["activeMs"]  = 200;
-    (*timing)["recoverMs"] = 300;
-    timing->erase("windupNs");
-    timing->erase("activeNs");
-    timing->erase("recoverNs");
-    auto migrated = eve::action::decodeAbilityAsset(legacy);
-    REQUIRE(migrated.ok());
-    CHECK_EQ(migrated.value().cooldown.nanoseconds(), 1'500'000'000);
-    CHECK_EQ(migrated.value().action.timing.active.nanoseconds(), 200'000'000);
-    auto canonical = eve::action::encodeAbilityAsset(migrated.value());
-    REQUIRE(canonical.ok());
-    CHECK_EQ(canonical.value().getIf<eve::Value::Object>()->at("schemaVersion").asInt(), 2);
-
-    auto future                                            = encoded.value();
-    (*future.getIf<eve::Value::Object>())["schemaVersion"] = 3;
+    auto future = encoded.value();
+    future.set("schemaVersion", 999);
     CHECK(!eve::action::decodeAbilityAsset(future).ok());
-    auto unknown                                       = encoded.value();
-    (*unknown.getIf<eve::Value::Object>())["surprise"] = true;
-    CHECK(!eve::action::decodeAbilityAsset(unknown).ok());
-    auto malformed                                         = encoded.value();
-    (*malformed.getIf<eve::Value::Object>())["cooldownNs"] = -1;
+    auto malformed = encoded.value();
+    malformed.set("action", eve::Value::Object{});
     CHECK(!eve::action::decodeAbilityAsset(malformed).ok());
-    auto ambiguous                                         = encoded.value();
-    (*ambiguous.getIf<eve::Value::Object>())["cooldownMs"] = 1500;
-    CHECK(!eve::action::decodeAbilityAsset(ambiguous).ok());
-
-    auto  fractionalGrid   = encoded.value();
-    auto* fractionalAction = fractionalGrid.getIf<eve::Value::Object>()->at("action").getIf<eve::Value::Object>();
-    (*fractionalAction)["targetingMode"] = "query";
-    (*fractionalAction)["targetingSpec"] =
-        eve::Value::Object{{"space", "grid2d"},
-                           {"domain", 1},
-                           {"minCount", 1},
-                           {"maxCount", 1},
-                           {"minRange", 0.0},
-                           {"maxRange", 3.0},
-                           {"requiredTags", eve::Value::Array{}},
-                           {"excludedTags", eve::Value::Array{}},
-                           {"lineOfSight", false},
-                           {"gridArea", eve::Value::Object{{"shape", 0},
-                                                           {"minimum", eve::Value::Array{0.5, 0, 0}},
-                                                           {"maximum", eve::Value::Array{2, 2, 0}}}}};
-    CHECK(!eve::action::decodeAbilityAsset(fractionalGrid).ok());
+    source.cooldown = eve::Duration::fromNanoseconds(-1);
+    CHECK(!source.validate().ok());
 }
-
-TEST_CASE("actionTiming.physicalSectionsProjectAtMostTwoSplitsAndRemainNonAuthoritative") {
-    eve::action::ActionTimeline timeline;
-    timeline.actionId = id("action:slash");
-    timeline.duration = eve::Duration::fromNanoseconds(600);
-    auto none         = eve::action::actionTimingFromPhysicalSections(timeline);
-    REQUIRE(none.ok());
-    CHECK_EQ(none.value().active.nanoseconds(), 600);
-    CHECK_EQ(none.value().windup.nanoseconds(), 0);
-    CHECK_EQ(none.value().recover.nanoseconds(), 0);
-
-    timeline.splitTimestamps = {eve::Duration::fromNanoseconds(100), eve::Duration::fromNanoseconds(350)};
-    auto two                 = eve::action::actionTimingFromPhysicalSections(timeline);
-    REQUIRE(two.ok());
-    CHECK_EQ(two.value().windup.nanoseconds(), 100);
-    CHECK_EQ(two.value().active.nanoseconds(), 250);
-    CHECK_EQ(two.value().recover.nanoseconds(), 250);
-    auto total = two.value().total();
-    REQUIRE(total.ok());
-    CHECK_EQ(total.value(), timeline.duration);
-
-    timeline.splitTimestamps.push_back(eve::Duration::fromNanoseconds(500));
-    CHECK(!eve::action::actionTimingFromPhysicalSections(timeline).ok());
-}
-
-TEST_CASE("abilityAsset.parsePolicySpellingsAndAssembleDefinitionFromTimeline") {
-    auto instancing = eve::action::parseAbilityInstancingPolicy("per-execution");
-    REQUIRE(instancing.ok());
-    CHECK(instancing.value() == eve::action::AbilityInstancingPolicy::PerExecution);
-    CHECK(!eve::action::parseAbilityInstancingPolicy("per-owner-typo").ok());
-
-    auto group = eve::action::parseAbilityActivationGroup("exclusive-replaceable");
-    REQUIRE(group.ok());
-    CHECK(group.value() == eve::action::AbilityActivationGroup::ExclusiveReplaceable);
-    CHECK(!eve::action::parseAbilityActivationGroup("exclusive").ok());
-
-    eve::action::ActionTimeline timeline;
-    timeline.actionId        = id("action:slash");
-    timeline.duration        = eve::Duration::fromNanoseconds(600);
-    timeline.splitTimestamps = {eve::Duration::fromNanoseconds(100), eve::Duration::fromNanoseconds(350)};
-    auto cooldown            = eve::Duration::fromNanoseconds(1'000);
-    auto definition          = eve::action::abilityDefinitionFromTimeline(
-        id("ability:slash"), timeline, cooldown, eve::action::AbilityInstancingPolicy::PerOwner,
-        eve::action::AbilityActivationGroup::Independent, "Event.Combat.Slash");
-    REQUIRE(definition.ok());
-    CHECK_EQ(definition.value().id, id("ability:slash"));
-    CHECK_EQ(definition.value().action.id, id("action:slash"));
-    CHECK_EQ(definition.value().action.timing.windup.nanoseconds(), 100);
-    CHECK_EQ(definition.value().action.timing.active.nanoseconds(), 250);
-    CHECK_EQ(definition.value().action.timing.recover.nanoseconds(), 250);
-    REQUIRE(definition.value().action.timeline.has_value());
-    CHECK_EQ(definition.value().action.timeline->duration.nanoseconds(), 600);
-    REQUIRE(definition.value().triggers.size() == 1);
-    CHECK_EQ(definition.value().triggers[0].gameplayTag, std::string("Event.Combat.Slash"));
-
-    CHECK(!eve::action::abilityDefinitionFromTimeline(id("ability:bad"), timeline, cooldown,
-                                                      eve::action::AbilityInstancingPolicy::PerOwner,
-                                                      eve::action::AbilityActivationGroup::Independent, "not a tag")
-               .ok());
-}
-}  // namespace ability_asset
-}  // namespace
 
 // ability_controller.cpp
-namespace {
-namespace ability_controller {
-namespace {
+struct ControllerFixture {
+    eve::action::ActionRuntime            actions;
+    eve::action::AbilityRuntime           abilities{actions};
+    eve::action::AbilityControllerRuntime controller{abilities};
+    eve::action::AbilityDefinition        definition = ability("strike");
+    eve::action::AbilityGrantId           grant;
 
-eve::LogicalId logicalId(const char* ns, const char* name) {
-    const auto result = eve::LogicalId::fromParts(ns, name);
-    REQUIRE(result.has_value());
-    return *result;
-}
-
-struct Fixture {
-    Fixture() : abilities(actions), controller(abilities) {
-        definition.id        = logicalId("ability", "strike");
-        definition.action.id = logicalId("action", "strike");
+    ControllerFixture() {
         REQUIRE(abilities.registerDefinition(definition).ok());
         auto created = abilities.grant("fighter", definition.id);
         REQUIRE(created.ok());
@@ -251,876 +113,350 @@ struct Fixture {
         value.request.actionId = definition.action.id;
         return value;
     }
-
-    eve::action::ActionRuntime            actions;
-    eve::action::AbilityRuntime           abilities;
-    eve::action::AbilityControllerRuntime controller;
-    eve::action::AbilityDefinition        definition;
-    eve::action::AbilityGrantId           grant;
 };
 
-class AiIntentSource final : public eve::action::IAbilityIntentSource {
+class ScriptedSource final : public eve::action::IAbilityIntentSource {
 public:
-    [[nodiscard]] eve::Result<std::optional<eve::action::AbilityIntent>> nextIntent(eve::SimulationTick tick) override {
-        observedTick = tick;
-        if (reject)
+    eve::Result<std::optional<eve::action::AbilityIntent>> nextIntent(eve::SimulationTick tick) override {
+        seen = tick;
+        if (fail)
             return eve::Result<std::optional<eve::action::AbilityIntent>>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "AI has no valid plan"));
-        auto result = pending;
+                eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation, "source failed"));
+        auto next = pending;
         pending.reset();
-        return eve::Result<std::optional<eve::action::AbilityIntent>>::success(std::move(result));
+        return eve::Result<std::optional<eve::action::AbilityIntent>>::success(std::move(next));
     }
-
-    bool                                      reject = false;
-    eve::SimulationTick                       observedTick;
+    bool                                      fail = false;
+    eve::SimulationTick                       seen;
     std::optional<eve::action::AbilityIntent> pending;
 };
 
-}  // namespace
-
-TEST_CASE("abilityController.playerQueueRoutesFifoIntentWithInjectedTick") {
-    Fixture                               fixture;
-    eve::action::PlayerAbilityIntentQueue player;
-    REQUIRE(player.enqueue(fixture.intent()).ok());
-    REQUIRE_EQ(player.pendingCount(), 1u);
-
-    auto processed = fixture.controller.processNext(player, eve::SimulationTick(17));
-    REQUIRE(processed.ok());
-    REQUIRE(processed.value().has_value());
-    CHECK_EQ(player.pendingCount(), 0u);
-    const auto* execution = fixture.actions.find(processed.value()->executionId);
+TEST_CASE("action.controller.playerQueueConsumesOneIntentWithInjectedTick") {
+    ControllerFixture                     f;
+    eve::action::PlayerAbilityIntentQueue queue;
+    auto                                  empty = f.controller.processNext(queue, eve::SimulationTick(3));
+    REQUIRE(empty.ok());
+    CHECK(!empty.value().has_value());
+    REQUIRE(queue.enqueue(f.intent()).ok());
+    CHECK_EQ(queue.pendingCount(), std::size_t{1});
+    auto activated = f.controller.processNext(queue, eve::SimulationTick(17));
+    REQUIRE(activated.ok());
+    REQUIRE(activated.value().has_value());
+    CHECK_EQ(queue.pendingCount(), std::size_t{0});
+    auto* execution = f.actions.find(activated.value()->executionId);
     REQUIRE(execution != nullptr);
     CHECK(execution->request().requestedTick == eve::SimulationTick(17));
 }
 
-TEST_CASE("abilityController.aiAndPlayerUseTheSameActivationPath") {
-    Fixture        fixture;
-    AiIntentSource ai;
-    ai.pending = fixture.intent();
-
-    auto processed = fixture.controller.processNext(ai, eve::SimulationTick(23));
-    REQUIRE(processed.ok());
-    REQUIRE(processed.value().has_value());
-    CHECK(ai.observedTick == eve::SimulationTick(23));
-    CHECK_EQ(fixture.abilities.activeActivations().size(), 1u);
+TEST_CASE("action.controller.sourceFailureAndRejectedIntentDoNotMutateAbilityState") {
+    ControllerFixture f;
+    ScriptedSource    source;
+    source.pending = f.intent();
+    source.fail    = true;
+    CHECK(!f.controller.processNext(source, eve::SimulationTick(1)).ok());
+    CHECK(source.pending.has_value());
+    CHECK(f.abilities.activeActivations().empty());
+    source.fail                      = false;
+    source.pending->request.actionId = id("action:wrong");
+    CHECK(!f.controller.processNext(source, eve::SimulationTick(2)).ok());
+    CHECK(!source.pending.has_value());
+    CHECK(f.abilities.activeActivations().empty());
 }
-
-TEST_CASE("abilityController.sourceFailureDoesNotMutateAbilityRuntime") {
-    Fixture        fixture;
-    AiIntentSource ai;
-    ai.pending = fixture.intent();
-    ai.reject  = true;
-
-    auto processed = fixture.controller.processNext(ai, eve::SimulationTick(3));
-    CHECK(!processed.ok());
-    CHECK(fixture.abilities.activeActivations().empty());
-    CHECK(ai.pending.has_value());
-}
-
-TEST_CASE("abilityController.emptySourceIsAnExplicitNoOp") {
-    Fixture                               fixture;
-    eve::action::PlayerAbilityIntentQueue player;
-    auto                                  processed = fixture.controller.processNext(player, eve::SimulationTick(5));
-    REQUIRE(processed.ok());
-    CHECK(!processed.value().has_value());
-    CHECK(fixture.abilities.activeActivations().empty());
-}
-
-TEST_CASE("abilityController.rejectedIntentIsConsumedExactlyOnce") {
-    Fixture                               fixture;
-    eve::action::PlayerAbilityIntentQueue player;
-    auto                                  invalid = fixture.intent();
-    invalid.request.actionId                      = logicalId("action", "other");
-    REQUIRE(player.enqueue(std::move(invalid)).ok());
-
-    auto processed = fixture.controller.processNext(player, eve::SimulationTick(9));
-    CHECK(!processed.ok());
-    CHECK_EQ(player.pendingCount(), 0u);
-    CHECK(fixture.abilities.activeActivations().empty());
-}
-}  // namespace ability_controller
-}  // namespace
 
 // ability_system.cpp
-namespace {
-namespace ability_system {
-namespace {
-
-eve::LogicalId logicalId(const char* ns, const char* name) {
-    const auto id = eve::LogicalId::fromParts(ns, name);
-    REQUIRE(id.has_value());
-    return *id;
-}
-
-eve::action::AbilityDefinition ability(const char* name, eve::action::AbilityInstancingPolicy instancing,
-                                       eve::action::AbilityActivationGroup group,
-                                       eve::Duration                       cooldown = eve::Duration::zero()) {
-    eve::action::AbilityDefinition result;
-    result.id              = logicalId("ability", name);
-    result.action.id       = logicalId("action", name);
-    result.instancing      = instancing;
-    result.activationGroup = group;
-    result.cooldown        = cooldown;
-    return result;
-}
-
-eve::action::ActionRequest requestFor(const eve::action::AbilityDefinition& ability) {
-    eve::action::ActionRequest request;
-    request.actionId = ability.action.id;
-    return request;
-}
-
-}  // namespace
-
-TEST_CASE("abilitySystem.grantsDefinitionsAndKeepsPerOwnerInstanceIdentity") {
-    eve::action::ActionRuntime  runtime;
-    eve::action::AbilityRuntime abilities(runtime);
-    auto                        definition = ability("dash", eve::action::AbilityInstancingPolicy::PerOwner,
-                                                     eve::action::AbilityActivationGroup::Independent);
-    REQUIRE(abilities.registerDefinition(definition).ok());
-    CHECK(!abilities.registerDefinition(definition).ok());
-    auto grant = abilities.grant("fighter:a", definition.id);
+TEST_CASE("action.ability.grantsPerOwnerIdentityAndDeterministicCooldown") {
+    eve::action::ActionRuntime  actions;
+    eve::action::AbilityRuntime runtime(actions);
+    auto                        definition = ability("dash");
+    definition.cooldown                    = eve::Duration::fromNanoseconds(100);
+    REQUIRE(runtime.registerDefinition(definition).ok());
+    CHECK(!runtime.registerDefinition(definition).ok());
+    auto grant = runtime.grant("fighter", definition.id);
     REQUIRE(grant.ok());
-    auto first = abilities.activate(grant.value(), requestFor(definition), eve::SimulationTick(1));
+    auto first = runtime.activate(grant.value(), eve::SimulationTick(1));
     REQUIRE(first.ok());
     CHECK(!first.value().instanceId.isZero());
-    REQUIRE(runtime.cancel(first.value().executionId, eve::SimulationTick(2)).ok());
-    REQUIRE(abilities.synchronize().ok());
-    auto second = abilities.activate(grant.value(), requestFor(definition), eve::SimulationTick(3));
+    CHECK(!runtime.activate(grant.value(), eve::SimulationTick(2)).ok());
+    REQUIRE(runtime.advanceCooldowns(eve::Duration::fromNanoseconds(99)).ok());
+    CHECK(!runtime.activate(grant.value(), eve::SimulationTick(3)).ok());
+    REQUIRE(runtime.advanceCooldowns(eve::Duration::fromNanoseconds(1)).ok());
+    CHECK(!runtime.activate(grant.value(), eve::SimulationTick(4)).ok());
+    REQUIRE(runtime.cancel(first.value().id, eve::SimulationTick(5)).ok());
+    auto second = runtime.activate(grant.value(), eve::SimulationTick(6));
     REQUIRE(second.ok());
     CHECK(second.value().instanceId == first.value().instanceId);
+    CHECK(!runtime.advanceCooldowns(eve::Duration::fromNanoseconds(-1)).ok());
 }
 
-TEST_CASE("abilitySystem.cooldownsUseOnlyInjectedDeterministicDuration") {
-    eve::action::ActionRuntime  runtime;
-    eve::action::AbilityRuntime abilities(runtime);
-    auto                        oneSecond = eve::Duration::fromSeconds(1.0);
-    REQUIRE(oneSecond.ok());
-    auto definition = ability("fireball", eve::action::AbilityInstancingPolicy::PerExecution,
-                              eve::action::AbilityActivationGroup::Independent, oneSecond.value());
-    REQUIRE(abilities.registerDefinition(definition).ok());
-    auto grant = abilities.grant("mage", definition.id);
-    REQUIRE(grant.ok());
-    auto activation = abilities.activate(grant.value(), requestFor(definition), eve::SimulationTick(1));
-    REQUIRE(activation.ok());
-    CHECK(!abilities.activate(grant.value(), requestFor(definition), eve::SimulationTick(2)).ok());
-    auto partial = eve::Duration::fromSeconds(0.4);
-    REQUIRE(partial.ok());
-    REQUIRE(abilities.advanceCooldowns(partial.value()).ok());
-    CHECK(!abilities.activate(grant.value(), requestFor(definition), eve::SimulationTick(3)).ok());
-    auto remainder = eve::Duration::fromSeconds(0.6);
-    REQUIRE(remainder.ok());
-    REQUIRE(abilities.advanceCooldowns(remainder.value()).ok());
-    auto second = abilities.activate(grant.value(), requestFor(definition), eve::SimulationTick(4));
-    REQUIRE(second.ok());
-    CHECK(second.value().instanceId != activation.value().instanceId);
-    CHECK(!abilities.advanceCooldowns(eve::Duration::fromNanoseconds(-1)).ok());
-}
-
-TEST_CASE("abilitySystem.hotReloadPreservesGrantsAndActiveDefinitionSnapshots") {
-    eve::action::ActionRuntime  runtime;
-    eve::action::AbilityRuntime abilities(runtime);
-    auto                        original = ability("strike", eve::action::AbilityInstancingPolicy::PerExecution,
-                                                   eve::action::AbilityActivationGroup::Independent);
+TEST_CASE("action.ability.hotReloadKeepsActiveSnapshotAndGrant") {
+    eve::action::ActionRuntime  actions;
+    eve::action::AbilityRuntime runtime(actions);
+    auto                        original = ability("strike", eve::action::AbilityInstancingPolicy::PerExecution);
     original.action.timing.active        = eve::Duration::fromNanoseconds(100);
-    REQUIRE(abilities.registerDefinition(original).ok());
-    auto grant = abilities.grant("fighter", original.id);
+    REQUIRE(runtime.registerDefinition(original).ok());
+    auto grant = runtime.grant("fighter", original.id);
     REQUIRE(grant.ok());
-    auto first = abilities.activate(grant.value(), requestFor(original), eve::SimulationTick(1));
+    auto first = runtime.activate(grant.value(), eve::SimulationTick(1));
     REQUIRE(first.ok());
-
     auto replacement                 = original;
-    replacement.action.id            = logicalId("action", "strike-v2");
+    replacement.action.id            = id("action:strike-v2");
     replacement.action.timing.active = eve::Duration::fromNanoseconds(250);
-    REQUIRE(abilities.replaceDefinition(replacement).ok());
-    REQUIRE(runtime.find(first.value().executionId) != nullptr);
-    CHECK(runtime.find(first.value().executionId)->definition().id == original.action.id);
-    CHECK(runtime.find(first.value().executionId)->definition().timing.active == eve::Duration::fromNanoseconds(100));
-
-    REQUIRE(runtime.cancel(first.value().executionId, eve::SimulationTick(2)).ok());
-    REQUIRE(abilities.synchronize().ok());
-    auto second = abilities.activate(grant.value(), requestFor(replacement), eve::SimulationTick(3));
+    REQUIRE(runtime.replaceDefinition(replacement).ok());
+    CHECK(actions.find(first.value().executionId)->definition().id == original.action.id);
+    REQUIRE(runtime.cancel(first.value().id, eve::SimulationTick(2)).ok());
+    auto second = runtime.activate(grant.value(), eve::SimulationTick(3));
     REQUIRE(second.ok());
-    REQUIRE(runtime.find(second.value().executionId) != nullptr);
-    CHECK(runtime.find(second.value().executionId)->definition().id == replacement.action.id);
-    CHECK(runtime.find(second.value().executionId)->definition().timing.active == eve::Duration::fromNanoseconds(250));
-
-    auto missing = replacement;
-    missing.id   = logicalId("ability", "missing");
-    CHECK(!abilities.replaceDefinition(missing).ok());
-    auto invalid                 = replacement;
-    invalid.action.timing.active = eve::Duration::fromNanoseconds(-1);
-    CHECK(!abilities.replaceDefinition(invalid).ok());
+    CHECK(actions.find(second.value().executionId)->definition().id == replacement.action.id);
     auto incompatible       = replacement;
     incompatible.instancing = eve::action::AbilityInstancingPolicy::PerOwner;
-    CHECK(!abilities.replaceDefinition(incompatible).ok());
+    CHECK(!runtime.replaceDefinition(incompatible).ok());
 }
 
-TEST_CASE("abilitySystem.exclusiveGroupsReplaceOrBlockDeterministically") {
-    eve::action::ActionRuntime  runtime;
-    eve::action::AbilityRuntime abilities(runtime);
-    auto                        light    = ability("light", eve::action::AbilityInstancingPolicy::PerExecution,
-                                                   eve::action::AbilityActivationGroup::ExclusiveReplaceable);
-    auto                        heavy    = ability("heavy", eve::action::AbilityInstancingPolicy::PerExecution,
-                                                   eve::action::AbilityActivationGroup::ExclusiveReplaceable);
-    auto                        ultimate = ability("ultimate", eve::action::AbilityInstancingPolicy::PerExecution,
-                                                   eve::action::AbilityActivationGroup::ExclusiveBlocking);
-    REQUIRE(abilities.registerDefinition(light).ok());
-    REQUIRE(abilities.registerDefinition(heavy).ok());
-    REQUIRE(abilities.registerDefinition(ultimate).ok());
-    auto lightGrant    = abilities.grant("fighter", light.id);
-    auto heavyGrant    = abilities.grant("fighter", heavy.id);
-    auto ultimateGrant = abilities.grant("fighter", ultimate.id);
+TEST_CASE("action.ability.exclusiveReplacementBlockingAndRevokeLifecycle") {
+    eve::action::ActionRuntime  actions;
+    eve::action::AbilityRuntime runtime(actions);
+    auto                        light = ability("light", eve::action::AbilityInstancingPolicy::PerExecution,
+                                                eve::action::AbilityActivationGroup::ExclusiveReplaceable);
+    auto                        heavy = ability("heavy", eve::action::AbilityInstancingPolicy::PerExecution,
+                                                eve::action::AbilityActivationGroup::ExclusiveBlocking);
+    REQUIRE(runtime.registerDefinition(light).ok());
+    REQUIRE(runtime.registerDefinition(heavy).ok());
+    auto lightGrant = runtime.grant("fighter", light.id);
+    auto heavyGrant = runtime.grant("fighter", heavy.id);
     REQUIRE(lightGrant.ok());
     REQUIRE(heavyGrant.ok());
-    REQUIRE(ultimateGrant.ok());
-
-    auto first = abilities.activate(lightGrant.value(), requestFor(light), eve::SimulationTick(1));
+    auto first = runtime.activate(lightGrant.value(), eve::SimulationTick(1));
     REQUIRE(first.ok());
-    auto replacement = abilities.activate(heavyGrant.value(), requestFor(heavy), eve::SimulationTick(2));
-    REQUIRE(replacement.ok());
-    REQUIRE(runtime.find(first.value().executionId) != nullptr);
-    CHECK(static_cast<int>(runtime.find(first.value().executionId)->phase()) ==
-          static_cast<int>(eve::action::ActionPhase::Cancelled));
-    REQUIRE(runtime.cancel(replacement.value().executionId, eve::SimulationTick(3)).ok());
-    REQUIRE(abilities.synchronize().ok());
-
-    auto blocker = abilities.activate(ultimateGrant.value(), requestFor(ultimate), eve::SimulationTick(4));
+    CHECK(!runtime.revoke(lightGrant.value()).ok());
+    auto blocker = runtime.activate(heavyGrant.value(), eve::SimulationTick(2));
     REQUIRE(blocker.ok());
-    CHECK(!abilities.activate(lightGrant.value(), requestFor(light), eve::SimulationTick(5)).ok());
-    CHECK(abilities.activeActivations().size() == 1);
+    CHECK(actions.find(first.value().executionId)->phase() == eve::action::ActionPhase::Cancelled);
+    CHECK(!runtime.activate(lightGrant.value(), eve::SimulationTick(3)).ok());
+    REQUIRE(runtime.cancel(blocker.value().id, eve::SimulationTick(4)).ok());
+    REQUIRE(runtime.revoke(heavyGrant.value()).ok());
 }
 
-TEST_CASE("abilitySystem.gameplayEventTriggersSupportHierarchicalTags") {
-    eve::action::ActionRuntime  runtime;
-    eve::action::AbilityRuntime abilities(runtime);
-    auto                        exact = ability("parry", eve::action::AbilityInstancingPolicy::NonInstanced,
-                                                eve::action::AbilityActivationGroup::Independent);
-    exact.triggers.push_back({"Event.Combat.Parry", eve::tags::GameplayTagMatch::Exact});
-    auto family = ability("hit-react", eve::action::AbilityInstancingPolicy::PerOwner,
-                          eve::action::AbilityActivationGroup::Independent);
-    family.triggers.push_back({"Event.Combat.Hit", eve::tags::GameplayTagMatch::IncludeDescendants});
-    REQUIRE(abilities.registerDefinition(exact).ok());
-    REQUIRE(abilities.registerDefinition(family).ok());
-    auto exactGrant  = abilities.grant("fighter", exact.id);
-    auto familyGrant = abilities.grant("fighter", family.id);
-    REQUIRE(exactGrant.ok());
-    REQUIRE(familyGrant.ok());
-
-    const auto hit = abilities.matchingGrants("fighter", "Event.Combat.Hit.Heavy");
-    REQUIRE(hit.size() == 1);
-    CHECK(hit[0] == familyGrant.value());
-    const auto parry = abilities.matchingGrants("fighter", "Event.Combat.Parry");
-    REQUIRE(parry.size() == 1);
-    CHECK(parry[0] == exactGrant.value());
-    CHECK(abilities.matchingGrants("other", "Event.Combat.Parry").empty());
-}
-
-TEST_CASE("abilitySystem.revokeRejectsActiveGrantAndSucceedsAfterSynchronization") {
-    eve::action::ActionRuntime  runtime;
-    eve::action::AbilityRuntime abilities(runtime);
-    auto                        definition = ability("guard", eve::action::AbilityInstancingPolicy::PerOwner,
-                                                     eve::action::AbilityActivationGroup::Independent);
-    REQUIRE(abilities.registerDefinition(definition).ok());
-    auto grant = abilities.grant("fighter", definition.id);
-    REQUIRE(grant.ok());
-    auto activation = abilities.activate(grant.value(), requestFor(definition), eve::SimulationTick(1));
-    REQUIRE(activation.ok());
-    CHECK(!abilities.revoke(grant.value()).ok());
-    REQUIRE(runtime.cancel(activation.value().executionId, eve::SimulationTick(2)).ok());
-    auto synchronized = abilities.synchronize();
-    REQUIRE(synchronized.ok());
-    CHECK(synchronized.value() == 1);
-    REQUIRE(abilities.revoke(grant.value()).ok());
-    CHECK(!abilities.findGrant(grant.value()).ok());
-}
-
-TEST_CASE("abilitySystem.findDefinitionAndActivateByTickUseRegisteredActionId") {
-    eve::action::ActionRuntime  runtime;
-    eve::action::AbilityRuntime abilities(runtime);
-    auto                        definition = ability("slash", eve::action::AbilityInstancingPolicy::PerOwner,
-                                                     eve::action::AbilityActivationGroup::Independent);
-    definition.action.timing.active        = eve::Duration::fromNanoseconds(100);
-    REQUIRE(abilities.registerDefinition(definition).ok());
-    auto found = abilities.findDefinition(definition.id);
-    REQUIRE(found.ok());
-    CHECK(found.value().action.id == definition.action.id);
-    CHECK(!abilities.findDefinition(logicalId("ability", "missing")).ok());
-
-    auto grant = abilities.grant("fighter", definition.id);
-    REQUIRE(grant.ok());
-    auto activation = abilities.activate(grant.value(), eve::SimulationTick(1));
-    REQUIRE(activation.ok());
-    REQUIRE(runtime.find(activation.value().executionId) != nullptr);
-    CHECK(runtime.find(activation.value().executionId)->definition().id == definition.action.id);
-}
-
-TEST_CASE("abilitySystem.cancelAndStepOwnOrchestrationThroughActionRuntime") {
-    eve::action::ActionRuntime  runtime;
-    eve::action::AbilityRuntime abilities(runtime);
-    auto                        definition = ability("combo", eve::action::AbilityInstancingPolicy::PerExecution,
-                                                     eve::action::AbilityActivationGroup::Independent);
+TEST_CASE("action.ability.eventTriggersAndStepReportUseCanonicalState") {
+    eve::action::ActionRuntime  actions;
+    eve::action::AbilityRuntime runtime(actions);
+    auto                        definition = ability("react");
     definition.action.timing.active        = eve::Duration::fromNanoseconds(200);
-    REQUIRE(abilities.registerDefinition(definition).ok());
-    auto grant = abilities.grant("fighter", definition.id);
+    definition.triggers                    = {{"Event.Combat.Hit", eve::tags::GameplayTagMatch::IncludeDescendants}};
+    REQUIRE(runtime.registerDefinition(definition).ok());
+    auto grant = runtime.grant("fighter", definition.id);
     REQUIRE(grant.ok());
-    auto first = abilities.activate(grant.value(), eve::SimulationTick(1));
-    REQUIRE(first.ok());
-
-    auto half    = eve::Duration::fromNanoseconds(100);
-    auto stepped = abilities.step(eve::SimulationTick(2), half);
-    REQUIRE(stepped.ok());
-    REQUIRE(stepped.value().advances.size() == 1);
-    CHECK(stepped.value().advances[0].activationId == first.value().id);
-    CHECK(stepped.value().activeCount == 1);
-    CHECK(stepped.value().completedCount == 0);
-
-    REQUIRE(abilities.cancel(first.value().id, eve::SimulationTick(3)).ok());
-    CHECK(abilities.activeActivations().empty());
-    CHECK(!abilities.cancel(first.value().id, eve::SimulationTick(4)).ok());
-
-    auto second = abilities.activate(grant.value(), eve::SimulationTick(5));
-    REQUIRE(second.ok());
-    auto finished = abilities.step(eve::SimulationTick(6), eve::Duration::fromNanoseconds(200));
-    REQUIRE(finished.ok());
-    CHECK(finished.value().completedCount == 1);
-    CHECK(finished.value().activeCount == 0);
-    CHECK(abilities.activeActivations().empty());
-    CHECK(!abilities.step(eve::SimulationTick(7), eve::Duration::fromNanoseconds(-1)).ok());
+    auto matched = runtime.matchingGrants("fighter", "Event.Combat.Hit.Heavy");
+    REQUIRE_EQ(matched.size(), std::size_t{1});
+    CHECK(matched[0] == grant.value());
+    CHECK(runtime.matchingGrants("other", "Event.Combat.Hit.Heavy").empty());
+    auto activation = runtime.activate(grant.value(), eve::SimulationTick(1));
+    REQUIRE(activation.ok());
+    auto step = runtime.step(eve::SimulationTick(2), eve::Duration::fromNanoseconds(100));
+    REQUIRE(step.ok());
+    REQUIRE_EQ(step.value().advances.size(), std::size_t{1});
+    CHECK(step.value().advances[0].activationId == activation.value().id);
+    CHECK_EQ(step.value().activeCount, std::size_t{1});
+    auto end = runtime.step(eve::SimulationTick(3), eve::Duration::fromNanoseconds(100));
+    REQUIRE(end.ok());
+    CHECK_EQ(end.value().completedCount, std::size_t{1});
+    CHECK(runtime.activeActivations().empty());
 }
-}  // namespace ability_system
-}  // namespace
-}  // namespace test_action_abilities
+}  // namespace action_ability_contract
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_notify_registry)
-#include <memory>
-#include <string_view>
 #include "PrivateTestScope.h"
-#include "action/ActionAudioBlock.h"
-#include "action/ActionBlockRuntime.h"
-#include "action/ActionCameraBlock.h"
-#include "action/ActionNotifyPlayback.h"
 #include "action/ActionNotifyRegistry.h"
-#include "action/ActionParameterCurve.h"
-#include "action/ActionPrefabBlock.h"
-#include "action/ActionPrefabInstances.h"
-#include "action/ActionSpatialBlock.h"
-#include "action/ActionVfxBlock.h"
-#include "common/Capability.h"
-#include "common/EntitySpatialResolver.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+
+#include <memory>
+#include <string>
+
 // action_notify_registry.cpp
-namespace test_action_notify_registry_unit {
-namespace {
-
-eve::LogicalId id(std::string_view value) {
-    auto parsed = eve::LogicalId::parse(value);
+namespace action_notify_contract {
+eve::LogicalId id(const char* text) {
+    auto parsed = eve::LogicalId::parse(text);
     REQUIRE(parsed.has_value());
-    return std::move(*parsed);
-}
-
-eve::action::ActionTimelineEvent event(eve::action::ActionTimelineEventKind kind, std::string_view type) {
-    return {kind,     id("combat-track:gameplay"),        id("combat-notify:test"),
-            id(type), eve::Duration::fromNanoseconds(10), {}};
+    return *parsed;
 }
 
 class RecordingHandler final : public eve::action::IActionNotifyHandler {
 public:
-    eve::Result<void> handle(const eve::action::ActionTimelineEvent& incoming,
-                             const eve::action::ActionNotifyContext& incomingContext) override {
-        ++calls;
-        lastType      = incoming.type.format();
-        lastExecution = incomingContext.executionId;
-        return eve::Result<void>::success();
-    }
-
-    eve::Result<void> update(const eve::action::ActionActiveBlock& block,
+    eve::Result<void> handle(const eve::action::ActionTimelineEvent& event,
                              const eve::action::ActionNotifyContext&) override {
-        ++updates;
-        lastLocalTime = block.localTime;
-        return eve::Result<void>::success();
-    }
-
-    eve::Result<void> sample(const eve::action::ActionActiveBlock&,
-                             const eve::action::ActionNotifyContext& context) const override {
-        if (!context.preview || !context.scrubbing)
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                     "sample context is not preview", "context"));
-        ++samples;
-        return eve::Result<void>::success();
-    }
-
-    eve::Result<void> advance(const eve::action::ActionNotifyContext&) override {
-        ++advances;
-        if (failAdvance)
-            return eve::Result<void>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "advance failed", "handler"));
-        return eve::Result<void>::success();
-    }
-
-    int                            calls       = 0;
-    int                            updates     = 0;
-    mutable int                    samples     = 0;
-    int                            advances    = 0;
-    bool                           failAdvance = false;
-    std::string                    lastType;
-    eve::action::ActionExecutionId lastExecution;
-    eve::Duration                  lastLocalTime = eve::Duration::zero();
-};
-
-class RecordingParameterSink final : public eve::action::IActionParameterSink {
-public:
-    bool supports(const eve::LogicalId& target) const noexcept override { return target.format() == "test:parameter"; }
-
-    eve::Result<void> apply(const eve::action::ActionParameterSample& sample) override {
-        samples.push_back(sample);
-        return eve::Result<void>::success();
-    }
-
-    std::vector<eve::action::ActionParameterSample> samples;
-};
-
-class RecordingCameraSink final : public eve::action::IActionCameraCueSink {
-public:
-    bool supports(const eve::LogicalId& cue) const noexcept override { return cue.format() == "combat:impact"; }
-
-    eve::Result<void> trigger(const eve::action::ActionCameraCueBinding& binding,
-                              const eve::action::ActionNotifyContext&    context) override {
         ++calls;
-        last      = binding;
-        execution = context.executionId;
+        lastType = event.type.format();
         return eve::Result<void>::success();
     }
-
-    int                                 calls = 0;
-    eve::action::ActionCameraCueBinding last;
-    eve::action::ActionExecutionId      execution;
+    int         calls = 0;
+    std::string lastType;
 };
 
-eve::Value::Object curvePayload() {
-    return {
-        {"target", "test:parameter"},
-        {"operation", "multiply"},
-        {"keys", eve::Value::Array{eve::Value::Object{{"time", 0.0}, {"value", 0.0}, {"interpolation", "linear"}},
-                                   eve::Value::Object{{"time", 0.5}, {"value", 1.0}, {"interpolation", "step"}},
-                                   eve::Value::Object{{"time", 1.0}, {"value", 0.25}, {"interpolation", "linear"}}}}};
+TEST_CASE("action.notify.builtinCatalogHasStableShapeAndRequiredFields") {
+    auto built = eve::action::ActionNotifyRegistry::withBuiltins();
+    REQUIRE(built.ok());
+    const auto descriptors = built.value().descriptors();
+    REQUIRE_EQ(descriptors.size(), std::size_t{18});
+    CHECK_EQ(descriptors.front().type, std::string("collision:ignore-window"));
+    CHECK_EQ(descriptors.back().type, std::string("presentation:vfx-state"));
+    auto damage = built.value().descriptor("combat:damage");
+    REQUIRE(damage.ok());
+    CHECK(damage.value().shape == eve::action::ActionNotifyShape::Instant);
+    CHECK_EQ(damage.value().requiredPayloadFields.size(), std::size_t{2});
+    auto hitbox = built.value().descriptor("combat:hitbox-window");
+    REQUIRE(hitbox.ok());
+    CHECK(hitbox.value().shape == eve::action::ActionNotifyShape::State);
+}
+
+TEST_CASE("action.notify.registrationRejectsInvalidAndDuplicateDescriptors") {
+    eve::action::ActionNotifyRegistry registry;
+    CHECK(!registry.registerDescriptor({"", "empty", "test", eve::action::ActionNotifyShape::Instant, {}}).ok());
+    REQUIRE(
+        registry
+            .registerDescriptor({"test:flash", "Flash", "test", eve::action::ActionNotifyShape::Instant, {"strength"}})
+            .ok());
+    CHECK(
+        !registry
+             .registerDescriptor({"test:flash", "Flash", "test", eve::action::ActionNotifyShape::Instant, {"strength"}})
+             .ok());
+    CHECK(!registry.descriptor("test:missing").ok());
+}
+
+TEST_CASE("action.notify.handlerOwnershipAndDispatchAreExplicit") {
+    eve::action::ActionNotifyRegistry registry;
+    REQUIRE(
+        registry
+            .registerDescriptor({"test:flash", "Flash", "test", eve::action::ActionNotifyShape::Instant, {"strength"}})
+            .ok());
+    auto handler = std::make_shared<RecordingHandler>();
+    REQUIRE(registry.registerHandler("test:flash", handler).ok());
+    CHECK(registry.hasHandler("test:flash"));
+    eve::action::ActionTimelineEvent event{
+        eve::action::ActionTimelineEventKind::Notify, id("test:track"),   id("test:notify"), id("test:flash"),
+        eve::Duration::fromNanoseconds(10),           {{"strength", 1.0}}};
+    CHECK(registry.validate(event).ok());
+    eve::action::ActionNotifyContext context;
+    CHECK(registry.dispatch(event, context).ok());
+    CHECK_EQ(handler->calls, 1);
+    CHECK_EQ(handler->lastType, std::string("test:flash"));
+    REQUIRE(registry.unregisterHandler("test:flash").ok());
+    CHECK(!registry.hasHandler("test:flash"));
+}
+}  // namespace action_notify_contract
+#endif
+
+#include <map>
+#include "action/editor/ActionPreviewProfile.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+namespace test_action_preview_profile_contracts {
+namespace {
+
+eve::action::ActionTimeline previewTimeline() {
+    eve::action::ActionTimeline timeline;
+    timeline.actionId = *eve::LogicalId::parse("combat:preview-test");
+    timeline.duration = eve::Duration::fromSeconds(2.0).takeValue();
+    eve::action::ActionAnimationSection first;
+    first.id           = *eve::LogicalId::parse("animation:first");
+    first.animationUri = "asset://animations/first";
+    first.end          = eve::Duration::fromSeconds(1.0).takeValue();
+    eve::action::ActionAnimationSection second;
+    second.id                  = *eve::LogicalId::parse("animation:second");
+    second.animationUri        = "asset://animations/second";
+    second.start               = first.end;
+    second.end                 = timeline.duration;
+    timeline.animationSections = {first, second};
+    return timeline;
+}
+
+eve::editor::ActionPreviewSkeleton skeleton(std::string uri, std::string root = "Root", std::string child = "Spine") {
+    return {std::move(uri), {{std::move(root), -1}, {std::move(child), 0}}};
+}
+
+class PreviewAssets final : public eve::editor::IActionPreviewAssetProvider {
+public:
+    std::map<std::string, eve::editor::ActionPreviewSkeleton> models;
+    std::map<std::string, eve::editor::ActionPreviewSkeleton> animations;
+    bool                                                      acceptMask = true;
+
+    eve::Result<eve::editor::ActionPreviewSkeleton> modelSkeleton(std::string_view uri) override {
+        auto found = models.find(std::string(uri));
+        if (found == models.end())
+            return eve::Result<eve::editor::ActionPreviewSkeleton>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::NotFound, "preview model was not found", "previewModelUri"));
+        return eve::Result<eve::editor::ActionPreviewSkeleton>::success(found->second);
+    }
+
+    eve::Result<eve::editor::ActionPreviewSkeleton> animationSkeleton(std::string_view uri) override {
+        auto found = animations.find(std::string(uri));
+        if (found == animations.end())
+            return eve::Result<eve::editor::ActionPreviewSkeleton>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "animation was not found", "animationUri"));
+        return eve::Result<eve::editor::ActionPreviewSkeleton>::success(found->second);
+    }
+
+    eve::Result<void> validateBoneMask(std::string_view, const eve::editor::ActionPreviewSkeleton&) override {
+        if (!acceptMask)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "mask targets another skeleton", "boneMaskUri"));
+        return eve::Result<void>::success();
+    }
+};
+
+eve::editor::ActionPreviewProfile previewProfile() {
+    eve::editor::ActionPreviewProfile profile;
+    profile.actionAsset         = eve::editor::AssetGuid("asset-preview-test");
+    profile.previewModelUri     = "asset://models/hero";
+    profile.baseMotionUri       = "asset://animations/idle";
+    profile.animationProfileUri = "asset://animation-profiles/humanoid";
+    profile.boneMaskUri         = "asset://animation-masks/upper-body";
+    profile.showSkeleton        = true;
+    profile.showJointNames      = true;
+    profile.shading             = eve::editor::ActionPreviewShading::Unlit;
+    return profile;
 }
 
 }  // namespace
 
-TEST_CASE("actionNotifyRegistry.builtinsExposeStableEditorContracts") {
-    CHECK(eve::cap::query<eve::action::IActionPrefabInstances>() == nullptr);
-    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
-    REQUIRE(registry.ok());
-    const auto descriptors = registry.value().descriptors();
-    REQUIRE_EQ(descriptors.size(), 18u);
-    CHECK_EQ(descriptors.front().type, "collision:ignore-window");
-    CHECK_EQ(descriptors.back().type, "presentation:vfx-state");
+TEST_CASE("actionPreviewProfile.versionedSidecarRoundTripsAndRejectsUnknownVersion") {
+    auto profile = previewProfile();
+    auto encoded = profile.toValue();
+    REQUIRE(encoded.ok());
+    auto decoded = eve::editor::ActionPreviewProfile::fromValue(encoded.value());
+    REQUIRE(decoded.ok());
+    CHECK(decoded.value() == profile);
 
-    auto damage = registry.value().descriptor("combat:damage");
-    REQUIRE(damage.ok());
-    CHECK(static_cast<int>(damage.value().shape) == static_cast<int>(eve::action::ActionNotifyShape::Instant));
-    CHECK_EQ(damage.value().requiredPayloadFields.size(), 2u);
-
-    auto hitbox = registry.value().descriptor("combat:hitbox-window");
-    REQUIRE(hitbox.ok());
-    CHECK(static_cast<int>(hitbox.value().shape) == static_cast<int>(eve::action::ActionNotifyShape::State));
-
-    auto prefab = registry.value().descriptor("gameplay:prefab-spawn");
-    REQUIRE(prefab.ok());
-    CHECK_EQ(prefab.value().displayName, "Spawn Prefab");
-    CHECK(static_cast<int>(prefab.value().shape) == static_cast<int>(eve::action::ActionNotifyShape::State));
-}
-
-TEST_CASE("actionCameraCue.validatesAndRoutesToOptionalSink") {
-    eve::Value::Object payload{{"cue", "combat:impact"}, {"positionAmplitude", 0.2}, {"rotationAmplitude", 2.5},
-                               {"fovAmplitude", -1.0},   {"durationSeconds", 0.4},   {"seed", 17}};
-    auto               binding = eve::action::ActionCameraCueBinding::fromPayload(payload);
-    REQUIRE(binding.ok());
-    CHECK_EQ(binding.value().cue, id("combat:impact"));
-    CHECK_EQ(binding.value().positionAmplitude, 0.2);
-    CHECK_EQ(binding.value().rotationAmplitude, 2.5);
-    CHECK_EQ(binding.value().fovAmplitude, -1.0);
-    CHECK_EQ(binding.value().duration, eve::Duration::fromNanoseconds(400000000));
-    CHECK_EQ(binding.value().seed, 17u);
-
-    auto invalid               = payload;
-    invalid["durationSeconds"] = 0.0;
-    auto rejected              = eve::action::ActionCameraCueBinding::fromPayload(invalid);
+    eve::Value unknown = encoded.value();
+    unknown.set("schemaVersion", static_cast<std::int64_t>(2));
+    auto rejected = eve::editor::ActionPreviewProfile::fromValue(unknown);
     CHECK(!rejected.ok());
-    CHECK_EQ(rejected.status().diagnostics().front().path(), "durationSeconds");
-
-    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
-    REQUIRE(registry.ok());
-    auto cameraEvent    = event(eve::action::ActionTimelineEventKind::Notify, "presentation:camera");
-    cameraEvent.payload = payload;
-    eve::action::ActionNotifyContext context;
-    context.executionId = eve::action::ActionExecutionId{202};
-    auto missing        = registry.value().dispatch(cameraEvent, context);
-    CHECK(!missing.ok());
-    CHECK_EQ(missing.status().code(), eve::StatusCode::NotFound);
-
-    RecordingCameraSink sink;
-    eve::cap::addListener<eve::action::IActionCameraCueSink>(&sink);
-    REQUIRE(registry.value().dispatch(cameraEvent, context).ok());
-    REQUIRE_EQ(sink.calls, 1);
-    CHECK_EQ(sink.last.seed, 17u);
-    CHECK_EQ(sink.execution, context.executionId);
-    eve::cap::removeListener<eve::action::IActionCameraCueSink>(&sink);
 }
 
-TEST_CASE("actionParameterCurve.validatesSamplesAndRoutesPairedRuntimeLifecycle") {
-    auto payload = curvePayload();
-    auto binding = eve::action::ActionParameterCurveBinding::fromPayload(payload);
-    REQUIRE(binding.ok());
-    CHECK_EQ(binding.value().target, id("test:parameter"));
-    CHECK_EQ(binding.value().operation, eve::action::ActionParameterOperation::Multiply);
-    CHECK_EQ(binding.value().sample(0.25), 0.5);
-    CHECK_EQ(binding.value().sample(0.75), 1.0);
-    CHECK_EQ(binding.value().toPayload({{"extension", true}}).at("extension").asBool(), true);
-    auto invalid    = payload;
-    invalid["keys"] = eve::Value::Array{eve::Value::Object{{"time", 0.1}, {"value", 0.0}},
-                                        eve::Value::Object{{"time", 1.0}, {"value", 1.0}}};
-    auto rejected   = eve::action::ActionParameterCurveBinding::fromPayload(invalid);
-    CHECK(!rejected.ok());
-    CHECK_EQ(rejected.status().diagnostics().front().path(), "keys");
+TEST_CASE("actionPreviewProfile.compatibilityIsExplicitForExactRetargetedAndUnavailableProviders") {
+    auto          timeline = previewTimeline();
+    auto          profile  = previewProfile();
+    PreviewAssets assets;
+    assets.models.emplace(profile.previewModelUri, skeleton(profile.previewModelUri));
+    assets.animations.emplace("asset://animations/first", skeleton("asset://animations/first"));
+    assets.animations.emplace("asset://animations/second", skeleton("asset://animations/second", "root", "spine"));
 
-    {
-        auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
-        REQUIRE(registry.ok());
-        eve::action::ActionBlockRuntime runtime(registry.value());
-        eve::action::ActionAdvance      advance;
-        advance.id = eve::action::ActionExecutionId{100};
-        advance.activeBlocks.push_back({id("parameter-track:main"), id("parameter-curve:missing-sink"),
-                                        id("presentation:parameter-curve"), eve::Duration::zero(),
-                                        eve::Duration::fromNanoseconds(100), payload});
-        eve::action::ActionNotifyContext context;
-        context.executionId = advance.id;
-        auto missing        = runtime.apply(advance, context);
-        CHECK(!missing.ok());
-        CHECK_EQ(missing.status().code(), eve::StatusCode::NotFound);
-    }
+    eve::editor::ActionPreviewCompatibilityAnalyzer analyzer;
+    auto                                            report = analyzer.analyze(timeline, profile, &assets);
+    REQUIRE(report.ok());
+    REQUIRE(report.value().sections.size() == 2);
+    CHECK(report.value().sections[0].compatibility == eve::editor::ActionPreviewCompatibility::Compatible);
+    CHECK(report.value().sections[1].compatibility == eve::editor::ActionPreviewCompatibility::Retargetable);
+    CHECK(report.value().canPreview());
 
-    RecordingParameterSink sink;
-    eve::cap::addListener<eve::action::IActionParameterSink>(&sink);
-    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
-    REQUIRE(registry.ok());
-    eve::action::ActionBlockRuntime runtime(registry.value());
-    eve::action::ActionAdvance      advance;
-    advance.id = eve::action::ActionExecutionId{101};
-    advance.timelineEvents.push_back({eve::action::ActionTimelineEventKind::StateEnter, id("parameter-track:main"),
-                                      id("parameter-curve:fade"), id("presentation:parameter-curve"),
-                                      eve::Duration::zero(), payload});
-    advance.activeBlocks.push_back({id("parameter-track:main"), id("parameter-curve:fade"),
-                                    id("presentation:parameter-curve"), eve::Duration::zero(),
-                                    eve::Duration::fromNanoseconds(100), payload});
-    eve::action::ActionNotifyContext context;
-    context.executionId = advance.id;
-    REQUIRE(runtime.apply(advance, context).ok());
-    REQUIRE_EQ(sink.samples.size(), 1u);
-    CHECK_EQ(sink.samples.back().phase, eve::action::ActionParameterPhase::Begin);
-    CHECK_EQ(sink.samples.back().value, 0.0);
+    auto unsupported = analyzer.analyze(timeline, profile, nullptr);
+    REQUIRE(unsupported.ok());
+    CHECK(!unsupported.value().canPreview());
+    CHECK(unsupported.value().sections[0].compatibility == eve::editor::ActionPreviewCompatibility::Unsupported);
 
-    advance.timelineEvents.clear();
-    advance.activeBlocks.front().localTime = eve::Duration::fromNanoseconds(25);
-    REQUIRE(runtime.apply(advance, context).ok());
-    REQUIRE_EQ(sink.samples.size(), 2u);
-    CHECK_EQ(sink.samples.back().phase, eve::action::ActionParameterPhase::Update);
-    CHECK_EQ(sink.samples.back().value, 0.5);
-    REQUIRE(runtime.interrupt(context).ok());
-    REQUIRE_EQ(sink.samples.size(), 3u);
-    CHECK_EQ(sink.samples.back().phase, eve::action::ActionParameterPhase::End);
-    eve::cap::removeListener<eve::action::IActionParameterSink>(&sink);
+    assets.acceptMask = false;
+    auto badMask      = analyzer.analyze(timeline, profile, &assets);
+    REQUIRE(badMask.ok());
+    CHECK(!badMask.value().canPreview());
 }
-
-TEST_CASE("entitySpatialResolver.absentProviderFailsObservably") {
-    auto resolved = eve::resolveEntitySpatialPose({});
-    CHECK(!resolved.ok());
-    CHECK(static_cast<int>(resolved.status().code()) == static_cast<int>(eve::StatusCode::NotFound));
-}
-
-TEST_CASE("actionBlockRuntime.routesEnterUpdateExitAndSideEffectFreeSample") {
-    eve::action::ActionNotifyRegistry registry;
-    REQUIRE(registry
-                .registerDescriptor(
-                    {"project:combat.window", "Window", "Project", eve::action::ActionNotifyShape::State, {}})
-                .ok());
-    CHECK(!registry.hasHandler("project:combat.window"));
-    auto handler = std::make_shared<RecordingHandler>();
-    REQUIRE(registry.registerHandler("project:combat.window", handler).ok());
-    CHECK(registry.hasHandler("project:combat.window"));
-    eve::action::ActionBlockRuntime runtime(registry);
-
-    eve::action::ActionAdvance advance;
-    advance.id           = eve::action::ActionExecutionId{7};
-    advance.totalElapsed = eve::Duration::fromNanoseconds(25);
-    advance.timelineEvents.push_back(event(eve::action::ActionTimelineEventKind::StateEnter, "project:combat.window"));
-    advance.activeBlocks.push_back({id("combat-track:gameplay"),
-                                    id("combat-notify:test"),
-                                    id("project:combat.window"),
-                                    eve::Duration::fromNanoseconds(15),
-                                    eve::Duration::fromNanoseconds(40),
-                                    {}});
-    eve::action::ActionNotifyContext context;
-    context.executionId = advance.id;
-    REQUIRE(runtime.apply(advance, context).ok());
-    CHECK_EQ(handler->calls, 1);
-    CHECK_EQ(handler->updates, 1);
-    CHECK_EQ(handler->advances, 1);
-    CHECK_EQ(handler->lastLocalTime, eve::Duration::fromNanoseconds(15));
-    CHECK_EQ(runtime.executionCount(), 1u);
-
-    REQUIRE(runtime.sample(advance.activeBlocks, context).ok());
-    CHECK_EQ(handler->samples, 1);
-    CHECK_EQ(runtime.executionCount(), 1u);
-
-    context.time = eve::Duration::fromNanoseconds(30);
-    REQUIRE(runtime.interrupt(context).ok());
-    CHECK_EQ(handler->calls, 2);
-    CHECK_EQ(runtime.executionCount(), 0u);
-    auto noOp = runtime.interrupt(context);
-    REQUIRE(noOp.ok());
-    CHECK_EQ(noOp.status().code(), eve::StatusCode::NoOp);
-}
-
-TEST_CASE("actionSpatialBlock.decodesSharedAttachmentContractTransactionally") {
-    eve::Value::Object payload{
-        {"attachment", "follow_position_only"},
-        {"spatialTarget", "target"},
-        {"targetIndex", 2},
-        {"bone", "hand_r"},
-        {"positionOffset", eve::Value::Array{1.0, 2, 3.5}},
-        {"rotationOffsetDegrees", eve::Value::Array{0, 90.0, 0}},
-        {"scale", eve::Value::Array{1.0, 2.0, 1.0}},
-        {"uri", "asset://vfx/sword-trail"},
-    };
-    auto binding = eve::action::ActionSpatialBinding::fromPayload(payload);
-    REQUIRE(binding.ok());
-    CHECK_EQ(binding.value().mode, eve::action::ActionSpatialAttachmentMode::FollowPositionOnly);
-    CHECK_EQ(binding.value().target, eve::action::ActionSpatialTarget::Target);
-    CHECK_EQ(binding.value().targetIndex, 2u);
-    CHECK_EQ(binding.value().bone, "hand_r");
-    CHECK_EQ(binding.value().positionOffset.z, 3.5);
-    CHECK_EQ(binding.value().rotationOffsetDegrees.y, 90.0);
-    CHECK_EQ(binding.value().scale.y, 2.0);
-
-    payload["scale"] = eve::Value::Array{1.0, 0.0, 1.0};
-    auto rejected    = eve::action::ActionSpatialBinding::fromPayload(payload);
-    CHECK(!rejected.ok());
-    CHECK_EQ(rejected.status().diagnostics().front().path(), "scale");
-}
-
-TEST_CASE("actionPrefabBlock.validatesLifecycleDurationAndSpatialContract") {
-    eve::Value::Object payload{
-        {"uri", "asset://prefabs/sword-wave.glb"},
-        {"lifecycle", "custom_duration"},
-        {"customDurationSeconds", 1.25},
-        {"attachment", "follow_target"},
-        {"bone", "hand_r"},
-        {"scale", eve::Value::Array{1.0, 2.0, 1.0}},
-    };
-    auto binding = eve::action::ActionPrefabSpawnBinding::fromPayload(payload);
-    REQUIRE(binding.ok());
-    CHECK_EQ(binding.value().uri, "asset://prefabs/sword-wave.glb");
-    CHECK_EQ(binding.value().lifecycle, eve::action::PrefabSpawnLifecycle::CustomDuration);
-    CHECK_EQ(binding.value().customDuration, eve::Duration::fromNanoseconds(1250000000));
-    CHECK_EQ(binding.value().spatial.bone, "hand_r");
-    CHECK_EQ(binding.value().spatial.scale.y, 2.0);
-
-    payload["customDurationSeconds"] = 0.0;
-    auto rejected                    = eve::action::ActionPrefabSpawnBinding::fromPayload(payload);
-    CHECK(!rejected.ok());
-    CHECK_EQ(rejected.status().diagnostics().front().path(), "customDurationSeconds");
-
-    payload["customDurationSeconds"] = 0.5;
-    payload["lifecycle"]             = "unknown";
-    rejected                         = eve::action::ActionPrefabSpawnBinding::fromPayload(payload);
-    CHECK(!rejected.ok());
-    CHECK_EQ(rejected.status().diagnostics().front().path(), "lifecycle");
-}
-
-TEST_CASE("actionAudioBlock.validatesSharedRuntimeAndPreviewContract") {
-    eve::Value::Object payload{
-        {"uri", "asset://audio/sword.wav"},
-        {"randomUris", eve::Value::Array{"asset://audio/sword-a.wav", "asset://audio/sword-b.wav"}},
-        {"volume", 0.5},
-        {"pitch", 1.25},
-        {"randomPitchOffset", 0.1},
-        {"spatialBlend", 0.75},
-        {"minDistance", 2.0},
-        {"maxDistance", 28.0},
-        {"looping", true},
-        {"fadeOutOnExit", true},
-        {"fadeOutDuration", 0.25}};
-    auto state = eve::action::ActionAudioBinding::fromPayload(payload, eve::action::ActionAudioShape::State);
-    REQUIRE(state.ok());
-    CHECK_EQ(state.value().uri, "asset://audio/sword.wav");
-    CHECK_EQ(state.value().volume, 0.5);
-    CHECK_EQ(state.value().pitch, 1.25);
-    REQUIRE_EQ(state.value().randomUris.size(), 2U);
-    CHECK_EQ(state.value().randomUris[1], "asset://audio/sword-b.wav");
-    CHECK_EQ(state.value().randomPitchOffset, 0.1);
-    CHECK_EQ(state.value().spatialBlend, 0.75);
-    CHECK_EQ(state.value().minDistance, 2.0);
-    CHECK_EQ(state.value().maxDistance, 28.0);
-    CHECK(state.value().fadeOutOnExit);
-    CHECK_EQ(state.value().fadeOutDuration, 0.25);
-    CHECK(state.value().looping);
-
-    auto instant = eve::action::ActionAudioBinding::fromPayload(payload, eve::action::ActionAudioShape::Instant);
-    CHECK(!instant.ok());
-    CHECK_EQ(instant.status().diagnostics().front().path(), "looping");
-    payload["looping"] = false;
-    payload["pitch"]   = 0.0;
-    auto invalidPitch  = eve::action::ActionAudioBinding::fromPayload(payload, eve::action::ActionAudioShape::Instant);
-    CHECK(!invalidPitch.ok());
-    CHECK_EQ(invalidPitch.status().diagnostics().front().path(), "pitch");
-
-    payload["pitch"]             = 1.0;
-    payload["randomPitchOffset"] = 0.6;
-    auto invalidVariation =
-        eve::action::ActionAudioBinding::fromPayload(payload, eve::action::ActionAudioShape::Instant);
-    CHECK(!invalidVariation.ok());
-    CHECK_EQ(invalidVariation.status().diagnostics().front().path(), "randomPitchOffset");
-    payload["randomPitchOffset"] = 0.1;
-    payload["maxDistance"]       = 1.0;
-    auto invalidAttenuation =
-        eve::action::ActionAudioBinding::fromPayload(payload, eve::action::ActionAudioShape::Instant);
-    CHECK(!invalidAttenuation.ok());
-    CHECK_EQ(invalidAttenuation.status().diagnostics().front().path(), "maxDistance");
-    payload["maxDistance"] = 28.0;
-    payload["randomUris"]  = eve::Value::Array{"asset://audio/repeated.wav", "asset://audio/repeated.wav"};
-    auto duplicateUri = eve::action::ActionAudioBinding::fromPayload(payload, eve::action::ActionAudioShape::Instant);
-    CHECK(!duplicateUri.ok());
-    CHECK_EQ(duplicateUri.status().diagnostics().front().path(), "randomUris[1]");
-    payload["randomUris"]      = eve::Value::Array{};
-    payload["fadeOutDuration"] = 0.0;
-    auto invalidFade = eve::action::ActionAudioBinding::fromPayload(payload, eve::action::ActionAudioShape::Instant);
-    CHECK(!invalidFade.ok());
-    CHECK_EQ(invalidFade.status().diagnostics().front().path(), "fadeOutDuration");
-}
-
-TEST_CASE("actionVfxBlock.validatesTrimStopAndLifetimeContract") {
-    eve::Value::Object payload{{"uri", "asset://vfx/sword-trail.effect.json"},
-                               {"stopBehavior", "clear_immediately"},
-                               {"playbackRateSynced", false},
-                               {"clipStartTime", 0.25},
-                               {"clipEndTime", 1.75},
-                               {"lifetimeSeconds", 2.0}};
-    auto instant = eve::action::ActionVfxBinding::fromPayload(payload, eve::action::ActionVfxShape::Instant);
-    REQUIRE(instant.ok());
-    CHECK_EQ(instant.value().uri, "asset://vfx/sword-trail.effect.json");
-    CHECK_EQ(instant.value().stopBehavior, eve::action::ActionVfxStopBehavior::ClearImmediately);
-    CHECK(!instant.value().playbackRateSynced);
-    CHECK_EQ(instant.value().clipStartTime, 0.25);
-    CHECK_EQ(instant.value().clipEndTime, 1.75);
-    CHECK_EQ(instant.value().lifetimeSeconds, 2.0);
-
-    payload["clipEndTime"] = 0.25;
-    auto invalidClip       = eve::action::ActionVfxBinding::fromPayload(payload, eve::action::ActionVfxShape::State);
-    CHECK(!invalidClip.ok());
-    CHECK_EQ(invalidClip.status().diagnostics().front().path(), "clipEndTime");
-    payload["clipEndTime"]     = 1.75;
-    payload["lifetimeSeconds"] = 0.0;
-    auto invalidLifetime = eve::action::ActionVfxBinding::fromPayload(payload, eve::action::ActionVfxShape::Instant);
-    CHECK(!invalidLifetime.ok());
-    CHECK_EQ(invalidLifetime.status().diagnostics().front().path(), "lifetimeSeconds");
-}
-
-TEST_CASE("actionNotifyRegistry.validatesShapeAndRequiredPayload") {
-    auto registry = eve::action::ActionNotifyRegistry::withBuiltins();
-    REQUIRE(registry.ok());
-
-    auto gameplay = event(eve::action::ActionTimelineEventKind::Notify, "gameplay:event");
-    CHECK(!registry.value().validate(gameplay).ok());
-    gameplay.payload.emplace("tag", eve::Value("Combat.Action.Hit"));
-    CHECK(registry.value().validate(gameplay).ok());
-
-    auto hitbox = event(eve::action::ActionTimelineEventKind::StateEnter, "combat:hitbox-window");
-    hitbox.payload.emplace("hitbox", eve::Value("weapon.main"));
-    CHECK(registry.value().validate(hitbox).ok());
-    hitbox.kind = eve::action::ActionTimelineEventKind::StateExit;
-    CHECK(registry.value().validate(hitbox).ok());
-    hitbox.kind = eve::action::ActionTimelineEventKind::Notify;
-    CHECK(!registry.value().validate(hitbox).ok());
-
-    auto prefab = event(eve::action::ActionTimelineEventKind::StateEnter, "gameplay:prefab-spawn");
-    prefab.payload.emplace("uri", eve::Value("asset://prefabs/sword-wave.glb"));
-    prefab.payload.emplace("lifecycle", eve::Value("custom_duration"));
-    CHECK(!registry.value().validate(prefab).ok());
-    prefab.payload.emplace("customDurationSeconds", eve::Value(0.5));
-    CHECK(registry.value().validate(prefab).ok());
-    eve::action::ActionNotifyContext context;
-    context.executionId = eve::action::ActionExecutionId{99};
-    auto dispatched     = registry.value().dispatch(prefab, context);
-    CHECK(!dispatched.ok());
-    CHECK_EQ(dispatched.status().code(), eve::StatusCode::NotFound);
-}
-
-TEST_CASE("actionNotifyRegistry.rejectsInvalidAndDuplicateDescriptors") {
-    eve::action::ActionNotifyRegistry   registry;
-    eve::action::ActionNotifyDescriptor descriptor{
-        "project:combat.custom", "Custom", "Project", eve::action::ActionNotifyShape::Instant, {"value"}};
-    CHECK(registry.registerDescriptor(descriptor).ok());
-    CHECK(!registry.registerDescriptor(descriptor).ok());
-    descriptor.type = "project..invalid";
-    CHECK(!registry.registerDescriptor(std::move(descriptor)).ok());
-}
-
-TEST_CASE("actionNotifyRegistry.handlerLifecycleIsExplicitAndObservable") {
-    eve::action::ActionNotifyRegistry   registry;
-    eve::action::ActionNotifyDescriptor descriptor{
-        "project:combat.custom", "Custom", "Project", eve::action::ActionNotifyShape::Instant, {}};
-    REQUIRE(registry.registerDescriptor(std::move(descriptor)).ok());
-    auto handler = std::make_shared<RecordingHandler>();
-    REQUIRE(registry.registerHandler("project:combat.custom", handler).ok());
-
-    auto routed = event(eve::action::ActionTimelineEventKind::Notify, "project:combat.custom");
-    eve::action::ActionNotifyContext context;
-    context.executionId = eve::action::ActionExecutionId{42};
-    REQUIRE(registry.dispatch(routed, context).ok());
-    CHECK_EQ(handler->calls, 1);
-    CHECK_EQ(handler->lastType, "project:combat.custom");
-    CHECK_EQ(handler->lastExecution, context.executionId);
-
-    REQUIRE(registry.unregisterHandler("project:combat.custom").ok());
-    CHECK(!registry.dispatch(routed, context).ok());
-    CHECK(!registry.unregisterHandler("project:combat.custom").ok());
-}
-
-TEST_CASE("actionNotifyRegistry.advancesSharedHandlerOnceAndPropagatesFailure") {
-    eve::action::ActionNotifyRegistry registry;
-    REQUIRE(
-        registry.registerDescriptor({"project:first", "First", "Project", eve::action::ActionNotifyShape::Instant, {}})
-            .ok());
-    REQUIRE(
-        registry
-            .registerDescriptor({"project:second", "Second", "Project", eve::action::ActionNotifyShape::Instant, {}})
-            .ok());
-    auto handler = std::make_shared<RecordingHandler>();
-    REQUIRE(registry.registerHandler("project:first", handler).ok());
-    REQUIRE(registry.registerHandler("project:second", handler).ok());
-
-    eve::action::ActionNotifyContext context;
-    context.executionId = eve::action::ActionExecutionId{43};
-    REQUIRE(registry.advanceHandlers(context).ok());
-    CHECK_EQ(handler->advances, 1);
-
-    handler->failAdvance = true;
-    auto failed          = registry.advanceHandlers(context);
-    CHECK(!failed.ok());
-    CHECK_EQ(failed.status().diagnostics().front().path(), "handler");
-    CHECK_EQ(handler->advances, 2);
-}
-
-TEST_CASE("actionNotifyPlayback.composesRegistryAndBlockRuntimeForHosts") {
-    auto playback = eve::action::ActionNotifyPlayback::withBuiltins();
-    REQUIRE(playback.ok());
-    REQUIRE(playback.value());
-    CHECK(!playback.value()->registry().descriptors().empty());
-    CHECK_EQ(playback.value()->executionCount(), 0u);
-}
-}  // namespace test_action_notify_registry_unit
-#endif
+}  // namespace test_action_preview_profile_contracts

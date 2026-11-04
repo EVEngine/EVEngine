@@ -4,7 +4,7 @@
 persist animUi = {
     workspace = null, clip = null, mouseDown = false,
     status = "Loading preview clip...",
-    spaceWas = false, undoWas = false, redoWas = false,
+    presenter = null,
     frame = 0, screenshotSaved = false,
 };
 
@@ -19,11 +19,8 @@ function buildWorkspace() {
                                 "Create animation clip editor");
     requireResult(animUi.clip.configureWorkspace(animUi.workspace), "Compose workspace");
     animUi.status = "Seeded two-bone walk clip";
-    local dpi = win.getDPIScale();
-    animUi.workspace.setRegionSize("left", 220.0 / dpi);
-    animUi.workspace.setRegionSize("right", 340.0 / dpi);
-    animUi.workspace.setRegionSize("bottom", 230.0 / dpi);
-    animUi.workspace.layout(win.getWidth().tofloat() / dpi, win.getHeight().tofloat() / dpi);
+    animUi.presenter = EditorWorkspacePresenter(ui, animUi.workspace, animUi.clip);
+    animUi.presenter.layout(win, { left = 220.0, right = 340.0, bottom = 230.0 });
 }
 
 function panelSkeleton() {
@@ -46,37 +43,6 @@ function panelPreview() {
                 animUi.workspace.getRegionH("center") - 72.0);
 }
 
-function panelInspector() {
-    ui.text("Bone Transform", "inspector-title");
-    ui.text("", "selected-bone");
-    ui.text("", "revision");
-    ui.separator("inspector-sep-1");
-    ui.text("Position", "position-label");
-    ui.slider("X", 0.0, -4.0, 4.0, "position-x");
-    ui.slider("Y", 0.0, -4.0, 4.0, "position-y");
-    ui.slider("Z", 0.0, -4.0, 4.0, "position-z");
-    ui.text("Rotation (degrees)", "rotation-label");
-    ui.slider("X", 0.0, -180.0, 180.0, "rotation-x");
-    ui.slider("Y", 0.0, -180.0, 180.0, "rotation-y");
-    ui.slider("Z", 0.0, -180.0, 180.0, "rotation-z");
-    ui.text("Scale", "scale-label");
-    ui.slider("X", 1.0, 0.05, 3.0, "scale-x");
-    ui.slider("Y", 1.0, 0.05, 3.0, "scale-y");
-    ui.slider("Z", 1.0, 0.05, 3.0, "scale-z");
-    ui.beginToolbar("key-tools");
-    ui.iconButton("plus", "Set Key", "set-key");
-    ui.iconButton("minus", "Delete Key", "delete-key");
-    ui.end();
-    ui.slider("Key time", 0.0, 0.0, 2.0, "key-time");
-    ui.separator("inspector-sep-2");
-    ui.text("Clip", "clip-label");
-    ui.slider("Duration", animUi.clip.getDuration(), 0.25, 8.0, "duration");
-    ui.slider("Sample rate", animUi.clip.getSampleRate(), 1.0, 120.0, "sample-rate");
-    ui.checkbox("Loop", animUi.clip.getLoop(), "loop");
-    ui.slider("Mask", animUi.clip.getSelectedMaskWeight(), 0.0, 1.0, "mask");
-    ui.beginToolbar("inspector-history"); ui.iconButton("undo", "", "undo"); ui.iconButton("redo", "", "redo"); ui.end();
-}
-
 function panelTimeline() {
     ui.beginToolbar("transport");
     ui.iconButton("play", "", "play-pause"); ui.iconButton("stop", "", "stop");
@@ -90,89 +56,22 @@ function panelTimeline() {
 panelBuilders <- {
     ["animation.skeleton"]=panelSkeleton,
     ["animation.preview"]=panelPreview,
-    ["animation.inspector"]=panelInspector,
     ["animation.timeline"]=panelTimeline
 };
 
 function mountPanels() {
-    for (local i = 0; i < animUi.workspace.getPanelCount(); ++i) {
-        local id = animUi.workspace.getPanelId(i);
-        if (!(id in panelBuilders)) continue;
-        ui.beginBuild(); ui.beginWindow(animUi.workspace.getPanelTitle(i), "root");
-        panelBuilders[id](); ui.end(); ui.mountBuildAs(id); ui.select(id);
-        local region = animUi.workspace.getPanelRegion(i);
-        ui.setHostPos(animUi.workspace.getRegionX(region), animUi.workspace.getRegionY(region), 0.0, 0.0);
-        ui.setHostSize(animUi.workspace.getRegionW(region), animUi.workspace.getRegionH(region));
-        ui.setHostMovable(false);
-        ui.setHostResizable(false);
-        ui.setHostOverlay(false);
-    }
-    requireResult(animUi.clip.setViewport(animUi.workspace.getRegionW("bottom") - 20.0, 36.0, 120.0),
-                  "Configure dope-sheet viewport");
-}
+    animUi.presenter.status = animUi.status;
+    animUi.presenter.statusPanel = "animation.timeline";
+    animUi.presenter.statusWidget = "timeline-status";
+    animUi.presenter.mount(panelBuilders);
 
-function applyHistory(command) {
-    local result = command == "undo" ? animUi.clip.undo() : animUi.clip.redo();
-    animUi.status = result.ok ? command + " applied" : command + ": " + result.status.summary;
-}
-
-function eventParts(path) {
-    local slash = path.find("/");
-    return slash == null ? ["", path] : [path.slice(0, slash), path.slice(slash + 1)];
-}
-
-function handleUiEvents() {
-    local click = ui.consumeClick();
-    while (click != "") {
-        local event = eventParts(click); local host = event[0]; local id = event[1];
-        if (id == "play-pause") {
-            if (animUi.clip.isPlaying()) {
-                animUi.clip.pause(); animUi.status = "Preview paused";
-            } else {
-                animUi.clip.play(); animUi.status = "Preview playing";
-            }
-        } else if (id == "stop") {
-            animUi.clip.stop(); animUi.status = "Preview stopped";
-        } else if (id == "undo" || id == "redo") {
-            applyHistory(id);
-        } else if (id == "set-key") {
-            local result = animUi.clip.keySelectedBone();
-            animUi.status = result.ok ? "Key set at playhead" : result.status.summary;
-        } else if (id == "delete-key") {
-            local result = animUi.clip.deleteSelectedKey();
-            animUi.status = result.ok ? "Selected key deleted" : result.status.summary;
-        } else if (host == "animation.skeleton") {
-            local bone = id.find("bone-") == 0 ? id.slice(5) : "";
-            if (bone != "") {
-                requireResult(animUi.clip.selectBone(bone), "Select bone");
-                animUi.status = "Selected " + bone;
-            }
-        }
-        click = ui.consumeClick();
-    }
-
-    local changed = ui.consumeChange();
-    while (changed != "") {
-        local event = eventParts(changed); local host = event[0]; local id = event[1];
-        if (host == "animation.inspector") {
-            ui.select("animation.inspector");
-            local result = { ok = true, status = { summary = "" } };
-            if (id == "duration") result = animUi.clip.setDuration(ui.getValue("duration"));
-            else if (id == "sample-rate") result = animUi.clip.setSampleRate(ui.getValue("sample-rate"));
-            else if (id == "loop") result = animUi.clip.setLoop(ui.getChecked("loop"));
-            else if (id == "mask") result = animUi.clip.setMaskWeight(ui.getValue("mask"));
-            else if (id == "key-time") result = animUi.clip.moveSelectedKey(ui.getValue("key-time"));
-            else if (id.find("position-") == 0) result = animUi.clip.setSelectedPosition(
-                ui.getValue("position-x"), ui.getValue("position-y"), ui.getValue("position-z"));
-            else if (id.find("rotation-") == 0) result = animUi.clip.setSelectedRotation(
-                ui.getValue("rotation-x"), ui.getValue("rotation-y"), ui.getValue("rotation-z"));
-            else if (id.find("scale-") == 0) result = animUi.clip.setSelectedScale(
-                ui.getValue("scale-x"), ui.getValue("scale-y"), ui.getValue("scale-z"));
-            animUi.status = result.ok ? id + " committed · revision " + animUi.clip.getRevision()
-                                      : result.status.summary;
-        }
-        changed = ui.consumeChange();
-    }
+    animUi.presenter.actions["set-key"] <- true;
+    animUi.presenter.actions["delete-key"] <- true;
+    animUi.presenter.onClick = function(host, id) {
+        if (host == "animation.skeleton" && id.find("bone-") == 0)
+            animUi.presenter.checked(animUi.clip.selectBone(id.slice(5)));
+    };
+    requireResult(animUi.clip.setViewport(animUi.workspace.getRegionW("bottom") - 20.0, 36.0, 120.0), "Configure dope-sheet viewport");
 }
 
 function updateTimelinePointer() {
@@ -183,58 +82,20 @@ function updateTimelinePointer() {
     local y = ui.viewportMouseY("anim-dopesheet");
     if (down && !animUi.mouseDown) {
         local hit = animUi.clip.pointerDown(x, y);
-        animUi.status = hit.ok ? "Timeline " + animUi.clip.getSelectedBone() : hit.status.summary;
+        animUi.presenter.status = hit.ok ? "Timeline " + animUi.clip.getSelectedBone() : hit.status.summary;
     }
     animUi.mouseDown = down;
-}
-
-function updateKeyboardShortcuts() {
-    local space = keyboard.isDown("space") || keyboard.isDown("Space");
-    if (space && !animUi.spaceWas) {
-        if (animUi.clip.isPlaying()) animUi.clip.pause(); else animUi.clip.play();
-        animUi.status = "Space toggled preview";
-    }
-    animUi.spaceWas = space;
-    local control = keyboard.isDown("lctrl") || keyboard.isDown("rctrl") || keyboard.isDown("ctrl");
-    local undo = control && (keyboard.isDown("z") || keyboard.isDown("Z"));
-    local redo = control && (keyboard.isDown("y") || keyboard.isDown("Y"));
-    if (undo && !animUi.undoWas) applyHistory("undo");
-    if (redo && !animUi.redoWas) applyHistory("redo");
-    animUi.undoWas = undo; animUi.redoWas = redo;
 }
 
 function updateLabels() {
     ui.select("animation.preview");
     ui.setText("preview-status", format("%s  %.3f / %.3f s  %s",
         animUi.clip.isPlaying() ? "PLAYING" : "PAUSED",
-        animUi.clip.getPlayhead(), animUi.clip.getDuration(),
-        animUi.clip.getSelectedBone()));
-    ui.select("animation.inspector");
-    ui.setText("selected-bone", "Bone " + animUi.clip.getSelectedBone());
-    ui.setText("revision", "Revision " + animUi.clip.getRevision());
-    ui.setValue("duration", animUi.clip.getDuration());
-    ui.setValue("sample-rate", animUi.clip.getSampleRate());
-    ui.setChecked("loop", animUi.clip.getLoop());
-    ui.setValue("mask", animUi.clip.getSelectedMaskWeight());
-    ui.setValue("position-x", animUi.clip.getSelectedPositionX());
-    ui.setValue("position-y", animUi.clip.getSelectedPositionY());
-    ui.setValue("position-z", animUi.clip.getSelectedPositionZ());
-    ui.setValue("rotation-x", animUi.clip.getSelectedRotationX());
-    ui.setValue("rotation-y", animUi.clip.getSelectedRotationY());
-    ui.setValue("rotation-z", animUi.clip.getSelectedRotationZ());
-    ui.setValue("scale-x", animUi.clip.getSelectedScaleX());
-    ui.setValue("scale-y", animUi.clip.getSelectedScaleY());
-    ui.setValue("scale-z", animUi.clip.getSelectedScaleZ());
-    ui.setValue("key-time", animUi.clip.getSelectedKeyTime());
-    ui.setEnabled("delete-key", animUi.clip.hasSelectedKey());
-    ui.setEnabled("undo", animUi.clip.canUndo());
-    ui.setEnabled("redo", animUi.clip.canRedo());
+        animUi.clip.getPlayhead(), animUi.clip.getDuration(), animUi.clip.getSelectedBone()));
     ui.select("animation.skeleton");
     ui.setText("bone-selection", "Active: " + animUi.clip.getSelectedBone());
     ui.select("animation.timeline");
-    ui.setText("timeline-status", animUi.status);
-    ui.setEnabled("undo", animUi.clip.canUndo());
-    ui.setEnabled("redo", animUi.clip.canRedo());
+    ui.setEnabled("delete-key", animUi.clip.hasSelectedKey());
 }
 
 function drawPose() {
@@ -319,9 +180,9 @@ eve_init = function() {
 };
 
 eve_update = function(dt) {
-    handleUiEvents(); updateTimelinePointer(); updateKeyboardShortcuts();
+    animUi.presenter.update(keyboard, mouse.isDown(1), win.hasFocus()); updateTimelinePointer();
     local advanced = animUi.clip.update(dt);
-    if (!advanced.ok) animUi.status = advanced.status.summary;
+    if (!advanced.ok) animUi.presenter.checked(advanced);
     updateLabels();
 };
 
@@ -336,3 +197,5 @@ eve_render = function() {
         print("animation-clip-editor: saved animation-clip-editor.png\n");
     }
 };
+
+eve_quit = function() { if (animUi.presenter != null) animUi.presenter.close(); };

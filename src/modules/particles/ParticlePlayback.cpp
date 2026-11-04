@@ -1,6 +1,8 @@
 #include "particles/ParticleEmitter.h"
+#include "particles/ParticleRecording.h"
 
 #include "common/Module.h"
+#include "graphics/GpuParticles.h"
 #include "graphics/Graphics.h"
 
 #include <algorithm>
@@ -145,6 +147,8 @@ void ParticleEmitter::pause() {
 
 void ParticleEmitter::reset() {
     auto s               = sim();
+    for (int i = 0; i < s->alive; ++i)
+        recordParticleEvent(*config(), *s, s->particles[std::size_t(i)], ParticleRecordEventKind::Death);
     s->alive             = 0;
     s->emitAccum         = 0.f;
     s->distanceEmitAccum = 0.f;
@@ -157,7 +161,8 @@ void ParticleEmitter::reset() {
     auto g = gpuSim();
     if (g->residentHandle != 0) {
         auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-        if (gfx) gfx->resetGpuParticleEmitter(g->residentHandle);
+        if (gfx)
+            if (auto* gp = gfx->gpuParticles()) gp->resetGpuParticleEmitter(g->residentHandle);
     }
     g->residentActive = false;
     g->estimatedAlive = 0;

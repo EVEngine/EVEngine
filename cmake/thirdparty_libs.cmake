@@ -27,14 +27,14 @@ function(eve_thirdparty_libs out_var)
     endif()
 
     # The Emscripten aggregate only builds the simple vendored libraries; the
-    # heavy ones are skipped and most module code that would need them is
-    # compiled out (see EVENGINE_EXCLUDED_MODULE_FILES and the module guards).
+    # heavy ones are skipped. Browser audio uses Emscripten's OpenAL and
+    # Web Audio decoding instead of the vendored OpenAL Soft / codec archives.
     # FreeType is an exception: the browser build enables Emscripten's port,
     # which supplies its headers and archive without a conventional link name.
     # Asking for these groups on WASM must resolve to nothing, not to a missing
     # archive.
     set(_skip_on_emscripten
-        assimp medialoader_model medialoader_sound audio_codecs openal freetype poco poco_data)
+        assimp medialoader_model medialoader_sound audio_codecs freetype poco poco_data)
 
     set(_libs "")
     foreach(g IN LISTS ARGN)
@@ -75,7 +75,13 @@ function(eve_thirdparty_libs out_var)
                     list(APPEND _libs SDL2 SDL2main)
                 endif()
             else()
-                if(_win_debug)
+                if(BUILD_PLATFORM STREQUAL "webgpu" AND _win_debug)
+                    # Native WebGPU builds SDL_STATIC without SDL_SHARED;
+                    # SDL2 names the static-only archive SDL2d.lib.
+                    list(APPEND _libs SDL2d SDL2maind)
+                elseif(BUILD_PLATFORM STREQUAL "webgpu" AND WIN32)
+                    list(APPEND _libs SDL2md SDL2mainmd)
+                elseif(_win_debug)
                     list(APPEND _libs SDL2-staticd SDL2maind)
                 elseif(WIN32)
                     list(APPEND _libs SDL2-staticmd SDL2mainmd)
@@ -165,7 +171,7 @@ function(eve_thirdparty_libs out_var)
             # release SDK route, which must stay a single self-contained
             # executable. Both exist in one install tree, so no build order can
             # change which one the route gets. See
-            # cmake/patches/box2d-shared-library.patch.
+            # third-party/Box2D/Common/b2Settings.h.
             if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
                 list(APPEND _libs Box2D-dynamic)
             elseif(_win_debug)

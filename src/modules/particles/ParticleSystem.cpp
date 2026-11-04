@@ -1,14 +1,17 @@
+// eve-hot-path
 #include "particles/ParticleSystem.h"
-#include "particles/ParticleEmitter.h"
-#include "particles/ParticleConfig.h"
-#include "particles/ParticleRuntime.h"
+#include "common/Module.h"
+#include "filesystem/Filesystem.h"
+#include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
+#include "graphics/GpuParticles.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/RenderSystem.h"
-#include "graphics/Canvas.h"
-#include "filesystem/Filesystem.h"
-#include "common/Module.h"
+#include "particles/ParticleAppearance.h"
+#include "particles/ParticleConfig.h"
+#include "particles/ParticleEmitter.h"
+#include "particles/ParticleRuntime.h"
 
 #include <algorithm>
 #include <bit>
@@ -25,82 +28,20 @@ namespace {
 
 constexpr float kRad2Deg = 180.f / 3.14159265358979323846f;
 
-void sampleColor(const ParticleEmitter::Config &cfg, float t, Color &out) {
-    if (!cfg.colorGradient.empty()) {
-        float r, g, b, a;
-        cfg.colorGradient.sample(t, r, g, b, a);
-        out = Color(r, g, b, a);
-        return;
-    }
-    t = t < 0.f ? 0.f : (t > 1.f ? 1.f : t);
-    out.r = cfg.colorStart.r + (cfg.colorEnd.r - cfg.colorStart.r) * t;
-    out.g = cfg.colorStart.g + (cfg.colorEnd.g - cfg.colorStart.g) * t;
-    out.b = cfg.colorStart.b + (cfg.colorEnd.b - cfg.colorStart.b) * t;
-    out.a = cfg.colorStart.a + (cfg.colorEnd.a - cfg.colorStart.a) * t;
-}
-
-void sampleScale(const ParticleEmitter::Config &cfg, float t, float &scale) {
-    if (!cfg.sizeCurve.empty()) {
-        scale = cfg.sizeCurve.sample(t, 1.f);
-        return;
-    }
-    t = t < 0.f ? 0.f : (t > 1.f ? 1.f : t);
-    scale = cfg.sizeStart + (cfg.sizeEnd - cfg.sizeStart) * t;
-}
-
-void flipbookUV(const ParticleEmitter::Config &cfg, float frame, float &u0, float &v0, float &u1,
-                float &v1) {
-    const int total = cfg.hframes * cfg.vframes;
-    if (total <= 1 || cfg.hframes <= 0 || cfg.vframes <= 0) {
-        u0 = 0.f;
-        v0 = 0.f;
-        u1 = 1.f;
-        v1 = 1.f;
-        return;
-    }
-    int fi = int(std::floor(frame));
-    fi = ((fi % total) + total) % total;
-    const int col = fi % cfg.hframes;
-    const int row = fi / cfg.hframes;
-    const float iw = 1.f / float(cfg.hframes);
-    const float ih = 1.f / float(cfg.vframes);
-    u0 = float(col) * iw;
-    v0 = float(row) * ih;
-    u1 = u0 + iw;
-    v1 = v0 + ih;
-}
-
 void appendParticleItem(const ParticleEmitter::Config &cfg, const ParticleEmitter::Draw &draw,
                         const Particle &p, int order, std::vector<graphics::DrawItem2D> &out) {
-    const float t = p.lifetime > 0.f ? 1.f - (p.life / p.lifetime) : 1.f;
-    Color c;
-    sampleColor(cfg, t, c);
-    float scale;
-    sampleScale(cfg, t, scale);
-    scale *= p.size > 0.f ? p.size : 1.f;
-    const float w = cfg.particleW * scale;
-    const float h = cfg.particleH * scale;
-
+    const auto evaluated = evaluateParticleAppearance(cfg, p);
+    if (!evaluated) return;
+    const auto&          appearance = evaluated.value();
     graphics::DrawItem2D item;
-    item.x = p.x - w * 0.5f;
-    item.y = p.y - h * 0.5f;
-    item.w = w;
-    item.h = h;
-    if (cfg.renderMode == "stretched") {
-        // Elongate along the velocity direction (comet / streak style).
-        const float speed = std::sqrt(p.vx * p.vx + p.vy * p.vy);
-        const float len = std::max(w, speed * cfg.stretchFactor);
-        item.w = len;
-        item.rotation = std::atan2(p.vy, p.vx) * kRad2Deg;
-    } else if (cfg.renderMode == "axis") {
-        item.rotation = cfg.renderAxisDegrees;
-    } else {
-        item.rotation = p.rot * kRad2Deg;
-        if (!cfg.rotationCurve.empty()) item.rotation += cfg.rotationCurve.sample(t, 0.f);
-    }
+    item.x                    = appearance.x;
+    item.y                    = appearance.y;
+    item.w                    = appearance.w;
+    item.h                    = appearance.h;
+    item.rotation             = appearance.rotation;
     item.order = order;
     item.hasOrder = true;
-    item.color = c;
+    item.color                = appearance.color;
     item.layer = draw.layer;
     item.blend = draw.blend;
     item.texture = draw.texture;
@@ -113,7 +54,10 @@ void appendParticleItem(const ParticleEmitter::Config &cfg, const ParticleEmitte
     item.sceneColorDistortion = cfg.materialMode == "distortion";
     item.distortionStrength   = cfg.distortionStrength;
     if (draw.texture && (cfg.hframes > 1 || cfg.vframes > 1)) {
-        flipbookUV(cfg, p.frame, item.u0, item.v0, item.u1, item.v1);
+        item.u0    = appearance.u0;
+        item.v0    = appearance.v0;
+        item.u1    = appearance.u1;
+        item.v1    = appearance.v1;
         item.hasUV = true;
     }
     out.push_back(item);
@@ -237,7 +181,7 @@ graphics::GpuParticleSpawn gpuSpawn(const Particle& particle, std::uint32_t birt
 
 void deactivateResidentGpu(graphics::Graphics* gfx, ParticleEmitter::GpuSim& gpu) {
     if (gfx && gpu.residentHandle != graphics::kInvalidGpuParticleHandle)
-        gfx->releaseGpuParticleEmitter(gpu.residentHandle);
+        if (auto* gp = gfx->gpuParticles()) gp->releaseGpuParticleEmitter(gpu.residentHandle);
     gpu.residentHandle = graphics::kInvalidGpuParticleHandle;
     gpu.residentActive = false;
     gpu.estimatedAlive = 0;
@@ -253,10 +197,11 @@ eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *e
     auto cfg = emitter->config();
     auto sim = emitter->sim();
     auto gpu = emitter->gpuSim();
-    if (!gfx || !gfx->canSubmitGpuParticles()) return eve::Result<bool>::success(false);
+    if (!gfx || !(gfx->gpuParticles() && gfx->gpuParticles()->canSubmitGpuParticles()))
+        return eve::Result<bool>::success(false);
 
     if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle) {
-        gpu->residentHandle = gfx->createGpuParticleEmitter(std::uint32_t(sim->particles.size()));
+        gpu->residentHandle = gfx->gpuParticles()->createGpuParticleEmitter(std::uint32_t(sim->particles.size()));
         if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle) return eve::Result<bool>::success(false);
     }
 
@@ -318,7 +263,8 @@ eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *e
     update.localOffsetX += gpu->pendingWorldOffsetX;
     update.localOffsetY += gpu->pendingWorldOffsetY;
 
-    if (!gfx->updateGpuParticleEmitter(gpu->residentHandle, update, spawns.data(), std::uint32_t(spawns.size()))) {
+    if (!gfx->gpuParticles()->updateGpuParticleEmitter(gpu->residentHandle, update, spawns.data(),
+                                                       std::uint32_t(spawns.size()))) {
         // Before activation the CPU state remains authoritative and already
         // advanced. Once resident, a transient submit failure freezes state
         // rather than losing it through an implicit CPU migration.
@@ -445,6 +391,7 @@ eve::Result<void> runParticleSimulation(const eve::SimulationStep &step, bool le
         const bool wantsResident = cfg->gpuSimulation && gpuEligible;
         bool       handled       = false;
         if (wantsResident) {
+            sim->recording.invalidate();
             auto gpuAdvance = advanceResidentGpu(gfx, emitter, step, legacyControls);
             if (!gpuAdvance) return eve::Result<void>::failure(gpuAdvance.status());
             handled = std::move(gpuAdvance).takeValue();
@@ -549,7 +496,8 @@ int appendOneEmitter(graphics::Graphics& gfx, ParticleEmitter& emitter,
                            : cfg->sortMode == "youngest" ? graphics::GpuParticleSortMode::Youngest
                            : cfg->sortMode == "distance" ? graphics::GpuParticleSortMode::Distance
                                                          : graphics::GpuParticleSortMode::None;
-        if (gfx.drawGpuParticleEmitter(gpu->residentHandle, gpuDraw)) return gpu->estimatedAlive;
+        if (auto* gp = gfx.gpuParticles(); gp && gp->drawGpuParticleEmitter(gpu->residentHandle, gpuDraw))
+            return gpu->estimatedAlive;
         culled = true; return 0;
     }
     if (draw->canvas) usedCanvas = true;

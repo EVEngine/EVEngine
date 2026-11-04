@@ -1,21 +1,23 @@
 #pragma once
 #include "common/Export.h"
 
-
-#include "ik.hpp"
+#include <memory>
 
 namespace eve::ik {
 
+class Solver3D;
+
 /**
- * @brief Script-facing 3D skeleton + pose state (ik::skeleton3d + ik::ecs3d).
+ * @brief Script-facing 3D skeleton + pose state.
  * Local angles are yaw/pitch in the parent bone frame.
+ * @note Public headers intentionally hide the underlying ik.hpp types (Pimpl).
  */
 class EVENGINE_API_FOUNDATION Skeleton3D {
 public:
     /** @brief Creates an empty 3D skeleton with a root bone. */
     Skeleton3D();
     /** @brief Releases skeleton and pose state. */
-    ~Skeleton3D() = default;
+    ~Skeleton3D();
 
     Skeleton3D(const Skeleton3D &)            = delete;
     Skeleton3D &operator=(const Skeleton3D &) = delete;
@@ -37,10 +39,10 @@ public:
     /** @brief Rest length of the bone. */
     float getLength(int boneId) const;
     /** @brief Sets the rest length of the bone. */
-    void  setLength(int boneId, float length);
+    void setLength(int boneId, float length);
 
     /** @brief Sets the world-space bone position. */
-    void  setPosition(int boneId, float x, float y, float z);
+    void setPosition(int boneId, float x, float y, float z);
     /** @brief World-space X of the bone (or component). */
     float getX(int boneId) const;
     /** @brief World-space Y of the bone (or component). */
@@ -49,7 +51,7 @@ public:
     float getZ(int boneId) const;
 
     /** @brief Sets the bone forward orientation vector. */
-    void  setOrientation(int boneId, float x, float y, float z);
+    void setOrientation(int boneId, float x, float y, float z);
     /** @brief Orientation vector X. */
     float getOrientationX(int boneId) const;
     /** @brief Orientation vector Y. */
@@ -58,15 +60,14 @@ public:
     float getOrientationZ(int boneId) const;
 
     /** @brief Sets local hinge/yaw-pitch rotation (radians). */
-    void  setRotation(int boneId, float yaw, float pitch);
+    void setRotation(int boneId, float yaw, float pitch);
     /** @brief Local yaw in radians. */
     float getRotationYaw(int boneId) const;
     /** @brief Local pitch in radians. */
     float getRotationPitch(int boneId) const;
 
     /** @brief Sets joint angle limits for the bone. */
-    void setConstraints(int boneId, float minYaw, float minPitch, float maxYaw,
-                        float maxPitch);
+    void setConstraints(int boneId, float minYaw, float minPitch, float maxYaw, float maxPitch);
     /** @brief Removes joint limits from the bone. */
     void clearConstraints(int boneId);
     /** @brief True if the bone has joint limits. */
@@ -84,19 +85,12 @@ public:
     /** @brief Sum of bone lengths from root to boneId inclusive. */
     float totalLengthTo(int boneId) const;
 
-    ::ik::skeleton3d &native() { return sk_; }
-    ::ik::ecs3d      &state() { return state_; }
-    const ::ik::skeleton3d &native() const { return sk_; }
-    const ::ik::ecs3d      &state() const { return state_; }
-
 private:
-    void ensureSorted();
-    void ensureStateSize();
-    ::ik::bone3d *boneAt(int boneId) const;
-    void          requireBone(int boneId) const;
+    friend class Solver3D;
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
 
-    ::ik::skeleton3d sk_;
-    ::ik::ecs3d      state_;
+    void requireBone(int boneId) const;
 };
 
 }  // namespace eve::ik

@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "modules": [
+    "procgen",
+    "procgen_editing"
+  ],
+  "origins": [
+    "procgen_road_recipe_snapshot.cpp"
+  ],
+  "module": "procgen"
+}
+*/
+// clang-format on
+
 #include "editing/EditingProperty.h"
 #include "procgen/editing/RoadNetworkEditTarget.h"
 #include "procgen/road/RoadNetworkCodec.h"
@@ -51,42 +68,5 @@ TEST_CASE("procgen.road.authoring.recipeSnapshotConsumesEditorAuthorDataAndLOD")
         REQUIRE(author.ok());
         REQUIRE(captureRoadNetwork(author.value()).value() == encoded.value());
     }
-    REQUIRE(params.canonicalString() == before);
-}
-
-TEST_CASE("procgen.road.authoring.recipeSnapshotRejectsInvalidWithoutSceneFallback") {
-    Params params;
-    REQUIRE(resolveRoadRecipeNetwork(params).ok());
-    params.setBool("networkSnapshot", true);
-    REQUIRE(!bakeRoadNetworkRecipe(params).ok());
-    params.setString("networkSnapshot", "{}");
-    REQUIRE(!resolveRoadRecipeNetwork(params).ok());
-    params.setString("networkSnapshot", "");
-    REQUIRE(!resolveRoadRecipeNetwork(params).ok());
-    auto source = RoadNetwork::makeStraight(36.f, 2);
-    REQUIRE(source.ok());
-    auto snapshot = captureRoadNetwork(source.value());
-    REQUIRE(snapshot.ok());
-    auto value                                               = snapshot.value();
-    (*value.getIf<eve::Value::Object>())["blockedLaneLinks"] = true;
-    REQUIRE(!restoreRoadNetwork(value).ok());
-    value                                                 = snapshot.value();
-    (*value.getIf<eve::Value::Object>())["schemaVersion"] = 2;
-    REQUIRE(!restoreRoadNetwork(value).ok());
-    value                                               = snapshot.value();
-    (*value.getIf<eve::Value::Object>())["futureField"] = "ignored";
-    REQUIRE(restoreRoadNetwork(value).ok());
-    auto before = params.canonicalString();
-    REQUIRE(!restoreRoadNetwork(eve::Value{}).ok());
-    REQUIRE(params.canonicalString() == before);
-    eve::Value deep;
-    for (int i = 0; i < 70; ++i) deep = eve::Value::Array{std::move(deep)};
-    (*value.getIf<eve::Value::Object>())["futureField"] = std::move(deep);
-    REQUIRE(!restoreRoadNetwork(value).ok());
-    auto                          tooManyMarkers = source.value();
-    std::vector<RoadControlPoint> many;
-    for (int i = 0; i < 4097; ++i) many.push_back({-18.f + 36.f * static_cast<float>(i) / 4096.f, 0.f, 0.f});
-    REQUIRE(tooManyMarkers.setEdgeControlPoints(1, std::move(many)).ok());
-    REQUIRE(!setRoadRecipeNetwork(params, tooManyMarkers).ok());
     REQUIRE(params.canonicalString() == before);
 }

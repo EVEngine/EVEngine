@@ -372,7 +372,11 @@ void AmbientOcclusion::drawFullscreen(Graphics *gfx, Texture *source, Shader *sh
     const float dw = gfx->getCanvas() ? float(gfx->getCanvas()->getWidth()) : float(gfx->getWidth());
     const float dh =
         gfx->getCanvas() ? float(gfx->getCanvas()->getHeight()) : float(gfx->getHeight());
-    gfx->drawTexturedRectShader(source, shader, 0.f, 0.f, dw, dh, Color(1.f, 1.f, 1.f, 1.f));
+    // Compute/blur store depth in alpha, not coverage. Only overlays alpha-blend with the scene.
+    const bool storesDepth =
+        shader == ssaoShader_ || shader == hbaoShader_ || shader == gtaoShader_ || shader == blurShader_;
+    gfx->drawTexturedRectShaderUV(source, shader, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f, Color(1.f, 1.f, 1.f, 1.f),
+                                  false, storesDepth ? BlendMode::Opaque : BlendMode::Alpha);
 }
 
 void AmbientOcclusion::compute(Graphics *gfx, Texture *linearDepth) {

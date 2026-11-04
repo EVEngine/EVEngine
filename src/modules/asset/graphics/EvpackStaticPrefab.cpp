@@ -11,17 +11,89 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
-#include <functional>
+#include <cstring>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <limits>
 #include <map>
 #include <numeric>
 #include <optional>
+#include <vector>
+
+// Linux ARM64 CI (GCC aarch64 -O2 / EVENGINE_DEBUG_LEVEL=normal) miscompiles
+// transform+AABB math in this TU: worldT.z stays correct in the matrix, but
+// localBounds Z loses the root translation (mesh zmax=0 → AABB zmax=0 instead
+// of tz). Out-of-line helpers alone were not enough; cap this file at -O1 on
+// that toolchain. Windows ARM64 (MSVC) and Linux x86_64 are unaffected.
+#if defined(__GNUC__) && !defined(__clang__) && defined(__aarch64__)
+#pragma GCC optimize("O1")
+#endif
 
 namespace eve::asset_graphics {
 namespace {
 using MaterialData = detail::CookedMaterial;
+
+// Compose Ry*Rx*Rz*S then write translation explicitly. Building via
+// glm::translate(...)*rotate*... under GCC aarch64 -O2 has been observed to
+// drop the Z translation component inside the large prefab load() body while
+// X/Y survive (Linux ARM64 CI: authored z=-3 → localBounds Z unshifted).
+#if defined(__GNUC__) && !defined(__clang__)
+__attribute__((noinline))
+#if defined(__aarch64__)
+__attribute__((optimize("O1")))
+#endif
+#endif
+glm::mat4 nodeLocalTransform(const scene::NodeDesc& node) {
+    const float tx = node.x, ty = node.y, tz = node.z;
+    const float yaw = node.yaw, pitch = node.pitch, roll = node.roll;
+    const float sx = node.sx, sy = node.sy, sz = node.sz;
+    glm::mat4 local(1.f);
+    local = glm::rotate(local, glm::radians(yaw), glm::vec3(0.f, 1.f, 0.f));
+    local = glm::rotate(local, glm::radians(pitch), glm::vec3(1.f, 0.f, 0.f));
+    local = glm::rotate(local, glm::radians(roll), glm::vec3(0.f, 0.f, 1.f));
+    local = glm::scale(local, glm::vec3(sx, sy, sz));
+    local[3][0] = tx;
+    local[3][1] = ty;
+    local[3][2] = tz;
+    return local;
+}
+
+// Expand an AABB by the eight corners of `mesh` after an affine transform.
+// Copy the matrix through a plain float[16] and add translation in a second
+// statement so a zero mesh-axis component cannot fold away the translation
+// term under aggressive GCC scheduling (seen with glm::mat4 * glm::vec4).
+#if defined(__GNUC__) && !defined(__clang__)
+__attribute__((noinline))
+#if defined(__aarch64__)
+__attribute__((optimize("O1")))
+#endif
+#endif
+bool expandAabbByTransformedCorners(const glm::mat4& matrix, const std::array<float, 6>& mesh,
+                                    std::array<float, 6>& aabb) {
+    alignas(16) float m[16];
+    std::memcpy(m, glm::value_ptr(matrix), sizeof(m));
+    // Column-major: translation is m[12], m[13], m[14].
+    const float tx = m[12], ty = m[13], tz = m[14];
+    for (unsigned corner = 0; corner < 8; ++corner) {
+        const float x = mesh[(corner & 1u) ? 3u : 0u];
+        const float y = mesh[(corner & 2u) ? 4u : 1u];
+        const float z = mesh[(corner & 4u) ? 5u : 2u];
+        float px = m[0] * x + m[4] * y + m[8] * z;
+        float py = m[1] * x + m[5] * y + m[9] * z;
+        float pz = m[2] * x + m[6] * y + m[10] * z;
+        px += tx;
+        py += ty;
+        pz += tz;
+        if (!std::isfinite(px) || !std::isfinite(py) || !std::isfinite(pz)) return false;
+        aabb[0] = std::min(aabb[0], px);
+        aabb[1] = std::min(aabb[1], py);
+        aabb[2] = std::min(aabb[2], pz);
+        aabb[3] = std::max(aabb[3], px);
+        aabb[4] = std::max(aabb[4], py);
+        aabb[5] = std::max(aabb[5], pz);
+    }
+    return true;
+}
 }  // namespace
 
 struct EvpackStaticPrefab::Impl {
@@ -301,26 +373,43 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
         out->impl_->placementBounds[axis]     = std::numeric_limits<float>::max();
         out->impl_->placementBounds[axis + 3] = std::numeric_limits<float>::lowest();
     }
-    std::map<SceneObjectId, glm::mat4>                                      transforms;
-    std::map<SceneObjectId, glm::mat4>                                      placementTransforms;
-    std::function<void(const scene::NodeDesc&, glm::mat4, glm::mat4, bool)> walk =
-        [&](const scene::NodeDesc& node, glm::mat4 parent, glm::mat4 placedParent, bool root) {
-            if (!node.visible) return;
-            auto local = glm::translate(glm::mat4(1), glm::vec3(node.x, node.y, node.z));
-            local      = glm::rotate(local, glm::radians(node.yaw), glm::vec3(0, 1, 0));
-            local      = glm::rotate(local, glm::radians(node.pitch), glm::vec3(1, 0, 0));
-            local      = glm::rotate(local, glm::radians(node.roll), glm::vec3(0, 0, 1));
-            local      = glm::scale(local, glm::vec3(node.sx, node.sy, node.sz));
-            auto world = parent * local;
-            auto placed =
-                placedParent * (root ? glm::scale(glm::mat4(1), glm::vec3(node.sx, node.sy, node.sz)) : local);
-            transforms.emplace(node.persistentId, world);
-            placementTransforms.emplace(node.persistentId, placed);
-            for (const auto& child : node.children) walk(child, world, placed, false);
-        };
+    std::map<SceneObjectId, glm::mat4> transforms;
+    std::map<SceneObjectId, glm::mat4> placementTransforms;
+    // Iterative walk (no std::function / by-value mat4 recursion): under GCC
+    // aarch64 -O2 the prior recursive lambda + glm::translate path dropped Z.
+    struct WalkFrame {
+        const scene::NodeDesc* node;
+        glm::mat4              parent;
+        glm::mat4              placedParent;
+        bool                   root;
+    };
+    std::vector<WalkFrame> stack;
+    stack.reserve(scene.value().root.children.size());
     // The template decoder owns an identity-only synthetic container; its children
     // are the authored source roots whose poses the placement convention replaces.
-    for (const auto& sourceRoot : scene.value().root.children) walk(sourceRoot, glm::mat4(1), glm::mat4(1), true);
+    for (const auto& sourceRoot : scene.value().root.children)
+        stack.push_back(WalkFrame{&sourceRoot, glm::mat4(1.f), glm::mat4(1.f), true});
+    while (!stack.empty()) {
+        const WalkFrame frame = stack.back();
+        stack.pop_back();
+        const scene::NodeDesc& node = *frame.node;
+        if (!node.visible) continue;
+        const glm::mat4 local = nodeLocalTransform(node);
+        const glm::mat4 world = frame.parent * local;
+        const glm::mat4 placed =
+            frame.placedParent *
+            (frame.root ? glm::scale(glm::mat4(1.f), glm::vec3(node.sx, node.sy, node.sz)) : local);
+        // Catch lost root translation before bounds (GCC aarch64 -O2 regression probe).
+        if (frame.root && (std::fabs(world[3][0] - node.x) > 1e-4f || std::fabs(world[3][1] - node.y) > 1e-4f ||
+                           std::fabs(world[3][2] - node.z) > 1e-4f))
+            return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, "prefab root world translation lost during hierarchy walk", {}, {},
+                "asset.graphics.prefab"));
+        transforms.emplace(node.persistentId, world);
+        placementTransforms.emplace(node.persistentId, placed);
+        for (auto it = node.children.rbegin(); it != node.children.rend(); ++it)
+            stack.push_back(WalkFrame{&(*it), world, placed, false});
+    }
     EvpackGraphicsLoader meshLoader(reader, meshes);
     EvpackImageLoader    imageLoader(reader, images);
     for (const auto& binding : scene.value().renderers) {
@@ -370,22 +459,11 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
         const auto& bounds          = out->impl_->meshBounds.at(meshKey);
         const auto& matrix          = transforms.at(binding.object);
         const auto& placementMatrix = placementTransforms.at(binding.object);
-        for (unsigned corner = 0; corner < 8; ++corner) {
-            const auto p      = matrix * glm::vec4(bounds[(corner & 1) ? 3 : 0], bounds[(corner & 2) ? 4 : 1],
-                                                   bounds[(corner & 4) ? 5 : 2], 1.f);
-            const auto placed = placementMatrix * glm::vec4(bounds[(corner & 1) ? 3 : 0], bounds[(corner & 2) ? 4 : 1],
-                                                            bounds[(corner & 4) ? 5 : 2], 1.f);
-            for (unsigned axis = 0; axis < 3; ++axis) {
-                if (!std::isfinite(p[axis]) || !std::isfinite(placed[axis]))
-                    return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(Diagnostic::error(
-                        DiagnosticCode::InvalidArgument, "transformed prefab bounds are not representable", {}, {},
-                        "asset.graphics.prefab"));
-                out->impl_->localBounds[axis]         = std::min(out->impl_->localBounds[axis], p[axis]);
-                out->impl_->localBounds[axis + 3]     = std::max(out->impl_->localBounds[axis + 3], p[axis]);
-                out->impl_->placementBounds[axis]     = std::min(out->impl_->placementBounds[axis], placed[axis]);
-                out->impl_->placementBounds[axis + 3] = std::max(out->impl_->placementBounds[axis + 3], placed[axis]);
-            }
-        }
+        if (!expandAabbByTransformedCorners(matrix, bounds, out->impl_->localBounds) ||
+            !expandAabbByTransformedCorners(placementMatrix, bounds, out->impl_->placementBounds))
+            return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "transformed prefab bounds are not representable", {}, {},
+                "asset.graphics.prefab"));
         out->impl_->hasLocalBounds = true;
         out->impl_->draws.push_back({transforms.at(binding.object), placementTransforms.at(binding.object),
                                      out->impl_->meshLeases.at(meshKey), image, std::move(parameters).takeValue(),

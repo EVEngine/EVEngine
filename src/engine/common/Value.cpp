@@ -1,11 +1,13 @@
 #include "common/Value.h"
 #include "common/Assert.h"
+#include "common/ValueRead.h"
 
 #include "common/Json.h"
 
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
+#include <limits>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -19,6 +21,91 @@ template class std::map<std::string, eve::Value>;
 #endif
 
 namespace eve {
+
+Result<std::string> readStringMember(const Value::Object& object, std::string_view name) {
+    const auto  found = object.find(std::string(name));
+    const auto* text  = found == object.end() ? nullptr : found->second.getIf<std::string>();
+    if (!text)
+        return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::ParseError, "expected a string field"));
+    return Result<std::string>::success(*text);
+}
+
+Result<std::string> readNonEmptyStringMember(const Value::Object& object, std::string_view name) {
+    auto text = readStringMember(object, name);
+    if (!text || text.value().empty())
+        return Result<std::string>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "expected a nonempty string field"));
+    return text;
+}
+
+Result<int> readIntValue(const Value& value) {
+    const auto* integer = value.getIf<std::int64_t>();
+    if (!integer)
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, "expected an Int64 value"));
+    if (*integer < std::numeric_limits<int>::min() || *integer > std::numeric_limits<int>::max())
+        return Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "integer exceeds int range"));
+    return Result<int>::success(static_cast<int>(*integer));
+}
+
+Result<bool> readBoolValue(const Value& value) {
+    const auto* boolean = value.getIf<bool>();
+    if (!boolean)
+        return Result<bool>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, "expected a Bool value"));
+    return Result<bool>::success(*boolean);
+}
+
+Result<std::int64_t> readInt64Value(const Value& value) {
+    const auto* integer = value.getIf<std::int64_t>();
+    if (!integer)
+        return Result<std::int64_t>::failure(
+            Diagnostic::error(DiagnosticCode::TypeMismatch, "expected an Int64 value"));
+    return Result<std::int64_t>::success(*integer);
+}
+
+Result<std::uint32_t> readUInt32Value(const Value& value) {
+    auto integer = readInt64Value(value);
+    if (!integer) return Result<std::uint32_t>::failure(integer.status());
+    if (integer.value() < 0 || static_cast<std::uint64_t>(integer.value()) > std::numeric_limits<std::uint32_t>::max())
+        return Result<std::uint32_t>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "integer exceeds UInt32 range"));
+    return Result<std::uint32_t>::success(static_cast<std::uint32_t>(integer.value()));
+}
+
+Result<double> readNumericDoubleValue(const Value& value) {
+    if (const auto* integer = value.getIf<std::int64_t>())
+        return Result<double>::success(static_cast<double>(*integer));
+    if (const auto* number = value.getIf<double>()) return Result<double>::success(*number);
+    return Result<double>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, "expected Int64 or Double"));
+}
+
+Result<float> readFiniteFloatValue(const Value& value) {
+    double number = 0.0;
+    if (const auto* integer = value.getIf<std::int64_t>())
+        number = static_cast<double>(*integer);
+    else if (const auto* real = value.getIf<double>())
+        number = *real;
+    else
+        return Result<float>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, "expected Integer or Double"));
+    const double maximum = static_cast<double>(std::numeric_limits<float>::max());
+    if (!std::isfinite(number) || number < -maximum || number > maximum)
+        return Result<float>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "number exceeds finite Float range"));
+    return Result<float>::success(static_cast<float>(number));
+}
+
+Result<json::UnsignedIntegerScan> scanUnsignedStringValue(const Value& value) {
+    const auto* text = value.getIf<std::string>();
+    if (!text || text->empty())
+        return Result<json::UnsignedIntegerScan>::failure(
+            Diagnostic::error(DiagnosticCode::ParseError, "expected a nonempty unsigned decimal string"));
+    return json::scanUnsignedInteger(*text, json::UnsignedIntegerSyntax::Decimal);
+}
+
+Result<json::UnsignedIntegerScan> scanUnsignedStringMember(const Value::Object& object, std::string_view name) {
+    auto text = readNonEmptyStringMember(object, name);
+    if (!text) return Result<json::UnsignedIntegerScan>::failure(text.status());
+    return json::scanUnsignedInteger(text.value(), json::UnsignedIntegerSyntax::Decimal);
+}
 
 Value::Value() noexcept = default;
 Value::Value(std::nullptr_t) {}

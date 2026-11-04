@@ -17,7 +17,72 @@ Evolutionary Vision Engine
 
 [English](Readme.en.md)
 
+## 简介
+
+**EVEngine（Evolutionary Vision Engine）是一个面向快速迭代与人机协作的开源游戏引擎，以 C++20 和 Vulkan 为基础，用 EveScript（兼容 Squirrel）编写游戏逻辑，支持 2D、第三人称 3D 与 2D/3D 混合游戏。**
+
+项目的目标是缩短「想法 → 可运行的玩法 → 观察与调试 → 修改验证」的距离。让个人开发者和小团队用脚本快速表达玩法，用原生模块承担渲染与模拟，再让编辑工具和 AI Agent 参与实际运行、观察与验证，从原型持续迭代到可发布的游戏。
+
+### 核心特色
+
+- **像写脚本一样开始做游戏。** 类似 LÖVE 的直接运行方式，一个普通目录里的 `config.nut` 与 `main.nut` 就是游戏入口。下载预编译 SDK 即可运行；需要扩展性能代码时，再通过 SDK 的 C++ 动态库插件接入引擎模块。见 [EveScript 教程](docs/usr/EVESCRIPT.md)与[原生插件](examples/native-plugin/)。
+- **边运行、边编辑、边调试。** 内置资源管理与脚本、资源热重载，支持暂停游戏循环、DAP 调试和开发快照，方便反复修改和验证事件、逻辑与过场。声明式 UI 与游戏共享运行时，可以用脚本制作专属编辑工具；脚本类扫描与属性面板支持查看、编辑实例字段，面板可同步显示属性变化。见 [DevLab](examples/devlab/) 与[地形编辑器](examples/terrain-editor/)。
+- **AI 能看到游戏，也能通过接口操作游戏。** 桌面 MCP 工具覆盖脚本 API 查询、错误诊断、状态检查、调试和引擎截图，还提供实体几何多视图、帧缓冲检查与图像拼图，帮助 Agent 根据实际画面定位问题。游戏可以声明操作与观察接口供 Agent 试玩；独立 `eve mcp` 宿主支持创建原生编辑窗口。见 [AI 与 MCP](docs/dev/AI与MCP支持.md)、[AI Game](examples/ai-game/) 和 [AI Editor](examples/ai-editor/)。
+- **2D 资产可以进入真正的 3D 场景。** 除常规 2D 与 3D 渲染外，HD-2D 支持将 Tilemap 挤出为立体地形，把精灵动画作为面向摄像机的角色放入 3D 世界，并接入深度与阴影；也提供 Avatar 分层渲染和 Sprite Stacking，便于组合不同的美术表现。见 [HD-2D 河畔场景](examples/hd2d-riverside/) 与[渲染画廊](docs/images/examples/README.md)。
+- **把可交互的模拟做成玩法材料。** PixelWorld 提供分块的沙、水、火焰等像素物质模拟，以及材料反应、热传导和相变；配套命令回放、检查点分歧诊断与兴趣区增量传输。几何破碎系统则用预切几何、连接图和场驱动断边构建可破坏物体，另有流体、布料与粒子系统。见 [PixelWorld](examples/pixelworld/)、[几何破碎](examples/destruction-basic/) 与[分块破碎](examples/destruction-clusters/)。
+- **角色动画兼顾资源复用与程序控制。** 骨骼动画包含状态机、混合、Root Motion、IK、骨骼映射重定向和 Motion Matching；控制论程序动画支持用目标、阻尼和冲量驱动动态响应。见[动画手册](docs/usr/modules/animation.md)、[重定向示例](examples/ironwarden-retarget/) 与[攀爬 / Motion Matching](examples/climbing-motion-matching/)。
+
+### 内置系统
+
+引擎按模块组织渲染、模拟、玩法与工具，构建时可按配置选择能力。具体接口与接线方式见[模块手册](docs/usr/MODULES.md)。
+
+- **场景与表现：** Tilemap 与地图编辑、2D/3D 摄像机、HD-2D、Avatar 分层、Sprite Stacking、3D 模型与骨骼动画、粒子、UI、音频。
+- **物理与世界：** Box2D / Box3D 物理、流体、绳索与布料、几何破碎、像素物质世界、程序化生成、六边形地图、建筑放置。
+- **玩法与 AI：** RPG 属性 / 效果 / 技能、战斗、背包与装备、对话、NPC 状态树与感知、RTS、战棋、武器与载具。
+- **数据与开发：** 虚拟文件系统、资源导入与 Cook、SQLite / JSON 与存档接口、本地化、网络、脚本 ECS、热重载、运行时编辑与 AI/MCP 工具。
+
+用这些可组合的系统搭起 RPG、动作或策略玩法，再在同一个运行环境里持续编辑、调试与验证，是 EVEngine 的核心开发思路。可从[用户指南](docs/usr/README.md)和可运行示例入手，脚本接口以对应版本的 API 目录为准。
+
 ## 文档导航
+- 想先直观感受引擎的渲染效果？浏览[示例渲染画廊](docs/images/examples/README.md)——每张截图都由引擎把交换链上实际呈现的一帧原样输出。
+- [游戏开发者文档](docs/usr/README.md)：下载引擎、创建并运行游戏、调试与打包发布；[模块使用手册](docs/usr/MODULES.md) 逐个说明脚本 API 和示例。
+- [在线 API 参考（Doxygen）](https://evengine.github.io/EVEngine/)：随 GitHub Pages 持续发布，包含 C++ API 与用户手册。
+- [开发者文档](docs/dev/README.md)：面向引擎维护者与贡献者，包含架构、模块设计、测试策略与实施记录。
+
+### Intel macOS x86_64 原生构建
+
+在 Intel Mac 上初始化子模块（`make init/submodules`），安装 Xcode 命令行工具、
+CMake、Ninja 和支持 x86_64 的 Vulkan SDK（含 MoltenVK），然后分别构建：
+
+```sh
+make build/macosx-x86_64-debug JOBS=4
+make build/macosx-x86_64 JOBS=4
+```
+
+这两个入口显式设置 `CMAKE_OSX_ARCHITECTURES=x86_64`，最低目标版本为 macOS 13.3，
+满足浮点数 `std::format` 所需的系统标准库版本；同时检查宿主、目标和编译器，拒绝其他平台或架构。
+引擎使用 `build/macosx-x86_64[-debug]`；源码依赖构建和安装分别使用
+`build/third-party/macosx-x86_64[-debug]` 和
+`build/third-party-binary/macosx-x86_64[-debug]`。
+预编译依赖按 `macosx-x86_64-Release` 选择，Debug 引擎也使用 Release 依赖。
+只构建依赖可用 `make deps/macosx-x86_64[-debug]`；运行测试可用
+`make test/macosx-x86_64[-debug]`。原有 `make debug` 默认入口保持不变。
+
+CI 使用 `macos-15-intel` 原生 runner，按 `build_type` 选择 Debug、Release 或两者，
+与 Windows ARM64 一样验证引擎及测试程序的编译和链接，要求对应预编译依赖可用。
+编译检查不运行图形测试；SDK 发布另外在两种架构的原生 runner 上验证原生插件和打包游戏。
+
+分别生成 SDK：
+
+```sh
+make sdk/macosx-arm64 JOBS=4
+make sdk/macosx-x86_64 JOBS=4
+```
+
+Debug SDK 对应 `sdk/macosx-arm64-debug` 和 `sdk/macosx-x86_64-debug`。
+发布包分别命名为 `eve-sdk-macosx-arm64-<版本>.zip` 和
+`eve-sdk-macosx-x86_64-<版本>.zip`，选择与目标 Mac CPU 匹配的包。
+`TARGET_PLATFORM` 保持 `macosx`，`TARGET_ARCHITECTURE` 标记 CPU 架构。
 
 - 想先直观感受引擎的渲染效果？浏览[示例渲染画廊](docs/images/examples/README.md)——每张截图都由引擎把交换链上实际呈现的一帧原样输出。
 - [游戏开发者文档](docs/usr/README.md)：下载引擎、创建并运行游戏、调试与打包发布；[模块使用手册](docs/usr/MODULES.md) 逐个说明脚本 API 和示例。
@@ -25,43 +90,6 @@ Evolutionary Vision Engine
 - [开发者文档](docs/dev/README.md)：面向引擎维护者与贡献者，包含架构、模块设计、测试策略与实施记录。
 
 > **给游戏开发者**：使用 EVEngine 做游戏**不需要编译引擎**。请直接到[官网发布页](https://github.com/EVEngine/EVEngine/releases)下载对应平台的预编译 SDK，解压即可开始创作——无需安装 Git、CMake、C++ 编译器或 Vulkan SDK。只有想修改引擎本身的开发者才需要阅读下文“从源码构建”。
-
-## 简介
-
-针对很多游戏引擎开发效率低、难以调试、难以动态快速实现游戏原型的问题，我们设计了一款非常简单好用的游戏引擎。它主要提供 2D、第三人称 3D 与 2D/3D 混合的游戏组件能力，不提供复杂 3D 引擎中的场景管理等重量级功能。
-
-设计思路：
-
-> 状态图例：✅ = 已落地　🟡 = 部分落地　🛠 = 规划中（未实现）
-
-1. ✅ 采用类似 Love2D 的解析式引擎，可以直接加载脚本和数据；
-2. ✅ 内部有众多 C++ 编写的高性能模块，你还可以把自己的 C++ 库编译成动态链接库与这些模块直接交互（见 `examples/native-plugin`）；
-3. 🟡 有完整的开发环境：自己写的逻辑可以直接用 GUI 工具编辑，且编辑器运行时就是游戏运行时——只有发布用的运行时才会裁剪开发工具（也可以选择保留，供玩家二次创作；脚本可现场生成编辑用 GUI，见 `examples/terrain-editor`）；
-4. ✅ 内置资产管理、热重载，无需额外管线；
-5. 🛠 可扫描类并自动为其生成编辑用 GUI（属性反射尚未落地；当前 `editor.Inspector` 为手动登记字段，见 Roadmap）；
-6. 🟡 GUI 可以即时根据脚本动态创建和同步（声明式 `ui` 模块 + 热重载；反射式双向绑定规划中）；
-7. ✅ 可暂停游戏循环进行调试（`eve run --debug`，F 键 / DAP / 快照，见 `examples/devlab`）；
-8. 🟡 拥有众多独立状态机模型（动画状态机等）；「修改代码 → 局部状态机自动热更新」的系统化支持规划中；
-9. ✅ 支持 3D 与 2D 混合渲染。
-
-> 想最快体验第 3 / 4 / 7 条：`make devlab`（内置开发者体验示例，跑一遍 F4 / F6 / F7 / F9 与热重载）。
-
-内置系统：
-
-1. 2D tilemap——含可扩展的地图编辑器；
-2. 2D 摄像机；
-3. 简单的数据库；
-4. Box2D / Box3D 物理；
-5. RPG 框架；
-6. 可扩展的战斗模型组件；
-7. 对话框及脚本；
-8. Avatar 分层渲染；
-9. 2D 流体引擎（`Physics.newFluid2D`；另含可交互布料 `newCloth`）；
-10. 粒子系统；
-11. Sprite-stacking 伪 3D 技术；
-12. 真实 3D 模型渲染。
-
-支持以最简单的方式实现一个 RPG 游戏，并提供对事件、逻辑、过场脚本等快速编辑调试的功能。例如你可以修改脚本中的某个函数并反复执行，实时观察效果（热更新）。
 
 ## 快速开始（游戏开发者：下载即用，无需编译）
 
@@ -73,7 +101,8 @@ Evolutionary Vision Engine
 |----------|----------|------|
 | Windows | `eve-sdk-win32-<版本>.zip` | Windows 10/11 x64 |
 | Linux | `eve-sdk-linux-<版本>.zip` | Ubuntu 20.04+ 等（需 Vulkan 驱动） |
-| macOS | `eve-sdk-macosx-<版本>.zip` | macOS 12+（Apple Silicon / Intel） |
+| macOS ARM64 | `eve-sdk-macosx-arm64-<版本>.zip` | macOS 13.3+，Apple Silicon |
+| macOS x86_64 | `eve-sdk-macosx-x86_64-<版本>.zip` | macOS 13.3+，Intel |
 | Android | `eve-sdk-android-<版本>.zip` | 在开发机上组装 arm64 APK |
 | iOS | `eve-sdk-ios-<版本>.zip` | 在 macOS 开发机上组装 arm64 .app |
 
@@ -169,7 +198,7 @@ make build/win32-debug CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=SOURCE"
 macOS 通用架构和自定义 sanitizer/code-model 构建使用源码。`PREBUILT` 则要求目标有预编译包。
 原有 `EVENGINE_THIRD_PARTY_BINARY_DIR` 仍可指定兼容的离线/本机依赖目录。
 升级依赖时，先等 third-party 独立 release 上传完成，再更新引擎中的 tag 和提交两个固定值。
-依赖补丁由 third-party 仓库维护；引擎自有 `external/ECS.hpp`、`external/zeroerr` 的补丁留在本仓库。
+third-party 管理稳定依赖；ECS 和 zeroerr 保留在 external 下独立更新，修改直接进入各自源码仓库。引擎不再保留依赖覆盖头文件或补丁。
 
 zip 包含头文件、静态/动态库、运行时文件、版本信息和许可文件。仍需安装平台构建工具、
 Vulkan SDK、系统开发库，并初始化引擎子模块；配置时也会拉取 ImGui 等直接参与引擎编译的源码。
@@ -218,10 +247,10 @@ sudo apt install -y \
 
 | 组件 | 推荐配置 |
 |------|----------|
-| 操作系统 | macOS 12+（Apple Silicon / Intel） |
+| 操作系统 | macOS 13.3+（Apple Silicon / Intel，使用对应架构的 SDK） |
 | 工具链 | **Xcode Command Line Tools**（`xcode-select --install`） |
 | CMake | Homebrew：`brew install cmake`（≥ 3.21） |
-| Vulkan | 从 [LunarG](https://vulkan.lunarg.com/) 安装 **macOS Vulkan SDK**（内含 **MoltenVK**），仅**构建/开发**需要；`dist/eve-sdk/macosx` 发布包已内置 Vulkan loader + MoltenVK，玩家机器无需再装 SDK |
+| Vulkan | 从 [LunarG](https://vulkan.lunarg.com/) 安装 **macOS Vulkan SDK**（内含 **MoltenVK**），仅**构建/开发**需要；`dist/eve-sdk/macosx-<arm64|x86_64>` 发布包已内置 Vulkan loader + MoltenVK，玩家机器无需再装 SDK |
 
 配置环境（每次新开终端执行，或写入 `~/.zshrc`）：
 
@@ -587,7 +616,7 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
    Makefile 默认 `-j 32`。机器核心较少时可改为 `-j$(nproc)`（Linux）/`-j$(sysctl -n hw.ncpu)`（macOS）或较小数字，避免内存不足。
 
 6. **macOS 窗口/渲染失败**  
-   如果报错是 `Installed Vulkan doesn't implement the VK_KHR_surface extension`（SDL 原文），说明运行时可用的 Vulkan 没有实现 surface 扩展，macOS 上即 MoltenVK 未被加载。**发布包**请确认把 `dist/eve-sdk/macosx` 的 `lib/` 一起发给玩家（内含 `libvulkan.1.dylib`、`libMoltenVK.dylib`、`MoltenVK_icd.json`），eve 启动时会自动指向这些文件（`platform/macosx` 的 `bootstrapBundledVulkan`），玩家无需安装 SDK。**开发构建**请确认 `VK_ICD_FILENAMES` 指向 MoltenVK ICD（`setup-env.sh` 会设置），且 SDK 的 `lib` 在 `DYLD_LIBRARY_PATH` 中。引擎通过 SDL2 Vulkan surface + MoltenVK 运行，无需单独写 Metal 后端。
+   如果报错是 `Installed Vulkan doesn't implement the VK_KHR_surface extension`（SDL 原文），说明运行时可用的 Vulkan 没有实现 surface 扩展，macOS 上即 MoltenVK 未被加载。**发布包**请确认把 `dist/eve-sdk/macosx-<arm64|x86_64>` 的 `lib/` 一起发给玩家（内含 `libvulkan.1.dylib`、`libMoltenVK.dylib`、`MoltenVK_icd.json`），eve 启动时会自动指向这些文件（`platform/macosx` 的 `bootstrapBundledVulkan`），玩家无需安装 SDK。**开发构建**请确认 `VK_ICD_FILENAMES` 指向 MoltenVK ICD（`setup-env.sh` 会设置），且 SDK 的 `lib` 在 `DYLD_LIBRARY_PATH` 中。引擎通过 SDL2 Vulkan surface + MoltenVK 运行，无需单独写 Metal 后端。
 
 7. **Android APK / 真机**  
    确认 NDK 版本与 Makefile 一致；`local.properties` 的 `sdk.dir` 正确；设备开启 USB 调试且 `adb devices` 可见。首版要求真机 Vulkan；无设备时至少验证 `make build/android-debug` 产出 APK。

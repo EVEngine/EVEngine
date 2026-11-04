@@ -44,13 +44,15 @@ void exposeAnimPlayerBindings(ssq::Table& table) {
     player.addFunc("pause", &AnimPlayer::pause);
     player.addFunc("resume", &AnimPlayer::resume);
     player.addFunc("setSpeed", &AnimPlayer::setSpeed);
-    player.addFunc("getSpeed", &AnimPlayer::getSpeed);
+    // The Squirrel adapter accepts potentially-throwing member pointer types.
+    // This standard conversion preserves the native noexcept contract.
+    player.addFunc("getSpeed", static_cast<float (AnimPlayer::*)() const>(&AnimPlayer::getSpeed));
     player.addFunc("setTime", &AnimPlayer::setTime);
-    player.addFunc("getTime", &AnimPlayer::getTime);
-    player.addFunc("setLoop", &AnimPlayer::setLoop);
+    player.addFunc("getTime", static_cast<float (AnimPlayer::*)() const>(&AnimPlayer::getTime));
+    player.addFunc("setLoop", static_cast<void (AnimPlayer::*)(bool)>(&AnimPlayer::setLoop));
     player.addFunc("getLoop", &AnimPlayer::getLoop);
-    player.addFunc("isPlaying", &AnimPlayer::isPlaying);
-    player.addFunc("isPaused", &AnimPlayer::isPaused);
+    player.addFunc("isPlaying", static_cast<bool (AnimPlayer::*)() const>(&AnimPlayer::isPlaying));
+    player.addFunc("isPaused", static_cast<bool (AnimPlayer::*)() const>(&AnimPlayer::isPaused));
     player.addFunc("getPose", &AnimPlayer::getPose);
     player.addFunc("getClip", &AnimPlayer::getClip);
     player.addFunc("setRootMotionBone", &AnimPlayer::setRootMotionBone);

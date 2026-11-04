@@ -436,8 +436,8 @@ struct FormulaParser {
 
     void fail(std::string message) {
         if (error) return;
-        error =
-            eve::Diagnostic::error(eve::DiagnosticCode::ParseError, message, "formula[" + std::to_string(pos) + "]");
+        error = eve::Diagnostic::error(eve::DiagnosticCode::ParseError, std::move(message),
+                                       "formula[" + std::to_string(pos) + "]");
     }
 };
 
@@ -698,8 +698,9 @@ namespace {
 
 eve::Result<BattleVictoryReceipt> victoryFailure(eve::DiagnosticCode code, std::string message, std::string path,
                                                  const BattleVictoryRequest &request) {
-    return eve::Result<BattleVictoryReceipt>::failure(eve::Diagnostic::error(
-        code, message, path, {{"mapId", request.mapId}, {"objectId", request.objectId}}, "rpg.battle-victory"));
+    return eve::Result<BattleVictoryReceipt>::failure(
+        eve::Diagnostic::error(code, std::move(message), std::move(path),
+                               {{"mapId", request.mapId}, {"objectId", request.objectId}}, "rpg.battle-victory"));
 }
 
 struct TrackerRollback {
@@ -724,7 +725,7 @@ bool finiteAddition(const GameState &state, const std::string &id, double amount
 
 eve::Result<BattleVictoryReceipt> BattleVictory::settle(RPGActor &actor, GameState &gameState, Tracker &tracker,
                                                         const BattleVictoryRequest &request) {
-    if (request.requiredQuestId.empty() || tracker.getState(request.requiredQuestId) != "active")
+    if (!request.requiredQuestId.empty() && tracker.getState(request.requiredQuestId) != "active")
         return victoryFailure(eve::DiagnosticCode::PreconditionViolation,
                               "required quest must be active before victory settlement", "requiredQuestId", request);
     if (request.notifyTopic.empty() || request.notifyTarget.empty() || request.notifyAmount <= 0)

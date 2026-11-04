@@ -1,9 +1,12 @@
 #include "rpg/Battle.h"
 
+#include <utility>
+
 #include "rpg/AttributeSystem.h"
 #include "rpg/BattleSystem.h"
 #include "rpg/RPGActor.h"
 #include "rpg/SettlementAdapter.h"
+#include "rpg/Skill.h"
 #include "rpg/SkillSystem.h"
 #include "rpg/StatusSystem.h"
 #include "rpg/TraitSystem.h"
@@ -13,6 +16,14 @@
 #include <array>
 
 namespace eve::rpg {
+
+eve::Result<void> Battle::configureSeed(std::uint64_t seed) {
+    if (turn_ != 0)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Conflict, "Battle seed must be configured before the first round"));
+    seedCounter_ = static_cast<unsigned>(seed ^ (seed >> 32));
+    return eve::Result<void>::success();
+}
 
 void Battle::addActor(RPGActor* actor, int side) {
     if (!actor) return;
@@ -203,7 +214,7 @@ RPGActor* Battle::lowestHealthTarget(int side, bool sameSide) const {
 eve::Result<void> Battle::setActionChecked(RPGActor* actor, const std::string& skillId, RPGActor* target) {
     const auto reject = [](eve::DiagnosticCode code, std::string message, std::string path) {
         return eve::Result<void>::failure(
-            eve::Diagnostic::error(code, message, path, {}, "rpg.battle.action"));
+            eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "rpg.battle.action"));
     };
     if (!actor) return reject(eve::DiagnosticCode::InvalidArgument, "actor must not be null", "actor");
     if (finished_ || started_)
@@ -390,6 +401,15 @@ void Battle::execute(PendingAction& pa, unsigned& seedCounter) {
         // 普攻默认规格
         static const SkillDamageSpec kDefault{};
         spec = &kDefault;
+    }
+
+    // Instant formula skills use the same affordability, cooldown and effect path as other skills.
+    if (!skillId.empty()) {
+        const auto* definition = SkillRegistry::find(skillId);
+        if (definition && definition->castTime <= 0 && !SkillSystem::beginCast(pa.actor, skillId, target)) {
+            events_.push_back(BattleEvent{"actionRejected", skillId, pa.actor, target, 0.0, false});
+            return;
+        }
     }
 
     DamageResult result = BattleSystem::resolveHit(pa.actor, target, *spec, seedCounter++);

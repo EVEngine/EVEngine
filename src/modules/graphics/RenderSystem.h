@@ -7,13 +7,13 @@
 #include <vector>
 #include "common/ECS.h"
 #include "graphics/DrawItem2D.h"
-#include "graphics/Quad.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
 
 namespace eve::graphics {
 
 class Canvas;
+class Quad;
+class Shader;
+class Texture;
 
 /** @brief Declarative 2D camera (viewport center + zoom). */
 class EVENGINE_API_BACKENDS Camera2D : public ecs::Entity {

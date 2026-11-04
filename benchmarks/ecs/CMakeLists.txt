@@ -11,29 +11,16 @@ if(NOT EXISTS "${ECS_ENGINE_ROOT}/external/ECS.hpp/src/ECS.hpp")
     message(FATAL_ERROR "Initialize external/ECS.hpp before building the benchmark")
 endif()
 
-foreach(_ecs_patch ecs-shared-default-table ecs-view-preparation ecs-idle-commit ecs-view-scope-and-iteration ecs-view-live-slots ecs-query-and-record-lifetime)
-    execute_process(COMMAND "${CMAKE_COMMAND}"
-        "-DPATCH=${ECS_ENGINE_ROOT}/cmake/patches/${_ecs_patch}.patch"
-        "-DPATCH_DIR=${ECS_ENGINE_ROOT}/external/ECS.hpp"
-        -P "${ECS_ENGINE_ROOT}/cmake/patch_third_party.cmake"
-        RESULT_VARIABLE _ecs_patch_result)
-    if(NOT _ecs_patch_result EQUAL 0)
-        message(FATAL_ERROR "Applying the engine ECS ${_ecs_patch} patch failed")
-    endif()
-    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-        "${ECS_ENGINE_ROOT}/cmake/patches/${_ecs_patch}.patch")
-endforeach()
-
 add_executable(ecs_benchmark main.cpp)
 target_compile_features(ecs_benchmark PRIVATE cxx_std_20)
-target_include_directories(ecs_benchmark PRIVATE "${ECS_ENGINE_ROOT}/external/ECS.hpp/src")
+target_include_directories(ecs_benchmark SYSTEM PRIVATE "${ECS_ENGINE_ROOT}/external/ECS.hpp/src")
 target_compile_definitions(ecs_benchmark PRIVATE ECS_BENCH_CONFIG="$<CONFIG>")
 file(SHA256 "${ECS_ENGINE_ROOT}/external/ECS.hpp/src/ECS.hpp" ECS_BENCH_HEADER_SHA256)
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
     "${ECS_ENGINE_ROOT}/external/ECS.hpp/src/ECS.hpp")
 target_compile_definitions(ecs_benchmark PRIVATE ECS_BENCH_HEADER_SHA256="${ECS_BENCH_HEADER_SHA256}")
 if(MSVC)
-    target_compile_options(ecs_benchmark PRIVATE /W4 /WX /permissive-)
+    target_compile_options(ecs_benchmark PRIVATE /W4 /WX /permissive- /utf-8)
 else()
     target_compile_options(ecs_benchmark PRIVATE -Wall -Wextra -Wpedantic -Werror)
 endif()
@@ -72,25 +59,15 @@ if(BUILD_TESTING)
         add_test(NAME ecs_benchmark.query_lifetime_${_case} COMMAND ecs_query_lifetime ${_case})
     endforeach()
 
-    # Exercise the engine's actual default-Table/container owners with the same
-    # generated extern-template overlay used by its SDK, in both linkage modes.
-    file(READ "${ECS_ENGINE_ROOT}/external/ECS.hpp/src/ECS.hpp" _ecs_contract_header)
-    string(REPLACE "\r\n" "\n" _ecs_contract_header "${_ecs_contract_header}")
-    file(READ "${ECS_ENGINE_ROOT}/cmake/overrides/ecs/container_instances.hpp" _ecs_contract_instances)
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/contracts-ecs")
-    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/contracts-ecs/ECS.hpp.in"
-        "${_ecs_contract_header}\n${_ecs_contract_instances}")
-    configure_file("${CMAKE_CURRENT_BINARY_DIR}/contracts-ecs/ECS.hpp.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/contracts-ecs/ECS.hpp" COPYONLY)
-    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-        "${ECS_ENGINE_ROOT}/cmake/overrides/ecs/container_instances.hpp")
+    # Exercise native dependency headers with both compiled-container owners.
     foreach(_linkage OBJECT SHARED)
         add_library(ecs_contract_foundation_${_linkage} ${_linkage}
             "${ECS_ENGINE_ROOT}/src/engine/common/EcsDefaultTable.cpp"
             "${ECS_ENGINE_ROOT}/src/engine/common/EcsContainerInstances.cpp")
         target_compile_features(ecs_contract_foundation_${_linkage} PUBLIC cxx_std_20)
+        target_compile_definitions(ecs_contract_foundation_${_linkage} PUBLIC EVE_ECS_EXTERN_CONTAINERS=1)
         target_include_directories(ecs_contract_foundation_${_linkage} PUBLIC
-            "${CMAKE_CURRENT_BINARY_DIR}/contracts-ecs")
+            "${ECS_ENGINE_ROOT}/external/ECS.hpp/src")
         if(_linkage STREQUAL "SHARED")
             target_compile_definitions(ecs_contract_foundation_${_linkage}
                 PUBLIC EVENGINE_MODULE_DLL PRIVATE EVENGINE_EXPORTS_FOUNDATION)

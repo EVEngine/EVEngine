@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "modules": [
+    "procgen",
+    "scene"
+  ],
+  "origins": [
+    "scene_procgen_rotation.cpp"
+  ],
+  "module": "scene"
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <limits>
 #include <stdexcept>

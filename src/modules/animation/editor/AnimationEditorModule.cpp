@@ -3,6 +3,8 @@
 #include "animation/editing/AnimationClip.h"
 #include "animation/editing/AnimationEditingCommands.h"
 #include "animation/editor/AnimationClipEditorScriptBindings.h"
+#include "animation/editor/ControlRigAutomation.h"
+#include "animation/editor/ControlRigBindings.h"
 #include "common/Capability.h"
 #include "editing/EditingCommandRegistry.h"
 #include "editor/EditorAutomationTargetFactory.h"
@@ -48,6 +50,8 @@ AnimationEditorModule::AnimationEditorModule() : factory_(std::make_unique<Targe
     auto* registry = eve::cap::query<editing::IEditingCommandRegistry>();
     if (!registry || !animation_editing::registerEditingCommands(*registry).ok())
         throw std::runtime_error("Failed to register animation editing commands");
+    auto rigCommands = registerControlRigAutomation(*registry);
+    if (!rigCommands.ok()) throw std::runtime_error("Failed to register control rig editing commands");
     eve::cap::addListener<editor::IEditorAutomationTargetFactory>(factory_.get());
 }
 
@@ -60,6 +64,7 @@ AnimationEditorModule::~AnimationEditorModule() {
 void AnimationEditorModule::expose(ssq::Table& table) {
     auto module = table.addClass(name, AnimationEditorModule::create, false);
     exposeAnimationClipEditorScriptBindings(table, module);
+    exposeControlRigBindings(table, module);
 }
 void AnimationEditorModule::expose(ssq::Class&) {}
 

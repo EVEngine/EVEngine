@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "tactics/TacticsBattle.h"
 
 #include "tactics/TurnPolicy.h"

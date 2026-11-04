@@ -42,6 +42,12 @@ if(EVE_MECHANICS_WITH_JOLT)
   set_source_files_properties("${EVE_ROOT}/src/modules/physics/jolt/JoltDistanceConstraint.cpp" PROPERTIES COMPILE_OPTIONS -fno-rtti)
 endif()
 set(src
+ test/integration/projectile-behavior/optional_composition.cpp
+ test/integration/projectile-behavior/world_sweep.cpp
+ test/integration/projectile-behavior/world_hit_probe.cpp
+ src/modules/weapon/WorldHitProbe.cpp src/modules/weapon/CombatCarrier.cpp src/modules/weapon/ProjectileRuntime.cpp
+ src/modules/physics/WorldSphereSweep.cpp src/modules/physics/WorldSphereSweepScript.cpp
+ src/modules/physics/PhysicsWorldQueries.cpp
  test/unit/physics/physics_tests.cpp
  test/integration/physics-simulation/physics_merge_contract.cpp
  src/engine/common/ModuleRegistry.cpp
@@ -97,6 +103,7 @@ set(src
  src/modules/physics/forces/WingAssembly.cpp
  src/modules/physics/forces/TireDynamics.cpp src/modules/physics/forces/ForceApplication.cpp src/modules/physics/forces/ForceBindings.cpp
  src/modules/physics/World.cpp src/modules/physics/World3D.cpp
+ src/modules/physics/Box2DSimulationBackend.cpp src/modules/physics/World3D.cpp
     src/modules/physics/World3DSimulation.cpp
     src/modules/physics/mechanics/Coupling3D.cpp
     src/modules/physics/mechanics/Coupling3DStep.cpp src/modules/physics/Body.cpp src/modules/physics/Body3D.cpp
@@ -146,3 +153,29 @@ target_include_directories(vehicle_tires_absent PRIVATE "${EVE_ROOT}/src/modules
 target_link_libraries(vehicle_tires_absent PRIVATE zeroerr pthread)
 add_dependencies(force_integration vehicle_tires_absent)
 add_test(NAME physics.vehicleTires.absentBackend COMMAND vehicle_tires_absent)
+
+# Compile/link/run the projectile query adapter without any physics implementation.
+add_executable(carrier_probe_absent
+  "${EVE_ROOT}/test/integration/projectile-behavior/world_hit_probe.cpp"
+  "${EVE_ROOT}/src/modules/weapon/WorldHitProbe.cpp"
+  "${EVE_ROOT}/src/modules/weapon/CombatCarrier.cpp"
+  "${EVE_ROOT}/src/modules/weapon/ProjectileRuntime.cpp"
+  "${EVE_ROOT}/src/engine/common/Identity.cpp"
+  "${EVE_ROOT}/src/engine/common/Time.cpp"
+  "${EVE_ROOT}/src/engine/common/Result.cpp"
+  "${EVE_ROOT}/src/engine/common/Status.cpp"
+  "${EVE_ROOT}/src/engine/common/Diagnostic.cpp")
+target_include_directories(carrier_probe_absent PRIVATE
+  "${EVE_ROOT}/src/modules" "${EVE_ROOT}/src/engine" "${EVE_ROOT}/external/ECS.hpp/src")
+target_compile_options(carrier_probe_absent PRIVATE -ffunction-sections -fdata-sections)
+target_link_options(carrier_probe_absent PRIVATE -Wl,--gc-sections)
+target_link_libraries(carrier_probe_absent PRIVATE zeroerr pthread)
+add_test(NAME carrierComposition.physicsImplementationAbsent COMMAND carrier_probe_absent)
+add_dependencies(force_integration carrier_probe_absent)
+
+set_tests_properties(carrierComposition.physicsImplementationAbsent PROPERTIES FAIL_REGULAR_EXPRESSION "Assertion Failed" PASS_REGULAR_EXPRESSION "TEST CASE:[ ]+2[ ]+0[ ]+0[ ]+0")
+
+# Match the normal host tests' assertion and unique-fixture registration contract.
+foreach(_physics_check_target IN ITEMS force_integration carrier_probe_absent vehicle_tires_absent)
+  target_include_directories(${_physics_check_target} BEFORE PRIVATE "${EVE_ROOT}/cmake/overrides/zeroerr")
+endforeach()

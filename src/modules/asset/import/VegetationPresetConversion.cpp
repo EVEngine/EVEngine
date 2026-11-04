@@ -1,8 +1,10 @@
 #include <algorithm>
+
 #include <cmath>
 #include <iomanip>
 #include <new>
 #include <sstream>
+#include <utility>
 #include "asset/import/VegetationPreset.h"
 
 // VegetationPresetConversion.cpp
@@ -15,7 +17,7 @@ Result<void> applyOutputPlan(VegetationConversionResult& result) {
                                                                                              : &found->second.front();
     };
     const auto invalid = [](std::string message) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, message, {}, {},
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move(message), {}, {},
                                                        "asset.import.vegetation-preset.conversion"));
     };
     if (result.candidate.outputDirectives.contains("OutputMeshes")) {

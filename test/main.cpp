@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "runner",
+  "default": "runtime-lifecycle",
+  "module": "common"
+}
+*/
+// clang-format on
+
 #include "zeroerr/unittest.h"
 #include "common/CrashHandler.h"
 

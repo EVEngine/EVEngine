@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "weapon/CombatCarrier.h"
 
 #include "common/Diagnostic.h"

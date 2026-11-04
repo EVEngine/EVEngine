@@ -2,6 +2,7 @@
 #include "filesystem/physfs/File.h"
 
 #include <cstring>
+#include <utility>
 
 #include "common/Exception.h"
 #include "filesystem/FileData.h"
@@ -19,7 +20,7 @@ static bool hack_setupWriteDirectory() {
 namespace physfs {
 
 File::File(std::string filename)
-    : filename(filename), file(nullptr), mode("c"), bufferMode("none"), bufferSize(0) {}
+    : filename(std::move(filename)), file(nullptr), mode("c"), bufferMode("none"), bufferSize(0) {}
 
 File::~File() {
     if (mode != "c") close();

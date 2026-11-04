@@ -63,11 +63,14 @@ double            turn(V a, V b, V c) { return cross(sub(b, a), sub(c, a))[2]; }
 Result<MeshBuild> flatArrow(const std::vector<V>& path, const std::vector<V>& normals, V tip, double shaft, double head,
                             double thickness, double radius, int steps, bool flowing) {
     if (radius >= shaft * 0.25) return Result<MeshBuild>::failure(invalid());
-    std::vector<double> arc{0.};
+    std::vector<double> arc;
+    arc.reserve(path.size());
+    arc.push_back(0.);
     for (std::size_t i = 1; i < path.size(); ++i) arc.push_back(arc.back() + length(sub(path[i], path[i - 1])));
     const auto     taper    = [&](double t) { return flowing ? flowingRatio(t) : 1.; };
     const auto     progress = [&](V p) { return samplePath(p, path, arc).progress; };
     std::vector<V> outline;
+    outline.reserve(2 * path.size() + 3);
     for (std::size_t i = 0; i < path.size(); ++i)
         outline.push_back(sub(path[i], mul(normals[i], shaft * taper(arc[i] / arc.back()) * 0.5)));
     outline.push_back(sub(path.back(), mul(normals.back(), head * 0.5)));
@@ -183,6 +186,7 @@ Result<MeshBuild> flatArrow(const std::vector<V>& path, const std::vector<V>& no
         }
     mesh.setActiveGroup("face");
     std::vector<std::size_t> remaining;
+    remaining.reserve(count);
     for (std::size_t i = 0; i < count; ++i) remaining.push_back(i);
     const auto& top    = rings.back();
     const auto& bottom = rings.front();
@@ -455,8 +459,13 @@ Result<MeshBuild> ArrowGenerator::buildMeshResult() const {
     if (std::abs(dot(bend_, unit(chord))) >= chordLength * 0.499 || (planar_ && (a_[2] != b_[2] || bend_[2] != 0.)))
         return Result<MeshBuild>::failure(invalid());
     const V             control = add(mul(add(a_, b_), 0.5), bend_);
-    std::vector<V>      points{a_};
-    std::vector<double> arc{0.};
+    const auto          sampleCapacity = static_cast<std::size_t>(segments_) + 2;
+    std::vector<V>      points;
+    points.reserve(sampleCapacity);
+    points.push_back(a_);
+    std::vector<double> arc;
+    arc.reserve(sampleCapacity);
+    arc.push_back(0.);
     for (int i = 1; i <= segments_; ++i) {
         const double t = static_cast<double>(i) / segments_;
         const V      p = i == segments_
@@ -500,6 +509,8 @@ Result<MeshBuild> ArrowGenerator::buildMeshResult() const {
         }
     }
     std::vector<V> tangents, normals;
+    tangents.reserve(points.size());
+    normals.reserve(points.size());
     for (std::size_t i = 0; i < points.size(); ++i) {
         V t = i + 1 == points.size() ? headAxis : unit(sub(points[i + 1], points[i]));
         if (i > 0 && i + 1 < points.size()) t = unit(add(t, unit(sub(points[i], points[i - 1]))));

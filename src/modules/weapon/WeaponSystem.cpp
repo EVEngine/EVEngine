@@ -63,16 +63,12 @@ public:
 const WeaponDefinition* defOf(WeaponEntity& w);
 void                    pushFireEvent(WeaponEntity& w, const WeaponDefinition* def, const AttackRequest& req, int ammo);
 
-/** @brief 近战逻辑：开火事件携带 arc/aoe，几何命中由 combat::MeleeHitRuntime 消费。 */
+/** @brief 近战逻辑由阶段机发布携带 arc/aoe 的开火事件，几何命中由 combat::MeleeHitRuntime 消费。 */
 class MeleeLogic : public IWeaponLogic {
 public:
     const char* name() const override { return "melee"; }
     bool        canFire(const WeaponEntity&) const override { return true; }
-    void        fire(WeaponEntity& w, const AttackRequest& req) override {
-        const WeaponDefinition* def = defOf(w);
-        if (!def) return;
-        pushFireEvent(w, def, req, static_cast<int>(w.state()->resource.value));
-    }
+    void        fire(WeaponEntity&, const AttackRequest&) override {}
     void update(WeaponEntity&, float) override {}
 };
 

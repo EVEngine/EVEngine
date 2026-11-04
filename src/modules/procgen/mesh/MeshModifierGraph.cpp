@@ -1176,6 +1176,7 @@ Result<MeshBuild> subdivideMesh(const MeshBuild& input, int levels) {
             }
         }
         std::vector<std::string> names;
+        names.reserve(static_cast<std::size_t>(current.getGroupCount()));
         for (int i = 0; i < current.getGroupCount(); ++i) names.push_back(current.getGroupName(i));
         auto restored = next.restoreGroupData(std::move(names), std::move(assignments), -1);
         if (!restored.ok()) return Result<MeshBuild>::failure(restored.status());
@@ -1255,6 +1256,7 @@ Result<MeshBuild> cutPlaneMesh(const MeshBuild& input, const auto& node) {
         }
     }
     std::vector<std::string> names;
+    names.reserve(static_cast<std::size_t>(input.getGroupCount()));
     for (int i = 0; i < input.getGroupCount(); ++i) names.push_back(input.getGroupName(i));
     if (intParameter(node, "cap", 0) != 0 && !cutSegments.empty()) {
         const int capGroup = static_cast<int>(names.size());
@@ -1386,6 +1388,7 @@ Result<MeshBuild> weldMesh(const MeshBuild& input, float tolerance) {
         assignments.push_back(input.getTriangleGroup(i / 3));
     }
     std::vector<std::string> names;
+    names.reserve(static_cast<std::size_t>(input.getGroupCount()));
     for (int i = 0; i < input.getGroupCount(); ++i) names.push_back(input.getGroupName(i));
     auto restored = output.restoreGroupData(std::move(names), std::move(assignments), -1);
     if (!restored.ok()) return Result<MeshBuild>::failure(restored.status());

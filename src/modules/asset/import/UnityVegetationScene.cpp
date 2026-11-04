@@ -44,7 +44,7 @@ std::optional<std::string> component(std::string_view source, std::string_view s
     const std::regex script("(?:^|\\n)  m_Script: *\\{fileID: *11500000, guid: *" +
                             std::string(scriptGuid) + R"(, type: *3\})");
     for (std::cregex_iterator it(source.data(), source.data() + source.size(), document), end; it != end; ++it) {
-        const auto body = (*it)[1].str();
+        auto body = (*it)[1].str();
         if (std::regex_search(body, script)) return body;
     }
     return {};
@@ -785,7 +785,7 @@ std::optional<std::string> match(const std::string& s, const std::string& patter
     const std::regex expression(pattern);
     auto             it = std::sregex_iterator(s.begin(), s.end(), expression);
     if (it == std::sregex_iterator()) return {};
-    const auto result = (*it)[1].str();
+    auto result = (*it)[1].str();
     if (++it != std::sregex_iterator()) throw Invalid{};
     return result;
 }

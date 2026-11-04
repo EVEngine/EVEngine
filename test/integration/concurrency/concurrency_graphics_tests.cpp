@@ -1,7 +1,72 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "concurrency",
+  "module": "animation",
+  "modules": [
+    "animation",
+    "cmdline",
+    "common",
+    "devtools",
+    "network",
+    "pixelworld_thread",
+    "procgen",
+    "thread",
+    "voxel"
+  ],
+  "origins": [
+    "animation_batch_lod.cpp",
+    "animation_binary.cpp",
+    "cmdline_sdk_hash.cpp",
+    "common_diagnostic_vector_instances.cpp",
+    "mcp_architecture_graph.cpp",
+    "mcp_binding_architecture.cpp",
+    "mcp_console.cpp",
+    "mcp_domain_tools.cpp",
+    "mcp_editor_targets.cpp",
+    "mcp_input_tools.cpp",
+    "mcp_stdio.cpp",
+    "mcp_tool_filter.cpp",
+    "network.cpp",
+    "pixelworld_parallel.cpp",
+    "procgen_result_contract.cpp",
+    "procgen_rng_contract.cpp",
+    "render_graph.cpp",
+    "thread.cpp",
+    "voxel.cpp"
+  ],
+  "cases": {
+    "platform-network": [
+      "event.VariantMessage",
+      "network.Channel.fragmentedAndCoalescedFrames",
+      "network.Channel.rejectsOversizedFrameHeader",
+      "network.NetReaderOverrunIsSticky",
+      "network.NetWorkerQueue",
+      "network.NetWriterReaderRoundtrip",
+      "network.Network.cppFactoriesReturnOwners",
+      "network.Network.timeoutAndVerifySsl"
+    ],
+    "runtime-lifecycle": [
+      "devtools.mcp.inputBatchWaitCompletesAcrossPoll"
+    ],
+    "script-binding": [
+      "devtools.mcp.consoleToolsRoundTripScriptPrint",
+      "procgen.result.squirrelExecutionAndSchedulerShareProjection",
+      "procgen.scriptHostCommitsAndRollsBackGeneratorsAtomically"
+    ]
+  }
+}
+*/
+// clang-format on
+
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: animation batch lod
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_batch_lod)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <memory>
 #include <vector>
@@ -9,7 +74,6 @@
 #include "animation/AnimClip.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // animation_batch_lod.cpp
 namespace test_animation_batch_lod {
@@ -45,22 +109,20 @@ TEST_CASE("animation.batch.parallelEvaluationAndBoneLod") {
     }
 }
 }  // namespace test_animation_batch_lod
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_binary)
+// Contract section: animation binary
+#include <stdexcept>
 #include "PrivateTestScope.h"
+
 #include <bit>
-#include <cmath>
 #include <cstdint>
 #include <limits>
+#include <stdexcept>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimClipBinary.h"
 #include "animation/AnimParallelInternal.h"
-#include "animation/AnimPose.h"
-#include "animation/AnimSkeleton.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // animation_binary.cpp
 namespace test_animation_binary {
 using namespace eve::animation;
@@ -155,19 +217,17 @@ TEST_CASE("animation.binary.parallelWorkersJoinBeforeFailureReturns") {
     for (int item : visited) CHECK(item == 1);
 }
 }  // namespace test_animation_binary
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_cmdline_sdk_hash)
+// Contract section: cmdline sdk hash
 #include "PrivateTestScope.h"
+
 #include <array>
 #include <barrier>
 #include <fstream>
 #include <future>
 #include <string>
-#include <vector>
 #include "Fixtures.h"
 #include "cmdline/sdk_tools.h"
-#include "zeroerr/unittest.h"
 // cmdline_sdk_hash.cpp
 namespace test_cmdline_sdk_hash {
 TEST_CASE("cmdline.sdkSha256IndependentConcurrentReads") {
@@ -207,22 +267,19 @@ TEST_CASE("cmdline.sdkSha256IndependentConcurrentReads") {
     REQUIRE(eve::cmd::sdk::fileSha256((dir.path() / "missing.bin").string()).empty());
 }
 }  // namespace test_cmdline_sdk_hash
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_diagnostic_vector_instances)
+// Contract section: common diagnostic vector instances
 #include "PrivateTestScope.h"
+
 #include <zeroerr/assert.h>
 #include <zeroerr/unittest.h>
 #include <atomic>
 #include <thread>
 #include <type_traits>
 #include <utility>
-#include <vector>
 #include "common/Diagnostic.h"
 #include "common/StringMapInstances.h"
 #include "common/Subscription.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // common_diagnostic_vector_instances.cpp
 namespace test_common_diagnostic_vector_instances {
 // common_diagnostic_vector_instances.cpp
@@ -277,21 +334,18 @@ TEST_CASE("common.stringMap.independentContainersOnThreads") {
 
 // common_subscription.cpp
 }  // namespace test_common_diagnostic_vector_instances
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_architecture_graph)
+// Contract section: mcp architecture graph
 #include "PrivateTestScope.h"
+
 #include <Poco/JSON/Parser.h>
 #include <chrono>
 #include <sstream>
-#include <thread>
 #include "common/BindingContracts.h"
 #include "common/ScriptCompiler.h"
 #include "devtools/McpArchitectureTools.hpp"
 #include "devtools/McpServer.hpp"
 #include "devtools/McpToolFilter.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_architecture_graph.cpp
 namespace test_mcp_architecture_graph {
 namespace {
@@ -354,19 +408,12 @@ TEST_CASE("devtools.architecture.mcpStdioListsAndQueriesGraph") {
     CHECK(checked);
 }
 }  // namespace test_mcp_architecture_graph
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_binding_architecture)
+// Contract section: mcp binding architecture
 #include "PrivateTestScope.h"
+
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <sstream>
-#include <thread>
-#include "devtools/McpServer.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_binding_architecture.cpp
 namespace test_mcp_binding_architecture {
 TEST_CASE("devtools.mcp.bindingArchitectureEvidence") {
@@ -418,27 +465,74 @@ TEST_CASE("devtools.mcp.bindingArchitectureEvidence") {
     }
     CHECK_EQ(checked, 2);
 }
-}  // namespace test_mcp_binding_architecture
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_console)
+TEST_CASE("devtools.mcp.eveApiGetSuggestsOnMiss") {
+    auto& server = eve::dev::McpServer::instance();
+    server.stop();
+    std::istringstream input(
+        "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}\n"
+        "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/call\",\"params\":{"
+        "\"name\":\"eve_api_get\",\"arguments\":{\"key\":\"dialogue/publishGameplay\"}}}\n"
+        "{\"jsonrpc\":\"2.0\",\"id\":3,\"method\":\"tools/call\",\"params\":{"
+        "\"name\":\"eve_api_get\",\"arguments\":{\"key\":\"dialogueFlow.publishGameplay\"}}}\n");
+    std::ostringstream output;
+    struct StopServer {
+        eve::dev::McpServer& server;
+        ~StopServer() { server.stop(); }
+    } cleanup{server};
+    REQUIRE(server.listenStdio(input, output));
+    for (int attempt = 0; attempt < 200; ++attempt) {
+        server.poll();
+        if (output.str().find("\"id\":3") != std::string::npos) break;
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+    server.stop();
+
+    std::istringstream responses(output.str());
+    std::string        line;
+    bool               sawSuggestions = false;
+    bool               sawResolved    = false;
+    while (std::getline(responses, line)) {
+        Poco::JSON::Parser parser;
+        auto               response = parser.parse(line).extract<Poco::JSON::Object::Ptr>();
+        const int          id       = response->getValue<int>("id");
+        if (id == 1) continue;
+        auto content = response->getObject("result")->getArray("content");
+        auto body =
+            parser.parse(content->getObject(0)->getValue<std::string>("text")).extract<Poco::JSON::Object::Ptr>();
+        if (id == 2) {
+            CHECK(!body->getValue<bool>("ok"));
+            auto suggestions = body->getArray("suggestions");
+            REQUIRE(suggestions);
+            REQUIRE(suggestions->size() > 0);
+            bool found = false;
+            for (size_t i = 0; i < suggestions->size(); ++i) {
+                if (suggestions->getObject(static_cast<unsigned>(i))->getValue<std::string>("key") ==
+                    "dialogueFlow/publishGameplay")
+                    found = true;
+            }
+            CHECK(found);
+            sawSuggestions = true;
+        }
+        if (id == 3) {
+            REQUIRE(body->getValue<bool>("ok"));
+            CHECK_EQ(body->getObject("contract")->getValue<std::string>("key"),
+                     std::string("dialogueFlow/publishGameplay"));
+            sawResolved = true;
+        }
+    }
+    CHECK(sawSuggestions);
+    CHECK(sawResolved);
+}
+}  // namespace test_mcp_binding_architecture
+
+// Contract section: mcp console
 #include "PrivateTestScope.h"
+
 #include <Poco/Dynamic/Var.h>
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <cstdint>
 #include <simplesquirrel/simplesquirrel.hpp>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/DevTool.hpp"
-#include "devtools/McpServer.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_console.cpp
 namespace test_mcp_console {
 // MCP runtime-console tools: an unattended agent must be able to read the same
@@ -582,13 +676,30 @@ TEST_CASE("devtools.mcp.consoleToolsRoundTripScriptPrint") {
     CHECK(responseContentText(responses[3]).find("unknown level") != std::string::npos);
     CHECK(responseContentText(responses[4]).find("unknown level") != std::string::npos);
 
-    // Cursor-based incremental read: nothing new after clear().
+    // A tail read after clear reports the discarded history as a gap.
     auto cleared = parseObject(responseContentText(responses[5]));
     REQUIRE(cleared);
     CHECK(cleared->getValue<std::int64_t>("droppedThrough") == nextSeq - 1);
-    const std::string afterClear = responseContentText(responses[6]);
-    CHECK(afterClear.find("\"count\":0") != std::string::npos);
-    CHECK(afterClear.find("\"truncated\":false") != std::string::npos);
+    auto afterClear = parseObject(responseContentText(responses[6]));
+    REQUIRE(afterClear);
+    CHECK_EQ(afterClear->getValue<int>("count"), 0);
+    CHECK(afterClear->getValue<bool>("truncated"));
+    CHECK_EQ(afterClear->getValue<std::int64_t>("droppedThrough"), nextSeq - 1);
+
+    // Resuming from the last covered sequence has no gap or repeated lines.
+    const auto resumed = runStdioSession(
+        joinRequests({initializeRequest(1, "2025-06-18"),
+                      callRequest(2, "eve_console_read", "{\"sinceSeq\":" + std::to_string(nextSeq - 1) + "}")}),
+        2);
+    REQUIRE_EQ(resumed.size(), std::size_t(2));
+    auto incremental = parseObject(responseContentText(resumed[1]));
+    REQUIRE(incremental);
+    CHECK(!incremental->getValue<bool>("truncated"));
+    auto resumedLines = incremental->getArray("lines");
+    REQUIRE(resumedLines);
+    CHECK_EQ(incremental->getValue<std::size_t>("count"), resumedLines->size());
+    for (std::size_t index = 0; index < resumedLines->size(); ++index)
+        CHECK(resumedLines->getObject(static_cast<unsigned>(index))->getValue<Poco::Int64>("seq") > nextSeq - 1);
 
     dt.detach();
     CHECK(!console.isAttached());
@@ -641,7 +752,9 @@ TEST_CASE("devtools.mcp.initializeNegotiatesSupportedProtocol") {
     auto supported = parseObject(responses[0])->getObject("result");
     REQUIRE(supported);
     CHECK(supported->getValue<std::string>("protocolVersion") == "2025-06-18");
-    CHECK(!supported->getValue<std::string>("serverInfo.name").empty());
+    auto serverInfo = supported->getObject("serverInfo");
+    REQUIRE(serverInfo);
+    CHECK(!serverInfo->getValue<std::string>("name").empty());
 
     // An unknown revision must not be echoed back as if it were implemented.
     auto unknown = parseObject(responses[1])->getObject("result");
@@ -649,18 +762,10 @@ TEST_CASE("devtools.mcp.initializeNegotiatesSupportedProtocol") {
     CHECK(unknown->getValue<std::string>("protocolVersion") == "2025-06-18");
 }
 }  // namespace test_mcp_console
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_domain_tools)
+// Contract section: mcp domain tools
 #include "PrivateTestScope.h"
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
+
 #include "common/Capability.h"
 #include "common/DecalQuery.h"
 #include "common/Module.h"
@@ -669,11 +774,8 @@ TEST_CASE("devtools.mcp.initializeNegotiatesSupportedProtocol") {
 #include "common/SensingQuery.h"
 #include "decal/Decal.h"
 #include "devtools/McpDomainTools.hpp"
-#include "devtools/McpServer.hpp"
 #include "profiler/Profiler.h"
 #include "sensing/Sensing.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_domain_tools.cpp
 namespace test_mcp_domain_tools {
 // Capability-backed MCP domain tools.
@@ -801,6 +903,9 @@ TEST_CASE("devtools.mcp.profilerToolsReadTheLiveCore") {
 
     // Aggregate one synthetic frame the way the frame loop does, so the tool has
     // real zone data to report.
+    const bool enabledBefore = profilerModule->enabled();
+    profilerModule->setEnabled(true);
+    profilerModule->reset();
     profilerModule->beginFrame();
     {
         eve::prof::Profiler::zoneBegin("mcp.test.zone", "mcp.test");
@@ -817,6 +922,7 @@ TEST_CASE("devtools.mcp.profilerToolsReadTheLiveCore") {
 
     // The text report is the same hotspot view the profiler panel shows.
     CHECK(callToolOnce("eve_profiler_report", "{}").find("mcp.test.zone") != std::string::npos);
+    profilerModule->setEnabled(enabledBefore);
 }
 
 TEST_CASE("devtools.mcp.spatialQueryToolsValidateAndReportMissingProviders") {
@@ -852,26 +958,13 @@ TEST_CASE("devtools.mcp.sensingToolsReadLiveWorldQueries") {
     CHECK(callToolOnce("eve_sensing_last_query", R"({"world":3})").find("no live sensing world") != std::string::npos);
 }
 }  // namespace test_mcp_domain_tools
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_editor_targets)
+// Contract section: mcp editor targets
 #include "PrivateTestScope.h"
-#include <Poco/Dynamic/Var.h>
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
-#include "common/Capability.h"
+
 #include "common/EditorAutomation.h"
-#include "devtools/McpServer.hpp"
 #include "editor/Editor.h"
 #include "voxel/editor/VoxelEditorModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_editor_targets.cpp
 namespace test_mcp_editor_targets {
 // Editor target discovery over MCP.
@@ -1025,25 +1118,13 @@ TEST_CASE("devtools.mcp.editorTargetListRejectsUnknownType") {
     CHECK(findTarget(callToolOnce("eve_editor_target_list", "{}"), "agent.nope") == nullptr);
 }
 }  // namespace test_mcp_editor_targets
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_input_tools)
+// Contract section: mcp input tools
 #include "PrivateTestScope.h"
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
-#include "common/Capability.h"
+
 #include "common/InputInjection.h"
 #include "common/Result.h"
 #include "devtools/McpInputTools.hpp"
-#include "devtools/McpServer.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_input_tools.cpp
 namespace test_mcp_input_tools {
 // MCP playtest input tools: inject via IInputInjection, defer wait/capture across
@@ -1243,16 +1324,10 @@ TEST_CASE("devtools.mcp.inputBatchReportsMissingProvider") {
     CHECK(batch->has("hint"));
 }
 }  // namespace test_mcp_input_tools
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_stdio)
+// Contract section: mcp stdio
 #include "PrivateTestScope.h"
-#include <chrono>
-#include <sstream>
-#include <thread>
-#include "devtools/McpServer.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // mcp_stdio.cpp
 namespace test_mcp_stdio {
 TEST_CASE("devtools.mcp.stdioTransport") {
@@ -1291,23 +1366,13 @@ TEST_CASE("devtools.mcp.stdioTransport") {
     REQUIRE(resp.find("eve_host_status") != std::string::npos);
 }
 }  // namespace test_mcp_stdio
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_tool_filter)
+// Contract section: mcp tool filter
 #include "PrivateTestScope.h"
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
+
 #include <cstdlib>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
-#include "devtools/McpServer.hpp"
-#include "devtools/McpToolFilter.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+#include "devtools/AgentDevelopmentSession.hpp"
+#include "devtools/McpTaskProfile.hpp"
 // mcp_tool_filter.cpp
 namespace test_mcp_tool_filter {
 // MCP toolset / read-only / exclude filters: tools/list and tools/call must agree.
@@ -1406,8 +1471,14 @@ struct EnvGuard {
 
 
 TEST_CASE("devtools.mcp.toolsetFilterHidesAndRejects") {
+    AgentDevelopmentSession::instance().reset();
+    mcpSetSessionProfile({});
+    mcpFilterStatsResetForTest();
     {
-        EnvGuard env{{{"EVE_MCP_TOOLSET", "core"}, {"EVE_MCP_READONLY", nullptr}, {"EVE_MCP_EXCLUDE", nullptr}}};
+        EnvGuard env{{{"EVE_MCP_TOOLSET", "core"},
+                      {"EVE_MCP_READONLY", nullptr},
+                      {"EVE_MCP_EXCLUDE", nullptr},
+                      {"EVE_MCP_PROFILE", nullptr}}};
         CHECK(mcpToolAllowed("eve_status"));
         CHECK(!mcpToolAllowed("eve_eval"));
         CHECK(toolsListContains("eve_status"));
@@ -1417,31 +1488,69 @@ TEST_CASE("devtools.mcp.toolsetFilterHidesAndRejects") {
         CHECK(text.find("hint") != std::string::npos);
     }
     {
-        EnvGuard env{{{"EVE_MCP_TOOLSET", "all"}, {"EVE_MCP_READONLY", "1"}, {"EVE_MCP_EXCLUDE", nullptr}}};
+        EnvGuard env{{{"EVE_MCP_TOOLSET", "all"},
+                      {"EVE_MCP_READONLY", "1"},
+                      {"EVE_MCP_EXCLUDE", nullptr},
+                      {"EVE_MCP_PROFILE", nullptr}}};
         CHECK(mcpToolAllowed("eve_status"));
         CHECK(!mcpToolAllowed("eve_eval"));
         CHECK(!mcpToolAllowed("eve_input_batch"));
         CHECK(mcpToolAllowed("eve_input_poll"));
     }
     {
-        EnvGuard env{
-            {{"EVE_MCP_TOOLSET", "all"}, {"EVE_MCP_READONLY", nullptr}, {"EVE_MCP_EXCLUDE", "eve_status,eve_restart"}}};
+        EnvGuard env{{{"EVE_MCP_TOOLSET", "all"},
+                      {"EVE_MCP_READONLY", nullptr},
+                      {"EVE_MCP_EXCLUDE", "eve_status,eve_restart"},
+                      {"EVE_MCP_PROFILE", nullptr}}};
         CHECK(!mcpToolAllowed("eve_status"));
         CHECK(!mcpToolAllowed("eve_restart"));
         CHECK(mcpToolAllowed("eve_console_read"));
     }
 }
-}  // namespace test_mcp_tool_filter
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_network)
+TEST_CASE("devtools.mcp.taskProfileStacksWithToolsetAndEscalates") {
+    AgentDevelopmentSession::instance().reset();
+    mcpSetSessionProfile({});
+    mcpFilterStatsResetForTest();
+    {
+        EnvGuard env{{{"EVE_MCP_TOOLSET", "all"},
+                      {"EVE_MCP_READONLY", nullptr},
+                      {"EVE_MCP_EXCLUDE", nullptr},
+                      {"EVE_MCP_PROFILE", "verify.play"}}};
+        CHECK(mcpToolAllowed("eve_play"));
+        CHECK(mcpToolAllowed("eve_agent_session_status"));
+        CHECK(!mcpToolAllowed("eve_scene_batch"));
+        CHECK(!mcpToolAllowed("eve_eval"));
+        const std::string text = callToolText("eve_scene_batch");
+        CHECK(text.find("\"filtered\":true") != std::string::npos);
+        CHECK(text.find("\"profile\":\"verify.play\"") != std::string::npos);
+        CHECK(text.find("\"escalate\"") != std::string::npos);
+        CHECK(text.find("content.scene") != std::string::npos);
+    }
+    {
+        EnvGuard env{{{"EVE_MCP_TOOLSET", "all"},
+                      {"EVE_MCP_READONLY", nullptr},
+                      {"EVE_MCP_EXCLUDE", nullptr},
+                      {"EVE_MCP_PROFILE", nullptr}}};
+        auto&    session = AgentDevelopmentSession::instance();
+        session.reset();
+        REQUIRE(session.start("Session overlay", {{"play", "ok", true, false}}, "verify", "verify.play").isAccepted());
+        CHECK(mcpToolAllowed("eve_play"));
+        CHECK(!mcpToolAllowed("eve_scene_batch"));
+        REQUIRE(session.escalate(session.sessionId(), "content.scene").isAccepted());
+        CHECK(mcpToolAllowed("eve_scene_batch"));
+        CHECK(!mcpToolAllowed("eve_eval"));
+        session.reset();
+    }
+    CHECK_EQ(mcpProfileToolsetEnv("verify.play"), std::string("agent,core,play,input"));
+}
+}  // namespace test_mcp_tool_filter
+
+// Contract section: network
 #include "PrivateTestScope.h"
-#include <atomic>
-#include <chrono>
+
 #include <cstdio>
 #include <cstring>
-#include <string>
-#include <thread>
 #include "data/ByteData.h"
 #include "network/Channel.h"
 #include "network/HttpRequest.h"
@@ -1455,8 +1564,6 @@ TEST_CASE("devtools.mcp.toolsetFilterHidesAndRejects") {
 #include "network/UdpLink.h"
 #include "network/UdpSocket.h"
 #include "platform_event/PlatformEvent.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // network.cpp
 namespace test_network {
 using eve::platform_event::Message;
@@ -1858,29 +1965,30 @@ TEST_CASE("network.Http.setHeaderAndBody") {
     req->setBodyString("post-body");
     REQUIRE(req->submit());
 
-    std::string              received;
+    std::string received;
     eve::network::TcpSocket* peer = nullptr;
-    for (int i = 0; i < 400 && !peer; ++i) {
+    bool complete = false;
+    for (int i = 0; i < 400 && !complete; ++i) {
         net->pump();
-        while (ev->pollOwned()) {
-        }
-        peer = server->accept();
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    }
-    REQUIRE(peer != nullptr);
-
-    for (int i = 0; i < 400 && received.find("\r\n\r\n") == std::string::npos; ++i) {
-        net->pump();
+        // Accept before draining events: the worker can queue request bytes
+        // along with the connection, so discarding early events loses headers.
+        if (!peer) peer = server->accept();
         while (auto m = ev->pollOwned()) {
             if (m->name == "netdata" && m->args.size() >= 2 && m->args[0].p == peer && m->args[1].p) {
                 auto* data = static_cast<eve::data::ByteData*>(m->args[1].p);
                 received.append(static_cast<char*>(data->getData()), data->getSize());
             }
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        // TCP may deliver headers and body separately. The known request body
+        // is nine bytes; do not reply or assert until all of it has arrived.
+        const auto headerEnd = received.find("\r\n\r\n");
+        complete = headerEnd != std::string::npos && received.size() >= headerEnd + 4 + 9;
+        if (!complete) std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
-    CHECK(received.find("X-Test-Header: custom-value") != std::string::npos);
-    CHECK(received.find("post-body") != std::string::npos);
+    REQUIRE(peer != nullptr);
+    REQUIRE(complete);
+    REQUIRE(received.find("X-Test-Header: custom-value") != std::string::npos);
+    REQUIRE_EQ(received.substr(received.find("\r\n\r\n") + 4), std::string("post-body"));
 
     const char*         httpResp = "HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok";
     eve::data::ByteData respData(httpResp, std::strlen(httpResp));
@@ -1890,15 +1998,15 @@ TEST_CASE("network.Http.setHeaderAndBody") {
     for (int i = 0; i < 400 && !got; ++i) {
         net->pump();
         while (auto m = ev->pollOwned()) {
-            if (m->name == "httpresp") {
+            if (m->name == "httpresp" && !m->args.empty() && m->args[0].p == req) {
                 got = true;
                 REQUIRE(m->args.size() >= 3);
-                CHECK(m->args[2].ownsPointer());
+                REQUIRE(m->args[2].ownsPointer());
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
-    CHECK(got);
+    REQUIRE(got);
 
     peer->close();
     server->close();
@@ -2324,21 +2432,15 @@ TEST_CASE("network.NetHostPeers") {
     recordPhase("destroy client and host");
 }
 }  // namespace test_network
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pixelworld_parallel)
+// Contract section: pixelworld parallel
 #include "PrivateTestScope.h"
+
 #include <algorithm>
-#include <chrono>
-#include <cstdlib>
 #include <iostream>
-#include <memory>
-#include <vector>
 #include "pixelworld/PixelWorld.h"
 #include "pixelworld/thread/PixelWorldThread.h"
 #include "thread/JobSystem.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // pixelworld_parallel.cpp
 namespace test_pixelworld_parallel {
 using namespace eve::pixelworld;
@@ -2432,16 +2534,13 @@ TEST_CASE("pixelworld.benchmark_million_mobile_pixels_reports_p50_p95") {
     CHECK(p95 >= p50);
 }
 }  // namespace test_pixelworld_parallel
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_result_contract)
+// Contract section: procgen result contract
 #include "PrivateTestScope.h"
-#include <future>
-#include <memory>
+
 #include "procgen/PointGraph.h"
 #include "procgen/Procgen.h"
 #include "procgen/RuntimeGeneration.h"
-#include "zeroerr/unittest.h"
 // procgen_result_contract.cpp
 namespace test_procgen_result_contract {
 using namespace eve;
@@ -2681,15 +2780,13 @@ TEST_CASE("procgen.scriptHostCommitsAndRollsBackGeneratorsAtomically") {
     CHECK_EQ(vm.find("afterUnfinishedRevision").toInt(), 1);
 }
 }  // namespace test_procgen_result_contract
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_rng_contract)
+// Contract section: procgen rng contract
 #include "PrivateTestScope.h"
+
 #include <DTL/Shape/CellularAutomatonIsland.hpp>
-#include <future>
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/Semantic.h"
-#include "zeroerr/unittest.h"
 // procgen_rng_contract.cpp
 namespace test_procgen_rng_contract {
 using namespace eve::procgen;
@@ -2733,24 +2830,22 @@ TEST_CASE("procgen.cave.cellular.parallelJobsHaveIsolatedRandomStreams") {
     CHECK(sameCells(expectedB.second, actualB.second));
 }
 }  // namespace test_procgen_rng_contract
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_render_graph)
-#include "PrivateTestScope.h"
+#include "common/config.h"
+#if !defined(EVENGINE_WEBGPU)
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <cstdint>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <thread>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "graphics/vulkan/FrameGraphJobs.h"
-#include "thread/JobSystem.h"
 #include "vkbuilder/framegraph.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // render_graph.cpp
 namespace test_render_graph {
 // Device-free tests for the FrameGraph-based render pipeline planning and the
@@ -2886,49 +2981,52 @@ TEST_CASE("render_graph.engineTopology") {
         }
         if (p.name == "shadow0" || p.name == "shadow1" || p.name == "shadow2") {
             REQUIRE_EQ(p.attachments.size(), size_t(1));
-            const bool folded = p.attachments[0].finalLayout == vk::ImageLayout::eDepthStencilReadOnlyOptimal;
-            CHECK(folded);
+            // Match the next sample() access, not the resource's end-of-frame layout.
+            CHECK_EQ(p.attachments[0].finalLayout, vk::ImageLayout::eShaderReadOnlyOptimal);
         }
     }
 }
 
 TEST_CASE("render_graph.jobSystemExecutorParallel") {
-    auto* jobs = eve::thread::createJobSystem(0);  // hardware concurrency, like the engine
+    auto* jobs = eve::thread::createJobSystem(4);
     REQUIRE(jobs != nullptr);
     jobs->beginFrame();
 
     std::mutex                   mu;
     std::vector<int>             recorded;
     std::vector<std::thread::id> threads;
+    std::condition_variable      overlap;
+    int                          active = 0, peakActive = 0;
+    const auto                   deadline  = std::chrono::steady_clock::now() + std::chrono::seconds(5);
     const auto                   recordOne = [&](uint32_t order) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(8));
-        std::lock_guard<std::mutex> lk(mu);
+        std::unique_lock<std::mutex> lk(mu);
+        peakActive = std::max(peakActive, ++active);
+        overlap.notify_all();
+        overlap.wait_until(lk, deadline, [&] { return peakActive >= 2; });
         recorded.push_back(int(order));
         threads.push_back(std::this_thread::get_id());
+        --active;
     };
 
-    // One layer of 8 independent passes: serial recording would take >= 64 ms,
-    // parallel recording on 4 workers takes ~2-3 sleep periods.
+    // Independent passes must overlap, even when a busy CI host schedules workers late.
     std::vector<uint32_t> layer{0, 1, 2, 3, 4, 5, 6, 7};
-    const auto            t0       = std::chrono::steady_clock::now();
     auto                  executor = vulkan::jobSystemPassExecutor(jobs);
     executor(layer, recordOne);
-    const auto ms =
-        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - t0).count();
 
     jobs->endFrame();
     delete jobs;
 
     CHECK_EQ(recorded.size(), layer.size());
+    std::sort(recorded.begin(), recorded.end());
     for (size_t i = 0; i < recorded.size(); ++i) CHECK_EQ(recorded[i], int(i));
     // Every pass recorded exactly once (recorded already proves count; sort
     // check proves no duplicates and no gaps).
-    CHECK(ms < 40);
+    CHECK_GE(peakActive, 2);
     // At least two distinct threads participated -> the layer was truly
     // recorded in parallel, not just serialized through the executor.
     std::sort(threads.begin(), threads.end());
-    const bool parallel = threads.size() >= 2 && std::unique(threads.begin(), threads.end()) != threads.end();
-    CHECK(parallel);
+    const auto distinctEnd = std::unique(threads.begin(), threads.end());
+    CHECK(std::distance(threads.begin(), distinctEnd) >= 2);
 }
 
 TEST_CASE("render_graph.jobSystemExecutorSerialFallback") {
@@ -3131,24 +3229,15 @@ TEST_CASE("render_graph.recordCycleConcurrent") {
 }  // namespace test_render_graph
 #endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_thread)
+// Contract section: thread
 #include "PrivateTestScope.h"
-#include <atomic>
-#include <chrono>
+
 #include <functional>
-#include <memory>
-#include <string>
-#include <thread>
-#include <vector>
 #include "common/Exception.h"
-#include "platform_event/PlatformEvent.h"
 #include "thread/Channel.h"
-#include "thread/JobSystem.h"
 #include "thread/Task.h"
 #include "thread/Thread.h"
 #include "thread/ThreadPool.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // thread.cpp
 namespace test_thread {
 namespace {
@@ -3265,7 +3354,8 @@ TEST_CASE("thread.postMain.fromWorkerThread") {
     task->wait();
     CHECK_EQ(task->getStatus(), std::string("done"));
     CHECK_EQ(ev->pollName(), std::string("thread.worker.done"));
-    CHECK_EQ(ev->pollData(), std::string("w"));
+    CHECK_EQ(ev->getLastData(), std::string("w"));
+    CHECK_EQ(ev->pollName(), std::string());
 }
 
 TEST_CASE("thread.pool.submitSleep") {
@@ -3790,19 +3880,10 @@ TEST_CASE("thread.jobsystem.defaultSystem") {
     delete job;
 }
 }  // namespace test_thread
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_voxel)
+// Contract section: voxel
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <cstring>
-#include <memory>
-#include <string>
-#include <thread>
-#include <vector>
-#include "data/ByteData.h"
+
 #include "procgen/heightmap/TerrainAsset.h"
 #include "procgen/heightmap/TerrainSampler.h"
 #include "voxel/Chunk.h"
@@ -3814,8 +3895,6 @@ TEST_CASE("thread.jobsystem.defaultSystem") {
 #include "voxel/VoxelPack.h"
 #include "voxel/VoxelRectDecode.h"
 #include "voxel/VoxelWorld.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // voxel.cpp
 namespace test_voxel {
 using namespace eve::voxel;
@@ -3937,4 +4016,3 @@ TEST_CASE("voxel.world.streamAround_create_budget_spreads_across_calls") {
     CHECK_EQ(world.getInflightStreamCount(), 0);
 }
 }  // namespace test_voxel
-#endif

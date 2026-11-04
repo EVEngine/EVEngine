@@ -626,6 +626,19 @@ public:
      */
     [[nodiscard]] eve::Result<std::vector<eve::WorldSphereContact>> sweepSphereOwned(
         double x, double y, double z, double endX, double endY, double endZ, eve::WorldSphereSweepSettings settings);
+    /**
+     * @brief Explicitly apply a world-space impulse (N s) to a sweep contact's dynamic body.
+     * @param contact Borrowed provenance from this world's sweep; never retained or treated as a surface point.
+     * @param impulse Finite impulse chosen by the caller; no projectile mass/damage policy is inferred.
+     * @param worldPoint Finite application point in meters, chosen explicitly by the caller.
+     * @return Structured stale-world/body, invalid-input or non-dynamic-body failure; no mutation on rejection.
+     * @thread Simulation owner only, without callbacks or reentrancy. Call after a successful carrier update.
+     * @remarks No automatic dispatch or deduplication. Each successful call applies once; callers own event
+     * consumption. World restore invalidates old contacts even if numeric body IDs are reused. Contacts are
+     * process-local only.
+     */
+    [[nodiscard]] eve::Result<void> applySweepContactImpulse(const eve::WorldSphereContact &contact,
+                                                             PhysicsVector3D impulse, PhysicsVector3D worldPoint);
     /** @brief Opaque process-local query token; re-fetch after restore, never persist in save data. */
     [[nodiscard]] std::string queryToken() const;
     /** @brief Monotonic query binding revision; successful restore invalidates prior sessions. */

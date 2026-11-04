@@ -1,4 +1,5 @@
 #include "climbing/ClimbingAnchorAuthoring.h"
+#include "common/ValueRead.h"
 
 #include <algorithm>
 #include <array>
@@ -125,44 +126,36 @@ const eve::Value* field(const eve::Value::Object& object, std::string_view name)
 }
 
 bool readString(const eve::Value::Object& object, std::string_view name, std::string& output) {
-    const auto* value = field(object, name);
-    const auto* text = value ? value->getIf<std::string>() : nullptr;
-    if (!text) return false;
-    output = *text;
+    auto parsed = eve::readStringMember(object, name);
+    if (!parsed) return false;
+    output = std::move(parsed.value());
     return true;
 }
 
 bool readFloat(const eve::Value::Object& object, std::string_view name, float& output) {
     const auto* value = field(object, name);
     if (!value) return false;
-    double number = 0.0;
-    if (const auto* integer = value->getIf<std::int64_t>())
-        number = static_cast<double>(*integer);
-    else if (const auto* real = value->getIf<double>())
-        number = *real;
-    else
-        return false;
-    if (!std::isfinite(number) || number < -std::numeric_limits<float>::max() ||
-        number > std::numeric_limits<float>::max())
-        return false;
-    output = static_cast<float>(number);
+    auto parsed = eve::readFiniteFloatValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool readUInt32(const eve::Value::Object& object, std::string_view name, std::uint32_t& output) {
     const auto* value = field(object, name);
-    const auto* integer = value ? value->getIf<std::int64_t>() : nullptr;
-    if (!integer || *integer < 0 || static_cast<std::uint64_t>(*integer) > std::numeric_limits<std::uint32_t>::max())
-        return false;
-    output = static_cast<std::uint32_t>(*integer);
+    if (!value) return false;
+    auto parsed = eve::readUInt32Value(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool readBool(const eve::Value::Object& object, std::string_view name, bool& output) {
     const auto* value = field(object, name);
-    const auto* boolean = value ? value->getIf<bool>() : nullptr;
-    if (!boolean) return false;
-    output = *boolean;
+    if (!value) return false;
+    auto parsed = eve::readBoolValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 

@@ -22,7 +22,11 @@ namespace eve::network {
 
 class Network;
 
-/** @brief UDP socket backed by Poco::Net; supports connect/bind and datagram send. */
+/** @brief UDP socket backed by Poco::Net; supports connect/bind and datagram send.
+ *  @ownership The caller owns the socket; Network must outlive it.
+ *  @thread Public operations run on the owner thread; I/O runs on NetWorker.
+ *  @lifetime Closing waits for active sends/polling and cancels queued sends.
+ */
 class EVENGINE_API_PLATFORM UdpSocket {
 public:
     /** @brief Creates an unbound socket owned by the given module. */
@@ -53,6 +57,8 @@ public:
     Network* network() const { return net_; }
 
 private:
+    struct SendState;
+    std::shared_ptr<SendState>                 sendState_;
     Network* net_ = nullptr;
     std::unique_ptr<Poco::Net::DatagramSocket> sock_;
     bool bound_ = false;
