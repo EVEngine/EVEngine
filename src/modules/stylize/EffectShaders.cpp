@@ -12,6 +12,7 @@
 #include "stylize/shaders/grain_post_frag_spv.inc"
 #include "stylize/shaders/kuwahara_post_frag_spv.inc"
 #include "stylize/shaders/kuwahara_aniso_post_frag_spv.inc"
+#include "stylize/shaders/dog_post_frag_spv.inc"
 #include "stylize/shaders/neon_edge_post_frag_spv.inc"
 #include "stylize/shaders/hologram_mesh_frag_spv.inc"
 #include "stylize/shaders/slash_mesh_frag_spv.inc"
@@ -49,6 +50,7 @@ const StyleDefinition kPostEffects[] = {
     {"glitchWave", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 310},
     {"kuwahara", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 220},
     {"kuwaharaAniso", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 225},
+    {"dog", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 230},
     // BeforeTonemap so neon edges sit with cartoon/ink outline peers (port program Wave 2).
     {"neonEdge", true, false, false, false, false, graphics::PostEffectStage::BeforeTonemap, 120},
 };
@@ -156,6 +158,15 @@ const StyleParameterDesc kKuwaharaAnisoParams[] = {
     {"zeta", 0.f, 0.f, 3.f},
 };
 
+// Acerola Difference of Gaussians. strength 0 → identity; texelW/H in bind.
+// thresholding/useTanh/invert are 0/1 flags (float knobs for push-constant layout).
+const StyleParameterDesc kDogParams[] = {
+    {"strength", 0.f, 0.f, 1.f},      {"kernelSize", 5.f, 1.f, 8.f}, {"sigma", 2.f, 0.1f, 5.f},
+    {"k", 1.6f, 0.1f, 5.f},           {"tau", 1.f, 0.01f, 5.f},     {"thresholding", 1.f, 0.f, 1.f},
+    {"useTanh", 0.f, 0.f, 1.f},       {"phi", 1.f, 0.01f, 100.f},   {"threshold", 0.005f, -1.f, 1.f},
+    {"invert", 0.f, 0.f, 1.f},
+};
+
 // XPL EdgeDetectionSobelNeonV2. strength 0 → identity; screenW/H appended in bind.
 // RGB Sobel gradients → colorful neon edges (not luma-only V1).
 const StyleParameterDesc kNeonEdgeParams[] = {
@@ -209,6 +220,7 @@ int postParamCount(const std::string& style) {
     if (style == "glitchWave") return int(sizeof(kGlitchWaveParams) / sizeof(kGlitchWaveParams[0]));
     if (style == "kuwahara") return int(sizeof(kKuwaharaParams) / sizeof(kKuwaharaParams[0]));
     if (style == "kuwaharaAniso") return int(sizeof(kKuwaharaAnisoParams) / sizeof(kKuwaharaAnisoParams[0]));
+    if (style == "dog") return int(sizeof(kDogParams) / sizeof(kDogParams[0]));
     if (style == "neonEdge") return int(sizeof(kNeonEdgeParams) / sizeof(kNeonEdgeParams[0]));
     return 0;
 }
@@ -221,6 +233,7 @@ const StyleParameterDesc* postParamAt(const std::string& style, int index) {
     if (style == "glitchWave") return paramAt(kGlitchWaveParams, index);
     if (style == "kuwahara") return paramAt(kKuwaharaParams, index);
     if (style == "kuwaharaAniso") return paramAt(kKuwaharaAnisoParams, index);
+    if (style == "dog") return paramAt(kDogParams, index);
     if (style == "neonEdge") return paramAt(kNeonEdgeParams, index);
     return nullptr;
 }
@@ -295,7 +308,7 @@ void bindEffectPostUniforms(graphics::Shader* shader, const std::string& style) 
         shader->sendFloat("screenW", 256.f);
         shader->sendFloat("screenH", 256.f);
     }
-    if (style == "kuwahara" || style == "kuwaharaAniso") {
+    if (style == "kuwahara" || style == "kuwaharaAniso" || style == "dog") {
         shader->declareFloat("texelW");
         shader->declareFloat("texelH");
         shader->sendFloat("texelW", 1.f / 256.f);
@@ -326,6 +339,8 @@ graphics::Shader* createEffectPostShader(graphics::Graphics* gfx, const std::str
         frag = copySpv(kuwahara_post_frag_spv, kuwahara_post_frag_spv_count);
     else if (style == "kuwaharaAniso")
         frag = copySpv(kuwahara_aniso_post_frag_spv, kuwahara_aniso_post_frag_spv_count);
+    else if (style == "dog")
+        frag = copySpv(dog_post_frag_spv, dog_post_frag_spv_count);
     else if (style == "neonEdge")
         frag = copySpv(neon_edge_post_frag_spv, neon_edge_post_frag_spv_count);
     else

@@ -372,7 +372,7 @@ using namespace eve::stylize;
 namespace {
 const char *kMeshEffects[] = {"rim", "dissolve", "hologram", "snow", "slash", "ember", "aura"};
 const char *kPostEffects[] = {"vignette", "chromatic", "grain", "glitchAnalog", "glitchBlock",
-                              "glitchWave", "kuwahara", "kuwaharaAniso", "neonEdge"};
+                              "glitchWave", "kuwahara", "kuwaharaAniso", "dog", "neonEdge"};
 }  // namespace
 
 TEST_CASE("stylize.layerEffects.spec.registryAndParameters") {
@@ -523,6 +523,35 @@ TEST_CASE("stylize.layerEffects.spec.registryAndParameters") {
         effect->setFloat("kernelSize", 99.f);
         REQUIRE_EQ(effect->getFloat("kernelSize"), effect->getParamMax("kernelSize"));
         REQUIRE_EQ(effect->getPriority(), 225);
+    };
+    SUB_CASE("dog defaults -> afterTonemap with zero strength near-identity") {
+        auto                          *mod = Stylize::create();
+        std::unique_ptr<StyleInstance> effect(mod->newInstance("dog"));
+        REQUIRE(effect != nullptr);
+        REQUIRE_EQ(effect->getStage(), std::string("afterTonemap"));
+        REQUIRE(effect->requiresInput("color"));
+        REQUIRE(!effect->requiresInput("depth"));
+        REQUIRE(effect->hasParam("strength"));
+        REQUIRE(effect->hasParam("kernelSize"));
+        REQUIRE(effect->hasParam("sigma"));
+        REQUIRE(effect->hasParam("k"));
+        REQUIRE(effect->hasParam("tau"));
+        REQUIRE(effect->hasParam("thresholding"));
+        REQUIRE(effect->hasParam("useTanh"));
+        REQUIRE(effect->hasParam("phi"));
+        REQUIRE(effect->hasParam("threshold"));
+        REQUIRE(effect->hasParam("invert"));
+        REQUIRE_EQ(effect->getFloat("strength"), 0.f);
+        REQUIRE_EQ(effect->getFloat("kernelSize"), 5.f);
+        REQUIRE_EQ(effect->getFloat("sigma"), 2.f);
+        REQUIRE_EQ(effect->getFloat("k"), 1.6f);
+        REQUIRE_EQ(effect->getFloat("tau"), 1.f);
+        REQUIRE_EQ(effect->getFloat("thresholding"), 1.f);
+        REQUIRE_EQ(effect->getFloat("useTanh"), 0.f);
+        REQUIRE_EQ(effect->getFloat("invert"), 0.f);
+        effect->setFloat("kernelSize", 99.f);
+        REQUIRE_EQ(effect->getFloat("kernelSize"), effect->getParamMax("kernelSize"));
+        REQUIRE_EQ(effect->getPriority(), 230);
     };
     SUB_CASE("neonEdge defaults -> beforeTonemap with zero strength near-identity") {
         auto                          *mod = Stylize::create();
@@ -1355,7 +1384,7 @@ TEST_CASE("stylize.styles.spec.registryAndInstance") {
         auto *mod = Stylize::create();
         REQUIRE(mod != nullptr);
         REQUIRE_EQ(mod->getName(), std::string("Stylize"));
-        REQUIRE_EQ(mod->getStyleCount(), 24);
+        REQUIRE_EQ(mod->getStyleCount(), 25);
         REQUIRE(mod->supports("cartoon", "mesh"));
         REQUIRE(mod->supports("cartoon", "post"));
         REQUIRE(mod->supports("watercolor", "cpu"));
@@ -1374,6 +1403,8 @@ TEST_CASE("stylize.styles.spec.registryAndInstance") {
         REQUIRE(!mod->supports("kuwahara", "mesh"));
         REQUIRE(mod->supports("kuwaharaAniso", "post"));
         REQUIRE(!mod->supports("kuwaharaAniso", "mesh"));
+        REQUIRE(mod->supports("dog", "post"));
+        REQUIRE(!mod->supports("dog", "mesh"));
         REQUIRE(mod->supports("neonEdge", "post"));
         REQUIRE(!mod->supports("neonEdge", "mesh"));
         REQUIRE(!mod->hasStyle("oil"));
