@@ -49,6 +49,7 @@ struct ShaderResourceInputs;
 class AmbientOcclusion;
 class AntiAliasing;
 class Bloom;
+class ContactShadow;
 class DepthOfField;
 class Exposure;
 class DepthPyramid;
@@ -2030,6 +2031,12 @@ public:
     AmbientOcclusion *newAmbientOcclusion();
 
     /**
+     * @brief Screen-space contact shadows along the primary light. Caller owns ContactShadow*;
+     * its Shader is owned by Graphics.
+     */
+    ContactShadow *newContactShadow();
+
+    /**
      * @brief Screen-space model outline (t3ssel8r-style) from GBuffer depth + normal.
      * Caller owns Outline*; its Shader is owned by Graphics.
      */
@@ -2061,6 +2068,8 @@ public:
     /** @lifetime Pipeline effect getters return Graphics-owned objects valid until shutdown. */
     /** @brief Pipeline ambient occlusion. */
     AmbientOcclusion *pipelineAmbientOcclusion();
+    /** @brief Pipeline contact shadow. */
+    ContactShadow *pipelineContactShadow();
     /** @brief Pipeline global illumination. */
     GlobalIllumination *pipelineGlobalIllumination();
     /** @brief Pipeline screen space reflection. */
@@ -2281,6 +2290,7 @@ protected:
     std::unique_ptr<RenderControl> renderControl_;
     std::shared_ptr<PrimitiveScene>                         primitiveScene_;
     std::unique_ptr<AmbientOcclusion> pipelineAO_;
+    std::unique_ptr<ContactShadow> pipelineContactShadow_;
     std::unique_ptr<GlobalIllumination> pipelineGI_;
     std::unique_ptr<ScreenSpaceReflection> pipelineSSR_;
     std::unique_ptr<AntiAliasing> pipelineAA_;

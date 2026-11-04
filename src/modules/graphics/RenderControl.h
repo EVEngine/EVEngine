@@ -52,6 +52,8 @@ enum class PathTracingFrameState { Disabled, Active, Unavailable, SceneRejected 
  *   "reflectionChain"— enables TAA plus the complete RTGI then SSR lighting chain (default off)
  *   "decal"         — screen-space decal layer pass between gbuffer and forward
  *                     (implies gbuffer; default off)
+ *   "contactShadow" — short screen-space ray-march contact shadows along the
+ *                     primary directional light (implies gbuffer; default off)
  *   "atmosphere"    — analytic sky/aerial-perspective pass (default on)
  *   "volumetricFog" — froxel media, lighting, integration and composite passes
  *   "fogLocalVolumes" — local volume injection (implies volumetricFog)

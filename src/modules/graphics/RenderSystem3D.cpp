@@ -9,6 +9,7 @@
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/ClipSpace.h"
+#include "graphics/ContactShadow.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/DepthPyramid.h"
 #include "graphics/DiffuseLightProbeRegistry.h"
@@ -1605,13 +1606,16 @@ void RenderSystem3D::render(Graphics& gfx) {
 
     drawPersistentPrimitives();
 
-    const bool doAO      = rc->isEnabled("ao");
-    const bool doRTGI    = rc->isEnabled("rtgi") || rc->isEnabled("reflectionChain");
-    const bool doSSR     = rc->isEnabled("ssr") || rc->isEnabled("reflectionChain");
-    const bool doRTX     = rc->isEnabled("rtx");
+    const bool doAO            = rc->isEnabled("ao");
+    const bool doContactShadow = rc->isEnabled("contactShadow");
+    const bool doRTGI          = rc->isEnabled("rtgi") || rc->isEnabled("reflectionChain");
+    const bool doSSR           = rc->isEnabled("ssr") || rc->isEnabled("reflectionChain");
+    const bool doRTX           = rc->isEnabled("rtx");
     bool       aoApplied = false;
     auto       applyAO   = [&]() {
-        if (!doAO || !gfx.supportsGBufferPost() || !defaultCam || !gfx.had3DThisFrame()) return;
+        if ((!doAO && !doContactShadow) || !gfx.supportsGBufferPost() || !defaultCam ||
+            !gfx.had3DThisFrame())
+            return;
         GBuffer* gb = rc->getGBuffer();
         if (gb && gb->isValid()) {
             auto        cd         = defaultCam->data();
@@ -1620,17 +1624,36 @@ void RenderSystem3D::render(Graphics& gfx) {
                 fx->setCamera(cd->eyeX, cd->eyeY, cd->eyeZ, cd->targetX, cd->targetY, cd->targetZ, cd->upX, cd->upY,
                               cd->upZ, cd->fovYDeg, aspectSafe, cd->nearZ, cd->farZ);
             };
-            AmbientOcclusion* ao = gfx.pipelineAmbientOcclusion();
-            ao->setQuality("medium");
-            ao->setIntensity(0.16f);
-            ao->setPower(1.1f);
-            ao->setRadius(std::clamp(cd->farZ * 0.006f, 0.18f, 0.35f));
-            bindCam(ao);
             // WebGPU cannot bind a depth-aspect texture to the generic 2D
             // post-process layout. Its G-buffer already carries equivalent
             // linear depth in a filterable RGBA target.
             Texture* depth = gfx.getBackendName() == "webgpu" ? gb->getDepthTexture() : gb->getHwDepthTexture();
-            if (depth) ao->applyFromGBuffer(&gfx, depth, gb->getNormalTexture());
+            if (doAO) {
+                AmbientOcclusion* ao = gfx.pipelineAmbientOcclusion();
+                ao->setQuality("medium");
+                ao->setIntensity(0.16f);
+                ao->setPower(1.1f);
+                ao->setRadius(std::clamp(cd->farZ * 0.006f, 0.18f, 0.35f));
+                bindCam(ao);
+                if (depth) ao->applyFromGBuffer(&gfx, depth, gb->getNormalTexture());
+            }
+            if (doContactShadow && depth) {
+                ContactShadow* cs = gfx.pipelineContactShadow();
+                cs->setQuality("medium");
+                glm::vec3 lightDir = gLightDir;
+                if (shadowCaster) {
+                    lightDir = glm::vec3(shadowCaster->dx, shadowCaster->dy, shadowCaster->dz);
+                } else if (!packed.empty() && packed[0].data && !packed[0].isPoint) {
+                    lightDir = glm::vec3(packed[0].data->dx, packed[0].data->dy, packed[0].data->dz);
+                }
+                if (glm::length(lightDir) < 1e-6f) lightDir = glm::vec3(0.f, 1.f, 0.f);
+                else
+                    lightDir = glm::normalize(lightDir);
+                cs->setLightDirection(lightDir.x, lightDir.y, lightDir.z);
+                bindCam(cs);
+                if (!cams.empty()) cs->setInvViewProj(glm::inverse(cams.front().viewProj));
+                cs->applyFromGBuffer(&gfx, depth, gb->getNormalTexture());
+            }
             // Fullscreen SSGI from lit scene color reprints nearby props
             // (curtains, planters) onto the floor as multiple swimming ghosts.
             // Mesh shaders still add hemispheric sky/ground + wrap fill.

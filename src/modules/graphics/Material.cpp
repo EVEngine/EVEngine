@@ -247,6 +247,13 @@ Result<void> Material::setFoliageTranslucency(float red, float green, float blue
     return Result<void>::success();
 }
 
+Result<void> Material::setClearcoat(float factor, float roughness) {
+    auto candidate                 = pbr_;
+    candidate.clearcoatFactor      = factor;
+    candidate.clearcoatRoughness   = roughness;
+    return setPbrSurface(candidate);
+}
+
 Result<void> Material::setFoliageWind(Texture* motionTexture, Texture* noiseTexture, float directionX, float directionZ,
                                       float strength, float bending, float bendingSpeed, float branch,
                                       float branchSpeed, float flutter, float flutterSpeed, float fadeDistance,

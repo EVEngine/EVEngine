@@ -31,6 +31,7 @@ const char *kKnownFeatures[] = {"depthTest",
                                 "pathTracing",
                                 "pathTemporal",
                                 "outline",
+                                "contactShadow",
                                 "gpuDriven",
                                 "visResolve",
                                 "frustumCull",
@@ -49,9 +50,10 @@ bool isKnownFeature(const std::string &feature) {
 
 bool requiresGBuffer(const std::string& feature) {
     return feature == "gbuffer" || feature == "gbufferAlbedo" || feature == "ao" || feature == "gi" ||
-           feature == "outline" || feature == "decal" || feature == "gpuDriven" || feature == "visResolve" ||
-           feature == "ssr" || feature == "rtgi" || feature == "reflectionChain" || feature == "rtx" ||
-           feature == "volumetricFog" || feature == "fogLocalVolumes" || feature == "fogTemporal";
+           feature == "outline" || feature == "contactShadow" || feature == "decal" ||
+           feature == "gpuDriven" || feature == "visResolve" || feature == "ssr" || feature == "rtgi" ||
+           feature == "reflectionChain" || feature == "rtx" || feature == "volumetricFog" ||
+           feature == "fogLocalVolumes" || feature == "fogTemporal";
 }
 
 }  // namespace
@@ -67,6 +69,7 @@ RenderControl::RenderControl() {
     features_["clusteredDeferred"] = false;
     features_["ao"] = true;
     features_["gi"] = true;
+    features_["contactShadow"] = false;
     features_["rtgi"] = false;
     features_["aa"] = true;
     features_["taa"] = false;
@@ -297,7 +300,10 @@ void RenderControl::compile() {
     const bool wantHybrid   = lightingMode_ == LightingMode::Hybrid;
     const bool gbufferAvailable = gfx_ == nullptr || gfx_->supportsGBufferPost();
     const bool gbufferOn =
-        gbufferAvailable && (isEnabled("gbuffer") || isEnabled("gbufferAlbedo") || isEnabled("ao") || isEnabled("gi"));
+        gbufferAvailable &&
+        (isEnabled("gbuffer") || isEnabled("gbufferAlbedo") || isEnabled("ao") || isEnabled("gi") ||
+         isEnabled("contactShadow") || isEnabled("outline") || isEnabled("decal") || isEnabled("rtgi") ||
+         isEnabled("ssr") || isEnabled("reflectionChain") || isEnabled("rtx") || isEnabled("volumetricFog"));
     // GPU-driven opaque and visibility resolve belong to ForwardPlus. Preserve
     // the requested mode while exposing this explicit feature's priority in the
     // effective pass list instead of silently disabling it during rendering.
