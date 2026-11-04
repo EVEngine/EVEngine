@@ -372,7 +372,7 @@ using namespace eve::stylize;
 namespace {
 const char *kMeshEffects[] = {"rim", "dissolve", "hologram", "snow", "slash", "ember", "aura"};
 const char *kPostEffects[] = {"vignette", "chromatic", "grain", "glitchAnalog", "glitchBlock",
-                              "glitchWave", "kuwahara", "neonEdge"};
+                              "glitchWave", "kuwahara", "kuwaharaAniso", "neonEdge"};
 }  // namespace
 
 TEST_CASE("stylize.layerEffects.spec.registryAndParameters") {
@@ -500,6 +500,29 @@ TEST_CASE("stylize.layerEffects.spec.registryAndParameters") {
         effect->setFloat("kernelSize", 99.f);
         REQUIRE_EQ(effect->getFloat("kernelSize"), effect->getParamMax("kernelSize"));
         REQUIRE_EQ(effect->getPriority(), 220);
+    };
+    SUB_CASE("kuwaharaAniso defaults -> afterTonemap with zero strength near-identity") {
+        auto                          *mod = Stylize::create();
+        std::unique_ptr<StyleInstance> effect(mod->newInstance("kuwaharaAniso"));
+        REQUIRE(effect != nullptr);
+        REQUIRE_EQ(effect->getStage(), std::string("afterTonemap"));
+        REQUIRE(effect->requiresInput("color"));
+        REQUIRE(!effect->requiresInput("depth"));
+        REQUIRE(effect->hasParam("strength"));
+        REQUIRE(effect->hasParam("kernelSize"));
+        REQUIRE(effect->hasParam("sharpness"));
+        REQUIRE(effect->hasParam("hardness"));
+        REQUIRE(effect->hasParam("alpha"));
+        REQUIRE(effect->hasParam("zeroCrossing"));
+        REQUIRE(effect->hasParam("zeta"));
+        REQUIRE_EQ(effect->getFloat("strength"), 0.f);
+        REQUIRE_EQ(effect->getFloat("kernelSize"), 4.f);
+        REQUIRE_EQ(effect->getFloat("sharpness"), 8.f);
+        REQUIRE_EQ(effect->getFloat("hardness"), 8.f);
+        REQUIRE_EQ(effect->getFloat("zeta"), 0.f);
+        effect->setFloat("kernelSize", 99.f);
+        REQUIRE_EQ(effect->getFloat("kernelSize"), effect->getParamMax("kernelSize"));
+        REQUIRE_EQ(effect->getPriority(), 225);
     };
     SUB_CASE("neonEdge defaults -> beforeTonemap with zero strength near-identity") {
         auto                          *mod = Stylize::create();
@@ -1332,7 +1355,7 @@ TEST_CASE("stylize.styles.spec.registryAndInstance") {
         auto *mod = Stylize::create();
         REQUIRE(mod != nullptr);
         REQUIRE_EQ(mod->getName(), std::string("Stylize"));
-        REQUIRE_EQ(mod->getStyleCount(), 23);
+        REQUIRE_EQ(mod->getStyleCount(), 24);
         REQUIRE(mod->supports("cartoon", "mesh"));
         REQUIRE(mod->supports("cartoon", "post"));
         REQUIRE(mod->supports("watercolor", "cpu"));
@@ -1349,6 +1372,8 @@ TEST_CASE("stylize.styles.spec.registryAndInstance") {
         REQUIRE(!mod->supports("glitchWave", "mesh"));
         REQUIRE(mod->supports("kuwahara", "post"));
         REQUIRE(!mod->supports("kuwahara", "mesh"));
+        REQUIRE(mod->supports("kuwaharaAniso", "post"));
+        REQUIRE(!mod->supports("kuwaharaAniso", "mesh"));
         REQUIRE(mod->supports("neonEdge", "post"));
         REQUIRE(!mod->supports("neonEdge", "mesh"));
         REQUIRE(!mod->hasStyle("oil"));

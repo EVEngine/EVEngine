@@ -11,6 +11,7 @@
 #include "stylize/shaders/glitch_wave_post_frag_spv.inc"
 #include "stylize/shaders/grain_post_frag_spv.inc"
 #include "stylize/shaders/kuwahara_post_frag_spv.inc"
+#include "stylize/shaders/kuwahara_aniso_post_frag_spv.inc"
 #include "stylize/shaders/neon_edge_post_frag_spv.inc"
 #include "stylize/shaders/hologram_mesh_frag_spv.inc"
 #include "stylize/shaders/slash_mesh_frag_spv.inc"
@@ -47,6 +48,7 @@ const StyleDefinition kPostEffects[] = {
     {"glitchBlock", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 300},
     {"glitchWave", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 310},
     {"kuwahara", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 220},
+    {"kuwaharaAniso", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 225},
     // BeforeTonemap so neon edges sit with cartoon/ink outline peers (port program Wave 2).
     {"neonEdge", true, false, false, false, false, graphics::PostEffectStage::BeforeTonemap, 120},
 };
@@ -146,6 +148,14 @@ const StyleParameterDesc kKuwaharaParams[] = {
     {"kernelSize", 3.f, 1.f, 8.f},
 };
 
+// Acerola anisotropic Kuwahara (fused). strength 0 → identity; texelW/H in bind.
+// zeta 0 → auto 2/kernelSize (Acerola useZeta=false path). Diameter capped at 8.
+const StyleParameterDesc kKuwaharaAnisoParams[] = {
+    {"strength", 0.f, 0.f, 1.f},       {"kernelSize", 4.f, 2.f, 8.f}, {"sharpness", 8.f, 1.f, 18.f},
+    {"hardness", 8.f, 1.f, 100.f},     {"alpha", 1.f, 0.01f, 2.f},    {"zeroCrossing", 0.58f, 0.01f, 2.f},
+    {"zeta", 0.f, 0.f, 3.f},
+};
+
 // XPL EdgeDetectionSobelNeonV2. strength 0 → identity; screenW/H appended in bind.
 // RGB Sobel gradients → colorful neon edges (not luma-only V1).
 const StyleParameterDesc kNeonEdgeParams[] = {
@@ -198,6 +208,7 @@ int postParamCount(const std::string& style) {
     if (style == "glitchBlock") return int(sizeof(kGlitchBlockParams) / sizeof(kGlitchBlockParams[0]));
     if (style == "glitchWave") return int(sizeof(kGlitchWaveParams) / sizeof(kGlitchWaveParams[0]));
     if (style == "kuwahara") return int(sizeof(kKuwaharaParams) / sizeof(kKuwaharaParams[0]));
+    if (style == "kuwaharaAniso") return int(sizeof(kKuwaharaAnisoParams) / sizeof(kKuwaharaAnisoParams[0]));
     if (style == "neonEdge") return int(sizeof(kNeonEdgeParams) / sizeof(kNeonEdgeParams[0]));
     return 0;
 }
@@ -209,6 +220,7 @@ const StyleParameterDesc* postParamAt(const std::string& style, int index) {
     if (style == "glitchBlock") return paramAt(kGlitchBlockParams, index);
     if (style == "glitchWave") return paramAt(kGlitchWaveParams, index);
     if (style == "kuwahara") return paramAt(kKuwaharaParams, index);
+    if (style == "kuwaharaAniso") return paramAt(kKuwaharaAnisoParams, index);
     if (style == "neonEdge") return paramAt(kNeonEdgeParams, index);
     return nullptr;
 }
@@ -283,7 +295,7 @@ void bindEffectPostUniforms(graphics::Shader* shader, const std::string& style) 
         shader->sendFloat("screenW", 256.f);
         shader->sendFloat("screenH", 256.f);
     }
-    if (style == "kuwahara") {
+    if (style == "kuwahara" || style == "kuwaharaAniso") {
         shader->declareFloat("texelW");
         shader->declareFloat("texelH");
         shader->sendFloat("texelW", 1.f / 256.f);
@@ -312,6 +324,8 @@ graphics::Shader* createEffectPostShader(graphics::Graphics* gfx, const std::str
         frag = copySpv(glitch_wave_post_frag_spv, glitch_wave_post_frag_spv_count);
     else if (style == "kuwahara")
         frag = copySpv(kuwahara_post_frag_spv, kuwahara_post_frag_spv_count);
+    else if (style == "kuwaharaAniso")
+        frag = copySpv(kuwahara_aniso_post_frag_spv, kuwahara_aniso_post_frag_spv_count);
     else if (style == "neonEdge")
         frag = copySpv(neon_edge_post_frag_spv, neon_edge_post_frag_spv_count);
     else

@@ -229,7 +229,7 @@ flowchart TB
 | glitchBlock | 1 | A | 已落地 |
 | glitchWave | 1 | A | 已落地 |
 | kuwahara | 2 | A | 已落地 |
-| kuwaharaAniso | 2 | A | 待做 |
+| kuwaharaAniso | 2 | A | 已落地（融合单 Pass；完整 TFM 多纹理待后续） |
 | neonEdge | 2 | A | 已落地 |
 | dog | 2 | A | 待做 |
 | sharpen | 3 | A | 待做 |

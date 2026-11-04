@@ -37,6 +37,7 @@ FRAGS = [
     "glitch_block_post.frag",
     "glitch_wave_post.frag",
     "kuwahara_post.frag",
+    "kuwahara_aniso_post.frag",
     "neon_edge_post.frag",
 ]
 
