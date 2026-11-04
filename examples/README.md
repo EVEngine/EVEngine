@@ -200,6 +200,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [hex-terrain-3d](hex-terrain-3d/README.md) | 可交互 3D 六边形地图：高程台地与悬崖、水面、河流、道路、城墙与地物、战争迷雾、单位寻路、程序化地图生成、存档、相机操控与笔刷编辑 |
 | [hex-planet](hex-planet/README.md) | 球面文明竞赛：探索、城市、粮食/金币/科研、建造与奇观胜利；economy + tactics 图拓扑 + production + ECS |
 | [terrain-preview](terrain-preview/README.md) | 直写交换链的 3D 地形预览：三种侵蚀 + 河湖水面 + 自动抓帧 |
+| [procgen-cliffs-mountains](procgen-cliffs-mountains/README.md) | 山脉配方 + 陡坡 cliff-band 网格 + 岩块散布：`bakeMountainRecipe` / `generateCliffBandMesh` |
 | [terrain-gallery](terrain-gallery/README.md) | 三个固定 seed 在相同生成参数、光照与材质下的并排对比 |
 | [mesh-modifier-lab](mesh-modifier-lab/README.md) | 13 种网格变形变体并排对照：类型化修饰图（bend / twist / FFD / 切面 / 样条 / 声波）、雕刻笔刷、粘液回弹、Mesh Fit、顶点编辑器 |
 | [mesh-contact-fusion](mesh-contact-fusion/README.md) | 接触带融合：静态 `mergeStaticMeshes`（默认关 / 可选开）与实时 `MeshAdhereLive` 并排对照 |

@@ -1831,5 +1831,7 @@ void exposeHeightmap(ssq::Table& table) {
             return eve::script::projectResult(vm, generateTerrainDistanceMask(*target, copy, *curve, *strength),
                                               [](int n) { return eve::Value(n); });
         });
+
+    exposeMountainCliffApis(table);
 }
 }  // namespace eve::procgen

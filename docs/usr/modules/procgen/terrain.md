@@ -4,6 +4,37 @@
 
 高度图印章、侵蚀、蒙版、生成会话、草地/树木放置，以及 GTS 切片与 PCG 运行时辅助。
 
+程序化山脉配方与悬崖条带网格（Pegasus 风格陡坡提取）见开发说明
+[`docs/dev/procgen-cliffs-mountains.md`](../../../dev/procgen-cliffs-mountains.md)
+与示例 [`examples/procgen-cliffs-mountains`](../../../../examples/procgen-cliffs-mountains/)。
+
+### 山脉配方与悬崖条带（CPU）
+
+`eve.MountainRecipeSettings` 一次烘焙 ridged+warp 高度图并跑 thermal → hydraulic →
+fluvial。`setPreset(0|1|2)` 选择 AlpineRidge / Mesa / CoastalCliff；`setSize` /
+`setSeed` 控制分辨率与可回放种子。可写字段：
+
+- 噪声：`frequencyOverride`、`ridgeOverride`、`warpOverride`、`amplitudeOverride`
+  （负值表示沿用 preset 默认）。
+- 侵蚀迭代：`thermalIterations`、`hydraulicIterations`、`fluvialIterations`
+  （负值沿用 preset）。
+- 悬崖适应度阈值：`cliffSlopeMin`、`cliffSlopeMax`（与 `deriveSlope` 的 `1-n.y`
+  语义一致）。
+
+`eve.bakeMountainRecipe(target, settings, slopeMask, cliffFitness)` 写入高度图；
+后两个蒙版可为 `null`。`eve.generateCliffFitnessMask(target, heights, spacingX,
+spacingZ, heightScale, slopeMin, slopeMax)` 只生成悬崖适应度。
+
+`eve.CliffBandMeshSettings` 控制陡坡条带网格：`setOrigin` / `setSpacing` /
+`setSeed`，以及 `slopeMin` / `slopeMax`、`subdivisions`、`strataAmplitude` /
+`strataScale` / `strataVertical`、`ledgeHeight`、`outwardBias`、`maxTriangles`。
+`eve.generateCliffBandMesh(heights, settings, fitness)` 返回拥有所有权的
+`MeshBuild`（`algorithm=mesh.cliffband`）。
+
+`eve.configureCliffRockScatterDefaults(settings, originX, originZ, width, depth,
+heightScale, seed, spacing, minimumFitness, asset)` 填充
+`TerrainObjectPlacementSettings`，再配合悬崖适应度蒙版做 `mesh.rock` 散布。
+
 ## 使用要点
 
 ### 高度图印章与顺序蒙版（CPU）

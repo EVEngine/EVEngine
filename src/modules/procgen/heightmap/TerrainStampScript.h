@@ -10,4 +10,6 @@ namespace eve::procgen {
 EVENGINE_API_DOMAINS void exposeHeightmap(ssq::Table& table);
 /** @brief Register stamp settings and mesh-bake builder; VM-thread only, retains no borrowed input. */
 EVENGINE_API_DOMAINS void exposeTerrainStampSettings(ssq::Table& table);
+/** @brief Register mountain recipe and cliff-band mesh script APIs on the eve root table. */
+EVENGINE_API_DOMAINS void exposeMountainCliffApis(ssq::Table& table);
 }  // namespace eve::procgen
