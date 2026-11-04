@@ -48,7 +48,8 @@
     "capability_owned.cpp",
     "condition.cpp",
     "sdf_field3d.cpp",
-    "ecs_view_preparation.cpp"
+    "ecs_view_preparation.cpp",
+    "action_guide_pack.cpp"
   ]
 }
 */
@@ -314,9 +315,9 @@ TEST_CASE("common.protocolDispatch.hasExhaustiveStableOutcomes") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_diagnostic_storage)
-#include "PrivateTestScope.h"
 #include <zeroerr/unittest.h>
 #include <type_traits>
+#include "PrivateTestScope.h"
 #include "common/Diagnostic.h"
 #include "common/Result.h"
 // common_diagnostic_storage.cpp
@@ -376,7 +377,6 @@ TEST_CASE("common.diagnosticStorage.spec.detailOwnershipAndMoves") {
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_diagnostic_vector_instances) || \
     defined(EVE_TEST_ORIGIN_diagnostic_value)
-#include "PrivateTestScope.h"
 #include <zeroerr/assert.h>
 #include <zeroerr/unittest.h>
 #include <atomic>
@@ -384,6 +384,7 @@ TEST_CASE("common.diagnosticStorage.spec.detailOwnershipAndMoves") {
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Diagnostic.h"
 #include "common/DiagnosticValue.h"
 #include "common/StringMapInstances.h"
@@ -1233,7 +1234,6 @@ TEST_CASE("common.ecsContainers.spec.tableIsolationAndDeferredInheritance") {
 }  // namespace test_common_ecs
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_identity_version)
-#include "PrivateTestScope.h"
 #include <array>
 #include <chrono>
 #include <cstdint>
@@ -1241,6 +1241,7 @@ TEST_CASE("common.ecsContainers.spec.tableIsolationAndDeferredInheritance") {
 #include <string>
 #include <type_traits>
 #include <unordered_map>
+#include "PrivateTestScope.h"
 #include "common/EventSequence.h"
 #include "common/Generation.h"
 #include "common/Identity.h"
@@ -1359,11 +1360,11 @@ TEST_CASE("common.identity.spec.persistentLogicalContentAndVersionTypes") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_result_assertion)
-#include "PrivateTestScope.h"
 #include <zeroerr/unittest.h>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "PrivateTestScope.h"
 #include "common/Result.h"
 // common_result_assertion.cpp
 namespace test_common_result_assertion {
@@ -1783,7 +1784,7 @@ TEST_CASE("common.zeroerr.preservesAssertionCounters") {
     const auto after = _ZEROERR_TEST_CONTEXT->passed_as;
     CHECK(after == before + 1);
     auto knownFailure = [reporter = &_ZEROERR_TEST_CONTEXT->reporter] {
-        zeroerr::TestContext context(*reporter);
+        zeroerr::TestContext   context(*reporter);
         zeroerr::assert_info   info{zeroerr::assert_level::ZEROERR_WARN_l, zeroerr::assert_throw::no_throw, false};
         zeroerr::AssertionData failure(__FILE__, __LINE__, "2 == 3", info);
         failure.setResult({false, "2 == 3"});
@@ -2036,8 +2037,8 @@ TEST_CASE_FIXTURE(ZeroerrRegistrationFixture, "common.zeroerrRegistration.fixtur
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_json)
-#include "PrivateTestScope.h"
 #include <string>
+#include "PrivateTestScope.h"
 #include "common/Json.h"
 #include "common/StringMapInstances.h"
 #include "zeroerr/assert.h"
@@ -2306,10 +2307,10 @@ TEST_CASE("common.json.spec.syntaxDepthAndOwnership") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_result)
-#include "PrivateTestScope.h"
 #include <memory>
 #include <string>
 #include <type_traits>
+#include "PrivateTestScope.h"
 #include "common/Result.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -2484,11 +2485,11 @@ TEST_CASE("common.result.spec.voidAndDiagnosticStorage") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_runtime_handle)
-#include "PrivateTestScope.h"
 #include <cstdint>
 #include <limits>
 #include <type_traits>
 #include <unordered_set>
+#include "PrivateTestScope.h"
 #include "common/RuntimeHandle.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -2565,7 +2566,6 @@ TEST_CASE("common.runtimeHandle.spec.invalidGenerationAndTypeIsolation") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_compiler)
-#include "PrivateTestScope.h"
 #include <chrono>
 #include <cstdio>
 #include <cstring>
@@ -2574,6 +2574,7 @@ TEST_CASE("common.runtimeHandle.spec.invalidGenerationAndTypeIsolation") {
 #include <iterator>
 #include <memory>
 #include <string>
+#include "PrivateTestScope.h"
 #include "common/BindingContracts.h"
 #include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
@@ -2836,9 +2837,9 @@ TEST_CASE("common.scriptStructure.spec.lexingAliasScopeAndInvalidInput") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_state_value)
-#include "PrivateTestScope.h"
 #include <string>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/StateValue.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -2976,8 +2977,8 @@ TEST_CASE("common.stateValue.spec.containersPathsMergeAndEquality") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_string_instances)
-#include "PrivateTestScope.h"
 #include <zeroerr/unittest.h>
+#include "PrivateTestScope.h"
 #include "common/Result.h"
 #include "common/Value.h"
 // string_instances.cpp
@@ -3027,8 +3028,8 @@ TEST_CASE("common.stringInstances.spec.crossBoundaryOwnershipAndStatus") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_time_contract)
-#include "PrivateTestScope.h"
 #include <limits>
+#include "PrivateTestScope.h"
 #include "common/Time.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -3531,8 +3532,8 @@ TEST_CASE("Compound conditions explain failed any and negation without mutating 
     context.values.emplace("level", 2);
     context.values.emplace(tagKey("fire"), false);
     context.values.emplace(stateKey("phase"), "ready");
-    const auto before   = context.values;
-    const auto any = Condition::any({Condition::compare("level", CompareOperator::Greater, 9), tagPresent("fire")});
+    const auto before = context.values;
+    const auto any    = Condition::any({Condition::compare("level", CompareOperator::Greater, 9), tagPresent("fire")});
     const auto rejected = any.evaluate(context);
     REQUIRE(!rejected.passed());
     CHECK(rejected.reasonCode() == ConditionReasonCode::NoChildPassed);
@@ -3866,3 +3867,374 @@ TEST_CASE("identity.audit.runtimeHandleGenerationMakesStaleReuseObservable") {
     CHECK_EQ(Handle::fromPacked(oldHandle.packed()), oldHandle);
 }
 }  // namespace test_identity_value_audit_unit
+
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_guide_pack)
+#include <array>
+#include <cmath>
+#include <memory>
+#include <string>
+#include <vector>
+#include "common/ActionGuideIngest.h"
+#include "common/ActionGuidePack.h"
+#include "common/ActionGuideVerify.h"
+#include "common/Diagnostic.h"
+
+namespace {
+
+eve::ActionGuidePack samplePack() {
+    eve::ActionGuidePack pack;
+    pack.revision          = 1;
+    pack.subject           = {"animation.preview", 1, 1};
+    pack.skeletonRef       = "assets/guides/hero.skeleton";
+    pack.clipRef           = "assets/guides/hero_attack.clip";
+    pack.rootMode          = eve::ActionGuideRootMode::InPlace;
+    pack.canvas            = {256, 256, 64.0, {0, 0, 0, 0}, true};
+    pack.camera.projection = eve::ActionGuideProjection::Orthographic;
+    pack.camera.orthoSize  = 1.25;
+    pack.camera.nearPlane  = 0.1;
+    pack.camera.farPlane   = 50.0;
+    pack.camera.eye        = {0.0, 1.0, 4.0};
+    pack.camera.target     = {0.0, 1.0, 0.0};
+    pack.camera.up         = {0.0, 1.0, 0.0};
+    eve::ActionGuideShot shot;
+    shot.shotId      = "attack.light.s00";
+    shot.timeSeconds = 0.0;
+    shot.view        = "front";
+    shot.aovs        = {"silhouette", "depth", "bone"};
+    shot.tags        = {"windup"};
+    pack.shots.push_back(shot);
+    pack.actionBinding.abilityId = "ability:hero.attack.light";
+    pack.actionBinding.clipName  = "attack.light";
+    pack.actionBinding.fps       = 12.0;
+    pack.actionBinding.loop      = false;
+    pack.qc                      = {0.85, 8.0, 3};
+    return pack;
+}
+
+}  // namespace
+
+TEST_CASE("common.actionGuidePack.roundTripPreservesShotsCameraAndBinding") {
+    auto source  = samplePack();
+    auto encoded = eve::encodeActionGuidePack(source);
+    REQUIRE(encoded.ok());
+    auto decoded = eve::decodeActionGuidePack(encoded.value());
+    REQUIRE(decoded.ok());
+    CHECK_EQ(decoded.value().revision, source.revision);
+    CHECK_EQ(decoded.value().subject.domain, source.subject.domain);
+    CHECK_EQ(decoded.value().shots.size(), source.shots.size());
+    CHECK_EQ(decoded.value().shots[0].shotId, source.shots[0].shotId);
+    CHECK_EQ(decoded.value().actionBinding.abilityId, source.actionBinding.abilityId);
+    CHECK_EQ(decoded.value().camera.orthoSize, source.camera.orthoSize);
+}
+
+TEST_CASE("common.actionGuidePack.rejectsUnknownFieldsFutureVersionAndBadAov") {
+    auto encoded = eve::encodeActionGuidePack(samplePack());
+    REQUIRE(encoded.ok());
+
+    auto unknown = encoded.value();
+    unknown.set("extra", true);
+    auto unknownDecoded = eve::decodeActionGuidePack(unknown);
+    REQUIRE(!unknownDecoded.ok());
+    unknownDecoded.ignore();
+
+    auto              nested     = encoded.value();
+    const eve::Value* subjectPtr = nested.find("subject");
+    REQUIRE(subjectPtr != nullptr);
+    REQUIRE(subjectPtr->isObject());
+    auto subjectObject = *subjectPtr->getIf<eve::Value::Object>();
+    subjectObject.emplace("extra", true);
+    nested.set("subject", eve::Value(std::move(subjectObject)));
+    auto nestedDecoded = eve::decodeActionGuidePack(nested);
+    REQUIRE(!nestedDecoded.ok());
+    nestedDecoded.ignore();
+
+    auto future = encoded.value();
+    future.set("schemaVersion", static_cast<std::int64_t>(999));
+    auto futureDecoded = eve::decodeActionGuidePack(future);
+    REQUIRE(!futureDecoded.ok());
+    futureDecoded.ignore();
+
+    auto badAov          = samplePack();
+    badAov.shots[0].aovs = {"silhouette", "diffuse"};
+    auto badEncoded      = eve::encodeActionGuidePack(badAov);
+    REQUIRE(!badEncoded.ok());
+    badEncoded.ignore();
+}
+
+TEST_CASE("common.actionGuidePack.exampleFixtureJsonRoundTrips") {
+    // Keep in sync with docs/dev/fixtures/eve.action.guide-pack.v1.example.json (unit tests cannot read files).
+    constexpr char kExample[] = R"json({
+  "schema": "eve.action.guide-pack",
+  "schemaVersion": 1,
+  "revision": 1,
+  "subject": {"domain": "animation.preview", "id": 1, "generation": 1},
+  "skeletonRef": "assets/guides/hero.skeleton",
+  "clipRef": "assets/guides/hero_attack.clip",
+  "rootMode": "inPlace",
+  "canvas": {"width": 256, "height": 256, "pixelsPerUnit": 64.0, "backgroundRgba": [0.0, 0.0, 0.0, 0.0], "transparent": true},
+  "camera": {"projection": "orthographic", "fovYDegrees": 45.0, "orthoSize": 1.25, "nearPlane": 0.1, "farPlane": 50.0,
+             "eye": [0.0, 1.0, 4.0], "target": [0.0, 1.0, 0.0], "up": [0.0, 1.0, 0.0]},
+  "shots": [
+    {"shotId": "attack.light.s00", "timeSeconds": 0.0, "view": "front", "aovs": ["silhouette", "depth", "bone"], "tags": ["windup"]},
+    {"shotId": "attack.light.s01", "timeSeconds": 0.0833333333, "sampleIndex": 1, "view": "front",
+     "aovs": ["silhouette", "depth", "bone"], "tags": ["active"]}
+  ],
+  "actionBinding": {"abilityId": "ability:hero.attack.light", "clipName": "attack.light", "fps": 12.0, "loop": false,
+                    "phaseMarks": [{"name": "active.start", "timeSeconds": 0.0833333333},
+                                   {"name": "recover.start", "timeSeconds": 0.25}]},
+  "qc": {"minSilhouetteIoU": 0.85, "maxJointErrorPx": 8.0, "maxRetries": 3}
+})json";
+    auto           parsed     = eve::Value::fromJson(kExample);
+    REQUIRE(parsed.ok());
+    auto decoded = eve::decodeActionGuidePack(parsed.value());
+    REQUIRE(decoded.ok());
+    CHECK_EQ(decoded.value().shots.size(), std::size_t{2});
+    auto encoded = eve::encodeActionGuidePack(decoded.value());
+    REQUIRE(encoded.ok());
+    auto again = eve::decodeActionGuidePack(encoded.value());
+    REQUIRE(again.ok());
+    CHECK_EQ(again.value().actionBinding.phaseMarks.size(), std::size_t{2});
+}
+
+TEST_CASE("common.actionGuidePack.landmarksProjectTargetToCanvasCenter") {
+    auto pack             = samplePack();
+    pack.camera.eye       = {0.0, 0.0, 5.0};
+    pack.camera.target    = {0.0, 0.0, 0.0};
+    pack.camera.up        = {0.0, 1.0, 0.0};
+    pack.camera.orthoSize = 1.0;
+    pack.canvas.width     = 200;
+    pack.canvas.height    = 100;
+
+    eve::ActionGuideBoneWorld root;
+    root.boneId   = "root";
+    root.name     = "root";
+    root.position = {0.0, 0.0, 0.0};
+    eve::ActionGuideBoneWorld child;
+    child.boneId   = "head";
+    child.name     = "head";
+    child.parentId = "root";
+    child.position = {0.0, 0.5, 0.0};
+
+    auto landmarks = eve::projectActionGuideLandmarks(pack, std::array{root, child});
+    REQUIRE(landmarks.ok());
+    REQUIRE_EQ(landmarks.value().size(), std::size_t{2});
+    CHECK(std::abs(landmarks.value()[0].x - 100.0) < 1e-6);
+    CHECK(std::abs(landmarks.value()[0].y - 50.0) < 1e-6);
+    CHECK(landmarks.value()[0].depth > 0.0);
+    CHECK(landmarks.value()[1].y < landmarks.value()[0].y);  // +Y is toward top of image
+    REQUIRE(landmarks.value()[1].parentId.has_value());
+    CHECK_EQ(*landmarks.value()[1].parentId, std::string("root"));
+}
+
+namespace {
+
+std::shared_ptr<std::vector<uint8_t>> makeGuideCandidateRgba(uint32_t width, uint32_t height, bool clearBorder,
+                                                             bool opaqueInterior) {
+    auto rgba = std::make_shared<std::vector<uint8_t>>(size_t(width) * height * 4, uint8_t{0});
+    for (uint32_t y = 0; y < height; ++y) {
+        for (uint32_t x = 0; x < width; ++x) {
+            const size_t i    = (size_t(y) * width + x) * 4;
+            const bool   edge = x == 0 || y == 0 || x + 1 == width || y + 1 == height;
+            (*rgba)[i + 0]    = 255;
+            (*rgba)[i + 1]    = 255;
+            (*rgba)[i + 2]    = 255;
+            if (edge) {
+                (*rgba)[i + 3] = clearBorder ? 0 : 255;
+            } else {
+                (*rgba)[i + 3] = opaqueInterior ? 255 : 0;
+            }
+        }
+    }
+    return rgba;
+}
+
+}  // namespace
+
+TEST_CASE("common.actionGuideIngest.validateAndBuildDraft") {
+    auto pack                     = samplePack();
+    pack.actionBinding.phaseMarks = {{"active.start", 0.05}, {"recover.start", 0.12}};
+
+    eve::ActionGuideCandidateFrame frame;
+    frame.meta   = {pack.revision, pack.shots[0].shotId, "test-model", 7, "hash-abc"};
+    frame.width  = static_cast<uint32_t>(pack.canvas.width);
+    frame.height = static_cast<uint32_t>(pack.canvas.height);
+    frame.rgba8  = makeGuideCandidateRgba(frame.width, frame.height, /*clearBorder=*/true, /*opaqueInterior=*/true);
+
+    eve::ActionGuideIngestRequest request;
+    request.pack   = pack;
+    request.frames = {frame};
+    auto draft     = eve::buildActionGuideIngestDraft(request);
+    REQUIRE(draft.ok());
+    CHECK_EQ(draft.value().clipName, std::string("attack.light"));
+    CHECK_EQ(draft.value().frameCount, std::int64_t{1});
+    REQUIRE(draft.value().abilityDraft.find("schema") != nullptr);
+    CHECK_EQ(draft.value().abilityDraft.find("schema")->asString(), std::string(eve::kActionGuideAbilityDraftSchemaId));
+    CHECK_EQ(draft.value().abilityDraft.find("commitAbility")->asBool(), false);
+
+    auto badRevision                               = request;
+    badRevision.frames[0].meta.sourceGuideRevision = pack.revision + 1;
+    auto conflict                                  = eve::validateActionGuideCandidates(badRevision);
+    REQUIRE(!conflict.ok());
+    CHECK_EQ(conflict.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Conflict);
+    conflict.ignore();
+
+    auto solidEdge            = request;
+    solidEdge.frames[0].rgba8 = makeGuideCandidateRgba(frame.width, frame.height, false, true);
+    auto rejectedEdge         = eve::validateActionGuideCandidates(solidEdge);
+    REQUIRE(!rejectedEdge.ok());
+    CHECK_EQ(rejectedEdge.status().primaryDiagnostic()->code(), eve::DiagnosticCode::InvalidArgument);
+    rejectedEdge.ignore();
+
+    auto wrongSize             = request;
+    wrongSize.frames[0].width  = frame.width / 2;
+    wrongSize.frames[0].height = frame.height / 2;
+    wrongSize.frames[0].rgba8 =
+        makeGuideCandidateRgba(wrongSize.frames[0].width, wrongSize.frames[0].height, true, true);
+    auto rejectedSize = eve::validateActionGuideCandidates(wrongSize);
+    REQUIRE(!rejectedSize.ok());
+    rejectedSize.ignore();
+
+    auto meta = eve::encodeActionGuideCandidateMeta(frame.meta);
+    REQUIRE(meta.ok());
+    auto decodedMeta = eve::decodeActionGuideCandidateMeta(meta.value());
+    REQUIRE(decodedMeta.ok());
+    CHECK_EQ(decodedMeta.value().promptHash, std::string("hash-abc"));
+}
+
+TEST_CASE("common.actionGuideIngest.candidateFixtureJsonRoundTrips") {
+    // Keep in sync with docs/dev/fixtures/eve.action.guide-candidate.v1.example.json.
+    constexpr char kExample[] = R"json({
+  "schema": "eve.action.guide-candidate",
+  "schemaVersion": 1,
+  "sourceGuideRevision": 1,
+  "shotId": "attack.light.s00",
+  "model": "external.image-gen.example",
+  "seed": 42,
+  "promptHash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+})json";
+    auto           parsed     = eve::Value::fromJson(kExample);
+    REQUIRE(parsed.ok());
+    auto decoded = eve::decodeActionGuideCandidateMeta(parsed.value());
+    REQUIRE(decoded.ok());
+    CHECK_EQ(decoded.value().shotId, std::string("attack.light.s00"));
+    auto encoded = eve::encodeActionGuideCandidateMeta(decoded.value());
+    REQUIRE(encoded.ok());
+    auto again = eve::decodeActionGuideCandidateMeta(encoded.value());
+    REQUIRE(again.ok());
+    CHECK_EQ(again.value().seed, std::int64_t{42});
+}
+
+namespace {
+
+std::shared_ptr<std::vector<uint8_t>> makeWhiteDiskGuide(uint32_t width, uint32_t height, int cx, int cy, int radius) {
+    auto rgba = std::make_shared<std::vector<uint8_t>>(size_t(width) * height * 4, uint8_t{0});
+    for (uint32_t y = 0; y < height; ++y) {
+        for (uint32_t x = 0; x < width; ++x) {
+            const size_t i      = (size_t(y) * width + x) * 4;
+            const int    dx     = int(x) - cx;
+            const int    dy     = int(y) - cy;
+            const bool   inside = dx * dx + dy * dy <= radius * radius;
+            (*rgba)[i + 0] = (*rgba)[i + 1] = (*rgba)[i + 2] = inside ? 255 : 0;
+            (*rgba)[i + 3]                                   = 255;
+        }
+    }
+    return rgba;
+}
+
+std::shared_ptr<std::vector<uint8_t>> makeAlphaDiskCandidate(uint32_t width, uint32_t height, int cx, int cy,
+                                                             int radius) {
+    auto rgba = std::make_shared<std::vector<uint8_t>>(size_t(width) * height * 4, uint8_t{0});
+    for (uint32_t y = 0; y < height; ++y) {
+        for (uint32_t x = 0; x < width; ++x) {
+            const size_t i      = (size_t(y) * width + x) * 4;
+            const int    dx     = int(x) - cx;
+            const int    dy     = int(y) - cy;
+            const bool   inside = dx * dx + dy * dy <= radius * radius;
+            (*rgba)[i + 0] = (*rgba)[i + 1] = (*rgba)[i + 2] = 255;
+            (*rgba)[i + 3]                                   = inside ? 255 : 0;
+        }
+    }
+    return rgba;
+}
+
+}  // namespace
+
+TEST_CASE("common.actionGuideVerify.iouPassAndRejectShiftedMask") {
+    auto pack                = samplePack();
+    pack.canvas.width        = 32;
+    pack.canvas.height       = 32;
+    pack.qc.minSilhouetteIoU = 0.85;
+    pack.qc.maxJointErrorPx  = 8.0;
+
+    eve::ActionGuideVerifyShotInput aligned;
+    aligned.shotId               = pack.shots[0].shotId;
+    aligned.width                = 32;
+    aligned.height               = 32;
+    aligned.guideSilhouetteRgba8 = makeWhiteDiskGuide(32, 32, 16, 16, 8);
+    aligned.candidateRgba8       = makeAlphaDiskCandidate(32, 32, 16, 16, 8);
+
+    eve::ActionGuideVerifyRequest okRequest;
+    okRequest.pack  = pack;
+    okRequest.shots = {aligned};
+    auto okReport   = eve::verifyActionGuideCandidates(okRequest);
+    REQUIRE(okReport.ok());
+    CHECK(okReport.value().passed);
+    CHECK(okReport.value().shots[0].silhouette.iou + 1e-9 >= 0.85);
+
+    eve::ActionGuideVerifyShotInput shifted = aligned;
+    shifted.candidateRgba8                  = makeAlphaDiskCandidate(32, 32, 24, 16, 8);
+    eve::ActionGuideVerifyRequest badRequest;
+    badRequest.pack  = pack;
+    badRequest.shots = {shifted};
+    auto badReport   = eve::verifyActionGuideCandidates(badRequest);
+    REQUIRE(badReport.ok());
+    CHECK(!badReport.value().passed);
+    CHECK(badReport.value().shots[0].silhouette.iou < 0.85);
+
+    auto empty = eve::compareActionGuideSilhouetteIoU(*aligned.guideSilhouetteRgba8,
+                                                      std::vector<uint8_t>(32 * 32 * 4, 0), 32, 32);
+    REQUIRE(!empty.ok());
+    empty.ignore();
+}
+
+TEST_CASE("common.actionGuideVerify.jointErrorGate") {
+    eve::ActionGuideLandmark expected;
+    expected.boneId                   = "hand";
+    expected.x                        = 10.0;
+    expected.y                        = 20.0;
+    eve::ActionGuideLandmark observed = expected;
+    observed.x                        = 12.0;
+    observed.y                        = 21.0;
+    auto ok                           = eve::compareActionGuideJointError(std::array{expected}, std::array{observed});
+    REQUIRE(ok.ok());
+    CHECK(ok.value().evaluated);
+    CHECK(ok.value().maxErrorPx < 8.0);
+
+    observed.x = 40.0;
+    auto bad   = eve::compareActionGuideJointError(std::array{expected}, std::array{observed});
+    REQUIRE(bad.ok());
+    CHECK(bad.value().maxErrorPx > 8.0);
+
+    auto pack                = samplePack();
+    pack.canvas.width        = 32;
+    pack.canvas.height       = 32;
+    pack.qc.minSilhouetteIoU = 0.5;
+    pack.qc.maxJointErrorPx  = 3.0;
+    eve::ActionGuideVerifyShotInput shot;
+    shot.shotId               = pack.shots[0].shotId;
+    shot.width                = 32;
+    shot.height               = 32;
+    shot.guideSilhouetteRgba8 = makeWhiteDiskGuide(32, 32, 16, 16, 8);
+    shot.candidateRgba8       = makeAlphaDiskCandidate(32, 32, 16, 16, 8);
+    shot.expectedJoints       = {expected};
+    shot.observedJoints       = {observed};
+    eve::ActionGuideVerifyRequest request;
+    request.pack  = pack;
+    request.shots = {shot};
+    auto report   = eve::verifyActionGuideCandidates(request);
+    REQUIRE(report.ok());
+    CHECK(!report.value().passed);
+}
+
+#endif

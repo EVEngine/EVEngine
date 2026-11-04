@@ -1,0 +1,9 @@
+{
+  "schema": "eve.action.guide-candidate",
+  "schemaVersion": 1,
+  "sourceGuideRevision": 1,
+  "shotId": "attack.light.s00",
+  "model": "external.image-gen.example",
+  "seed": 42,
+  "promptHash": "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+}

@@ -209,6 +209,9 @@ bool mcpToolMutates(std::string_view name) {
         name == "eve_scene_node_set" || name == "set_camera_pose" || name == "eve_camera_generate" ||
         name == "eve_whitebox_playtest" || name == "eve_recipe_apply")
         return true;
+    if (name == "eve_action_guide_pack_set" || name == "eve_action_guide_capture" ||
+        name == "eve_action_guide_export" || name == "eve_action_guide_ingest" || name == "eve_action_guide_verify")
+        return true;
     if (name == "eve_workshop") return true;
     if (startsWith(name, "eve_editor_") &&
         (name.find("execute") != std::string_view::npos || name.find("commit") != std::string_view::npos ||
