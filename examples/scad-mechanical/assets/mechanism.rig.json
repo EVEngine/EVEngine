@@ -1,0 +1,142 @@
+{
+  "schema": "eve.scad-rig",
+  "schemaVersion": 1,
+  "unknownFields": "reject",
+  "coordinateSystem": "openscad-mm-z-up",
+  "joints": [
+    {
+      "name": "pedestal",
+      "parent": null,
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "slew",
+      "parent": "pedestal",
+      "pivot": [
+        0,
+        0,
+        180
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        -160,
+        160
+      ]
+    },
+    {
+      "name": "shoulder",
+      "parent": "slew",
+      "pivot": [
+        0,
+        0,
+        240
+      ],
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "limits": [
+        -15,
+        75
+      ]
+    },
+    {
+      "name": "elbow",
+      "parent": "shoulder",
+      "pivot": [
+        0,
+        0,
+        560
+      ],
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "limits": [
+        -120,
+        10
+      ]
+    },
+    {
+      "name": "wrist",
+      "parent": "elbow",
+      "pivot": [
+        0,
+        0,
+        580
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        -170,
+        170
+      ]
+    },
+    {
+      "name": "tool",
+      "parent": "wrist",
+      "pivot": [
+        0,
+        0,
+        160
+      ],
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "limits": [
+        -60,
+        40
+      ]
+    }
+  ],
+  "parts": [
+    {
+      "name": "pedestal",
+      "joint": "pedestal"
+    },
+    {
+      "name": "slew",
+      "joint": "slew"
+    },
+    {
+      "name": "shoulder",
+      "joint": "shoulder"
+    },
+    {
+      "name": "elbow",
+      "joint": "elbow"
+    },
+    {
+      "name": "wrist",
+      "joint": "wrist"
+    },
+    {
+      "name": "tool",
+      "joint": "tool"
+    }
+  ]
+}
