@@ -230,7 +230,7 @@ flowchart TB
 | glitchWave | 1 | A | 已落地 |
 | kuwahara | 2 | A | 已落地 |
 | kuwaharaAniso | 2 | A | 待做 |
-| neonEdge | 2 | A | 待做 |
+| neonEdge | 2 | A | 已落地 |
 | dog | 2 | A | 待做 |
 | sharpen | 3 | A | 待做 |
 | motionBlur | 3 | B? | 待评估 |

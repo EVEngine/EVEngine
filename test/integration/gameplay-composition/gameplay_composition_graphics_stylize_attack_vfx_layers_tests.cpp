@@ -373,7 +373,7 @@ namespace {
 
 const char* kMeshEffects[] = {"rim", "dissolve", "hologram", "snow", "slash", "ember", "aura"};
 const char* kPostEffects[] = {"vignette", "chromatic", "grain", "glitchAnalog", "glitchBlock",
-                              "glitchWave", "kuwahara"};
+                              "glitchWave", "kuwahara", "neonEdge"};
 
 [[maybe_unused]] bool near(float a, float b, float eps = 0.02f) { return std::fabs(a - b) <= eps; }
 
