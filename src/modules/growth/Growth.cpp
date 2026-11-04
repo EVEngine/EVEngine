@@ -123,16 +123,25 @@ void Growth::expose(ssq::Table& table) {
     organism.addFunc("speciesId", &Organism::speciesId);
     organism.addFunc("stageIndex", &Organism::stageIndex);
     organism.addFunc("stageId", &Organism::stageId);
-    organism.addFunc("stageProgressDays", &Organism::stageProgressDays);
+    // SSQ has no double marshalling — project meters/progress as float (same pattern as RPG xp).
+    organism.addFunc("stageProgressDays", [](Organism* self) -> float {
+        return self ? static_cast<float>(self->stageProgressDays()) : 0.f;
+    });
     organism.addFunc("isMature", &Organism::isMature);
     organism.addFunc("isDead", &Organism::isDead);
     organism.addFunc("isHarvested", &Organism::isHarvested);
     organism.addFunc("isDiseased", &Organism::isDiseased);
     organism.addFunc("isPregnant", &Organism::isPregnant);
     organism.addFunc("diseaseId", &Organism::diseaseId);
-    organism.addFunc("waterPermille", &Organism::waterPermille);
-    organism.addFunc("foodPermille", &Organism::foodPermille);
-    organism.addFunc("fertilityPermille", &Organism::fertilityPermille);
+    organism.addFunc("waterPermille", [](Organism* self) -> float {
+        return self ? static_cast<float>(self->waterPermille()) : 0.f;
+    });
+    organism.addFunc("foodPermille", [](Organism* self) -> float {
+        return self ? static_cast<float>(self->foodPermille()) : 0.f;
+    });
+    organism.addFunc("fertilityPermille", [](Organism* self) -> float {
+        return self ? static_cast<float>(self->fertilityPermille()) : 0.f;
+    });
     organism.addFunc("kindName", [](Organism* self) {
         if (!self) return std::string{};
         return self->kind() == OrganismKind::Animal ? std::string("animal") : std::string("plant");

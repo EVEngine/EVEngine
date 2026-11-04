@@ -5,4 +5,5 @@ config = {
     title = "EVEngine Growth 示例 —— 动植物生长"
     debug = false
     hotReload = true
+    modules = ["font"]
 };
