@@ -30,6 +30,11 @@ public:
     [[nodiscard]] int  speciesCount() const;
 
     [[nodiscard]] Result<void> setDaysPerSeason(int days);
+    /**
+     * @brief Configures a custom season layout from JSON (alien year cycles).
+     * @cost Cheap: parses a small season table.
+     */
+    [[nodiscard]] Result<void> setSeasonLayoutFromJson(const std::string& json);
     [[nodiscard]] Result<void> setSecondsPerSimDay(double seconds);
     void                       setRngSeed(std::uint64_t seed);
     [[nodiscard]] Result<void> advanceDays(double days);
@@ -39,9 +44,15 @@ public:
     [[nodiscard]] std::int64_t year() const;
     [[nodiscard]] std::string  seasonName() const;
 
+    /** @brief Spawns any registered species (plant, animal, or custom lifeform). */
+    [[nodiscard]] Result<Organism*> spawn(const std::string& speciesId);
+    /** @brief Convenience: spawn when species.kindId == "plant". */
     [[nodiscard]] Result<Organism*> plant(const std::string& speciesId);
+    /** @brief Convenience: spawn when species.kindId == "animal". */
     [[nodiscard]] Result<Organism*> spawnAnimal(const std::string& speciesId);
     [[nodiscard]] Result<void>      tryBreed(Organism* carrier, Organism* partner);
+    /** @brief Solo reproduction for self_bud / fission / spore_burst species. */
+    [[nodiscard]] Result<void> tryReproduce(Organism* organism);
 
     void                        clearEvents();
     [[nodiscard]] int           eventCount() const;

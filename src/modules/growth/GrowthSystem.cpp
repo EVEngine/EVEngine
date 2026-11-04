@@ -26,6 +26,30 @@ double unitHash(std::uint64_t seed, std::uint64_t stream, std::uint64_t key) {
     return static_cast<double>(mixed >> 11) * (1.0 / 9007199254740992.0);  // [0,1)
 }
 
+double meterValue(const Organism::VitalNeeds& needs, const std::string& id) {
+    auto it = needs.meters.find(id);
+    if (it == needs.meters.end()) return 0.0;
+    return it->second;
+}
+
+bool anyLethalEmpty(const Organism::VitalNeeds& needs, const SpeciesDef& species) {
+    bool sawLethal = false;
+    bool allLethalEmpty = true;
+    for (const NeedMeterDef& need : species.needs) {
+        if (!need.lethalWhenEmpty) continue;
+        sawLethal = true;
+        if (meterValue(needs, need.id) > 0.0) allLethalEmpty = false;
+    }
+    return sawLethal && allLethalEmpty;
+}
+
+bool isStressed(const Organism::VitalNeeds& needs, const SpeciesDef& species) {
+    for (const NeedMeterDef& need : species.needs) {
+        if (meterValue(needs, need.id) < need.minPermille) return true;
+    }
+    return false;
+}
+
 std::unique_ptr<GrowthWorld>& worldHolder() {
     static std::unique_ptr<GrowthWorld> world = std::make_unique<GrowthWorld>();
     return world;
@@ -36,7 +60,6 @@ std::unique_ptr<GrowthWorld>& worldHolder() {
 GrowthWorld& GrowthWorld::instance() { return *worldHolder(); }
 
 void GrowthWorld::resetInstance() {
-    // Destroy live organisms before replacing the world so ECS slots do not leak across tests.
     std::vector<Organism*> batch = Organism::liveOrganisms();
     for (Organism* organism : batch) {
         if (organism) organism->release();
@@ -90,7 +113,6 @@ Result<void> GrowthWorld::advanceDays(double days) {
         const double       toEdge     = 1.0 - dayFraction_;
         const double       slice      = remaining < toEdge ? remaining : toEdge;
         const std::int64_t dayForHash = calendar_.dayIndex();
-        // Copy pointers: gestation may create new organisms mid-loop.
         std::vector<Organism*> batch = Organism::liveOrganisms();
         for (Organism* organism : batch) {
             if (!organism || organism->isDead()) continue;
@@ -107,19 +129,12 @@ Result<void> GrowthWorld::advanceDays(double days) {
 }
 
 void GrowthWorld::drainNeeds(Organism& organism, const SpeciesDef& species, double days) {
-    auto& needs         = *organism.vitalNeeds();
-    needs.waterPermille = clampPermille(needs.waterPermille - species.waterDrainPerDay * days);
-    if (species.kind == OrganismKind::Animal) {
-        needs.foodPermille = clampPermille(needs.foodPermille - species.foodDrainPerDay * days);
-    } else {
-        needs.fertilityPermille = clampPermille(needs.fertilityPermille - species.fertilityDrainPerDay * days);
+    auto& needs = *organism.vitalNeeds();
+    for (const NeedMeterDef& need : species.needs) {
+        const double current = meterValue(needs, need.id);
+        needs.meters[need.id] = clampPermille(current - need.drainPerDay * days);
     }
-
-    // Lethal neglect: completely dry + empty food/fertility for sustained stress kills.
-    const bool noWater = needs.waterPermille <= 0.0;
-    const bool noFuel =
-        species.kind == OrganismKind::Animal ? needs.foodPermille <= 0.0 : needs.fertilityPermille <= 0.0;
-    if (noWater && noFuel) {
+    if (anyLethalEmpty(needs, species)) {
         organism.growth()->dead = true;
         emit(GrowthEventKind::Died, organism, "neglect");
     }
@@ -128,15 +143,23 @@ void GrowthWorld::drainNeeds(Organism& organism, const SpeciesDef& species, doub
 double GrowthWorld::growthMultiplier(Organism& organism, const SpeciesDef& species) {
     if (organism.isDead()) return 0.0;
     const auto& needs = *organism.vitalNeeds();
-    if (needs.waterPermille < species.minWaterPermille) return 0.0;
-    if (species.kind == OrganismKind::Animal) {
-        if (needs.foodPermille < species.minFoodPermille) return 0.0;
-    } else {
-        if (needs.fertilityPermille < species.minFertilityPermille) return 0.0;
+    for (const NeedMeterDef& need : species.needs) {
+        if (need.requiredForGrowth && meterValue(needs, need.id) < need.minPermille) return 0.0;
     }
 
-    const int seasonIndex = static_cast<int>(calendar_.season());
-    double    mul         = species.seasonMul[seasonIndex];
+    double mul = 1.0;
+    const std::string seasonId = calendar_.seasonId();
+    if (!species.seasonMulById.empty()) {
+        auto it = species.seasonMulById.find(seasonId);
+        if (it != species.seasonMulById.end()) mul = it->second;
+    } else if (!species.seasonMul.empty()) {
+        const int index = calendar_.seasonIndex();
+        if (index >= 0 && index < static_cast<int>(species.seasonMul.size())) {
+            mul = species.seasonMul[static_cast<std::size_t>(index)];
+        } else {
+            mul = species.seasonMul.back();
+        }
+    }
     if (organism.isDiseased()) mul *= organism.health()->diseaseGrowthMul;
     if (!(mul > 0.0) || !std::isfinite(mul)) return 0.0;
     return mul;
@@ -186,13 +209,7 @@ void GrowthWorld::advanceDisease(Organism& organism, const SpeciesDef& species, 
     }
 
     if (species.diseases.empty() || days <= 0.0) return;
-
-    const auto& needs = *organism.vitalNeeds();
-    const bool  stressed =
-        needs.waterPermille < species.minWaterPermille ||
-        (species.kind == OrganismKind::Animal ? needs.foodPermille < species.minFoodPermille
-                                              : needs.fertilityPermille < species.minFertilityPermille);
-    if (!stressed) return;
+    if (!isStressed(*organism.vitalNeeds(), species)) return;
 
     const double resist = std::clamp(species.baseDiseaseResist, 0.0, 1.0);
     for (std::size_t i = 0; i < species.diseases.size(); ++i) {
@@ -212,7 +229,6 @@ void GrowthWorld::advanceDisease(Organism& organism, const SpeciesDef& species, 
 }
 
 void GrowthWorld::advanceProduce(Organism& organism, const SpeciesDef& species, double days) {
-    if (species.kind != OrganismKind::Animal) return;
     if (!organism.isMature() || organism.isDead()) return;
     if (species.produceIntervalDays <= 0.0 || species.produceYield.empty()) return;
 
@@ -224,21 +240,67 @@ void GrowthWorld::advanceProduce(Organism& organism, const SpeciesDef& species, 
     }
 }
 
-void GrowthWorld::advanceGestation(Organism& organism, const SpeciesDef& species, double days) {
-    auto& repro = *organism.reproduction();
-    if (!repro.pregnant) return;
-    repro.gestationProgressDays += days;
-    if (repro.gestationProgressDays + 1e-12 < species.gestationDays) return;
+Result<void> GrowthWorld::spawnOffspring(Organism& parent, const SpeciesDef& species, int count) {
+    if (count <= 0) return Result<void>::success();
+    const std::string offspringId = species.reproduction.offspringSpeciesId.empty()
+                                        ? species.id
+                                        : species.reproduction.offspringSpeciesId;
+    for (int i = 0; i < count; ++i) {
+        auto child = Organism::createOrganism(offspringId);
+        if (!child) {
+            emit(GrowthEventKind::Died, parent, "offspring_failed");
+            return Result<void>::failure(child.status());
+        }
+        emit(GrowthEventKind::Offspring, *child.value(), offspringId);
+    }
 
-    repro.pregnant                = false;
-    repro.gestationProgressDays   = 0.0;
-    const std::string offspringId = species.offspringSpeciesId.empty() ? species.id : species.offspringSpeciesId;
-    auto              child       = Organism::createOrganism(offspringId);
-    if (!child) {
-        emit(GrowthEventKind::Died, organism, "offspring_failed");
+    auto& growth = *parent.growth();
+    if (species.reproduction.parentDiesOnBirth) {
+        growth.dead = true;
+        emit(GrowthEventKind::Died, parent, "fission");
+    } else if (species.reproduction.parentResetsStagesOnBirth) {
+        growth.stageIndex        = 0;
+        growth.stageProgressDays = 0.0;
+        growth.mature            = false;
+        growth.harvested         = false;
+        emit(GrowthEventKind::StageChanged, parent, species.stages.front().id);
+    }
+    return Result<void>::success();
+}
+
+void GrowthWorld::advanceReproduction(Organism& organism, const SpeciesDef& species, double days) {
+    auto& repro = *organism.reproduction();
+    const ReproductionDef& def = species.reproduction;
+
+    if (def.mode == ReproductionMode::PairGestation) {
+        if (!repro.pregnant) return;
+        repro.gestationProgressDays += days;
+        if (repro.gestationProgressDays + 1e-12 < def.gestationDays) return;
+        repro.pregnant              = false;
+        repro.gestationProgressDays = 0.0;
+        const int count =
+            def.offspringCountMin + (def.offspringCountMax - def.offspringCountMin) / 2;
+        spawnOffspring(organism, species, std::max(1, count))
+            .ignore("gestation completion already emitted offspring_failed on error");
         return;
     }
-    emit(GrowthEventKind::Offspring, *child.value(), offspringId);
+
+    if (def.mode != ReproductionMode::SelfBud && def.mode != ReproductionMode::Fission &&
+        def.mode != ReproductionMode::SporeBurst)
+        return;
+    if (!organism.isMature() || organism.isDead()) return;
+    if (!(def.intervalDays > 0.0)) return;
+
+    repro.daysSinceReproduce += days;
+    while (repro.daysSinceReproduce + 1e-12 >= def.intervalDays && !organism.isDead()) {
+        repro.daysSinceReproduce -= def.intervalDays;
+        const int count =
+            def.offspringCountMin + (def.offspringCountMax - def.offspringCountMin) / 2;
+        emit(GrowthEventKind::Bred, organism, "auto:" + species.kindId);
+        spawnOffspring(organism, species, std::max(1, count))
+            .ignore("interval reproduction already emitted offspring_failed on error");
+        if (organism.isDead() || def.parentResetsStagesOnBirth) break;
+    }
 }
 
 void GrowthWorld::applyDaySlice(Organism& organism, double days, std::int64_t dayIndexForHash) {
@@ -250,7 +312,7 @@ void GrowthWorld::applyDaySlice(Organism& organism, double days, std::int64_t da
     if (organism.isDead()) return;
     advanceGrowth(organism, *species, days);
     advanceProduce(organism, *species, days);
-    advanceGestation(organism, *species, days);
+    advanceReproduction(organism, *species, days);
 }
 
 Result<void> GrowthWorld::tryBreed(Organism& carrier, Organism& partner) {
@@ -262,24 +324,26 @@ Result<void> GrowthWorld::tryBreed(Organism& carrier, Organism& partner) {
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
                                                        "dead organisms cannot breed", "growth.world.tryBreed"));
     }
-    if (carrier.kind() != OrganismKind::Animal || partner.kind() != OrganismKind::Animal) {
-        return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "only animals can breed", "growth.world.tryBreed"));
-    }
     if (!carrier.isMature() || !partner.isMature()) {
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
-                                                       "both animals must be mature", "growth.world.tryBreed"));
-    }
-    if (carrier.speciesId() != partner.speciesId()) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "partners must share a species",
-                                                       "growth.world.tryBreed"));
+                                                       "both organisms must be mature", "growth.world.tryBreed"));
     }
     const SpeciesDef* species = SpeciesRegistry::find(carrier.speciesId());
     if (!species) {
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "unknown species", "growth.world.tryBreed"));
     }
-    if (!species->canBreed || !(species->gestationDays > 0.0)) {
+    const ReproductionDef& def = species->reproduction;
+    if (def.mode != ReproductionMode::PairGestation || !def.requiresPartner) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "species reproduction.mode is not pair_gestation",
+                                                       "growth.world.tryBreed"));
+    }
+    if (def.partnerMustSameSpecies && carrier.speciesId() != partner.speciesId()) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "partners must share a species",
+                                                       "growth.world.tryBreed"));
+    }
+    if (!(def.gestationDays > 0.0)) {
         return Result<void>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "species cannot breed", "growth.world.tryBreed"));
     }
@@ -291,8 +355,36 @@ Result<void> GrowthWorld::tryBreed(Organism& carrier, Organism& partner) {
     auto& repro                 = *carrier.reproduction();
     repro.pregnant              = true;
     repro.gestationProgressDays = 0.0;
+    repro.partnerStableId       = partner.stableId();
     emit(GrowthEventKind::Bred, carrier, partner.speciesId());
     return Result<void>::success();
+}
+
+Result<void> GrowthWorld::tryReproduce(Organism& organism) {
+    if (organism.isDead()) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "dead organisms cannot reproduce", "growth.world.tryReproduce"));
+    }
+    if (!organism.isMature()) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "organism must be mature", "growth.world.tryReproduce"));
+    }
+    const SpeciesDef* species = SpeciesRegistry::find(organism.speciesId());
+    if (!species) {
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "unknown species", "growth.world.tryReproduce"));
+    }
+    const ReproductionDef& def = species->reproduction;
+    if (def.mode != ReproductionMode::SelfBud && def.mode != ReproductionMode::Fission &&
+        def.mode != ReproductionMode::SporeBurst) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "species reproduction.mode is not a solo mode",
+                                                       "growth.world.tryReproduce"));
+    }
+    organism.reproduction()->daysSinceReproduce = 0.0;
+    emit(GrowthEventKind::Bred, organism, "forced:" + species->kindId);
+    const int count = def.offspringCountMin + (def.offspringCountMax - def.offspringCountMin) / 2;
+    return spawnOffspring(organism, *species, std::max(1, count));
 }
 
 }  // namespace eve::growth

@@ -22,6 +22,10 @@ int Growth::speciesCount() const { return SpeciesRegistry::count(); }
 
 Result<void> Growth::setDaysPerSeason(int days) { return GrowthWorld::instance().calendar().setDaysPerSeason(days); }
 
+Result<void> Growth::setSeasonLayoutFromJson(const std::string& json) {
+    return GrowthWorld::instance().calendar().setSeasonLayoutFromJson(json);
+}
+
 Result<void> Growth::setSecondsPerSimDay(double seconds) {
     return GrowthWorld::instance().setSecondsPerSimDay(seconds);
 }
@@ -47,15 +51,15 @@ std::int64_t Growth::dayIndex() const { return GrowthWorld::instance().calendar(
 
 std::int64_t Growth::year() const { return GrowthWorld::instance().calendar().year(); }
 
-std::string Growth::seasonName() const {
-    return GrowthCalendar::seasonName(GrowthWorld::instance().calendar().season());
-}
+std::string Growth::seasonName() const { return GrowthWorld::instance().calendar().seasonId(); }
+
+Result<Organism*> Growth::spawn(const std::string& speciesId) { return Organism::createOrganism(speciesId); }
 
 Result<Organism*> Growth::plant(const std::string& speciesId) {
     auto organism = Organism::createOrganism(speciesId);
     if (!organism) return organism;
     Organism* created = organism.value();
-    if (created->kind() != OrganismKind::Plant) {
+    if (created->kindId() != "plant") {
         created->release();
         return Result<Organism*>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "species is not a plant", "growth.plant"));
@@ -67,7 +71,7 @@ Result<Organism*> Growth::spawnAnimal(const std::string& speciesId) {
     auto organism = Organism::createOrganism(speciesId);
     if (!organism) return organism;
     Organism* created = organism.value();
-    if (created->kind() != OrganismKind::Animal) {
+    if (created->kindId() != "animal") {
         created->release();
         return Result<Organism*>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "species is not an animal", "growth.spawnAnimal"));
@@ -81,6 +85,14 @@ Result<void> Growth::tryBreed(Organism* carrier, Organism* partner) {
             Diagnostic::error(DiagnosticCode::InvalidArgument, "breed partners must not be null", "growth.tryBreed"));
     }
     return GrowthWorld::instance().tryBreed(*carrier, *partner);
+}
+
+Result<void> Growth::tryReproduce(Organism* organism) {
+    if (!organism) {
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "organism must not be null", "growth.tryReproduce"));
+    }
+    return GrowthWorld::instance().tryReproduce(*organism);
 }
 
 void Growth::clearEvents() { GrowthWorld::instance().events().clear(); }
@@ -142,9 +154,18 @@ void Growth::expose(ssq::Table& table) {
     organism.addFunc("fertilityPermille", [](Organism* self) -> float {
         return self ? static_cast<float>(self->fertilityPermille()) : 0.f;
     });
-    organism.addFunc("kindName", [](Organism* self) {
-        if (!self) return std::string{};
-        return self->kind() == OrganismKind::Animal ? std::string("animal") : std::string("plant");
+    organism.addFunc("kindId", [](Organism* self) { return self ? self->kindId() : std::string{}; });
+    organism.addFunc("kindName", [](Organism* self) { return self ? self->kindId() : std::string{}; });
+    organism.addFunc("needPermille", [](Organism* self, const std::string& needId) -> float {
+        return self ? static_cast<float>(self->needPermille(needId)) : 0.f;
+    });
+    organism.addFunc("refillNeed", [vm = organism.getHandle()](Organism* self, const std::string& needId, float amount) {
+        if (!self) {
+            return eve::script::projectResult(
+                vm, Result<void>::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument, "organism is null", "growth.organism")));
+        }
+        return eve::script::projectResult(vm, self->refillNeed(needId, static_cast<double>(amount)));
     });
     organism.addFunc("waterBy", [vm = organism.getHandle()](Organism* self, float amount) {
         if (!self) {
@@ -214,6 +235,14 @@ void Growth::expose(ssq::Class& cls) {
         }
         return eve::script::projectResult(vm, self->setDaysPerSeason(days));
     });
+    cls.addFunc("setSeasonLayoutFromJson", [vm = cls.getHandle()](Growth* self, const std::string& json) {
+        if (!self) {
+            return eve::script::projectResult(
+                vm, Result<void>::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument, "growth module is null", "growth")));
+        }
+        return eve::script::projectResult(vm, self->setSeasonLayoutFromJson(json));
+    });
     cls.addFunc("setSecondsPerSimDay", [vm = cls.getHandle()](Growth* self, float seconds) {
         if (!self) {
             return eve::script::projectResult(
@@ -245,6 +274,12 @@ void Growth::expose(ssq::Class& cls) {
     cls.addFunc("year", &Growth::year);
     cls.addFunc("seasonName", &Growth::seasonName);
     // ECS organism pointers match RPGActor: return borrowed instances; script calls destroy().
+    cls.addFunc("spawn", [](Growth* self, const std::string& speciesId) -> Organism* {
+        if (!self) return nullptr;
+        auto created = self->spawn(speciesId);
+        if (!created) return nullptr;
+        return created.value();
+    });
     cls.addFunc("plant", [](Growth* self, const std::string& speciesId) -> Organism* {
         if (!self) return nullptr;
         auto created = self->plant(speciesId);
@@ -264,6 +299,14 @@ void Growth::expose(ssq::Class& cls) {
                         Diagnostic::error(DiagnosticCode::InvalidArgument, "growth module is null", "growth")));
         }
         return eve::script::projectResult(vm, self->tryBreed(carrier, partner));
+    });
+    cls.addFunc("tryReproduce", [vm = cls.getHandle()](Growth* self, Organism* organism) {
+        if (!self) {
+            return eve::script::projectResult(
+                vm, Result<void>::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument, "growth module is null", "growth")));
+        }
+        return eve::script::projectResult(vm, self->tryReproduce(organism));
     });
     cls.addFunc("clearEvents", &Growth::clearEvents);
     cls.addFunc("eventCount", &Growth::eventCount);

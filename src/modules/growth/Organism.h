@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::growth {
@@ -20,7 +21,7 @@ struct YieldReceipt {
 };
 
 /**
- * @brief Farm growth short-root entity (plants and animals).
+ * @brief Growth short-root entity for any configured lifeform.
  *
  * Orthogonal state lives in components. Scene / hex / inventory links are
  * owned by adapters outside this module (spatial binding 2A).
@@ -34,7 +35,8 @@ public:
     /** @brief Species binding and stage progress. */
     struct Growth {
         std::string  speciesId;
-        OrganismKind kind              = OrganismKind::Plant;
+        std::string  kindId;
+        OrganismKind kind              = OrganismKind::Custom;
         int          stageIndex        = 0;
         double       stageProgressDays = 0.0;
         bool         mature            = false;
@@ -42,11 +44,9 @@ public:
         bool         harvested         = false;
     };
 
-    /** @brief Need meters in permille [0, 1000]. */
+    /** @brief Named need meters in permille [0, 1000], keyed by species need id. */
     struct VitalNeeds {
-        double waterPermille     = 1000.0;
-        double foodPermille      = 1000.0;
-        double fertilityPermille = 1000.0;
+        std::unordered_map<std::string, double> meters;
     };
 
     /** @brief Disease state; empty diseaseId means healthy. */
@@ -56,13 +56,15 @@ public:
         double      diseaseGrowthMul = 1.0;
     };
 
-    /** @brief Gestation state for breeding animals. */
+    /** @brief Reproduction progress for any authored mode. */
     struct Reproduction {
-        bool   pregnant              = false;
-        double gestationProgressDays = 0.0;
+        bool          pregnant               = false;
+        double        gestationProgressDays  = 0.0;
+        double        daysSinceReproduce     = 0.0;
+        std::uint64_t partnerStableId        = 0;
     };
 
-    /** @brief Periodic produce timer for livestock. */
+    /** @brief Periodic produce timer (milk, crystals, spores as yield — not offspring). */
     struct Produce {
         double daysSinceProduce = 0.0;
     };
@@ -83,8 +85,8 @@ public:
     /** @brief Live organisms currently visible to Growth views. */
     [[nodiscard]] static const std::vector<Organism*>& liveOrganisms();
 
-    // Component accessors from ENTITY/COMPONENT are non-const; getters follow that model.
     [[nodiscard]] const std::string& speciesId();
+    [[nodiscard]] const std::string& kindId();
     [[nodiscard]] OrganismKind       kind();
     [[nodiscard]] int                stageIndex();
     [[nodiscard]] std::string        stageId();
@@ -96,28 +98,36 @@ public:
     [[nodiscard]] bool               isPregnant();
     [[nodiscard]] std::string        diseaseId();
 
+    /** @brief Convenience meters when the species declares water/food/fertility needs. */
     [[nodiscard]] double waterPermille();
     [[nodiscard]] double foodPermille();
     [[nodiscard]] double fertilityPermille();
+    /** @brief Generic meter read; missing need returns 0. */
+    [[nodiscard]] double needPermille(const std::string& needId);
 
     /**
-     * @brief Adds water (plants/animals). Clamped to 1000.
+     * @brief Refills a named need declared by the species.
+     * @cost Cheap: O(1) meter write + optional event.
+     */
+    [[nodiscard]] Result<void> refillNeed(const std::string& needId, double permille);
+    /**
+     * @brief Adds water when the species declares a `water` need.
      * @cost Cheap: O(1) meter write + optional event.
      */
     [[nodiscard]] Result<void> waterBy(double permille);
     /**
-     * @brief Adds food (animals). Plants reject.
+     * @brief Adds food when the species declares a `food` need.
      * @cost Cheap: O(1) meter write + optional event.
      */
     [[nodiscard]] Result<void> feed(double permille);
     /**
-     * @brief Adds fertility (plants). Animals reject.
+     * @brief Adds fertility when the species declares a `fertility` need.
      * @cost Cheap: O(1) meter write + optional event.
      */
     [[nodiscard]] Result<void> fertilize(double permille);
 
     /**
-     * @brief Harvests a mature plant once; returns yield lines without touching inventory.
+     * @brief Harvests once when mature and harvestYield is non-empty (any lifeform).
      * @cost Moderate: copies yield defs and marks harvested; emits one event.
      */
     [[nodiscard]] Result<std::vector<YieldReceipt>> harvest();

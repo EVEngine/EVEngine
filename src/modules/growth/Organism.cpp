@@ -14,6 +14,12 @@ double clampPermille(double value) {
     return std::clamp(value, 0.0, 1000.0);
 }
 
+double meterOrZero(const Organism::VitalNeeds& needs, const std::string& id) {
+    auto it = needs.meters.find(id);
+    if (it == needs.meters.end()) return 0.0;
+    return it->second;
+}
+
 }  // namespace
 
 Result<Organism*> Organism::createOrganism(const std::string& speciesId) {
@@ -25,6 +31,7 @@ Result<Organism*> Organism::createOrganism(const std::string& speciesId) {
     Organism* organism       = Organism::create();
     auto&     growth         = *organism->growth();
     growth.speciesId         = species->id;
+    growth.kindId            = species->kindId;
     growth.kind              = species->kind;
     growth.stageIndex        = 0;
     growth.stageProgressDays = 0.0;
@@ -32,10 +39,9 @@ Result<Organism*> Organism::createOrganism(const std::string& speciesId) {
     growth.dead              = false;
     growth.harvested         = false;
 
-    auto& needs             = *organism->vitalNeeds();
-    needs.waterPermille     = 1000.0;
-    needs.foodPermille      = 1000.0;
-    needs.fertilityPermille = 1000.0;
+    auto& needs = *organism->vitalNeeds();
+    needs.meters.clear();
+    for (const NeedMeterDef& need : species->needs) needs.meters[need.id] = 1000.0;
 
     (void)*organism->health();
     (void)*organism->reproduction();
@@ -52,6 +58,8 @@ const std::vector<Organism*>& Organism::liveOrganisms() {
 }
 
 const std::string& Organism::speciesId() { return growth()->speciesId; }
+
+const std::string& Organism::kindId() { return growth()->kindId; }
 
 OrganismKind Organism::kind() { return growth()->kind; }
 
@@ -79,83 +87,74 @@ bool Organism::isPregnant() { return reproduction()->pregnant; }
 
 std::string Organism::diseaseId() { return health()->activeDiseaseId; }
 
-double Organism::waterPermille() { return vitalNeeds()->waterPermille; }
+double Organism::waterPermille() { return meterOrZero(*vitalNeeds(), "water"); }
 
-double Organism::foodPermille() { return vitalNeeds()->foodPermille; }
+double Organism::foodPermille() { return meterOrZero(*vitalNeeds(), "food"); }
 
-double Organism::fertilityPermille() { return vitalNeeds()->fertilityPermille; }
+double Organism::fertilityPermille() { return meterOrZero(*vitalNeeds(), "fertility"); }
 
-Result<void> Organism::waterBy(double permille) {
-    if (growth()->dead) {
+double Organism::needPermille(const std::string& needId) { return meterOrZero(*vitalNeeds(), needId); }
+
+Result<void> Organism::refillNeed(const std::string& needId, double permille) {
+    const SpeciesDef* species = SpeciesRegistry::find(growth()->speciesId);
+    if (!species) {
         return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::PreconditionViolation, "organism is dead", "growth.organism.waterBy"));
+            Diagnostic::error(DiagnosticCode::NotFound, "unknown species", "growth.organism.refillNeed"));
     }
-    if (!std::isfinite(permille) || permille < 0.0) {
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "water amount must be finite and >= 0", "growth.organism.waterBy"));
-    }
-    vitalNeeds()->waterPermille = clampPermille(vitalNeeds()->waterPermille + permille);
-    GrowthWorld::instance().emit(GrowthEventKind::Watered, *this, std::to_string(permille));
-    return Result<void>::success();
-}
-
-Result<void> Organism::feed(double permille) {
-    if (growth()->kind != OrganismKind::Animal) {
-        return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "only animals can be fed", "growth.organism.feed"));
-    }
-    if (growth()->dead) {
-        return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::PreconditionViolation, "organism is dead", "growth.organism.feed"));
-    }
-    if (!std::isfinite(permille) || permille < 0.0) {
+    if (!species->hasNeed(needId)) {
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                       "feed amount must be finite and >= 0", "growth.organism.feed"));
-    }
-    vitalNeeds()->foodPermille = clampPermille(vitalNeeds()->foodPermille + permille);
-    GrowthWorld::instance().emit(GrowthEventKind::Fed, *this, std::to_string(permille));
-    return Result<void>::success();
-}
-
-Result<void> Organism::fertilize(double permille) {
-    if (growth()->kind != OrganismKind::Plant) {
-        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "only plants can be fertilized",
-                                                       "growth.organism.fertilize"));
+                                                       "species does not declare need '" + needId + "'",
+                                                       "growth.organism.refillNeed"));
     }
     if (growth()->dead) {
         return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::PreconditionViolation, "organism is dead", "growth.organism.fertilize"));
+            Diagnostic::error(DiagnosticCode::PreconditionViolation, "organism is dead", "growth.organism.refillNeed"));
     }
     if (!std::isfinite(permille) || permille < 0.0) {
         return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "fertilizer amount must be finite and >= 0", "growth.organism.fertilize"));
+            DiagnosticCode::InvalidArgument, "need amount must be finite and >= 0", "growth.organism.refillNeed"));
     }
-    vitalNeeds()->fertilityPermille = clampPermille(vitalNeeds()->fertilityPermille + permille);
-    GrowthWorld::instance().emit(GrowthEventKind::Fertilized, *this, std::to_string(permille));
+    auto& meters  = vitalNeeds()->meters;
+    meters[needId] = clampPermille(meterOrZero(*vitalNeeds(), needId) + permille);
+    if (needId == "water") {
+        GrowthWorld::instance().emit(GrowthEventKind::Watered, *this, std::to_string(permille));
+    } else if (needId == "food") {
+        GrowthWorld::instance().emit(GrowthEventKind::Fed, *this, std::to_string(permille));
+    } else if (needId == "fertility") {
+        GrowthWorld::instance().emit(GrowthEventKind::Fertilized, *this, std::to_string(permille));
+    } else {
+        GrowthWorld::instance().emit(GrowthEventKind::Watered, *this, needId + ":" + std::to_string(permille));
+    }
     return Result<void>::success();
 }
+
+Result<void> Organism::waterBy(double permille) { return refillNeed("water", permille); }
+
+Result<void> Organism::feed(double permille) { return refillNeed("food", permille); }
+
+Result<void> Organism::fertilize(double permille) { return refillNeed("fertility", permille); }
 
 Result<std::vector<YieldReceipt>> Organism::harvest() {
-    if (growth()->kind != OrganismKind::Plant) {
-        return Result<std::vector<YieldReceipt>>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "only plants can be harvested", "growth.organism.harvest"));
-    }
     if (growth()->dead) {
         return Result<std::vector<YieldReceipt>>::failure(
             Diagnostic::error(DiagnosticCode::PreconditionViolation, "organism is dead", "growth.organism.harvest"));
     }
     if (!growth()->mature) {
-        return Result<std::vector<YieldReceipt>>::failure(
-            Diagnostic::error(DiagnosticCode::PreconditionViolation, "plant is not mature", "growth.organism.harvest"));
+        return Result<std::vector<YieldReceipt>>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation, "organism is not mature", "growth.organism.harvest"));
     }
     if (growth()->harvested) {
         return Result<std::vector<YieldReceipt>>::failure(Diagnostic::error(
-            DiagnosticCode::PreconditionViolation, "plant already harvested", "growth.organism.harvest"));
+            DiagnosticCode::PreconditionViolation, "organism already harvested", "growth.organism.harvest"));
     }
     const SpeciesDef* species = SpeciesRegistry::find(growth()->speciesId);
     if (!species) {
         return Result<std::vector<YieldReceipt>>::failure(
             Diagnostic::error(DiagnosticCode::NotFound, "unknown species", "growth.organism.harvest"));
+    }
+    if (species->harvestYield.empty()) {
+        return Result<std::vector<YieldReceipt>>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "species has no harvestYield", "growth.organism.harvest"));
     }
 
     std::vector<YieldReceipt> yields;

@@ -46,10 +46,17 @@ public:
     [[nodiscard]] Result<void> advanceDays(double days);
 
     /**
-     * @brief Starts gestation on carrier when both are mature, breedable animals.
+     * @brief Starts pair_gestation on carrier when both partners satisfy the species rules.
      * @cost Cheap validation + component write; offspring spawn on later advance.
      */
     [[nodiscard]] Result<void> tryBreed(Organism& carrier, Organism& partner);
+
+    /**
+     * @brief Triggers a solo reproduction pulse for self_bud / fission / spore_burst.
+     * @remarks Interval modes also fire automatically from advanceDays; this forces one attempt.
+     * @cost Cheap validation; may spawn organisms immediately.
+     */
+    [[nodiscard]] Result<void> tryReproduce(Organism& organism);
 
     /** @brief Clears organisms' world-facing bookkeeping used by tests (events + calendar). */
     void resetForTests();
@@ -68,8 +75,9 @@ private:
     void                 advanceGrowth(Organism& organism, const SpeciesDef& species, double days);
     void advanceDisease(Organism& organism, const SpeciesDef& species, double days, std::int64_t dayIndexForHash);
     void advanceProduce(Organism& organism, const SpeciesDef& species, double days);
-    void advanceGestation(Organism& organism, const SpeciesDef& species, double days);
-    void emit(GrowthEventKind kind, Organism& organism, std::string detail);
+    void advanceReproduction(Organism& organism, const SpeciesDef& species, double days);
+    [[nodiscard]] Result<void> spawnOffspring(Organism& parent, const SpeciesDef& species, int count);
+    void                       emit(GrowthEventKind kind, Organism& organism, std::string detail);
 
     GrowthCalendar calendar_;
     GrowthEventLog events_;

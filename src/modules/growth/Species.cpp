@@ -140,6 +140,73 @@ Result<std::vector<YieldDef>> parseYieldArray(const Value::Object& object, const
     return Result<std::vector<YieldDef>>::success(std::move(out));
 }
 
+Result<void> parseNeedsArray(const Value::Object& object, std::vector<NeedMeterDef>& out) {
+    const Value* value = objectField(object, "needs");
+    if (!value) return Result<void>::success();
+    const auto* array = value->getIf<Value::Array>();
+    if (!array) {
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "needs must be an array", "growth.species.needs"));
+    }
+    for (const Value& entry : *array) {
+        const auto* needObject = entry.getIf<Value::Object>();
+        if (!needObject) {
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "need entry must be an object", "growth.species.needs"));
+        }
+        NeedMeterDef need;
+        if (auto id = readString(*needObject, "id", need.id, true); !id) return id;
+        if (need.id.empty()) {
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "need id is empty", "growth.species.needs.id"));
+        }
+        if (auto d = readDouble(*needObject, "drainPerDay", need.drainPerDay, false); !d) return d;
+        if (auto m = readDouble(*needObject, "minPermille", need.minPermille, false); !m) return m;
+        if (auto r = readBool(*needObject, "requiredForGrowth", need.requiredForGrowth); !r) return r;
+        if (auto l = readBool(*needObject, "lethalWhenEmpty", need.lethalWhenEmpty); !l) return l;
+        out.push_back(std::move(need));
+    }
+    return Result<void>::success();
+}
+
+Result<void> parseReproduction(const Value::Object& object, ReproductionDef& out, bool& sawReproductionObject,
+                               bool& legacyCanBreed, double& legacyGestation, std::string& legacyOffspring) {
+    sawReproductionObject = false;
+    if (auto v = readBool(object, "canBreed", legacyCanBreed); !v) return v;
+    if (auto v = readDouble(object, "gestationDays", legacyGestation, false); !v) return v;
+    if (auto v = readString(object, "offspringSpeciesId", legacyOffspring, false); !v) return v;
+
+    const Value* value = objectField(object, "reproduction");
+    if (!value) return Result<void>::success();
+    const auto* reproObject = value->getIf<Value::Object>();
+    if (!reproObject) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "reproduction must be an object", "growth.species.reproduction"));
+    }
+    sawReproductionObject = true;
+    std::string modeText  = "none";
+    if (auto mode = readString(*reproObject, "mode", modeText, false); !mode) return mode;
+    auto parsedMode = parseReproductionMode(modeText);
+    if (!parsedMode) return Result<void>::failure(parsedMode.status());
+    out.mode = parsedMode.value();
+    if (auto v = readDouble(*reproObject, "gestationDays", out.gestationDays, false); !v) return v;
+    if (auto v = readDouble(*reproObject, "intervalDays", out.intervalDays, false); !v) return v;
+    if (auto v = readInt(*reproObject, "offspringCountMin", out.offspringCountMin, false); !v) return v;
+    out.offspringCountMax = out.offspringCountMin;
+    if (auto v = readInt(*reproObject, "offspringCountMax", out.offspringCountMax, false); !v) return v;
+    if (auto v = readString(*reproObject, "offspringSpeciesId", out.offspringSpeciesId, false); !v) return v;
+    if (auto v = readBool(*reproObject, "requiresPartner", out.requiresPartner); !v) return v;
+    if (auto v = readBool(*reproObject, "partnerMustSameSpecies", out.partnerMustSameSpecies); !v) return v;
+    if (auto v = readBool(*reproObject, "parentDiesOnBirth", out.parentDiesOnBirth); !v) return v;
+    if (auto v = readBool(*reproObject, "parentResetsStagesOnBirth", out.parentResetsStagesOnBirth); !v) return v;
+    if (out.offspringCountMin < 0 || out.offspringCountMax < out.offspringCountMin) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "offspring counts must satisfy 0 <= min <= max",
+                                                       "growth.species.reproduction"));
+    }
+    return Result<void>::success();
+}
+
 Result<SpeciesDef> parseSpeciesObject(const Value::Object& object) {
     SpeciesDef def;
     if (auto id = readString(object, "id", def.id, true); !id) return fail<SpeciesDef>(id.status());
@@ -147,9 +214,10 @@ Result<SpeciesDef> parseSpeciesObject(const Value::Object& object) {
         return fail<SpeciesDef>(name.status());
     if (def.displayName.empty()) def.displayName = def.id;
 
-    std::string kindText = "plant";
+    std::string kindText = "organism";
     if (auto kind = readString(object, "kind", kindText, false); !kind) return fail<SpeciesDef>(kind.status());
-    auto parsedKind = parseOrganismKind(kindText);
+    def.kindId          = kindText;
+    auto parsedKind     = parseOrganismKind(kindText);
     if (!parsedKind) return fail<SpeciesDef>(parsedKind.status());
     def.kind = parsedKind.value();
 
@@ -181,42 +249,112 @@ Result<SpeciesDef> parseSpeciesObject(const Value::Object& object) {
         def.stages.push_back(std::move(stage));
     }
 
-    if (auto v = readDouble(object, "waterDrainPerDay", def.waterDrainPerDay, false); !v)
+    if (auto needs = parseNeedsArray(object, def.needs); !needs) return fail<SpeciesDef>(needs.status());
+
+    // Legacy Earth-farm fields — folded into needs by normalizeSpeciesDef when needs is empty.
+    double waterDrain = 0.0, foodDrain = 0.0, fertilityDrain = 0.0;
+    double minWater = 200.0, minFood = 200.0, minFertility = 100.0;
+    bool   sawWater = objectField(object, "waterDrainPerDay") != nullptr;
+    bool   sawFood  = objectField(object, "foodDrainPerDay") != nullptr;
+    bool   sawFert  = objectField(object, "fertilityDrainPerDay") != nullptr;
+    if (auto v = readDouble(object, "waterDrainPerDay", waterDrain, false); !v) return fail<SpeciesDef>(v.status());
+    if (auto v = readDouble(object, "foodDrainPerDay", foodDrain, false); !v) return fail<SpeciesDef>(v.status());
+    if (auto v = readDouble(object, "fertilityDrainPerDay", fertilityDrain, false); !v)
         return fail<SpeciesDef>(v.status());
-    if (auto v = readDouble(object, "foodDrainPerDay", def.foodDrainPerDay, false); !v)
+    if (auto v = readDouble(object, "minWaterPermille", minWater, false); !v) return fail<SpeciesDef>(v.status());
+    if (auto v = readDouble(object, "minFoodPermille", minFood, false); !v) return fail<SpeciesDef>(v.status());
+    if (auto v = readDouble(object, "minFertilityPermille", minFertility, false); !v)
         return fail<SpeciesDef>(v.status());
-    if (auto v = readDouble(object, "fertilityDrainPerDay", def.fertilityDrainPerDay, false); !v)
-        return fail<SpeciesDef>(v.status());
-    if (auto v = readDouble(object, "minWaterPermille", def.minWaterPermille, false); !v)
-        return fail<SpeciesDef>(v.status());
-    if (auto v = readDouble(object, "minFoodPermille", def.minFoodPermille, false); !v)
-        return fail<SpeciesDef>(v.status());
-    if (auto v = readDouble(object, "minFertilityPermille", def.minFertilityPermille, false); !v)
-        return fail<SpeciesDef>(v.status());
+    if (def.needs.empty()) {
+        if (def.kind == OrganismKind::Animal || sawFood || sawWater) {
+            if (def.kind == OrganismKind::Animal || sawWater || !sawFert) {
+                def.needs.push_back(NeedMeterDef{"water", waterDrain > 0.0 ? waterDrain : 50.0, minWater, true, true});
+            }
+            if (def.kind == OrganismKind::Animal || sawFood) {
+                def.needs.push_back(NeedMeterDef{"food", foodDrain > 0.0 ? foodDrain : 50.0, minFood, true, true});
+            }
+        }
+        if (def.kind == OrganismKind::Plant || sawFert) {
+            if (def.needs.empty() || def.kind == OrganismKind::Plant) {
+                if (!def.hasNeed("water")) {
+                    def.needs.push_back(
+                        NeedMeterDef{"water", waterDrain > 0.0 ? waterDrain : 50.0, minWater, true, true});
+                }
+                def.needs.push_back(
+                    NeedMeterDef{"fertility", fertilityDrain > 0.0 ? fertilityDrain : 20.0, minFertility, true, true});
+            }
+        }
+        if (def.needs.empty() && (sawWater || sawFood || sawFert)) {
+            if (sawWater)
+                def.needs.push_back(NeedMeterDef{"water", waterDrain, minWater, true, true});
+            if (sawFood) def.needs.push_back(NeedMeterDef{"food", foodDrain, minFood, true, true});
+            if (sawFert) def.needs.push_back(NeedMeterDef{"fertility", fertilityDrain, minFertility, true, true});
+        }
+    }
+
     if (auto v = readDouble(object, "produceIntervalDays", def.produceIntervalDays, false); !v)
-        return fail<SpeciesDef>(v.status());
-    if (auto v = readBool(object, "canBreed", def.canBreed); !v) return fail<SpeciesDef>(v.status());
-    if (auto v = readDouble(object, "gestationDays", def.gestationDays, false); !v) return fail<SpeciesDef>(v.status());
-    if (auto v = readString(object, "offspringSpeciesId", def.offspringSpeciesId, false); !v)
         return fail<SpeciesDef>(v.status());
     if (auto v = readDouble(object, "baseDiseaseResist", def.baseDiseaseResist, false); !v)
         return fail<SpeciesDef>(v.status());
 
+    bool        sawReproduction = false;
+    bool        legacyCanBreed  = false;
+    double      legacyGestation = 0.0;
+    std::string legacyOffspring;
+    if (auto repro = parseReproduction(object, def.reproduction, sawReproduction, legacyCanBreed, legacyGestation,
+                                       legacyOffspring);
+        !repro)
+        return fail<SpeciesDef>(repro.status());
+    if (!sawReproduction) {
+        if (legacyCanBreed) {
+            def.reproduction.mode              = ReproductionMode::PairGestation;
+            def.reproduction.gestationDays     = legacyGestation;
+            def.reproduction.requiresPartner   = true;
+            def.reproduction.offspringSpeciesId =
+                legacyOffspring.empty() ? def.id : legacyOffspring;
+        } else if (!legacyOffspring.empty()) {
+            def.reproduction.offspringSpeciesId = legacyOffspring;
+        }
+    } else if (def.reproduction.offspringSpeciesId.empty() && !legacyOffspring.empty()) {
+        def.reproduction.offspringSpeciesId = legacyOffspring;
+    }
+
     if (const Value* season = objectField(object, "seasonMul")) {
         const auto* array = season->getIf<Value::Array>();
-        if (!array || array->size() != 4) {
+        if (!array || array->empty()) {
             return Result<SpeciesDef>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
-                                                                 "seasonMul must be an array of 4 numbers",
+                                                                 "seasonMul must be a non-empty number array",
                                                                  "growth.species.seasonMul"));
         }
-        for (std::size_t i = 0; i < 4; ++i) {
-            if (const auto* number = (*array)[i].getIf<double>()) {
-                def.seasonMul[i] = *number;
-            } else if (const auto* integer = (*array)[i].getIf<std::int64_t>()) {
-                def.seasonMul[i] = static_cast<double>(*integer);
+        def.seasonMul.clear();
+        def.seasonMul.reserve(array->size());
+        for (const Value& entry : *array) {
+            if (const auto* number = entry.getIf<double>()) {
+                def.seasonMul.push_back(*number);
+            } else if (const auto* integer = entry.getIf<std::int64_t>()) {
+                def.seasonMul.push_back(static_cast<double>(*integer));
             } else {
                 return Result<SpeciesDef>::failure(Diagnostic::error(
                     DiagnosticCode::InvalidArgument, "seasonMul entries must be numbers", "growth.species.seasonMul"));
+            }
+        }
+    }
+
+    if (const Value* byId = objectField(object, "seasonMulById")) {
+        const auto* mapObject = byId->getIf<Value::Object>();
+        if (!mapObject) {
+            return Result<SpeciesDef>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "seasonMulById must be an object", "growth.species.seasonMulById"));
+        }
+        for (const auto& [seasonId, mulValue] : *mapObject) {
+            if (const auto* number = mulValue.getIf<double>()) {
+                def.seasonMulById[seasonId] = *number;
+            } else if (const auto* integer = mulValue.getIf<std::int64_t>()) {
+                def.seasonMulById[seasonId] = static_cast<double>(*integer);
+            } else {
+                return Result<SpeciesDef>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                                     "seasonMulById values must be numbers",
+                                                                     "growth.species.seasonMulById"));
             }
         }
     }
@@ -254,18 +392,94 @@ Result<SpeciesDef> parseSpeciesObject(const Value::Object& object) {
         }
     }
 
-    if (def.offspringSpeciesId.empty()) def.offspringSpeciesId = def.id;
+    if (auto ok = normalizeSpeciesDef(def); !ok) return fail<SpeciesDef>(ok.status());
     return Result<SpeciesDef>::success(std::move(def));
 }
 
 }  // namespace
 
+bool SpeciesDef::hasNeed(std::string_view needId) const { return findNeed(needId) != nullptr; }
+
+const NeedMeterDef* SpeciesDef::findNeed(std::string_view needId) const {
+    for (const NeedMeterDef& need : needs) {
+        if (need.id == needId) return &need;
+    }
+    return nullptr;
+}
+
 Result<OrganismKind> parseOrganismKind(std::string_view text) {
     const std::string lower = lowerCopy(text);
     if (lower == "plant") return Result<OrganismKind>::success(OrganismKind::Plant);
     if (lower == "animal") return Result<OrganismKind>::success(OrganismKind::Animal);
-    return Result<OrganismKind>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, "kind must be plant or animal", "growth.species.kind"));
+    if (lower == "custom" || lower == "organism" || lower.empty())
+        return Result<OrganismKind>::success(OrganismKind::Custom);
+    // Any other tag is a valid custom lifeform id (xeno.crystal, slime, …).
+    return Result<OrganismKind>::success(OrganismKind::Custom);
+}
+
+Result<ReproductionMode> parseReproductionMode(std::string_view text) {
+    const std::string lower = lowerCopy(text);
+    if (lower == "none" || lower.empty()) return Result<ReproductionMode>::success(ReproductionMode::None);
+    if (lower == "pair_gestation" || lower == "pairgestation" || lower == "gestation")
+        return Result<ReproductionMode>::success(ReproductionMode::PairGestation);
+    if (lower == "self_bud" || lower == "selfbud" || lower == "bud")
+        return Result<ReproductionMode>::success(ReproductionMode::SelfBud);
+    if (lower == "fission" || lower == "split")
+        return Result<ReproductionMode>::success(ReproductionMode::Fission);
+    if (lower == "spore_burst" || lower == "sporeburst" || lower == "spore")
+        return Result<ReproductionMode>::success(ReproductionMode::SporeBurst);
+    return Result<ReproductionMode>::failure(Diagnostic::error(
+        DiagnosticCode::InvalidArgument,
+        "reproduction.mode must be none|pair_gestation|self_bud|fission|spore_burst",
+        "growth.species.reproduction.mode"));
+}
+
+Result<void> normalizeSpeciesDef(SpeciesDef& def) {
+    if (def.id.empty()) {
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "species id is empty", "growth.species.id"));
+    }
+    if (def.kindId.empty()) def.kindId = "organism";
+    const std::string lowerKind = lowerCopy(def.kindId);
+    if (lowerKind == "plant")
+        def.kind = OrganismKind::Plant;
+    else if (lowerKind == "animal")
+        def.kind = OrganismKind::Animal;
+    else
+        def.kind = OrganismKind::Custom;
+
+    if (def.reproduction.offspringSpeciesId.empty()) def.reproduction.offspringSpeciesId = def.id;
+    if (def.reproduction.mode == ReproductionMode::PairGestation) {
+        def.reproduction.requiresPartner = true;
+        if (!(def.reproduction.gestationDays > 0.0)) {
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "pair_gestation requires gestationDays > 0",
+                                                           "growth.species.reproduction.gestationDays"));
+        }
+    }
+    if (def.reproduction.mode == ReproductionMode::SelfBud || def.reproduction.mode == ReproductionMode::Fission ||
+        def.reproduction.mode == ReproductionMode::SporeBurst) {
+        if (!(def.reproduction.intervalDays > 0.0)) {
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "interval reproduction requires intervalDays > 0",
+                                                           "growth.species.reproduction.intervalDays"));
+        }
+    }
+    if (def.seasonMul.empty()) def.seasonMul = {1.0, 1.0, 1.0, 1.0};
+
+    // Deduplicate need ids.
+    std::unordered_map<std::string, int> seen;
+    for (const NeedMeterDef& need : def.needs) {
+        if (need.id.empty()) {
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "need id is empty", "growth.species.needs"));
+        }
+        if (++seen[need.id] > 1) {
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "duplicate need id: " + need.id, "growth.species.needs"));
+        }
+    }
+    return Result<void>::success();
 }
 
 std::unordered_map<std::string, SpeciesDef>& SpeciesRegistry::table() {
@@ -274,21 +488,29 @@ std::unordered_map<std::string, SpeciesDef>& SpeciesRegistry::table() {
 }
 
 Result<void> SpeciesRegistry::registerSpecies(const SpeciesDef& def) {
-    if (def.id.empty()) {
-        return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "species id is empty", "growth.species.id"));
-    }
-    if (def.stages.empty()) {
+    SpeciesDef copy = def;
+    if (auto ok = normalizeSpeciesDef(copy); !ok) return ok;
+    if (copy.stages.empty()) {
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                        "species requires at least one stage", "growth.species.stages"));
     }
-    for (const GrowthStageDef& stage : def.stages) {
+    for (const GrowthStageDef& stage : copy.stages) {
         if (stage.id.empty() || !(stage.durationDays > 0.0) || !std::isfinite(stage.durationDays)) {
             return Result<void>::failure(
                 Diagnostic::error(DiagnosticCode::InvalidArgument, "invalid growth stage", "growth.species.stages"));
         }
     }
-    table()[def.id] = def;
+    // C++ authors may still fill only legacy-shaped fields via helpers; synthesize needs if empty.
+    if (copy.needs.empty()) {
+        if (copy.kind == OrganismKind::Animal) {
+            copy.needs.push_back(NeedMeterDef{"water", 50.0, 100.0, true, true});
+            copy.needs.push_back(NeedMeterDef{"food", 50.0, 100.0, true, true});
+        } else if (copy.kind == OrganismKind::Plant) {
+            copy.needs.push_back(NeedMeterDef{"water", 50.0, 100.0, true, true});
+            copy.needs.push_back(NeedMeterDef{"fertility", 20.0, 50.0, true, true});
+        }
+    }
+    table()[copy.id] = std::move(copy);
     return Result<void>::success();
 }
 
