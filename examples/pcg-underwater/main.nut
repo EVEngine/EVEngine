@@ -51,7 +51,8 @@ function setupUnderwaterAudio(){
     underwaterAmbienceSource=retain(audio.newSource(ambiencePcm));underwaterAmbienceSource.setRelative(true);
     requireResult(eve.applyUnderwaterAudio(submergeDownSource,submergeUpSource,underwaterAmbienceSource,
                                            underwaterOutput.playSubmergeDown,underwaterOutput.playSubmergeUp,
-                                           underwaterOutput.loopAudio,underwaterSettings.playbackVolume),"audio provider");
+                                           underwaterOutput.loopAudio,underwaterSettings.playbackVolume,
+                                           0.0,0.0),"audio provider");
     if(!underwaterAmbienceSource.isLooping()||!underwaterAmbienceSource.isPlaying())
         throw "pcg-underwater: ambience source mismatch";
 }

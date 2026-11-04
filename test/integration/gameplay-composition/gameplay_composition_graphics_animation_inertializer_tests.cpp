@@ -44,7 +44,8 @@
       "animClip.reloadUnknownOrBrokenPathIsNoop"
     ],
     "script-binding": [
-      "audio.pcgZone.squirrelContract"
+      "audio.pcgZone.squirrelContract",
+      "audio.fade.squirrelContract"
     ]
   }
 }
@@ -3848,6 +3849,8 @@ TEST_CASE("attributes.customPolicyParityUsesCanonicalOperationRegistry") {
 #include "action/ActionBlockRuntime.h"
 #include "action/ActionPreview.h"
 #include "audio/Audio.h"
+#include "audio/AudioAmbient.h"
+#include "audio/AudioFade.h"
 #include "audio/AudioZone.h"
 #include "audio/Source.h"
 #include "audio/UnderwaterAudio.h"
@@ -4195,17 +4198,25 @@ TEST_CASE("audio.underwater.transitionsAndAtomicValidation") {
     auto* up       = audio->newSource(sd);
     auto* ambience = audio->newSource(sd);
 
-    CHECK(!eve::audio::applyUnderwaterAudio(down, up, ambience, true, false, true, 1.5F));
+    CHECK(!eve::audio::applyUnderwaterAudio(down, up, ambience, true, false, true, 1.5F, 0.f, 0.f));
     CHECK(!down->isPlaying());
     CHECK(!ambience->isPlaying());
-    REQUIRE(static_cast<bool>(eve::audio::applyUnderwaterAudio(down, up, ambience, true, false, true, 0.35F)));
+    REQUIRE(
+        static_cast<bool>(eve::audio::applyUnderwaterAudio(down, up, ambience, true, false, true, 0.35F, 0.f, 0.f)));
     CHECK(down->isPlaying());
     CHECK(ambience->isPlaying());
     CHECK(ambience->isLooping());
     CHECK(ambience->getVolume() == 0.35F);
 
-    REQUIRE(static_cast<bool>(eve::audio::applyUnderwaterAudio(down, up, ambience, false, true, false, 0.35F)));
+    REQUIRE(
+        static_cast<bool>(eve::audio::applyUnderwaterAudio(down, up, ambience, false, true, false, 0.35F, 0.5F, 1.f)));
     CHECK(up->isPlaying());
+    CHECK(ambience->isPlaying());
+    REQUIRE(ambience->advanceFade(1.25F).ok());
+    CHECK(ambience->isPlaying());
+    CHECK(ambience->getVolume() > 0.1F);
+    CHECK(ambience->getVolume() < 0.3F);
+    REQUIRE(ambience->advanceFade(1.5F).ok());
     CHECK(!ambience->isPlaying());
 
     delete ambience;
@@ -4551,11 +4562,19 @@ TEST_CASE("audio.pcgZone.activationFadeTrackAndDelayedExit") {
     REQUIRE(leave.ok());
     CHECK(state.phase == AudioZonePhase::BecomingInactive);
     CHECK(!leave.value().stop);
+    CHECK(leave.value().volume > .7f);
+    CHECK(leave.value().volume < .8f);
+    auto midExit = evaluateAudioZone(profile, state, 7.f, 20.f, 0.f, 0.f, 1.f, 1u);
+    REQUIRE(midExit.ok());
+    CHECK(state.phase == AudioZonePhase::BecomingInactive);
+    CHECK(midExit.value().volume > .35f);
+    CHECK(midExit.value().volume < .45f);
     REQUIRE(evaluateAudioZone(profile, state, 11.9f, 20.f, 0.f, 0.f, 1.f, 1u).ok());
     CHECK(state.phase == AudioZonePhase::BecomingInactive);
     auto stopped = evaluateAudioZone(profile, state, 12.1f, 20.f, 0.f, 0.f, 1.f, 1u);
     REQUIRE(stopped.ok());
     CHECK(stopped.value().stop);
+    CHECK(stopped.value().volume == 0.f);
     CHECK(state.phase == AudioZonePhase::Inactive);
 }
 
@@ -4601,6 +4620,112 @@ TEST_CASE("audio.pcgZone.squirrelContract") {
         assert(start.ok && start.value.play && start.value.trackIndex==0);
         local fade=eve.evaluateAudioZone(profile,state,1.1,0.0,0.0,0.0,0.5,17);
         assert(fade.ok && fade.value.volume>0.39 && fade.value.volume<0.41);
+    )"));
+}
+
+TEST_CASE("audio.source.fadeToAndFadeOutAndStop") {
+    auto* audio = tryCreateAudio();
+    if (!audio) return;
+    auto* sd  = new eve::sound::SoundData(std::vector<uint8_t>(44100 * 2, 0), 44100, 16, 1);
+    auto* src = audio->newSource(sd);
+    src->setVolume(1.f);
+    src->play();
+    REQUIRE(src->fadeTo(0.f, 1.f, 0.f).ok());
+    REQUIRE(src->advanceFade(0.5f).ok());
+    CHECK(src->isFading());
+    CHECK(src->getVolume() > 0.45f);
+    CHECK(src->getVolume() < 0.55f);
+    REQUIRE(src->advanceFade(1.f).ok());
+    CHECK(!src->isFading());
+    CHECK(src->getVolume() == 0.f);
+
+    src->setVolume(0.8f);
+    src->play();
+    REQUIRE(src->fadeOutAndStop(0.4f, 2.f).ok());
+    REQUIRE(src->advanceFade(2.2f).ok());
+    CHECK(src->isPlaying());
+    REQUIRE(src->advanceFade(2.4f).ok());
+    CHECK(!src->isFading());
+    CHECK(!src->isPlaying());
+
+    const float before = src->getVolume();
+    CHECK(!src->fadeTo(-1.f, 1.f, 0.f).ok());
+    CHECK(src->getVolume() == before);
+    delete src;
+    delete sd;
+}
+
+TEST_CASE("audio.source.crossfadeAndAmbientBed") {
+    auto* audio = tryCreateAudio();
+    if (!audio) return;
+    auto* sd   = new eve::sound::SoundData(std::vector<uint8_t>(44100 * 2, 0), 44100, 16, 1);
+    auto* from = audio->newSource(sd);
+    auto* to   = audio->newSource(sd);
+    from->setVolume(1.f);
+    from->play();
+    REQUIRE(eve::audio::crossfadeSources(from, to, 0.8f, 1.f, 0.f).ok());
+    REQUIRE(from->advanceFade(0.5f).ok());
+    REQUIRE(to->advanceFade(0.5f).ok());
+    CHECK(from->getVolume() > 0.45f);
+    CHECK(from->getVolume() < 0.55f);
+    CHECK(to->getVolume() > 0.35f);
+    CHECK(to->getVolume() < 0.45f);
+    REQUIRE(from->advanceFade(1.f).ok());
+    REQUIRE(to->advanceFade(1.f).ok());
+    CHECK(!from->isPlaying());
+    CHECK(to->getVolume() == 0.8f);
+
+    REQUIRE(eve::audio::configureAmbientBed(to).ok());
+    CHECK(to->isRelative());
+    CHECK(to->getSpatialBlend() == 0.f);
+    CHECK(to->getRolloffFactor() == 0.f);
+    REQUIRE(to->setBalance(0.25f).ok());
+    CHECK(to->getBalance() == 0.25f);
+
+    auto* stereo = new eve::sound::SoundData(std::vector<uint8_t>(44100 * 4, 0), 44100, 16, 2);
+    auto* bed    = audio->newSource(stereo);
+    REQUIRE(eve::audio::configureAmbientBed(bed).ok());
+    CHECK(bed->getChannelCount() == 2);
+    auto balance = bed->setBalance(-0.5f);
+    if (balance.ok()) {
+        CHECK(bed->getBalance() == -0.5f);
+    } else {
+        CHECK(bed->getBalance() == 0.f);
+    }
+    auto blend = bed->setSpatialBlend(0.5f);
+    if (blend.ok()) {
+        CHECK(bed->getSpatialBlend() == 0.5f);
+    } else {
+        CHECK(bed->getSpatialBlend() == 0.f);
+    }
+
+    delete bed;
+    delete stereo;
+    delete to;
+    delete from;
+    delete sd;
+}
+
+TEST_CASE("audio.fade.squirrelContract") {
+    auto* audioMod = tryCreateAudio();
+    if (!audioMod) return;
+    ssq::VM vm(2048, ssq::Libs::ALL);
+    auto    table = vm.addTable("eve");
+    eve::script::exposeResultBindings(table);
+    eve::sound::Sound::expose(table);
+    Audio::expose(table);
+    vm.run(vm.compileSource(R"(
+        local sound = eve.Sound();
+        local audio = eve.Audio();
+        local pcm = sound.newSoundDataEmpty(44100, 44100, 16, 1);
+        local src = audio.newSource(pcm);
+        assert(eve.configureAmbientBed(src).ok);
+        assert(src.isRelative() && src.getSpatialBlend()==0.0);
+        assert(src.fadeTo(0.0,1.0,0.0).ok);
+        assert(src.advanceFade(0.5).ok);
+        assert(src.isFading() && src.getVolume()>0.45 && src.getVolume()<0.55);
+        assert(src.advanceFade(1.0).ok);
+        assert(!src.isFading() && src.getVolume()==0.0);
     )"));
 }
 }  // namespace test_audio
