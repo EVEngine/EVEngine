@@ -1,5 +1,6 @@
 #include "asset/import/StructuredModelCommon.h"
 #include "asset/import/ImportCommon.h"
+#include "common/StringMapInstances.h"
 
 #include <algorithm>
 #include <bit>
