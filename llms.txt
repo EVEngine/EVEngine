@@ -7,7 +7,7 @@
 1. Open the matching `docs/usr/modules/<name>.md` and read **这篇解决什么** before the rest of the page. It names the problems, the preferred entry API, and what not to do.
 2. Search by the problem (e.g. nearby units, in-range targets), then use the documented entry. Prefer `eve_api_search` / `eve_api_get` for exact signatures.
 3. If the guide says do not scan a full unit array / rebuild a higher-level feature from primitives, do not use that as the main path.
-4. When runtime cost looks wrong, profile at scale (`eve.Profiler` / MCP `eve_profiler_frame` / `eve_profiler_report`); a small scene is not evidence.
+4. When runtime cost looks wrong, profile at scale (`eve.Profiler.hotspots` / MCP `eve_profiler_hotspots`); a small scene is not evidence. Cost dims + hotspot rules: [docs/dev/API成本与Profiler约定.md](docs/dev/API成本与Profiler约定.md).
 
 ## For coding agents
 

@@ -48,6 +48,7 @@ EveScript（Squirrel 超集）和 `eve.X()` / `persist` / Result 表几乎不在
 模块用户文档在正文前用 **这篇解决什么** 标明：覆盖哪些问题、推荐入口 API、禁止的低层拼法。
 Agent 先读该段再翻细节（样板：[sensing](../usr/modules/sensing.md)、[spatial](../usr/modules/spatial.md)）。
 入口规则写在 `llms.txt` 与 evescript skill，不另建 recipe 目录。
+静态成本维与规模化热点读取见 [API 成本与 Profiler 约定](API成本与Profiler约定.md)。
 
 ### 层 B — 机器可读 API 目录
 

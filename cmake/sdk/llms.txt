@@ -7,7 +7,7 @@
 1. Module user docs start with **这篇解决什么**: problems covered, preferred entry API, and what not to do. Read that block before the rest of the page.
 2. Search by the problem, then call the documented entry. Prefer `eve_api_search` / `eve_api_get` for signatures from this build.
 3. Do not rebuild a documented higher-level path from lower-level primitives (e.g. do not scan every enemy unit when a query API exists).
-4. When cost looks wrong, profile at scale (`eve.Profiler` / MCP `eve_profiler_frame` / `eve_profiler_report`); a tiny scene is not evidence.
+4. When cost looks wrong, profile at scale (`eve.Profiler.hotspots` / MCP `eve_profiler_hotspots`); a tiny scene is not evidence.
 
 ## For coding agents
 
