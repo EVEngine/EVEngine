@@ -13,6 +13,7 @@
 #include "stylize/shaders/kuwahara_post_frag_spv.inc"
 #include "stylize/shaders/kuwahara_aniso_post_frag_spv.inc"
 #include "stylize/shaders/dog_post_frag_spv.inc"
+#include "stylize/shaders/sharpen_post_frag_spv.inc"
 #include "stylize/shaders/neon_edge_post_frag_spv.inc"
 #include "stylize/shaders/hologram_mesh_frag_spv.inc"
 #include "stylize/shaders/slash_mesh_frag_spv.inc"
@@ -51,6 +52,7 @@ const StyleDefinition kPostEffects[] = {
     {"kuwahara", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 220},
     {"kuwaharaAniso", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 225},
     {"dog", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 230},
+    {"sharpen", true, false, false, false, false, graphics::PostEffectStage::AfterTonemap, 240},
     // BeforeTonemap so neon edges sit with cartoon/ink outline peers (port program Wave 2).
     {"neonEdge", true, false, false, false, false, graphics::PostEffectStage::BeforeTonemap, 120},
 };
@@ -167,6 +169,13 @@ const StyleParameterDesc kDogParams[] = {
     {"invert", 0.f, 0.f, 1.f},
 };
 
+// Acerola Contrast Adaptive Sharpening. strength 0 → identity; texelW/H in bind.
+// amount maps to CAS sharpness lerp(10,7); CAS alone is never identity.
+const StyleParameterDesc kSharpenParams[] = {
+    {"strength", 0.f, 0.f, 1.f},
+    {"amount", 0.5f, 0.f, 1.f},
+};
+
 // XPL EdgeDetectionSobelNeonV2. strength 0 → identity; screenW/H appended in bind.
 // RGB Sobel gradients → colorful neon edges (not luma-only V1).
 const StyleParameterDesc kNeonEdgeParams[] = {
@@ -221,6 +230,7 @@ int postParamCount(const std::string& style) {
     if (style == "kuwahara") return int(sizeof(kKuwaharaParams) / sizeof(kKuwaharaParams[0]));
     if (style == "kuwaharaAniso") return int(sizeof(kKuwaharaAnisoParams) / sizeof(kKuwaharaAnisoParams[0]));
     if (style == "dog") return int(sizeof(kDogParams) / sizeof(kDogParams[0]));
+    if (style == "sharpen") return int(sizeof(kSharpenParams) / sizeof(kSharpenParams[0]));
     if (style == "neonEdge") return int(sizeof(kNeonEdgeParams) / sizeof(kNeonEdgeParams[0]));
     return 0;
 }
@@ -234,6 +244,7 @@ const StyleParameterDesc* postParamAt(const std::string& style, int index) {
     if (style == "kuwahara") return paramAt(kKuwaharaParams, index);
     if (style == "kuwaharaAniso") return paramAt(kKuwaharaAnisoParams, index);
     if (style == "dog") return paramAt(kDogParams, index);
+    if (style == "sharpen") return paramAt(kSharpenParams, index);
     if (style == "neonEdge") return paramAt(kNeonEdgeParams, index);
     return nullptr;
 }
@@ -308,7 +319,7 @@ void bindEffectPostUniforms(graphics::Shader* shader, const std::string& style) 
         shader->sendFloat("screenW", 256.f);
         shader->sendFloat("screenH", 256.f);
     }
-    if (style == "kuwahara" || style == "kuwaharaAniso" || style == "dog") {
+    if (style == "kuwahara" || style == "kuwaharaAniso" || style == "dog" || style == "sharpen") {
         shader->declareFloat("texelW");
         shader->declareFloat("texelH");
         shader->sendFloat("texelW", 1.f / 256.f);
@@ -341,6 +352,8 @@ graphics::Shader* createEffectPostShader(graphics::Graphics* gfx, const std::str
         frag = copySpv(kuwahara_aniso_post_frag_spv, kuwahara_aniso_post_frag_spv_count);
     else if (style == "dog")
         frag = copySpv(dog_post_frag_spv, dog_post_frag_spv_count);
+    else if (style == "sharpen")
+        frag = copySpv(sharpen_post_frag_spv, sharpen_post_frag_spv_count);
     else if (style == "neonEdge")
         frag = copySpv(neon_edge_post_frag_spv, neon_edge_post_frag_spv_count);
     else

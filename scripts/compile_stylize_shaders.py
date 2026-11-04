@@ -39,6 +39,7 @@ FRAGS = [
     "kuwahara_post.frag",
     "kuwahara_aniso_post.frag",
     "dog_post.frag",
+    "sharpen_post.frag",
     "neon_edge_post.frag",
 ]
 

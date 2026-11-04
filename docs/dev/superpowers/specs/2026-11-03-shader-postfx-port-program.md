@@ -232,7 +232,7 @@ flowchart TB
 | kuwaharaAniso | 2 | A | 已落地（融合单 Pass；完整 TFM 多纹理待后续） |
 | neonEdge | 2 | A | 已落地 |
 | dog | 2 | A | 已落地（融合 2D DoG；可分两 Pass 优化待后续） |
-| sharpen | 3 | A | 待做 |
+| sharpen | 3 | A | 已落地（Acerola CAS） |
 | motionBlur | 3 | B? | 待评估 |
 | scanPulse | 3 | A | 待做 |
 | lensDirt | 3 | A | 待做 |

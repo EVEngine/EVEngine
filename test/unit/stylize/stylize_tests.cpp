@@ -372,7 +372,7 @@ using namespace eve::stylize;
 namespace {
 const char *kMeshEffects[] = {"rim", "dissolve", "hologram", "snow", "slash", "ember", "aura"};
 const char *kPostEffects[] = {"vignette", "chromatic", "grain", "glitchAnalog", "glitchBlock",
-                              "glitchWave", "kuwahara", "kuwaharaAniso", "dog", "neonEdge"};
+                              "glitchWave", "kuwahara", "kuwaharaAniso", "dog", "sharpen", "neonEdge"};
 }  // namespace
 
 TEST_CASE("stylize.layerEffects.spec.registryAndParameters") {
@@ -552,6 +552,21 @@ TEST_CASE("stylize.layerEffects.spec.registryAndParameters") {
         effect->setFloat("kernelSize", 99.f);
         REQUIRE_EQ(effect->getFloat("kernelSize"), effect->getParamMax("kernelSize"));
         REQUIRE_EQ(effect->getPriority(), 230);
+    };
+    SUB_CASE("sharpen defaults -> afterTonemap with zero strength near-identity") {
+        auto                          *mod = Stylize::create();
+        std::unique_ptr<StyleInstance> effect(mod->newInstance("sharpen"));
+        REQUIRE(effect != nullptr);
+        REQUIRE_EQ(effect->getStage(), std::string("afterTonemap"));
+        REQUIRE(effect->requiresInput("color"));
+        REQUIRE(!effect->requiresInput("depth"));
+        REQUIRE(effect->hasParam("strength"));
+        REQUIRE(effect->hasParam("amount"));
+        REQUIRE_EQ(effect->getFloat("strength"), 0.f);
+        REQUIRE_EQ(effect->getFloat("amount"), 0.5f);
+        effect->setFloat("amount", 9.f);
+        REQUIRE_EQ(effect->getFloat("amount"), effect->getParamMax("amount"));
+        REQUIRE_EQ(effect->getPriority(), 240);
     };
     SUB_CASE("neonEdge defaults -> beforeTonemap with zero strength near-identity") {
         auto                          *mod = Stylize::create();
@@ -1384,7 +1399,7 @@ TEST_CASE("stylize.styles.spec.registryAndInstance") {
         auto *mod = Stylize::create();
         REQUIRE(mod != nullptr);
         REQUIRE_EQ(mod->getName(), std::string("Stylize"));
-        REQUIRE_EQ(mod->getStyleCount(), 25);
+        REQUIRE_EQ(mod->getStyleCount(), 26);
         REQUIRE(mod->supports("cartoon", "mesh"));
         REQUIRE(mod->supports("cartoon", "post"));
         REQUIRE(mod->supports("watercolor", "cpu"));
@@ -1405,6 +1420,8 @@ TEST_CASE("stylize.styles.spec.registryAndInstance") {
         REQUIRE(!mod->supports("kuwaharaAniso", "mesh"));
         REQUIRE(mod->supports("dog", "post"));
         REQUIRE(!mod->supports("dog", "mesh"));
+        REQUIRE(mod->supports("sharpen", "post"));
+        REQUIRE(!mod->supports("sharpen", "mesh"));
         REQUIRE(mod->supports("neonEdge", "post"));
         REQUIRE(!mod->supports("neonEdge", "mesh"));
         REQUIRE(!mod->hasStyle("oil"));
