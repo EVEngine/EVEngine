@@ -149,6 +149,47 @@ TEST_CASE("math.random.reseedRepeatsSequenceAndNoiseIsPure") {
     const float noise = math.noise2(.2f, .7f);
     CHECK(noise >= 0.f);
     CHECK(noise <= 1.f);
+    CHECK_EQ(math.simplex2(.2f, .7f), math.noise2(.2f, .7f));
+    CHECK_EQ(math.billow2(.2f, .7f, 3), math.turbulence2(.2f, .7f, 3));
+    const float value  = math.value2(.2f, .7f);
+    const float white  = math.white2(.2f, .7f);
+    const float worley = math.worley2(.2f, .7f);
+    const float deep   = math.warpNoise2Deep(.2f, .7f, 1.f);
+    CHECK(value >= 0.f);
+    CHECK(value <= 1.f);
+    CHECK(white >= 0.f);
+    CHECK(white <= 1.f);
+    CHECK(worley >= 0.f);
+    CHECK(worley <= 1.f);
+    CHECK(deep >= 0.f);
+    CHECK(deep <= 1.f);
+    CHECK_EQ(math.white2(.2f, .7f), math.white2(0.f, 0.f));  // floor lattice
+    CHECK(math.voronoiF2_2(.2f, .7f) >= math.voronoi2(.2f, .7f));
+    CHECK(math.worleyManhattan2(.2f, .7f) >= 0.f);
+    CHECK(math.worleyChebyshev2(.2f, .7f) >= 0.f);
+    CHECK(math.worleySmooth2(.2f, .7f, .25f) >= 0.f);
+    CHECK(math.worleySmooth2(.2f, .7f, .25f) <= 1.f);
+    CHECK(std::isfinite(math.curlNoise2X(.2f, .7f, 1e-3f)));
+    CHECK(std::isfinite(math.curlNoise2Y(.2f, .7f, 1e-3f)));
+    CHECK(math.hexEdge2(.2f, .7f, .05f, .02f) >= 0.f);
+    CHECK(math.hexEdge2(.2f, .7f, .05f, .02f) <= 1.f);
+    CHECK(math.gyroid3(.2f, .7f, .3f) >= 0.f);
+    CHECK(math.gyroidFbm3(.2f, .7f, .3f, 3) <= 1.f);
+    CHECK(math.swiss2(.2f, .7f, 3, 2.f, .5f, .15f) >= 0.f);
+    CHECK(math.hybrid2(.2f, .7f, 3, 2.f, .5f, .7f) <= 1.f);
+    CHECK(math.jordan2(.2f, .7f, 3, 2.f, .5f, .35f) >= 0.f);
+    CHECK(math.jordan2(.2f, .7f, 3, 2.f, .5f, .35f) <= 1.f);
+    CHECK(math.gabor2(.2f, .7f, 0.f, 0.f, 6.2831853f) >= 0.f);
+    CHECK(math.gaborFbm2(.2f, .7f, 3, 0.f, 0.f) <= 1.f);
+    CHECK(math.valueSlope2(.2f, .7f, 1e-3f) >= 0.f);
+    CHECK(math.isoLine2(.2f, .7f, 8, .04f) >= 0.f);
+    CHECK(math.isoLine2(.2f, .7f, 8, .04f) <= 1.f);
+    CHECK(math.banding2(.2f, .7f, 5) >= 0.f);
+    CHECK(math.banding2(.2f, .7f, 5) <= 1.f);
+    CHECK(math.fbmColor2(.2f, .7f, 0, 3, 2.f, .5f) != math.fbmColor2(.2f, .7f, 1, 3, 2.f, .5f));
+    CHECK(math.value3(.2f, .7f, .3f) >= 0.f);
+    CHECK(math.worley3(.2f, .7f, .3f) <= 1.f);
+    CHECK_EQ(math.white3(.2f, .7f, .3f), math.white3(0.f, 0.f, 0.f));
 }
 
 TEST_CASE("math.curves.endpointsAndLinearControlPoints") {

@@ -28,25 +28,8 @@ float smoothstep(float edge0, float edge1, float x) {
     return t * t * (3.f - 2.f * t);
 }
 
-/** Distance to the nearest lattice-center (value-noise voronoi). Cell size = 1. */
-float voronoiDist(const NoiseField &n, float x, float y) {
-    float best = 1e18f;
-    const int cx0 = int(std::floor(x));
-    const int cy0 = int(std::floor(y));
-    for (int oy = -1; oy <= 1; ++oy) {
-        for (int ox = -1; ox <= 1; ++ox) {
-            const int cx = cx0 + ox;
-            const int cy = cy0 + oy;
-            const float px = float(cx) + n.hash01(cx, cy);
-            const float py = float(cy) + n.hash01(cx * 7 + 3, cy * 13 + 5);
-            const float dx = x - px;
-            const float dy = y - py;
-            const float d  = dx * dx + dy * dy;
-            if (d < best) best = d;
-        }
-    }
-    return std::sqrt(best);
-}
+/** Distance to the nearest Worley feature point. Cell size = 1. */
+float voronoiDist(const NoiseField &n, float x, float y) { return n.worleyF1(x, y); }
 
 std::unique_ptr<image::ImageData> makeFromHeightFn(const Params &params, std::string &error,
                                                    const TextureRecipeDef &def) {

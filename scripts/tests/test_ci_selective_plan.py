@@ -27,6 +27,27 @@ class SelectivePlanTests(unittest.TestCase):
         self.assertEqual(["linux"], [name for name, enabled in scope.classify(paths).items() if enabled])
         self.assertEqual(("none", ""), scope.classify_tests(paths))
 
+    def test_particle_effects_pack_smokes_known_consumers_only(self):
+        # Asset packs have no main.nut; without a consumer map CI used to expand
+        # SMOKE_EXAMPLES to every runnable example and hit the 30m Linux timeout.
+        mode, scripts, examples = scope.source_plan(
+            ["examples/particle-effects/smoke_flipbook.effect.json"]
+        )
+        self.assertEqual("examples", mode)
+        self.assertFalse(scripts)
+        self.assertEqual(["attack-vfx", "unity-vfx-port-lab"], examples)
+
+    def test_particle_effects_pack_with_lab_edits_stays_bounded(self):
+        mode, _, examples = scope.source_plan(
+            [
+                "examples/particle-effects/fire_flipbook.effect.json",
+                "examples/unity-vfx-port-lab/main.nut",
+                "examples/attack-vfx/main.nut",
+            ]
+        )
+        self.assertEqual("examples", mode)
+        self.assertEqual(["attack-vfx", "unity-vfx-port-lab"], examples)
+
     def test_module_changes_use_existing_impact_index(self):
         self.assertEqual(("affected", ""), scope.classify_tests(["src/modules/scene/Scene.cpp"]))
         self.assertEqual(("full", False, []), scope.source_plan(["src/modules/scene/Scene.cpp"]))

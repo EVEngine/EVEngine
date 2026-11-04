@@ -1,0 +1,77 @@
+{
+  "type": "eve.particle-effect",
+  "version": 2,
+  "parameters": { "intensity": 1.0 },
+  "timeline": {
+    "duration": 2.2,
+    "looping": true,
+    "cues": [
+      { "time": 0.0, "action": "emit", "emitter": "puff", "count": 2 },
+      { "time": 0.7, "action": "emit", "emitter": "puff", "count": 1 },
+      { "time": 1.4, "action": "emit", "emitter": "puff", "count": 2 }
+    ]
+  },
+  "emitters": [
+    {
+      "name": "puff",
+      "emitter": {
+        "buffer": 32,
+        "emitterLife": 2.2,
+        "looping": true,
+        "emissionRate": 0.0,
+        "particleLife": [1.85, 1.98],
+        "particleSize": [160.0, 230.0],
+        "sizes": [0.6, 1.45],
+        "sizeVariation": 0.22,
+        "speed": [8.0, 22.0],
+        "direction": -1.5707963,
+        "spread": 0.4,
+        "damping": 0.18,
+        "noise": { "strength": 10.0, "frequency": 0.05, "speed": 1.0 },
+        "blendMode": "alpha",
+        "texture": "textures/smoke-flipbook-atlas.png",
+        "flipbook": { "hframes": 6, "vframes": 6, "frameRate": 18.0, "frameRandomStart": 0.05 },
+        "colorOverLifetime": [
+          [0.0, 0.85, 0.88, 0.92, 0.0],
+          [0.1, 0.7, 0.74, 0.8, 0.7],
+          [0.55, 0.42, 0.44, 0.48, 0.42],
+          [1.0, 0.18, 0.18, 0.2, 0.0]
+        ],
+        "randomSeed": 20261131,
+        "autoRandomSeed": false,
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "size", "scale": 1.05 }
+        ]
+      }
+    },
+    {
+      "name": "wisps",
+      "offset": [0.0, -12.0],
+      "emitter": {
+        "buffer": 96,
+        "emitterLife": 2.2,
+        "looping": true,
+        "emissionRate": 12.0,
+        "particleLife": [0.9, 1.5],
+        "particleSize": [20.0, 40.0],
+        "sizes": [0.55, 1.5],
+        "speed": [12.0, 34.0],
+        "direction": -1.5707963,
+        "spread": 0.95,
+        "damping": 0.28,
+        "noise": { "strength": 16.0, "frequency": 0.07, "speed": 1.15 },
+        "blendMode": "alpha",
+        "colorOverLifetime": [
+          [0.0, 0.45, 0.45, 0.5, 0.0],
+          [0.18, 0.34, 0.34, 0.38, 0.38],
+          [1.0, 0.14, 0.14, 0.16, 0.0]
+        ],
+        "randomSeed": 20261132,
+        "autoRandomSeed": false,
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "emission", "scale": 1.1 }
+        ]
+      }
+    }
+  ]
+}
