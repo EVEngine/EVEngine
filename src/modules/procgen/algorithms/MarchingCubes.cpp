@@ -12,6 +12,7 @@
 #include "procgen/algorithms/RockMesh.h"
 #include "procgen/algorithms/SkyscraperMesh.h"
 #include "procgen/algorithms/TreeMesh.h"
+#include "procgen/algorithms/WaterSplashMesh.h"
 #include "procgen/road/BridgeGenerator.h"
 #include "procgen/road/RoadRecipes.h"
 #include "procgen/urban/UrbanOutput.h"
@@ -667,6 +668,17 @@ void MeshRecipeRegistry::registerBuiltins() {
     addAdvanced(bush,
                 ParamDescriptor::floating("twigLength", "Twig Length", 0.42f, 0.05f, 10.f, 0.01f));
     registerRecipe(std::move(bush), generateBushMesh);
+
+    // Clay-sheet crowns only: look (noise lip, foam, transparency) is material-side.
+    RecipeDescriptor splash = mesh("mesh.water_splash", "Water Splash");
+    splash.params.push_back(ParamDescriptor::floating("height", "Height", 2.4f, 0.2f, 20.f, 0.05f));
+    splash.params.push_back(ParamDescriptor::floating("width", "Width", 3.2f, 0.3f, 30.f, 0.05f));
+    splash.params.push_back(ParamDescriptor::integer("layers", "Layers", 4, 2, 4));
+    splash.params.push_back(ParamDescriptor::floating("flare", "Flare", 1.0f, 0.35f, 1.75f, 0.01f));
+    addAdvanced(splash, ParamDescriptor::integer("onlyLayer", "Only Layer (-1=all)", -1, -1, 3));
+    addAdvanced(splash, ParamDescriptor::integer("radialSegments", "Radial Segments", 32, 8, 64));
+    addAdvanced(splash, ParamDescriptor::integer("heightSegments", "Height Segments", 12, 3, 32));
+    registerRecipe(std::move(splash), generateWaterSplashMesh);
 
     RecipeDescriptor flower = mesh("mesh.flower", "Flower");
     flower.params.push_back(ParamDescriptor::floating("height", "Height", 0.55f, 0.15f, 2.5f, 0.01f));
