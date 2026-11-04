@@ -48,6 +48,20 @@ void appendString(std::string& out, const std::string& value) {
  * global core (`eve::prof`), so holding a module pointer would dangle the moment
  * a host rebuilds its module set.
  */
+void appendZone(std::string& out, const eve::prof::ZoneSample& zone) {
+    out += "{\"module\":";
+    appendString(out, zone.module);
+    out += ",\"name\":";
+    appendString(out, zone.name);
+    out += ",\"thread\":";
+    appendString(out, zone.thread);
+    out += ",\"selfMs\":";
+    appendNumber(out, zone.selfMs);
+    out += ",\"totalMs\":";
+    appendNumber(out, zone.totalMs);
+    out += ",\"count\":" + std::to_string(zone.count) + ",\"depth\":" + std::to_string(zone.minDepth) + "}";
+}
+
 class ProfilerQueryImpl final : public eve::IProfilerQuery {
 public:
     bool enabled() const override { return eve::prof::Profiler::enabled(); }
@@ -61,12 +75,13 @@ public:
         // times are the CPU work the zones account for.
         static const std::vector<eve::prof::ZoneSample> kNoZones;
         const std::vector<eve::prof::ZoneSample>&       zones = hasFrame ? eve::prof::Profiler::lastFrame() : kNoZones;
-        double                                          cpuFrameMs = 0.0;
+        const auto hotspots = eve::prof::Profiler::hotspots(8, 0.0);
+        double     cpuFrameMs = 0.0;
         for (const auto& zone : zones) {
             if (zone.minDepth == 0) cpuFrameMs += zone.selfMs;
         }
 
-        std::string out = "{\"schema\":\"eve.profiler.frame\",\"version\":1,\"enabled\":";
+        std::string out = "{\"schema\":\"eve.profiler.frame\",\"version\":2,\"enabled\":";
         out += enabled() ? "true" : "false";
         out += ",\"hasFrame\":";
         out += hasFrame ? "true" : "false";
@@ -76,21 +91,31 @@ public:
         appendNumber(out, gpuKnown ? static_cast<double>(timer->gpuFrameMs()) : 0.0);
         out += ",\"gpuTimingAvailable\":";
         out += gpuKnown ? "true" : "false";
-        out += ",\"zoneCount\":" + std::to_string(zones.size()) + ",\"zones\":[";
-        for (std::size_t index = 0; index < zones.size(); ++index) {
-            const eve::prof::ZoneSample& zone = zones[index];
+        out += ",\"zoneCount\":" + std::to_string(zones.size()) + ",\"hotspots\":[";
+        for (std::size_t index = 0; index < hotspots.size(); ++index) {
             if (index) out += ',';
-            out += "{\"module\":";
-            appendString(out, zone.module);
-            out += ",\"name\":";
-            appendString(out, zone.name);
-            out += ",\"thread\":";
-            appendString(out, zone.thread);
-            out += ",\"selfMs\":";
-            appendNumber(out, zone.selfMs);
-            out += ",\"totalMs\":";
-            appendNumber(out, zone.totalMs);
-            out += ",\"count\":" + std::to_string(zone.count) + ",\"depth\":" + std::to_string(zone.minDepth) + "}";
+            appendZone(out, hotspots[index]);
+        }
+        out += "],\"zones\":[";
+        for (std::size_t index = 0; index < zones.size(); ++index) {
+            if (index) out += ',';
+            appendZone(out, zones[index]);
+        }
+        out += "]}";
+        return out;
+    }
+
+    std::string hotspotsJson(std::size_t limit, double minSelfMs) const override {
+        const bool hasFrame = eve::prof::Profiler::hasFrame();
+        const auto zones    = eve::prof::Profiler::hotspots(limit, minSelfMs);
+        std::string out     = "{\"schema\":\"eve.profiler.hotspots\",\"version\":1,\"hasFrame\":";
+        out += hasFrame ? "true" : "false";
+        out += ",\"limit\":" + std::to_string(limit) + ",\"minSelfMs\":";
+        appendNumber(out, minSelfMs);
+        out += ",\"count\":" + std::to_string(zones.size()) + ",\"zones\":[";
+        for (std::size_t index = 0; index < zones.size(); ++index) {
+            if (index) out += ',';
+            appendZone(out, zones[index]);
         }
         out += "]}";
         return out;
