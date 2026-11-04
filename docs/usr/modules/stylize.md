@@ -179,6 +179,9 @@ mat.setShadingModel("custom");
 - `supports(style, "gbuffer")` 可查询 definition 是否要求 depth 或 normal。
 - 内置风格 id：`cartoon` / `watercolor` / `ink` / `pixel` / `xray`。
 - Mesh 风格扩展：`rim` / `dissolve` / `hologram` / `snow` / `slash` / `ember` / `aura`。
+- 全屏效果扩展：`vignette` / `chromatic` / `grain` / `glitchAnalog`
+  （模拟磁带故障：scanline jitter / vertical jump / horizontal shake / color drift；
+  默认 knobs 为 0，接近恒等；`strength==0` 早退。成本约全屏 1–2 tap，与 grain 同级）。
 
 
 ### Impasto 厚涂油彩
