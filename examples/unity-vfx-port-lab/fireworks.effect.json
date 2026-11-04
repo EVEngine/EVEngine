@@ -1,0 +1,102 @@
+{
+  "type": "eve.particle-effect",
+  "version": 2,
+  "parameters": { "intensity": 1.0 },
+  "eventRoutes": [
+    { "from": "shell", "on": "death", "to": "stars", "inheritVelocity": 0.18 },
+    { "from": "shell", "on": "death", "to": "smoke", "inheritVelocity": 0.05 }
+  ],
+  "timeline": {
+    "duration": 2.4,
+    "looping": true,
+    "cues": [
+      { "time": 0.0, "action": "emit", "emitter": "shell", "count": 1 },
+      { "time": 0.55, "action": "emit", "emitter": "shell", "count": 1 },
+      { "time": 1.15, "action": "emit", "emitter": "shell", "count": 1 },
+      { "time": 1.75, "action": "emit", "emitter": "shell", "count": 1 }
+    ]
+  },
+  "emitters": [
+    {
+      "name": "shell",
+      "emitter": {
+        "buffer": 16,
+        "emitterLife": 2.4,
+        "looping": true,
+        "emissionRate": 0.0,
+        "particleLife": [0.45, 0.7],
+        "particleSize": [8.0, 12.0],
+        "sizes": [1.0, 0.35],
+        "speed": [210.0, 280.0],
+        "direction": -1.5707963,
+        "spread": 0.22,
+        "gravity": [0.0, 140.0],
+        "damping": 0.02,
+        "renderMode": "velocity",
+        "stretch": 0.05,
+        "blendMode": "additive",
+        "colorStart": [1.0, 0.95, 0.75, 1.0],
+        "colorEnd": [1.0, 0.55, 0.15, 0.4],
+        "randomSeed": 20261123,
+        "autoRandomSeed": false,
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "speed", "scale": 1.0 }
+        ]
+      }
+    },
+    {
+      "name": "stars",
+      "emitter": {
+        "buffer": 640,
+        "emitterLife": 2.4,
+        "looping": true,
+        "emissionRate": 0.0,
+        "particleLife": [0.55, 1.15],
+        "particleSize": [4.0, 11.0],
+        "sizes": [1.15, 0.1],
+        "speed": [80.0, 220.0],
+        "spread": 6.2831853,
+        "gravity": [0.0, 95.0],
+        "damping": 0.08,
+        "noise": { "strength": 8.0, "frequency": 0.04, "speed": 1.5 },
+        "renderMode": "velocity",
+        "stretch": 0.045,
+        "blendMode": "additive",
+        "colorOverLifetime": [
+          [0.0, 1.0, 0.95, 0.7, 1.0],
+          [0.25, 1.0, 0.45, 0.15, 0.95],
+          [0.65, 0.95, 0.15, 0.35, 0.65],
+          [1.0, 0.25, 0.05, 0.08, 0.0]
+        ],
+        "randomSeed": 20261124,
+        "autoRandomSeed": false,
+        "parameterBindings": [
+          { "parameter": "intensity", "target": "size", "scale": 1.0 },
+          { "parameter": "intensity", "target": "speed", "scale": 1.0 }
+        ]
+      }
+    },
+    {
+      "name": "smoke",
+      "offset": [0.0, -4.0],
+      "emitter": {
+        "buffer": 192,
+        "emitterLife": 2.4,
+        "looping": true,
+        "emissionRate": 0.0,
+        "particleLife": [0.9, 1.6],
+        "particleSize": [14.0, 28.0],
+        "sizes": [0.6, 1.5],
+        "speed": [8.0, 36.0],
+        "spread": 6.2831853,
+        "damping": 0.28,
+        "blendMode": "alpha",
+        "colorStart": [0.25, 0.25, 0.28, 0.28],
+        "colorEnd": [0.08, 0.08, 0.1, 0.0],
+        "priority": -2,
+        "randomSeed": 20261125,
+        "autoRandomSeed": false
+      }
+    }
+  ]
+}
