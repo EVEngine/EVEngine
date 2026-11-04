@@ -2,6 +2,13 @@
 
 **脚本入口：** `eve.Sensing()`
 
+## 这篇解决什么
+
+- **问题**：附近单位查询、射程/形状内筛选、按距离或标签得到有序候选（RTS/技能选目标的广相）。
+- **入口**：`SensingWorld.query`（或糖 `circle` / `box`）；需要锥形等组合时用 Targeting Preset（如 `executePreset`）。
+- **不要**：每 tick 遍历全体敌方/单位数组再手算距离与优先级——成本跟世界单位数 `N` 涨；query 跟范围与 `maxCount` 涨。
+- **相关**：只要裸 AABB/圆域索引见 [spatial](spatial.md)；技能 Targeting / Action 消费候选见 action 模块。性能可疑时用 `eve.Profiler` / MCP `eve_profiler_*` 在大规模下采样。
+
 `Sensing` 持有独立的 `SensingWorld` 事实镜像，并提供可配置的候选查询（`QuerySpec`）与
 可组合的 Targeting Preset 管线。模块只返回有序候选与分数，**不会**选定 primary /
 “最佳目标”；技能、武器、RTS 命令等消费者保留最终选择语义。

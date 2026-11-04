@@ -45,6 +45,10 @@ EveScript（Squirrel 超集）和 `eve.X()` / `persist` / Result 表几乎不在
 `share/eve/ai/SKILL.md` 和 `.cursor/skills/evescript/SKILL.md`，并把 `llms.txt` 放在 SDK 根目录，
 这样解压 `eve-sdk-*.zip` 的游戏开发者不必克隆源码。
 
+模块用户文档在正文前用 **这篇解决什么** 标明：覆盖哪些问题、推荐入口 API、禁止的低层拼法。
+Agent 先读该段再翻细节（样板：[sensing](../usr/modules/sensing.md)、[spatial](../usr/modules/spatial.md)）。
+入口规则写在 `llms.txt` 与 evescript skill，不另建 recipe 目录。
+
 ### 层 B — 机器可读 API 目录
 
 真相来源是 `expose(...).addFunc`，不是 Markdown「API 快查」。
