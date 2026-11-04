@@ -27,8 +27,35 @@ Windows 上把可执行文件路径替换为 `C:/Program Files/OpenSCAD/openscad
 
 编译结果使用普通 binary STL；按毫米、Z-up 转换为米、Y-up，保留三角形绕序并重建面法线。
 输出 `eve.mesh/2`、默认中性 `eve.material/15` 和 `eve.scene-template/3`。
-STL 不带颜色、UV、骨骼或动画，因此 SCAD 的 `color()`、ScadRig 等信息不会转换为运行时数据。
-源包保留根 `.scad` 文本；依赖文件闭包不自动归档，重新编译需要继续保留原始依赖。
+STL 不带颜色、UV 或动画，因此 SCAD 的 `color()` 不会进入运行时材质。
+
+### 可旋转机械部件（多 part + ScadRig）
+
+复杂机械图把每个可动部件写成独立 `part`，再用 `eve.scad-rig/1` 侧车描述关节树：
+
+```openscad
+part = "shoulder";
+if (part == "shoulder") { /* 肩关节局部坐标几何 */ }
+```
+
+```sh
+eve asset import mechanism.scad --from scad --openscad /absolute/path/to/openscad \
+  --scad-part pedestal --scad-part slew --scad-part shoulder \
+  --scad-rig mechanism.rig.json \
+  --out mechanism.eva --package-id 018f6f22-2490-7ad2-bf58-4f1dbca31050 \
+  --name mechanical.boom
+```
+
+`--scad-part` 可重复；每次编译附加 `-D part="<name>"`。`mechanism.rig.json` 需声明
+`schema=eve.scad-rig`、`schemaVersion=1`、`unknownFields=reject|preserve`、
+`coordinateSystem=openscad-mm-z-up`（可选）、非空 `joints` / `parts`。每个关节有唯一
+`name`、`parent`（根为 `null`）、父空间 `pivot`、非零 `axis`，以及可选角度限位
+`[min,max]`（度）。`parts` 的 `name` 必须与 `--scad-part` 集合一致，并绑定到已有关节。
+导入成功后包内有 `mesh:<part>` 与入口 `rig`；静态 prefab 场景节点位姿保持单位阵，
+关节角由运行时 Scene / `Renderable3D` 装配驱动（示例见 `examples/scad-mechanical/`）。
+单 STL 旧路径不变：省略 `--scad-part` 时仍产出名为 `default` 的单网格。
+
+源包保留根 `.scad` 文本与 ScadRig 原文；依赖文件闭包不自动归档，重新编译需要继续保留原始依赖。
 OpenSCAD 正常读取 include/use/import 文件；这是本地创作工具，不是执行沙箱。
 
 ## LDraw：原生解析零件组合

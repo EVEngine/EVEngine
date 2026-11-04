@@ -18,15 +18,19 @@ struct LDrawImportRequest {
 };
 
 /** @brief Owning OpenSCAD source and its compiler-produced binary STL.
- * STL is geometry only: colour, rigs and animation are not inferred from the source.
- * OpenSCAD millimetres/Z-up are converted to metres/Y-up. The source is preserved.
+ * STL is geometry only: colour and animation are not inferred from the mesh bytes.
+ * Optional named part STLs (`partStls`) and an `eve.scad-rig/1` document (`rigBytes`) retain
+ * rotatable joint metadata for mechanical assemblies. OpenSCAD millimetres/Z-up become metres/Y-up.
+ * The root source (and rig text when provided) are preserved.
  */
 struct ScadImportRequest {
-    ImportPackageIdentity     package;
-    std::string               sourceName;
-    std::vector<std::uint8_t> sourceBytes;
-    std::vector<std::uint8_t> binaryStl;
-    AssetImportLimits         limits;
+    ImportPackageIdentity                            package;
+    std::string                                      sourceName;
+    std::vector<std::uint8_t>                        sourceBytes;
+    std::vector<std::uint8_t>                        binaryStl;
+    std::map<std::string, std::vector<std::uint8_t>> partStls;
+    std::vector<std::uint8_t>                        rigBytes;
+    AssetImportLimits                                limits;
 };
 
 /** @brief Prepare LDR/DAT/MPD triangles, referenced parts and colour-separated static prefab.
@@ -39,24 +43,32 @@ struct ScadImportRequest {
  */
 [[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareLDrawImport(const LDrawImportRequest& request);
 
-/** @brief Validate compiler-produced binary STL and prepare a canonical static prefab.
- * @param request Borrowed root source, binary STL and budgets; no input reference is retained.
- * @return Owning candidate or checked format/range/budget diagnostic, without publishing state.
+/** @brief Validate compiler-produced binary STL part(s) and prepare a canonical static prefab.
+ * @param request Borrowed root source, STL bytes (single `binaryStl` or named `partStls`), optional ScadRig
+ *        JSON and budgets; no input reference is retained.
+ * @return Owning candidate or checked format/range/budget/rig diagnostic, without publishing state.
  * @thread Worker-safe and reentrant; no IO, callbacks or retained pointers.
  * @cost Copies and encodes every triangle once per import; amortize by cooking and reusing the package.
+ * @details When `partStls` is empty the legacy single mesh `"default"` path is used. A present ScadRig is
+ * validated and published as entrypoint `rig` (`eve.scad-rig/1`); joint angles are not baked into the
+ * static prefab — runtime posing remains a Scene/`Renderable3D` composition concern.
  */
 [[nodiscard]] EVENGINE_API_PLATFORM Result<PreparedAssetImport> prepareScadImport(const ScadImportRequest& request);
 
 /** @brief Desktop tool request for compiling a SCAD file with an installed OpenSCAD executable.
  * The compiler may resolve include/use/import files as OpenSCAD normally does. This is a local authoring
  * operation, not a sandbox. The generated package retains the root source, not its dependency closure.
+ * Non-empty `parts` compiles once per name with `-D part="<name>"` (OpenSCAD string define).
+ * `rigPath` is an optional sidecar `eve.scad-rig/1` JSON document beside the SCAD source.
  */
 struct ScadFileImportRequest {
-    ImportPackageIdentity package;
-    std::string           sourcePath;
-    std::string           executable     = "openscad";
-    std::uint32_t         timeoutSeconds = 120;
-    AssetImportLimits     limits;
+    ImportPackageIdentity    package;
+    std::string              sourcePath;
+    std::string              executable     = "openscad";
+    std::uint32_t            timeoutSeconds = 120;
+    std::vector<std::string> parts;
+    std::string              rigPath;
+    AssetImportLimits        limits;
 };
 
 /** @brief Compile via argument-vector process launch, then prepare without publishing.

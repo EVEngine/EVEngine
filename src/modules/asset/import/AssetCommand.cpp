@@ -169,8 +169,9 @@ struct AssetArgs final : Handler {
     std::string from, input, secondInput, output, packageId, packageName = "imported.asset", packageVersion = "1.0.0";
     bool        strict = false;
     std::string descriptor, terrain, terrainDetails, prefab, colorSpace = "srgb", usage = "color", target;
-    std::string   openscad    = "openscad", ldrawLibrary;
-    std::uint32_t scadTimeout = 120;
+    std::string              openscad = "openscad", ldrawLibrary, scadRig;
+    std::uint32_t            scadTimeout = 120;
+    std::vector<std::string> scadParts;
 
     void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
         assetCommand = app.add_subcommand("asset", "Import, validate, inspect and Cook EVEngine asset packages");
@@ -183,6 +184,10 @@ struct AssetArgs final : Handler {
         importCommand->add_option("--from", from, "image|gltf|unity|ue5|shader|scad|ldraw")->required();
         importCommand->add_option("--openscad", openscad, "OpenSCAD executable used only for SCAD import");
         importCommand->add_option("--scad-timeout", scadTimeout, "SCAD compilation timeout in seconds (1..3600)");
+        importCommand->add_option("--scad-part", scadParts,
+                                  "Compile a named SCAD part via -D part=\"name\" (repeatable; mechanical assemblies)");
+        importCommand->add_option("--scad-rig", scadRig,
+                                  "Optional eve.scad-rig/1 JSON sidecar for rotatable SCAD joints");
         importCommand->add_option("--ldraw-library", ldrawLibrary,
                                   "LDraw library root containing parts/, p/ and LDConfig.ldr");
         importCommand->add_option("--out", output)->required();
@@ -282,12 +287,13 @@ struct AssetArgs final : Handler {
         asset_import::AssetImportLimits limits;
         if (from == "scad") {
             prepared.ignore();
-            const auto sourceUtf8   = std::filesystem::path(input).u8string();
-            const auto compilerUtf8 = std::filesystem::path(openscad).u8string();
-            prepared                = asset_import::prepareScadFileImport(
-                {identity.value(), std::string(reinterpret_cast<const char*>(sourceUtf8.data()), sourceUtf8.size()),
-                                std::string(reinterpret_cast<const char*>(compilerUtf8.data()), compilerUtf8.size()), scadTimeout,
-                                limits});
+            auto asUtf8 = [](const std::string& value) {
+                const auto encoded = std::filesystem::path(value).u8string();
+                return std::string(reinterpret_cast<const char*>(encoded.data()), encoded.size());
+            };
+            prepared = asset_import::prepareScadFileImport({identity.value(), asUtf8(input), asUtf8(openscad),
+                                                            scadTimeout, scadParts,
+                                                            scadRig.empty() ? std::string{} : asUtf8(scadRig), limits});
         } else if (from == "ldraw") {
             const auto sourcePath = std::filesystem::path(input);
             const auto parent =

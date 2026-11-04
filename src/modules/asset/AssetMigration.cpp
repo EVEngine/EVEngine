@@ -526,6 +526,7 @@ Result<SchemaVersion> currentAssetSchemaVersion(std::string_view type) {
         {"eve.stylize.mesh-vfx", 1},
         {"eve.vegetation-conversion-preset", 1},
         {"eve.vegetation-scene", 1},
+        {"eve.scad-rig", 1},
     };
     const auto found = versions.find(type);
     if (found == versions.end())

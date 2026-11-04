@@ -4,6 +4,7 @@
 #include <Poco/Exception.h>
 #include <Poco/Process.h>
 
+#include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <filesystem>
@@ -24,6 +25,11 @@ Result<PreparedAssetImport> prepareScadFileImport(const ScadFileImportRequest& r
     if (request.executable.empty() || request.timeoutSeconds == 0 || request.timeoutSeconds > 3600)
         return failure(DiagnosticCode::InvalidArgument,
                        "OpenSCAD executable and timeout (1..3600 seconds) are required");
+    for (const auto& part : request.parts) {
+        if (part.empty()) return failure(DiagnosticCode::InvalidArgument, "SCAD part names must be non-empty");
+        if (std::count(request.parts.begin(), request.parts.end(), part) != 1)
+            return failure(DiagnosticCode::InvalidArgument, "SCAD part names must be unique");
+    }
     auto read = [&](const std::filesystem::path& path) -> Result<std::vector<std::uint8_t> > {
         std::error_code ec;
         const auto      size = std::filesystem::file_size(path, ec);
@@ -59,34 +65,60 @@ Result<PreparedAssetImport> prepareScadFileImport(const ScadFileImportRequest& r
                 std::filesystem::remove_all(path, ec);
             }
         } cleanup{directory};
-        const auto output = directory / "model.stl";
-        auto       utf8   = [](const std::filesystem::path& path) {
+        auto utf8 = [](const std::filesystem::path& path) {
             const auto value = path.u8string();
             return std::string(reinterpret_cast<const char*>(value.data()), value.size());
         };
-        auto process = Poco::Process::launch(
-            request.executable, {"--hardwarnings", "--export-format", "binstl", "-o", utf8(output), utf8(input)});
-        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(request.timeoutSeconds);
-        int        exit     = -1;
-        while ((exit = process.tryWait()) == -1) {
-            if (std::chrono::steady_clock::now() >= deadline) {
-                // Killing by PID keeps the wait handle valid on Poco's Windows backend.
-                Poco::Process::kill(process.id());
-                process.wait();
-                return failure(DiagnosticCode::Failed, "OpenSCAD compilation timed out");
+        auto compileOne = [&](const std::filesystem::path& output,
+                              const std::vector<std::string>& extraArgs) -> Result<std::vector<std::uint8_t> > {
+            std::vector<std::string> args = {"--hardwarnings", "--export-format", "binstl", "-o", utf8(output)};
+            args.insert(args.end(), extraArgs.begin(), extraArgs.end());
+            args.push_back(utf8(input));
+            auto       process  = Poco::Process::launch(request.executable, args);
+            const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(request.timeoutSeconds);
+            int        exit     = -1;
+            while ((exit = process.tryWait()) == -1) {
+                if (std::chrono::steady_clock::now() >= deadline) {
+                    Poco::Process::kill(process.id());
+                    process.wait();
+                    return Result<std::vector<std::uint8_t> >::failure(
+                        Diagnostic::error(DiagnosticCode::Failed, "OpenSCAD compilation timed out", request.sourcePath,
+                                          {}, "asset.import.scad"));
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(20));
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            if (exit != 0)
+                return Result<std::vector<std::uint8_t> >::failure(Diagnostic::error(
+                    DiagnosticCode::Failed, "OpenSCAD compiler exited with code " + std::to_string(exit),
+                    request.sourcePath, {}, "asset.import.scad"));
+            return read(output);
+        };
+
+        ScadImportRequest prepared{request.package, utf8(input.filename()), std::move(source).takeValue(), {}, {},
+                                   {}, request.limits};
+        if (request.parts.empty()) {
+            auto stl = compileOne(directory / "model.stl", {});
+            if (!stl) return Output::failure(stl.status());
+            prepared.binaryStl = std::move(stl).takeValue();
+        } else {
+            for (const auto& part : request.parts) {
+                auto stl = compileOne(directory / (part + ".stl"), {"-D", "part=\"" + part + "\""});
+                if (!stl) return Output::failure(stl.status());
+                prepared.partStls.emplace(part, std::move(stl).takeValue());
+            }
         }
-        if (exit != 0)
-            return failure(DiagnosticCode::Failed, "OpenSCAD compiler exited with code " + std::to_string(exit));
-        auto stl = read(output);
-        if (!stl) return Output::failure(stl.status());
+        if (!request.rigPath.empty()) {
+            const auto rig = std::filesystem::absolute(
+                std::filesystem::path(std::u8string(request.rigPath.begin(), request.rigPath.end())));
+            auto bytes = read(rig);
+            if (!bytes) return Output::failure(bytes.status());
+            prepared.rigBytes = std::move(bytes).takeValue();
+        }
         auto unchanged = read(input);
         if (!unchanged) return Output::failure(unchanged.status());
-        if (unchanged.value() != source.value())
+        if (unchanged.value() != prepared.sourceBytes)
             return failure(DiagnosticCode::Conflict, "SCAD source changed during compilation; retry import");
-        return prepareScadImport({request.package, utf8(input.filename()), std::move(source).takeValue(),
-                                  std::move(stl).takeValue(), request.limits});
+        return prepareScadImport(prepared);
     } catch (const Poco::Exception& error) {
         return failure(DiagnosticCode::Failed,
                        "cannot run OpenSCAD: " + error.displayText() + "; use --openscad <executable>");
