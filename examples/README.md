@@ -224,6 +224,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [atmospheric-fog](atmospheric-fog/README.md) | 大气 froxel 体积雾：最小的完整渲染路径与参数调试 |
 | [realtime-fog](realtime-fog/README.md) | MAC 流体雾 + SceneWind + 球体交互器，同步到 froxel 合成 |
 | [flame-jet](flame-jet/README.md) | 火焰射流：白热火芯、橙红火舌、火星与烟雾 |
+| [unity-vfx-port-lab](unity-vfx-port-lab/README.md) | Unity 开源 VFX 意图移植 Phase 1–3：bonfire / portal / fireworks / flipbook / ribbon |
 | [particle-playback-lab](particle-playback-lab/README.md) | 粒子回放实验室：确定性播放、版本化多发射器与视觉验证 |
 | [unit-surface-effects](unit-surface-effects/README.md) | 26 种单位表面特效：同模型参考、材质/发光/附加几何分层、逐项时间序列对照 |
 | [attack-vfx](attack-vfx/README.md) | AttackVfx 综合演示：一份配方覆盖 mesh/trail/particles/camera/distortion/decal/audio/prefab，anticipate→impact→release，三套 elemental skin 自动轮播 |
@@ -286,7 +287,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [agent](agent/README.md) | Squirrel 强化学习：定义环境、训练策略、选择动作与回放（C++ 侧 `eve.Agent`） |
 | [economy](economy/README.md) | `eve.Economy` 无窗口脚本演示：采集循环与满仓浪费（`eve run -r`） |
 | [shader_effect_package](shader_effect_package/README.md) | 打包式 shader effect 资产包（`effect.vert` / `effect.frag` + `parameters.json`） |
-| [particle-effects](particle-effects/README.md) | 粒子特效 JSON 资产包：fire / smoke / impact / trail / weather，供 `newEffectFromFile` 加载 |
+| [particle-effects](particle-effects/README.md) | 粒子特效 JSON 资产包：fire / smoke / impact / trail / weather / bonfire / portal / fireworks / flipbook / ribbon，供 `newEffectFromFile` 加载 |
 | [surface-fluid-dynamic](surface-fluid-dynamic/README.md) | C++ 侧表面流体参考实现（确定性 CPU 解算） |
 | [workspace-recipes](workspace-recipes/README.md) | 编辑器 Workspace 配方目录：嵌套薄壳入口，指向完整领域编辑器示例（本身不参与 smoke） |
 
