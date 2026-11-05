@@ -77,15 +77,14 @@ function rfBuildVtMaterial() {
 }
 
 function rfStudioSkyFaces() {
-    // Soft studio colors — never near-white (avoids blocky clip) and never near-black
-    // (chrome lower hemisphere must not read as a void).
+    // Soft studio colors — mid-key so chrome feet are not voids and whites are not blown.
     return [
-        [0.55, 0.48, 0.42], // +X warm
-        [0.34, 0.42, 0.62], // -X cool
-        [0.70, 0.74, 0.82], // +Y ceiling
-        [0.78, 0.79, 0.81], // -Y floor (bright — chrome feet must not go black)
-        [0.88, 0.90, 0.94], // +Z bright window-ish
-        [0.44, 0.48, 0.54]  // -Z
+        [0.48, 0.42, 0.38], // +X warm
+        [0.30, 0.38, 0.55], // -X cool
+        [0.58, 0.62, 0.70], // +Y ceiling
+        [0.52, 0.53, 0.55], // -Y floor
+        [0.72, 0.74, 0.78], // +Z window-ish
+        [0.40, 0.44, 0.50]  // -Z
     ];
 }
 
@@ -138,11 +137,20 @@ function rfBuildStudioProbe() {
 
 function rfSyncChromeLadder() {
     // Mirror metals with no environment are pitch-black voids. When the room probe
-    // is off, demote them to dark glossy dielectrics so P0 still reads contact
-    // shadows; restore full chrome when IBL is on.
+    // is off, demote them to mid-grey glossy dielectrics so P0 still reads contact
+    // shadows without washing to chalk-white; restore full chrome when IBL is on.
     if (!("chrome" in rf) || rf.chrome == null) return;
-    local metal = rf.opts.iblProbes ? 1.0 : 0.18;
-    foreach (ball in rf.chrome) ball.setMetallic(metal);
+    if (rf.opts.iblProbes) {
+        foreach (ball in rf.chrome) {
+            ball.setMetallic(1.0);
+            ball.setTint(0.70, 0.72, 0.74, 1.0);
+        }
+    } else {
+        foreach (ball in rf.chrome) {
+            ball.setMetallic(0.22);
+            ball.setTint(0.42, 0.44, 0.48, 1.0);
+        }
+    }
 }
 
 function rfResetCamera() {
@@ -249,10 +257,10 @@ function rfApplyIbl() {
         // Global env is a dim fallback; the local reflection-probe slot owns the room
         // box projection so chrome samples the captured walls with parallax.
         rf.camera.setEnvMap(cube);
-        rf.camera.setEnvIntensity(0.35);
+        rf.camera.setEnvIntensity(0.28);
         rf.camera.clearEnvProbe();
         rf.camera.setReflectionProbe(0, cube, 0.0, 1.15, 0.2, 5.1, 2.5, 5.0, 1.05, 0.75, 10);
-        rf.camera.setAmbient(0.12, 0.13, 0.15);
+        rf.camera.setAmbient(0.08, 0.09, 0.11);
         rfSyncChromeLadder();
     } else {
         // P0 leaves the room probe off. Soft studio sky + demoted metallic keeps the
@@ -266,13 +274,13 @@ function rfApplyIbl() {
         }
         if (rf.skyEnv != null) {
             rf.camera.setEnvMap(rf.skyEnv.getActiveCubemap());
-            rf.camera.setEnvIntensity(0.85);
+            rf.camera.setEnvIntensity(0.36);
         } else {
             rf.camera.setEnvIntensity(0.0);
         }
         rf.camera.clearEnvProbe();
         rf.camera.clearReflectionProbe(0);
-        rf.camera.setAmbient(0.28, 0.30, 0.34);
+        rf.camera.setAmbient(0.14, 0.16, 0.19);
         rfSyncChromeLadder();
     }
 }
@@ -335,13 +343,11 @@ function rfApplyRenderControl() {
         rc.setPostProcessQuality(rf.opts.ao || rf.opts.indirectGi ? "medium" : "low");
     }
     rf.camera.setBloom(rf.opts.reflectionChain || rf.opts.iblProbes ? 0.12 : 0.10, 1.05);
-    // Keep exposure near neutral. IBL already bakes soft floor/wall fills into the
-    // probe — crushing to ~0.58 made chrome read as black voids and muddied P0.
-    // Mild pull-down only when both IBL and fog stack, to avoid highlight clip.
-    local exposure = 0.92;
-    if (rf.opts.iblProbes && rf.opts.volumetricFog) exposure = 0.78;
-    else if (rf.opts.iblProbes) exposure = 0.84;
-    else if (rf.opts.volumetricFog) exposure = 0.86;
+    // Mid-key: below ~0.55 chrome collapses; above ~0.80 whites clip on Lavapipe.
+    local exposure = 0.66;
+    if (rf.opts.iblProbes && rf.opts.volumetricFog) exposure = 0.58;
+    else if (rf.opts.iblProbes) exposure = 0.62;
+    else if (rf.opts.volumetricFog) exposure = 0.62;
     rf.camera.setExposure(exposure);
     rc.compile();
 }
@@ -462,7 +468,7 @@ function rfBuildScene() {
     local roughness = [0.08, 0.20, 0.42, 0.75];
     for (local i = 0; i < 4; ++i) {
         local x = -3.0 + i * 2.0;
-        local ball = rfMakeSphere(x, 0.55, 1.2, 0.50, 0.78, 0.80, 0.82, 1.0, roughness[i], true);
+        local ball = rfMakeSphere(x, 0.55, 1.2, 0.50, 0.70, 0.72, 0.74, 1.0, roughness[i], true);
         ball.setReflectionCaptureMask(0);
         rf.chrome.append(ball);
     }
@@ -561,30 +567,30 @@ eve_init = function() {
     rf.sun = eve.Light3D();
     rf.sun.setType("dir");
     rf.sun.setDirection(-0.55, 0.92, 0.30);
-    rf.sun.setColor(1.0, 0.94, 0.86, 2.05);
+    rf.sun.setColor(1.0, 0.94, 0.86, 1.55);
     rf.sun.setCastShadow(true);
     rf.sun.setShadowMethod("csm");
     rf.sun.setVolumetric(true);
-    rf.sun.setVolumetricIntensity(0.22);
-    gfx.setDirectionalLight(-0.55, 0.92, 0.30, 0.50, 0.46, 0.40);
+    rf.sun.setVolumetricIntensity(0.18);
+    gfx.setDirectionalLight(-0.55, 0.92, 0.30, 0.40, 0.37, 0.32);
 
     rf.spot = eve.Light3D();
     rf.spot.setType("spot");
     rf.spot.setPosition(3.8, 4.6, 3.2);
     rf.spot.setDirection(-0.35, -1.0, -0.55);
-    rf.spot.setColor(1.0, 0.78, 0.48, 6.5);
+    rf.spot.setColor(1.0, 0.78, 0.48, 4.2);
     rf.spot.setRadius(16.0);
     rf.spot.setSpotAngle(28.0);
     rf.spot.setSpotSoftness(0.32);
     rf.spot.setCastShadow(true);
     rf.spot.setShadowMethod("perspective");
     rf.spot.setVolumetric(true);
-    rf.spot.setVolumetricIntensity(1.4);
+    rf.spot.setVolumetricIntensity(0.9);
 
     rf.fill = eve.Light3D();
     rf.fill.setType("point");
     rf.fill.setPosition(-3.6, 2.8, 3.5);
-    rf.fill.setColor(0.45, 0.65, 1.0, 2.2);
+    rf.fill.setColor(0.45, 0.65, 1.0, 1.5);
     rf.fill.setRadius(12.0);
     rf.fill.setCastShadow(false);
 
