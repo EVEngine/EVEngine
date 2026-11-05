@@ -76,34 +76,73 @@ function rfBuildVtMaterial() {
     return mat;
 }
 
+function rfStudioSkyFaces() {
+    // Soft studio colors — never near-white (avoids blocky clip) and never near-black
+    // (chrome lower hemisphere must not read as a void).
+    return [
+        [0.55, 0.48, 0.42], // +X warm
+        [0.34, 0.42, 0.62], // -X cool
+        [0.70, 0.74, 0.82], // +Y ceiling
+        [0.78, 0.79, 0.81], // -Y floor (bright — chrome feet must not go black)
+        [0.88, 0.90, 0.94], // +Z bright window-ish
+        [0.44, 0.48, 0.54]  // -Z
+    ];
+}
+
+function rfBuildStudioSkyEnv() {
+    // Cheap sky-only cubemap used when the room box-probe is off (P0). Metals with
+    // envIntensity=0 render as pitch-black voids; this keeps the chrome ladder lit.
+    local probe = gfx.newReflectionProbeCapture();
+    probe.configure(0.0, 1.15, 0.2, 64, 0.05, 32.0);
+    foreach (i, c in rfStudioSkyFaces()) probe.setSkyFaceColor(i, c[0], c[1], c[2]);
+    probe.setCaptureMask(0);
+    probe.requestCapture();
+    for (local attempt = 0; attempt < 24; ++attempt) {
+        if (probe.update(6)) break;
+    }
+    if (!probe.isCaptureComplete() || !probe.stageCapturedFaces() || !probe.filterAndPublish(32))
+        throw "render-fidelity: studio sky env publish failed";
+    if (probe.getActiveCubemap() == null)
+        throw "render-fidelity: studio sky cubemap missing";
+    return probe;
+}
+
 function rfBuildStudioProbe() {
     // Capture the closed room into a prefiltered cubemap. Sky face colors only
     // fill empty / out-of-far pixels — keep them soft (never near-white) so chrome
     // does not bake as blocky rectangles (the old setCaptureMask(0) path).
     local probe = gfx.newReflectionProbeCapture();
     // Capture near the chrome ladder so floor / walls / ceiling / window fill faces.
-    // 512 keeps mirror-ball faces readable after GGX prefilter on Lavapipe.
     probe.configure(0.0, 1.15, 0.2, 256, 0.05, 32.0);
-    local faces = [
-        [0.48, 0.42, 0.38], // +X
-        [0.30, 0.38, 0.55], // -X
-        [0.62, 0.66, 0.74], // +Y ceiling gap fill
-        [0.38, 0.39, 0.41], // -Y floor gap fill (match bright floor albedo)
-        [0.42, 0.46, 0.52], // +Z
-        [0.40, 0.44, 0.50]  // -Z
-    ];
-    foreach (i, c in faces) probe.setSkyFaceColor(i, c[0], c[1], c[2]);
+    foreach (i, c in rfStudioSkyFaces()) probe.setSkyFaceColor(i, c[0], c[1], c[2]);
+    // VT / plain ground often bakes as a dark slab on Lavapipe and paints chrome
+    // lower hemispheres black — prefer the bright -Y sky fill instead.
+    local groundMask = 1;
+    if (rf.ground != null) {
+        groundMask = rf.ground.getReflectionCaptureMask();
+        rf.ground.setReflectionCaptureMask(0);
+    }
     // MeshRenderer.reflectionCaptureMask defaults to bit0=1; -1 keeps room props.
     probe.setCaptureMask(-1);
     probe.requestCapture();
     for (local attempt = 0; attempt < 96; ++attempt) {
         if (probe.update(6)) break;
     }
+    if (rf.ground != null) rf.ground.setReflectionCaptureMask(groundMask);
     if (!probe.isCaptureComplete() || !probe.stageCapturedFaces() || !probe.filterAndPublish(128))
         throw "render-fidelity: reflection probe publish failed";
     if (probe.getActiveCubemap() == null)
         throw "render-fidelity: reflection cubemap missing";
     return probe;
+}
+
+function rfSyncChromeLadder() {
+    // Mirror metals with no environment are pitch-black voids. When the room probe
+    // is off, demote them to dark glossy dielectrics so P0 still reads contact
+    // shadows; restore full chrome when IBL is on.
+    if (!("chrome" in rf) || rf.chrome == null) return;
+    local metal = rf.opts.iblProbes ? 1.0 : 0.18;
+    foreach (ball in rf.chrome) ball.setMetallic(metal);
 }
 
 function rfResetCamera() {
@@ -192,7 +231,7 @@ function rfApplyGround() {
 function rfApplyIbl() {
     if (rf.opts.iblProbes) {
         if (rf.probe == null) {
-            // Probe publish can fail on software Vulkan; keep ambient-only then.
+            // Probe publish can fail on software Vulkan; fall back to studio sky.
             local ok = true;
             try { rf.probe = rfBuildStudioProbe(); }
             catch (e) {
@@ -201,9 +240,8 @@ function rfApplyIbl() {
                 rf.probe = null;
             }
             if (!ok) {
-                rf.camera.setEnvIntensity(0.0);
-                rf.camera.clearEnvProbe();
-                rf.camera.setAmbient(0.18, 0.20, 0.24);
+                rf.opts.iblProbes = false;
+                rfApplyIbl();
                 return;
             }
         }
@@ -211,15 +249,31 @@ function rfApplyIbl() {
         // Global env is a dim fallback; the local reflection-probe slot owns the room
         // box projection so chrome samples the captured walls with parallax.
         rf.camera.setEnvMap(cube);
-        rf.camera.setEnvIntensity(0.25);
+        rf.camera.setEnvIntensity(0.35);
         rf.camera.clearEnvProbe();
         rf.camera.setReflectionProbe(0, cube, 0.0, 1.15, 0.2, 5.1, 2.5, 5.0, 1.05, 0.75, 10);
-        rf.camera.setAmbient(0.07, 0.08, 0.10);
+        rf.camera.setAmbient(0.12, 0.13, 0.15);
+        rfSyncChromeLadder();
     } else {
-        rf.camera.setEnvIntensity(0.0);
+        // P0 leaves the room probe off. Soft studio sky + demoted metallic keeps the
+        // ladder from collapsing to black silhouettes with a single specular dot.
+        if (rf.skyEnv == null) {
+            try { rf.skyEnv = rfBuildStudioSkyEnv(); }
+            catch (e) {
+                print("render-fidelity: studio sky env unavailable: " + e + "\n");
+                rf.skyEnv = null;
+            }
+        }
+        if (rf.skyEnv != null) {
+            rf.camera.setEnvMap(rf.skyEnv.getActiveCubemap());
+            rf.camera.setEnvIntensity(0.85);
+        } else {
+            rf.camera.setEnvIntensity(0.0);
+        }
         rf.camera.clearEnvProbe();
         rf.camera.clearReflectionProbe(0);
-        rf.camera.setAmbient(0.22, 0.24, 0.28);
+        rf.camera.setAmbient(0.28, 0.30, 0.34);
+        rfSyncChromeLadder();
     }
 }
 
@@ -281,11 +335,13 @@ function rfApplyRenderControl() {
         rc.setPostProcessQuality(rf.opts.ao || rf.opts.indirectGi ? "medium" : "low");
     }
     rf.camera.setBloom(rf.opts.reflectionChain || rf.opts.iblProbes ? 0.12 : 0.10, 1.05);
-    // IBL chrome already carries room radiance — pull exposure down so reflections
-    // do not clip to flat white patches on the lower hemisphere.
-    local exposure = 0.82;
-    if (rf.opts.iblProbes) exposure = 0.58;
-    else if (rf.opts.volumetricFog) exposure = 0.62;
+    // Keep exposure near neutral. IBL already bakes soft floor/wall fills into the
+    // probe — crushing to ~0.58 made chrome read as black voids and muddied P0.
+    // Mild pull-down only when both IBL and fog stack, to avoid highlight clip.
+    local exposure = 0.92;
+    if (rf.opts.iblProbes && rf.opts.volumetricFog) exposure = 0.78;
+    else if (rf.opts.iblProbes) exposure = 0.84;
+    else if (rf.opts.volumetricFog) exposure = 0.86;
     rf.camera.setExposure(exposure);
     rc.compile();
 }
@@ -402,11 +458,13 @@ function rfBuildScene() {
     // room (walls / ceiling / boxes) instead of baking the spheres into themselves.
     // Slightly rough the mirror end so GGX mips hide cubemap texel edges;
     // still reads as chrome next to the satin / matte siblings.
+    rf.chrome <- [];
     local roughness = [0.08, 0.20, 0.42, 0.75];
     for (local i = 0; i < 4; ++i) {
         local x = -3.0 + i * 2.0;
-        local ball = rfMakeSphere(x, 0.55, 1.2, 0.50, 0.70, 0.72, 0.74, 1.0, roughness[i], true);
+        local ball = rfMakeSphere(x, 0.55, 1.2, 0.50, 0.78, 0.80, 0.82, 1.0, roughness[i], true);
         ball.setReflectionCaptureMask(0);
+        rf.chrome.append(ball);
     }
 
     rf.coatMat = gfx.newMaterial();
@@ -455,6 +513,8 @@ eve_init = function() {
     rf.frame <- 0;
     rf.volAccum <- 0.0;
     rf.probe <- null;
+    rf.skyEnv <- null;
+    rf.chrome <- null;
     rf.vtMat <- null;
     rf.plainGroundMat <- null;
     rf.heightTex <- null;

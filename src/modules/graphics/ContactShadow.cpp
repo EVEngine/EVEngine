@@ -77,22 +77,22 @@ void ContactShadow::applyQualityDefaults() {
         stepCount_ = 10;
         length_    = 0.20f;
         thickness_ = 0.10f;
-        intensity_ = 0.34f;
+        intensity_ = 0.22f;
         startBias_ = 0.010f;
     } else if (quality_ == "high") {
-        // Dual-ray soft (center + tangent) + binary refine; thicker window and
-        // more steps keep sphere/box feet continuous without a blur pass.
+        // Dual-ray soft (center + tangent) + binary refine; keep intensity
+        // modest so feet ground without crushing the lit albedo to black.
         stepCount_ = 16;
-        length_    = 0.38f;
-        thickness_ = 0.15f;
-        intensity_ = 0.40f;
+        length_    = 0.36f;
+        thickness_ = 0.14f;
+        intensity_ = 0.28f;
         startBias_ = 0.010f;
     } else {
         quality_   = "medium";
         stepCount_ = 14;
-        length_    = 0.30f;
-        thickness_ = 0.13f;
-        intensity_ = 0.36f;
+        length_    = 0.28f;
+        thickness_ = 0.12f;
+        intensity_ = 0.26f;
         startBias_ = 0.012f;
     }
 }

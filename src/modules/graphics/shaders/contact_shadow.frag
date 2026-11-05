@@ -176,8 +176,8 @@ void main() {
 
     // Facing-weighted: grazing receivers get less contact darkening.
     occlusion *= smoothstep(0.02, 0.35, nDotL);
-    // Mild gamma softens residual step edges without washing out contact tips.
-    occlusion = sqrt(clamp(occlusion, 0.0, 1.0));
+    // Do NOT sqrt here — dual-ray already fills coverage; sqrt lifts midtones and
+    // paints sphere feet / floors near-black under the alpha overlay.
 
     float darken = clamp(occlusion * intensity, 0.0, 1.0);
     outColor     = vec4(0.0, 0.0, 0.0, darken);

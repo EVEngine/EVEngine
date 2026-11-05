@@ -130,7 +130,6 @@ fn occ_or_zero(o: f32) -> f32 { return select(o, 0.0, o < 0.0); }
                          steps, fract(rnd + 0.37));
   var occlusion = occ_or_zero(o0) * 0.62 + occ_or_zero(o1) * 0.38;
   occlusion = occlusion * smoothstep(0.02, 0.35, n_dot_l);
-  occlusion = sqrt(clamp(occlusion, 0.0, 1.0));
   return vec4f(0.0, 0.0, 0.0, clamp(occlusion * intensity, 0.0, 1.0));
 }
 )wgsl";
