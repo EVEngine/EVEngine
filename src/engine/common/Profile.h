@@ -6,6 +6,7 @@
 #include "common/Export.h"
 
 #include <atomic>
+#include <cstddef>
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -93,6 +94,15 @@ public:
     static bool hasFrame();
     /** @brief Per-module/per-zone samples of the last frame, sorted by self time. */
     static const std::vector<ZoneSample>& lastFrame();
+    /**
+     * @brief Copy the hottest zones from the last completed frame.
+     * @param limit Maximum rows to return; 0 returns an empty vector.
+     * @param minSelfMs Drop zones whose selfMs is strictly below this threshold.
+     * @return Owning samples still sorted by selfMs descending; empty when no frame.
+     * @cost Linear in last-frame zone count plus up to @p limit copies; call after
+     *       frame aggregation for diagnosis, never per entity.
+     */
+    [[nodiscard]] static std::vector<ZoneSample> hotspots(std::size_t limit, double minSelfMs);
     /** @brief Human-readable report of the last frame. */
     static std::string textReport();
 

@@ -232,12 +232,15 @@ public:
      * @return Owning ranked candidates, or a structured failure.
      * @remarks Also refreshes the resultAt() cache to match ranked() order.
      * @thread Call on the sensing world's owning simulation thread.
+     * @cost Scales with broad-phase hits and maxCount (and optional LOS), not with full world
+     *       size when a spatial index is configured. Prefer this over scanning every unit.
      */
     [[nodiscard]] eve::Result<CandidateQueryResult> query(const QueryOrigin& origin, const QuerySpec& spec);
     /** @brief Runs the same query with an explicitly injected LOS backend, before result limits.
      * @ownership Provider is borrowed only until return; results own coordinates and ids.
      * @thread Simulation thread; provider must not mutate or re-enter this world.
      * @cost Candidate scan plus one LOS call per accepted candidate; reuse the configured index.
+     *       Scales with accepted candidates, not with a full unit-array walk.
      */
     [[nodiscard]] Result<CandidateQueryResult> query(const QueryOrigin& origin, const QuerySpec& spec,
                                                      OptionalRef<const ILineOfSightQuery> lineOfSight);

@@ -7,13 +7,14 @@ description: Write EveScript (.nut) for EVEngine. Use when editing game scripts,
 
 Do not invent Unity C#, Godot GDScript, Lua, or JavaScript APIs. EVEngine games are `.nut` (EveScript = Squirrel + compile-time extensions). There is no second runtime language.
 
-Lookup before writing (do not guess Unity/Godot names):
+## Entry rules
 
-1. Live MCP: `eve_api_search` / `eve_api_get` on `bin/eve run --debug --mcp-port=7529 …`
-2. **SDK zip** (no engine source): `share/eve/ai/eve-api.json` (same catalog as this `eve` binary)
-3. Engine git tree only: `python3 scripts/generate_binding_contracts.py --json-output eve-api.json`
+1. Module docs (`docs/usr/modules/<name>.md`) open with **这篇解决什么** — problems, preferred entry, do-not. Read that block first; do not skim past it into low-level APIs.
+2. Lookup by problem, then use the documented entry. Signatures: MCP `eve_api_search` / `eve_api_get`, or SDK `share/eve/ai/eve-api.json`, or `python3 scripts/generate_binding_contracts.py --json-output eve-api.json`.
+3. Never rebuild a documented higher-level feature from primitives (example: do not iterate every enemy unit to find in-range targets when `sensing` query / `circle` exists).
+4. Suspect cost → profile at scale (`profiler.hotspots(limit, minSelfMs)`, MCP `eve_profiler_hotspots`). Small scenes do not prove the path is fine. See `docs/dev/API成本与Profiler约定.md`.
 
-Cursor skill copy in an unzipped SDK: `.cursor/skills/evescript/SKILL.md`. Human tutorial: `docs/usr/EVESCRIPT.md` in the source tree / online docs. Longer engine-maintainer note: `docs/dev/AI知识补偿.md`.
+Cursor skill copy in an unzipped SDK: `.cursor/skills/evescript/SKILL.md`. Human tutorial: `docs/usr/EVESCRIPT.md` in the source tree / online docs. Longer engine-maintainer note: `docs/dev/AI知识补偿.md`. Template problem headers: `docs/usr/modules/sensing.md`, `docs/usr/modules/spatial.md`.
 
 ## Language (differences from JS/C#)
 

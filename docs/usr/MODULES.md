@@ -11,6 +11,7 @@
 模块可以按需裁剪：见 [按需裁剪模块](TRIMMING.md)。脚本里用 `has_module("slot")` 判断某个模块在当前构建中是否存在（下载的 SDK 默认包含全部模块）。
 
 首次查阅前请阅读 [API 使用约定](../dev/API-CONVENTIONS.md)，了解模块对象、辅助对象、生命周期与“C++ public 方法不一定是脚本 API”的边界。
+各章开头的 **这篇解决什么** 写明问题、推荐入口与不要做什么；成本选型与热点采样见 [API 成本与 Profiler 约定](../dev/API成本与Profiler约定.md)。
 本轮逐章核对的实现、测试证据与结论记录在 [用户模块文档 Review](https://github.com/EVEngine/EVEngine/blob/main/docs/usr/REVIEW.md)。
 
 新项目先读[完整游戏开发流程](GAME_DEVELOPMENT.md)：从配置、输入和状态，到资源、HUD、

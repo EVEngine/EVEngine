@@ -228,6 +228,19 @@ bool Profiler::hasFrame() { return hasFrameFlag(); }
 
 const std::vector<ZoneSample>& Profiler::lastFrame() { return lastFrameStorage().samples; }
 
+std::vector<ZoneSample> Profiler::hotspots(std::size_t limit, double minSelfMs) {
+    std::vector<ZoneSample> out;
+    if (!hasFrameFlag() || limit == 0) return out;
+    const auto& samples = lastFrameStorage().samples;
+    out.reserve(std::min(limit, samples.size()));
+    for (const ZoneSample& sample : samples) {
+        if (sample.selfMs < minSelfMs) continue;
+        out.push_back(sample);
+        if (out.size() >= limit) break;
+    }
+    return out;
+}
+
 std::string Profiler::textReport() {
     if (!hasFrameFlag()) return "=== Profiler: no frame captured yet ===\n";
     std::ostringstream os;
