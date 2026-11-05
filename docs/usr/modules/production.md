@@ -25,6 +25,12 @@ RPG 不另建生产包：`rpg/Crafting.h` 的 `Crafting` 适配器把配方投�
 `CraftingRequest::batchSize` 会在同一原子事务中同时放大材料成本和最终产物，并在任何
 整数溢出前拒绝请求，因此批量不是只用于 UI 展示的任务元数据。
 
+装备强化走同一队列上的 `rpg/EquipmentUpgrade.h`：扣材料后把 `process=upgrade` 任务
+入队，结算时就地改写目标实例的 `enhance` 属性（保留 `instanceId`），而不是发放新
+物品。脚本侧可用 `eve.RPGForge()`（`ForgeBench`）把 Crafting + Upgrade 绑到同一背包；
+示例见 `examples/emberforge/`。经济账本（`economy`）仍只负责货币支付，不拥有配方或
+强化等级。
+
 C++ `ProductionRequest::dependencies` 可以组成小型、向后引用的确定性 DAG：`AllOf`
 等待全部前置成功，`AnyOf` 在任一前置成功后放行，`blocks` 则在指定任务进入终态前
 禁止并发执行。依赖可以跨 owner；任何任务完成、取消或失败后，队列都会按稳定 owner
