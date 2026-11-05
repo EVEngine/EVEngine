@@ -177,6 +177,7 @@ set(EVE_TEST_MODULE_DOMAIN
     # through the include rule above rather than through a root of their own.
     "building;building"
     "archspace;building"
+    "logistics;building"
 
     # --- narrative, assets, media, platform, weather
     "dialogue;dialogue"

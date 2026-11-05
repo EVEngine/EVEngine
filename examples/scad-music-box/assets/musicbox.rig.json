@@ -1,0 +1,186 @@
+{
+  "schema": "eve.scad-rig",
+  "schemaVersion": 1,
+  "unknownFields": "reject",
+  "coordinateSystem": "openscad-mm-z-up",
+  "joints": [
+    {
+      "name": "shell",
+      "parent": null,
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "lid",
+      "parent": "shell",
+      "pivot": [
+        0,
+        55,
+        58
+      ],
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "limits": [
+        -95,
+        0
+      ]
+    },
+    {
+      "name": "bed",
+      "parent": "shell",
+      "pivot": [
+        0,
+        0,
+        18
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "barrel",
+      "parent": "bed",
+      "pivot": [
+        -58,
+        8,
+        22
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        -1000000.0,
+        1000000.0
+      ]
+    },
+    {
+      "name": "cylinder",
+      "parent": "bed",
+      "pivot": [
+        8,
+        -6,
+        28
+      ],
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "limits": [
+        -1000000.0,
+        1000000.0
+      ]
+    },
+    {
+      "name": "comb",
+      "parent": "bed",
+      "pivot": [
+        8,
+        22,
+        22
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "governor",
+      "parent": "bed",
+      "pivot": [
+        62,
+        10,
+        34
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        -1000000.0,
+        1000000.0
+      ]
+    },
+    {
+      "name": "dancer",
+      "parent": "shell",
+      "pivot": [
+        0,
+        -28,
+        62
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        -1000000.0,
+        1000000.0
+      ]
+    }
+  ],
+  "parts": [
+    {
+      "name": "shell",
+      "joint": "shell"
+    },
+    {
+      "name": "lid",
+      "joint": "lid"
+    },
+    {
+      "name": "bed",
+      "joint": "bed"
+    },
+    {
+      "name": "barrel",
+      "joint": "barrel"
+    },
+    {
+      "name": "cylinder",
+      "joint": "cylinder"
+    },
+    {
+      "name": "comb",
+      "joint": "comb"
+    },
+    {
+      "name": "governor",
+      "joint": "governor"
+    },
+    {
+      "name": "dancer",
+      "joint": "dancer"
+    }
+  ]
+}
