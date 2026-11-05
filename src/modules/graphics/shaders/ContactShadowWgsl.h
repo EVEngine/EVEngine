@@ -2,6 +2,7 @@
 
 namespace eve::graphics::shaders {
 
+/** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char* kContactShadowCommon = R"wgsl(
 struct FSIn { @location(0) color: vec4f, @location(1) uv: vec2f };
 struct Externals { data: array<vec4f, 8> };
@@ -22,6 +23,7 @@ fn ndc_to_view_z(ndc: f32, near_z: f32, far_z: f32) -> f32 {
 }
 )wgsl";
 
+/** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char* kContactShadow = R"wgsl(
 @fragment fn fs_main(i: FSIn) -> @location(0) vec4f {
   let m = inv_vp();

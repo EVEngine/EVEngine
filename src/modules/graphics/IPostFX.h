@@ -37,7 +37,7 @@ public:
     /** @brief Creates a ambient occlusion. @ownership Caller deletes unless documented otherwise. */
     virtual AmbientOcclusion *newAmbientOcclusion() = 0;
     /** @brief Creates a contact shadow. @ownership Caller deletes unless documented otherwise. */
-    virtual ContactShadow *newContactShadow() = 0;
+    virtual ContactShadow* newContactShadow() = 0;
     /** @brief Creates a outline. @ownership Caller deletes unless documented otherwise. */
     virtual Outline *newOutline() = 0;
     /** @brief Creates a global illumination. @ownership Caller deletes unless documented otherwise. */
@@ -50,7 +50,7 @@ public:
     /** @brief Pipeline ambient occlusion. */
     virtual AmbientOcclusion *pipelineAmbientOcclusion() = 0;
     /** @brief Pipeline contact shadow. */
-    virtual ContactShadow *pipelineContactShadow() = 0;
+    virtual ContactShadow* pipelineContactShadow() = 0;
     /** @brief Pipeline global illumination. */
     virtual GlobalIllumination *pipelineGlobalIllumination() = 0;
     /** @brief Pipeline anti aliasing. */

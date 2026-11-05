@@ -28,8 +28,8 @@
 #include "graphics/AlphaMask.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
-#include "graphics/ContactShadow.h"
 #include "graphics/CanvasScriptBindings.h"
+#include "graphics/ContactShadow.h"
 #include "graphics/DamageNumbersBindings.h"
 #include "graphics/FogVolume.h"
 #include "graphics/Font.h"
@@ -1538,9 +1538,8 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("getShadowSchemeLocalMapSize", [](Graphics*) { return ShadowSchemeSettings::current().localMapSize; });
     cls.addFunc("getShadowSchemeAtlasMapSize",
                 [](Graphics*) { return ShadowSchemeSettings::current().resolvedAtlasMapSize(); });
-    cls.addFunc("setShadowSchemeDirectionalMaxDistance", [](Graphics*, float meters) {
-        setShadowSchemeDirectionalMaxDistance(meters).ignore();
-    });
+    cls.addFunc("setShadowSchemeDirectionalMaxDistance",
+                [](Graphics*, float meters) { setShadowSchemeDirectionalMaxDistance(meters).ignore(); });
     cls.addFunc("getShadowSchemeDirectionalMaxDistance",
                 [](Graphics*) { return ShadowSchemeSettings::current().directionalMaxDistance; });
     cls.addFunc("setShadowSchemeAdaptiveCascadeResolution", [](Graphics*, bool enabled) {

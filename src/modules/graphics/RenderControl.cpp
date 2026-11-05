@@ -11,7 +11,7 @@
 namespace eve::graphics {
 namespace {
 
-const char *kKnownFeatures[] = {"depthTest",
+const char* kKnownFeatures[] = {"depthTest",
                                 "shadow",
                                 "gbuffer",
                                 "gbufferAlbedo",
@@ -50,10 +50,9 @@ bool isKnownFeature(const std::string &feature) {
 
 bool requiresGBuffer(const std::string& feature) {
     return feature == "gbuffer" || feature == "gbufferAlbedo" || feature == "ao" || feature == "gi" ||
-           feature == "outline" || feature == "contactShadow" || feature == "decal" ||
-           feature == "gpuDriven" || feature == "visResolve" || feature == "ssr" || feature == "rtgi" ||
-           feature == "reflectionChain" || feature == "rtx" || feature == "volumetricFog" ||
-           feature == "fogLocalVolumes" || feature == "fogTemporal";
+           feature == "outline" || feature == "contactShadow" || feature == "decal" || feature == "gpuDriven" ||
+           feature == "visResolve" || feature == "ssr" || feature == "rtgi" || feature == "reflectionChain" ||
+           feature == "rtx" || feature == "volumetricFog" || feature == "fogLocalVolumes" || feature == "fogTemporal";
 }
 
 }  // namespace
@@ -69,7 +68,7 @@ RenderControl::RenderControl() {
     features_["clusteredDeferred"] = false;
     features_["ao"] = true;
     features_["gi"] = true;
-    features_["contactShadow"] = false;
+    features_["contactShadow"]     = false;
     features_["rtgi"] = false;
     features_["aa"] = true;
     features_["taa"] = false;

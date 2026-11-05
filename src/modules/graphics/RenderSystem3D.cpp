@@ -9,8 +9,8 @@
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/ClipSpace.h"
-#include "graphics/ContactShadow.h"
 #include "graphics/ClusteredLight.h"
+#include "graphics/ContactShadow.h"
 #include "graphics/DepthPyramid.h"
 #include "graphics/DiffuseLightProbeRegistry.h"
 #include "graphics/GlobalIllumination.h"
@@ -1612,10 +1612,8 @@ void RenderSystem3D::render(Graphics& gfx) {
     const bool doSSR           = rc->isEnabled("ssr") || rc->isEnabled("reflectionChain");
     const bool doRTX           = rc->isEnabled("rtx");
     bool       aoApplied = false;
-    auto       applyAO   = [&]() {
-        if ((!doAO && !doContactShadow) || !gfx.supportsGBufferPost() || !defaultCam ||
-            !gfx.had3DThisFrame())
-            return;
+    auto       applyAO         = [&]() {
+        if ((!doAO && !doContactShadow) || !gfx.supportsGBufferPost() || !defaultCam || !gfx.had3DThisFrame()) return;
         GBuffer* gb = rc->getGBuffer();
         if (gb && gb->isValid()) {
             auto        cd         = defaultCam->data();
@@ -1646,7 +1644,8 @@ void RenderSystem3D::render(Graphics& gfx) {
                 } else if (!packed.empty() && packed[0].data && !packed[0].isPoint) {
                     lightDir = glm::vec3(packed[0].data->dx, packed[0].data->dy, packed[0].data->dz);
                 }
-                if (glm::length(lightDir) < 1e-6f) lightDir = glm::vec3(0.f, 1.f, 0.f);
+                if (glm::length(lightDir) < 1e-6f)
+                    lightDir = glm::vec3(0.f, 1.f, 0.f);
                 else
                     lightDir = glm::normalize(lightDir);
                 cs->setLightDirection(lightDir.x, lightDir.y, lightDir.z);

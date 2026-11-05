@@ -248,9 +248,9 @@ Result<void> Material::setFoliageTranslucency(float red, float green, float blue
 }
 
 Result<void> Material::setClearcoat(float factor, float roughness) {
-    auto candidate                 = pbr_;
-    candidate.clearcoatFactor      = factor;
-    candidate.clearcoatRoughness   = roughness;
+    auto candidate               = pbr_;
+    candidate.clearcoatFactor    = factor;
+    candidate.clearcoatRoughness = roughness;
     return setPbrSurface(candidate);
 }
 

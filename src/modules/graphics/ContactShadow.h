@@ -27,7 +27,7 @@ public:
     /** @brief Releases owned shaders. */
     ~ContactShadow();
 
-    ContactShadow(const ContactShadow&) = delete;
+    ContactShadow(const ContactShadow&)            = delete;
     ContactShadow& operator=(const ContactShadow&) = delete;
 
     /** @brief "low" | "medium" | "high" (unknown → medium). */
@@ -39,8 +39,8 @@ public:
      * @brief Camera for depth reconstruction (RH + ZO).
      * Builds inv(viewProj) and near/far used by apply*.
      */
-    void setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ,
-                   float upX, float upY, float upZ, float fovYDeg, float aspect, float nearZ, float farZ);
+    void setCamera(float eyeX, float eyeY, float eyeZ, float targetX, float targetY, float targetZ, float upX,
+                   float upY, float upZ, float fovYDeg, float aspect, float nearZ, float farZ);
 
     /** @brief Sets the inv view proj. */
     void setInvViewProj(const glm::mat4& invViewProj);
@@ -78,25 +78,26 @@ public:
      */
     void applyFromGBuffer(Graphics* gfx, Texture* hwDepth, Texture* worldNormal);
 
-    /** @brief Returns the owned contact-shadow shader. */
+    /** @brief Returns the owned contact-shadow shader.
+     * @lifetime Returned shader is borrowed and owned by Graphics. */
     Shader* getShader() const { return shader_; }
 
 private:
     void applyQualityDefaults();
     void uploadCommon(int width, int height);
 
-    Graphics* gfx_ = nullptr;
-    Shader*   shader_ = nullptr;
-    glm::mat4 invViewProj_{1.f};
-    glm::vec3 lightDir_{0.48f, 0.86f, 0.28f};
-    std::string quality_ = "medium";
-    float nearZ_ = 0.1f;
-    float farZ_ = 100.f;
-    float length_ = 0.35f;
-    float thickness_ = 0.12f;
-    float intensity_ = 0.65f;
-    float startBias_ = 0.01f;
-    int   stepCount_ = 12;
+    Graphics*   gfx_    = nullptr;
+    Shader*     shader_ = nullptr;
+    glm::mat4   invViewProj_{1.f};
+    glm::vec3   lightDir_{0.48f, 0.86f, 0.28f};
+    std::string quality_   = "medium";
+    float       nearZ_     = 0.1f;
+    float       farZ_      = 100.f;
+    float       length_    = 0.35f;
+    float       thickness_ = 0.12f;
+    float       intensity_ = 0.65f;
+    float       startBias_ = 0.01f;
+    int         stepCount_ = 12;
 };
 
 }  // namespace eve::graphics
