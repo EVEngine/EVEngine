@@ -968,7 +968,7 @@ v1 至少提供以下诊断：
 ```text
 EVE1001 config.modules contains an unknown root slot
 EVE1002 required module is absent from the selected profile
-EVE1003 config.denyGlobals contains an unknown name
+EVE1003 config.allowGlobals contains an unknown name
 EVE1101 cannot resolve imported module
 EVE1102 import escapes its module root
 EVE1103 cyclic import is not supported

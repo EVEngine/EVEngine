@@ -788,9 +788,9 @@ std::vector<ScriptDiagnostic> ScriptCompiler::validateProjectConfig(std::string_
     std::vector<ScriptDiagnostic>                result;
     const std::string                            scanned = maskComments(source);
     static const std::regex                      listPattern(R"(\b(modules|optionalModules)\s*=\s*\[([^\]]*)\])");
-    static const std::regex                      denyPattern(R"(\bdenyGlobals\s*=\s*\[([^\]]*)\])");
+    static const std::regex                      allowPattern(R"(\ballowGlobals\s*=\s*\[([^\]]*)\])");
     static const std::regex                      valuePattern(R"([\"']([^\"']+)[\"'])");
-    static const std::unordered_set<std::string> knownDenyGlobals = {"dofile", "loadfile", "compilestring"};
+    static const std::unordered_set<std::string> knownAllowGlobals = {"dofile", "loadfile", "compilestring"};
     forMatches(scanned, listPattern, [&](const std::smatch& list, size_t listOffset) {
         const bool        required = list[1].str() == "modules";
         const std::string values   = list[2].str();
@@ -811,14 +811,14 @@ std::vector<ScriptDiagnostic> ScriptCompiler::validateProjectConfig(std::string_
             result.push_back(std::move(diagnostic));
         });
     });
-    forMatches(scanned, denyPattern, [&](const std::smatch& list, size_t listOffset) {
+    forMatches(scanned, allowPattern, [&](const std::smatch& list, size_t listOffset) {
         const std::string values = list[1].str();
         forMatches(values, valuePattern, [&](const std::smatch& value, size_t valueOffset) {
             const std::string name = value[1].str();
-            if (knownDenyGlobals.count(name) != 0) return;
+            if (knownAllowGlobals.count(name) != 0) return;
             ScriptDiagnostic diagnostic;
             diagnostic.code         = "EVE1003";
-            diagnostic.message      = "config.denyGlobals contains an unknown name: " + name;
+            diagnostic.message      = "config.allowGlobals contains an unknown name: " + name;
             diagnostic.canonicalUri = std::string(canonicalUri);
             diagnostic.position = positionAt(source, listOffset + static_cast<size_t>(list.position(1)) + valueOffset);
             diagnostic.related  = name;

@@ -22,25 +22,27 @@ function file_exists(path) {
     }
 }
 
-// Engine-owned copies of script loaders. `config.denyGlobals` may replace the
+// Engine-owned copies of script loaders. `config.allowGlobals` may replace the
 // public root slots after bootstrap; hot reload and package load keep using these.
 _engine_dofile <- dofile
 _engine_loadfile <- loadfile
 _engine_compilestring <- compilestring
 
-// Names that config.denyGlobals may deny. Unknown entries fail at validation so
-// typos do not silently no-op. This is a project policy for agent/modular
-// authoring, not a security sandbox — private `_engine_*` copies remain.
-_deny_globals_allowed <- {
+// Restricted script-loader globals governed by config.allowGlobals. When that
+// field is present, only listed names from this set stay public; the rest become
+// throwing stubs. Absent field = unrestricted (compat). Unknown allow entries
+// fail validation. Project policy for agent/modular authoring, not a sandbox —
+// private `_engine_*` copies remain.
+_script_loader_globals <- {
     dofile = true
     loadfile = true
     compilestring = true
 }
 
-function _make_denied_global(name) {
+function _make_disallowed_global(name) {
     return function(...) {
         throw "global '" + name
-            + "' is denied by config.denyGlobals; use import/export modules instead of "
+            + "' is not allowed by config.allowGlobals; use import/export modules instead of "
             + name;
     };
 }
@@ -307,32 +309,37 @@ function validate_project_modules() {
     }
 }
 
-/** @brief Validate `config.denyGlobals` shape and known names. Absent = unrestricted. */
-function validate_deny_globals() {
-    if (!("denyGlobals" in config) || config.denyGlobals == null)
+/** @brief Validate `config.allowGlobals` shape and known names. Absent = unrestricted. */
+function validate_allow_globals() {
+    if (!("allowGlobals" in config) || config.allowGlobals == null)
         return;
-    if (typeof config.denyGlobals != "array")
-        throw "config.denyGlobals must be an array of strings";
-    foreach (name in config.denyGlobals) {
+    if (typeof config.allowGlobals != "array")
+        throw "config.allowGlobals must be an array of strings";
+    foreach (name in config.allowGlobals) {
         if (typeof name != "string")
-            throw "config.denyGlobals entries must be strings";
-        if (!(name in _deny_globals_allowed))
-            throw "config.denyGlobals unknown name: " + name
-                + " (allowed: dofile, loadfile, compilestring)";
+            throw "config.allowGlobals entries must be strings";
+        if (!(name in _script_loader_globals))
+            throw "config.allowGlobals unknown name: " + name
+                + " (known: dofile, loadfile, compilestring)";
     }
 }
 
 /**
- * Replace denied public globals with throwing stubs so game scripts (and agents)
- * cannot call them after bootstrap. Engine reload paths keep `_engine_*`.
+ * When `config.allowGlobals` is set, stub every restricted loader not listed so
+ * game scripts (and agents) must use import/export. Engine reload keeps `_engine_*`.
  */
-function apply_deny_globals() {
-    validate_deny_globals();
-    if (!("denyGlobals" in config) || config.denyGlobals == null)
+function apply_allow_globals() {
+    validate_allow_globals();
+    if (!("allowGlobals" in config) || config.allowGlobals == null)
         return;
+    local allowed = {};
+    foreach (name in config.allowGlobals)
+        allowed[name] <- true;
     local root = getroottable();
-    foreach (name in config.denyGlobals) {
-        local stub = _make_denied_global(name);
+    foreach (name, _ in _script_loader_globals) {
+        if (name in allowed)
+            continue;
+        local stub = _make_disallowed_global(name);
         if (name in root)
             root[name] = stub;
         else
@@ -341,7 +348,7 @@ function apply_deny_globals() {
 }
 
 validate_project_modules();
-validate_deny_globals();
+validate_allow_globals();
 
 if (!has_module("win") || !has_module("gfx")) {
     print("engine build is missing the window or graphics module\n");
@@ -498,7 +505,7 @@ function remap_instances(container, NewClass) {
 
 // Compile every candidate before touching the live root table.  loadfile()
 // returns a closure without executing it, so a syntax error cannot leave a
-// partially redefined game behind. Use the engine copy so config.denyGlobals
+// partially redefined game behind. Use the engine copy so config.allowGlobals
 // does not break hot reload.
 function compile_reload_candidates() {
     local candidates = [];
@@ -617,7 +624,7 @@ function soft_restart_game(reload_scripts = true) {
             report_reload_failure("soft-restart eve_init failed: " + format_script_error(e));
             return false;
         }
-        apply_deny_globals();
+        apply_allow_globals();
     } else {
         // Keep script definitions and persist roots; only reset native providers
         // and re-enter the game's restart/init path (for param-only retries).
@@ -746,8 +753,8 @@ function soft_reload_scripts() {
             print("eve_reload failed: " + format_script_error(e) + "\n");
         }
     }
-    // Re-assert project policy in case a reloaded script restored a denied global.
-    apply_deny_globals();
+    // Re-assert project policy in case a reloaded script restored a restricted global.
+    apply_allow_globals();
     return true;
 }
 
@@ -857,7 +864,7 @@ function poll_remote_reload() {
 
 // Apply after engine bootstrap (config/modules/async) and before game scripts so
 // main.nut and imports observe the policy. Engine reload keeps `_engine_*`.
-apply_deny_globals();
+apply_allow_globals();
 
 if (file_exists("main.nut")) {
     _engine_dofile("main.nut");

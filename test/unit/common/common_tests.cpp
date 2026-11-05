@@ -2729,9 +2729,10 @@ TEST_CASE("common.scriptCompiler.spec.inspectorVmAndConfigValidation") {
         CHECK_EQ(diagnostics[1].code, std::string("EVE1001"));
         CHECK_EQ(diagnostics[1].related, std::string("typo"));
     };
-    SUB_CASE("config denyGlobals source -> unknown names diagnosed") {
+    SUB_CASE("config allowGlobals source -> unknown names diagnosed") {
         const auto diagnostics = script::ScriptCompiler::validateProjectConfig(
-            "config <- { denyGlobals = [\"dofile\", \"eval\", \"loadfile\"] }\n", "game:/config.nut", {"gfx"}, {"gfx"});
+            "config <- { allowGlobals = [\"dofile\", \"eval\", \"loadfile\"] }\n", "game:/config.nut", {"gfx"},
+            {"gfx"});
         CHECK_EQ(diagnostics.size(), size_t(1));
         CHECK_EQ(diagnostics[0].code, std::string("EVE1003"));
         CHECK_EQ(diagnostics[0].related, std::string("eval"));
