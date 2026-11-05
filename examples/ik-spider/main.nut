@@ -87,7 +87,9 @@ eve_update <- function(dt) {
     }
     spiderFrame += 1;
 
-    if (!spiderScreenshotSaved && spiderFrame > 90 && spider.steps >= 8) {
+    // Wait until the tetrapod gait has taken several strides so the preview
+    // shows planted feet, a body trail, and a non-rest pose.
+    if (!spiderScreenshotSaved && spider.age > 2.8 && spider.steps >= 24) {
         if (gfx.saveFramePng("ik-spider.png")) {
             spiderScreenshotSaved = true;
             print("IK_SPIDER_SHOT steps=" + spider.steps + " age=" + spider.age + "\n");

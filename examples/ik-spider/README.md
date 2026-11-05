@@ -47,3 +47,7 @@ make run/linux-debug GAME=examples/ik-spider
 python3 scripts/check_examples.py
 MIN_RUN_SECONDS=2 RUN_SECONDS=6 bash scripts/smoke_examples.sh ik-spider
 ```
+
+引擎读回预览（约 2.8s 爬行后自动写出）：
+
+![自主爬行的 IK 蜘蛛](ik-spider.png)
