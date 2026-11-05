@@ -103,10 +103,10 @@ function createSession() {
     // Floor segments with a spike pit gap (world x ≈ 260..380).
     // Each entry is [centerX, centerY, width, height].
     local floors = [
-        [130.0, 560.0, 260.0, 40.0],
-        [560.0, 560.0, 360.0, 40.0],
-        [920.0, 560.0, 280.0, 40.0],
-        [1160.0, 560.0, 160.0, 40.0]
+        [130.0, 560.0, 260.0, 40.0],   // 0..260
+        [560.0, 560.0, 360.0, 40.0],   // 380..740 (pit gap 260..380)
+        [900.0, 560.0, 320.0, 40.0],   // 740..1060
+        [1170.0, 560.0, 180.0, 40.0]   // 1080..1260
     ];
     local floorBodies = [];
     foreach (f in floors) {
