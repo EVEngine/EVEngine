@@ -1,10 +1,9 @@
 # Procedural Cliffs & Mountains
 
-Bakes an alpine `MountainRecipe`, carves a midfield basin for a long scarp, extracts
-continuous cliff-band rock strips (shared verts, smoothed lip, geometric strata +
-`pbr.cliff.strata` albedo/normal with U-along / V-height UVs), softens the heightmap
-ramp so terrain splat does not own the sheer face, and dresses the toe with varied
-`mesh.rock` props. After ~1.5 s captures `procgen-cliffs-mountains.png` for visual audit.
+Bakes an alpine `MountainRecipe`, carves a soft curved valley, then runs a
+Pegasus/Ubisoft cliff extract: steep heightfield quads → subdivide → stratified
+bed extrusion + Worley rock displace + blur, shaded with `pbr.cliff.strata`, and
+toe-dressed with `mesh.rock`. After ~1.5 s captures `procgen-cliffs-mountains.png`.
 
 ## Run
 

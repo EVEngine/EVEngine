@@ -61,6 +61,10 @@ void exposeMountainCliffBindings(ssq::Table& table) {
     cliff.addVar("strataVertical", &CliffBandMeshSettings::strataVertical);
     cliff.addVar("ledgeHeight", &CliffBandMeshSettings::ledgeHeight);
     cliff.addVar("outwardBias", &CliffBandMeshSettings::outwardBias);
+    cliff.addVar("claddingOffset", &CliffBandMeshSettings::claddingOffset);
+    cliff.addVar("strataTilt", &CliffBandMeshSettings::strataTilt);
+    cliff.addVar("macroAmplitude", &CliffBandMeshSettings::macroAmplitude);
+    cliff.addVar("smoothIterations", &CliffBandMeshSettings::smoothIterations);
     cliff.addVar("uvScaleU", &CliffBandMeshSettings::uvScaleU);
     cliff.addVar("uvScaleV", &CliffBandMeshSettings::uvScaleV);
     cliff.addFunc("setSeed", [](CliffBandMeshSettings* s, int seed) { s->seed = static_cast<std::uint32_t>(seed); });

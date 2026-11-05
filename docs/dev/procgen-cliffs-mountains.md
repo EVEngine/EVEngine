@@ -9,7 +9,9 @@ Volumetric overhangs (Paris TOG 2019 / SDF differential erosion) are deferred.
 |---|---|
 | Musgrave ridged multifractal + Quilez domain warp | `TerrainSampler` ridge/warp presets in `MountainRecipe` |
 | Tzathas et al. CGF 2024 / Cordonnier TOG 2024 | Thermal → hydraulic → fluvial aging via `TerrainPipeline` (iterative, not analytical SPL yet) |
-| UE5 / Houdini Project Pegasus | Steep heightfield faces → dedicated cliff mesh → strata displace → rock scatter |
+| UE5 / Houdini Project Pegasus | Steep heightfield quads → mesh → subdivide → height/noise displace → rock scatter |
+| Ubisoft GDC cliff tool (Houdini-Cliff-Tool) | Slope threshold → remesh → strata boxes → extrusion + blur |
+| Houdini HeightField Strata | Soft-tilted sedimentary beds with amplitude / size / mask |
 | UE5 Landscape Auto Material | Cliff fitness from `deriveTerrainSlope` (`1-normal.y`) for dressing |
 
 Deferred Phase 2: amplify selected cliffs with `ScalarField3D` / implicit blocks for overhangs and arches.
@@ -25,19 +27,20 @@ Deferred Phase 2: amplify selected cliffs with `ScalarField3D` / implicit blocks
 | C++ | Role |
 |---|---|
 | `bakeMountainRecipe` | Preset noise + erosion into a heightmap; optional slope/cliff masks |
-| `generateCliffBandMesh` | Extract steep grid edges as vertical wall strips, subdivide, strata/ledge displace → `MeshBuild` |
+| `generateCliffBandMesh` | Extract steep heightfield quads, subdivide, Ubisoft strata extrusion + Worley rock + blur → `MeshBuild` |
 | `generateCliffFitnessMask` | Slope → cliff fitness via `deriveTerrainSlope` + range |
 | `configureCliffRockScatterDefaults` | Fill `TerrainObjectPlacementSettings` for steep-band rock dressing |
 
 Script: `eve.MountainRecipeSettings`, `eve.CliffBandMeshSettings`, Heightmap
 `bakeMountain` / `generateCliffFitness`, and `procgen.generateCliffBandMesh`.
 
-## Material
+## Material / geometry contract
 
-Cliff cladding uses `tex.cliff.strata` / `pbr.cliff.strata`: horizontal bedding height
-field → albedo ramp + normal + height. Mesh UVs are U-along-wall / V-by-height
-(`CliffBandMeshSettings.uvScaleU` / `uvScaleV`). Geometry adds soft shelves and
-fracture recesses in `rockDisplace`; painted stripes alone are not enough.
+Cliff cladding uses `tex.cliff.strata` / `pbr.cliff.strata` (albedo + normal + height).
+The mesh is the steep heightfield surface itself (Pegasus), not dual-edge fence wafers:
+per-bed XZ extrusion, Worley F2−F1 macro blocks, cladding offset, and Laplacian blur
+(`claddingOffset` / `macroAmplitude` / `smoothIterations` / `strataTilt`). UVs stay
+world-XZ → U and world-Y → V so beds read horizontal.
 
 ## Example
 

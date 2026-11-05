@@ -25,15 +25,15 @@ fluvial。`setPreset(0|1|2)` 选择 AlpineRidge / Mesa / CoastalCliff；`setSize
 后两个蒙版可为 `null`。`eve.generateCliffFitnessMask(target, heights, spacingX,
 spacingZ, heightScale, slopeMin, slopeMax)` 只生成悬崖适应度。
 
-`eve.CliffBandMeshSettings` 控制陡边竖直崖壁：`setOrigin` / `setSpacing` /
-`setSeed`，以及 `slopeMin` / `slopeMax`、`minRelief`（世界坐标最小落差）、
+`eve.CliffBandMeshSettings` 控制 Pegasus/Ubisoft 式悬崖提取：`setOrigin` /
+`setSpacing` / `setSeed`，以及 `slopeMin` / `slopeMax`、`minRelief`、
 `subdivisions`、`strataAmplitude` / `strataScale` / `strataVertical`、
-`ledgeHeight`、`outwardBias`、`uvScaleU` / `uvScaleV`（沿墙 / 按高度的 UV）、
-`maxTriangles`。
-`eve.generateCliffBandMesh(heights, settings, fitness)` 沿陡网格边挤出竖直墙面
-（hex `addCliff` 同思路），再做岩层置换，返回 `MeshBuild`
-（`algorithm=mesh.cliffband`）。UV 约定为 U 沿墙走向、V 按世界高度，配合
-`pbr.cliff.strata`（`tex.cliff.strata`）的水平岩层 albedo/normal。
+`ledgeHeight`、`outwardBias`、`claddingOffset`、`strataTilt`、`macroAmplitude`、
+`smoothIterations`、`uvScaleU` / `uvScaleV`、`maxTriangles`。
+`eve.generateCliffBandMesh(heights, settings, fitness)` 抽取陡坡高度场四边形，
+细分后做岩层挤出 + Worley 岩块置换 + Laplacian 模糊，返回 `MeshBuild`
+（`algorithm=mesh.cliffband`）。UV 为世界 XZ→U、世界高度→V，配合
+`pbr.cliff.strata`。
 
 `eve.configureCliffRockScatterDefaults(settings, originX, originZ, width, depth,
 heightScale, seed, spacing, minimumFitness, asset)` 填充

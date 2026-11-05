@@ -99,14 +99,14 @@ TEST_CASE("procgen.cliff.band_flatIsEmpty_stepEmitsWall_replayStable") {
     CHECK_EQ(first.getVertexCount(), replay.getVertexCount());
     CHECK_EQ(first.positions(), replay.positions());
     CHECK_EQ(first.getMeta("algorithm", ""), std::string("mesh.cliffband"));
-    // Wall strips must span the terrace relief and face horizontally (±X), not
-    // lie coplanar with the heightfield slope.
+    // Steep heightfield patch must span most of the terrace relief and face
+    // mostly horizontally (±X), not lie flat with the soft terrain skin.
     float minY = first.positions()[1], maxY = minY;
     for (size_t i = 1; i < first.positions().size(); i += 3) {
         minY = std::min(minY, first.positions()[i]);
         maxY = std::max(maxY, first.positions()[i]);
     }
-    CHECK(maxY - minY > 5.f);
+    CHECK(maxY - minY > 4.5f);
     const auto& normals = first.normals();
     REQUIRE(normals.size() >= 3);
     float avgAbsNy = 0.f;
@@ -117,7 +117,7 @@ TEST_CASE("procgen.cliff.band_flatIsEmpty_stepEmitsWall_replayStable") {
     }
     CHECK(countN > 0);
     avgAbsNy /= float(countN);
-    CHECK(avgAbsNy < 0.35f);
+    CHECK(avgAbsNy < 0.45f);
 }
 
 TEST_CASE("procgen.cliff.dressing_configuresRockScatterDefaults") {
