@@ -102,7 +102,7 @@ public:
      * @cost Linear in last-frame zone count plus up to @p limit copies; call after
      *       frame aggregation for diagnosis, never per entity.
      */
-    [[nodiscard]] static std::vector<ZoneSample> hotspots(std::size_t limit, double minSelfMs = 0.0);
+    [[nodiscard]] static std::vector<ZoneSample> hotspots(std::size_t limit, double minSelfMs);
     /** @brief Human-readable report of the last frame. */
     static std::string textReport();
 

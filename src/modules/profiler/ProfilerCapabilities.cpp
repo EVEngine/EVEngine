@@ -75,8 +75,8 @@ public:
         // times are the CPU work the zones account for.
         static const std::vector<eve::prof::ZoneSample> kNoZones;
         const std::vector<eve::prof::ZoneSample>&       zones = hasFrame ? eve::prof::Profiler::lastFrame() : kNoZones;
-        const auto hotspots = eve::prof::Profiler::hotspots(8, 0.0);
-        double     cpuFrameMs = 0.0;
+        const auto                                      hotspots   = eve::prof::Profiler::hotspots(8, 0.0);
+        double                                          cpuFrameMs = 0.0;
         for (const auto& zone : zones) {
             if (zone.minDepth == 0) cpuFrameMs += zone.selfMs;
         }
@@ -106,9 +106,9 @@ public:
     }
 
     std::string hotspotsJson(std::size_t limit, double minSelfMs) const override {
-        const bool hasFrame = eve::prof::Profiler::hasFrame();
-        const auto zones    = eve::prof::Profiler::hotspots(limit, minSelfMs);
-        std::string out     = "{\"schema\":\"eve.profiler.hotspots\",\"version\":1,\"hasFrame\":";
+        const bool  hasFrame = eve::prof::Profiler::hasFrame();
+        const auto  zones    = eve::prof::Profiler::hotspots(limit, minSelfMs);
+        std::string out      = "{\"schema\":\"eve.profiler.hotspots\",\"version\":1,\"hasFrame\":";
         out += hasFrame ? "true" : "false";
         out += ",\"limit\":" + std::to_string(limit) + ",\"minSelfMs\":";
         appendNumber(out, minSelfMs);
