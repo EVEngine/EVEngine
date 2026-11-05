@@ -149,8 +149,10 @@ eve_init = function() {
     cliffSettings.strataVertical = 0.95;
     cliffSettings.ledgeHeight = 1.80;
     cliffSettings.outwardBias = 0.90;
-    cliffSettings.claddingOffset = 0.40;
-    cliffSettings.shellThickness = 2.20;  // closed shell depth so silhouette is solid rock
+    cliffSettings.claddingOffset = 0.85;
+    // No hollow back-face: an open shell reads as venetian-blind wafers from 3/4 views.
+    // Volume comes from the multi-cell steep scarp + cladding sitting on the buried ramp.
+    cliffSettings.shellThickness = 0.0;
     cliffSettings.strataTilt = 0.03;
     cliffSettings.macroAmplitude = 0.55;  // Worley rock blocks for fractured face detail
     cliffSettings.smoothIterations = 2;
