@@ -215,14 +215,14 @@
 
 同时满足方可称 **FPS 竖切 v1 完成**（对应 Phase A–C，D 可为 v1.1）：
 
-- [ ] `examples/fps-arena` 可 run / smoke 绿
-- [ ] 相对鼠标第一人称看 + 胶囊移动 + 跳跃
-- [ ] 至少一把 hitscan 枪：弹匣、装填、开火、命中扣血
-- [ ] 后坐力影响视角；ADS 改变 FOV
-- [ ] 准星 + 弹药 + HP 可读
-- [ ] 命中有至少一种世界反馈（decal 或闪白/受击）
-- [ ] 用户文档写清组装路径与「武器不结算 HP」边界
-- [ ] `make check` 相关门禁不因该示例/模块回归
+- [x] `examples/fps-arena` 可 run / smoke 绿（Phase A，2026-11-06）
+- [x] 相对鼠标第一人称看 + 胶囊移动 + 跳跃
+- [x] 至少一把 hitscan 枪：弹匣、装填、开火、命中扣血
+- [x] 后坐力影响视角；ADS 改变 FOV
+- [x] 准星 + 弹药 + HP 可读
+- [ ] 命中有至少一种世界反馈（decal 或闪白/受击）— Phase A 仅有靶 tint / 准星闪；完整表现见 Phase C
+- [x] 用户文档写清组装路径与「武器不结算 HP」边界
+- [ ] `make check` 相关门禁不因该示例/模块回归（示例侧 `check_examples` + smoke 已绿）
 
 v1.1：viewmodel（Phase D）。  
 v1.2：步态完整化（Phase B 若未进 v1）+ 简易敌人（Phase F）。
