@@ -232,6 +232,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [particle-playback-lab](particle-playback-lab/README.md) | 粒子回放实验室：确定性播放、版本化多发射器与视觉验证 |
 | [unit-surface-effects](unit-surface-effects/README.md) | 26 种单位表面特效：同模型参考、材质/发光/附加几何分层、逐项时间序列对照 |
 | [attack-vfx](attack-vfx/README.md) | AttackVfx 综合演示：一份配方覆盖 mesh/trail/particles/camera/distortion/decal/audio/prefab，anticipate→impact→release，三套 elemental skin 自动轮播 |
+| [bullet-time](bullet-time/README.md) | 狙击精英式子弹时间：打断流程、慢放跟弹、穿墙 X-ray 命中高亮后恢复 |
 | [rendering-chain-lab](rendering-chain-lab/README.md) | 渲染链运行时对比：TAA / SSR / RTGI 与自动反射链开关（Space / R） |
 | [lighting-showcase](lighting-showcase/README.md) | 光照展示：环境光、有向光 CSM、聚光灯 perspective 阴影、彩色发光体，以及可选硬件光追 / 便携反射链 |
 | [modern-balcony](modern-balcony/README.md) | 现代阳台：SCAD 固定建筑、程序化花园、两款骨骼动画猫、大气天空与硬件光追 / 便携反射 |
