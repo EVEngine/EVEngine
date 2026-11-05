@@ -4,7 +4,7 @@
 // pixiv three-vrm sample female (female-rig.glb) with:
 //   - DynamicBone hair chains on J_Sec_Hair* secondary bones
 //   - DynamicBone clothing chains on Tops hem/sleeve (+ bust) secondary bones
-//   - Cloth3D cape pinned behind the upper back with body-shield collision
+//   - Cloth3D cape pinned across the shoulder tops with body-shield collision
 //
 // Controls:
 //   Space       — toggle wind
@@ -35,8 +35,9 @@ persist cape = null
 persist capeCols = 11
 persist capeRows = 14
 persist capeSpacing = 0.055
+persist capePadRows = 5 // rows draped across the shoulder tops before hanging
 persist capeAttach = []
-persist windOn = true
+persist windOn = false // start calm so the shoulder pad is readable; Space toggles wind
 persist elapsed = 0.0
 persist offsetY = 0.0
 persist camera = null
@@ -51,6 +52,7 @@ persist prevKeys = {}
 persist prevMouseLeft = false
 
 const HEAD_BONE = "J_Bip_C_Head"
+const NECK_BONE = "J_Bip_C_Neck"
 const HIPS_BONE = "J_Bip_C_Hips"
 const SPINE_BONE = "J_Bip_C_Spine"
 const CHEST_BONE = "J_Bip_C_Chest"
@@ -130,9 +132,9 @@ function vcross3(a, b) {
 }
 
 function bodyAxes() {
-    // Shoulder line defines character right; back faces opposite the camera-facing torso.
-    local left = worldPos(L_SHOULDER)
-    local right = worldPos(R_SHOULDER)
+    // VRM *Shoulder bones sit at the neck — use UpperArm tips for the shoulder line.
+    local left = worldPos(L_UPPER_ARM)
+    local right = worldPos(R_UPPER_ARM)
     local rightAxis = vnorm3([right[0] - left[0], right[1] - left[1], right[2] - left[2]])
     local upAxis = [0.0, 1.0, 0.0]
     local backAxis = vnorm3(vcross3(rightAxis, upAxis))
@@ -141,7 +143,7 @@ function bodyAxes() {
         backAxis = [-backAxis[0], -backAxis[1], -backAxis[2]]
         rightAxis = [-rightAxis[0], -rightAxis[1], -rightAxis[2]]
     }
-    return { right = rightAxis, back = backAxis }
+    return { right = rightAxis, back = backAxis, up = upAxis }
 }
 
 function addBackSphere(radius) {
@@ -156,11 +158,13 @@ function buildBodyColliders() {
     bodyColliders = []
     // Back-facing shield: a lattice of spheres on the outside of clothing so the cape
     // cannot wrap around a single center sphere into the shirt from the front.
+    // Keep the shield below the shoulder clasps so pinned top-row particles are not crushed.
+    // UpperChest row blocks wrap-around into the shirt front under the neck.
     local rows = [
-        { bone = UPPER_CHEST_BONE, back = 0.10, ys = 0.00, xs = [-0.14, -0.07, 0.0, 0.07, 0.14], r = 0.09 },
-        { bone = CHEST_BONE, back = 0.11, ys = 0.00, xs = [-0.15, -0.075, 0.0, 0.075, 0.15], r = 0.10 },
-        { bone = SPINE_BONE, back = 0.12, ys = 0.00, xs = [-0.13, -0.065, 0.0, 0.065, 0.13], r = 0.10 },
-        { bone = HIPS_BONE, back = 0.11, ys = 0.02, xs = [-0.12, -0.06, 0.0, 0.06, 0.12], r = 0.10 }
+        { bone = UPPER_CHEST_BONE, back = 0.08, ys = -0.02, xs = [-0.08, 0.0, 0.08], r = 0.07 },
+        { bone = CHEST_BONE, back = 0.10, ys = -0.04, xs = [-0.12, -0.06, 0.0, 0.06, 0.12], r = 0.085 },
+        { bone = SPINE_BONE, back = 0.11, ys = 0.00, xs = [-0.12, -0.06, 0.0, 0.06, 0.12], r = 0.09 },
+        { bone = HIPS_BONE, back = 0.10, ys = 0.02, xs = [-0.11, -0.055, 0.0, 0.055, 0.11], r = 0.09 }
     ]
     foreach (row in rows) {
         foreach (x in row.xs) {
@@ -194,7 +198,7 @@ function syncBodyColliders() {
         local back = c.back
         c.body.setPosition(
             p[0] + axes.right[0] * x + axes.back[0] * back,
-            p[1] + y + axes.back[1] * back,
+            p[1] + y + axes.back[1] * back + offsetY,
             p[2] + axes.right[2] * x + axes.back[2] * back)
     }
 }
@@ -353,39 +357,88 @@ function loadCharacter() {
 }
 
 function capeTopAnchor(t) {
-    // t in [0,1] across a line behind the upper back (not on the shoulder bones),
-    // so pinned particles stay outside clothing and the back-shield colliders.
-    local left = worldPos(L_SHOULDER)
-    local right = worldPos(R_SHOULDER)
-    local chest = worldPos(UPPER_CHEST_BONE)
+    // Outer tips sit on the visible deltoid tops (past the hair curtain); the middle
+    // bows behind the neck as a collar. Mesh parts use +offsetY — Cloth3D must match.
+    local left = worldPos(L_UPPER_ARM)
+    local right = worldPos(R_UPPER_ARM)
+    local neck = worldPos(NECK_BONE)
     local axes = bodyAxes()
-    local across = 0.16
-    local x = chest[0] + axes.right[0] * (-across + 2.0 * across * t)
-    local y = chest[1] - 0.03
-    local z = chest[2] + axes.right[2] * (-across + 2.0 * across * t)
-    local back = 0.26
+    local lift = 0.10
+    local out = 0.08 // on the deltoid top, not past the upper-arm silhouette
+    local ls = [
+        left[0] + axes.right[0] * (-out),
+        left[1] + lift + offsetY,
+        left[2] + axes.right[2] * (-out)
+    ]
+    local rs = [
+        right[0] + axes.right[0] * out,
+        right[1] + lift + offsetY,
+        right[2] + axes.right[2] * out
+    ]
+    local collar = [
+        neck[0] + axes.back[0] * 0.05,
+        ((ls[1] + rs[1]) * 0.5),
+        neck[2] + axes.back[2] * 0.05
+    ]
+    if (t < 0.5) {
+        local u = t * 2.0
+        return [
+            ls[0] + (collar[0] - ls[0]) * u,
+            ls[1] + (collar[1] - ls[1]) * u,
+            ls[2] + (collar[2] - ls[2]) * u
+        ]
+    }
+    local u = (t - 0.5) * 2.0
     return [
-        x + axes.back[0] * back,
-        y + axes.back[1] * back,
-        z + axes.back[2] * back
+        collar[0] + (rs[0] - collar[0]) * u,
+        collar[1] + (rs[1] - collar[1]) * u,
+        collar[2] + (rs[2] - collar[2]) * u
+    ]
+}
+
+function capeShoulderPoint(t, depth) {
+    // depth in [0,1]: wrap over the deltoid — front (lower) → peak on top → back.
+    // A flat pad is edge-on from the side and reads as "floating behind"; the arch
+    // gives the side view a clear cloth section sitting on the shoulder.
+    local c = capeTopAnchor(t)
+    local axes = bodyAxes()
+    local edge = fabs(t - 0.5) * 2.0
+    local padDepth = 0.06 + 0.16 * edge
+    // Slight forward bias so the pad sits on the shoulder top, not behind the scapula.
+    local along = (depth - 0.3) * padDepth
+    // Flat plateau across the deltoid crest, then drop toward the front/back faces.
+    local yOff = 0.02 * edge
+    if (depth < 0.25) yOff -= (0.25 - depth) * 0.10
+    else if (depth > 0.65) yOff -= (depth - 0.65) * 0.06
+    return [
+        c[0] + axes.back[0] * along,
+        c[1] + yOff,
+        c[2] + axes.back[2] * along
     ]
 }
 
 function layoutCape() {
-    // Native grid is XZ; remap into a vertical XY panel hanging from the shoulders.
-    local left = capeTopAnchor(0.0)
-    local right = capeTopAnchor(1.0)
-    local width = right[0] - left[0]
-    if (width < 0.2) width = 0.35
-    local topY = (left[1] + right[1]) * 0.5
-    local backZ = (left[2] + right[2]) * 0.5
+    local axes = bodyAxes()
+    local pad = capePadRows
+    if (pad < 1) pad = 1
+    if (pad > capeRows) pad = capeRows
     for (local row = 0; row < capeRows; ++row) {
         for (local col = 0; col < capeCols; ++col) {
             local t = capeCols <= 1 ? 0.5 : col.tofloat() / (capeCols - 1).tofloat()
-            local anchor = capeTopAnchor(t)
-            local x = anchor[0]
-            local y = topY - row.tofloat() * capeSpacing
-            local z = backZ - row.tofloat() * capeSpacing * 0.28
+            local x = 0.0
+            local y = 0.0
+            local z = 0.0
+            if (row < pad) {
+                local depth = pad <= 1 ? 1.0 : row.tofloat() / (pad - 1).tofloat()
+                local p = capeShoulderPoint(t, depth)
+                x = p[0]; y = p[1]; z = p[2]
+            } else {
+                local backEdge = capeShoulderPoint(t, 1.0)
+                local hang = (row - pad + 1).tofloat() * capeSpacing
+                x = backEdge[0] + axes.back[0] * hang * 1.05
+                y = backEdge[1] - hang
+                z = backEdge[2] + axes.back[2] * hang * 1.05
+            }
             cape.setParticlePosition(row * capeCols + col, x, y, z)
         }
     }
@@ -399,35 +452,44 @@ function buildCape() {
     cape.setStiffness(0.92)
     cape.setIterations(8)
     cape.setDamping(0.02)
-    // Particle radius doubles as the body-probe margin against kinematic spheres.
-    cape.setParticleSize(0.065)
+    // Smaller probe radius so the shoulder pad is not shoved off the deltoids.
+    cape.setParticleSize(0.045)
     cape.setParticleMass(0.03)
     cape.setSelfCollision(true)
     cape.setFoldStiffness(0.55)
     cape.setMaxFoldAngle(140.0)
     cape.setAerodynamics(1.225, 1.05, 0.18)
     cape.setCollisionMaterial(0.35, 0.0)
-    cape.setColor(0.22, 0.28, 0.55, 1.0)
+    // Bright cool tint so the cloth does not read as brown hair under modest light.
+    cape.setColor(0.35, 0.75, 0.95, 1.0)
     cape.setBounds(-2.5, -0.2, -2.5, 5.0, 3.0, 5.0)
     cape.setCollideWorld(bodyWorld)
     syncBodyColliders()
     layoutCape()
 
     capeAttach = []
-    for (local col = 0; col < capeCols; ++col) {
-        local idx = col // top row, already pinned by ClothModel::grid
-        local t = capeCols <= 1 ? 0.5 : col.tofloat() / (capeCols - 1).tofloat()
-        local p = capeTopAnchor(t)
-        cape.attachParticle(idx, p[0], p[1], p[2], 0.0)
-        capeAttach.append({ index = idx, t = t })
+    local pad = capePadRows
+    if (pad < 1) pad = 1
+    if (pad > capeRows) pad = capeRows
+    for (local row = 0; row < pad; ++row) {
+        local depth = pad <= 1 ? 1.0 : row.tofloat() / (pad - 1).tofloat()
+        for (local col = 0; col < capeCols; ++col) {
+            local idx = row * capeCols + col
+            local t = capeCols <= 1 ? 0.5 : col.tofloat() / (capeCols - 1).tofloat()
+            local p = capeShoulderPoint(t, depth)
+            cape.setParticleInverseMass(idx, 0.0)
+            cape.attachParticle(idx, p[0], p[1], p[2], 0.0)
+            capeAttach.append({ index = idx, t = t, depth = depth })
+        }
     }
-    print("CAPE_ATTACH=" + capeAttach.len() + " particles=" + cape.getParticleCount() +
+    print("CAPE_ATTACH=" + capeAttach.len() + " padRows=" + pad +
+          " particles=" + cape.getParticleCount() +
           " bodyColliders=" + bodyColliders.len() + "\n")
 }
 
 function syncCapeAttachments() {
     foreach (item in capeAttach) {
-        local p = capeTopAnchor(item.t)
+        local p = capeShoulderPoint(item.t, item.depth)
         cape.setParticlePosition(item.index, p[0], p[1], p[2])
         cape.updateAttachment(item.index, p[0], p[1], p[2])
     }
@@ -512,9 +574,9 @@ eve_init <- function() {
     camera = eve.Camera3D()
     camera.setUp(0.0, 1.0, 0.0)
     camera.setFov(38.0)
-    camera.setAmbient(0.32, 0.34, 0.38)
+    camera.setAmbient(0.48, 0.50, 0.54)
     camera.setActive(true)
-    gfx.setDirectionalLight(-0.35, -1.0, -0.45, 1.2, 1.12, 1.05)
+    gfx.setDirectionalLight(-0.25, -1.0, -0.35, 1.45, 1.40, 1.35)
     updateCamera()
 
     loadCharacter()
