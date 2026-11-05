@@ -29,6 +29,7 @@
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/CanvasScriptBindings.h"
+#include "graphics/ContactShadow.h"
 #include "graphics/DamageNumbersBindings.h"
 #include "graphics/FogVolume.h"
 #include "graphics/Font.h"
@@ -584,6 +585,9 @@ void Graphics::expose(ssq::Table& table) {
                 vm, self->setFoliageTranslucency(red, green, blue, intensity, strength, normalDistortion, scattering,
                                                  direct, ambient, shadow));
         });
+    material.addFunc("setClearcoat", [vm = table.getHandle()](Material* self, float factor, float roughness) {
+        return eve::script::projectResult(vm, self->setClearcoat(factor, roughness));
+    });
     material.addFunc("setFoliageWindTime", [vm = table.getHandle()](Material* self, float seconds) {
         return eve::script::projectResult(vm, self->setFoliageWindTime(seconds));
     });
@@ -1274,6 +1278,24 @@ void Graphics::expose(ssq::Table& table) {
     ao.addFunc("getOverlayShader", &AmbientOcclusion::getOverlayShader);
     ao.addFunc("getFromDepthShader", &AmbientOcclusion::getFromDepthShader);
 
+    auto contactShadow = table.addClass<ContactShadow>(
+        "ContactShadow", std::function<ContactShadow*()>([]() -> ContactShadow* { return nullptr; }), true);
+    contactShadow.addFunc("setQuality", &ContactShadow::setQuality);
+    contactShadow.addFunc("getQuality", &ContactShadow::getQuality);
+    contactShadow.addFunc("setCamera", &ContactShadow::setCamera);
+    contactShadow.addFunc("setLightDirection", &ContactShadow::setLightDirection);
+    contactShadow.addFunc("setLength", &ContactShadow::setLength);
+    contactShadow.addFunc("setThickness", &ContactShadow::setThickness);
+    contactShadow.addFunc("setIntensity", &ContactShadow::setIntensity);
+    contactShadow.addFunc("setStartBias", &ContactShadow::setStartBias);
+    contactShadow.addFunc("getLength", &ContactShadow::getLength);
+    contactShadow.addFunc("getThickness", &ContactShadow::getThickness);
+    contactShadow.addFunc("getIntensity", &ContactShadow::getIntensity);
+    contactShadow.addFunc("getStartBias", &ContactShadow::getStartBias);
+    contactShadow.addFunc("getStepCount", &ContactShadow::getStepCount);
+    contactShadow.addFunc("applyFromGBuffer", &ContactShadow::applyFromGBuffer);
+    contactShadow.addFunc("getShader", &ContactShadow::getShader);
+
     auto outline =
         table.addClass<Outline>("Outline", std::function<Outline*()>([]() -> Outline* { return nullptr; }), true);
     outline.addFunc("setColor", &Outline::setColor);
@@ -1503,7 +1525,7 @@ void Graphics::expose(ssq::Class& cls) {
     // Dynamic shadow atlas resolution + CSM coverage. GPU recreates on next
     // shadow ensure when atlas size changes (@cost: full depth-array realloc).
     cls.addFunc("setShadowSchemeDirectionalMapSize", [](Graphics*, int size) {
-        if (size > 0) (void)setShadowSchemeMapSizes(size, -1);
+        if (size > 0) setShadowSchemeMapSizes(size, -1).ignore();
     });
     cls.addFunc("getShadowSchemeDirectionalMapSize",
                 [](Graphics*) { return ShadowSchemeSettings::current().directionalMapSize; });
@@ -1517,7 +1539,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("getShadowSchemeAtlasMapSize",
                 [](Graphics*) { return ShadowSchemeSettings::current().resolvedAtlasMapSize(); });
     cls.addFunc("setShadowSchemeDirectionalMaxDistance",
-                [](Graphics*, float meters) { (void)setShadowSchemeDirectionalMaxDistance(meters); });
+                [](Graphics*, float meters) { setShadowSchemeDirectionalMaxDistance(meters).ignore(); });
     cls.addFunc("getShadowSchemeDirectionalMaxDistance",
                 [](Graphics*) { return ShadowSchemeSettings::current().directionalMaxDistance; });
     cls.addFunc("setShadowSchemeAdaptiveCascadeResolution", [](Graphics*, bool enabled) {
@@ -1537,6 +1559,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
     cls.addFunc("newDepthOfField", &Graphics::newDepthOfField);
     cls.addFunc("newAmbientOcclusion", &Graphics::newAmbientOcclusion);
+    cls.addFunc("newContactShadow", &Graphics::newContactShadow);
     cls.addFunc("newOutline", &Graphics::newOutline);
     cls.addFunc("newAlphaMask", &Graphics::newAlphaMask);
     cls.addFunc("newMapFog", &Graphics::newMapFog);
@@ -1577,6 +1600,8 @@ DepthOfField* Graphics::newDepthOfField() { return new DepthOfField(this); }
 
 AmbientOcclusion* Graphics::newAmbientOcclusion() { return new AmbientOcclusion(this); }
 
+ContactShadow* Graphics::newContactShadow() { return new ContactShadow(this); }
+
 Outline*   Graphics::newOutline() { return new Outline(this); }
 AlphaMask* Graphics::newAlphaMask() { return new AlphaMask(this); }
 
@@ -1589,6 +1614,11 @@ ScreenSpaceReflection* Graphics::newScreenSpaceReflection() { return new ScreenS
 AmbientOcclusion* Graphics::pipelineAmbientOcclusion() {
     if (!pipelineAO_) pipelineAO_ = std::make_unique<AmbientOcclusion>(this);
     return pipelineAO_.get();
+}
+
+ContactShadow* Graphics::pipelineContactShadow() {
+    if (!pipelineContactShadow_) pipelineContactShadow_ = std::make_unique<ContactShadow>(this);
+    return pipelineContactShadow_.get();
 }
 
 GlobalIllumination* Graphics::pipelineGlobalIllumination() {
