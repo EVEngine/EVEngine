@@ -130,7 +130,7 @@ bool considerEdge(MeshBuild& out, const Heightmap& heights, const Heightmap& fit
     const float push    = 0.12f * spacing;
     const float depth   = 0.22f * spacing + 0.35f * s.strataAmplitude;
     if (x0 != x1) {
-        const float half = 0.5f * s.spacingZ;
+        const float half = 0.5f * s.spacingZ + 0.02f * s.spacingZ;  // slight overlap seals seams
         outward          = h0 >= h1 ? Vec3{bx - ax, 0.f, 0.f} : Vec3{ax - bx, 0.f, 0.f};
         outward          = normalize(outward);
         const float wf   = mx + outward.x * push;
@@ -146,7 +146,7 @@ bool considerEdge(MeshBuild& out, const Heightmap& heights, const Heightmap& fit
         emitWallQuad(out, {wf, topY, mz - half}, {wb, topY, mz - half}, {wb, topY, mz + half}, {wf, topY, mz + half},
                      {0.f, 1.f, 0.f}, noise, s, triangles);
     } else {
-        const float half = 0.5f * s.spacingX;
+        const float half = 0.5f * s.spacingX + 0.02f * s.spacingX;
         outward          = h0 >= h1 ? Vec3{0.f, 0.f, bz - az} : Vec3{0.f, 0.f, az - bz};
         outward          = normalize(outward);
         const float zf   = mz + outward.z * push;
