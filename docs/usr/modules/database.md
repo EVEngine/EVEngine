@@ -13,7 +13,8 @@ local conn = db.connectSQLite("game.db");
 conn.execute("CREATE TABLE IF NOT EXISTS actors (id INTEGER, name TEXT, hp REAL)");
 conn.insertJson("actors", @"{""id"":1,""name"":""hero"",""hp"":100}");
 local rows = conn.queryJson("SELECT * FROM actors ORDER BY id");
-foreach (row in rows) print(row.id + " " + row.name + "\n");
+local decoded = eve.json.decode(rows);
+if (decoded.ok) foreach (row in decoded.value) print(row.id + " " + row.name + "\n");
 conn.close();
 ```
 
@@ -22,39 +23,78 @@ conn.close();
 ### 保存 / 读取玩家进度
 
 用 `updateJson("actors", "{...}", "id=1")` 局部更新字段，`findJson`/`firstJson`
-读取；存档表按版本号管理，配合 `data` 模块做 JSON 编码。
+读取；多行写入用 `begin`/`commit`（或 `upsertJson`）保证原子性。
 
 ### 批量查询与分页
 
-`conn.from("actors").where("hp>?", 50).orderBy("hp", "desc").limit(10).offset(0)`
-的链式 Query 返回 `allJson()` / `firstJson()` / `count()`，避免手拼 SQL。
+链式 `Query` 支持投影、JOIN、AND/OR/`whereAny`、IN/BETWEEN/NULL、GROUP BY/HAVING
+与分页：
+
+```squirrel
+local q = conn.from("officers");
+q.select("officers.name");
+q.select("forces.name");
+q.select("officers.leadership");
+q.innerJoin("forces", "officers.force_id", "forces.id");
+q.where("officers.force_id", "=", "\"wei\"");
+q.whereAny(@"[
+  {""column"":""war"",""op"":"">="",""value"":90},
+  {""column"":""leadership"",""op"":"">="",""value"":95}
+]");
+q.orderBy("officers.leadership", false);
+q.limit(20);
+local page = q.allJson();
+local total = q.count();
+```
+
+`where` / `orWhere` / `whereBetween` 的第三个参数是 **JSON 标量文本**
+（数字写 `"90"`，字符串写 `"\"wei\""`）。`whereIn` / `selectJson` / `groupByJson` /
+`whereAny` 吃 JSON 数组。
+
+聚合示例：
+
+```squirrel
+local g = conn.from("cities");
+g.select("nation_id");
+g.selectExpr("SUM(gold)", "treasury");
+g.selectExpr("COUNT(*)", "city_count");
+g.groupBy("nation_id");
+g.having("COUNT(*)", ">=", "1");
+g.orderBy("nation_id", true);
+local rows = g.allJson();
+```
+
+复杂到构建器表达不了时，仍用 `queryJson("SELECT …")` 逃生舱。
 
 ## 绑定与行为说明
 
 ### `Database`（模块）
 
 - `getName()`：模块名（"Database"）。
-- `connect(path)` / `connectSQLite(path)` → `Connection`。
+- `connect(connector, connectionString)` / `connectSQLite(path)` → `Connection`。
 
 ### `Connection`
 
 - `isConnected()`、`close()`。
-- `begin()` / `commit()` / `rollback()` / `inTransaction()`：嵌套计数事务；最外层才发
-  `BEGIN`/`COMMIT`，`rollback()` 整单回滚并清零嵌套。
+- `begin()` / `commit()` / `rollback()` / `inTransaction()`：嵌套计数事务。
 - `execute(sql)`：任意 DDL/DML。
-- `queryJson(sql)`：返回行数组（JSON 对象）。
-- `insertJson(table, obj)` / `upsertJson(table, obj)` / `updateJson(table, obj, whereSql)` /
-  `remove(table, whereSql)`。`upsertJson` 对应 SQLite `INSERT OR REPLACE`。
+- `queryJson(sql)`：返回行数组的 JSON 字符串（再用 `eve.json.decode`）。
+- `insertJson` / `upsertJson` / `updateJson` / `remove`。
 - `model(table, pk)` → `Model`；`from(table)` → `Query`。
 
 ### `Query`
 
-- `where(json)`、`orderBy(column, dir)`、`limit(n)`、`offset(n)`。
-- `allJson()` / `firstJson()` / `count()`。
+- 投影：`select(column)`、`selectExpr(expr, alias)`、`selectJson(array)`、`distinct(bool)`。
+- 连接：`innerJoin(table, leftCol, rightCol)`、`leftJoin(...)`（列可用 `table.column`）。
+- 过滤：`where` / `orWhere`、`whereIn` / `whereNotIn`、`whereBetween`、
+  `whereNull` / `whereNotNull`、`whereAny` / `orWhereAny`。
+- 分组：`groupBy` / `groupByJson`、`having`。
+- 排序分页：`orderBy(column, ascending)`、`limit`、`offset`。
+- 结果：`allJson()` / `firstJson()` / `count()`。
 
 ### `Model`
 
-  `remove(id)`、`query()` → `Query`。
+- `insertJson` / `allJson` / `findJson` / `updateJson` / `remove` / `query()` → `Query`。
 
 ## 生命周期
 

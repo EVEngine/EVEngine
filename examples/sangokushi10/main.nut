@@ -35,6 +35,10 @@ function buildPanel() {
     ui.text("", "army");
     ui.text("", "jobs");
     ui.text("", "ranking");
+    ui.text("", "join_roster");
+    ui.text("", "treasury_by_nation");
+    ui.text("", "elites");
+    ui.text("", "friends");
     ui.separator("sep");
     ui.button("End Month [Space]", "end_month");
     ui.button("Farm [1]", "farm");
@@ -109,6 +113,44 @@ function refreshPanel() {
             rankText += row.name + "(" + row.leadership + ") ";
     }
     ui.setText("ranking", rankText);
+
+    local rosterText = "DB join roster: ";
+    if (city != null) {
+        local rosterJson = cityRosterJson(world, city.id);
+        local rosterDecoded = eve.json.decode(rosterJson);
+        if (rosterDecoded.ok) {
+            foreach (row in rosterDecoded.value)
+                rosterText += row.officer_name + "/" + row.city_name + " ";
+        }
+    }
+    ui.setText("join_roster", rosterText);
+
+    local treasuryText = "DB groupBy: ";
+    local treasuryDecoded = eve.json.decode(nationTreasuryJson(world));
+    if (treasuryDecoded.ok) {
+        foreach (row in treasuryDecoded.value)
+            treasuryText += row.nation_id + "(g" + formatInt(row.treasury) +
+                " f" + formatInt(row.granary) + " n" + formatInt(row.city_count) + ") ";
+    }
+    ui.setText("treasury_by_nation", treasuryText);
+
+    local eliteText = "DB whereAny elites: ";
+    local eliteDecoded = eve.json.decode(eliteCandidatesJson(world, PLAYER_NATION));
+    if (eliteDecoded.ok) {
+        foreach (row in eliteDecoded.value)
+            eliteText += row.name + "(w" + formatInt(row.war) + ") ";
+        if (eliteDecoded.value.len() == 0) eliteText += "(none)";
+    }
+    ui.setText("elites", eliteText);
+
+    local friendText = "DB friendship: ";
+    local friendDecoded = eve.json.decode(friendshipPairsJson(world));
+    if (friendDecoded.ok) {
+        foreach (row in friendDecoded.value)
+            friendText += row.from_name + "->" + row.to_id + " ";
+    }
+    ui.setText("friends", friendText);
+
     ui.setText("message", world.message + (world.outcome != "" ? "  [" + world.outcome + "]" : ""));
 }
 

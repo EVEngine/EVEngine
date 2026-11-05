@@ -129,11 +129,68 @@ function refreshCatalog(w) {
 
 function topOfficersJson(w, nationId, limitCount) {
     if (w.db == null) return "[]";
-    local model = w.db.model("officers", "id");
-    local q = model.query();
+    local q = w.db.from("officers");
+    q.selectJson(@"[""name"",""leadership"",""war"",""city_id""]");
     q.where("nation_id", "=", "\"" + nationId + "\"");
     q.orderBy("leadership", false);
     q.limit(limitCount);
+    return q.allJson();
+}
+
+function cityRosterJson(w, cityId) {
+    if (w.db == null) return "[]";
+    local q = w.db.from("officers");
+    q.selectAs("officers.name", "officer_name");
+    q.selectAs("cities.name", "city_name");
+    q.select("officers.leadership");
+    q.select("officers.politics");
+    q.innerJoin("cities", "officers.city_id", "cities.id");
+    q.where("officers.city_id", "=", "\"" + cityId + "\"");
+    q.orderBy("officers.leadership", false);
+    return q.allJson();
+}
+
+function nationTreasuryJson(w) {
+    if (w.db == null) return "[]";
+    local q = w.db.from("cities");
+    q.select("nation_id");
+    q.selectExpr("SUM(gold)", "treasury");
+    q.selectExpr("SUM(food)", "granary");
+    q.selectExpr("COUNT(*)", "city_count");
+    q.groupBy("nation_id");
+    q.having("COUNT(*)", ">=", "1");
+    q.orderBy("nation_id", true);
+    return q.allJson();
+}
+
+function eliteCandidatesJson(w, nationId) {
+    if (w.db == null) return "[]";
+    // nation_id = X AND loyalty <= 95 AND (war >= 90 OR intellect >= 95)
+    local q = w.db.from("officers");
+    q.selectJson(@"[""name"",""war"",""intellect"",""loyalty""]");
+    q.where("nation_id", "=", "\"" + nationId + "\"");
+    q.where("loyalty", "<=", "95");
+    q.whereAny(@"[
+        {""column"":""war"",""op"":"">="",""value"":90},
+        {""column"":""intellect"",""op"":"">="",""value"":95}
+    ]");
+    q.whereBetween("leadership", "70", "100");
+    q.orderBy("war", false);
+    return q.allJson();
+}
+
+function friendshipPairsJson(w) {
+    if (w.db == null) return "[]";
+    local q = w.db.from("relationships");
+    q.selectAs("relationships.from_id", "from_id");
+    q.selectAs("relationships.to_id", "to_id");
+    q.select("relationships.affinity");
+    q.selectAs("officers.name", "from_name");
+    q.innerJoin("officers", "relationships.from_id", "officers.id");
+    q.where("relationships.kind", "=", "\"friendship\"");
+    q.where("relationships.affinity", ">=", "0.85");
+    q.orderBy("relationships.affinity", false);
+    q.limit(5);
     return q.allJson();
 }
 

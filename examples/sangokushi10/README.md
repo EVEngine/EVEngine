@@ -33,7 +33,20 @@ Windows：`build\win32-debug\src\engine\eve.exe run examples\sangokushi10`
 - 占领 6 座城获胜；洛阳失守失败。
 - `R`：重置。
 
-右侧面板显示国库、城池开发、驻军、魏势力统率排行（来自 SQLite `Query`）。
+右侧面板用新的 `Query` 构建器展示：
+
+- `select` + 排序分页：魏统率排行
+- `innerJoin`：当前城武将×城名花名册
+- `groupBy` / `selectExpr` / `having`：各国金/粮合计
+- `whereAny` + `whereBetween`：高战或高智力且忠诚偏低的精英候选人
+- 关系表 `innerJoin`：高亲密度友谊边
+
+## 引擎侧补齐（本示例用到）
+
+- `DatabaseConnection.begin/commit/rollback/inTransaction`
+- `DatabaseConnection.upsertJson`（SQLite `INSERT OR REPLACE`）
+- Query：`select`/`selectAs`/`selectExpr`/`selectJson`、`innerJoin`/`leftJoin`、
+  `orWhere`/`whereIn`/`whereBetween`/`whereAny`、`groupBy`/`having`
 
 ## 文件
 
@@ -43,8 +56,3 @@ Windows：`build\win32-debug\src\engine\eve.exe run examples\sangokushi10`
 | `world.nut` | 世界装配、任命、内政、攻城、AI、Database 目录同步 |
 | `main.nut` | 地图绘制、UI、输入 |
 | `config.nut` | 窗口与模块列表 |
-
-## 引擎侧补齐（本示例用到）
-
-- `DatabaseConnection.begin/commit/rollback/inTransaction`
-- `DatabaseConnection.upsertJson`（SQLite `INSERT OR REPLACE`）

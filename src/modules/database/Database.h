@@ -168,10 +168,57 @@ class EVENGINE_API_FOUNDATION Query {
 public:
     /** @brief Queries Query. */
     Query(Connection* connection, std::string table);
-    /** @brief Where. */
-    Query*           where(const std::string& column, const std::string& op, Value value);
-    /** @brief Where json. */
-    Query*           whereJson(const std::string& column, const std::string& op, const std::string& valueJson);
+
+    /** @brief Adds a quoted projection column (default remains SELECT *). */
+    Query* select(const std::string& column);
+    /** @brief Adds a quoted projection column with AS alias. */
+    Query* selectAs(const std::string& column, const std::string& alias);
+    /** @brief Adds a validated aggregate/expression projection with optional alias. */
+    Query* selectExpr(const std::string& expression, const std::string& alias = {});
+    /** @brief Script helper: JSON array of names, {column,as}, or {expr,as}. */
+    Query* selectJson(const std::string& columnsJson);
+    /** @brief SELECT DISTINCT … */
+    Query* distinct(bool enabled = true);
+
+    /** @brief INNER JOIN table ON leftColumn = rightColumn (dotted names allowed). */
+    Query* innerJoin(const std::string& table, const std::string& leftColumn, const std::string& rightColumn);
+    /** @brief LEFT JOIN table ON leftColumn = rightColumn (dotted names allowed). */
+    Query* leftJoin(const std::string& table, const std::string& leftColumn, const std::string& rightColumn);
+
+    /** @brief AND-combined comparison predicate. */
+    Query* where(const std::string& column, const std::string& op, Value value);
+    /** @brief Script AND where; valueJson is one JSON scalar. */
+    Query* whereJson(const std::string& column, const std::string& op, const std::string& valueJson);
+    /** @brief OR-combined comparison predicate. */
+    Query* orWhere(const std::string& column, const std::string& op, Value value);
+    /** @brief Script OR where; valueJson is one JSON scalar. */
+    Query* orWhereJson(const std::string& column, const std::string& op, const std::string& valueJson);
+    /** @brief AND column IN (…); valuesJson is a JSON array of scalars. */
+    Query* whereIn(const std::string& column, const std::string& valuesJson);
+    /** @brief AND column NOT IN (…). */
+    Query* whereNotIn(const std::string& column, const std::string& valuesJson);
+    /** @brief AND column BETWEEN lo AND hi. */
+    Query* whereBetween(const std::string& column, Value low, Value high);
+    /** @brief Script BETWEEN; lowJson/highJson are JSON scalars. */
+    Query* whereBetweenJson(const std::string& column, const std::string& lowJson, const std::string& highJson);
+    /** @brief AND column IS NULL. */
+    Query* whereNull(const std::string& column);
+    /** @brief AND column IS NOT NULL. */
+    Query* whereNotNull(const std::string& column);
+    /** @brief AND (p0 OR p1 OR …); predicatesJson is [{column,op,value}, …]. */
+    Query* whereAnyJson(const std::string& predicatesJson);
+    /** @brief OR (p0 OR p1 OR …) against the previous predicate. */
+    Query* orWhereAnyJson(const std::string& predicatesJson);
+
+    /** @brief Adds a GROUP BY column (dotted names allowed). */
+    Query* groupBy(const std::string& column);
+    /** @brief Script GROUP BY from a JSON array of column names. */
+    Query* groupByJson(const std::string& columnsJson);
+    /** @brief AND-style HAVING comparison (after GROUP BY). */
+    Query* having(const std::string& columnOrExpr, const std::string& op, Value value);
+    /** @brief Script HAVING; valueJson is one JSON scalar. */
+    Query* havingJson(const std::string& columnOrExpr, const std::string& op, const std::string& valueJson);
+
     /** @brief Order by. */
     Query*           orderBy(const std::string& column, bool ascending = true);
     /** @brief Limit. */
@@ -184,17 +231,38 @@ public:
     std::string      allJson();
     /** @brief First json. */
     std::string      firstJson();
-    /** @brief Returns the number of count. */
+    /** @brief Returns matching row count (or number of groups when GROUP BY is set). */
     int              count();
 
 private:
-    std::string              selectSql(bool countOnly, int forcedLimit = -1) const;
+    struct Predicate {
+        bool        combineWithOr = false;
+        std::string sql;
+    };
+    struct Join {
+        std::string type;  // INNER / LEFT
+        std::string table;
+        std::string left;
+        std::string right;
+    };
+
+    std::string selectSql(bool countOnly, int forcedLimit = -1) const;
+    Query*      addComparison(bool combineWithOr, const std::string& column, const std::string& op, Value value);
+    Query*      addIn(bool negate, const std::string& column, const std::string& valuesJson);
+    Query*      addJoin(std::string type, std::string table, std::string leftColumn, std::string rightColumn);
+    Query*      addAnyGroup(bool combineWithOr, const std::string& predicatesJson);
+
     Connection*              connection_;
     std::string              table_;
-    std::vector<std::string> predicates_;
+    std::vector<std::string> columns_;
+    std::vector<Join>        joins_;
+    std::vector<Predicate>   predicates_;
+    std::vector<std::string> groups_;
+    std::vector<std::string> havings_;
     std::vector<std::string> ordering_;
-    int                      limit_  = -1;
-    int                      offset_ = 0;
+    int                      limit_    = -1;
+    int                      offset_   = 0;
+    bool                     distinct_ = false;
 };
 
 /** @brief Typed active-record repository built from a Mapping<T>. */
