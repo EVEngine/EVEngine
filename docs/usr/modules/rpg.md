@@ -367,7 +367,9 @@ while (session.isActive()) {
 ### 产品示例
 
 `examples/rpg-classic` 已用 `data/stories.dnut` + `RpgStorySession` 驱动雾林抵达剧情，
-宿主循环见 `presentStoryStep()`（dialogue / wait / message / move / camera）。
+宿主循环见 `presentStoryStep()` / `updateStoryPresentation()`：对话后真实播放
+`camera`（层原点平移 + 焦点高亮）、`move`（Pathfinder 逐格行走）、`animation`（头顶动作气泡），
+再进入可存档的 `wait`，并以 Instant `flag` + `message` 收尾。
 JSON `StoryEvent` API 仍保留为兼容面，新产品应优先写 `.dnut` story。
 
 ## 常见问题
