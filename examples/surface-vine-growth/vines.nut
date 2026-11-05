@@ -200,7 +200,30 @@ function vineCreateSystem(settings) {
         return false;
     }
 
-    function spawnBurst(world, originX, originY, originZ) {
+    function tangentBasis(nx, ny, nz) {
+        local refX = 0.0;
+        local refY = 1.0;
+        local refZ = 0.0;
+        if (fabs(ny) > 0.92) {
+            refX = 1.0;
+            refY = 0.0;
+            refZ = 0.0;
+        }
+        local tx = refY * nz - refZ * ny;
+        local ty = refZ * nx - refX * nz;
+        local tz = refX * ny - refY * nx;
+        local t = vnorm(tx, ty, tz);
+        if (t == null) t = [1.0, 0.0, 0.0];
+        local bx = ny * t[2] - nz * t[1];
+        local by = nz * t[0] - nx * t[2];
+        local bz = nx * t[1] - ny * t[0];
+        local b = vnorm(bx, by, bz);
+        if (b == null) b = [0.0, 0.0, 1.0];
+        return { t = t, b = b };
+    }
+
+    // Optional hit normal lets click-spawn start on walls/roofs, not only floors.
+    function spawnBurst(world, originX, originY, originZ, hitNx = null, hitNy = null, hitNz = null) {
         tips.clear();
         branches.clear();
         nextForkBudget = s.maxTips;
@@ -210,13 +233,25 @@ function vineCreateSystem(settings) {
         local count = s.rootCount;
         if (count < 7) count = 7;
         if (count > 10) count = 10;
-        local stuck = stick(world, originX, originY + 0.4, originZ, 0.0, 1.0, 0.0, 0.05, 2.0);
-        local sx = originX;
-        local sy = originY;
-        local sz = originZ;
+
         local snx = 0.0;
         local sny = 1.0;
         local snz = 0.0;
+        if (hitNx != null && hitNy != null && hitNz != null) {
+            local hn = vnorm(hitNx.tofloat(), hitNy.tofloat(), hitNz.tofloat());
+            if (hn != null) {
+                snx = hn[0];
+                sny = hn[1];
+                snz = hn[2];
+            }
+        }
+        local stuck = stick(world, originX, originY, originZ, snx, sny, snz, 0.35, 1.5);
+        if (stuck == null) {
+            stuck = stick(world, originX, originY + 0.5, originZ, 0.0, 1.0, 0.0, 0.05, 2.5);
+        }
+        local sx = originX;
+        local sy = originY;
+        local sz = originZ;
         if (stuck != null) {
             sx = stuck.x;
             sy = stuck.y;
@@ -227,32 +262,19 @@ function vineCreateSystem(settings) {
                 sny = n[1];
                 snz = n[2];
             }
-            sx += snx * 0.02;
-            sy += sny * 0.02;
-            sz += snz * 0.02;
         }
-        // Aim a few roots at house (-X) and mountain (+X/+Z) so climb is not left to chance.
-        local aim = [
-            [-1.0, 0.0, 0.0],
-            [-0.8, 0.0, 0.4],
-            [1.0, 0.0, 0.15],
-            [0.7, 0.0, 0.55],
-            [0.0, 0.0, -1.0],
-            [0.15, 0.0, 1.0],
-            [-0.55, 0.0, -0.7],
-            [0.55, 0.0, -0.65]
-        ];
+        sx += snx * 0.03;
+        sy += sny * 0.03;
+        sz += snz * 0.03;
+        maxTipY = sy;
+
+        local basis = tangentBasis(snx, sny, snz);
         for (local i = 0; i < count; ++i) {
-            local yaw = (i.tofloat() / count.tofloat()) * 6.28318530718 + rand01() * 0.12;
-            local wantX = cos(yaw);
-            local wantZ = sin(yaw);
-            if (i < aim.len()) {
-                wantX = aim[i][0];
-                wantZ = aim[i][2];
-            }
-            local tangent = projectTangent(wantX, 0.0, wantZ, snx, sny, snz);
-            if (tangent == null) tangent = projectTangent(1.0, 0.0, 0.0, snx, sny, snz);
-            if (tangent == null) tangent = [1.0, 0.0, 0.0];
+            local yaw = (i.tofloat() / count.tofloat()) * 6.28318530718 + rand01() * 0.14;
+            local wantX = basis.t[0] * cos(yaw) + basis.b[0] * sin(yaw);
+            local wantY = basis.t[1] * cos(yaw) + basis.b[1] * sin(yaw);
+            local wantZ = basis.t[2] * cos(yaw) + basis.b[2] * sin(yaw);
+            local tangent = surfaceTravelDir(snx, sny, snz, wantX, wantY, wantZ);
             local branch = newBranch(0, sx, sy, sz);
             tips.append({
                 alive = true,

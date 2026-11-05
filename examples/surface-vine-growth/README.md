@@ -28,12 +28,14 @@ make run/linux-debug GAME=examples/surface-vine-growth
 
 | 输入 | 作用 |
 | --- | --- |
-| Space / Cast | 重新爆发一簇爬藤 |
+| 左键点击场景 | 在命中表面动态爆发爬藤（墙面/地面/屋顶均可） |
+| Space / Cast | 在上次点击点（或默认院子中心）重新施放 |
+| Clear | 清除当前藤蔓 |
 | Pause | 暂停 / 继续生长 |
-| Speed / Fork spacing / Fork angle / Yaw noise | 调参（下次 Cast 生效的有 seed；速度与扰动当前簇即时可用） |
+| Speed / Fork spacing / Fork angle / Yaw noise | 调参（速度与扰动对当前簇即时生效） |
 | Orbit | 环绕观察 |
 
-成功标记：启动打印 `SURFACE_VINE_READY`，每次施放打印 `SURFACE_VINE_CAST roots=…`。
+成功标记：启动打印 `SURFACE_VINE_READY click-to-grow…`，点击/施放打印 `SURFACE_VINE_CAST … at=(x,y,z)`。
 
 ## 文件
 

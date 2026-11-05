@@ -13,6 +13,13 @@ persist vineOrbit = 0.35
 persist vinePaused = false
 persist vineCasts = 0
 persist vineLastSpace = false
+persist vineLastMouse = false
+persist vineSpawnX = 0.0
+persist vineSpawnY = 0.08
+persist vineSpawnZ = 0.0
+persist vineSpawnNx = 0.0
+persist vineSpawnNy = 1.0
+persist vineSpawnNz = 0.0
 persist vineReadyPrinted = false
 persist vineScreenshotSaved = false
 persist vineSettings = {
@@ -161,21 +168,93 @@ function vineClearVisuals() {
     }
 }
 
-function vineCast() {
+function vineNormalizeHit(nx, ny, nz) {
+    local L = sqrt(nx * nx + ny * ny + nz * nz);
+    if (L < 1.0e-4) return [0.0, 1.0, 0.0];
+    return [nx / L, ny / L, nz / L];
+}
+
+function vineCastAt(x, y, z, nx, ny, nz) {
+    local n = vineNormalizeHit(nx, ny, nz);
     vineClearVisuals();
+    vineSpawnX = x;
+    vineSpawnY = y;
+    vineSpawnZ = z;
+    vineSpawnNx = n[0];
+    vineSpawnNy = n[1];
+    vineSpawnNz = n[2];
+    if (vineOriginMarker != null) {
+        vineOriginMarker.setPosition(x + n[0] * 0.06, y + n[1] * 0.06, z + n[2] * 0.06);
+        local pulse = 0.16;
+        vineOriginMarker.setScale(pulse, pulse, pulse);
+    }
     vineSettings.seed = vineSettings.seed + 17 + vineCasts * 3;
     vineSystem = vineCreateSystem(vineSettings);
-    local count = vineSystem.spawnBurst(vineWorld, 0.0, 0.08, 0.0);
+    local count = vineSystem.spawnBurst(vineWorld, x, y, z, n[0], n[1], n[2]);
     vineAge = 0.0;
     vineCasts += 1;
+    vinePaused = false;
     vineSyncBranchVisuals();
     vineSyncTipMarkers();
     vineScreenshotSaved = false;
-    print(format("SURFACE_VINE_CAST roots=%d seed=%d cast=%d\n", count, vineSettings.seed, vineCasts));
+    print(format("SURFACE_VINE_CAST roots=%d seed=%d cast=%d at=(%.2f,%.2f,%.2f) n=(%.2f,%.2f,%.2f)\n",
+        count, vineSettings.seed, vineCasts, x, y, z, n[0], n[1], n[2]));
+}
+
+function vineCast() {
+    vineCastAt(vineSpawnX, vineSpawnY, vineSpawnZ, vineSpawnNx, vineSpawnNy, vineSpawnNz);
+}
+
+function vinePickSurface(screenX, screenY) {
+    if (vineCamera == null || vineWorld == null) return null;
+    vineCamera.screenToRay(screenX, screenY, gfx.getWidth().tofloat(), gfx.getHeight().tofloat());
+    local ox = vineCamera.getScreenRayOriginX();
+    local oy = vineCamera.getScreenRayOriginY();
+    local oz = vineCamera.getScreenRayOriginZ();
+    local dx = vineCamera.getScreenRayDirX();
+    local dy = vineCamera.getScreenRayDirY();
+    local dz = vineCamera.getScreenRayDirZ();
+    local reach = 80.0;
+    vineWorld.rayCast(ox, oy, oz, ox + dx * reach, oy + dy * reach, oz + dz * reach);
+    if (!vineWorld.hasRayHit()) return null;
+    local n = vineNormalizeHit(
+        vineWorld.getRayHitNormalX(), vineWorld.getRayHitNormalY(), vineWorld.getRayHitNormalZ());
+    return {
+        x = vineWorld.getRayHitX(),
+        y = vineWorld.getRayHitY(),
+        z = vineWorld.getRayHitZ(),
+        nx = n[0],
+        ny = n[1],
+        nz = n[2]
+    };
+}
+
+function vineClickOverUi(screenX, screenY) {
+    // Host overlay panel is mounted at (12,12) with size ~300x420.
+    return screenX >= 8.0 && screenX <= 330.0 && screenY >= 8.0 && screenY <= 450.0;
+}
+
+function vineHandleClick() {
+    local mx = mouse.getX().tofloat();
+    local my = mouse.getY().tofloat();
+    if (vineClickOverUi(mx, my)) return false;
+    local hit = vinePickSurface(mx, my);
+    if (hit == null) {
+        print("SURFACE_VINE_CLICK miss\n");
+        return false;
+    }
+    vineCastAt(hit.x, hit.y, hit.z, hit.nx, hit.ny, hit.nz);
+    return true;
 }
 
 function vineControl(id) {
     if (id == "cast") vineCast();
+    if (id == "clear") {
+        vineClearVisuals();
+        vineSystem = null;
+        foreach (marker in vineTipMarkers) marker.setVisible(false);
+        print("SURFACE_VINE_CLEAR\n");
+    }
     if (id == "pause") {
         vinePaused = !vinePaused;
         ui.setText("pause", vinePaused ? "Resume" : "Pause");
@@ -191,6 +270,7 @@ function vineBuildUi() {
     ui.text("7-10 tips stick to house / ground / mountain and fork", "subtitle");
     ui.beginRow("transport", 6.0);
     ui.button("Cast", "cast");
+    ui.button("Clear", "clear");
     ui.button("Pause", "pause");
     ui.end();
     ui.slider("Speed", vineSettings.speed, 0.4, 3.5, "speed");
@@ -198,13 +278,13 @@ function vineBuildUi() {
     ui.slider("Fork angle", vineSettings.forkAngle, 0.2, 1.4, "forkAngle");
     ui.slider("Yaw noise", vineSettings.yawNoise, 0.0, 1.5, "yawNoise");
     ui.slider("Orbit", vineOrbit, 0.0, 6.28318530718, "orbit");
-    ui.text("Space = cast   ·   tips crawl Box3D surfaces", "hint");
+    ui.text("Left-click scene to grow   ·   Space = recast", "hint");
     ui.text("", "status");
     ui.end();
     ui.mountBuildAs("vine");
     ui.select("vine");
     ui.setHostPos(12.0, 12.0, 0.0, 0.0);
-    ui.setHostSize(300.0, 420.0);
+    ui.setHostSize(300.0, 440.0);
     ui.setHostOverlay(true);
 }
 
@@ -255,16 +335,29 @@ eve_init <- function() {
     }
 
     vineCamera = eve.Camera3D();
-    vineCamera.setTarget(0.5, 1.4, 0.8);
     vineCamera.setUp(0.0, 1.0, 0.0);
     vineCamera.setFov(46.0);
     vineCamera.setAmbient(0.22, 0.28, 0.34);
+    vineCamera.setEye(-0.4 + cos(vineOrbit) * 11.5, 5.8, 0.2 + sin(vineOrbit) * 11.5);
+    vineCamera.setTarget(-0.6, 1.8, 0.0);
     vineCamera.setActive(true);
     gfx.setDirectionalLight(-0.45, -1.0, -0.25, 1.05, 1.0, 0.92);
 
     vineBuildUi();
-    vineCast();
-    print("SURFACE_VINE_READY roots=8 house+mountain colliders=active\n");
+    // Seed courtyard via the same pick→cast path left-click uses (screen ray into the pad).
+    local seedHit = vinePickSurface(gfx.getWidth().tofloat() * 0.52, gfx.getHeight().tofloat() * 0.58);
+    if (seedHit != null) vineCastAt(seedHit.x, seedHit.y, seedHit.z, seedHit.nx, seedHit.ny, seedHit.nz);
+    else vineCastAt(0.0, 0.08, 0.0, 0.0, 1.0, 0.0);
+    // Headless proof that a wall click resolves a vertical normal (mouse uses the same vineCastAt).
+    vineWorld.rayCast(0.0, 1.2, 0.0, -4.0, 1.2, 0.0);
+    if (vineWorld.hasRayHit()) {
+        local wn = vineNormalizeHit(
+            vineWorld.getRayHitNormalX(), vineWorld.getRayHitNormalY(), vineWorld.getRayHitNormalZ());
+        print(format("SURFACE_VINE_CLICK_SIM wall at=(%.2f,%.2f,%.2f) n=(%.2f,%.2f,%.2f)\n",
+            vineWorld.getRayHitX(), vineWorld.getRayHitY(), vineWorld.getRayHitZ(),
+            wn[0], wn[1], wn[2]));
+    }
+    print("SURFACE_VINE_READY click-to-grow house+mountain colliders=active\n");
     vineReadyPrinted = true;
 };
 
@@ -272,6 +365,10 @@ eve_update <- function(dt) {
     local step = dt;
     if (step > 0.05) step = 0.05;
     vineApplyUi();
+
+    local left = mouse.isDown(1);
+    if (left && !vineLastMouse) vineHandleClick();
+    vineLastMouse = left;
 
     local space = keyboard.isDown("SPACE") || keyboard.isDown("Space") || keyboard.isDown("space");
     if (space && !vineLastSpace) vineCast();
