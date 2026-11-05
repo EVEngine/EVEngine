@@ -2,6 +2,14 @@
 
 **脚本入口：** `eve.Weapon()`
 
+## 这篇解决什么
+
+- 数据驱动的开火时序：弹匣、装填、射击模式、散射、后坐力状态、ADS 标志与 zoom FOV 建议。
+- hitscan / projectile / melee 的**事件**产出；**不**做射线命中或 HP 结算。
+- 第一人称组装路径：消费 `fire` 事件 → `World3D.rayCast*` → `combat.applyDamage`，并把
+  `getEventRecoil*` 应用到镜头。可运行竖切见 [`examples/fps-arena`](../../examples/fps-arena/)。
+- 不要：在 `HitscanLogic` / 游戏侧重复实现弹药状态机；不要假设 `fireAt` 已扣血。
+
 Weapon 提供数据驱动的武器定义、弹匣/储备弹药、射击模式、扩散与后坐力、装填、
 载具挂点和角色持握 Rig。武器、挂点、Rig 与弹药池都是 ECS 实体；脚本可用
 `eve.view(eve.WeaponEntity)` 查询，但创建和状态变更应通过模块 API 完成。
