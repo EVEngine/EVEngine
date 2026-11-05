@@ -39,9 +39,12 @@ conn.close();
 ### `Connection`
 
 - `isConnected()`、`close()`。
+- `begin()` / `commit()` / `rollback()` / `inTransaction()`：嵌套计数事务；最外层才发
+  `BEGIN`/`COMMIT`，`rollback()` 整单回滚并清零嵌套。
 - `execute(sql)`：任意 DDL/DML。
 - `queryJson(sql)`：返回行数组（JSON 对象）。
-- `insertJson(table, obj)` / `updateJson(table, obj, whereSql)` / `remove(table, whereSql)`。
+- `insertJson(table, obj)` / `upsertJson(table, obj)` / `updateJson(table, obj, whereSql)` /
+  `remove(table, whereSql)`。`upsertJson` 对应 SQLite `INSERT OR REPLACE`。
 - `model(table, pk)` → `Model`；`from(table)` → `Query`。
 
 ### `Query`

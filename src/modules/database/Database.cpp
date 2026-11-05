@@ -92,8 +92,40 @@ Connection::Connection(std::string connector, std::string connectionString) {
 Connection::~Connection() { close(); }
 bool Connection::isConnected() const { return session_ && session_->isConnected(); }
 void Connection::close() {
-    if (session_ && session_->isConnected()) session_->close();
+    if (session_ && session_->isConnected()) {
+        if (transactionDepth_ > 0) {
+            try {
+                execute("ROLLBACK");
+            } catch (...) {
+            }
+            transactionDepth_ = 0;
+        }
+        session_->close();
+    }
 }
+
+bool Connection::begin() {
+    if (!isConnected()) return false;
+    if (transactionDepth_ == 0) execute("BEGIN");
+    ++transactionDepth_;
+    return true;
+}
+
+bool Connection::commit() {
+    if (!isConnected() || transactionDepth_ <= 0) return false;
+    --transactionDepth_;
+    if (transactionDepth_ == 0) execute("COMMIT");
+    return true;
+}
+
+bool Connection::rollback() {
+    if (!isConnected() || transactionDepth_ <= 0) return false;
+    transactionDepth_ = 0;
+    execute("ROLLBACK");
+    return true;
+}
+
+bool Connection::inTransaction() const { return transactionDepth_ > 0; }
 
 int Connection::execute(const std::string& sql) {
     if (!isConnected()) throw std::runtime_error("database connection is closed");
@@ -132,6 +164,20 @@ int Connection::insert(const std::string& table, const Row& values) {
     return execute("INSERT INTO " + quoteIdentifier(table) + " (" + columns + ") VALUES (" + data + ")");
 }
 
+int Connection::upsert(const std::string& table, const Row& values) {
+    if (values.empty()) throw std::invalid_argument("upsert values must not be empty");
+    std::string columns, data;
+    for (const auto& [key, value] : values) {
+        if (!columns.empty()) {
+            columns += ',';
+            data += ',';
+        }
+        columns += quoteIdentifier(key);
+        data += literal(value);
+    }
+    return execute("INSERT OR REPLACE INTO " + quoteIdentifier(table) + " (" + columns + ") VALUES (" + data + ")");
+}
+
 int Connection::update(const std::string& table, const Row& values, const std::string& whereClause) {
     if (values.empty()) throw std::invalid_argument("update values must not be empty");
     std::string assignments;
@@ -149,6 +195,9 @@ int Connection::remove(const std::string& table, const std::string& whereClause)
 
 int Connection::insertJson(const std::string& table, const std::string& json) {
     return insert(table, parseObject(json));
+}
+int Connection::upsertJson(const std::string& table, const std::string& json) {
+    return upsert(table, parseObject(json));
 }
 int Connection::updateJson(const std::string& table, const std::string& json, const std::string& whereClause) {
     return update(table, parseObject(json), whereClause);
@@ -266,9 +315,14 @@ void Database::expose(ssq::Table& table) {
         "DatabaseConnection", std::function<Connection*()>([] { return new Connection("SQLite", ":memory:"); }), true);
     connection.addFunc("isConnected", &Connection::isConnected);
     connection.addFunc("close", &Connection::close);
+    connection.addFunc("begin", &Connection::begin);
+    connection.addFunc("commit", &Connection::commit);
+    connection.addFunc("rollback", &Connection::rollback);
+    connection.addFunc("inTransaction", &Connection::inTransaction);
     connection.addFunc("execute", &Connection::execute);
     connection.addFunc("queryJson", &Connection::queryJson);
     connection.addFunc("insertJson", &Connection::insertJson);
+    connection.addFunc("upsertJson", &Connection::upsertJson);
     connection.addFunc("updateJson", &Connection::updateJson);
     connection.addFunc("remove", &Connection::remove);
     connection.addFunc("model", &Connection::model);

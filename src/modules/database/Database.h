@@ -81,6 +81,20 @@ public:
     bool             isConnected() const;
     /** @brief Closes the session (idempotent). */
     void             close();
+    /** @brief Begins a nested-counted transaction (`BEGIN` on the outermost enter).
+     * @return false when the connection is closed.
+     */
+    bool             begin();
+    /** @brief Commits one nesting level (`COMMIT` when the outermost level exits).
+     * @return false when no transaction is open or the connection is closed.
+     */
+    bool             commit();
+    /** @brief Rolls back the whole open transaction and clears nesting.
+     * @return false when no transaction is open or the connection is closed.
+     */
+    bool             rollback();
+    /** @brief True while at least one begin() nesting level is open. */
+    bool             inTransaction() const;
     /** @brief Executes a statement; returns the affected row count. */
     int              execute(const std::string& sql);
     /** @brief Runs a SELECT and returns every row as name/value maps. */
@@ -89,6 +103,8 @@ public:
     std::string      queryJson(const std::string& sql);
     /** @brief Inserts a row map; returns the affected row count. */
     int              insert(const std::string& table, const Row& values);
+    /** @brief Insert-or-replace a row map (`INSERT OR REPLACE`); returns affected rows. */
+    int              upsert(const std::string& table, const Row& values);
     /** @brief Updates rows matching whereClause; returns the affected row count. */
     int              update(const std::string& table, const Row& values, const std::string& whereClause);
     /** @brief Deletes rows matching whereClause; returns the affected row count. */
@@ -96,6 +112,8 @@ public:
 
     /** @brief Script-friendly insert: JSON must be an object of column/value pairs. */
     int insertJson(const std::string& table, const std::string& json);
+    /** @brief Script-friendly insert-or-replace from a JSON object. */
+    int upsertJson(const std::string& table, const std::string& json);
     /** @brief Script-friendly update; whereClause is raw SQL. */
     int updateJson(const std::string& table, const std::string& json, const std::string& whereClause);
 
@@ -142,6 +160,7 @@ public:
 
 private:
     std::unique_ptr<Poco::Data::Session> session_;
+    int                                  transactionDepth_ = 0;
 };
 
 /** @brief Composable filtered/sorted/paged query shared by C++ and scripts. */
