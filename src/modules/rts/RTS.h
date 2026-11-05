@@ -175,12 +175,20 @@ public:
     /** @brief Configure one owned setup-phase match victory rule. */
     [[nodiscard]] Result<void> configureMatch(Match& match, VictoryRule rule,
                                                std::string archetype = {}, double targetValue = 0.0) const;
+    /**
+     * @brief Configure the optional match clock before start.
+     * @param timeLimit Zero keeps an open clock; positive values end or enter sudden death.
+     * @param suddenDeath Keep annihilation/headquarters matches running after the clock expires.
+     */
+    [[nodiscard]] Result<void> configureMatchTiming(Match& match, Duration timeLimit, bool suddenDeath = false) const;
     /** @brief Add one owned faction to one owned setup-phase match. */
     [[nodiscard]] Result<void> addMatchParticipant(Match& match, Faction& faction, int team) const;
     /** @brief Start one owned match after participant/rule validation. */
     [[nodiscard]] Result<void> startMatch(Match& match) const;
     /** @brief Surrender one owned faction from one owned running match. */
     [[nodiscard]] Result<void> surrenderMatch(Match& match, Faction& faction) const;
+    /** @brief Credit a finite score to one active team in a running owned match. */
+    [[nodiscard]] Result<void> creditMatchScore(Match& match, int team, double amount) const;
     /** @brief Return an owning deterministic projection of one match lifecycle. */
     [[nodiscard]] Result<Value> inspectMatch(Match& match) const;
 

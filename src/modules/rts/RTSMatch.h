@@ -24,8 +24,23 @@ public:
     [[nodiscard]] static Result<void> start(Match& match);
     /** @brief Eliminate a participant and all of its live RTS entities. */
     [[nodiscard]] static Result<void> surrender(Match& match, Faction& faction);
-    /** @brief Evaluate the configured victory rule and settle a winner or draw. */
-    [[nodiscard]] static Result<std::size_t> step(Match& match, const MatchResourceQuery& resources = {});
+    /**
+     * @brief Credit a finite team score while the match is running.
+     * @cost Linear in the number of score entries (typically team count).
+     */
+    [[nodiscard]] static Result<void> creditScore(Match& match, int team, double amount);
+    /** @brief Read one team's match-owned score; missing teams return 0. */
+    [[nodiscard]] static Result<double> teamScore(Match& match, int team) noexcept;
+    /**
+     * @brief Advance the match clock, evaluate victory, and settle a winner or draw.
+     * @param step Fixed simulation tick/delta used for elapsed time and control-point accrual.
+     * @param resources Required for ResourceTarget races and timed resource settlement.
+     * @cost Linear in participants plus held control-point buildings when score accrual is enabled.
+     */
+    [[nodiscard]] static Result<std::size_t> step(Match& match, const SimulationStep& step = {},
+                                                  const MatchResourceQuery& resources = {});
+    /** @brief Evaluate victory without advancing the match clock. */
+    [[nodiscard]] static Result<std::size_t> step(Match& match, const MatchResourceQuery& resources);
 };
 
 }  // namespace eve::rts

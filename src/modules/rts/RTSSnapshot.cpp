@@ -332,6 +332,7 @@ Result<RTSStateSnapshot> RTS::snapshotState() const {
         value.subject = match->identity()->subject;
         value.rules   = *match->rules();
         value.state   = *match->state();
+        value.scores  = *match->scores();
         value.events  = *match->events();
         for (const auto& participant : match->participants()->entries)
             value.participants.push_back({subjectOf(participant.faction.resolve()), participant.team,
@@ -604,7 +605,8 @@ Result<std::string> RTS::canonicalStateJson() const {
             {"capture", Value(Value::Object{{"blockedByGarrison", value.capture.blockedByGarrison},
                                             {"capturable", value.capture.capturable},
                                             {"duration", value.capture.durationSeconds},
-                                            {"progress", value.capture.progress}})},
+                                            {"progress", value.capture.progress},
+                                            {"scorePerSecond", value.capture.scorePerSecond}})},
             {"combat", Value(Value::Object{
                            {"acquisition", value.combat.acquisitionRange},
                            {"airDefenseNetworkRange", value.combat.airDefenseNetworkRange},
@@ -798,14 +800,22 @@ Result<std::string> RTS::canonicalStateJson() const {
                                               {"reason", event.reason},
                                               {"sequence", static_cast<std::int64_t>(event.sequence)},
                                               {"team", event.team}});
-        matches.emplace_back(Value::Object{{"events", Value(std::move(events))},
+        Value::Array scores;
+        for (const auto& entry : value.scores.entries)
+            scores.emplace_back(Value::Object{{"team", entry.team}, {"value", entry.value}});
+        matches.emplace_back(Value::Object{{"elapsedNs", value.state.elapsed.nanoseconds()},
+                                           {"events", Value(std::move(events))},
                                            {"participants", Value(std::move(participants))},
                                            {"phase", static_cast<std::int64_t>(value.state.phase)},
                                            {"rule", static_cast<std::int64_t>(value.rules.rule)},
                                            {"ruleArchetype", value.rules.archetype},
+                                           {"scores", Value(std::move(scores))},
                                            {"sequence", static_cast<std::int64_t>(value.state.updateSequence)},
                                            {"subject", value.subject.format()},
+                                           {"suddenDeath", value.rules.suddenDeath},
+                                           {"suddenDeathActive", value.state.suddenDeathActive},
                                            {"target", value.rules.targetValue},
+                                           {"timeLimitNs", value.rules.timeLimit.nanoseconds()},
                                            {"winningTeam", value.state.winningTeam}});
     }
     Value::Array movementGroups;
@@ -1200,6 +1210,7 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
         auto* match      = findMatch(value.subject);
         *match->rules()  = value.rules;
         *match->state()  = value.state;
+        *match->scores() = value.scores;
         *match->events() = value.events;
         match->participants()->entries.clear();
         for (const auto& participant : value.participants) {

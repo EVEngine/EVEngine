@@ -935,6 +935,8 @@ public:
         float             progress = 0.0f;
         ecs::EntityHandle capturingFaction{};
         bool              blockedByGarrison = false;
+        /** @brief Held-building score accrual for ScoreTarget matches; zero disables control-point scoring. */
+        float             scorePerSecond = 0.0f;
     };
     /** @brief Resource delivery policy; actual balances remain in the economy provider. */
     struct Dropoff {
@@ -1298,8 +1300,16 @@ public:
     [[nodiscard]] static Faction* createFaction(SubjectRef subject = {});
 };
 
-/** @brief Supported deterministic RTS victory policies. */
-enum class VictoryRule : std::uint8_t { Annihilation, DestroyHeadquarters, ResourceTarget };
+/**
+ * @brief Supported deterministic RTS victory policies.
+ * @remarks ScoreTarget races Match-owned team scores. timeLimit/suddenDeath on Rules are orthogonal clocks.
+ */
+enum class VictoryRule : std::uint8_t {
+    Annihilation,
+    DestroyHeadquarters,
+    ResourceTarget,
+    ScoreTarget,
+};
 /** @brief Lifecycle of one independent RTS match root. */
 enum class MatchPhase : std::uint8_t { Setup, Running, Finished };
 
@@ -1321,6 +1331,13 @@ public:
         VictoryRule rule = VictoryRule::Annihilation;
         std::string archetype;
         double targetValue = 0.0;
+        /** @brief Positive duration ends the match; zero keeps an open clock. */
+        Duration timeLimit{};
+        /**
+         * @brief After timeLimit, keep running until last team stands instead of settling/drawing.
+         * @remarks Applies to Annihilation and DestroyHeadquarters. Score/resource targets still settle by value.
+         */
+        bool suddenDeath = false;
     };
     /** @brief One faction's team and elimination projection. */
     struct Participants {
@@ -1334,11 +1351,23 @@ public:
         };
         std::vector<Entry> entries;
     };
-    /** @brief Authoritative match outcome. */
+    /** @brief Authoritative match outcome and clock. */
     struct State {
         MatchPhase phase = MatchPhase::Setup;
         int winningTeam = -1;
         std::uint64_t updateSequence = 0;
+        Duration elapsed{};
+        bool suddenDeathActive = false;
+    };
+    /** @brief Match-owned team scores for ScoreTarget and timed score settlement. */
+    struct Scores {
+        /** @brief One team's accumulated score. */
+        struct Entry {
+            int team = 0;
+            double value = 0.0;
+        };
+        /** @brief Sorted by ascending team id for deterministic projection. */
+        std::vector<Entry> entries;
     };
     /** @brief Deterministic retained lifecycle events. */
     struct Events {
@@ -1357,6 +1386,7 @@ public:
     COMPONENT(Rules, rules)
     COMPONENT(Participants, participants)
     COMPONENT(State, state)
+    COMPONENT(Scores, scores)
     COMPONENT(Events, events)
 
     /**

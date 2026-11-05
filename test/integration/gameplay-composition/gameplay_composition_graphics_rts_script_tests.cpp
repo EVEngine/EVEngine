@@ -1039,6 +1039,23 @@ TEST_CASE("rts.scriptMatchFacadeRunsResourceVictoryAndStableSurrenderLifecycle")
     CHECK_EQ(static_cast<int>(surrender->state()->phase), static_cast<int>(eve::rts::MatchPhase::Finished));
     CHECK_EQ(surrender->state()->winningTeam, 1);
 
+    Match* scoreMatch = rts.newMatch(subject("00000000-0000-7000-8000-00000000eb06")).value();
+    REQUIRE(rts.configureMatch(*scoreMatch, eve::rts::VictoryRule::ScoreTarget, {}, 25.0).ok());
+    REQUIRE(rts.configureMatchTiming(*scoreMatch, eve::Duration::fromSeconds(30.0).value(), false).ok());
+    REQUIRE(rts.addMatchParticipant(*scoreMatch, *blue, 1).ok());
+    REQUIRE(rts.addMatchParticipant(*scoreMatch, *red, 2).ok());
+    REQUIRE(rts.startMatch(*scoreMatch).ok());
+    REQUIRE(rts.creditMatchScore(*scoreMatch, 2, 25.0).ok());
+    REQUIRE(rts.stepScript(0.1).ok());
+    CHECK_EQ(static_cast<int>(scoreMatch->state()->phase), static_cast<int>(eve::rts::MatchPhase::Finished));
+    CHECK_EQ(scoreMatch->state()->winningTeam, 2);
+    auto scoreProjected = rts.inspectMatch(*scoreMatch);
+    REQUIRE(scoreProjected.ok());
+    const auto* scoreObject = scoreProjected.value().getIf<eve::Value::Object>();
+    REQUIRE(scoreObject != nullptr);
+    CHECK_EQ(*scoreObject->at("ruleName").getIf<std::string>(), "score");
+    CHECK(std::abs(*scoreObject->at("timeLimit").getIf<double>() - 30.0) < 1e-9);
+
     Match* foreign = Match::createMatch(subject("00000000-0000-7000-8000-00000000eb05"));
     CHECK(!rts.startMatch(*foreign).ok());
     foreign->release();

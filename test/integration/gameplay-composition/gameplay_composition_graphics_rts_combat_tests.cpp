@@ -3697,6 +3697,76 @@ TEST_CASE("rts.matchHeadquartersResourceVictoryAndTeamSurrender") {
     CHECK_EQ(surrender->state()->winningTeam, 1);
     CHECK(surrender->participants()->entries[1].surrendered);
 
+    Match* scored = Match::createMatch(subject("00000000-0000-7000-8000-000000000206"));
+    scored->rules()->rule = eve::rts::VictoryRule::ScoreTarget;
+    scored->rules()->targetValue = 10.0;
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*scored, *alpha, 10).ok());
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*scored, *beta, 20).ok());
+    REQUIRE(eve::rts::MatchSystem::start(*scored).ok());
+    Building* point = Building::createBuilding({}, *hqId);
+    auto pointOwner = eve::rts::FactionLink::bind(ecs::handle_of(alpha));
+    REQUIRE(pointOwner.ok());
+    point->faction()->link = std::move(pointOwner).takeValue();
+    point->integrity()->alive = true;
+    point->integrity()->state.health = 100.0;
+    point->construction()->progress = 1.0f;
+    point->capture()->scorePerSecond = 5.0f;
+    auto scoreStep = eve::rts::MatchSystem::step(
+        *scored, eve::SimulationStep{eve::SimulationTick{1}, eve::Duration::fromSeconds(2.0).value()});
+    REQUIRE(scoreStep.ok());
+    CHECK_EQ(static_cast<int>(scored->state()->phase), static_cast<int>(eve::rts::MatchPhase::Finished));
+    CHECK_EQ(scored->state()->winningTeam, 10);
+    CHECK_EQ(eve::rts::MatchSystem::teamScore(*scored, 10).value(), 10.0);
+
+    Match* timed = Match::createMatch(subject("00000000-0000-7000-8000-000000000207"));
+    timed->rules()->rule = eve::rts::VictoryRule::Annihilation;
+    timed->rules()->timeLimit = eve::Duration::fromSeconds(1.0).value();
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*timed, *alpha, 1).ok());
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*timed, *beta, 2).ok());
+    REQUIRE(eve::rts::MatchSystem::start(*timed).ok());
+    Unit* survivorA = Unit::createUnit(subject("00000000-0000-7000-8000-000000000208"));
+    Unit* survivorB = Unit::createUnit(subject("00000000-0000-7000-8000-000000000209"));
+    auto ownerA = eve::rts::FactionLink::bind(ecs::handle_of(alpha));
+    auto ownerB = eve::rts::FactionLink::bind(ecs::handle_of(beta));
+    REQUIRE(ownerA.ok());
+    REQUIRE(ownerB.ok());
+    survivorA->faction()->link = std::move(ownerA).takeValue();
+    survivorB->faction()->link = std::move(ownerB).takeValue();
+    survivorA->durability()->alive = true;
+    survivorA->durability()->state.health = 10.0;
+    survivorB->durability()->alive = true;
+    survivorB->durability()->state.health = 10.0;
+    auto timedOut = eve::rts::MatchSystem::step(
+        *timed, eve::SimulationStep{eve::SimulationTick{1}, eve::Duration::fromSeconds(1.0).value()});
+    REQUIRE(timedOut.ok());
+    CHECK_EQ(static_cast<int>(timed->state()->phase), static_cast<int>(eve::rts::MatchPhase::Finished));
+    CHECK_EQ(timed->state()->winningTeam, -1);
+
+    Match* sudden = Match::createMatch(subject("00000000-0000-7000-8000-00000000020a"));
+    sudden->rules()->rule = eve::rts::VictoryRule::Annihilation;
+    sudden->rules()->timeLimit = eve::Duration::fromSeconds(1.0).value();
+    sudden->rules()->suddenDeath = true;
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*sudden, *alpha, 1).ok());
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*sudden, *beta, 2).ok());
+    REQUIRE(eve::rts::MatchSystem::start(*sudden).ok());
+    auto enteredSudden = eve::rts::MatchSystem::step(
+        *sudden, eve::SimulationStep{eve::SimulationTick{1}, eve::Duration::fromSeconds(1.0).value()});
+    REQUIRE(enteredSudden.ok());
+    CHECK(sudden->state()->suddenDeathActive);
+    CHECK_EQ(static_cast<int>(sudden->state()->phase), static_cast<int>(eve::rts::MatchPhase::Running));
+    survivorB->durability()->alive = false;
+    survivorB->durability()->state.health = 0.0;
+    auto suddenWin = eve::rts::MatchSystem::step(*sudden);
+    REQUIRE(suddenWin.ok());
+    CHECK_EQ(static_cast<int>(sudden->state()->phase), static_cast<int>(eve::rts::MatchPhase::Finished));
+    CHECK_EQ(sudden->state()->winningTeam, 1);
+
+    sudden->release();
+    timed->release();
+    scored->release();
+    survivorB->release();
+    survivorA->release();
+    point->release();
     surrender->release();
     resource->release();
     headquarters->release();

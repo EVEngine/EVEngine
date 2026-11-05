@@ -7,6 +7,24 @@
 经济、群体运动、动作、战斗与生产仍各自拥有事实。渲染与 HUD 消费 inspectState，
 不能另写一套位置或资源来绕过 RTS 命令。
 
+## 比赛胜利与计时
+
+`newMatch` / `configureMatch` / `configureMatchTiming` / `startMatch` / `inspectMatch`
+走 `MatchSystem`。脚本胜利字符串：
+
+| `configureMatch` rule | 含义 |
+| --- | --- |
+| `annihilation` | 清空对方单位与建筑 |
+| `headquarters` | 摧毁 `archetype` 总部建筑 |
+| `resource` | 指定资源余额 ≥ `targetValue` |
+| `score` | 阵营队伍分 ≥ `targetValue` |
+
+`configureMatchTiming(match, seconds, suddenDeath)` 可选。`seconds > 0` 时：
+`score` / `resource` 在超时后按最高分/资源结算（平局 `winningTeam=-1`）；
+`annihilation` / `headquarters` 默认超时平局，`suddenDeath=true` 则进入加时歼灭。
+占点建筑在 content 里设 `controlPointScorePerSecond`，或调用 `creditMatchScore`
+写入 `Match::Scores`。战役 objective、局中外交、MOBA/塔防仍由游戏脚本组合，不进 Match。
+
 ## 任务一：建立最小阵营世界
 
 以下可作为完整 main.nut，配置包含 `modules=["gfx","rts"]`。

@@ -726,9 +726,40 @@ Result<void> RTS::configureMatch(Match& match, VictoryRule rule, std::string arc
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                        "RTS resource victory requires a resource and positive target",
                                                        "targetValue"));
+    if (rule == VictoryRule::ScoreTarget && (!std::isfinite(targetValue) || targetValue <= 0.0))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS score victory requires a positive target", "targetValue"));
+    if (match.rules()->suddenDeath &&
+        (rule == VictoryRule::ScoreTarget || rule == VictoryRule::ResourceTarget))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument,
+            "RTS sudden death applies only to annihilation or headquarters victory", "rules.suddenDeath"));
     match.rules()->rule        = rule;
     match.rules()->archetype   = std::move(archetype);
     match.rules()->targetValue = targetValue;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> RTS::configureMatchTiming(Match& match, Duration timeLimit, bool suddenDeath) const {
+    if (!owns(matches_, match))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS match is not owned by this composition root", "match"));
+    if (match.state()->phase != MatchPhase::Setup)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Conflict, "RTS match timing is immutable after start", "match.phase"));
+    if (timeLimit.nanoseconds() < 0)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS match time limit cannot be negative", "timeLimit"));
+    if (suddenDeath && timeLimit.isZero())
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "RTS sudden death requires a positive time limit", "suddenDeath"));
+    if (suddenDeath && (match.rules()->rule == VictoryRule::ScoreTarget ||
+                        match.rules()->rule == VictoryRule::ResourceTarget))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument,
+            "RTS sudden death applies only to annihilation or headquarters victory", "suddenDeath"));
+    match.rules()->timeLimit = timeLimit;
+    match.rules()->suddenDeath = suddenDeath;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -753,6 +784,13 @@ Result<void> RTS::surrenderMatch(Match& match, Faction& faction) const {
     return MatchSystem::surrender(match, faction);
 }
 
+Result<void> RTS::creditMatchScore(Match& match, int team, double amount) const {
+    if (!owns(matches_, match))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "RTS match is not owned by this composition root", "match"));
+    return MatchSystem::creditScore(match, team, amount);
+}
+
 Result<Value> RTS::inspectMatch(Match& match) const {
     if (!owns(matches_, match))
         return Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
@@ -760,6 +798,13 @@ Result<Value> RTS::inspectMatch(Match& match) const {
     const auto   phase = match.state()->phase == MatchPhase::Setup     ? "setup"
                          : match.state()->phase == MatchPhase::Running ? "running"
                                                                        : "finished";
+    const char* ruleName = "annihilation";
+    switch (match.rules()->rule) {
+        case VictoryRule::DestroyHeadquarters: ruleName = "headquarters"; break;
+        case VictoryRule::ResourceTarget: ruleName = "resource"; break;
+        case VictoryRule::ScoreTarget: ruleName = "score"; break;
+        case VictoryRule::Annihilation: break;
+    }
     Value::Array participants;
     for (auto& entry : match.participants()->entries) {
         auto* faction = dynamic_cast<Faction*>(entry.faction.resolve());
@@ -770,6 +815,9 @@ Result<Value> RTS::inspectMatch(Match& match) const {
                           {"surrendered", entry.surrendered},
                           {"reason", entry.reason}});
     }
+    Value::Array scores;
+    for (const auto& entry : match.scores()->entries)
+        scores.emplace_back(Value::Object{{"team", entry.team}, {"value", entry.value}});
     Value::Array events;
     for (const auto& event : match.events()->values)
         events.emplace_back(Value::Object{{"sequence", static_cast<std::int64_t>(event.sequence)},
@@ -777,15 +825,22 @@ Result<Value> RTS::inspectMatch(Match& match) const {
                                           {"faction", event.faction.isValid() ? event.faction.format() : std::string{}},
                                           {"team", event.team},
                                           {"reason", event.reason}});
-    return Result<Value>::success(Value(Value::Object{{"subject", match.identity()->subject.format()},
-                                                      {"phase", phase},
-                                                      {"winningTeam", match.state()->winningTeam},
-                                                      {"rule", static_cast<std::int64_t>(match.rules()->rule)},
-                                                      {"archetype", match.rules()->archetype},
-                                                      {"target", match.rules()->targetValue},
-                                                      {"participants", Value(std::move(participants))},
-                                                      {"events", Value(std::move(events))}}),
-                                  Status::success(StatusCode::Applied));
+    return Result<Value>::success(
+        Value(Value::Object{{"subject", match.identity()->subject.format()},
+                            {"phase", phase},
+                            {"winningTeam", match.state()->winningTeam},
+                            {"rule", static_cast<std::int64_t>(match.rules()->rule)},
+                            {"ruleName", ruleName},
+                            {"archetype", match.rules()->archetype},
+                            {"target", match.rules()->targetValue},
+                            {"timeLimit", match.rules()->timeLimit.seconds()},
+                            {"suddenDeath", match.rules()->suddenDeath},
+                            {"elapsed", match.state()->elapsed.seconds()},
+                            {"suddenDeathActive", match.state()->suddenDeathActive},
+                            {"scores", Value(std::move(scores))},
+                            {"participants", Value(std::move(participants))},
+                            {"events", Value(std::move(events))}}),
+        Status::success(StatusCode::Applied));
 }
 
 Unit* RTS::findUnit(SubjectRef subject) const noexcept { return findSubject<Unit>(units_, subject); }
@@ -1775,7 +1830,7 @@ Result<std::size_t> RTS::step(const SimulationStep& simulationStep, IRTSActionEx
     for (const auto& handle : matches_) {
         auto* match = tryGetCurrent<Match>(handle);
         if (match == nullptr) continue;
-        auto outcome = MatchSystem::step(*match, matchResourceQuery_);
+        auto outcome = MatchSystem::step(*match, simulationStep, matchResourceQuery_);
         if (!outcome) return Result<std::size_t>::failure(outcome.status());
         processed += std::move(outcome).takeValue();
     }
@@ -3479,12 +3534,28 @@ void RTS::expose(ssq::Class& cls) {
                         rule = VictoryRule::DestroyHeadquarters;
                     else if (ruleText == "resource")
                         rule = VictoryRule::ResourceTarget;
+                    else if (ruleText == "score")
+                        rule = VictoryRule::ScoreTarget;
                     else
                         return script::projectStatusResult(
                             vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                                   "RTS victory rule is invalid", "rule")));
                     return script::projectResult(
                         vm, self->configureMatch(*match, rule, archetype, static_cast<double>(targetValue)));
+                });
+    cls.addFunc("configureMatchTiming",
+                [vm](RTS* self, const std::string& matchText, float timeLimitSeconds, bool suddenDeath) -> ssq::Table {
+                    auto matchSubject = parseScriptSubject(matchText, "match");
+                    if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
+                    Match* match = self->findMatch(matchSubject.value());
+                    if (match == nullptr)
+                        return script::projectStatusResult(
+                            vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                                  "RTS match identity was not found", "match")));
+                    auto duration = Duration::fromSeconds(static_cast<double>(timeLimitSeconds));
+                    if (!duration) return script::projectStatusResult(vm, duration.status());
+                    return script::projectResult(vm, self->configureMatchTiming(
+                                                         *match, std::move(duration).takeValue(), suddenDeath));
                 });
     cls.addFunc(
         "addMatchParticipant",
@@ -3525,6 +3596,17 @@ void RTS::expose(ssq::Class& cls) {
                             DiagnosticCode::NotFound, "RTS match participant identity was not found", "participant")));
             return script::projectResult(vm, self->surrenderMatch(*match, *faction));
         });
+    cls.addFunc("creditMatchScore",
+                [vm](RTS* self, const std::string& matchText, int team, float amount) -> ssq::Table {
+                    auto matchSubject = parseScriptSubject(matchText, "match");
+                    if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());
+                    Match* match = self->findMatch(matchSubject.value());
+                    if (match == nullptr)
+                        return script::projectStatusResult(
+                            vm, Status::failure(Diagnostic::error(DiagnosticCode::NotFound,
+                                                                  "RTS match identity was not found", "match")));
+                    return script::projectResult(vm, self->creditMatchScore(*match, team, static_cast<double>(amount)));
+                });
     cls.addFunc("inspectMatch", [vm](RTS* self, const std::string& matchText) -> ssq::Table {
         auto matchSubject = parseScriptSubject(matchText, "match");
         if (!matchSubject) return script::projectStatusResult(vm, matchSubject.status());

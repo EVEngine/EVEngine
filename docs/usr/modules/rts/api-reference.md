@@ -29,7 +29,8 @@
 - `clearBuildingRally(producerText: string)` → `Table<string, dynamic>`；[绑定实现 L4123](../../../../src/modules/rts/RTS.cpp#L4123)。
 - `configureAutoConstruction(factionText: string, enabled: bool, maxBuildersPerSite: int, reserveWorkers: int)` → `Table<string, dynamic>`；[绑定实现 L4722](../../../../src/modules/rts/RTS.cpp#L4722)。
 - `configureAutoRepair(factionText: string, enabled: bool, maxRepairersPerBuilding: int, reserveWorkers: int)` → `Table<string, dynamic>`；[绑定实现 L4738](../../../../src/modules/rts/RTS.cpp#L4738)。
-- `configureMatch(matchText: string, ruleText: string, archetype: string, targetValue: float)` → `Table<string, dynamic>`；[绑定实现 L3688](../../../../src/modules/rts/RTS.cpp#L3688)。
+- `configureMatch(matchText: string, ruleText: string, archetype: string, targetValue: float)` → `Table<string, dynamic>`；[绑定实现 L3520](../../../../src/modules/rts/RTS.cpp#L3520)。`ruleText` 为 `annihilation` / `headquarters` / `resource` / `score`。
+- `configureMatchTiming(matchText: string, timeLimitSeconds: float, suddenDeath: bool)` → `Table<string, dynamic>`；[绑定实现 L3546](../../../../src/modules/rts/RTS.cpp#L3546)。
 - `configureScriptAI(factionText: string, workerText: string, armyText: string, targetBuildingText: string, desiredWorkers: int, attackThreshold: int, thinkInterval: float, formationSpacing: float, enabled: bool)` → `Table<string, dynamic>`；[绑定实现 L3926](../../../../src/modules/rts/RTS.cpp#L3926)。
 - `configureSettlementRulesJson(json: string)` → `Table<string, dynamic>`；[绑定实现 L3662](../../../../src/modules/rts/RTS.cpp#L3662)。
 - `escortUnits(subjectTexts: string, targetText: string, guardRadius: float, spacing: float)` → `Table<string, dynamic>`；[绑定实现 L4668](../../../../src/modules/rts/RTS.cpp#L4668)。
@@ -42,7 +43,8 @@
 - `holdUnits(subjectTexts: string)` → `Table<string, dynamic>`；[绑定实现 L5003](../../../../src/modules/rts/RTS.cpp#L5003)。
 - `importScriptCommandLog(text: string, clearExisting: bool)` → `Table<string, dynamic>`；[绑定实现 L4234](../../../../src/modules/rts/RTS.cpp#L4234)。
 - `inspectFrameEvents()` → `Table<string, dynamic>`；[绑定实现 L3826](../../../../src/modules/rts/RTS.cpp#L3826)。
-- `inspectMatch(matchText: string)` → `Table<string, dynamic>`；[绑定实现 L3751](../../../../src/modules/rts/RTS.cpp#L3751)。
+- `creditMatchScore(matchText: string, team: int, amount: float)` → `Table<string, dynamic>`；[绑定实现 L3599](../../../../src/modules/rts/RTS.cpp#L3599)。
+- `inspectMatch(matchText: string)` → `Table<string, dynamic>`；[绑定实现 L3610](../../../../src/modules/rts/RTS.cpp#L3610)。
 - `linkBuildingRally(producerText: string, sourceText: string)` → `Table<string, dynamic>`；[绑定实现 L4108](../../../../src/modules/rts/RTS.cpp#L4108)。
 - `matchCount()` → `dynamic`；[绑定实现 L3659](../../../../src/modules/rts/RTS.cpp#L3659)。
 - `moveFormationUnits(texts: Array<dynamic>, x: float, y: float, append: bool, kind: string, spacing: float, columns: int, rotation: float)` → `Table<string, dynamic>`；[绑定实现 L108](../../../../src/modules/rts/RTSFormationBindings.cpp#L108)。
