@@ -36,7 +36,7 @@ fn march_contact(view_proj: mat4x4f, origin: vec3f, light: vec3f, ray_len: f32, 
   var prev_t = 0.0;
   var hit_t = -1.0;
   var hit_delta = 0.0;
-  let start_t = step_size * (0.55 + dither * 0.35);
+  let start_t = step_size * (0.35 + dither * 0.25);
   for (var s = 0; s < steps; s = s + 1) {
     let t = start_t + step_size * f32(s);
     if (t > ray_len) { break; }
@@ -56,7 +56,7 @@ fn march_contact(view_proj: mat4x4f, origin: vec3f, light: vec3f, ray_len: f32, 
       hit_delta = delta;
       var lo = prev_t;
       var hi = t;
-      for (var r = 0; r < 4; r = r + 1) {
+      for (var r = 0; r < 6; r = r + 1) {
         let mid = mix(lo, hi, 0.5);
         let mid_pos = origin + light * mid;
         let mid_clip = view_proj * vec4f(mid_pos, 1.0);
@@ -77,10 +77,14 @@ fn march_contact(view_proj: mat4x4f, origin: vec3f, light: vec3f, ray_len: f32, 
     prev_t = t;
   }
   if (hit_t < 0.0) { return -1.0; }
-  let dist_fade = 1.0 - smoothstep(0.0, ray_len, hit_t);
-  let soft = 1.0 - smoothstep(0.0, thickness, hit_delta);
+  let dist_u = clamp(hit_t / ray_len, 0.0, 1.0);
+  let thick_u = clamp(hit_delta / thickness, 0.0, 1.0);
+  let dist_fade = 1.0 - (dist_u * dist_u * (3.0 - 2.0 * dist_u));
+  let soft = 1.0 - (thick_u * thick_u * (3.0 - 2.0 * thick_u));
   return dist_fade * soft;
 }
+
+fn occ_or_zero(o: f32) -> f32 { return select(o, 0.0, o < 0.0); }
 
 @fragment fn fs_main(i: FSIn) -> @location(0) vec4f {
   let m = inv_vp();
@@ -116,10 +120,17 @@ fn march_contact(view_proj: mat4x4f, origin: vec3f, light: vec3f, ray_len: f32, 
   if (n_dot_l <= 0.02) { return vec4f(0.0); }
   let view_proj = inverse(m);
   let origin = pos + n * start_bias + light * start_bias;
-  let rnd = hash12(i.uv * vec2f(1024.0, 768.0));
-  var occlusion = march_contact(view_proj, origin, light, ray_len, thickness, near_z, far_z, steps, rnd);
-  if (occlusion < 0.0) { occlusion = 0.0; }
+  let up_ref = select(vec3f(1.0, 0.0, 0.0), vec3f(0.0, 1.0, 0.0), abs(light.y) < 0.99);
+  let tangent = normalize(cross(light, up_ref));
+  let soft_r = ray_len * 0.06;
+  let side = select(-1.0, 1.0, hash12(i.uv * vec2f(733.0, 491.0)) < 0.5);
+  let rnd = hash12(i.uv * vec2f(1024.0, 768.0) + vec2f(17.0, 9.0));
+  let o0 = march_contact(view_proj, origin, light, ray_len, thickness, near_z, far_z, steps, rnd);
+  let o1 = march_contact(view_proj, origin + tangent * (soft_r * side), light, ray_len, thickness, near_z, far_z,
+                         steps, fract(rnd + 0.37));
+  var occlusion = occ_or_zero(o0) * 0.62 + occ_or_zero(o1) * 0.38;
   occlusion = occlusion * smoothstep(0.02, 0.35, n_dot_l);
+  occlusion = sqrt(clamp(occlusion, 0.0, 1.0));
   return vec4f(0.0, 0.0, 0.0, clamp(occlusion * intensity, 0.0, 1.0));
 }
 )wgsl";

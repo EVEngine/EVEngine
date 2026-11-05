@@ -35,7 +35,7 @@ xvfb-run -a ../../build/linux-debug/src/engine/eve run --debug --mcp-port=7529
 | 层 | 键 | 效果 |
 |----|----|------|
 | P0 | `1` | 间接光：`gi` + `rtgi` |
-| P0 | `2` | 接触阴影：`contactShadow`（抖动步进 + 二分细化，减轻斑马纹） |
+| P0 | `2` | 接触阴影：`contactShadow`（双射线软化 + 二分细化，消除斑马纹） |
 | P0 | `3` | CSM 质量：更高 atlas、更近覆盖、自适应 cascade |
 | P0 | `4` | AO：`ao`（GTAO 路径的默认管线 AO） |
 | P0 | `5` | 体积雾：froxel + 场景光注入（真实 CSM 采样仍是后续项） |

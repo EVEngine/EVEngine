@@ -45,18 +45,18 @@ float hash12(vec2 p) {
 // Returns occlusion in [0,1] for one dithered march, or -1 if no hit.
 float marchContact(mat4 viewProj, vec3 origin, vec3 lightDir, float rayLen, float thickness, float nearZ,
                    float farZ, int steps, float dither) {
-    float stepSize   = rayLen / float(steps);
-    float prevT      = 0.0;
-    float hitT       = -1.0;
-    float hitDelta   = 0.0;
-    // Small dither only — binary refine kills zebra banding; large dither just
-    // prints static noise into the alpha overlay (no blur pass yet).
-    float startT = stepSize * (0.55 + dither * 0.35);
+    float stepSize = rayLen / float(steps);
+    float prevT    = 0.0;
+    float hitT     = -1.0;
+    float hitDelta = 0.0;
+    // Keep dither modest: large offsets skip thin floor-contact slabs and
+    // reintroduce zebra when adjacent pixels alternate hit/miss.
+    float startT = stepSize * (0.35 + dither * 0.25);
     for (int i = 0; i < steps; ++i) {
-        float t        = startT + stepSize * float(i);
+        float t = startT + stepSize * float(i);
         if (t > rayLen) break;
-        vec3  samplePos = origin + lightDir * t;
-        vec4  clip      = viewProj * vec4(samplePos, 1.0);
+        vec3 samplePos = origin + lightDir * t;
+        vec4 clip      = viewProj * vec4(samplePos, 1.0);
         if (abs(clip.w) < 1e-6) {
             prevT = t;
             continue;
@@ -77,10 +77,9 @@ float marchContact(mat4 viewProj, vec3 origin, vec3 lightDir, float rayLen, floa
         if (delta > 0.0 && delta < thickness) {
             hitT     = t;
             hitDelta = delta;
-            // Binary refine between prevT and t for a stable contact edge.
             float lo = prevT;
             float hi = t;
-            for (int r = 0; r < 4; ++r) {
+            for (int r = 0; r < 6; ++r) {
                 float mid       = mix(lo, hi, 0.5);
                 vec3  midPos    = origin + lightDir * mid;
                 vec4  midClip   = viewProj * vec4(midPos, 1.0);
@@ -104,10 +103,15 @@ float marchContact(mat4 viewProj, vec3 origin, vec3 lightDir, float rayLen, floa
         prevT = t;
     }
     if (hitT < 0.0) return -1.0;
-    float distFade = 1.0 - smoothstep(0.0, rayLen, hitT);
-    float soft     = 1.0 - smoothstep(0.0, thickness, hitDelta);
+    // Quintic-ish soft falloffs — linear smoothstep left hard concentric rings.
+    float distU    = clamp(hitT / rayLen, 0.0, 1.0);
+    float thickU   = clamp(hitDelta / thickness, 0.0, 1.0);
+    float distFade = 1.0 - (distU * distU * (3.0 - 2.0 * distU));
+    float soft     = 1.0 - (thickU * thickU * (3.0 - 2.0 * thickU));
     return distFade * soft;
 }
+
+float occlusionOrZero(float o) { return o < 0.0 ? 0.0 : o; }
 
 void main() {
     mat4  invVP     = loadInvVP();
@@ -157,14 +161,23 @@ void main() {
     mat4 viewProj = inverse(invVP);
     vec3 origin   = pos + normal * startBias + lightDir * startBias;
 
-    // One dithered march + binary refine removes uniform-step zebra banding
-    // without the Lavapipe cost of multi-ray averaging.
-    float rnd       = hash12(fragUV * vec2(1024.0, 768.0));
-    float occlusion = marchContact(viewProj, origin, lightDir, rayLen, thickness, nearZ, farZ, steps, rnd);
-    if (occlusion < 0.0) occlusion = 0.0;
+    // Dual-ray soft: center + one tangent offset (kills zebra without Lavapipe
+    // blow-up from a third march on reflection/VT-heavy presets).
+    vec3 upRef   = abs(lightDir.y) < 0.99 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
+    vec3 tangent = normalize(cross(lightDir, upRef));
+    float softR  = rayLen * 0.06;
+    float side   = hash12(fragUV * vec2(733.0, 491.0)) < 0.5 ? -1.0 : 1.0;
+
+    float rnd = hash12(fragUV * vec2(1024.0, 768.0) + vec2(17.0, 9.0));
+    float o0  = marchContact(viewProj, origin, lightDir, rayLen, thickness, nearZ, farZ, steps, rnd);
+    float o1  = marchContact(viewProj, origin + tangent * (softR * side), lightDir, rayLen, thickness, nearZ, farZ,
+                            steps, fract(rnd + 0.37));
+    float occlusion = (occlusionOrZero(o0) * 0.62) + (occlusionOrZero(o1) * 0.38);
 
     // Facing-weighted: grazing receivers get less contact darkening.
     occlusion *= smoothstep(0.02, 0.35, nDotL);
+    // Mild gamma softens residual step edges without washing out contact tips.
+    occlusion = sqrt(clamp(occlusion, 0.0, 1.0));
 
     float darken = clamp(occlusion * intensity, 0.0, 1.0);
     outColor     = vec4(0.0, 0.0, 0.0, darken);

@@ -554,8 +554,8 @@ eve_init = function() {
     local start = ("fidelityPreset" in config) ? config.fidelityPreset : "all";
     if (start == "baseline") rfPresetBaseline();
     else if (start == "p0") rfPresetP0();
-    else if (start == "p1") rfPresetP1();
-    else if (start == "p2" || start == "all") rfPresetAll();
+    else if (start == "p1" || start == "p0+p1") rfPresetP1();
+    else if (start == "p2" || start == "p0+p1+p2" || start == "all") rfPresetAll();
     else rfPresetAll();
 
     print("render-fidelity: preset=" + rf.presetName + " capture=" + rf.capture + "\n");

@@ -1637,8 +1637,8 @@ void RenderSystem3D::render(Graphics& gfx) {
             }
             if (doContactShadow && depth) {
                 ContactShadow* cs = gfx.pipelineContactShadow();
-                // High: dithered dual-march + binary refine; avoids zebra banding
-                // from uniform ray steps under spheres / box feet.
+                // High: dual-ray soft (center + tangent) + binary refine;
+                // kills zebra banding under spheres / box feet without a blur pass.
                 cs->setQuality(rc->getPostProcessQuality() == "low" ? "medium" : "high");
                 glm::vec3 lightDir = gLightDir;
                 if (shadowCaster) {
