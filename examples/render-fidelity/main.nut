@@ -82,12 +82,13 @@ function rfBuildStudioProbe() {
     // does not bake as blocky rectangles (the old setCaptureMask(0) path).
     local probe = gfx.newReflectionProbeCapture();
     // Capture near the chrome ladder so floor / walls / ceiling / window fill faces.
+    // 512 keeps mirror-ball faces readable after GGX prefilter on Lavapipe.
     probe.configure(0.0, 1.15, 0.2, 256, 0.05, 32.0);
     local faces = [
         [0.48, 0.42, 0.38], // +X
         [0.30, 0.38, 0.55], // -X
         [0.62, 0.66, 0.74], // +Y ceiling gap fill
-        [0.22, 0.23, 0.25], // -Y floor gap fill (not black)
+        [0.38, 0.39, 0.41], // -Y floor gap fill (match bright floor albedo)
         [0.42, 0.46, 0.52], // +Z
         [0.40, 0.44, 0.50]  // -Z
     ];
@@ -95,7 +96,7 @@ function rfBuildStudioProbe() {
     // MeshRenderer.reflectionCaptureMask defaults to bit0=1; -1 keeps room props.
     probe.setCaptureMask(-1);
     probe.requestCapture();
-    for (local attempt = 0; attempt < 64; ++attempt) {
+    for (local attempt = 0; attempt < 96; ++attempt) {
         if (probe.update(6)) break;
     }
     if (!probe.isCaptureComplete() || !probe.stageCapturedFaces() || !probe.filterAndPublish(128))
@@ -383,7 +384,7 @@ function rfBuildScene() {
     rf.objects = [];
     // Fully closed Cornell-like room. Mirror balls need every direction filled —
     // an open front reflects as a dark equatorial band from typical camera angles.
-    rf.ground = rfMakeBox(0.0, -0.12, -0.4, 12.0, 0.16, 10.0, 0.50, 0.51, 0.53, 0.02, 0.74, false);
+    rf.ground = rfMakeBox(0.0, -0.12, -0.4, 12.0, 0.16, 10.0, 0.62, 0.63, 0.65, 0.02, 0.70, false);
     rfMakeBox(0.0, 3.85, -0.4, 12.0, 0.16, 10.0, 0.82, 0.84, 0.88, 0.0, 0.90, false); // ceiling
     rfMakeBox(0.0, 1.9, -5.2, 12.0, 4.0, 0.20, 0.62, 0.63, 0.65, 0.02, 0.82, true);   // back
     rfMakeBox(-5.0, 1.9, -0.4, 0.20, 4.0, 10.0, 0.78, 0.12, 0.08, 0.02, 0.70, true);  // left
@@ -399,7 +400,9 @@ function rfBuildScene() {
 
     // Chrome roughness ladder. Exclude from probe capture so the cubemap sees the
     // room (walls / ceiling / boxes) instead of baking the spheres into themselves.
-    local roughness = [0.05, 0.18, 0.40, 0.75];
+    // Slightly rough the mirror end so GGX mips hide cubemap texel edges;
+    // still reads as chrome next to the satin / matte siblings.
+    local roughness = [0.08, 0.20, 0.42, 0.75];
     for (local i = 0; i < 4; ++i) {
         local x = -3.0 + i * 2.0;
         local ball = rfMakeSphere(x, 0.55, 1.2, 0.50, 0.70, 0.72, 0.74, 1.0, roughness[i], true);

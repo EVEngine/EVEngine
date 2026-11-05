@@ -36,6 +36,79 @@ vec3 reconstructWorld(mat4 invVP, vec2 uv, float ndcZ) {
 
 float sampleNdcZ(vec2 uv) { return texture(MainTex, clamp(uv, vec2(0.0), vec2(1.0))).r; }
 
+float hash12(vec2 p) {
+    vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
+}
+
+// Returns occlusion in [0,1] for one dithered march, or -1 if no hit.
+float marchContact(mat4 viewProj, vec3 origin, vec3 lightDir, float rayLen, float thickness, float nearZ,
+                   float farZ, int steps, float dither) {
+    float stepSize   = rayLen / float(steps);
+    float prevT      = 0.0;
+    float hitT       = -1.0;
+    float hitDelta   = 0.0;
+    // Small dither only — binary refine kills zebra banding; large dither just
+    // prints static noise into the alpha overlay (no blur pass yet).
+    float startT = stepSize * (0.55 + dither * 0.35);
+    for (int i = 0; i < steps; ++i) {
+        float t        = startT + stepSize * float(i);
+        if (t > rayLen) break;
+        vec3  samplePos = origin + lightDir * t;
+        vec4  clip      = viewProj * vec4(samplePos, 1.0);
+        if (abs(clip.w) < 1e-6) {
+            prevT = t;
+            continue;
+        }
+        vec3 ndc = clip.xyz / clip.w;
+        vec2 uv  = ndc.xy * 0.5 + 0.5;
+        if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) break;
+
+        float sceneNdcZ = sampleNdcZ(uv);
+        if (sceneNdcZ >= 0.9999) {
+            prevT = t;
+            continue;
+        }
+
+        float sceneViewZ = ndcToViewZ(sceneNdcZ, nearZ, farZ);
+        float rayViewZ   = ndcToViewZ(clamp(ndc.z, 0.0, 1.0), nearZ, farZ);
+        float delta      = rayViewZ - sceneViewZ;
+        if (delta > 0.0 && delta < thickness) {
+            hitT     = t;
+            hitDelta = delta;
+            // Binary refine between prevT and t for a stable contact edge.
+            float lo = prevT;
+            float hi = t;
+            for (int r = 0; r < 4; ++r) {
+                float mid       = mix(lo, hi, 0.5);
+                vec3  midPos    = origin + lightDir * mid;
+                vec4  midClip   = viewProj * vec4(midPos, 1.0);
+                if (abs(midClip.w) < 1e-6) break;
+                vec3  midNdc    = midClip.xyz / midClip.w;
+                vec2  midUV     = midNdc.xy * 0.5 + 0.5;
+                float midSceneZ = sampleNdcZ(midUV);
+                float midSceneV = ndcToViewZ(midSceneZ, nearZ, farZ);
+                float midRayV   = ndcToViewZ(clamp(midNdc.z, 0.0, 1.0), nearZ, farZ);
+                float midDelta  = midRayV - midSceneV;
+                if (midDelta > 0.0 && midDelta < thickness) {
+                    hi       = mid;
+                    hitT     = mid;
+                    hitDelta = midDelta;
+                } else {
+                    lo = mid;
+                }
+            }
+            break;
+        }
+        prevT = t;
+    }
+    if (hitT < 0.0) return -1.0;
+    float distFade = 1.0 - smoothstep(0.0, rayLen, hitT);
+    float soft     = 1.0 - smoothstep(0.0, thickness, hitDelta);
+    return distFade * soft;
+}
+
 void main() {
     mat4  invVP     = loadInvVP();
     float nearZ     = max(u.data[16], 1e-3);
@@ -44,7 +117,9 @@ void main() {
     float thickness = max(u.data[19], 1e-4);
     float intensity = max(u.data[20], 0.0);
     int   steps     = int(clamp(u.data[21], 4.0, 32.0));
-    vec3  lightDir  = normalize(vec3(u.data[22], u.data[23], u.data[24]));
+    vec3  lightDir  = vec3(u.data[22], u.data[23], u.data[24]);
+    float llen      = length(lightDir);
+    lightDir        = llen > 1e-3 ? lightDir / llen : vec3(0.0, 1.0, 0.0);
     float texelW    = max(u.data[25], 1e-5);
     float texelH    = max(u.data[26], 1e-5);
     float hasNormal = u.data[27];
@@ -72,39 +147,24 @@ void main() {
     }
     if (dot(normal, camPos - pos) < 0.0) normal = -normal;
 
-    // Only surfaces facing the light can cast contact shadow onto themselves.
+    // Only surfaces facing the light can receive contact shadow from nearby blockers.
     float nDotL = dot(normal, lightDir);
     if (nDotL <= 0.02) {
         outColor = vec4(0.0);
         return;
     }
 
-    mat4  viewProj  = inverse(invVP);
-    vec3  origin    = pos + normal * startBias + lightDir * startBias;
-    float occlusion = 0.0;
-    float stepSize  = rayLen / float(steps);
-    for (int i = 1; i <= steps; ++i) {
-        vec3 samplePos = origin + lightDir * (stepSize * float(i));
-        vec4 clip      = viewProj * vec4(samplePos, 1.0);
-        if (abs(clip.w) < 1e-6) continue;
-        vec3 ndc = clip.xyz / clip.w;
-        vec2 uv  = ndc.xy * 0.5 + 0.5;
-        if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) break;
+    mat4 viewProj = inverse(invVP);
+    vec3 origin   = pos + normal * startBias + lightDir * startBias;
 
-        float sceneNdcZ = sampleNdcZ(uv);
-        if (sceneNdcZ >= 0.9999) continue;
+    // One dithered march + binary refine removes uniform-step zebra banding
+    // without the Lavapipe cost of multi-ray averaging.
+    float rnd       = hash12(fragUV * vec2(1024.0, 768.0));
+    float occlusion = marchContact(viewProj, origin, lightDir, rayLen, thickness, nearZ, farZ, steps, rnd);
+    if (occlusion < 0.0) occlusion = 0.0;
 
-        float sceneViewZ = ndcToViewZ(sceneNdcZ, nearZ, farZ);
-        float rayViewZ   = ndcToViewZ(clamp(ndc.z, 0.0, 1.0), nearZ, farZ);
-        float delta      = rayViewZ - sceneViewZ;
-        // Hit when the ray is behind scene geometry within a contact thickness.
-        if (delta > 0.0 && delta < thickness) {
-            float fade = 1.0 - float(i) / float(steps);
-            float soft = 1.0 - clamp(delta / thickness, 0.0, 1.0);
-            occlusion  = max(occlusion, fade * soft);
-            break;
-        }
-    }
+    // Facing-weighted: grazing receivers get less contact darkening.
+    occlusion *= smoothstep(0.02, 0.35, nDotL);
 
     float darken = clamp(occlusion * intensity, 0.0, 1.0);
     outColor     = vec4(0.0, 0.0, 0.0, darken);

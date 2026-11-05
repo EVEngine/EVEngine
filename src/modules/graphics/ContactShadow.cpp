@@ -75,20 +75,23 @@ ContactShadow::~ContactShadow() = default;
 void ContactShadow::applyQualityDefaults() {
     if (quality_ == "low") {
         stepCount_ = 8;
-        length_    = 0.22f;
-        thickness_ = 0.10f;
-        intensity_ = 0.55f;
+        length_    = 0.18f;
+        thickness_ = 0.09f;
+        intensity_ = 0.35f;
+        startBias_ = 0.010f;
     } else if (quality_ == "high") {
-        stepCount_ = 20;
-        length_    = 0.48f;
-        thickness_ = 0.14f;
-        intensity_ = 0.75f;
+        stepCount_ = 16;
+        length_    = 0.36f;
+        thickness_ = 0.13f;
+        intensity_ = 0.42f;
+        startBias_ = 0.014f;
     } else {
         quality_   = "medium";
         stepCount_ = 12;
-        length_    = 0.35f;
-        thickness_ = 0.12f;
-        intensity_ = 0.65f;
+        length_    = 0.28f;
+        thickness_ = 0.11f;
+        intensity_ = 0.38f;
+        startBias_ = 0.012f;
     }
 }
 

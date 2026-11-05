@@ -21,10 +21,67 @@ fn world(m: mat4x4f, uv: vec2f, z: f32) -> vec3f {
 fn ndc_to_view_z(ndc: f32, near_z: f32, far_z: f32) -> f32 {
   return (near_z * far_z) / max(far_z - ndc * (far_z - near_z), 0.000001);
 }
+fn hash12(q: vec2f) -> f32 {
+  var p3 = fract(vec3f(q.xyx) * 0.1031);
+  p3 = p3 + dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
+}
 )wgsl";
 
 /** @lifetime Shader source has static storage for the process lifetime. */
 inline constexpr const char* kContactShadow = R"wgsl(
+fn march_contact(view_proj: mat4x4f, origin: vec3f, light: vec3f, ray_len: f32, thickness: f32,
+                 near_z: f32, far_z: f32, steps: i32, dither: f32) -> f32 {
+  let step_size = ray_len / f32(steps);
+  var prev_t = 0.0;
+  var hit_t = -1.0;
+  var hit_delta = 0.0;
+  let start_t = step_size * (0.55 + dither * 0.35);
+  for (var s = 0; s < steps; s = s + 1) {
+    let t = start_t + step_size * f32(s);
+    if (t > ray_len) { break; }
+    let sample_pos = origin + light * t;
+    let clip = view_proj * vec4f(sample_pos, 1.0);
+    if (abs(clip.w) < 0.000001) { prev_t = t; continue; }
+    let ndc = clip.xyz / clip.w;
+    let uv = ndc.xy * 0.5 + 0.5;
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) { break; }
+    let scene_z = depth(uv);
+    if (scene_z >= 0.9999) { prev_t = t; continue; }
+    let scene_view = ndc_to_view_z(scene_z, near_z, far_z);
+    let ray_view = ndc_to_view_z(clamp(ndc.z, 0.0, 1.0), near_z, far_z);
+    let delta = ray_view - scene_view;
+    if (delta > 0.0 && delta < thickness) {
+      hit_t = t;
+      hit_delta = delta;
+      var lo = prev_t;
+      var hi = t;
+      for (var r = 0; r < 4; r = r + 1) {
+        let mid = mix(lo, hi, 0.5);
+        let mid_pos = origin + light * mid;
+        let mid_clip = view_proj * vec4f(mid_pos, 1.0);
+        if (abs(mid_clip.w) < 0.000001) { break; }
+        let mid_ndc = mid_clip.xyz / mid_clip.w;
+        let mid_uv = mid_ndc.xy * 0.5 + 0.5;
+        let mid_scene = ndc_to_view_z(depth(mid_uv), near_z, far_z);
+        let mid_ray = ndc_to_view_z(clamp(mid_ndc.z, 0.0, 1.0), near_z, far_z);
+        let mid_delta = mid_ray - mid_scene;
+        if (mid_delta > 0.0 && mid_delta < thickness) {
+          hi = mid; hit_t = mid; hit_delta = mid_delta;
+        } else {
+          lo = mid;
+        }
+      }
+      break;
+    }
+    prev_t = t;
+  }
+  if (hit_t < 0.0) { return -1.0; }
+  let dist_fade = 1.0 - smoothstep(0.0, ray_len, hit_t);
+  let soft = 1.0 - smoothstep(0.0, thickness, hit_delta);
+  return dist_fade * soft;
+}
+
 @fragment fn fs_main(i: FSIn) -> @location(0) vec4f {
   let m = inv_vp();
   let near_z = max(p(16u), 0.001);
@@ -55,30 +112,14 @@ inline constexpr const char* kContactShadow = R"wgsl(
     n = normalize(cross(pr - pos, pu - pos));
   }
   if (dot(n, cam - pos) < 0.0) { n = -n; }
-  if (dot(n, light) <= 0.02) { return vec4f(0.0); }
+  let n_dot_l = dot(n, light);
+  if (n_dot_l <= 0.02) { return vec4f(0.0); }
   let view_proj = inverse(m);
   let origin = pos + n * start_bias + light * start_bias;
-  var occlusion = 0.0;
-  let step_size = ray_len / f32(steps);
-  for (var s = 1; s <= steps; s = s + 1) {
-    let sample_pos = origin + light * (step_size * f32(s));
-    let clip = view_proj * vec4f(sample_pos, 1.0);
-    if (abs(clip.w) < 0.000001) { continue; }
-    let ndc = clip.xyz / clip.w;
-    let uv = ndc.xy * 0.5 + 0.5;
-    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) { break; }
-    let scene_z = depth(uv);
-    if (scene_z >= 0.9999) { continue; }
-    let scene_view = ndc_to_view_z(scene_z, near_z, far_z);
-    let ray_view = ndc_to_view_z(clamp(ndc.z, 0.0, 1.0), near_z, far_z);
-    let delta = ray_view - scene_view;
-    if (delta > 0.0 && delta < thickness) {
-      let fade = 1.0 - f32(s) / f32(steps);
-      let soft = 1.0 - clamp(delta / thickness, 0.0, 1.0);
-      occlusion = max(occlusion, fade * soft);
-      break;
-    }
-  }
+  let rnd = hash12(i.uv * vec2f(1024.0, 768.0));
+  var occlusion = march_contact(view_proj, origin, light, ray_len, thickness, near_z, far_z, steps, rnd);
+  if (occlusion < 0.0) { occlusion = 0.0; }
+  occlusion = occlusion * smoothstep(0.02, 0.35, n_dot_l);
   return vec4f(0.0, 0.0, 0.0, clamp(occlusion * intensity, 0.0, 1.0));
 }
 )wgsl";
