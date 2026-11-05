@@ -2199,8 +2199,9 @@ std::string loadStartupThroughModuleValidation() {
     const std::filesystem::path path = std::filesystem::path(EVENGINE_SOURCE_DIR) / "src" / "scripts" / "load.nut";
     std::ifstream               input(path, std::ios::binary);
     std::string                 source(std::istreambuf_iterator<char>(input), {});
-    const std::string           marker = "validate_project_modules();";
-    const size_t                end    = source.find(marker);
+    // Top-level boot calls; rfind skips the same text inside apply_deny_globals().
+    const std::string marker = "validate_deny_globals();";
+    const size_t      end    = source.rfind(marker);
     if (end == std::string::npos) return {};
     source.resize(end + marker.size());
     return source;
@@ -2272,6 +2273,45 @@ TEST_CASE("scriptConfig.ensureModuleLoadsOmittedSlot") {
         "_ensured <- ensure_module(\"bar\") && has_module(\"bar\")\n",
         "config-ensure-test.nut");
     CHECK(runtime.vm().get<bool>("_ensured"));
+}
+
+TEST_CASE("scriptConfig.denyGlobalsRejectsUnknownName") {
+    Runtime runtime(1024, ssq::Libs::ALL);
+    configureRuntime(runtime);
+    bool rejected = false;
+    try {
+        runtime.runSource("config.denyGlobals <- [\"eval\"]\nvalidate_deny_globals()\n",
+                          "config-deny-unknown-test.nut");
+    } catch (const ScriptException& error) {
+        rejected = std::string(error.what()).find("config.denyGlobals unknown name: eval") != std::string::npos;
+    }
+    CHECK(rejected);
+}
+
+TEST_CASE("scriptConfig.denyGlobalsBlocksDofileAfterApply") {
+    Runtime runtime(1024, ssq::Libs::ALL);
+    configureRuntime(runtime);
+    runtime.runSource(
+        "config.denyGlobals <- [\"dofile\", \"loadfile\"]\n"
+        "apply_deny_globals()\n"
+        "_denied_ok <- false\n"
+        "try { dofile(\"missing.nut\") } catch (e) {\n"
+        "  _denied_ok = (\"\" + e).find(\"denied by config.denyGlobals\") != null\n"
+        "}\n"
+        "_engine_still_callable <- typeof _engine_dofile == \"function\"\n",
+        "config-deny-apply-test.nut");
+    CHECK(runtime.vm().get<bool>("_denied_ok"));
+    CHECK(runtime.vm().get<bool>("_engine_still_callable"));
+}
+
+TEST_CASE("scriptConfig.denyGlobalsAbsentKeepsDofile") {
+    Runtime runtime(1024, ssq::Libs::ALL);
+    configureRuntime(runtime);
+    runtime.runSource(
+        "apply_deny_globals()\n"
+        "_dofile_ok <- typeof dofile == \"function\"\n",
+        "config-deny-absent-test.nut");
+    CHECK(runtime.vm().get<bool>("_dofile_ok"));
 }
 }  // namespace test_script_config
 

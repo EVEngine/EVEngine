@@ -52,6 +52,8 @@ config <- {
 
     modules = ["gfx", "keyboard", "timer"]
     optionalModules = ["audio"]
+    // Agent / 模块化项目可选：禁止游戏脚本调用这些会破坏 import 边界的全局函数。
+    // denyGlobals = ["dofile", "loadfile"]
 }
 ```
 
@@ -67,6 +69,10 @@ config <- {
 - 名称是脚本中的 root slot，例如图形模块写 `gfx`，不是 CMake 名称 `graphics`；
 - 这两个字段必须是字符串数组字面量，语言服务器和打包器不会执行任意配置代码来推断模块。
 - 不写这两个字段的旧项目保持原来的行为：构造当前构建里的全部模块。
+- `denyGlobals`（可选）是字符串数组，在加载 `main.nut` 之前把列出的公共全局替换成抛错桩。
+  当前允许的名字：`dofile`、`loadfile`、`compilestring`。未写出时不做限制（兼容旧示例）。
+  引擎启动与热重载仍通过内部 `_engine_*` 副本加载脚本；这是面向 Agent / 模块化约定的
+  项目策略，不是安全沙箱。未知名字会在启动校验时失败（LSP 静态检查码 `EVE1003`）。
 
 `scripts/movement.nut`：
 
@@ -824,7 +830,9 @@ scripts/
 - 避免模块顶层产生不可重复的外部副作用，把初始化放进显式函数；
 - 模块间保持有向无环依赖；共享定义放到更底层的小模块；
 - 需要跨重载的数据用 `persist`，可重建缓存则保持普通变量；
-- 必需引擎模块写进 `config.modules`，可选功能同时使用 `optionalModules` 和 `has_module()`。
+- 必需引擎模块写进 `config.modules`，可选功能同时使用 `optionalModules` 和 `has_module()`；
+- 希望 Agent / 新项目默认走 import 边界时，在 `config.denyGlobals` 中禁用 `dofile` /
+  `loadfile`（必要时加上 `compilestring`）。
 
 可选模块示例：
 

@@ -22,6 +22,29 @@ function file_exists(path) {
     }
 }
 
+// Engine-owned copies of script loaders. `config.denyGlobals` may replace the
+// public root slots after bootstrap; hot reload and package load keep using these.
+_engine_dofile <- dofile
+_engine_loadfile <- loadfile
+_engine_compilestring <- compilestring
+
+// Names that config.denyGlobals may deny. Unknown entries fail at validation so
+// typos do not silently no-op. This is a project policy for agent/modular
+// authoring, not a security sandbox — private `_engine_*` copies remain.
+_deny_globals_allowed <- {
+    dofile = true
+    loadfile = true
+    compilestring = true
+}
+
+function _make_denied_global(name) {
+    return function(...) {
+        throw "global '" + name
+            + "' is denied by config.denyGlobals; use import/export modules instead of "
+            + name;
+    };
+}
+
 /** Prefer the throw-site stack captured by the VM error hook over `e` alone. */
 function format_script_error(e) {
     if ("lastScriptError" in eve) {
@@ -203,7 +226,7 @@ config <- {
 };
 
 if (file_exists("config.nut")) {
-    dofile("config.nut");
+    _engine_dofile("config.nut");
 }
 if (!("hotReload" in config)) {
     // Off in the browser: the preloaded VFS has no file watcher to poll.
@@ -284,7 +307,41 @@ function validate_project_modules() {
     }
 }
 
+/** @brief Validate `config.denyGlobals` shape and known names. Absent = unrestricted. */
+function validate_deny_globals() {
+    if (!("denyGlobals" in config) || config.denyGlobals == null)
+        return;
+    if (typeof config.denyGlobals != "array")
+        throw "config.denyGlobals must be an array of strings";
+    foreach (name in config.denyGlobals) {
+        if (typeof name != "string")
+            throw "config.denyGlobals entries must be strings";
+        if (!(name in _deny_globals_allowed))
+            throw "config.denyGlobals unknown name: " + name
+                + " (allowed: dofile, loadfile, compilestring)";
+    }
+}
+
+/**
+ * Replace denied public globals with throwing stubs so game scripts (and agents)
+ * cannot call them after bootstrap. Engine reload paths keep `_engine_*`.
+ */
+function apply_deny_globals() {
+    validate_deny_globals();
+    if (!("denyGlobals" in config) || config.denyGlobals == null)
+        return;
+    local root = getroottable();
+    foreach (name in config.denyGlobals) {
+        local stub = _make_denied_global(name);
+        if (name in root)
+            root[name] = stub;
+        else
+            root[name] <- stub;
+    }
+}
+
 validate_project_modules();
+validate_deny_globals();
 
 if (!has_module("win") || !has_module("gfx")) {
     print("engine build is missing the window or graphics module\n");
@@ -331,7 +388,7 @@ if (!editor_host) {
 // Node-style async (Promise / nextTick / setTimeout). Embedded via eve.asyncScript.
 if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
     try {
-        compilestring(eve.asyncScript)();
+        _engine_compilestring(eve.asyncScript)();
     } catch (e) {
         // Report FIRST: with "break on error" the debugger pauses at the
         // throwing script line / catch site before stdout is flushed.
@@ -341,7 +398,7 @@ if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
     }
 } else if (file_exists("async.nut")) {
     try {
-        dofile("async.nut");
+        _engine_dofile("async.nut");
     } catch (e) {
         if ("dev" in eve) eve.dev.reportError("" + e);
         if ("packageCheck" in eve && eve.packageCheck) throw e;
@@ -441,12 +498,13 @@ function remap_instances(container, NewClass) {
 
 // Compile every candidate before touching the live root table.  loadfile()
 // returns a closure without executing it, so a syntax error cannot leave a
-// partially redefined game behind.
+// partially redefined game behind. Use the engine copy so config.denyGlobals
+// does not break hot reload.
 function compile_reload_candidates() {
     local candidates = [];
     foreach (p in watched_scripts) {
         if (!file_exists(p)) continue;
-        candidates.append({ path = p, closure = loadfile(p) });
+        candidates.append({ path = p, closure = _engine_loadfile(p) });
     }
     return candidates;
 }
@@ -559,6 +617,7 @@ function soft_restart_game(reload_scripts = true) {
             report_reload_failure("soft-restart eve_init failed: " + format_script_error(e));
             return false;
         }
+        apply_deny_globals();
     } else {
         // Keep script definitions and persist roots; only reset native providers
         // and re-enter the game's restart/init path (for param-only retries).
@@ -687,6 +746,8 @@ function soft_reload_scripts() {
             print("eve_reload failed: " + format_script_error(e) + "\n");
         }
     }
+    // Re-assert project policy in case a reloaded script restored a denied global.
+    apply_deny_globals();
     return true;
 }
 
@@ -794,13 +855,17 @@ function poll_remote_reload() {
     }
 }
 
+// Apply after engine bootstrap (config/modules/async) and before game scripts so
+// main.nut and imports observe the policy. Engine reload keeps `_engine_*`.
+apply_deny_globals();
+
 if (file_exists("main.nut")) {
-    dofile("main.nut");
+    _engine_dofile("main.nut");
     track_script("main.nut");
 } else if ("demoScript" in eve && eve.demoScript != null && eve.demoScript != "") {
     // Prefer try/catch over `in` — class slot checks differ across SSQ builds.
     try {
-        compilestring(eve.demoScript)();
+        _engine_compilestring(eve.demoScript)();
     } catch (e) {
         if ("dev" in eve) eve.dev.reportError("" + e);
         print("Embedded demo failed to load: " + format_script_error(e) + "\n");
