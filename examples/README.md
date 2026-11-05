@@ -76,6 +76,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 ## 入门与基础
 
+- [growth](growth/README.md)：作物阶段/浇水/收获与畜牧喂养/产奶/繁殖的确定性生长模拟（独立实体，不绑 hex）。
 - [ironwarden-retarget](ironwarden-retarget/README.md)：RX-78-2 风格 SCAD 机甲、人体骨架导入、23 骨骼重定向、8 个动作与完整 HDR 渲染。
 
 | 示例 | 演示能力 |
