@@ -67,6 +67,13 @@ log.activate("quest.hunt");
 log.notify("kill", "slime", 1);
 ach.notify("kill", "slime", 1);   // 两份 Tracker 互不影响
 log.pollEvents();                 // 处理完 notify 后必须 poll 才能读 getEvent*
+
+// 目标关系：objectivePolicy = all|any|ordered；目标可 optional:true
+// 对话约定：conversationId = dialogueBase + "." + dialoguePhase(questId)
+local conversation = log.dialogueConversationId("quest.hunt", "village.elder");
+// 限时 / 日刷：定义 timeLimitSeconds / refreshKey，由游戏喂时钟与日历 stamp
+log.applyClock(nowSeconds);
+log.refreshByKey("daily", calendarDayStamp);
 ```
 
 ### 成长与战斗落账
@@ -424,7 +431,7 @@ JSON `StoryEvent` API 仍保留为兼容面，新产品应优先写 `.dnut` stor
 投影，脚本不能另传奖励金额；多成员全部被击败后仍只结算一次，从而避免地图、战斗表现和结算三份事实漂移。`RPGActor` 仍由 RPG ECS 世界拥有，
 `GameState`、`Tracker` 和角色成长各自保持唯一权威所有者。
 
-**Tracker 方法：** `activate()`、`abandon()`、`canActivate()`、`canActivateReason()`、`claim()`、`fail()`、`getCount()`、`getEventAction()`、`getEventAmount()`、`getEventCount()`、`getEventEntryId()`、`getEventObjectiveId()`、`getEventReason()`、`getEventTarget()`、`getEventTopic()`、`getExtra()`、`getId()`、`getObjectiveCount()`、`getObjectiveCountRequired()`、`getObjectiveCurrent()`、`getObjectiveId()`、`getRewardAmount()`、`getRewardCount()`、`getRewardId()`、`getRewardType()`、`getState()`、`hasTag()`、`isObjectiveDone()`、`notify()`、`pollEvents()`、`reset()`、`syncAuto()`
+**Tracker 方法：** `activate()`、`abandon()`、`applyClock()`、`canActivate()`、`canActivateReason()`、`claim()`、`dialogueConversationId()`、`dialoguePhase()`、`fail()`、`getCount()`、`getDeadlineAt()`、`getEventAction()`、`getEventAmount()`、`getEventCount()`、`getEventEntryId()`、`getEventObjectiveId()`、`getEventReason()`、`getEventTarget()`、`getEventTopic()`、`getExtra()`、`getId()`、`getObjectiveCount()`、`getObjectiveCountRequired()`、`getObjectiveCurrent()`、`getObjectiveId()`、`getObjectivePolicy()`、`getRefreshStamp()`、`getRewardAmount()`、`getRewardCount()`、`getRewardId()`、`getRewardType()`、`getState()`、`hasTag()`、`isObjectiveDone()`、`isObjectiveOptional()`、`notify()`、`isObjectivesSatisfied()`、`pollEvents()`、`refreshByKey()`、`reset()`、`syncAuto()`
 
 **特征（RPGActor）：** `applyTrait()`、`removeTrait()`、`removeTraitsBySource()`、`removeTraitsByTrait()`、`hasTrait()`、`getTraitCount()`、`getTraitIdAt()`、`getTraitInstanceIdAt()`、`getTraitSourceAt()`、`getParamRate()`、`getElementRate()`、`getStateRate()`、`isStateResist()`、`getExParam()`、`getAttackSpeed()`、`getAttackTimesAdd()`
 

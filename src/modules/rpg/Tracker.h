@@ -50,6 +50,17 @@ public:
     /** @brief 失败任务（compatibility facade (脚本兼容门面)）。 */
     bool fail(const std::string &id, const std::string &reason);
 
+    /**
+     * @brief 武装限时截止并失败已过期条目；见 QuestSystem::applyClock。
+     * @cost Low — linear in entry count; prefer second-scale cadence.
+     */
+    int applyClock(double nowSeconds);
+    /**
+     * @brief 按 refreshKey + stamp 日刷/赛季刷；见 QuestSystem::refreshByKey。
+     * @cost Low — linear in entry count per stamp change.
+     */
+    int refreshByKey(const std::string &refreshKey, const std::string &stamp);
+
     /** @brief 把 pending 移到 polled 并清空 pending；随后 getEvent* 读 polled。 */
     void pollEvents();
 
@@ -94,6 +105,20 @@ public:
     int getObjectiveCountRequired(const std::string &id, int index) const;
     /** @brief True when objective done. */
     bool isObjectiveDone(const std::string &id, int index) const;
+    /** @brief True when the definition marks this objective optional；未知返回 false。 */
+    bool isObjectiveOptional(const std::string &id, int index) const;
+    /** @brief 定义的 objectivePolicy；未知 id 返回空串。 */
+    std::string getObjectivePolicy(const std::string &id) const;
+    /** @brief 目标是否已按 policy 满足完成条件。 */
+    bool isObjectivesSatisfied(const std::string &id) const;
+    /** @brief 对话相位后缀；见 QuestSystem::dialoguePhase。 */
+    std::string dialoguePhase(const std::string &questId) const;
+    /** @brief dialogueBase.phase；见 QuestSystem::dialogueConversationId。 */
+    std::string dialogueConversationId(const std::string &questId, const std::string &dialogueBase) const;
+    /** @brief 运行时 deadlineAt；0 表示未武装/无限时。 */
+    double getDeadlineAt(const std::string &id) const;
+    /** @brief 运行时 refreshStamp。 */
+    std::string getRefreshStamp(const std::string &id) const;
     /** @brief Returns the reward count. */
     int getRewardCount(const std::string &id) const;
     /** @brief Returns the reward type. */

@@ -863,6 +863,9 @@ void RPG::expose(ssq::Table &table) {
     tracker.addFunc("reset", &Tracker::reset);
     tracker.addFunc("abandon", &Tracker::abandon);
     tracker.addFunc("fail", &Tracker::fail);
+    tracker.addFunc("applyClock",
+                    [](Tracker *t, float nowSeconds) -> int { return t ? t->applyClock(double(nowSeconds)) : 0; });
+    tracker.addFunc("refreshByKey", &Tracker::refreshByKey);
     tracker.addFunc("pollEvents", &Tracker::pollEvents);
     tracker.addFunc("snapshotJson", [](Tracker *t) -> std::string {
         if (!t) return {};
@@ -883,6 +886,14 @@ void RPG::expose(ssq::Table &table) {
     tracker.addFunc("getObjectiveCurrent", &Tracker::getObjectiveCurrent);
     tracker.addFunc("getObjectiveCountRequired", &Tracker::getObjectiveCountRequired);
     tracker.addFunc("isObjectiveDone", &Tracker::isObjectiveDone);
+    tracker.addFunc("isObjectiveOptional", &Tracker::isObjectiveOptional);
+    tracker.addFunc("getObjectivePolicy", &Tracker::getObjectivePolicy);
+    tracker.addFunc("isObjectivesSatisfied", &Tracker::isObjectivesSatisfied);
+    tracker.addFunc("dialoguePhase", &Tracker::dialoguePhase);
+    tracker.addFunc("dialogueConversationId", &Tracker::dialogueConversationId);
+    tracker.addFunc("getDeadlineAt",
+                    [](Tracker *t, const std::string &id) -> float { return t ? float(t->getDeadlineAt(id)) : 0.f; });
+    tracker.addFunc("getRefreshStamp", &Tracker::getRefreshStamp);
     tracker.addFunc("getRewardCount", &Tracker::getRewardCount);
     tracker.addFunc("getRewardType", &Tracker::getRewardType);
     tracker.addFunc("getRewardId", &Tracker::getRewardId);

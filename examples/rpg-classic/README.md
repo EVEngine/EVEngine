@@ -94,7 +94,7 @@ make run/win32-debug GAME=examples/rpg-classic
 | 商品目录与交易 | `shop.json` 经 `replaceShopOffersFromJson` 严格原子发布；`buyShopOffer` / `sellShopOffer` 按权威价格提交金币与背包，失败不留下半笔交易 |
 | 状态界面 | `ui` 多窗口 + `setHostVisible` 切换 |
 | 探索地图 | `map.loadFromFileWithObjectContract` + `Pathfinder`，对象契约先准入；`collectWorldLoot` 原子结算通用 loot，portal 属性显式驱动跨地图切换 |
-| 对话任务链 | 通用 `quest_npc` 属性绑定 Quest 与对话前缀，按 `Tracker` 状态选择领取、提醒、交付或完成后会话 |
+| 对话任务链 | 通用 `quest_npc` 属性绑定 Quest 与 `dialogueBase`；`Tracker.dialogueConversationId` 按状态拼出 `offer/active/turnin/completed/failed` 会话 |
 | 奖励事务 | `rpg.claimQuestRewards` 先验证完整物品批次，再原子提交任务、金币与背包；库存监听器只观察最终状态 |
 | 队友策略 | `battle-tactics.json` 按序定义游侠策略：任一队友生命低于 40% 时治疗最低生命队友，否则攻击最低生命敌人；目录严格验证并参与内容包回滚 |
 | 剧情事件编排 | `stories.dnut` 经 `replaceStoriesFromDnut` 严格发布；`RpgStorySession` 把游标 JSON 写入 `GameState` 的 `story.<id>.cursor`，完成事实写入 `completed`；目录热替换不影响活动会话，事件中 F5 保存后会重放尚未确认步骤 |
