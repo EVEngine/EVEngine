@@ -1,4 +1,5 @@
 // Alpine mountain recipe + continuous cliff-band rock strips + rock scatter demo.
+// Cliff cladding uses pbr.cliff.strata (albedo + normal + height) with U-along / V-height UVs.
 
 local retained = [];
 local camera = null;
@@ -21,31 +22,51 @@ function requireOk(result, label) {
     return result.value;
 }
 
-function makeStrataTexture(size) {
-    local image = eve.Image();
-    local pixels = retain(image.newEmptyImageData(size, size, "RGBA8"));
-    for (local y = 0; y < size; ++y) {
-        // Strong horizontal beds (V = world height on cliff mesh).
-        local band = ((y / 10) % 2 == 0) ? 0.18 : -0.08;
-        local bed = math.noise2(0.2, y * 0.09) * 0.35 + band;
-        for (local x = 0; x < size; ++x) {
-            local n = math.noise2(x * 0.04, y * 0.11) * 0.12;
-            local grit = math.noise2(x * 0.35, y * 0.35) * 0.08;
-            local shade = 0.50 + bed + n + grit;
-            if (shade < 0.22) shade = 0.22;
-            if (shade > 0.90) shade = 0.90;
-            pixels.setPixel(x, y, shade * 0.95 + 0.05, shade * 0.68 + 0.04, shade * 0.42 + 0.02, 1.0);
-        }
-    }
-    return retain(gfx.newTexture(pixels, true, true));
+function makeCliffMaterial() {
+    local params = retain(requireOk(procgen.newParams(), "cliffPbrParams"));
+    requireOk(params.setSeed(20261105), "cliffPbr seed");
+    requireOk(params.setSize(512, 512), "cliffPbr size");
+    params.setFloat("scale", 3.0);
+    params.setFloat("normalStrength", 5.5);
+    params.setFloat("aoStrength", 2.0);
+    params.setFloat("heightStrength", 1.6);
+    params.setFloat("roughnessLow", 0.68);
+    params.setFloat("roughnessHigh", 0.98);
+    local maps = requireOk(procgen.generatePbrMaterial("pbr.cliff.strata", params), "cliffPbr");
+    local albedo = retain(gfx.newTexture(maps.getAlbedo(), true, true));
+    local normal = retain(gfx.newTexture(maps.getNormal(), true, true));
+    local height = retain(gfx.newTexture(maps.getHeight(), true, true));
+    maps.destroy();
+    local m = retain(gfx.newMaterial());
+    m.setAlbedoTexture(albedo);
+    m.setNormalTexture(normal);
+    m.setHeightTexture(height);
+    m.setTint(1.0, 1.0, 1.0, 1.0);
+    m.setMetallic(0.02);
+    m.setRoughness(0.84);
+    m.setParallax(0.022, 8.0, 28.0);
+    m.setReceiveLight(true);
+    return m;
 }
 
-function makeRockMaterial(r, g, b, roughness, texture) {
+function makeRockPropMaterial() {
+    local params = retain(requireOk(procgen.newParams(), "rockPbrParams"));
+    requireOk(params.setSeed(107), "rockPbr seed");
+    requireOk(params.setSize(256, 256), "rockPbr size");
+    params.setFloat("scale", 3.0);
+    params.setFloat("normalStrength", 3.4);
+    params.setFloat("aoStrength", 1.7);
+    local maps = requireOk(procgen.generatePbrMaterial("pbr.rock", params), "rockPbr");
+    local albedo = retain(gfx.newTexture(maps.getAlbedo(), true, true));
+    local normal = retain(gfx.newTexture(maps.getNormal(), true, true));
+    maps.destroy();
     local m = retain(gfx.newMaterial());
-    if (texture != null) m.setAlbedoTexture(texture);
-    m.setTint(r, g, b, 1.0);
-    m.setMetallic(0.04);
-    m.setRoughness(roughness);
+    m.setAlbedoTexture(albedo);
+    m.setNormalTexture(normal);
+    m.setTint(0.96, 0.90, 0.82, 1.0);
+    m.setMetallic(0.03);
+    m.setRoughness(0.92);
+    m.setReceiveLight(true);
     return m;
 }
 
@@ -53,9 +74,8 @@ eve_init = function() {
     gfx.setBackgroundColor(0.56, 0.70, 0.88, 1.0);
     gfx.setDirectionalLight(-0.95, 0.32, 0.10, 2.7, 2.2, 1.55);
     terrainShader = retain(procgen.createTerrainMaterialShader(gfx));
-    local strataTex = makeStrataTexture(256);
-    local cliffMat = makeRockMaterial(0.95, 0.72, 0.48, 0.82, strataTex);
-    local propMat = makeRockMaterial(0.70, 0.48, 0.30, 0.90, strataTex);
+    local cliffMat = makeCliffMaterial();
+    local propMat = makeRockPropMaterial();
 
     local settings = retain(eve.MountainRecipeSettings());
     settings.setPreset(0);
@@ -94,12 +114,15 @@ eve_init = function() {
     cliffSettings.slopeMin = 0.42;
     cliffSettings.minRelief = 1.6;
     cliffSettings.subdivisions = 4;
-    cliffSettings.strataAmplitude = 0.85;
-    cliffSettings.strataScale = 0.95;
-    cliffSettings.strataVertical = 3.2;
-    // Texture carries bedding; geometric ledges read as cardboard stairs under soft light.
-    cliffSettings.ledgeHeight = 0.0;
-    cliffSettings.outwardBias = 0.9;
+    cliffSettings.strataAmplitude = 1.35;
+    cliffSettings.strataScale = 0.85;
+    cliffSettings.strataVertical = 2.6;
+    // Soft geometric beds (not hard stairs) + U-along / V-height for strata PBR.
+    // Keep V sparse so ~8-14 beds read across a tall face (not hairline stripes).
+    cliffSettings.ledgeHeight = 0.55;
+    cliffSettings.outwardBias = 0.90;
+    cliffSettings.uvScaleU = 0.14;
+    cliffSettings.uvScaleV = 0.10;
     cliffSettings.setSeed(20261105);
     cliffSettings.maxTriangles = 400000;
     local cliffCpu = retain(requireOk(eve.generateCliffBandMesh(heightmap, cliffSettings, cliffMask), "cliffBand"));
@@ -145,8 +168,6 @@ eve_init = function() {
     cliffEntity.setMaterial(cliffMat);
 
     // Toe rocks sit on the basin floor along the scarp.
-    local rockParams = retain(requireOk(procgen.newParams(), "rockParams"));
-    rockParams.setSeed(107);
     local shapes = ["boulder", "shard", "cliff", "block"];
     local rockCount = 0;
     for (local i = 0; i < 18; ++i) {

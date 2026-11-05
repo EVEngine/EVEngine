@@ -127,6 +127,40 @@ std::vector<TextureRecipeDef> buildDefs() {
             pbr));
     }
 
+    // --- tex.cliff.strata: bedded sandstone cliff (V = height on cliff meshes) ---
+    {
+        ColorRamp ramp;
+        ramp.add(0.00f, 38, 30, 22);  // deep joint / crevice
+        ramp.add(0.22f, 72, 56, 40);
+        ramp.add(0.48f, 112, 88, 58);
+        ramp.add(0.72f, 146, 116, 78);
+        ramp.add(1.00f, 176, 146, 104);  // sunlit bed face
+        PbrParams pbr;
+        pbr.roughnessLow   = 0.68f;
+        pbr.roughnessHigh  = 0.98f;
+        pbr.aoStrength     = 1.85f;
+        pbr.normalStrength = 4.2f;
+        pbr.heightStrength = 1.35f;
+        defs.push_back(makeDef(
+            "tex.cliff.strata", std::move(ramp),
+            [](float u, float v, const NoiseField& n) {
+                // Horizontal bedding: ~0.5 period in V (≈8 beds when scale=4).
+                const float bedPeriod = 0.5f;
+                const float warpedV   = v + n.valueNoise(u * 0.4f, v * 0.15f) * 0.12f;
+                const float phase     = warpedV / bedPeriod;
+                const float frac      = phase - std::floor(phase);
+                const float joint     = smoothstep(0.f, 0.10f, frac) * (1.f - smoothstep(0.86f, 1.f, frac));
+                float       h         = 0.42f + 0.38f * joint;
+                h += 0.07f * (n.valueNoise(std::floor(phase) * 0.31f + 1.7f, 0.4f) - 0.5f);
+                const float grit  = n.fbm(u * 3.2f, v * 3.2f, 4);
+                const float crack = std::pow(std::fabs(n.valueNoise(u * 2.4f, v * 0.9f) - 0.5f) * 2.f, 1.7f);
+                h                 = h * 0.70f + grit * 0.20f + (1.f - crack) * 0.10f;
+                h += 0.05f * n.ridged(u * 1.4f, v * 2.2f, 3);
+                return std::clamp(h, 0.f, 1.f);
+            },
+            pbr));
+    }
+
     // --- tex.marble: polished veined marble ---
     {
         ColorRamp ramp;

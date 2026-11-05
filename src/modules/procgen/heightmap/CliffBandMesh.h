@@ -29,8 +29,10 @@ struct EVENGINE_API_DOMAINS CliffBandMeshSettings {
     float         strataAmplitude = 0.28f;
     float         strataScale     = 0.55f;  ///< World XZ frequency for rock noise.
     float         strataVertical  = 2.4f;   ///< World Y frequency (horizontal bedding).
-    float         ledgeHeight     = 0.f;    ///< >0 quantizes world Y into ledges before displace.
+    float         ledgeHeight     = 0.f;    ///< >0 soft-biases world Y toward beds before displace.
     float         outwardBias     = 0.85f;  ///< Prefer horizontal outward rock displace.
+    float         uvScaleU        = 0.22f;  ///< World meters along wall → albedo U.
+    float         uvScaleV        = 0.48f;  ///< World meters of height → albedo V (beds).
     std::uint32_t seed            = 1;
     int           maxTriangles    = 500000;
 };

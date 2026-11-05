@@ -32,8 +32,15 @@ Deferred Phase 2: amplify selected cliffs with `ScalarField3D` / implicit blocks
 Script: `eve.MountainRecipeSettings`, `eve.CliffBandMeshSettings`, Heightmap
 `bakeMountain` / `generateCliffFitness`, and `procgen.generateCliffBandMesh`.
 
+## Material
+
+Cliff cladding uses `tex.cliff.strata` / `pbr.cliff.strata`: horizontal bedding height
+field → albedo ramp + normal + height. Mesh UVs are U-along-wall / V-by-height
+(`CliffBandMeshSettings.uvScaleU` / `uvScaleV`). Geometry adds soft shelves and
+fracture recesses in `rockDisplace`; painted stripes alone are not enough.
+
 ## Example
 
 [`examples/procgen-cliffs-mountains`](../../examples/procgen-cliffs-mountains/) bakes an alpine
-recipe, renders terrain chunks, overlays cliff-band mesh, scatters a few rock props, and
-captures a PNG.
+recipe, renders terrain chunks, overlays cliff-band mesh with strata PBR, dresses the
+toe with `mesh.rock` + `pbr.rock`, and captures a PNG.

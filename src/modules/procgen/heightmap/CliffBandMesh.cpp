@@ -82,7 +82,7 @@ float maxPerpRelief(const Heightmap& heights, int x0, int z0, int x1, int z1, fl
     auto      consider = [&](int ax, int az, int bx, int bz) {
         if (ax < 0 || bx < 0 || az < 0 || bz < 0 || ax >= w || bx >= w || az >= h || bz >= h) return;
         m = std::max(m,
-                          std::abs(worldHeight(heights, ax, az, heightScale) - worldHeight(heights, bx, bz, heightScale)));
+                     std::abs(worldHeight(heights, ax, az, heightScale) - worldHeight(heights, bx, bz, heightScale)));
     };
     if (x0 != x1) {
         consider(x0, z0, x0, z0 - 1);
@@ -126,7 +126,7 @@ Vec3 rockDisplace(Vec3 p, Vec3 outward, float topY, float botY, float along, flo
     float y = p.y;
     if (s.ledgeHeight > 1e-4f) {
         const float q   = std::floor(y / s.ledgeHeight) * s.ledgeHeight;
-        const float bed = 0.42f;
+        const float bed = 0.38f;
         y               = y * (1.f - bed) + q * bed;
         y               = std::clamp(y, botY, topY);
     }
@@ -137,26 +137,41 @@ Vec3 rockDisplace(Vec3 p, Vec3 outward, float topY, float botY, float along, flo
     const float pits  = noise.fbm(p.x * s.strataScale * 2.4f, y * s.strataVertical * 1.9f + along * 0.2f, 4);
     const float crack = noise.fbm(along * s.strataScale * 1.7f, y * s.strataVertical * 0.55f, 3);
 
-    // Hex-style lip / foot: stronger near top and toe, quieter mid-face.
+    // Continuous geometric shelves: sine bed wave + ridged ledge (not discrete stairs).
+    const float midMask = std::clamp(1.f - std::abs(v01 * 2.f - 1.f), 0.f, 1.f);
+    const float bedWave =
+        std::sin(y * s.strataVertical * 6.2831853f + noise.valueNoise(along * 0.12f, y * 0.05f) * 1.35f);
+    const float softShelf =
+        bedWave * 0.55f +
+        (noise.ridged(p.x * s.strataScale * 0.5f, y * s.strataVertical * 1.6f, 3) * 2.f - 1.f) * 0.45f;
+    // Vertical fracture recesses (continuous in along — keeps welded strips).
+    const float fracture =
+        std::pow(std::fabs(noise.valueNoise(along * s.strataScale * 0.95f, y * 0.07f) - 0.5f) * 2.f, 2.4f);
+
+    // Hex-style lip / foot: stronger near top and toe.
     const float endMask = std::clamp(1.f - std::abs(v01 * 2.f - 1.f) * 0.55f, 0.f, 1.f);
-    const float lipMask = std::pow(std::clamp(v01, 0.f, 1.f), 1.6f);         // top-weighted
-    const float toeMask = std::pow(std::clamp(1.f - v01, 0.f, 1.f), 1.35f);  // bottom-weighted
+    const float lipMask = std::pow(std::clamp(v01, 0.f, 1.f), 1.6f);
+    const float toeMask = std::pow(std::clamp(1.f - v01, 0.f, 1.f), 1.35f);
     const float jitter  = hash01(seed ^ uint32_t(along * 97.f) ^ uint32_t(y * 13.f)) - 0.42f;
 
     const float baseAmp = s.strataAmplitude;
-    // Continuous noise only — discrete hash jitter created vertical "fence panel" seams.
-    float amount = baseAmp * (0.58f * strata + 0.48f * beds - 0.22f * pits - 0.16f * crack);
-    amount += baseAmp * 0.55f * lipMask * (jitter * 0.35f + beds * 0.25f);
-    amount += baseAmp * 0.70f * toeMask * (pits - 0.25f);
-    amount *= 0.60f + 0.40f * endMask;
+    float       amount  = baseAmp * (0.42f * strata + 0.38f * beds - 0.16f * pits - 0.10f * crack);
+    // Geometric beds must read as shelves under soft light — weight shelves hard.
+    amount += baseAmp * 1.45f * softShelf * (0.25f + 0.75f * midMask);
+    amount -= baseAmp * 0.72f * (1.f - fracture);
+    amount += baseAmp * 0.48f * lipMask * (jitter * 0.28f + beds * 0.30f);
+    amount += baseAmp * 0.78f * toeMask * (pits - 0.20f);
+    amount *= 0.55f + 0.45f * endMask;
 
     const float push = amount * std::max(0.30f, s.outwardBias);
-    const float lift = amount * (0.10f + 0.20f * lipMask) * (1.f - s.outwardBias * 0.45f);
-    Vec3        out  = {p.x + outward.x * push, y + lift, p.z + outward.z * push};
+    // Lift on shelf peaks so bedding reads in silhouette, not only in normals.
+    const float lift =
+        amount * (0.16f + 0.28f * lipMask + 0.18f * std::max(0.f, softShelf)) * (1.f - s.outwardBias * 0.40f);
+    Vec3 out = {p.x + outward.x * push, y + lift, p.z + outward.z * push};
 
-    // Mild continuous shear (noise is smooth in `along`) — keep seams welded.
+    // Mild continuous shear into fractures — keep seams welded.
     const Vec3 alongDir = normalize(cross(outward, {0.f, 1.f, 0.f}));
-    out += alongDir * (baseAmp * 0.16f * crack);
+    out += alongDir * (baseAmp * 0.18f * crack * (0.4f + 0.6f * fracture));
 
     // Clamp so displacement cannot collapse the relief to a sliver.
     out.y = std::clamp(out.y, botY - 0.05f * relief, topY + 0.08f * relief);
@@ -220,9 +235,9 @@ bool emitContinuousStrip(MeshBuild& out, const std::vector<CliffColumn>& cols, c
                 p               = rockDisplace(p, outw, topY, botY, al, v01, noise, s, s.seed ^ uint32_t(xi * 131u));
                 const size_t id = size_t(xi * nv + iv);
                 positions[id]   = p;
-                // U along ledge, denser V-by-height so strata albedo reads as beds.
-                us[id] = al * 0.35f;
-                vs[id] = (topY - p.y) * 0.55f;
+                // U along ledge, V-by-height so strata albedo/normal beds stay horizontal.
+                us[id] = al * s.uvScaleU;
+                vs[id] = (topY - p.y) * s.uvScaleV;
             }
         }
     }
@@ -383,7 +398,9 @@ Result<int> generateCliffBandMesh(MeshBuild& out, const Heightmap& heights, cons
         !std::isfinite(settings.strataScale) || settings.strataScale <= 0.f ||
         !std::isfinite(settings.strataVertical) || settings.strataVertical <= 0.f ||
         !std::isfinite(settings.ledgeHeight) || settings.ledgeHeight < 0.f || !std::isfinite(settings.outwardBias) ||
-        settings.outwardBias < 0.f || settings.outwardBias > 1.f || settings.maxTriangles < 0)
+        settings.outwardBias < 0.f || settings.outwardBias > 1.f || !std::isfinite(settings.uvScaleU) ||
+        settings.uvScaleU <= 0.f || !std::isfinite(settings.uvScaleV) || settings.uvScaleV <= 0.f ||
+        settings.maxTriangles < 0)
         return invalid("cliff.band: invalid settings");
     if (cliffFitness && (cliffFitness->getWidth() != heights.getWidth() ||
                          cliffFitness->getHeight() != heights.getHeight() || !validRaster(*cliffFitness)))
