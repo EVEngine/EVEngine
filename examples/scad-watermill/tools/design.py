@@ -59,13 +59,13 @@ JOINTS = [
 ]
 
 PARTS = [
-    {"name": "building", "joint": "building", "tint": [0.55, 0.42, 0.28], "metal": 0.04, "rough": 0.82},
-    {"name": "race", "joint": "race", "tint": [0.45, 0.43, 0.38], "metal": 0.02, "rough": 0.92},
-    {"name": "sluice", "joint": "sluice", "tint": [0.32, 0.18, 0.10], "metal": 0.10, "rough": 0.68},
-    {"name": "drive", "joint": "drive", "tint": [0.16, 0.17, 0.19], "metal": 0.55, "rough": 0.42},
-    {"name": "main", "joint": "main", "tint": [0.72, 0.52, 0.22], "metal": 0.28, "rough": 0.48},
-    {"name": "runner", "joint": "runner", "tint": [0.58, 0.56, 0.54], "metal": 0.04, "rough": 0.88},
-    {"name": "hoist", "joint": "hoist", "tint": [0.20, 0.16, 0.12], "metal": 0.35, "rough": 0.50},
+    {"name": "building", "joint": "building", "tint": [0.30, 0.22, 0.14], "metal": 0.02, "rough": 0.92},
+    {"name": "race", "joint": "race", "tint": [0.28, 0.28, 0.26], "metal": 0.02, "rough": 0.95},
+    {"name": "sluice", "joint": "sluice", "tint": [0.24, 0.14, 0.08], "metal": 0.05, "rough": 0.78},
+    {"name": "drive", "joint": "drive", "tint": [0.18, 0.18, 0.19], "metal": 0.12, "rough": 0.72},
+    {"name": "main", "joint": "main", "tint": [0.40, 0.30, 0.16], "metal": 0.10, "rough": 0.68},
+    {"name": "runner", "joint": "runner", "tint": [0.40, 0.38, 0.36], "metal": 0.03, "rough": 0.93},
+    {"name": "hoist", "joint": "hoist", "tint": [0.18, 0.14, 0.10], "metal": 0.12, "rough": 0.70},
 ]
 
 PART_NAMES = tuple(part["name"] for part in PARTS)

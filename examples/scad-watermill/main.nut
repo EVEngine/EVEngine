@@ -67,11 +67,11 @@ function millBuildAssembly() {
             // Race stonework stays earthy; separate water plate is the teal accent.
             if (name == "race") {
                 local material = part.e.getMaterial();
-                material.setTint(0.40, 0.38, 0.32, 1.0);
-                material.setRoughness(0.92);
+                material.setTint(0.28, 0.28, 0.26, 1.0);
+                material.setRoughness(0.95);
                 material.setMetallic(0.02);
-                part.e.setTint(0.40, 0.38, 0.32, 1.0);
-                part.e.setRoughness(0.92);
+                part.e.setTint(0.28, 0.28, 0.26, 1.0);
+                part.e.setRoughness(0.95);
                 part.e.setMetallic(0.02);
             }
             assembly.parts.push(part);
@@ -197,41 +197,27 @@ eve_init = function() {
         eve.dev.ai.setVisible(false);
         eve.dev.console.setVisible(false);
     }
-    gfx.setBackgroundColor(0.45, 0.62, 0.78, 1.0);
+    // Soft overcast: enough ambient to read timber, mild sun for form, no hot lamps.
+    gfx.setBackgroundColor(0.16, 0.20, 0.26, 1.0);
     mill.camera = eve.Camera3D();
     mill.camera.setUp(0.0, 1.0, 0.0);
     mill.camera.setFov(48.0);
-    mill.camera.setAmbient(0.22, 0.24, 0.28);
-    mill.camera.setExposure(0.58);
+    mill.camera.setAmbient(0.13, 0.135, 0.14);
+    mill.camera.setExposure(0.38);
+    mill.camera.setBloom(0.0, 1.0);
     mill.camera.setActive(true);
     millApplyVisitCamera();
 
     local sun = eve.Light3D();
     sun.setType("directional");
-    sun.setDirection(-0.35, -1.0, -0.25);
-    sun.setColor(1.0, 0.94, 0.82, 2.6);
+    sun.setDirection(-0.35, -1.0, 0.25);
+    sun.setColor(0.95, 0.92, 0.88, 0.55);
     sun.setCastShadow(true);
     sun.setShadowMethod("csm");
-    sun.setShadowStrength(0.90);
+    sun.setShadowStrength(0.78);
     mill.lights.push(sun);
-    gfx.setDirectionalLight(-0.35, 1.0, -0.25, 0.25, 0.28, 0.34);
-
-    local warm = eve.Light3D();
-    warm.setType("point");
-    warm.setPosition(1.4, 3.4, -0.2);
-    warm.setColor(1.0, 0.72, 0.40, 7.5);
-    warm.setRadius(9.0);
-    warm.setCastShadow(true);
-    warm.setShadowMethod("perspective");
-    mill.lights.push(warm);
-
-    local cool = eve.Light3D();
-    cool.setType("point");
-    cool.setPosition(-1.5, 2.2, 1.5);
-    cool.setColor(0.55, 0.75, 1.0, 4.0);
-    cool.setRadius(8.0);
-    cool.setCastShadow(false);
-    mill.lights.push(cool);
+    gfx.setDirectionalLight(-0.35, 1.0, -0.25, 0.09, 0.10, 0.11);
+    // No interior point lamps — they washed out timber and left hot spots on the stone floor.
 
     // Pond + tail-race water plates (opaque teal accents on stone racework).
     mill.water = eve.Renderable3D();
