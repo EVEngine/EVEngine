@@ -174,7 +174,8 @@ function eliteCandidatesJson(w, nationId) {
         {""column"":""war"",""op"":"">="",""value"":90},
         {""column"":""intellect"",""op"":"">="",""value"":95}
     ]");
-    q.whereBetween("leadership", "70", "100");
+    // Include advisors like Guo Jia (lead 62) while still dropping pure rookies.
+    q.whereBetween("leadership", "60", "100");
     q.orderBy("war", false);
     return q.allJson();
 }
