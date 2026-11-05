@@ -1,0 +1,29 @@
+#version 450
+layout(local_size_x = 64) in;
+layout(set = 0, binding = 0) buffer Sim { float data[]; } sim;
+layout(set = 0, binding = 1) buffer Pos { float data[]; } pos;
+layout(push_constant) uniform PC { float data[32]; } pc;
+void main() {
+    uint i = gl_GlobalInvocationID.x;
+    uint n = uint(pc.data[0]);
+    if (i >= n) return;
+    float cellSize = pc.data[1];
+    float originX = pc.data[2];
+    float originY = pc.data[3];
+    uint b = i * 6u;
+    float cellX = sim.data[b + 0u];
+    float cellY = sim.data[b + 1u];
+    float progress = sim.data[b + 2u];
+    uint dir = uint(sim.data[b + 3u]);
+    float dx = 0.0;
+    float dy = 0.0;
+    if (dir == 0u) dx = 1.0;
+    else if (dir == 1u) dy = 1.0;
+    else if (dir == 2u) dx = -1.0;
+    else dy = -1.0;
+    float along = progress * cellSize;
+    uint o = i * 3u;
+    pos.data[o + 0u] = originX + (cellX + 0.5) * cellSize + dx * along;
+    pos.data[o + 1u] = originY + (cellY + 0.5) * cellSize + dy * along;
+    pos.data[o + 2u] = sim.data[b + 4u];
+}
