@@ -18,16 +18,16 @@ persist vineScreenshotSaved = false
 persist vineSettings = {
     seed = 20261105,
     rootCount = 8,
-    speed = 1.55,
-    tipLife = 7.5,
-    forkSpacing = 1.15,
+    speed = 1.85,
+    tipLife = 9.0,
+    forkSpacing = 1.45,
     forkAngle = 0.72,
-    forkChance = 0.82,
+    forkChance = 0.7,
     maxDepth = 2,
-    maxTips = 36,
-    yawNoise = 0.55,
-    perturb = 1.1,
-    minPointSpacing = 0.08
+    maxTips = 40,
+    yawNoise = 0.4,
+    perturb = 0.85,
+    minPointSpacing = 0.07
 }
 
 function vineRequire(result, context) {
@@ -59,41 +59,48 @@ function vineAddBoxCollider(world, x, y, z, sx, sy, sz) {
 }
 
 function vineBuildScene(world, cube) {
-    // Ground pad connecting the house pad and mountain foothills.
-    vinePlace(cube, 0.0, -0.2, 0.0, 28.0, 0.4, 22.0, 0.12, 0.16, 0.20);
-    vineAddBoxCollider(world, 0.0, -0.2, 0.0, 28.0, 0.4, 22.0);
+    // Ground pad.
+    vinePlace(cube, 0.0, -0.2, 0.0, 20.0, 0.4, 16.0, 0.12, 0.16, 0.20);
+    vineAddBoxCollider(world, 0.0, -0.2, 0.0, 20.0, 0.4, 16.0);
 
-    // Courtyard plate where the vines erupt.
-    vinePlace(cube, 0.0, 0.02, 0.0, 7.5, 0.05, 7.5, 0.18, 0.22, 0.26);
-    vineAddBoxCollider(world, 0.0, 0.02, 0.0, 7.5, 0.05, 7.5);
+    // Courtyard floor — walls sit on every rim so almost every tip meets a face.
+    vinePlace(cube, 0.0, 0.02, 0.0, 3.6, 0.05, 3.6, 0.18, 0.22, 0.26);
+    vineAddBoxCollider(world, 0.0, 0.02, 0.0, 3.6, 0.05, 3.6);
 
-    // House cluster (walls + roof) on the -X side.
-    vinePlace(cube, -6.2, 1.15, -1.2, 3.4, 2.3, 3.0, 0.42, 0.36, 0.30);
-    vineAddBoxCollider(world, -6.2, 1.15, -1.2, 3.4, 2.3, 3.0);
-    vinePlace(cube, -6.2, 2.55, -1.2, 3.8, 0.55, 3.4, 0.55, 0.28, 0.22);
-    vineAddBoxCollider(world, -6.2, 2.55, -1.2, 3.8, 0.55, 3.4);
-    vinePlace(cube, -4.2, 0.55, 1.4, 1.4, 1.1, 1.5, 0.38, 0.33, 0.28);
-    vineAddBoxCollider(world, -4.2, 0.55, 1.4, 1.4, 1.1, 1.5);
+    // West house wall + roof (near face ~ x=-1.55).
+    vinePlace(cube, -2.6, 1.5, 0.0, 2.1, 3.0, 3.2, 0.42, 0.36, 0.30);
+    vineAddBoxCollider(world, -2.6, 1.5, 0.0, 2.1, 3.0, 3.2);
+    vinePlace(cube, -2.6, 3.2, 0.0, 2.5, 0.5, 3.6, 0.55, 0.28, 0.22);
+    vineAddBoxCollider(world, -2.6, 3.2, 0.0, 2.5, 0.5, 3.6);
 
-    // Mountain / ridge terraces climbing toward +X/+Z.
-    local terraces = [
-        [5.5, 0.55, 3.5, 6.0, 1.1, 5.5, 0.28, 0.30, 0.34],
-        [7.8, 1.55, 4.8, 5.2, 1.4, 4.6, 0.32, 0.34, 0.38],
-        [9.5, 2.85, 5.6, 4.0, 1.8, 3.6, 0.36, 0.38, 0.42],
-        [10.8, 4.2, 6.1, 2.8, 1.6, 2.6, 0.42, 0.44, 0.48],
-        [4.2, 0.85, -3.8, 4.5, 1.7, 3.2, 0.30, 0.32, 0.36],
-        [6.6, 2.1, -4.4, 3.4, 1.5, 2.4, 0.34, 0.36, 0.40]
-    ];
-    foreach (t in terraces) {
-        vinePlace(cube, t[0], t[1], t[2], t[3], t[4], t[5], t[6], t[7], t[8]);
-        vineAddBoxCollider(world, t[0], t[1], t[2], t[3], t[4], t[5]);
-    }
+    // East mountain first riser (near face ~ x=+1.45).
+    vinePlace(cube, 2.4, 1.1, 0.4, 1.9, 2.2, 2.8, 0.30, 0.32, 0.36);
+    vineAddBoxCollider(world, 2.4, 1.1, 0.4, 1.9, 2.2, 2.8);
+    vinePlace(cube, 3.6, 2.4, 0.8, 1.7, 2.0, 2.2, 0.34, 0.36, 0.40);
+    vineAddBoxCollider(world, 3.6, 2.4, 0.8, 1.7, 2.0, 2.2);
+    vinePlace(cube, 4.7, 3.7, 1.1, 1.4, 1.6, 1.8, 0.40, 0.42, 0.46);
+    vineAddBoxCollider(world, 4.7, 3.7, 1.1, 1.4, 1.6, 1.8);
 
-    // Connecting berms so vines can crawl from courtyard onto house / mountain.
-    vinePlace(cube, -3.0, 0.28, -0.2, 2.4, 0.55, 2.0, 0.22, 0.25, 0.28);
-    vineAddBoxCollider(world, -3.0, 0.28, -0.2, 2.4, 0.55, 2.0);
-    vinePlace(cube, 2.6, 0.32, 1.8, 2.8, 0.65, 2.6, 0.24, 0.27, 0.30);
-    vineAddBoxCollider(world, 2.6, 0.32, 1.8, 2.8, 0.65, 2.6);
+    // North / south courtyard walls so sideways tips also climb.
+    vinePlace(cube, 0.1, 1.0, -2.4, 3.0, 2.0, 1.2, 0.28, 0.30, 0.34);
+    vineAddBoxCollider(world, 0.1, 1.0, -2.4, 3.0, 2.0, 1.2);
+    vinePlace(cube, 0.2, 0.85, 2.35, 2.6, 1.7, 1.1, 0.32, 0.30, 0.28);
+    vineAddBoxCollider(world, 0.2, 0.85, 2.35, 2.6, 1.7, 1.1);
+}
+
+function vineProbeWalls(world) {
+    // Prove Box3D walls are hittable from the spawn courtyard before growing.
+    world.rayCast(0.0, 0.55, 0.0, -4.0, 0.55, 0.0);
+    local houseHit = world.hasRayHit() && fabs(world.getRayHitNormalY()) < 0.55;
+    local houseY = houseHit ? world.getRayHitY() : -1.0;
+    world.rayCast(0.0, 0.55, 0.0, 4.0, 0.55, 0.4);
+    local mountainHit = world.hasRayHit() && fabs(world.getRayHitNormalY()) < 0.55;
+    local mountainY = mountainHit ? world.getRayHitY() : -1.0;
+    world.rayCast(0.0, 0.55, 0.0, 0.1, 0.55, -4.0);
+    local northHit = world.hasRayHit() && fabs(world.getRayHitNormalY()) < 0.55;
+    print(format("SURFACE_VINE_PROBE houseWall=%d y=%.2f mountainWall=%d y=%.2f northWall=%d\n",
+        houseHit ? 1 : 0, houseY, mountainHit ? 1 : 0, mountainY, northHit ? 1 : 0));
+    if (!houseHit || !mountainHit || !northHit) throw "surface-vine-growth: wall colliders not reachable from spawn";
 }
 
 function vineMakePolyline(points, r, g, b, a, width) {
@@ -163,6 +170,7 @@ function vineCast() {
     vineCasts += 1;
     vineSyncBranchVisuals();
     vineSyncTipMarkers();
+    vineScreenshotSaved = false;
     print(format("SURFACE_VINE_CAST roots=%d seed=%d cast=%d\n", count, vineSettings.seed, vineCasts));
 }
 
@@ -219,8 +227,10 @@ function vineApplyUi() {
     }
     local living = vineSystem == null ? 0 : vineSystem.livingTipCount();
     local branches = vineSystem == null ? 0 : vineSystem.branchCount();
-    ui.setText("status", format("tips=%d  branches=%d  age=%.1fs  %s",
-        living, branches, vineAge, vinePaused ? "PAUSED" : "GROWING"));
+    local maxY = vineSystem == null ? 0.0 : vineSystem.getMaxTipY();
+    local climbs = vineSystem == null ? 0 : vineSystem.getClimbTransfers();
+    ui.setText("status", format("tips=%d br=%d maxY=%.2f climb=%d  %s",
+        living, branches, maxY, climbs, vinePaused ? "PAUSED" : "GROWING"));
 }
 
 eve_init <- function() {
@@ -235,6 +245,7 @@ eve_init <- function() {
     local physicsMod = eve.Physics();
     vineWorld = physicsMod.newWorld3D(0.0, 0.0, 0.0, false);
     vineBuildScene(vineWorld, vineCube);
+    vineProbeWalls(vineWorld);
 
     vineOriginMarker = vinePlace(vineSphere, 0.0, 0.12, 0.0, 0.18, 0.18, 0.18, 0.55, 1.0, 0.75, false);
     for (local i = 0; i < vineSettings.maxTips; ++i) {
@@ -271,17 +282,28 @@ eve_update <- function(dt) {
         vineSystem.update(vineWorld, step);
         vineSyncBranchVisuals();
         vineSyncTipMarkers();
+        if (vineAge > 1.5 && vineAge - step <= 1.5) {
+            print(format("SURFACE_VINE_CLIMB age=1.5 maxY=%.2f transfers=%d wallFrames=%d tips=%d\n",
+                vineSystem.getMaxTipY(), vineSystem.getClimbTransfers(),
+                vineSystem.getWallTipFrames(), vineSystem.livingTipCount()));
+        }
+        if (vineAge > 5.0 && vineAge - step <= 5.0) {
+            print(format("SURFACE_VINE_CLIMB age=5.0 maxY=%.2f transfers=%d wallFrames=%d tips=%d\n",
+                vineSystem.getMaxTipY(), vineSystem.getClimbTransfers(),
+                vineSystem.getWallTipFrames(), vineSystem.livingTipCount()));
+        }
     }
 
-    local eyeR = 14.5;
-    local eyeY = 7.8;
-    vineCamera.setEye(0.5 + cos(vineOrbit) * eyeR, eyeY, 0.8 + sin(vineOrbit) * eyeR);
-    vineCamera.setTarget(0.5, 1.4, 0.8);
+    local eyeR = 11.5;
+    local eyeY = 5.8;
+    vineCamera.setEye(-0.4 + cos(vineOrbit) * eyeR, eyeY, 0.2 + sin(vineOrbit) * eyeR);
+    vineCamera.setTarget(-0.6, 1.8, 0.0);
 
-    if (!vineScreenshotSaved && vineAge > 2.8) {
+    if (!vineScreenshotSaved && vineAge > 5.2) {
         if (gfx.saveFramePng("surface-vine-growth.png")) {
             vineScreenshotSaved = true;
-            print("SURFACE_VINE_SCREENSHOT path=surface-vine-growth.png\n");
+            print(format("SURFACE_VINE_SCREENSHOT path=surface-vine-growth.png maxY=%.2f climbs=%d\n",
+                vineSystem.getMaxTipY(), vineSystem.getClimbTransfers()));
         }
     }
 };
