@@ -49,7 +49,13 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         self.assertIn("emulator-boot-timeout: 1800", block)
         self.assertIn("-gpu swiftshader", block)
         self.assertIn("-accel on", block)
-        self.assertIn("-partition-size 8192", block)
+        # 8192 needs ~9.8 GB free under ~/.android/avd; ubuntu-latest often has
+        # only 6–10 GB left after the API 35 system image, so AVD creation
+        # fatally aborts. Peak /data use for sequential ~380 MB APK installs is
+        # ~1.7 GB — 4096 is enough, and the free-disk step clears unused hosts
+        # toolchains so that budget still fits after the system-image download.
+        self.assertIn("-partition-size 4096", block)
+        self.assertIn("Free host disk for emulator userdata", block)
         self.assertIn("-wipe-data", block)
         self.assertIn("disable-linux-hw-accel: false", block)
         self.assertIn("Enable KVM access", block)
