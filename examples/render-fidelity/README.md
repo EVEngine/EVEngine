@@ -41,7 +41,7 @@ xvfb-run -a ../../build/linux-debug/src/engine/eve run --debug --mcp-port=7529
 | P0 | `5` | 体积雾：froxel + 场景光注入（真实 CSM 采样仍是后续项） |
 | P1 | `6` | 材质扩展：叶片透射 SSS + clearcoat 球 |
 | P1 | `7` | IBL / probe：预过滤 cubemap + box env probe |
-| P1 | `8` | 反射链：`reflectionChain`（TAA + RTGI + SSR） |
+| P1 | `8` | 反射链：TAA + RTGI（本例关掉 SSR：凸面金属上 SSR 会盖住房间探针，出现竖缝） |
 | P2 | `9` | 虚拟纹理地面 |
 | P2 | `0` | 几何细节：POM + cell bombing |
 
@@ -54,6 +54,7 @@ xvfb-run -a ../../build/linux-debug/src/engine/eve run --debug --mcp-port=7529
 - **点光 cube 阴影**：引擎仍标记为 reserved（`setShadowSchemePointEnabled(false)`）；P0 局部阴影用 spot perspective。
 - **体积雾绑真实 CSM**：本例 froxel 采场景灯；不是 shadow-map 体积阴影。
 - **材质图 MVP / Substrate**：本例用 `setFoliageTranslucency` / `setClearcoat`，不是节点材质图。
+- **IBL 探针**：`setCaptureMask(-1)` 捕捉封闭房间；镜面球 `setReflectionCaptureMask(0)` 不写入 cubemap。相机在室内，前墙带亮窗——开敞入口会在球心反射成黑带。Box probe 对齐墙体半extents。
 - **Virtual Geometry（Nanite 风格）**：另有 `examples/virtualgeometry`；本例 P2 用 VT + POM 代表“细节密度”。
 
 ## 相关实现

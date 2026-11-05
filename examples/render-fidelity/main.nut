@@ -25,7 +25,8 @@ function rfMakeBox(x, y, z, sx, sy, sz, r, g, b, metallic, roughness, castShadow
 
 function rfMakeSphere(x, y, z, scale, r, g, b, metallic, roughness, castShadow) {
     local o = eve.Renderable3D();
-    o.setMesh(gfx.newMeshSphere(40, 24));
+    // Dense tessellation so chrome IBL / SSR wrap without faceted normals.
+    o.setMesh(gfx.newMeshSphere(64, 40));
     o.setPosition(x, y, z);
     o.setScale(scale, scale, scale);
     o.setTint(r, g, b, 1.0);
@@ -76,19 +77,28 @@ function rfBuildVtMaterial() {
 }
 
 function rfBuildStudioProbe() {
+    // Capture the closed room into a prefiltered cubemap. Sky face colors only
+    // fill empty / out-of-far pixels — keep them soft (never near-white) so chrome
+    // does not bake as blocky rectangles (the old setCaptureMask(0) path).
     local probe = gfx.newReflectionProbeCapture();
-    probe.configure(0.0, 1.4, -0.5, 64, 0.1, 28.0);
+    // Capture near the chrome ladder so floor / walls / ceiling / window fill faces.
+    probe.configure(0.0, 1.15, 0.2, 256, 0.05, 32.0);
     local faces = [
-        [0.72, 0.68, 0.62], [0.42, 0.52, 0.72], [0.95, 0.96, 1.0],
-        [0.10, 0.12, 0.16], [0.62, 0.68, 0.78], [0.40, 0.44, 0.52]
+        [0.48, 0.42, 0.38], // +X
+        [0.30, 0.38, 0.55], // -X
+        [0.62, 0.66, 0.74], // +Y ceiling gap fill
+        [0.22, 0.23, 0.25], // -Y floor gap fill (not black)
+        [0.42, 0.46, 0.52], // +Z
+        [0.40, 0.44, 0.50]  // -Z
     ];
     foreach (i, c in faces) probe.setSkyFaceColor(i, c[0], c[1], c[2]);
-    probe.setCaptureMask(0);
+    // MeshRenderer.reflectionCaptureMask defaults to bit0=1; -1 keeps room props.
+    probe.setCaptureMask(-1);
     probe.requestCapture();
-    for (local attempt = 0; attempt < 24; ++attempt) {
+    for (local attempt = 0; attempt < 64; ++attempt) {
         if (probe.update(6)) break;
     }
-    if (!probe.isCaptureComplete() || !probe.stageCapturedFaces() || !probe.filterAndPublish(64))
+    if (!probe.isCaptureComplete() || !probe.stageCapturedFaces() || !probe.filterAndPublish(128))
         throw "render-fidelity: reflection probe publish failed";
     if (probe.getActiveCubemap() == null)
         throw "render-fidelity: reflection cubemap missing";
@@ -96,8 +106,12 @@ function rfBuildStudioProbe() {
 }
 
 function rfResetCamera() {
-    rf.camera.setEye(0.0, 5.4, 12.2);
-    rf.camera.setTarget(0.0, 1.15, -0.5);
+    // Inside the closed room, pulled back enough to see the chrome ladder.
+    // Mirror-ball centers reflect behind the camera — stay indoors so that
+    // direction is the bright front window, not the exterior void.
+    rf.camera.setEye(0.0, 2.05, 3.9);
+    rf.camera.setTarget(0.0, 0.85, -0.8);
+    rf.camera.setFov(55.0);
 }
 
 function rfSyncVolume() {
@@ -192,13 +206,18 @@ function rfApplyIbl() {
                 return;
             }
         }
-        rf.camera.setEnvMap(rf.probe.getActiveCubemap());
-        rf.camera.setEnvIntensity(0.85);
-        rf.camera.setEnvProbe(0.0, 1.6, -0.8, 7.5, 2.4, 5.5);
-        rf.camera.setAmbient(0.14, 0.16, 0.20);
+        local cube = rf.probe.getActiveCubemap();
+        // Global env is a dim fallback; the local reflection-probe slot owns the room
+        // box projection so chrome samples the captured walls with parallax.
+        rf.camera.setEnvMap(cube);
+        rf.camera.setEnvIntensity(0.25);
+        rf.camera.clearEnvProbe();
+        rf.camera.setReflectionProbe(0, cube, 0.0, 1.15, 0.2, 5.1, 2.5, 5.0, 1.05, 0.75, 10);
+        rf.camera.setAmbient(0.07, 0.08, 0.10);
     } else {
         rf.camera.setEnvIntensity(0.0);
         rf.camera.clearEnvProbe();
+        rf.camera.clearReflectionProbe(0);
         rf.camera.setAmbient(0.22, 0.24, 0.28);
     }
 }
@@ -240,7 +259,15 @@ function rfApplyRenderControl() {
     if (rf.opts.contactShadow) rc.enable("contactShadow"); else rc.disable("contactShadow");
     if (rf.opts.volumetricFog) rc.enable("volumetricFog"); else rc.disable("volumetricFog");
     if (rf.opts.reflectionChain) {
-        rc.enable("reflectionChain");
+        // Enable the temporal/RTGI half of the chain. Skip SSR on this stage:
+        // convex chrome + screen-space hits produce a hard vertical seam that
+        // overrides the room probe (the "broken metal ball" look). Floor SSR
+        // belongs in a dedicated planar-reflection demo.
+        rc.enable("taa");
+        rc.enable("rtgi");
+        rc.disable("ssr");
+        rc.enable("aa");
+        rc.disable("msaa");
         rc.setPostProcessQuality("high");
     } else {
         rc.disable("reflectionChain");
@@ -252,8 +279,13 @@ function rfApplyRenderControl() {
         gfx.setMsaaSamples(4);
         rc.setPostProcessQuality(rf.opts.ao || rf.opts.indirectGi ? "medium" : "low");
     }
-    rf.camera.setBloom(rf.opts.reflectionChain || rf.opts.iblProbes ? 0.16 : 0.10, 1.08);
-    rf.camera.setExposure(rf.opts.volumetricFog ? 0.62 : 0.82);
+    rf.camera.setBloom(rf.opts.reflectionChain || rf.opts.iblProbes ? 0.12 : 0.10, 1.05);
+    // IBL chrome already carries room radiance — pull exposure down so reflections
+    // do not clip to flat white patches on the lower hemisphere.
+    local exposure = 0.82;
+    if (rf.opts.iblProbes) exposure = 0.58;
+    else if (rf.opts.volumetricFog) exposure = 0.62;
+    rf.camera.setExposure(exposure);
     rc.compile();
 }
 
@@ -268,7 +300,7 @@ function rfRefreshHud() {
     ui.setText("p0e", (rf.opts.volumetricFog ? "[ON] " : "[  ] ") + "5 Volumetric fog");
     ui.setText("p1a", (rf.opts.materialExt ? "[ON] " : "[  ] ") + "6 Material SSS/clearcoat");
     ui.setText("p1b", (rf.opts.iblProbes ? "[ON] " : "[  ] ") + "7 IBL + box probe");
-    ui.setText("p1c", (rf.opts.reflectionChain ? "[ON] " : "[  ] ") + "8 Reflection chain");
+    ui.setText("p1c", (rf.opts.reflectionChain ? "[ON] " : "[  ] ") + "8 Reflection chain (TAA+RTGI)");
     ui.setText("p2a", (rf.opts.virtualTexture ? "[ON] " : "[  ] ") + "9 Virtual texture ground");
     ui.setText("p2b", (rf.opts.meshDetail ? "[ON] " : "[  ] ") + "0 POM + cell bomb");
 }
@@ -349,20 +381,29 @@ function rfToggle(name) {
 
 function rfBuildScene() {
     rf.objects = [];
-    rf.ground = rfMakeBox(0.0, -0.12, -0.4, 16.0, 0.16, 12.0, 0.16, 0.17, 0.19, 0.08, 0.88, false);
-    rfMakeBox(0.0, 2.5, -5.5, 16.0, 5.2, 0.22, 0.18, 0.19, 0.22, 0.04, 0.82, true);
-    rfMakeBox(-5.4, 1.4, -1.0, 0.35, 2.8, 5.0, 0.78, 0.12, 0.08, 0.04, 0.70, true);
-    rfMakeBox(5.4, 1.4, -1.0, 0.35, 2.8, 5.0, 0.10, 0.28, 0.78, 0.04, 0.70, true);
+    // Fully closed Cornell-like room. Mirror balls need every direction filled —
+    // an open front reflects as a dark equatorial band from typical camera angles.
+    rf.ground = rfMakeBox(0.0, -0.12, -0.4, 12.0, 0.16, 10.0, 0.50, 0.51, 0.53, 0.02, 0.74, false);
+    rfMakeBox(0.0, 3.85, -0.4, 12.0, 0.16, 10.0, 0.82, 0.84, 0.88, 0.0, 0.90, false); // ceiling
+    rfMakeBox(0.0, 1.9, -5.2, 12.0, 4.0, 0.20, 0.62, 0.63, 0.65, 0.02, 0.82, true);   // back
+    rfMakeBox(-5.0, 1.9, -0.4, 0.20, 4.0, 10.0, 0.78, 0.12, 0.08, 0.02, 0.70, true);  // left
+    rfMakeBox(5.0, 1.9, -0.4, 0.20, 4.0, 10.0, 0.10, 0.28, 0.78, 0.02, 0.70, true);   // right
+    // Front wall with a bright window band so chrome center is not a black void.
+    rfMakeBox(0.0, 1.9, 4.9, 12.0, 4.0, 0.20, 0.58, 0.60, 0.64, 0.02, 0.80, true);
+    rfMakeBox(0.0, 2.35, 4.75, 4.8, 1.7, 0.08, 0.95, 0.96, 0.98, 0.0, 0.32, false);
 
-    // Contact-shadow casters close to the floor / walls.
-    rfMakeBox(-2.4, 0.55, 0.6, 0.9, 1.1, 0.9, 0.42, 0.40, 0.36, 0.12, 0.55, true);
-    rfMakeBox(0.2, 1.05, -1.6, 0.7, 2.1, 0.7, 0.32, 0.36, 0.44, 0.40, 0.35, true);
-    rfMakeBox(2.8, 0.42, 0.2, 1.4, 0.84, 0.7, 0.55, 0.48, 0.30, 0.08, 0.68, true);
+    // Contact-shadow casters — warmer / cooler tints so they read in chrome IBL.
+    rfMakeBox(-2.4, 0.55, 0.4, 0.9, 1.1, 0.9, 0.72, 0.55, 0.28, 0.08, 0.48, true);
+    rfMakeBox(0.2, 1.05, -1.8, 0.7, 2.1, 0.7, 0.28, 0.55, 0.42, 0.25, 0.38, true);
+    rfMakeBox(2.8, 0.42, 0.1, 1.4, 0.84, 0.7, 0.82, 0.78, 0.70, 0.05, 0.62, true);
 
-    local roughness = [0.06, 0.22, 0.48, 0.82];
+    // Chrome roughness ladder. Exclude from probe capture so the cubemap sees the
+    // room (walls / ceiling / boxes) instead of baking the spheres into themselves.
+    local roughness = [0.05, 0.18, 0.40, 0.75];
     for (local i = 0; i < 4; ++i) {
-        local x = -3.2 + i * 2.1;
-        rfMakeSphere(x, 0.55, 2.0, 0.52, 0.86, 0.88, 0.90, 0.72, roughness[i], true);
+        local x = -3.0 + i * 2.0;
+        local ball = rfMakeSphere(x, 0.55, 1.2, 0.50, 0.70, 0.72, 0.74, 1.0, roughness[i], true);
+        ball.setReflectionCaptureMask(0);
     }
 
     rf.coatMat = gfx.newMaterial();
@@ -370,14 +411,16 @@ function rfBuildScene() {
     rf.coatMat.setMetallic(0.05);
     rf.coatMat.setRoughness(0.28);
     rf.coat = eve.Renderable3D();
-    rf.coat.setMesh(gfx.newMeshSphere(40, 24));
-    rf.coat.setPosition(4.4, 0.62, 1.5);
+    rf.coat.setMesh(gfx.newMeshSphere(48, 28));
+    rf.coat.setPosition(4.0, 0.62, 1.0);
     rf.coat.setScale(0.58, 0.58, 0.58);
     rf.coat.setMaterial(rf.coatMat);
     rf.coat.setCastShadow(true);
     rf.coat.setReceiveShadow(true);
+    rf.coat.setReflectionCaptureMask(0);
     rf.objects.append(rf.coat);
 
+    // Foliage card kept away from chrome so it does not read as a "green pole" in IBL.
     rf.leafMat = gfx.newMaterial();
     rf.leafMat.setTint(0.22, 0.48, 0.16, 1.0);
     rf.leafMat.setRoughness(0.72);
@@ -385,12 +428,15 @@ function rfBuildScene() {
     rf.leafMat.setDoubleSided(true);
     rf.leaf = eve.Renderable3D();
     rf.leaf.setMesh(gfx.newMeshCube(1.0));
-    rf.leaf.setPosition(-4.2, 1.2, 1.8);
-    rf.leaf.setScale(0.05, 1.5, 0.9);
-    rf.leaf.setYaw(0.4);
+    rf.leaf.setPosition(-3.6, 1.35, -2.4);
+    rf.leaf.setScale(0.04, 1.7, 1.1);
+    rf.leaf.setYaw(0.55);
     rf.leaf.setMaterial(rf.leafMat);
     rf.leaf.setCastShadow(true);
     rf.leaf.setReceiveShadow(true);
+    // Keep the card in the live scene, but out of the probe — a 4cm slab reads as
+    // a mysterious green "pole" stripe inside chrome reflections.
+    rf.leaf.setReflectionCaptureMask(0);
     rf.objects.append(rf.leaf);
 }
 
