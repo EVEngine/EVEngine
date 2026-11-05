@@ -191,7 +191,9 @@ Vec3 stratifyDisplace(Vec3 p, Vec3 outward, Vec3 surfN, const NoiseField& noise,
     const float f1    = noise.worleyF1(wu, wv, 0.9f);
     const float f2    = noise.worleyF2(wu, wv, 0.9f);
     const float block = std::clamp((f2 - f1) * 2.4f - 0.10f, -1.f, 1.f);
-    const float grit = noise.fbm(p.x * s.strataScale * 3.1f, p.y * s.strataScale * 2.2f, p.z * s.strataScale * 3.1f, 3);
+    // NoiseField::fbm is 2D (x, y, octaves); fold Z into U so MSVC /WX stays clean.
+    const float grit =
+        noise.fbm(p.x * s.strataScale * 3.1f + p.z * s.strataScale * 1.7f, p.y * s.strataScale * 2.2f, 3);
     const float crack =
         std::pow(std::fabs(noise.valueNoise(p.x * s.strataScale * 1.4f + p.z * 0.7f, p.y * 0.12f) - 0.5f) * 2.f, 2.2f);
 
