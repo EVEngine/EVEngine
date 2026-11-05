@@ -126,10 +126,14 @@ function vineCreateSystem(settings) {
         local nyPos = hy + ny2 * 0.03;
         local nzPos = hz + nz2 * 0.03;
         // If the mount jumps too far, drop a corner sample so the ribbon stays on geometry.
+        // Never accept a large free-space jump — keep mounts local to avoid air chords.
         local jump = vlen(nxPos - tip.x, nyPos - tip.y, nzPos - tip.z);
-        if (jump > 0.35) {
-            appendPoint(tip.branch, tip.x, tip.y, tip.z);
-            appendPoint(tip.branch, tip.x * 0.35 + nxPos * 0.65, tip.y, tip.z * 0.35 + nzPos * 0.65);
+        if (jump > 0.55) return false;
+        if (fabs(nyPos - tip.y) > 0.45 && isWallNormal(nx2, ny2, nz2)) {
+            // Prefer climbing the current face instead of teleporting onto a higher ledge.
+            nyPos = tip.y + ny2 * 0.03;
+            jump = vlen(nxPos - tip.x, nyPos - tip.y, nzPos - tip.z);
+            if (jump > 0.55) return false;
         }
         tip.nx = nx2;
         tip.ny = ny2;
