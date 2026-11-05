@@ -14,6 +14,7 @@ persist vinePaused = false
 persist vineCasts = 0
 persist vineLastSpace = false
 persist vineReadyPrinted = false
+persist vineScreenshotSaved = false
 persist vineSettings = {
     seed = 20261105,
     rootCount = 8,
@@ -276,10 +277,18 @@ eve_update <- function(dt) {
     local eyeY = 7.8;
     vineCamera.setEye(0.5 + cos(vineOrbit) * eyeR, eyeY, 0.8 + sin(vineOrbit) * eyeR);
     vineCamera.setTarget(0.5, 1.4, 0.8);
+
+    if (!vineScreenshotSaved && vineAge > 2.8) {
+        if (gfx.saveFramePng("surface-vine-growth.png")) {
+            vineScreenshotSaved = true;
+            print("SURFACE_VINE_SCREENSHOT path=surface-vine-growth.png\n");
+        }
+    }
 };
 
 eve_render <- function() {
     gfx.clear();
     gfx.render3D();
-    ui.render();
+    ui.select("vine");
+    ui.beginFrameAndRender();
 };
