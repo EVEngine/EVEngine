@@ -73,6 +73,22 @@ AI 改「有 schema 的事实」；脚本只写无法数据化的行为。
 - 玩法观察 / 操作：`game.agent.json` + `eve_play`。**禁止把 `eve_eval` 教成过关手段。**
 - 生成脚本后的闭环：查 API → 编译诊断 → 真实帧 → `eve_screenshot` / observe → 证据会话。
 
+### 层 D — 素材像素合同（Asset Kits）
+
+AI 生图前必须拿到引擎声明的尺寸 / 比例 / 透明通道 / 路径模板，而不是猜 Unity 卡牌
+分辨率或视觉小说立绘比例。
+
+| 入口 | 用途 |
+| --- | --- |
+| MCP `eve_asset_kit_list` / `eve_asset_kit_get` | 运行时发现（只读；各 task profile 可用） |
+| `cmake/sdk/asset-kits/catalog.json` | 源码真源；`python3 scripts/asset_kits.py list\|get\|validate` |
+| SDK `share/eve/ai/asset-kits/` | 解压 SDK 后离线可读（与 MCP 嵌入目录同源） |
+
+首批 kit：`card.playing`（262×372）、`card.collectible`（512×724）、
+`visual-novel.dialogue`（立绘 1024×1536 / 显示 256×384，背景 1920×1080）。
+说明见 [`cmake/sdk/asset-kits/README.md`](../../cmake/sdk/asset-kits/README.md)。
+引擎拥有合同与验收宿主；像素创意仍由引擎外图像模型生成（与 [白膜引导管线](2026-11-03-2d-action-ai-guide-pipeline.md) 同构）。
+
 ## 编译器当老师
 
 绑定合同已进入 LSP hover/补全。MCP `eve_api_search` 使用同一份合同，避免 Agent 对着 40 个模块手册猜。

@@ -7,6 +7,11 @@
 
 面向卡牌游戏（炉石 / MTGA / 杀戮尖塔风格）的通用 UI 工具集：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、敌方手牌背面与偷看、费用不足置灰，以及 UiCard 同款的可实时调节布局参数。参考 [ycarowr/UiCard](https://github.com/ycarowr/UiCard) 的功能面实现，以 C++ 模块提供（布局/交互/渲染均在本模块内完成）。
 
+**AI 生图尺寸：** 不要猜分辨率。先查 asset kit `card.playing`（扑克面 262×372）或
+`card.collectible`（CCG 面 512×724）；MCP `eve_asset_kit_get`，或
+[`cmake/sdk/asset-kits/`](../../../cmake/sdk/asset-kits/README.md)。默认布局
+`LayoutConfig.cardW/cardH` = 110×150。
+
 ## 基本用法
 
 ```squirrel

@@ -70,6 +70,14 @@ eve_render <- function() {
 - SDK and tree: `share/eve/examples/basic/main.nut` or `examples/basic/main.nut` — persist, physics, particles, lifecycle
 - Engine tree only: `examples/ecs/main.nut` (Component / Entity / System), `examples/primitive-drawing/main.nut` (Result tables)
 
+## Generating art assets
+
+Before inventing image sizes for cards or visual novels, read an **asset kit**:
+MCP `eve_asset_kit_list` / `eve_asset_kit_get`, or SDK `share/eve/ai/asset-kits/catalog.json`
+(source tree: `cmake/sdk/asset-kits/`). Kits name `pixelSize`, aspect ratio, alpha rules,
+`pathPattern`, and EveScript consumer hints (`setArt`, Avatar layers, …). Do not guess
+Unity/Godot texture sizes.
+
 ## Runtime agents
 
 - Observe/act through `eve_play` when `game.agent.json` exists. Do **not** teach `eve_eval` to change HP or skip puzzles.

@@ -476,6 +476,7 @@ TEST_CASE("devtools.ActionGuide validate set get landmarks and absent capture") 
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_whitebox)
 // The source catalogue groups recipe/workshop MCP tests with the whitebox origin.
+#include "devtools/McpAssetKitTools.hpp"
 #include "devtools/McpRecipeTools.hpp"
 #include "devtools/McpTaskProfile.hpp"
 #include "devtools/McpToolFilter.hpp"
@@ -486,6 +487,30 @@ Poco::JSON::Object::Ptr result(const std::string& response) {
     auto               envelope = parser.parse(response).extract<Poco::JSON::Object::Ptr>();
     return parser.parse(envelope->getArray("content")->getObject(0)->getValue<std::string>("text"))
         .extract<Poco::JSON::Object::Ptr>();
+}
+TEST_CASE("devtools.Asset kit list/get: discover pixel contracts without a live VM") {
+    CHECK(eve::dev::isMcpAssetKitTool("eve_asset_kit_list"));
+    CHECK(eve::dev::isMcpAssetKitTool("eve_asset_kit_get"));
+    CHECK(!eve::dev::mcpToolMutates("eve_asset_kit_list"));
+    CHECK(!eve::dev::mcpToolMutates("eve_asset_kit_get"));
+    CHECK(eve::dev::mcpProfileAllowsTool("verify.play", "eve_asset_kit_list"));
+    CHECK(eve::dev::mcpProfileAllowsTool("content.scene", "eve_asset_kit_get"));
+    auto listed = result(eve::dev::callMcpAssetKitTool("eve_asset_kit_list", {}));
+    REQUIRE(listed->getValue<bool>("ok"));
+    CHECK(listed->getValue<int>("count") >= 3);
+    Poco::JSON::Parser parser;
+    auto               args =
+        parser.parse(R"({"id":"visual-novel.dialogue"})").extract<Poco::JSON::Object::Ptr>();
+    auto kitDoc = result(eve::dev::callMcpAssetKitTool("eve_asset_kit_get", args));
+    REQUIRE(kitDoc->getValue<bool>("ok"));
+    auto kit = kitDoc->getObject("kit");
+    REQUIRE(kit);
+    CHECK_EQ(kit->getValue<std::string>("id"), std::string("visual-novel.dialogue"));
+    REQUIRE(kit->isArray("slots"));
+    CHECK(kit->getArray("slots")->size() >= 2);
+    auto missingArgs = parser.parse(R"({"id":"no.such.kit"})").extract<Poco::JSON::Object::Ptr>();
+    auto missing     = result(eve::dev::callMcpAssetKitTool("eve_asset_kit_get", missingArgs));
+    CHECK(!missing->getValue<bool>("ok"));
 }
 TEST_CASE("devtools.Recipe list: discover recipes without a live VM") {
     CHECK(eve::dev::isMcpRecipeTool("eve_recipe_list"));

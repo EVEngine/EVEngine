@@ -102,6 +102,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_scene_director_install` / `eve_scene_director_status` / `eve_scene_reset` / `eve_scene_modify` / `eve_scene_batch` / `eve_scene_info` / `eve_camera_generate` / `eve_whitebox_playtest` | AI 场景导演：搭台 kit / 单步与批量摆物 / 快速白盒游玩测试（见 [AI 场景导演](AI场景导演.md)、[`tools/whitebox-playtest`](../../tools/whitebox-playtest/)） |
 | `eve_action_guide_pack_validate` / `_set` / `_get` / `eve_action_guide_landmarks` / `eve_action_guide_capture` / `_status` / `_export` / `_ingest` / `_verify` | 2D 动作白膜引导包：校验/会话、关节投影、capture→export、候选帧 ingest（sequence + ability draft）、几何 verify（silhouette IoU / joint）；GPU AOV 需 `IActionGuideCapture`（见 [白膜引导管线](2026-11-03-2d-action-ai-guide-pipeline.md)） |
 | `eve_recipe_list` / `eve_recipe_apply` | 内容 recipe：注册表 id + 少量 params → 一次 `scene_director.batch` 事务（`content.scene` / workshop 转发） |
+| `eve_asset_kit_list` / `eve_asset_kit_get` | AI 素材合同：卡牌 / 视觉小说等 slot 的 `pixelSize`、比例、透明通道、`pathPattern`、生成约束与 EveScript 消费提示（只读；源 `cmake/sdk/asset-kits/`，SDK `share/eve/ai/asset-kits/`） |
 | `eve_workshop` | 工坊窄 facade：`status` / `set_mode` / `recipe.apply` / `map.brush` / `play.observe` / `play.submit`（仅 `workshop.rpg`） |
 | `eve_procgen_recipes` / `eve_procgen_map` / `eve_procgen_mesh` | 程序化生成：算法/配方枚举、生成地图网格、构建网格 |
 | `eve_physics_new_world` / `eve_physics_list_worlds` / `eve_physics_raycast` / `eve_physics_remove_world` | 2D 物理世界与射线检测 |

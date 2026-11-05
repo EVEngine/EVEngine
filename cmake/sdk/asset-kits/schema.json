@@ -1,0 +1,175 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://evengine.dev/schema/eve.asset-kit.catalog.json",
+  "title": "EVEngine AI asset kit catalog",
+  "description": "Engine-owned pixel/format contracts so AI agents generate game art at sizes the modules actually consume.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "schemaVersion", "kits"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "eve.asset-kit.catalog"
+    },
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "kits": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/kit" }
+    }
+  },
+  "definitions": {
+    "sizePx": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "slot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "role",
+        "required",
+        "pixelSize",
+        "aspectRatio",
+        "format",
+        "colorType",
+        "alpha",
+        "pathPattern",
+        "constraints"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable slot id within the kit (face, back, background, portrait, …)."
+        },
+        "role": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human/agent-facing purpose of this slot."
+        },
+        "required": { "type": "boolean" },
+        "count": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "min": { "type": "integer", "minimum": 0 },
+            "max": { "type": "integer", "minimum": 0 },
+            "typical": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "pixelSize": { "$ref": "#/definitions/sizePx" },
+        "aspectRatio": {
+          "type": "string",
+          "pattern": "^[0-9]+(\\.[0-9]+)?:[0-9]+(\\.[0-9]+)?$",
+          "description": "Canonical width:height ratio agents must preserve."
+        },
+        "format": {
+          "type": "string",
+          "enum": ["png", "webp", "jpg"]
+        },
+        "colorType": {
+          "type": "string",
+          "enum": ["rgba", "rgb", "gray"]
+        },
+        "alpha": {
+          "type": "string",
+          "enum": ["required", "optional", "forbidden"]
+        },
+        "displaySize": {
+          "allOf": [{ "$ref": "#/definitions/sizePx" }],
+          "description": "On-screen size the engine example draws; may be smaller than pixelSize."
+        },
+        "pathPattern": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Project-relative path template with {placeholders}."
+        },
+        "safeMargin": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.45,
+          "description": "Fraction of each edge that must stay clear of critical content."
+        },
+        "constraints": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        },
+        "promptTemplate": {
+          "type": "string",
+          "description": "Optional generation prompt skeleton; fill {placeholders}."
+        },
+        "consumer": {
+          "type": "string",
+          "description": "How EveScript / modules bind the finished file."
+        }
+      }
+    },
+    "kit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "genre",
+        "title",
+        "summary",
+        "modules",
+        "window",
+        "slots"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+([.-][a-z0-9]+)+$",
+          "description": "Stable kit id (card.playing, visual-novel.dialogue, …)."
+        },
+        "genre": {
+          "type": "string",
+          "enum": ["card", "visual-novel", "action-2d", "avatar", "other"]
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string", "minLength": 1 },
+        "modules": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "description": "Root script slots / module names that consume these assets."
+        },
+        "referenceExample": {
+          "type": "string",
+          "description": "Repository example path that already follows this kit."
+        },
+        "window": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["width", "height"],
+          "properties": {
+            "width": { "type": "integer", "minimum": 1 },
+            "height": { "type": "integer", "minimum": 1 },
+            "notes": { "type": "string" }
+          }
+        },
+        "layoutDefaults": {
+          "type": "object",
+          "description": "Optional module layout numbers agents should match (e.g. cardW/cardH).",
+          "additionalProperties": true
+        },
+        "slots": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/definitions/slot" }
+        }
+      }
+    }
+  }
+}

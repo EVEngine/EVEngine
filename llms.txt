@@ -17,7 +17,8 @@
 - [docs/dev/API-CONVENTIONS.md](docs/dev/API-CONVENTIONS.md): `eve.X()`, errors, ownership
 - Module guides with problem headers: e.g. [sensing](docs/usr/modules/sensing.md), [spatial](docs/usr/modules/spatial.md)
 - Binding catalog: `python3 scripts/generate_binding_contracts.py --json-output eve-api.json`
-- SDK zip (no git tree): `share/eve/ai/eve-api.json` + `share/eve/ai/SKILL.md` + root `llms.txt`
+- Asset kits (card / visual-novel pixel contracts for image gen): MCP `eve_asset_kit_list` / `eve_asset_kit_get`, or `cmake/sdk/asset-kits/catalog.json` / SDK `share/eve/ai/asset-kits/`
+- SDK zip (no git tree): `share/eve/ai/eve-api.json` + `share/eve/ai/SKILL.md` + `share/eve/ai/asset-kits/` + root `llms.txt`
 
 ## For runtime agents
 
