@@ -26,6 +26,9 @@ persist skins = []
 persist dynamic = null
 persist hairChainCount = 0
 persist clothModule = null
+persist physics = null
+persist bodyWorld = null
+persist bodyColliders = []
 persist cape = null
 persist capeCols = 11
 persist capeRows = 14
@@ -54,6 +57,10 @@ const L_SHOULDER = "J_Bip_L_Shoulder"
 const R_SHOULDER = "J_Bip_R_Shoulder"
 const L_UPPER_ARM = "J_Bip_L_UpperArm"
 const R_UPPER_ARM = "J_Bip_R_UpperArm"
+const L_UPPER_LEG = "J_Bip_L_UpperLeg"
+const R_UPPER_LEG = "J_Bip_R_UpperLeg"
+const L_LOWER_LEG = "J_Bip_L_LowerLeg"
+const R_LOWER_LEG = "J_Bip_R_LowerLeg"
 
 function edgePressed(name) {
     local down = keyboard.isDown(name)
@@ -90,6 +97,104 @@ function worldPos(name) {
         pose.getWorldPositionY(i) + offsetY,
         pose.getWorldPositionZ(i)
     ]
+}
+
+function midWorld(a, b) {
+    local pa = worldPos(a)
+    local pb = worldPos(b)
+    return [
+        (pa[0] + pb[0]) * 0.5,
+        (pa[1] + pb[1]) * 0.5,
+        (pa[2] + pb[2]) * 0.5
+    ]
+}
+
+function vlen3(v) {
+    return sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+}
+
+function vnorm3(v) {
+    local l = vlen3(v)
+    if (l < 1e-6) return [0.0, 0.0, -1.0]
+    return [v[0] / l, v[1] / l, v[2] / l]
+}
+
+function vcross3(a, b) {
+    return [
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0]
+    ]
+}
+
+function bodyAxes() {
+    // Shoulder line defines character right; back faces opposite the camera-facing torso.
+    local left = worldPos(L_SHOULDER)
+    local right = worldPos(R_SHOULDER)
+    local rightAxis = vnorm3([right[0] - left[0], right[1] - left[1], right[2] - left[2]])
+    local upAxis = [0.0, 1.0, 0.0]
+    local backAxis = vnorm3(vcross3(rightAxis, upAxis))
+    // Prefer a back that points toward -Z in bind so the cape (behind) hits the shield.
+    if (backAxis[2] > 0.0) {
+        backAxis = [-backAxis[0], -backAxis[1], -backAxis[2]]
+        rightAxis = [-rightAxis[0], -rightAxis[1], -rightAxis[2]]
+    }
+    return { right = rightAxis, back = backAxis }
+}
+
+function addBackSphere(radius) {
+    local body = bodyWorld.newBody("kinematic", 0.0, 0.0, 0.0)
+    body.newSphereShape(radius, 1.0, 0.4, 0.0)
+    return body
+}
+
+function buildBodyColliders() {
+    if (physics == null) physics = eve.Physics()
+    bodyWorld = physics.newWorld3D(0.0, -9.8, 0.0, true)
+    bodyColliders = []
+    // Back-facing shield: a lattice of spheres on the outside of clothing so the cape
+    // cannot wrap around a single center sphere into the shirt from the front.
+    local rows = [
+        { bone = UPPER_CHEST_BONE, back = 0.10, ys = 0.00, xs = [-0.14, -0.07, 0.0, 0.07, 0.14], r = 0.09 },
+        { bone = CHEST_BONE, back = 0.11, ys = 0.00, xs = [-0.15, -0.075, 0.0, 0.075, 0.15], r = 0.10 },
+        { bone = SPINE_BONE, back = 0.12, ys = 0.00, xs = [-0.13, -0.065, 0.0, 0.065, 0.13], r = 0.10 },
+        { bone = HIPS_BONE, back = 0.11, ys = 0.02, xs = [-0.12, -0.06, 0.0, 0.06, 0.12], r = 0.10 }
+    ]
+    foreach (row in rows) {
+        foreach (x in row.xs) {
+            bodyColliders.append({
+                body = addBackSphere(row.r), kind = "back",
+                bone = row.bone, x = x, y = row.ys, back = row.back, radius = row.r
+            })
+        }
+    }
+    // Thigh outsides — keep the lower cape from slicing through the legs.
+    foreach (spec in [
+        { bone = L_UPPER_LEG, x = -0.04, y = -0.05, back = 0.07, r = 0.09 },
+        { bone = R_UPPER_LEG, x = 0.04, y = -0.05, back = 0.07, r = 0.09 },
+        { bone = L_LOWER_LEG, x = -0.02, y = -0.02, back = 0.05, r = 0.075 },
+        { bone = R_LOWER_LEG, x = 0.02, y = -0.02, back = 0.05, r = 0.075 }
+    ]) {
+        bodyColliders.append({
+            body = addBackSphere(spec.r), kind = "back",
+            bone = spec.bone, x = spec.x, y = spec.y, back = spec.back, radius = spec.r
+        })
+    }
+    print("BODY_COLLIDERS=" + bodyColliders.len() + "\n")
+}
+
+function syncBodyColliders() {
+    local axes = bodyAxes()
+    foreach (c in bodyColliders) {
+        local p = worldPos(c.bone)
+        local x = c.x
+        local y = c.y
+        local back = c.back
+        c.body.setPosition(
+            p[0] + axes.right[0] * x + axes.back[0] * back,
+            p[1] + y + axes.back[1] * back,
+            p[2] + axes.right[2] * x + axes.back[2] * back)
+    }
 }
 
 function hairSegIndex(name) {
@@ -171,7 +276,8 @@ function loadCharacter() {
         })
     }
     foreach (required in [HEAD_BONE, HIPS_BONE, SPINE_BONE, CHEST_BONE, UPPER_CHEST_BONE,
-                          L_SHOULDER, R_SHOULDER, L_UPPER_ARM, R_UPPER_ARM]) {
+                          L_SHOULDER, R_SHOULDER, L_UPPER_ARM, R_UPPER_ARM,
+                          L_UPPER_LEG, R_UPPER_LEG, L_LOWER_LEG, R_LOWER_LEG]) {
         if (!(required in bones)) throw "Missing required bone: " + required
     }
 
@@ -195,26 +301,22 @@ function loadCharacter() {
 }
 
 function capeTopAnchor(t) {
-    // t in [0,1]: left shoulder → upper chest → right shoulder, with a slight back offset.
+    // t in [0,1] across a line behind the upper back (not on the shoulder bones),
+    // so pinned particles stay outside clothing and the back-shield colliders.
     local left = worldPos(L_SHOULDER)
     local right = worldPos(R_SHOULDER)
     local chest = worldPos(UPPER_CHEST_BONE)
-    local x = 0.0
-    local y = 0.0
-    local z = 0.0
-    if (t < 0.5) {
-        local u = t * 2.0
-        x = left[0] + (chest[0] - left[0]) * u
-        y = left[1] + (chest[1] - left[1]) * u
-        z = left[2] + (chest[2] - left[2]) * u
-    } else {
-        local u = (t - 0.5) * 2.0
-        x = chest[0] + (right[0] - chest[0]) * u
-        y = chest[1] + (right[1] - chest[1]) * u
-        z = chest[2] + (right[2] - chest[2]) * u
-    }
-    // Bias the shawl slightly behind the torso.
-    return [x, y - 0.02, z - 0.08]
+    local axes = bodyAxes()
+    local across = 0.16
+    local x = chest[0] + axes.right[0] * (-across + 2.0 * across * t)
+    local y = chest[1] - 0.03
+    local z = chest[2] + axes.right[2] * (-across + 2.0 * across * t)
+    local back = 0.26
+    return [
+        x + axes.back[0] * back,
+        y + axes.back[1] * back,
+        z + axes.back[2] * back
+    ]
 }
 
 function layoutCape() {
@@ -231,7 +333,7 @@ function layoutCape() {
             local anchor = capeTopAnchor(t)
             local x = anchor[0]
             local y = topY - row.tofloat() * capeSpacing
-            local z = backZ - row.tofloat() * capeSpacing * 0.15
+            local z = backZ - row.tofloat() * capeSpacing * 0.28
             cape.setParticlePosition(row * capeCols + col, x, y, z)
         }
     }
@@ -239,19 +341,24 @@ function layoutCape() {
 
 function buildCape() {
     if (clothModule == null) clothModule = eve.Cloth()
+    if (bodyWorld == null) buildBodyColliders()
     cape = clothModule.newCloth3D(capeCols, capeRows, capeSpacing, -0.3, 1.4, -0.2)
     cape.setGravity(0.0, -9.8, 0.0)
     cape.setStiffness(0.92)
-    cape.setIterations(6)
+    cape.setIterations(8)
     cape.setDamping(0.02)
-    cape.setParticleSize(0.04)
+    // Particle radius doubles as the body-probe margin against kinematic spheres.
+    cape.setParticleSize(0.065)
     cape.setParticleMass(0.03)
     cape.setSelfCollision(true)
     cape.setFoldStiffness(0.55)
     cape.setMaxFoldAngle(140.0)
     cape.setAerodynamics(1.225, 1.05, 0.18)
+    cape.setCollisionMaterial(0.35, 0.0)
     cape.setColor(0.22, 0.28, 0.55, 1.0)
     cape.setBounds(-2.5, -0.2, -2.5, 5.0, 3.0, 5.0)
+    cape.setCollideWorld(bodyWorld)
+    syncBodyColliders()
     layoutCape()
 
     capeAttach = []
@@ -262,7 +369,8 @@ function buildCape() {
         cape.attachParticle(idx, p[0], p[1], p[2], 0.0)
         capeAttach.append({ index = idx, t = t })
     }
-    print("CAPE_ATTACH=" + capeAttach.len() + " particles=" + cape.getParticleCount() + "\n")
+    print("CAPE_ATTACH=" + capeAttach.len() + " particles=" + cape.getParticleCount() +
+          " bodyColliders=" + bodyColliders.len() + "\n")
 }
 
 function syncCapeAttachments() {
@@ -283,9 +391,9 @@ function applyIdlePose(seconds) {
     rotateBone(CHEST_BONE, 0.02 * bob, 0.10 * twist, 0.0)
     rotateBone(UPPER_CHEST_BONE, 0.015 * bob, 0.06 * twist, 0.0)
     rotateBone(HEAD_BONE, 0.05 * sin(seconds * 1.1), 0.18 * twist, 0.04 * sway)
-    // Soft A-pose so the cape clears the arms a bit.
-    rotateBone(L_UPPER_ARM, 0.0, 0.0, -0.55)
-    rotateBone(R_UPPER_ARM, 0.0, 0.0, 0.55)
+    // Stronger A-pose so the cape clears the upper arms.
+    rotateBone(L_UPPER_ARM, 0.0, 0.0, -0.95)
+    rotateBone(R_UPPER_ARM, 0.0, 0.0, 0.95)
 }
 
 function updateFootOffset() {
@@ -337,6 +445,7 @@ function grabPoint() {
 function resetSimulation() {
     if (dynamic != null) dynamic.reset()
     if (cape != null) {
+        syncBodyColliders()
         cape.reset()
         layoutCape()
         syncCapeAttachments()
@@ -363,18 +472,21 @@ eve_init <- function() {
     pose.computeWorld(skeleton)
     updateFootOffset()
     applySkins()
+    buildBodyColliders()
     buildCape()
     syncCapeAttachments()
 
     ready = true
     print("CAPE_HAIR_READY hair=" + hairChainCount + " capeAttach=" + capeAttach.len() +
-          " meshes=" + parts.len() + "\n")
+          " bodyColliders=" + bodyColliders.len() + " meshes=" + parts.len() + "\n")
 }
 
 eve_reload <- function() {
     ready = false
     cape = null
     dynamic = null
+    bodyWorld = null
+    bodyColliders = []
     parts = []
     skins = []
     loadCharacter()
@@ -383,6 +495,7 @@ eve_reload <- function() {
     pose.computeWorld(skeleton)
     updateFootOffset()
     applySkins()
+    buildBodyColliders()
     buildCape()
     syncCapeAttachments()
     ready = true
@@ -430,6 +543,7 @@ eve_update <- function(dt) {
     pose.computeWorld(skeleton)
     updateFootOffset()
     applySkins()
+    syncBodyColliders()
 
     if (cape != null) {
         syncCapeAttachments()
@@ -455,6 +569,8 @@ eve_update <- function(dt) {
             grabbing = false
         }
         prevMouseLeft = leftDown
+        // Kinematic body poses are written directly; cloth probes them during update.
+        if (bodyWorld != null) bodyWorld.update(dt)
         cape.update(dt)
     }
 }
