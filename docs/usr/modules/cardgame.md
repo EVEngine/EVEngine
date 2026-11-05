@@ -67,7 +67,9 @@ if (!configured.ok) throw configured.status.summary;
 
 `update` 逐手牌推进布局与拖拽状态机，并把交互写入事件队列：`getEventType(i)` 为 `"click"`、`"drop"` 或 `"dropRejected"`，`getEventCardId(i)` / `getEventZone(i)` / `getEventHand(i)` / `getEventReason(i)` 给出对应字段；处理完用 `clearEvents()` 清空。拖拽命中落牌区后卡牌**仍留在手牌数组**，由脚本调用 `hand.removeCard(card)` 决定是否离手；不处理则自动归位。
 
-自定义 2D 或 3D 表现可调用 `setBuiltInVisuals(false)`，然后每帧在 `update` 后调用 `capturePresentation()`。`getPresentation(i)` 返回只读布局快照，含实例/定义 ID、位置、尺寸、角度、缩放、透明度与交互状态。快照对象只在下一次 `capturePresentation()` 前有效，不要跨帧保存；用 `getInstanceId()` 关联自己的 Sprite/Renderable。
+自定义 2D 或 3D 表现可调用 `setBuiltInVisuals(false)`，然后每帧在 `update` 后调用 `capturePresentation()`。`getPresentation(i)` 返回只读布局快照，含实例/定义 ID、位置、尺寸、角度、缩放、透明度、交互状态，以及翻牌表现字段：`getFlip`（0=正面朝上 … 1=背面朝上）、`getFlipAngle`（0..180°）、`getFlipLift`、`getFlipAxisScale`（边沿线缩为 0）、`isShowingFront`（过半程换贴图）、`getFlipAxis`。快照对象只在下一次 `capturePresentation()` 前有效，不要跨帧保存；用 `getInstanceId()` 关联自己的 Sprite/Renderable。
+
+翻牌由模块推进，适配器只消费姿态：`setFaceUp(false)` 会把 `flip` 插值到 1；`snapFaceUp` 立即跳变；`LayoutConfig.setFlipSpeed` / `setFlipLift` / `setFlipAxis`（0=绕竖直轴，宽度被压扁；1=绕水平轴）控制手感。手牌 `setFaceDown(true)` 发牌时直接落到背面（不播翻面），之后 `setPeek(true)` 才会播翻开展示。内置 2D `render` 同样吃这套 progress，所以 2D/3D 适配器看到的时间线一致。
 
 Card 不内置固定的卡牌编辑器。项目可用 `setCardDefinition` / `removeCardDefinition`
 增删定义，用按 ID 排序的 `getCardDefinitionId` 枚举定义，再根据自己的 schema 动态组合
@@ -75,7 +77,7 @@ Inspector。编辑器和游戏由此直接消费同一份 Card 运行时数据�
 [`examples/composable-editor/gameplay_components.nut`](../../../examples/composable-editor/gameplay_components.nut)
 展示了用通用 `Schema`、`Definitions` 和 ECS 组合项目专属卡牌工具的做法。
 
-把逻辑手牌映射到 3D 桌面时，用 `newPlaneMapper()` 创建映射器，`setLogicalRect()` 设置 Card 画布，`setPlane()` 设置世界 origin、全宽 U 向量和全高 V 向量。把 `Camera3D.screenToRay()` 的射线交给 `mapRay()`，随后将 `getLogicalX/Y()` 传给 `card.update()`；用 `mapLayout(snapshot.getX(), snapshot.getY())` 取得对应世界坐标。
+把逻辑手牌映射到 3D 桌面时，用 `newPlaneMapper()` 创建映射器，`setLogicalRect()` 设置 Card 画布，`setPlane()` 设置世界 origin、全宽 U 向量和全高 V 向量。把 `Camera3D.screenToRay()` 的射线交给 `mapRay()`，随后将 `getLogicalX/Y()` 传给 `card.update()`；用 `mapLayout(snapshot.getX(), snapshot.getY())` 取得对应世界坐标。需要带翻牌的网格姿态时调用 `mapCardPose(x, y, angle, flip, flipLift, flipAxis)`，再读 `getWorld*`、`getBasisU/V/N*` 与 `isShowingFront()` 去摆 mesh / 换正反面材质——模块不画 3D，只给出桌面上的位置与正交基。
 
 ## 目标导向指南
 
@@ -109,16 +111,16 @@ Inspector。编辑器和游戏由此直接消费同一份 Card 运行时数据�
 
 - `eve.Card()`：`registerCardsFromJson`、`clearCardDefinitions`、`getCardDefinitionCount`、`getCardDefinitionId`、`hasCardDefinition`、`setCardDefinition`、`removeCardDefinition`、`getCardDefinitionName/Kind/Cost/Attack/Health/TintR/TintG/TintB`
 - `eve.Card()` 工厂：`newConfig()`、`newCard(defId)`、`newDeck()`、`newZone(id, label, x, y, w, h)`、`newHand(cfg)`
-- `eve.Card()` 空间适配：`newPlaneMapper()`；`CardPlaneMapper.setLogicalRect/setPlane/mapRay/mapLayout/getLogicalX/getLogicalY/getWorldX/getWorldY/getWorldZ`
+- `eve.Card()` 空间适配：`newPlaneMapper()`；`CardPlaneMapper.setLogicalRect/setPlane/mapRay/mapLayout/mapCardPose/getLogicalX/getLogicalY/getWorldX/getWorldY/getWorldZ/getBasisU*/getBasisV*/getBasisN*/isShowingFront`
 - `eve.Card()` 状态：`setConfig`/`getConfig`、`handCount`/`getHand`/`findHand`、`zoneCount`/`getZone`、`getDeck`、`drawCard(handOwner)`
 - `eve.Card()` 每帧：`update(dt, mx, my, down)`、`render(gfx)`、`renderDeck(gfx)`、`set/getBuiltInVisuals`
 - `eve.Card()` 表现快照：`capturePresentation`、`getPresentationCount`、`getPresentation(index)`
 - `eve.Card()` 玩法协议发布：`publishGameplay(instanceId, ownerId, hand)`、`unpublishGameplay(instanceId)`、`clearGameplayControls`、`getGameplayControlCount`
 - `eve.Card()` 事件：`clearEvents`、`getEventCount`、`getEventType`、`getEventHand`、`getEventZone`、`getEventCardId`、`getEventReason`
 - `eve.Card()` 目标选择：`beginTargeting`、`updateTargeting`、`cancelTargeting`、`renderTargeting`、`isTargeting`、`isTargetValid`、`getTargetSource`、`getTargetId`
-- `LayoutConfig`：`get/setCardW`、`get/setCardH`、`get/setSpacing`、`get/setHandX`、`get/setHandY`、`get/setArcHeight`、`get/setRotationAngle`、`get/setHoverRotation`、`get/setHoverScale`、`get/setHoverLift`、`get/setHoverSpeed`、`get/setMotionSpeed`、`get/setDisabledAlpha`、`get/setShowZones`、`get/setDeckX`、`get/setDeckY`、`get/setDragThreshold`
-- `CardData`：`configureSettlementRulesJson(json)`、`getId/setId`（兼容接口）、`getInstanceId/getDefinitionId`、`getName/setName`、`getKind/setKind`、`getCost/setCost`、`getAttack/setAttack`、`getHealth/setHealth`、`isFaceUp/setFaceUp`、`isDisabled/setDisabled`、`getState/setState`、`getTintR/G/B`、`setTint(r, g, b)`、`setArt/getArt`、`getX/getY/getW/getH/getAngle/getScale/getAlpha`、`isHovered/isDragging`、`hit(px, py)`、`describe()`
-- `CardPresentationSnapshot`：`getInstanceId/getDefinitionId/getState`、`getX/getY/getW/getH/getAngle/getScale/getAlpha`、`isHovered/isDragging/isDisabled/isFaceUp`
+- `LayoutConfig`：`get/setCardW`、`get/setCardH`、`get/setSpacing`、`get/setHandX`、`get/setHandY`、`get/setArcHeight`、`get/setRotationAngle`、`get/setHoverRotation`、`get/setHoverScale`、`get/setHoverLift`、`get/setHoverSpeed`、`get/setMotionSpeed`、`get/setFlipSpeed`、`get/setFlipLift`、`get/setFlipAxis`、`get/setDisabledAlpha`、`get/setShowZones`、`get/setDeckX`、`get/setDeckY`、`get/setDragThreshold`
+- `CardData`：`configureSettlementRulesJson(json)`、`getId/setId`（兼容接口）、`getInstanceId/getDefinitionId`、`getName/setName`、`getKind/setKind`、`getCost/setCost`、`getAttack/setAttack`、`getHealth/setHealth`、`isFaceUp/setFaceUp`、`snapFaceUp`、`getFlip/setFlip`、`isShowingFront`、`isFlipping`、`isDisabled/setDisabled`、`getState/setState`、`getTintR/G/B`、`setTint(r, g, b)`、`setArt/getArt`、`getX/getY/getW/getH/getAngle/getScale/getAlpha`、`isHovered/isDragging`、`hit(px, py)`、`describe()`
+- `CardPresentationSnapshot`：`getInstanceId/getDefinitionId/getState`、`getX/getY/getW/getH/getAngle/getScale/getAlpha`、`isHovered/isDragging/isDisabled/isFaceUp`、`getFlip/getFlipAngle/getFlipLift/getFlipAxisScale/isShowingFront/getFlipAxis`
 - `Deck`：`push`、`draw`、`peek`、`count`、`isEmpty`、`clear`、`shuffle`、`getCard`
 - `Zone`：`getId/setId`、`getLabel/setLabel`、`getX/getY/getW/getH`、`setRect`、`getColorR/G/B`、`setColor(r, g, b)`、`getAlpha/setAlpha`、`isEnabled/setEnabled`、`addAcceptKind`、`clearAcceptKinds`、`accepts`、`contains`、`render`
 - `Hand`：`getOwner/setOwner`、`getConfig/setConfig`、`isFaceDown/setFaceDown`、`isPeek/setPeek`、`isInteractive/setInteractive`、`addCard`、`removeCard`、`clear`、`count`、`getCard`、`findCard`、`pickCard`、`render`

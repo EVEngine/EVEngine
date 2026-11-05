@@ -7,6 +7,7 @@
 #include "graphics/Graphics.h"
 
 #include <algorithm>
+#include <cmath>
 #include <random>
 
 namespace eve::card {
@@ -66,6 +67,34 @@ float frameRateK(float k, float dt) {
     r *= (1.f + frac * (u - 1.f));
     return 1.f - r;
 }
+
+constexpr float kPi = 3.14159265358979323846f;
+}  // namespace
+
+CardFlipPose evaluateCardFlip(float flipProgress, float liftPeak) {
+    CardFlipPose pose;
+    pose.progress     = clampf(flipProgress, 0.f, 1.f);
+    pose.angleRadians = pose.progress * kPi;
+    pose.angleDegrees = pose.progress * 180.f;
+    pose.lift         = std::sin(pose.angleRadians) * liftPeak;
+    pose.axisScale    = std::fabs(std::cos(pose.angleRadians));
+    pose.showingFront = pose.progress < 0.5f;
+    return pose;
+}
+
+void advanceCardFlip(float &flip, float targetFaceDown, float speed, float dt) {
+    const float target = clampf(targetFaceDown, 0.f, 1.f);
+    const float k      = frameRateK(clampf(speed, 0.f, 1.f), dt);
+    flip               = lerpf(flip, target, k);
+    if (std::fabs(flip - target) < 0.0005f) flip = target;
+}
+
+bool resolveCardWantFaceUp(bool cardFaceUp, bool handFaceDown, bool handPeek) {
+    if (handFaceDown) return handPeek;
+    return cardFaceUp;
+}
+
+namespace {
 
 void drawSolid(graphics::Graphics *gfx, float x, float y, float w, float h, float angle,
                const glm::vec4 &color) {
@@ -237,7 +266,6 @@ void renderCardBack(graphics::Graphics *gfx, float x, float y, float w, float h,
 }
 
 void renderCard(graphics::Graphics *gfx, const CardData &cardRef, const LayoutConfig &cfg, bool back) {
-    (void)cfg;
     CardData &card = const_cast<CardData &>(cardRef);
     auto      projected = CardAttributeAdapter::project(card);
     if (!projected) {
@@ -249,16 +277,22 @@ void renderCard(graphics::Graphics *gfx, const CardData &cardRef, const LayoutCo
     const auto *I = card.identity().operator->();
     const auto *S = card.stats().operator->();
 
-    const float w = L->w * L->scale;
-    const float h = L->h * L->scale;
-    const float x = L->x - w * 0.5f;
-    const float y = L->y - h * 0.5f;
+    const CardFlipPose pose     = evaluateCardFlip(V->flip, cfg.flipLift);
+    const bool         showBack = back || !pose.showingFront;
+    const float        baseW    = L->w * L->scale;
+    const float        baseH    = L->h * L->scale;
+    const float        w        = (cfg.flipAxis == 0) ? baseW * pose.axisScale : baseW;
+    const float        h        = (cfg.flipAxis == 1) ? baseH * pose.axisScale : baseH;
+    const float        cx       = L->x;
+    const float        cy       = L->y - pose.lift;
+    const float        x        = cx - w * 0.5f;
+    const float        y        = cy - h * 0.5f;
     const float a = L->alpha;
 
     const RenderTransform previous = gRenderTransform;
-    gRenderTransform = {L->x, L->y, L->angle, true};
+    gRenderTransform               = {cx, cy, L->angle, true};
 
-    if (back || !V->faceUp) {
+    if (showBack) {
         renderCardBack(gfx, x, y, w, h, L->angle, a);
         gRenderTransform = previous;
         return;
@@ -345,6 +379,11 @@ void Hand::addCard(CardData *c) {
         c->layout()->h = md->config ? md->config->cardH : 150.f;
         c->layout()->scale = 0.01f;  // 从 0 生长出牌动画
         c->layout()->alpha = (c->visual()->disabled && md->config) ? md->config->disabledAlpha : 1.f;
+        // Deal into a face-down hand starts already down — animate only later reveals.
+        if (md->faceDown && !md->peek)
+            c->visual()->flip = 1.f;
+        else if (!md->faceDown && c->visual()->faceUp)
+            c->visual()->flip = 0.f;
     }
 }
 
@@ -438,6 +477,8 @@ void Hand::update(float dt, float mx, float my, bool down, const std::vector<Zon
         lay->scale = lerpf(lay->scale, targetScale, k);
         lay->angle = lerpf(lay->angle, targetAngle, k);
         lay->alpha = lerpf(lay->alpha, vis->disabled ? cfg.disabledAlpha : 1.f, k);
+        const float targetFlip = resolveCardWantFaceUp(vis->faceUp, md->faceDown, md->peek) ? 0.f : 1.f;
+        advanceCardFlip(vis->flip, targetFlip, cfg.flipSpeed, dt);
     }
 
     // 2) 拖拽状态机
@@ -466,11 +507,14 @@ void Hand::update(float dt, float mx, float my, bool down, const std::vector<Zon
 
     if (d->card && down) {
         auto *lay = d->card->layout().operator->();
+        auto *vis              = d->card->visual().operator->();
         lay->x = mx - d->ox;
         lay->y = my - d->oy;
         lay->scale = cfg.hoverScale;
         lay->angle = 0.f;
         lay->alpha = 1.f;
+        const float targetFlip = resolveCardWantFaceUp(vis->faceUp, md->faceDown, md->peek) ? 0.f : 1.f;
+        advanceCardFlip(vis->flip, targetFlip, cfg.flipSpeed, dt);
     }
 
     if (release) {
@@ -501,12 +545,12 @@ void Hand::update(float dt, float mx, float my, bool down, const std::vector<Zon
 void Hand::render(graphics::Graphics *gfx) {
     auto *md = meta().operator->();
     const LayoutConfig cfg = md->config ? *md->config : LayoutConfig();
-    const bool back = md->faceDown && !md->peek;
+    // Flip progress owns face visibility; do not force an instant back face here.
     const CardData *dragCard = drag()->card;
     for (auto *c : membership()->cards) {
-        if (c && c != dragCard) renderCard(gfx, *c, cfg, back);
+        if (c && c != dragCard) renderCard(gfx, *c, cfg, false);
     }
-    if (dragCard) renderCard(gfx, *dragCard, cfg, back);
+    if (dragCard) renderCard(gfx, *dragCard, cfg, false);
 }
 
 }  // namespace eve::card
