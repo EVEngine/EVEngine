@@ -3152,12 +3152,20 @@ TEST_CASE("animation.procedural.dynamicBoneColliderModesAreRuntimeConfigurable")
     solver.addColliderSphere(0.f, -1.f, 0.f, 0.5f);
     solver.setColliderInside(0, true);
     solver.setColliderRadius(0, 0.25f);
+    solver.setColliderCenter(0, 0.f, -1.f, 0.f);
     for (int i = 0; i < 3; ++i) solver.update(&pose, 0.1f);
     CHECK(pose.getWorldPositionX(tip) <= 0.151f);
 
     skeleton.applyBindPose(&pose);
     solver.reset();
     solver.setColliderEnabled(0, false);
+    for (int i = 0; i < 3; ++i) solver.update(&pose, 0.1f);
+    CHECK(pose.getWorldPositionX(tip) > 0.151f);
+
+    skeleton.applyBindPose(&pose);
+    solver.reset();
+    solver.setColliderEnabled(0, true);
+    solver.setColliderCenter(0, 10.f, 0.f, 0.f); // move the world sphere off the tip path
     for (int i = 0; i < 3; ++i) solver.update(&pose, 0.1f);
     CHECK(pose.getWorldPositionX(tip) > 0.151f);
 }

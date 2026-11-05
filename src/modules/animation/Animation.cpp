@@ -1088,6 +1088,7 @@ void Animation::expose(ssq::Table &table) {
     solver.addFunc("setColliderEnabled", &DynamicBoneSolver::setColliderEnabled);
     solver.addFunc("setColliderInside", &DynamicBoneSolver::setColliderInside);
     solver.addFunc("setColliderRadius", &DynamicBoneSolver::setColliderRadius);
+    solver.addFunc("setColliderCenter", &DynamicBoneSolver::setColliderCenter);
     solver.addFunc("reset", &DynamicBoneSolver::reset);
     solver.addFunc("update", &DynamicBoneSolver::update);
     auto footIK = table.addClass<FootIKSolver>(
