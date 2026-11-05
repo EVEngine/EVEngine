@@ -153,7 +153,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [avatar-document-editor](avatar-document-editor/README.md) | Azure / Avatar 工作区：可编辑分层母稿 + 真实 `eve.Avatar` 图层渲染 |
 | [vrm-avatar](vrm-avatar/README.md) | VRM 角色加载与渲染示例 |
 | [character-atelier](character-atelier/README.md) | 骨骼捏脸编辑器：现成女性、YSA、脸部关键点、身体比例、姿势、存档与撤销 |
-| [character-cape-hair](character-cape-hair/README.md) | 网上下载角色：DynamicBone 飘发 + Cloth3D 披肩真实物理 |
+| [character-cape-hair](character-cape-hair/README.md) | 网上下载角色：DynamicBone 飘发/衣服 + Cloth3D 披肩真实物理 |
 | [voxel](voxel/README.md) | 流式体素地形 + 方块建造：脚本图集、流式 chunk 与 DDA 拾取 |
 | [voxel-terrain](voxel-terrain/README.md) | 体素引擎 + 地形生成：32³ chunk、贪婪矩形合并、视锥/视距裁剪、顶点 AO |
 | [ocean-voyage](ocean-voyage/README.md) | 可驾驶 055 展示舰、三频段 FFT 广阔海洋、GPU 驻留绘制、浮力与尾浪泡沫 |

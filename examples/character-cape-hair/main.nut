@@ -3,11 +3,12 @@
 //
 // pixiv three-vrm sample female (female-rig.glb) with:
 //   - DynamicBone hair chains on J_Sec_Hair* secondary bones
-//   - Cloth3D cape pinned to shoulder / upper-chest bones
+//   - DynamicBone clothing chains on Tops hem/sleeve (+ bust) secondary bones
+//   - Cloth3D cape pinned behind the upper back with body-shield collision
 //
 // Controls:
 //   Space       — toggle wind
-//   R           — reset cape + hair
+//   R           — reset cape + secondary bones
 //   Left drag   — grab cape
 //   Right drag  — orbit camera
 //   Mouse wheel — zoom
@@ -25,6 +26,7 @@ persist parts = []
 persist skins = []
 persist dynamic = null
 persist hairChainCount = 0
+persist clothChainCount = 0
 persist clothModule = null
 persist physics = null
 persist bodyWorld = null
@@ -260,6 +262,53 @@ function discoverHairChains() {
     return count
 }
 
+function setupClothChain(root, tip, stiffness, damping, inertia, endLength) {
+    // Clothing uses the same spring-chain solver as hair, with stiffer defaults.
+    local chain = anim.setupHairChain(dynamic, root, tip, stiffness, damping, inertia, endLength, false)
+    if (chain >= 0) {
+        clothChainCount += 1
+        print("CLOTH_CHAIN " + root + " -> " + tip + " idx=" + chain + "\n")
+    } else {
+        print("CLOTH_CHAIN_FAIL " + root + " -> " + tip + "\n")
+    }
+    return chain
+}
+
+function discoverClothingChains() {
+    // Authoring from the original VRM VRMC_springBone Tops groups: hem + sleeve soft bones.
+    local tops = [
+        "J_Sec_L_TopsUpperLegBack", "J_Sec_L_TopsUpperLegFront", "J_Sec_L_TopsUpperLegSide",
+        "J_Sec_R_TopsUpperLegBack", "J_Sec_R_TopsUpperLegFront", "J_Sec_R_TopsUpperLegSide",
+        "J_Sec_L_TopsUpperArmInside", "J_Sec_L_TopsUpperArmOutside",
+        "J_Sec_R_TopsUpperArmInside", "J_Sec_R_TopsUpperArmOutside"
+    ]
+    clothChainCount = 0
+    foreach (root in tops) {
+        local tip = root + "_end"
+        if (!(root in bones) || !(tip in bones)) {
+            print("CLOTH_CHAIN_SKIP missing " + root + " / " + tip + "\n")
+            continue
+        }
+        // Stiffer than hair so the shirt keeps its silhouette while still reacting to wind.
+        setupClothChain(root, tip, 0.32, 0.24, 0.45, 0.0)
+    }
+    // Soft bust secondary bones (same spring family as Tops in the source VRM).
+    foreach (side in ["L", "R"]) {
+        local root = "J_Sec_" + side + "_Bust1"
+        local tip = "J_Sec_" + side + "_Bust2"
+        if ((root in bones) && (tip in bones))
+            setupClothChain(root, tip, 0.40, 0.28, 0.35, 0.0)
+    }
+    // Keep soft clothing from collapsing into the torso / hips while swinging.
+    if (HEAD_BONE in bones)
+        dynamic.addBoneColliderSphere(bones[HEAD_BONE], 0.0, 0.02, 0.0, 0.11)
+    if (CHEST_BONE in bones)
+        dynamic.addBoneColliderSphere(bones[CHEST_BONE], 0.0, 0.0, 0.0, 0.14)
+    if (HIPS_BONE in bones)
+        dynamic.addBoneColliderSphere(bones[HIPS_BONE], 0.0, 0.0, 0.0, 0.13)
+    return clothChainCount
+}
+
 function loadCharacter() {
     model = model3d.newModelDataFromFile("assets/pixiv/female-rig.glb")
     skeleton = anim.newSkeletonFromModel(model)
@@ -296,8 +345,11 @@ function loadCharacter() {
     dynamic.setGlobalGravity(0.0, -9.81, 0.0)
     hairChainCount = discoverHairChains()
     local colliders = anim.setupHairHeadCollider(dynamic, HEAD_BONE, 0.11)
-    print("HAIR_CHAINS=" + hairChainCount + " HEAD_COLLIDERS=" + colliders + "\n")
+    clothChainCount = discoverClothingChains()
+    print("HAIR_CHAINS=" + hairChainCount + " CLOTH_CHAINS=" + clothChainCount +
+          " HEAD_COLLIDERS=" + colliders + "\n")
     if (hairChainCount <= 0) throw "No hair chains were set up"
+    if (clothChainCount <= 0) throw "No clothing cloth chains were set up"
 }
 
 function capeTopAnchor(t) {
@@ -477,8 +529,9 @@ eve_init <- function() {
     syncCapeAttachments()
 
     ready = true
-    print("CAPE_HAIR_READY hair=" + hairChainCount + " capeAttach=" + capeAttach.len() +
-          " bodyColliders=" + bodyColliders.len() + " meshes=" + parts.len() + "\n")
+    print("CAPE_HAIR_READY hair=" + hairChainCount + " cloth=" + clothChainCount +
+          " capeAttach=" + capeAttach.len() + " bodyColliders=" + bodyColliders.len() +
+          " meshes=" + parts.len() + "\n")
 }
 
 eve_reload <- function() {
