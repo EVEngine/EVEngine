@@ -54,6 +54,14 @@ if (restartOrLoad) duel.close();   // 放弃瞬时遭遇；读档后重新 bind
 
 权威：脚本可拥有位置与攻击窗口；**HP 只在 RPG Vitals**；奖励去重在 `GameState`；物品在 `inventory`。
 
+### 消耗与表现边界（竖切）
+
+- **`examples/arpg-loop`**：攻击/重击/闪避的冷却与准入由脚本固定步拥有，**不**走 Ability
+  `CostSpec` 资源扣费。需要正式能量/法力事务时，改用 `action` Ability + resource provider
+  （见 `examples/combat-arena` 的说明：示例可自管 energy，取消不自动退费）。
+- **表现**：伤害数字、hitstop、闪光只读 settlement / encounter 结果；失败不回滚已提交 HP。
+  参考 `examples/impact-arena` 的 DamageNumbers 接线，不要在 HUD 再存一份血量。
+
 ## 失败语义矩阵
 
 宿主应对 `Result` 的 `status`，失败时权威状态不变。
