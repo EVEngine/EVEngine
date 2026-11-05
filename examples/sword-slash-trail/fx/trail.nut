@@ -55,6 +55,7 @@ local SlashTrail = class {
     _edge = null;
     _opacity = 1.0;
     _time = 0.0;
+    _useTexColor = 1.0;
 
     constructor(graphics, texture, shaderPath, closedMaterial, settings) {
         _graphics = graphics;
@@ -71,12 +72,14 @@ local SlashTrail = class {
             if ("color" in settings) _color = settings.color;
             if ("edge" in settings) _edge = settings.edge;
             if ("opacity" in settings) _opacity = settings.opacity.tofloat();
+            if ("useTexColor" in settings) _useTexColor = settings.useTexColor.tofloat();
         }
         bounded(_maxSamples, 2, 256, "maxSamples");
         bounded(_lifetime, 0.02, 5.0, "lifetime");
         bounded(_minDistance, 0.0, 5.0, "minDistance");
         bounded(_teleportDistance, _minDistance > 0.0 ? _minDistance : 0.001, 50.0, "teleportDistance");
         bounded(_opacity, 0.0, 1.0, "opacity");
+        bounded(_useTexColor, 0.0, 1.0, "useTexColor");
 
         // Placeholder ribbon kept alive so updateMeshVertices can grow/shrink each frame.
         local pos = [0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.01, 0.0, 0.0, 0.01, 0.01, 0.0];
@@ -87,12 +90,13 @@ local SlashTrail = class {
         if (_mesh == null) throw "slash-trail: mesh upload failed";
 
         _shader = need(graphics.loadMeshShaderSpv("", shaderPath), "load shader");
-        foreach (k in ["time", "scroll", "red", "green", "blue", "edgeRed", "edgeGreen", "edgeBlue", "intensity"])
+        foreach (k in ["time", "scroll", "red", "green", "blue", "edgeRed", "edgeGreen", "edgeBlue", "intensity", "useTexColor"])
             _shader.declareFloat(k);
         _shader.sendFloat("scroll", 0.35);
         foreach (i, k in ["red", "green", "blue"]) _shader.sendFloat(k, _color[i]);
         foreach (i, k in ["edgeRed", "edgeGreen", "edgeBlue"]) _shader.sendFloat(k, _edge[i]);
-        _shader.sendFloat("intensity", 1.6);
+        _shader.sendFloat("intensity", 1.85);
+        _shader.sendFloat("useTexColor", _useTexColor);
 
         _material = graphics.newMaterial();
         _material.setShader(_shader);
@@ -168,6 +172,16 @@ local SlashTrail = class {
         _opacity = bounded(opacity, 0.0, 1.0, "opacity");
         foreach (i, k in ["red", "green", "blue"]) _shader.sendFloat(k, _color[i]);
         foreach (i, k in ["edgeRed", "edgeGreen", "edgeBlue"]) _shader.sendFloat(k, _edge[i]);
+    }
+
+    /** @brief Swap ribbon albedo; useTexColor=1 samples PNG RGB, 0 uses procedural palette only. */
+    function setTexture(texture, useTexColor = 1.0) {
+        if (_closed) throw "slash-trail: closed";
+        if (texture == null) throw "slash-trail: texture required";
+        _texture = texture;
+        _useTexColor = bounded(useTexColor, 0.0, 1.0, "useTexColor");
+        _material.setAlbedoTexture(texture);
+        _shader.sendFloat("useTexColor", _useTexColor);
     }
 
     function close() {
@@ -283,5 +297,13 @@ return {
         local texture = graphics.newTexture(image, true, false);
         if (texture == null) throw "slash-trail: texture upload failed";
         return SlashTrail(graphics, texture, shaderPath, closedMaterial, settings);
+    },
+    /** @brief Upload an image path to a Graphics texture for setTexture swaps. */
+    loadTexture = function(graphics, maskPath) {
+        local image = eve.Image().newImageDataFromFile(maskPath);
+        if (image == null) throw "slash-trail: mask unavailable: " + maskPath;
+        local texture = graphics.newTexture(image, true, false);
+        if (texture == null) throw "slash-trail: texture upload failed";
+        return texture;
     }
 };

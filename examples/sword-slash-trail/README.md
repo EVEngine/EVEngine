@@ -33,8 +33,9 @@ make run/linux-debug GAME=examples/sword-slash-trail
    整段挥砍扫过的区域即扇形 Ribbon；`UV.x` 沿弧、`UV.y` 从根到尖。
 
 3. **特效纹理**  
-   `fx/assets/slash-mask.tga` 的 alpha 乘在弧面上；自定义片元 `fx/shaders/slash.frag`  
-   （additive、双面、不写深度）做出亮芯与边缘冷光。
+   默认使用网上的 **CC0** 月牙刀光贴图（OpenGameArt / FreeGameSprites），见
+   `fx/assets/vendor/`。UI 可切换 OGA Blue / OGA Gray / FGS Trail / 程序化 TGA。
+   自定义片元 `fx/shaders/slash.frag`（additive、双面、不写深度）采样 RGB+A。
 
 ```
 刀尖  ●────────────────●  tip samples

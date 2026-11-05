@@ -17,7 +17,28 @@ orbit <- 0.55;
 shotCount <- 0;
 lastAppend <- "-";
 closed <- false;
+maskStyle <- 0;
+maskName <- "oga-blue";
+maskTextures <- [];
 local PI = 3.14159265358979;
+
+function loadMaskTexture(path) {
+    local image = eve.Image().newImageDataFromFile(path);
+    if (image == null) throw "sword-slash-trail: mask missing: " + path;
+    local texture = gfx.newTexture(image, true, false);
+    if (texture == null) throw "sword-slash-trail: mask upload failed: " + path;
+    return texture;
+}
+
+function applyMaskStyle(index, replay = true) {
+    if (maskTextures.len() == 0) return;
+    maskStyle = ((index % maskTextures.len()) + maskTextures.len()) % maskTextures.len();
+    local entry = maskTextures[maskStyle];
+    maskName = entry.name;
+    trail.setTexture(entry.texture, entry.useTexColor);
+    if ("color" in entry) trail.setPalette(entry.color, entry.edge, entry.opacity);
+    if (replay) triggerSlash();
+}
 
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 function lerp(a, b, t) { return a + (b - a) * t; }
@@ -197,15 +218,57 @@ eve_init <- function() {
     if (!gfx.getRenderControl().setLightingMode("forwardPlus"))
         throw "Forward lighting unavailable";
     runContracts();
-    trail = trailMod.create(gfx, "fx/assets/slash-mask.tga", "fx/shaders/slash.frag.spv", {
+    // Default to the CC0 OpenGameArt crescent; procedural TGA remains a fallback style.
+    maskTextures = [
+        {
+            name = "oga-blue",
+            path = "fx/assets/vendor/oga-slash-blue-ribbon.png",
+            useTexColor = 1.0,
+            color = [0.85, 0.95, 1.0],
+            edge = [0.35, 0.65, 1.0],
+            opacity = 1.0
+        },
+        {
+            name = "oga-gray",
+            path = "fx/assets/vendor/oga-slash-gray-ribbon.png",
+            useTexColor = 1.0,
+            color = [1.0, 0.95, 0.85],
+            edge = [0.7, 0.8, 1.0],
+            opacity = 1.0
+        },
+        {
+            name = "fgs-trail",
+            path = "fx/assets/vendor/fgs-slash-trail-ribbon.png",
+            useTexColor = 1.0,
+            color = [0.7, 0.95, 1.0],
+            edge = [0.8, 0.4, 1.0],
+            opacity = 1.0
+        },
+        {
+            name = "procedural",
+            path = "fx/assets/slash-mask.tga",
+            useTexColor = 0.0,
+            color = [1.0, 0.93, 0.70],
+            edge = [0.45, 0.78, 1.0],
+            opacity = 0.95
+        }
+    ];
+    foreach (entry in maskTextures) entry.texture <- loadMaskTexture(entry.path);
+
+    trail = trailMod.create(gfx, maskTextures[0].path, "fx/shaders/slash.frag.spv", {
         maxSamples = 56,
         lifetime = 0.32,
         minDistance = 0.012,
         teleportDistance = 1.8,
-        color = [1.0, 0.93, 0.70],
-        edge = [0.45, 0.78, 1.0],
-        opacity = 0.95
+        color = maskTextures[0].color,
+        edge = maskTextures[0].edge,
+        opacity = maskTextures[0].opacity,
+        useTexColor = maskTextures[0].useTexColor
     });
+    trail.setTexture(maskTextures[0].texture, maskTextures[0].useTexColor);
+    trail.setPalette(maskTextures[0].color, maskTextures[0].edge, maskTextures[0].opacity);
+    maskStyle = 0;
+    maskName = maskTextures[0].name;
     buildScene();
 
     ui.setTheme("dark");
@@ -213,11 +276,17 @@ eve_init <- function() {
     ui.beginBuild();
     ui.beginWindow("SWORD SLASH TRAIL", "root");
     ui.text("SWORD SLASH TRAIL", "title");
-    ui.text("ROOT/TIP TRACK  /  FAN RIBBON  /  MASK", "subtitle");
+    ui.text("ROOT/TIP TRACK  /  FAN RIBBON  /  CC0 MASK", "subtitle");
     ui.beginRow("kinds", 6.0);
     ui.button("Horizontal", "hcut");
     ui.button("Diagonal", "dcut");
     ui.button("Rising", "rcut");
+    ui.end();
+    ui.beginRow("masks", 6.0);
+    ui.button("OGA Blue", "m0");
+    ui.button("OGA Gray", "m1");
+    ui.button("FGS Trail", "m2");
+    ui.button("Procedural", "m3");
     ui.end();
     ui.beginRow("transport", 6.0);
     ui.button("Slash [SPACE]", "slash");
@@ -230,15 +299,15 @@ eve_init <- function() {
     ui.text("", "status");
     ui.text("", "phase");
     ui.textWrapped(
-        "Each swing samples the katana guard (root) and tip. Samples form a fan-shaped ribbon; the slash mask rides UV along the arc.",
+        "CC0 crescent masks from OpenGameArt / FreeGameSprites ride the fan ribbon UV. See fx/assets/vendor/LICENSE.md.",
         280.0, "help");
     ui.end();
     ui.mountBuildAs("slash");
     ui.select("slash");
     ui.setHostPos(10.0, 10.0, 0.0, 0.0);
-    ui.setHostSize(320.0, 560.0);
+    ui.setHostSize(320.0, 620.0);
     ui.setHostOverlay(true);
-    print("SWORD_SLASH_TRAIL_READY track=root+tip ribbon=fan mask=slash-mask.tga\n");
+    print("SWORD_SLASH_TRAIL_READY track=root+tip ribbon=fan mask=" + maskName + "\n");
 };
 
 eve_update <- function(dt) {
@@ -249,6 +318,10 @@ eve_update <- function(dt) {
         else if (click == "slash/hcut") triggerSlash(0);
         else if (click == "slash/dcut") triggerSlash(1);
         else if (click == "slash/rcut") triggerSlash(2);
+        else if (click == "slash/m0") applyMaskStyle(0);
+        else if (click == "slash/m1") applyMaskStyle(1);
+        else if (click == "slash/m2") applyMaskStyle(2);
+        else if (click == "slash/m3") applyMaskStyle(3);
         else if (click == "slash/pause") paused = !paused;
         else if (click == "slash/clear") { trail.clear(); slashAge = 10.0; }
         else if (click == "slash/auto") {
@@ -284,7 +357,7 @@ eve_update <- function(dt) {
     orbit = ui.getValue("orbit");
     camera.setEye(sin(orbit) * 11.5, 5.8, cos(orbit) * 11.5);
     local kindName = slashKind == 0 ? "horizontal" : (slashKind == 1 ? "diagonal" : "rising");
-    ui.setText("status", format("%s / %s / slashes %d", kindName, lastAppend, shotCount));
+    ui.setText("status", format("%s / %s / %s / slashes %d", kindName, maskName, lastAppend, shotCount));
     ui.setText("phase", format("%s  |  samples %d  |  age %.2f s",
         paused ? "PAUSED" : "LIVE", trail.sampleCount(), slashAge));
 };
