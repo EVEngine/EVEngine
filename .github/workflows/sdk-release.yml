@@ -92,7 +92,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -256,7 +256,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           # Keep full macOS tree so MoltenVK remains available.
@@ -318,7 +318,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           # Keep full macOS tree so MoltenVK / iOS xcframework remain available.
@@ -426,7 +426,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -672,7 +672,7 @@ jobs:
 
       - name: Install Vulkan SDK (SwiftShader for the packaged-game run)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -913,7 +913,7 @@ jobs:
 
       - name: Install Vulkan SDK (SwiftShader for the packaged-game run)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -1100,7 +1100,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK for the simulator build)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true

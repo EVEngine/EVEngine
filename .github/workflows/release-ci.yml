@@ -147,7 +147,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           destination: ${{ runner.temp }}/VulkanSDK
@@ -257,7 +257,7 @@ jobs:
       - name: Install native ARM64 Vulkan SDK
         timeout-minutes: 20
         # This pinned action selects the Windows ARM64 SDK from the host arch.
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -510,7 +510,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -523,7 +523,7 @@ jobs:
 
       - name: Setup Dawn generator Python
         timeout-minutes: 5
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.13"
 
@@ -619,7 +619,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -822,7 +822,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -920,7 +920,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -1044,7 +1044,7 @@ jobs:
 
       - name: Download example smoke runtime
         timeout-minutes: 10
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: linux-example-smoke-runtime
           path: ${{ runner.temp }}/example-smoke-artifact
@@ -1060,7 +1060,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -1148,7 +1148,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -1290,7 +1290,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true

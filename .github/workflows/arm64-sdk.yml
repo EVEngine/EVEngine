@@ -47,7 +47,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Install native Windows Vulkan SDK
         if: runner.os == 'Windows'
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ vars.VULKAN_VERSION || '1.4.363.0' }}
           cache: true

@@ -246,7 +246,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -500,7 +500,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -648,7 +648,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -794,7 +794,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -995,7 +995,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        uses: jakoch/install-vulkan-sdk-action@6d320c543af48e7e45b02c8c9ab14d5ffad48eba # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
