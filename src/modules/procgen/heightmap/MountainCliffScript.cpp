@@ -54,6 +54,7 @@ void exposeMountainCliffBindings(ssq::Table& table) {
     cliff.addVar("heightScale", &CliffBandMeshSettings::heightScale);
     cliff.addVar("slopeMin", &CliffBandMeshSettings::slopeMin);
     cliff.addVar("slopeMax", &CliffBandMeshSettings::slopeMax);
+    cliff.addVar("minRelief", &CliffBandMeshSettings::minRelief);
     cliff.addVar("subdivisions", &CliffBandMeshSettings::subdivisions);
     cliff.addVar("strataAmplitude", &CliffBandMeshSettings::strataAmplitude);
     cliff.addVar("strataScale", &CliffBandMeshSettings::strataScale);
@@ -86,9 +87,9 @@ void exposeMountainCliffApis(ssq::Table& table) {
         MountainRecipeMasks masks;
         masks.slopeMask    = slopeMask;
         masks.cliffFitness = cliffFitness;
-        auto result = target && settings
-                          ? bakeMountainRecipe(*target, *settings, masks)
-                          : Result<int>::failure(Diagnostic::error(
+        auto result        = target && settings
+                                 ? bakeMountainRecipe(*target, *settings, masks)
+                                 : Result<int>::failure(Diagnostic::error(
                                 DiagnosticCode::InvalidArgument, "bakeMountainRecipe requires heightmap and settings"));
         return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
     });

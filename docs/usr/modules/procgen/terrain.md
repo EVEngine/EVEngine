@@ -25,11 +25,13 @@ fluvial。`setPreset(0|1|2)` 选择 AlpineRidge / Mesa / CoastalCliff；`setSize
 后两个蒙版可为 `null`。`eve.generateCliffFitnessMask(target, heights, spacingX,
 spacingZ, heightScale, slopeMin, slopeMax)` 只生成悬崖适应度。
 
-`eve.CliffBandMeshSettings` 控制陡坡条带网格：`setOrigin` / `setSpacing` /
-`setSeed`，以及 `slopeMin` / `slopeMax`、`subdivisions`、`strataAmplitude` /
-`strataScale` / `strataVertical`、`ledgeHeight`、`outwardBias`、`maxTriangles`。
-`eve.generateCliffBandMesh(heights, settings, fitness)` 返回拥有所有权的
-`MeshBuild`（`algorithm=mesh.cliffband`）。
+`eve.CliffBandMeshSettings` 控制陡边竖直崖壁：`setOrigin` / `setSpacing` /
+`setSeed`，以及 `slopeMin` / `slopeMax`、`minRelief`（世界坐标最小落差）、
+`subdivisions`、`strataAmplitude` / `strataScale` / `strataVertical`、
+`ledgeHeight`、`outwardBias`、`maxTriangles`。
+`eve.generateCliffBandMesh(heights, settings, fitness)` 沿陡网格边挤出竖直墙面
+（hex `addCliff` 同思路），再做岩层置换，返回 `MeshBuild`
+（`algorithm=mesh.cliffband`）。
 
 `eve.configureCliffRockScatterDefaults(settings, originX, originZ, width, depth,
 heightScale, seed, spacing, minimumFitness, asset)` 填充

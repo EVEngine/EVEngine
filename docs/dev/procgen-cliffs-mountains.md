@@ -25,7 +25,7 @@ Deferred Phase 2: amplify selected cliffs with `ScalarField3D` / implicit blocks
 | C++ | Role |
 |---|---|
 | `bakeMountainRecipe` | Preset noise + erosion into a heightmap; optional slope/cliff masks |
-| `generateCliffBandMesh` | Extract steep faces, subdivide, strata/ledge displace → `MeshBuild` |
+| `generateCliffBandMesh` | Extract steep grid edges as vertical wall strips, subdivide, strata/ledge displace → `MeshBuild` |
 | `generateCliffFitnessMask` | Slope → cliff fitness via `deriveTerrainSlope` + range |
 | `configureCliffRockScatterDefaults` | Fill `TerrainObjectPlacementSettings` for steep-band rock dressing |
 
