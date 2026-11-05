@@ -161,6 +161,12 @@ public:
     void setColliderInside(int index, bool inside);
     /** @brief Change a collider radius; non-positive values are ignored. */
     void setColliderRadius(int index, float radius);
+    /**
+     * @brief Move a world-space collider center (bone index < 0).
+     * Bone-attached colliders ignore this call because their centers are rebuilt from
+     * bone-local offsets each update. For spheres, the capsule end is kept coincident.
+     */
+    void setColliderCenter(int index, float x, float y, float z);
     /** @brief Reset all chains to the animated pose on their next update. */
     void reset();
     /** @brief Simulate one frame using injected dt and update pose local rotations. */
