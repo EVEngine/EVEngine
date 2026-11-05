@@ -48,3 +48,7 @@ make run/linux-debug GAME=examples/surface-vine-growth
 python3 scripts/check_examples.py
 MIN_RUN_SECONDS=2 bash scripts/smoke_examples.sh surface-vine-growth
 ```
+
+引擎读回预览（约 2.8s 生长后自动写出）：
+
+![贴面爬藤生长画面](surface-vine-growth.png)
