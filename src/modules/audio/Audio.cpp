@@ -2,7 +2,9 @@
 #include "PcmStream.h"
 #include "Source.h"
 
+#include "AudioAmbient.h"
 #include "AudioCapabilities.h"
+#include "AudioFade.h"
 #include "AudioZone.h"
 #include "EventSinkOwner.h"
 #include "UnderwaterAudio.h"
@@ -29,11 +31,9 @@ Audio::Audio() {
     registerAudioCapabilities();
     StartupStage stage("audio: OpenAL device/context + worker thread");
     device = alcOpenDevice(nullptr);
-    if (!device)
-        throw eve::Exception("Could not open OpenAL device");
+    if (!device) throw eve::Exception("Could not open OpenAL device");
     context = alcCreateContext(device, nullptr);
-    if (!context || !alcMakeContextCurrent(context))
-        throw eve::Exception("Could not create OpenAL context");
+    if (!context || !alcMakeContextCurrent(context)) throw eve::Exception("Could not create OpenAL context");
     alListenerf(AL_GAIN, masterVolume);
     worker = std::thread([this] { workerMain(); });
     bindAudioEventSinkOwner(this);
@@ -43,8 +43,7 @@ Audio::~Audio() {
     bindAudioEventSinkOwner(nullptr);
     running = false;
     cv.notify_all();
-    if (worker.joinable())
-        worker.join();
+    if (worker.joinable()) worker.join();
 
     for (auto &weak : pcmStreams)
         if (auto state = weak.lock()) PcmStream::closeState(state);
@@ -71,10 +70,8 @@ Audio::~Audio() {
 void Audio::workerMain() {
     while (running.load()) {
         std::unique_lock<std::mutex> lock(mutex);
-        cv.wait_for(lock, std::chrono::milliseconds(10),
-                    [this] { return !running.load() || !streamSources.empty(); });
-        if (!running.load())
-            break;
+        cv.wait_for(lock, std::chrono::milliseconds(10), [this] { return !running.load() || !streamSources.empty(); });
+        if (!running.load()) break;
         // Keep Audio::mutex held while filling. Source::~Source() removes the
         // source from streamSources under the same mutex, so a source cannot be
         // destroyed (and its decoderMutex/pendingMutex freed) while the worker
@@ -82,8 +79,7 @@ void Audio::workerMain() {
         // finish between the snapshot and the fill; the worker would then lock
         // mutexes that no longer exist (std::system_error: mutex lock failed).
         for (Source *s : streamSources) {
-            if (s)
-                s->fillPendingFromDecoder();
+            if (s) s->fillPendingFromDecoder();
         }
     }
 }
@@ -99,14 +95,12 @@ void Audio::unregisterSource(Source *s) {
     allSources.erase(std::remove(allSources.begin(), allSources.end(), s), allSources.end());
 }
 
-void Audio::unregisterStream(Source *s) {
-    unregisterSource(s);
-}
+void Audio::unregisterStream(Source* s) { unregisterSource(s); }
 
 void Audio::notifyWorker() { cv.notify_all(); }
 
 Source *Audio::newSource(sound::SoundData *data) {
-    auto *s = new Source(this, data);
+    auto*                       s = new Source(this, data);
     std::lock_guard<std::mutex> lock(mutex);
     allSources.push_back(s);
     return s;
@@ -120,12 +114,11 @@ Result<std::unique_ptr<PcmStream>> Audio::newPcmStream(int sampleRate, int chann
 }
 
 Source *Audio::newSourceFromDecoder(sound::Decoder *decoder, std::string type) {
-    if (type != "static" && type != "stream")
-        throw eve::Exception("Invalid source type '%s'", type.c_str());
+    if (type != "static" && type != "stream") throw eve::Exception("Invalid source type '%s'", type.c_str());
     if (type == "static") {
         auto *sound = sound::Sound::create();
-        auto *sd = sound->newSoundDataFromDecoder(decoder);
-        auto *s = newSource(sd);
+        auto* sd    = sound->newSoundDataFromDecoder(decoder);
+        auto* s     = newSource(sd);
         // SoundData owned by caller eventually; keep sd alive via Source holding pointer only —
         // Source does not own SoundData. Caller must keep SoundData alive.
         // For static-from-decoder convenience, leak prevention: Source should own or we document.
@@ -135,38 +128,34 @@ Source *Audio::newSourceFromDecoder(sound::Decoder *decoder, std::string type) {
         // We'll let Source keep staticData pointer; user deletes Source then SoundData.
         return s;
     }
-    auto *s = new Source(this, decoder, true);
+    auto*                       s = new Source(this, decoder, true);
     std::lock_guard<std::mutex> lock(mutex);
     allSources.push_back(s);
     return s;
 }
 
 Source *Audio::newSourceFromData(Data *data, std::string type) {
-    if (type != "static" && type != "stream")
-        throw eve::Exception("Invalid source type '%s'", type.c_str());
+    if (type != "static" && type != "stream") throw eve::Exception("Invalid source type '%s'", type.c_str());
     auto *sound = sound::Sound::create();
     if (type == "static") {
         auto *sd = sound->newSoundData(data);
         return newSource(sd);
     }
-    auto *dec = sound->newDecoder(data);
-    auto *s = new Source(this, dec, true, true);
+    auto*                       dec = sound->newDecoder(data);
+    auto*                       s   = new Source(this, dec, true, true);
     std::lock_guard<std::mutex> lock(mutex);
     allSources.push_back(s);
     return s;
 }
 
 void Audio::play(Source *s) {
-    if (s)
-        s->play();
+    if (s) s->play();
 }
 void Audio::stop(Source *s) {
-    if (s)
-        s->stop();
+    if (s) s->stop();
 }
 void Audio::pause(Source *s) {
-    if (s)
-        s->pause();
+    if (s) s->pause();
 }
 void Audio::stopAll() {
     for (auto &weak : pcmStreams) {
@@ -177,8 +166,7 @@ void Audio::stopAll() {
     // touched here after it has been removed from allSources.
     std::lock_guard<std::mutex> lock(mutex);
     for (Source *s : allSources) {
-        if (s)
-            s->stop();
+        if (s) s->stop();
     }
 }
 
@@ -212,8 +200,7 @@ void Audio::pump() {
     // mutex, so the pointer stays valid for the whole iteration.
     std::lock_guard<std::mutex> lock(mutex);
     for (Source *s : streamSources) {
-        if (s)
-            s->pump();
+        if (s) s->pump();
     }
 }
 
@@ -222,8 +209,7 @@ void Audio::expose(ssq::Table &table) {
     expose(cls);
     exposePcmStream(table, cls);
 
-    auto src = table.addClass<Source>(
-        "Source", std::function<Source *()>([]() -> Source * { return nullptr; }), true);
+    auto src = table.addClass<Source>("Source", std::function<Source*()>([]() -> Source* { return nullptr; }), true);
     src.addFunc("play", &Source::play);
     src.addFunc("pause", &Source::pause);
     src.addFunc("stop", &Source::stop);
@@ -241,41 +227,89 @@ void Audio::expose(ssq::Table &table) {
     src.addFunc("setVelocity", &Source::setVelocity);
     src.addFunc("setDirection", &Source::setDirection);
     src.addFunc("setRelative", &Source::setRelative);
+    src.addFunc("isRelative", [](Source* self) { return self->isRelative(); });
     src.addFunc("setAttenuationDistances", &Source::setAttenuationDistances);
-    table.addFunc("applyUnderwaterAudio",
-                  [vm = table.getHandle()](Source* down, Source* up, Source* ambience,
-                                           bool playDown, bool playUp, bool loopAmbience,
-                                           float volume) {
+    src.addFunc("fadeTo", [vm = table.getHandle()](Source* self, float target, float duration, float now) {
+        return eve::script::projectResult(vm, self->fadeTo(target, duration, now));
+    });
+    src.addFunc("fadeOutAndStop", [vm = table.getHandle()](Source* self, float duration, float now) {
+        return eve::script::projectResult(vm, self->fadeOutAndStop(duration, now));
+    });
+    src.addFunc("cancelFade",
+                [vm = table.getHandle()](Source* self) { return eve::script::projectResult(vm, self->cancelFade()); });
+    src.addFunc("advanceFade", [vm = table.getHandle()](Source* self, float now) {
+        return eve::script::projectResult(vm, self->advanceFade(now));
+    });
+    src.addFunc("getFadeWeight", [](Source* self) { return self->getFadeWeight(); });
+    src.addFunc("isFading", [](Source* self) { return self->isFading(); });
+    src.addFunc("setSpatialBlend", [vm = table.getHandle()](Source* self, float blend) {
+        return eve::script::projectResult(vm, self->setSpatialBlend(blend));
+    });
+    src.addFunc("getSpatialBlend", [](Source* self) { return self->getSpatialBlend(); });
+    src.addFunc("setBalance", [vm = table.getHandle()](Source* self, float balance) {
+        return eve::script::projectResult(vm, self->setBalance(balance));
+    });
+    src.addFunc("getBalance", [](Source* self) { return self->getBalance(); });
+    src.addFunc("setRolloffFactor", [vm = table.getHandle()](Source* self, float factor) {
+        return eve::script::projectResult(vm, self->setRolloffFactor(factor));
+    });
+    src.addFunc("getRolloffFactor", [](Source* self) { return self->getRolloffFactor(); });
+    src.addFunc("getChannelCount", [](Source* self) { return self->getChannelCount(); });
+    table.addFunc("crossfadeSources",
+                  [vm = table.getHandle()](Source* from, Source* to, float toVolume, float duration, float now) {
+                      return eve::script::projectResult(vm, crossfadeSources(from, to, toVolume, duration, now));
+                  });
+    table.addFunc("configureAmbientBed", [vm = table.getHandle()](Source* source) {
+        return eve::script::projectResult(vm, configureAmbientBed(source));
+    });
+    table.addFunc("applyUnderwaterAudio", [vm = table.getHandle()](Source* down, Source* up, Source* ambience,
+                                                                   bool playDown, bool playUp, bool loopAmbience,
+                                                                   float volume, float fadeSeconds, float now) {
         return eve::script::projectResult(
-            vm, applyUnderwaterAudio(down, up, ambience, playDown, playUp, loopAmbience, volume));
+            vm, applyUnderwaterAudio(down, up, ambience, playDown, playUp, loopAmbience, volume, fadeSeconds, now));
     });
-    auto zoneItem=table.addClass("AudioZoneItem",ssq::Class::Ctor<AudioZoneItem()>());
-    zoneItem.addVar("volume",&AudioZoneItem::volume); zoneItem.addVar("fadeInTime",&AudioZoneItem::fadeInTime);
-    zoneItem.addVar("fadeOutTime",&AudioZoneItem::fadeOutTime); zoneItem.addVar("duration",&AudioZoneItem::duration);
-    auto zoneProfile=table.addClass("AudioZoneProfile",ssq::Class::Ctor<AudioZoneProfile()>());
-    zoneProfile.addVar("x",&AudioZoneProfile::x); zoneProfile.addVar("y",&AudioZoneProfile::y);
-    zoneProfile.addVar("z",&AudioZoneProfile::z); zoneProfile.addVar("radius",&AudioZoneProfile::radius);
-    zoneProfile.addVar("minimumBreakTime",&AudioZoneProfile::minimumBreakTime);
-    zoneProfile.addVar("maximumBreakTime",&AudioZoneProfile::maximumBreakTime);
-    zoneProfile.addVar("deactivationTime",&AudioZoneProfile::deactivationTime);
-    zoneProfile.addVar("global",&AudioZoneProfile::global);
-    zoneProfile.addFunc("addItem",[vm=table.getHandle()](AudioZoneProfile* p,const AudioZoneItem* item){
-        auto r=p&&item?p->addItem(*item):Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"profile and item required"));
-        return eve::script::projectResult(vm,std::move(r),[](int v){return Value(v);});
+    auto zoneItem = table.addClass("AudioZoneItem", ssq::Class::Ctor<AudioZoneItem()>());
+    zoneItem.addVar("volume", &AudioZoneItem::volume);
+    zoneItem.addVar("fadeInTime", &AudioZoneItem::fadeInTime);
+    zoneItem.addVar("fadeOutTime", &AudioZoneItem::fadeOutTime);
+    zoneItem.addVar("duration", &AudioZoneItem::duration);
+    auto zoneProfile = table.addClass("AudioZoneProfile", ssq::Class::Ctor<AudioZoneProfile()>());
+    zoneProfile.addVar("x", &AudioZoneProfile::x);
+    zoneProfile.addVar("y", &AudioZoneProfile::y);
+    zoneProfile.addVar("z", &AudioZoneProfile::z);
+    zoneProfile.addVar("radius", &AudioZoneProfile::radius);
+    zoneProfile.addVar("minimumBreakTime", &AudioZoneProfile::minimumBreakTime);
+    zoneProfile.addVar("maximumBreakTime", &AudioZoneProfile::maximumBreakTime);
+    zoneProfile.addVar("deactivationTime", &AudioZoneProfile::deactivationTime);
+    zoneProfile.addVar("global", &AudioZoneProfile::global);
+    zoneProfile.addFunc("addItem", [vm = table.getHandle()](AudioZoneProfile* p, const AudioZoneItem* item) {
+        auto r =
+            p && item
+                ? p->addItem(*item)
+                : Result<int>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "profile and item required"));
+        return eve::script::projectResult(vm, std::move(r), [](int v) { return Value(v); });
     });
-    zoneProfile.addFunc("getItemCount",[](const AudioZoneProfile* p){return p?p->itemCount():0;});
-    auto zoneState=table.addClass("AudioZoneState",ssq::Class::Ctor<AudioZoneState()>());
-    zoneState.addVar("selectedTrack",&AudioZoneState::selectedTrack); zoneState.addVar("playing",&AudioZoneState::playing);
-    table.addFunc("evaluateAudioZone",[vm=table.getHandle()](const AudioZoneProfile* p,AudioZoneState* state,
-        float now,float x,float y,float z,float master,std::uint32_t seed){
-        auto r=p&&state?evaluateAudioZone(*p,*state,now,x,y,z,master,seed)
-            :Result<AudioZoneOutput>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,"profile and state required"));
-        return eve::script::projectResult(vm,std::move(r),[](const AudioZoneOutput& v){return Value::Object{
-            {"play",v.play},{"stop",v.stop},{"trackIndex",v.trackIndex},{"volume",v.volume}};});
-    });
-    table.addFunc("applyAudioZoneOutput",[vm=table.getHandle()](Source* source,bool play,bool stop,float volume){
-        AudioZoneOutput output; output.play=play; output.stop=stop; output.volume=volume;
-        return eve::script::projectResult(vm,applyAudioZoneOutput(source,output));
+    zoneProfile.addFunc("getItemCount", [](const AudioZoneProfile* p) { return p ? p->itemCount() : 0; });
+    auto zoneState = table.addClass("AudioZoneState", ssq::Class::Ctor<AudioZoneState()>());
+    zoneState.addVar("selectedTrack", &AudioZoneState::selectedTrack);
+    zoneState.addVar("playing", &AudioZoneState::playing);
+    table.addFunc(
+        "evaluateAudioZone", [vm = table.getHandle()](const AudioZoneProfile* p, AudioZoneState* state, float now,
+                                                      float x, float y, float z, float master, std::uint32_t seed) {
+            auto r = p && state ? evaluateAudioZone(*p, *state, now, x, y, z, master, seed)
+                                : Result<AudioZoneOutput>::failure(
+                                      Diagnostic::error(DiagnosticCode::InvalidArgument, "profile and state required"));
+            return eve::script::projectResult(vm, std::move(r), [](const AudioZoneOutput& v) {
+                return Value::Object{
+                    {"play", v.play}, {"stop", v.stop}, {"trackIndex", v.trackIndex}, {"volume", v.volume}};
+            });
+        });
+    table.addFunc("applyAudioZoneOutput", [vm = table.getHandle()](Source* source, bool play, bool stop, float volume) {
+        AudioZoneOutput output;
+        output.play   = play;
+        output.stop   = stop;
+        output.volume = volume;
+        return eve::script::projectResult(vm, applyAudioZoneOutput(source, output));
     });
 }
 

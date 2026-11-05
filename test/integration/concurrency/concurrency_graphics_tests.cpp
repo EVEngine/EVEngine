@@ -916,12 +916,17 @@ TEST_CASE("devtools.mcp.profilerToolsReadTheLiveCore") {
     const std::string frame = callToolOnce("eve_profiler_frame", "{}");
     REQUIRE(!frame.empty());
     CHECK(frame.find("\"schema\":\"eve.profiler.frame\"") != std::string::npos);
+    CHECK(frame.find("\"version\":2") != std::string::npos);
     CHECK(frame.find("\"hasFrame\":true") != std::string::npos);
+    CHECK(frame.find("\"hotspots\":") != std::string::npos);
     CHECK(frame.find("mcp.test.zone") != std::string::npos);
     CHECK(frame.find("\"gpuTimingAvailable\":") != std::string::npos);
 
     // The text report is the same hotspot view the profiler panel shows.
     CHECK(callToolOnce("eve_profiler_report", "{}").find("mcp.test.zone") != std::string::npos);
+    const std::string hotspots = callToolOnce("eve_profiler_hotspots", R"({"limit":4,"minSelfMs":0})");
+    CHECK(hotspots.find("\"schema\":\"eve.profiler.hotspots\"") != std::string::npos);
+    CHECK(hotspots.find("mcp.test.zone") != std::string::npos);
     profilerModule->setEnabled(enabledBefore);
 }
 

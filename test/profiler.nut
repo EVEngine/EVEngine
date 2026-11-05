@@ -16,6 +16,9 @@ function captureWorks() {
         if (r.name == "scriptScope") found = true;
     }
     if (!found) return false;
+    local tops = p.hotspots(3, 0.0);
+    if (typeof tops != "array" || tops.len() < 1) return false;
+    if (tops[0].name != "scriptScope") return false;
     if (p.frameMs() < 0.0) return false;
     if (p.textReport().find("scriptScope") == null) return false;
     p.setEnabled(false);

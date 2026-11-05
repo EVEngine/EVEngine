@@ -76,6 +76,23 @@ TEST_CASE("profiler.core.sameNameDifferentStorageAggregates") {
     REQUIRE(samples.front().selfMs <= samples.front().totalMs);
 }
 
+TEST_CASE("profiler.core.hotspotsFiltersByLimitAndMinSelfMs") {
+    CaptureGuard capture;
+    {
+        EV_PROFILE_MODULE("test", "quiet");
+    }
+    {
+        EV_PROFILE_MODULE("test", "loud");
+        std::this_thread::sleep_for(std::chrono::milliseconds(8));
+    }
+    eve::debug::rtFrameEnd();
+    auto topOne = eve::prof::Profiler::hotspots(1, 0.0);
+    REQUIRE_EQ(topOne.size(), 1u);
+    REQUIRE_EQ(topOne.front().name, std::string("loud"));
+    REQUIRE(eve::prof::Profiler::hotspots(8, 1.0e9).empty());
+    REQUIRE(eve::prof::Profiler::hotspots(0, 0.0).empty());
+}
+
 TEST_CASE("profiler.capture.automaticFrameBeginIncludesEarlier3DWork") {
     CaptureGuard capture;
     {

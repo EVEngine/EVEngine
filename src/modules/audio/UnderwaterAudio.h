@@ -1,7 +1,6 @@
 #pragma once
 #include "common/Export.h"
 
-
 #include "common/Result.h"
 
 namespace eve::audio {
@@ -16,11 +15,14 @@ class Source;
  * @param playUp Whether to play the upward transition once.
  * @param loopAmbience Whether ambience should be playing after this call.
  * @param volume Normalized transition and ambience gain in [0,1].
+ * @param fadeSeconds Ambience ramp length; 0 keeps hard cuts. Caller must advanceFade(now).
+ * @param now Absolute simulation time in seconds for ambience fades.
  * @return Success or InvalidArgument; validation completes before source mutation.
  * @ownership Sources remain caller-owned and are never retained.
  * @thread Audio owner thread only; callbacks are not invoked.
  */
 [[nodiscard]] EVENGINE_API_BACKENDS Result<void> applyUnderwaterAudio(Source* submergeDown, Source* submergeUp,
                                                                       Source* ambience, bool playDown, bool playUp,
-                                                                      bool loopAmbience, float volume);
-}
+                                                                      bool loopAmbience, float volume,
+                                                                      float fadeSeconds, float now);
+}  // namespace eve::audio

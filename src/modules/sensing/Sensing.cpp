@@ -1,6 +1,7 @@
 // eve-hot-path
 #include "sensing/Sensing.h"
 #include "common/Identity.h"
+#include "common/Profile.h"
 #include "common/SquirrelBinding.h"
 #include "sensing/SensingQueryBinding.h"
 #include "sensing/SensingScriptCandidateSeam.h"
@@ -705,6 +706,7 @@ eve::Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin,
 
 Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin, const QuerySpec& spec,
                                                  OptionalRef<const ILineOfSightQuery> lineOfSight) {
+    EV_PROFILE_MODULE("sensing", "SensingWorld::query");
     if (spec.requireLineOfSight && !lineOfSight)
         return Result<CandidateQueryResult>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
                                                                        "query requires a line-of-sight provider",
