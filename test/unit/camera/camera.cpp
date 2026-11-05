@@ -11,6 +11,7 @@
 // clang-format on
 
 #include "camera/CameraController.h"
+#include "camera/CinemaDirector.h"
 #include "common/CameraObstruction.h"
 #include "common/Capability.h"
 #include "graphics/RenderSystem3D.h"
@@ -299,6 +300,87 @@ TEST_CASE("camera.spec.rigsTimelineAndPlayback") {
         controller.update(1.f);
         controller.stopSequence();
         REQUIRE(!controller.isPlaying());
+    };
+}
+
+TEST_CASE("camera.spec.cinemaDirectorOverviewStack") {
+    SUB_CASE("setView upserts fov and framing restore returns gameplay pose") {
+        CameraRig rig;
+        rig.controller.setMode("follow");
+        rig.controller.setTarget(1.f, 2.f, 3.f);
+        rig.controller.setOffset(0.f, 2.f, 6.f);
+        rig.controller.setFov(55.f);
+        rig.controller.snap();
+        auto snap = rig.controller.captureFraming();
+        REQUIRE(snap.mode == "follow");
+        REQUIRE(near(snap.targetX, 1.f));
+        REQUIRE(rig.controller.setView("plaza", 10.f, 8.f, 10.f, 0.f, 1.f, 0.f, 40.f).ok());
+        rig.controller.setMode("cinematic");
+        REQUIRE(rig.controller.switchTo("plaza", 0.f));
+        rig.controller.snap();
+        REQUIRE(near(rig.camera->data()->eyeX, 10.f));
+        REQUIRE(rig.controller.restoreFraming(snap, 0.f).ok());
+        REQUIRE(rig.controller.getMode() == "follow");
+        REQUIRE(near(rig.controller.getTargetX(), 1.f));
+        REQUIRE(near(rig.camera->data()->eyeY, 4.f));
+    };
+    SUB_CASE("push overview pauses director, film moves advance, pop restores follow") {
+        CameraRig rig;
+        CinemaDirector director;
+        REQUIRE(director.bind(&rig.controller).ok());
+        rig.controller.setMode("follow");
+        rig.controller.setTarget(0.f, 1.f, 0.f);
+        rig.controller.setOffset(0.f, 2.f, 6.f);
+        rig.controller.setFov(50.f);
+        REQUIRE(rig.controller.addRig("gameplay", "follow", 10));
+        rig.controller.snap();
+        REQUIRE(rig.controller.getDirectorEnabled());
+        REQUIRE(director.defineOverview("plaza", 12.f, 9.f, 12.f, 0.f, 1.f, 0.f, 42.f).ok());
+        REQUIRE(director.pushOverview("plaza", 0.f).ok());
+        REQUIRE(director.isActive());
+        REQUIRE(director.depth() == 1);
+        REQUIRE(director.getActiveOverview() == "plaza");
+        REQUIRE(!rig.controller.getDirectorEnabled());
+        REQUIRE(near(rig.camera->data()->eyeX, 12.f));
+        const float beforeDolly =
+            glm::length(glm::vec3(rig.camera->data()->eyeX, rig.camera->data()->eyeY, rig.camera->data()->eyeZ) -
+                        glm::vec3(rig.camera->data()->targetX, rig.camera->data()->targetY, rig.camera->data()->targetZ));
+        REQUIRE(director.dolly(3.f, 1.f).ok());
+        REQUIRE(director.isMovePlaying());
+        for (int i = 0; i < 70; ++i) {
+            REQUIRE(director.update(1.f / 60.f).ok());
+            rig.controller.update(1.f / 60.f);
+        }
+        REQUIRE(!director.isMovePlaying());
+        const float afterDolly =
+            glm::length(glm::vec3(rig.camera->data()->eyeX, rig.camera->data()->eyeY, rig.camera->data()->eyeZ) -
+                        glm::vec3(rig.camera->data()->targetX, rig.camera->data()->targetY, rig.camera->data()->targetZ));
+        REQUIRE(afterDolly < beforeDolly - 2.5f);
+        REQUIRE(director.crane(2.f, .5f).ok());
+        for (int i = 0; i < 40; ++i) {
+            REQUIRE(director.update(1.f / 60.f).ok());
+            rig.controller.update(1.f / 60.f);
+        }
+        REQUIRE(director.orbitReveal(45.f, .5f).ok());
+        for (int i = 0; i < 40; ++i) {
+            REQUIRE(director.update(1.f / 60.f).ok());
+            rig.controller.update(1.f / 60.f);
+        }
+        REQUIRE(director.pop(0.f).ok());
+        REQUIRE(!director.isActive());
+        REQUIRE(rig.controller.getMode() == "follow");
+        REQUIRE(rig.controller.getDirectorEnabled());
+        REQUIRE(near(rig.camera->data()->eyeZ, 6.f, .05f));
+    };
+    SUB_CASE("rejects unbound moves and unknown overviews") {
+        CinemaDirector director;
+        REQUIRE(!director.pushOverview("missing", 0.f).ok());
+        CameraRig rig;
+        REQUIRE(director.bind(&rig.controller).ok());
+        REQUIRE(!director.dolly(1.f, 1.f).ok());
+        REQUIRE(!director.defineOverview("", 0.f, 1.f, 2.f, 0.f, 0.f, 0.f, 40.f).ok());
+        REQUIRE(director.defineOverview("a", 0.f, 2.f, 5.f, 0.f, 1.f, 0.f, 40.f).ok());
+        REQUIRE(!director.pushOverview("absent", 0.f).ok());
     };
 }
 

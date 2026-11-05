@@ -26,6 +26,42 @@ class SceneNodeRef;
 
 namespace eve::camera {
 
+/**
+ * @brief Serializable gameplay camera framing for story push/pop restore.
+ * @remarks Captures mode, active rig, follow/orbit parameters and the live smoothed pose.
+ */
+struct CameraFramingSnapshot {
+    std::string mode = "follow";
+    std::string activeRig;
+    float       targetX = 0.f;
+    float       targetY = 0.f;
+    float       targetZ = 0.f;
+    float       offsetX = 0.f;
+    float       offsetY = 2.f;
+    float       offsetZ = 6.f;
+    float       lookAheadX = 0.f;
+    float       lookAheadY = 0.f;
+    float       lookAheadZ = 0.f;
+    float       radius = 10.f;
+    float       azimuth = 45.f;
+    float       elevation = 30.f;
+    float       yaw = 0.f;
+    float       pitch = 0.f;
+    float       fov = 60.f;
+    float       smooth = 6.f;
+    float       positionSmooth = 6.f;
+    float       targetSmooth = 6.f;
+    float       maxSpeed = 0.f;
+    float       eyeX = 0.f;
+    float       eyeY = 0.f;
+    float       eyeZ = 0.f;
+    float       lookX = 0.f;
+    float       lookY = 0.f;
+    float       lookZ = 0.f;
+    bool        directorEnabled = false;
+    bool        timelinePlaying = false;
+};
+
 /** @brief Complete Pcg photo-mode post-processing state retained across render-pipeline projections. */
 struct PcgPhotoModePostFxState {
     float postFxExposure = 13.5f;
@@ -231,6 +267,12 @@ public:
     // --- cinematic / 自动切换视角 ---
     /** @brief Adds view. */
     void addView(const std::string& name, float ex, float ey, float ez, float tx, float ty, float tz);
+    /**
+     * @brief Insert or replace a named cinematic view including FOV.
+     * @cost Constant; amortised over the next blend or story move.
+     */
+    [[nodiscard]] Result<void> setView(const std::string& name, float ex, float ey, float ez, float tx, float ty,
+                                       float tz, float fov);
     /** @brief Switch to. */
     bool switchTo(const std::string& name, float blendTime);
     /** @brief Play sequence. */
@@ -239,6 +281,21 @@ public:
     void stopSequence();
     /** @brief True when playing. */
     bool isPlaying() const;
+
+    /**
+     * @brief Snapshot gameplay framing so a story director can restore it later.
+     * @cost Constant copy of scalar framing state.
+     */
+    [[nodiscard]] CameraFramingSnapshot captureFraming() const;
+    /**
+     * @brief Restore a previously captured framing, optionally blending from the live pose.
+     * @cost One pose evaluation plus an optional blend setup.
+     */
+    [[nodiscard]] Result<void> restoreFraming(const CameraFramingSnapshot& snapshot, float blendTime);
+    /** @brief Pause or resume priority-rig director selection (story cameras need this off). */
+    void setDirectorEnabled(bool enabled);
+    /** @brief Return whether the priority-rig director is selecting rigs. */
+    [[nodiscard]] bool getDirectorEnabled() const noexcept { return directorEnabled_; }
 
     // --- timeline / events ---
     /** @brief Clears timeline. */

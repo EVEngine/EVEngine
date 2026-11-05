@@ -1,10 +1,17 @@
 # 3D 相机控制器（CameraController）
 
-**脚本入口：** `eve.CameraController()`
+**脚本入口：** `eve.CameraController()` / `eve.CinemaDirector()`
+
+## 这篇解决什么
+
+- **问题**：玩法跟随 / 环绕 / 俯视 / 第一人称 / 锁定；故事场景要切到全剧建立镜头（overview），再 dolly / crane / orbit-reveal，最后无玩法机位。
+- **入口**：玩法与 Rig/Timeline 用 `CameraController`；故事全景与电影运镜用 `CinemaDirector`（`bind` → `defineOverview` → `pushOverview` → 运镜 → `pop`）。
+- **不要**：用 `addView` + 手写 `activateRig` 拼装“推全景再还原”——那是过场幻灯片 API，不是故事栈。
+- **相关**：基础视角示例 [`examples/camera-controllers`](../../../examples/camera-controllers/)；故事全景示例 [`examples/cinematic-story-camera`](../../../examples/cinematic-story-camera/)。
 
 在 `Camera3D` 之上提供可复用的视角行为：跟随、环绕、俯视、第一人称、过场与锁定。
-模块还提供优先级 Camera Rig、遮挡修正、构图、Impulse Modifier，以及可发送
-`Event` 的 Camera Timeline。`Camera3D` 本身只描述“看哪里”；本模块负责“怎么移动”。
+模块还提供优先级 Camera Rig、遮挡修正、构图、Impulse Modifier，可发送
+`Event` 的 Camera Timeline，以及故事向的 `CinemaDirector`。`Camera3D` 本身只描述“看哪里”；本模块负责“怎么移动”。
 
 ## 基本用法
 
@@ -158,6 +165,32 @@ if (marker != "") print(marker + ": " + ctrl.getTimelineEventData() + "\n");
 `setMode("cinematic")` 前用 `addView("front", ...)` 等注册多个命名视角，
 `playSequence(3.0)` 在视角间平滑切换，`stopSequence()` / `isPlaying()` 控制。
 
+### 故事全景 / 电影运镜（CinemaDirector）
+
+玩家进入剧情点时，把镜头推到命名 overview（全剧建立镜头），播放短运镜，再弹回玩法：
+
+```squirrel
+local dir = eve.CinemaDirector();
+local bound = dir.bind(ctrl);
+if (!bound.ok) return;
+eve.result.ignore(dir.defineOverview("plaza", 16.0, 12.5, 16.0, 0.0, 1.2, 0.0, 42.0), "define");
+eve.result.ignore(dir.pushOverview("plaza", 0.8), "push");   // 暂停 Rig Director，入栈
+eve.result.ignore(dir.dolly(4.0, 1.4), "dolly");              // 沿视线推进（正值靠近主体）
+eve.result.ignore(dir.crane(3.0, 1.2), "crane");
+eve.result.ignore(dir.orbitReveal(70.0, 2.0), "orbit");
+eve.result.ignore(dir.pop(0.7), "pop");                      // 还原 captureFraming 快照
+
+function eve_update(dt) {
+    eve.result.ignore(dir.update(dt), "cinema");  // 先于 ctrl.update
+    ctrl.update(dt);
+}
+```
+
+- `pushOverview` 首次入栈会 `captureFraming`、关闭 priority director、停掉 sequence。
+- `dolly` / `crane` / `orbitReveal` 只在栈非空时可用；`isMovePlaying` / `depth` / `getActiveOverview` 查询状态。
+- `pop` 还原上一层 overview，或在栈空时 `restoreFraming` 回玩法。
+- `setView(name, …, fov)` 供导演写入命名机位；玩法脚本一般不必直接调用。
+
 ## 绑定与行为说明
 
 ### `CameraController`
@@ -170,9 +203,17 @@ if (marker != "") print(marker + ": " + ctrl.getTimelineEventData() + "\n");
 - 环绕：`setRadius`、`setAzimuth`、`setElevation`、`setOrbitSpeed`、`setYaw`、`setPitch`。
 - 平滑：`setSmooth(k)` 同时设置两路阻尼；也可用 `setPositionSmooth(k)` /
   `setTargetSmooth(k)` 独立控制机位与朝向跟随，再配合 `setMaxSpeed(v)`、`snap()`。
-- 过场（兼容 API）：`addView(name, ex,ey,ez, tx,ty,tz)`、`switchTo(name, blendTime)`、
-  `playSequence(seconds)`、`stopSequence()`、`isPlaying()`。
+- 过场（兼容 API）：`addView(name, ex,ey,ez, tx,ty,tz)`、`setView(name,…,fov)`、
+  `switchTo(name, blendTime)`、`playSequence(seconds)`、`stopSequence()`、`isPlaying()`。
+- Director：`setDirectorEnabled` / `getDirectorEnabled`（故事导演入栈时会关闭）。
 - `update(dt)`：每帧驱动（放到 `eve_update`）。
+
+### `CinemaDirector`
+
+- `bind(ctrl)` / `defineOverview(name, eye, target, fov)` / `pushOverview` / `pop`
+- 运镜：`dolly(distance, duration)`、`crane(deltaY, duration)`、`orbitReveal(degrees, duration)`
+- 状态：`update(dt)`、`isActive`、`depth`、`isMovePlaying`、`getActiveOverview`
+- 所有变更 API 返回 Result；脚本侧用 `result.ok` 或 `eve.result.ignore`。
 
 ## 生命周期
 
