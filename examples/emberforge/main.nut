@@ -339,49 +339,62 @@ function updateFx(dt) {
     }
 }
 
+function idleHeat() {
+    // Soft hearth breath so the loft never looks cold between jobs.
+    local saw = (ambientT * 1.1) % 2.0
+    if (saw > 1.0) saw = 2.0 - saw
+    return 0.28 + saw * 0.22 + heat * 0.55
+}
+
 function drawBackdrop() {
-    gfx.drawSolidRect(0.0, 0.0, W, H, 0.06, 0.045, 0.05, 1.0)
+    gfx.drawSolidRect(0.0, 0.0, W, H, 0.08, 0.05, 0.045, 1.0)
+    // Warm upper wash.
+    gfx.drawSolidRect(0.0, 0.0, W, 220.0, 0.18, 0.07, 0.03, 0.22)
     // Ceiling soot bands.
     for (local i = 0; i < 6; i += 1) {
         local y = 40.0 + i * 18.0
-        gfx.drawSolidRect(0.0, y, W, 10.0, 0.04, 0.03, 0.035, 0.18 + i * 0.02)
+        gfx.drawSolidRect(0.0, y, W, 10.0, 0.05, 0.03, 0.03, 0.22 + i * 0.02)
     }
     // Floor ash.
-    gfx.drawSolidRect(0.0, 430.0, W, 210.0, 0.09, 0.06, 0.055, 1.0)
+    gfx.drawSolidRect(0.0, 430.0, W, 210.0, 0.12, 0.07, 0.05, 1.0)
     for (local i = 0; i < 10; i += 1) {
         local y = 440.0 + i * 18.0
-        gfx.drawSolidRect(0.0, y, W, 12.0, 0.16 + heat * 0.15, 0.07, 0.035, 0.05 + i * 0.012)
+        gfx.drawSolidRect(0.0, y, W, 12.0, 0.22 + heat * 0.2, 0.09, 0.04, 0.08 + i * 0.015)
     }
-    // Hearth glow behind the anvil.
-    local glow = 0.10 + heat * 0.42
-    gfx.drawSolidRect(350.0, 250.0, 260.0, 180.0, 0.62, 0.18, 0.04, glow * 0.55)
-    gfx.drawSolidRect(390.0, 290.0, 180.0, 120.0, 0.9, 0.32, 0.06, glow)
+    // Hearth glow behind the anvil — always alive, hotter after jobs.
+    local glow = idleHeat()
+    gfx.drawSolidRect(300.0, 220.0, 360.0, 220.0, 0.75, 0.22, 0.04, glow * 0.35)
+    gfx.drawSolidRect(360.0, 260.0, 240.0, 150.0, 0.95, 0.38, 0.08, glow * 0.7)
+    gfx.drawSolidRect(410.0, 300.0, 140.0, 90.0, 1.0, 0.55, 0.12, glow)
     // Ambient drifting embers.
-    for (local i = 0; i < 12; i += 1) {
+    for (local i = 0; i < 18; i += 1) {
         local t = ambientT * (0.35 + (i % 4) * 0.08) + i * 1.7
-        local x = 120.0 + ((i * 73) % 720) + (t * 18.0) % 40.0
-        local y = 460.0 - ((t * 28.0 + i * 17.0) % 220.0)
-        local a = 0.18 + ((i + simTick) % 5) * 0.04
-        gfx.drawSolidRect(x, y, 3.0, 3.0, 1.0, 0.55, 0.18, a)
+        local x = 80.0 + ((i * 73) % 800) + (t * 18.0) % 40.0
+        local y = 470.0 - ((t * 28.0 + i * 17.0) % 260.0)
+        local a = 0.25 + ((i + simTick) % 5) * 0.05
+        gfx.drawSolidRect(x, y, 4.0, 4.0, 1.0, 0.58, 0.16, a)
     }
 }
 
 function drawForgeFurniture() {
-    // Chimney / back wall plate.
-    gfx.drawSolidRect(320.0, 180.0, 320.0, 24.0, 0.14, 0.12, 0.13, 1.0)
-    gfx.drawSolidRect(360.0, 140.0, 80.0, 50.0, 0.12, 0.10, 0.11, 1.0)
-    gfx.drawSolidRect(520.0, 140.0, 80.0, 50.0, 0.12, 0.10, 0.11, 1.0)
+    // Back wall plate + twin chimneys.
+    gfx.drawSolidRect(300.0, 170.0, 360.0, 34.0, 0.2, 0.14, 0.12, 1.0)
+    gfx.drawSolidRect(340.0, 110.0, 90.0, 70.0, 0.16, 0.11, 0.1, 1.0)
+    gfx.drawSolidRect(530.0, 110.0, 90.0, 70.0, 0.16, 0.11, 0.1, 1.0)
+    gfx.drawSolidRect(360.0, 90.0, 50.0, 24.0, 0.12, 0.09, 0.08, 1.0)
+    gfx.drawSolidRect(550.0, 90.0, 50.0, 24.0, 0.12, 0.09, 0.08, 1.0)
     // Bellows silhouette.
-    gfx.drawSolidRect(250.0, 360.0, 70.0, 40.0, 0.28, 0.14, 0.08, 1.0)
-    gfx.drawSolidRect(260.0, 340.0, 50.0, 24.0, 0.32, 0.16, 0.09, 1.0)
+    gfx.drawSolidRect(230.0, 350.0, 90.0, 48.0, 0.36, 0.18, 0.1, 1.0)
+    gfx.drawSolidRect(245.0, 320.0, 60.0, 34.0, 0.42, 0.2, 0.11, 1.0)
+    gfx.drawSolidRect(200.0, 370.0, 40.0, 16.0, 0.28, 0.14, 0.08, 1.0)
 }
 
 function drawAnvilAndBlade() {
     // Anvil body.
-    gfx.drawSolidRect(400.0, 340.0, 160.0, 28.0, 0.22, 0.22, 0.24, 1.0)
-    gfx.drawSolidRect(430.0, 368.0, 100.0, 50.0, 0.16, 0.16, 0.18, 1.0)
-    gfx.drawSolidRect(445.0, 418.0, 70.0, 18.0, 0.12, 0.12, 0.14, 1.0)
-    gfx.drawSolidRect(390.0, 346.0, 18.0, 14.0, 0.2, 0.2, 0.22, 1.0)
+    gfx.drawSolidRect(395.0, 336.0, 170.0, 34.0, 0.32, 0.32, 0.36, 1.0)
+    gfx.drawSolidRect(425.0, 368.0, 110.0, 54.0, 0.24, 0.24, 0.28, 1.0)
+    gfx.drawSolidRect(440.0, 420.0, 80.0, 20.0, 0.18, 0.18, 0.2, 1.0)
+    gfx.drawSolidRect(382.0, 342.0, 22.0, 18.0, 0.3, 0.3, 0.34, 1.0)
 
     local level = bladeEnhance()
     local equipped = !gear.isSlotEmpty("weapon")
@@ -428,15 +441,16 @@ function drawHammer() {
 function drawDummy() {
     local shake = dummyHit * 8.0
     local dx = 740.0 + shake * (((simTick % 2) == 0) ? 1.0 : -1.0)
-    local dy = 280.0
-    gfx.drawSolidRect(dx + 18.0, dy + 120.0, 40.0, 70.0, 0.22, 0.14, 0.08, 1.0)
-    gfx.drawSolidRect(dx, dy, 76.0, 120.0, 0.42 + dummyHit * 0.35, 0.28, 0.18, 1.0)
-    gfx.drawSolidRect(dx + 22.0, dy + 28.0, 32.0, 18.0, 0.12, 0.1, 0.09, 1.0)
+    local dy = 270.0
+    gfx.drawSolidRect(dx + 14.0, dy + 130.0, 48.0, 80.0, 0.28, 0.16, 0.09, 1.0)
+    gfx.drawSolidRect(dx - 4.0, dy, 84.0, 132.0, 0.52 + dummyHit * 0.35, 0.32, 0.18, 1.0)
+    gfx.drawSolidRect(dx + 10.0, dy + 10.0, 64.0, 18.0, 0.62, 0.4, 0.22, 1.0)
+    gfx.drawSolidRect(dx + 24.0, dy + 36.0, 36.0, 22.0, 0.14, 0.1, 0.08, 1.0)
     // HP bar.
     local ratio = dummyHp / 100.0
     if (ratio < 0.0) ratio = 0.0
-    gfx.drawSolidRect(dx, dy - 18.0, 76.0, 8.0, 0.12, 0.1, 0.1, 1.0)
-    gfx.drawSolidRect(dx, dy - 18.0, 76.0 * ratio, 8.0, 0.75, 0.28, 0.18, 1.0)
+    gfx.drawSolidRect(dx - 4.0, dy - 20.0, 84.0, 10.0, 0.14, 0.1, 0.1, 1.0)
+    gfx.drawSolidRect(dx - 4.0, dy - 20.0, 84.0 * ratio, 10.0, 0.85, 0.3, 0.16, 1.0)
 }
 
 function drawSparks() {
