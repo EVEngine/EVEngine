@@ -39,7 +39,9 @@ if (gb.isValid()) {
 
 Hybrid 下 Pass 序为 shadow → gbuffer → **deferredLighting** → forward（半透明仍 Forward+）；MSAA 会被关掉。
 
-3D 前向仍启用硬件 z-buffer；GBuffer 是给 AO / 体积雾 / 风格描边等中后期用的采样目标。阴影仍走 CSM shadow map。
+3D 前向仍启用硬件 z-buffer；GBuffer 是给 AO / 体积雾 / 接触阴影 / 风格描边等中后期用的采样目标。阴影仍走 CSM shadow map。
+
+**接触阴影（contactShadow）**：沿主方向光做短距离屏幕空间射线步进，叠黑 alpha 暗化。默认关；需要 GBuffer 深度（可选法线）。质量档 `low|medium|high` 由管线内 `ContactShadow` 控制。对比台见 `examples/render-fidelity`。
 
 一帧里各 buffer 谁写谁读、对应函数和 shader，见开发文档 [`3D渲染管线.md`](../../../dev/3D渲染管线.md)。
 
