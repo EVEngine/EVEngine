@@ -206,21 +206,23 @@ local SlashTrail = class {
                 nrm.extend([0.0, 1.0, 0.0, 0.0, 1.0, 0.0]);
                 // UV.x = arc progress (tail to head); UV.y = root(0) to tip(1).
                 uv.extend([u, 0.0, u, 1.0]);
-                // Soften older edges by shrinking toward the blade mid so the fan dissolves.
+                // Dissolve old samples by pulling the root inward first; keep the tip path long
+                // so the outer arc still reads as blade-point glow while the trail ages out.
                 if (fade < 0.999) {
                     local mid = {
                         x = (s.root.x + s.tip.x) * 0.5,
                         y = (s.root.y + s.tip.y) * 0.5,
                         z = (s.root.z + s.tip.z) * 0.5
                     };
-                    local keep = 0.35 + 0.65 * fade;
+                    local rootKeep = 0.20 + 0.80 * fade;
+                    local tipKeep = 0.70 + 0.30 * fade;
                     local vi = (pos.len() / 3) - 2;
-                    pos[vi * 3] = mid.x + (s.root.x - mid.x) * keep;
-                    pos[vi * 3 + 1] = mid.y + (s.root.y - mid.y) * keep;
-                    pos[vi * 3 + 2] = mid.z + (s.root.z - mid.z) * keep;
-                    pos[vi * 3 + 3] = mid.x + (s.tip.x - mid.x) * keep;
-                    pos[vi * 3 + 4] = mid.y + (s.tip.y - mid.y) * keep;
-                    pos[vi * 3 + 5] = mid.z + (s.tip.z - mid.z) * keep;
+                    pos[vi * 3] = mid.x + (s.root.x - mid.x) * rootKeep;
+                    pos[vi * 3 + 1] = mid.y + (s.root.y - mid.y) * rootKeep;
+                    pos[vi * 3 + 2] = mid.z + (s.root.z - mid.z) * rootKeep;
+                    pos[vi * 3 + 3] = mid.x + (s.tip.x - mid.x) * tipKeep;
+                    pos[vi * 3 + 4] = mid.y + (s.tip.y - mid.y) * tipKeep;
+                    pos[vi * 3 + 5] = mid.z + (s.tip.z - mid.z) * tipKeep;
                 }
                 if (i > segmentStart) {
                     local prev = vertBase + (i - segmentStart - 1) * 2;

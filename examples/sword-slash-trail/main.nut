@@ -63,11 +63,12 @@ function buildScene() {
     body.push(part(cube, -2.18, 1.15, 0.0, 0.16, 0.55, 0.16, [0.14, 0.16, 0.2])); // left arm
     body.push(part(cube, -1.42, 1.2, 0.05, 0.16, 0.5, 0.16, [0.14, 0.16, 0.2]));  // sword arm
 
-    // Katana parts: `along` is meters from pivot (hand) toward tip.
-    sword.push({e = part(cube, 0, 0, 0, 0.07, 0.08, 0.07, [0.18, 0.14, 0.10]), along = 0.0});     // tsuka
-    sword.push({e = part(cube, 0, 0, 0, 0.28, 0.04, 0.12, [0.72, 0.58, 0.28]), along = 0.18});    // tsuba
-    sword.push({e = part(cube, 0, 0, 0, 0.055, 1.55, 0.02, [0.78, 0.84, 0.90]), along = 1.05});  // blade
-    sword.push({e = part(cube, 0, 0, 0, 0.012, 1.52, 0.028, [0.95, 0.98, 1.0], false), along = 1.05}); // edge highlight
+    // Katana parts: `along` is meters from pivot to the mesh center.
+    // Unit cubes are centered, so the visual tip is along + halfScaleY (blade: 1.05+0.775).
+    sword.push({e = part(cube, 0, 0, 0, 0.07, 0.08, 0.07, [0.18, 0.14, 0.10]), along = 0.0}); // tsuka
+    sword.push({e = part(cube, 0, 0, 0, 0.28, 0.04, 0.12, [0.72, 0.58, 0.28]), along = 0.18}); // tsuba
+    sword.push({e = part(cube, 0, 0, 0, 0.055, 1.55, 0.02, [0.78, 0.84, 0.90]), along = 1.05}); // blade
+    sword.push({e = part(cube, 0, 0, 0, 0.012, 1.52, 0.028, [0.95, 0.98, 1.0], false), along = 1.05}); // edge
 
     camera = eve.Camera3D();
     camera.setTarget(-0.6, 1.25, 0.0);
@@ -119,8 +120,11 @@ function slashPose(kind, age) {
         yaw = lerp(-0.20, 0.30, e);
     }
     local dir = bladeDir(yaw, pitch, roll);
+    // Match the authored blade mesh: center 1.05, half-extent 0.775 → tip at 1.825.
+    // Overshoot a little so the hot tip filament covers the point instead of stopping short.
     local rootAlong = 0.22;
-    local tipAlong = 1.82;
+    // Blade mesh tip = 1.05 + 0.775 = 1.825; overshoot so the outer arc covers the point.
+    local tipAlong = 1.95;
     local root = {
         x = pivot.x + dir.x * rootAlong,
         y = pivot.y + dir.y * rootAlong,
