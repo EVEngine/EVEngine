@@ -398,15 +398,6 @@ Result<SpeciesDef> parseSpeciesObject(const Value::Object& object) {
 
 }  // namespace
 
-bool SpeciesDef::hasNeed(std::string_view needId) const { return findNeed(needId) != nullptr; }
-
-const NeedMeterDef* SpeciesDef::findNeed(std::string_view needId) const {
-    for (const NeedMeterDef& need : needs) {
-        if (need.id == needId) return &need;
-    }
-    return nullptr;
-}
-
 Result<OrganismKind> parseOrganismKind(std::string_view text) {
     const std::string lower = lowerCopy(text);
     if (lower == "plant") return Result<OrganismKind>::success(OrganismKind::Plant);

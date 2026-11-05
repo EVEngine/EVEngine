@@ -105,15 +105,24 @@ struct SpeciesDef {
     std::vector<DiseaseSusceptibility> diseases;
     double                             baseDiseaseResist = 0.5;
 
-    /** @brief True when the species declares a need meter with this id. */
-    [[nodiscard]] bool hasNeed(std::string_view needId) const;
+    /**
+     * @brief True when the species declares a need meter with this id.
+     * @remarks Inline so SHARED Windows consumers do not need a DLL export.
+     */
+    [[nodiscard]] bool hasNeed(std::string_view needId) const { return findNeed(needId) != nullptr; }
     /**
      * @brief Looks up a need meter; nullptr when absent.
      * @ownership Borrowed from this SpeciesDef; caller must not free it.
      * @lifetime Valid while this SpeciesDef remains alive / registered.
      * @nullable Yes when the id is unknown.
+     * @remarks Inline so SHARED Windows consumers do not need a DLL export.
      */
-    [[nodiscard]] const NeedMeterDef* findNeed(std::string_view needId) const;
+    [[nodiscard]] const NeedMeterDef* findNeed(std::string_view needId) const {
+        for (const NeedMeterDef& need : needs) {
+            if (need.id == needId) return &need;
+        }
+        return nullptr;
+    }
 };
 
 /** @brief Process-wide species table used by GrowthWorld and Organism factories. */
