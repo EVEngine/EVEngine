@@ -1203,6 +1203,9 @@ void RPG::expose(ssq::Table &table) {
         });
     actionEncounter.addFunc("close", [](ActionEncounter* session) { session->close(); });
     actionEncounter.addFunc("hasPendingReward", &ActionEncounter::hasPendingReward);
+    actionEncounter.addFunc("isClosed", &ActionEncounter::isClosed);
+    actionEncounter.addFunc("isBound", &ActionEncounter::isBound);
+    actionEncounter.addFunc("lastTick", &ActionEncounter::lastTick);
 
     auto saveSession = table.addClass<RPGSaveSession>(
         "RPGSaveSession", std::function<RPGSaveSession *()>([]() { return new RPGSaveSession(); }), true);

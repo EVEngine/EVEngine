@@ -153,6 +153,15 @@ Result<AbilityStepReport> AbilityRuntime::step(SimulationTick tick, Duration del
     if (delta < Duration::zero())
         return Result<AbilityStepReport>::failure(
             Diagnostic::error(DiagnosticCode::InvalidArgument, "Ability step delta must be non-negative", "delta"));
+    if (lastStepTick_.has_value()) {
+        if (tick < *lastStepTick_)
+            return Result<AbilityStepReport>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Ability step tick moved backwards", "tick"));
+        if (tick == *lastStepTick_)
+            return Result<AbilityStepReport>::failure(
+                Diagnostic::error(DiagnosticCode::Conflict, "AbilityRuntime already stepped this tick", "tick"));
+    }
+    lastStepTick_ = tick;
     AbilityStepReport     report;
     std::optional<Status> firstFailure;
     for (const auto& activation : activeActivations()) {

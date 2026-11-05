@@ -94,6 +94,10 @@ Timeline 新增内建窗口：`input:cancel-window`（payload `allows`，可选 
 
 可玩组合烟测见 `examples/combat-arena`；更细的几何/取消/锁定/循环契约见 `test/combat_*.cpp`。
 
+**每 tick 只推进一次：** `CombatLoopRuntime::advance` 要求仿真 tick **严格递增**；同一 tick
+再次 `advance` 返回 `Conflict`，避免位移、近战扫掠与 hitstop 被双算。动作 RPG 宿主清单见
+[arpg-host](arpg-host.md)。
+
 ## 组合边界
 
 移动状态应由表现层投射到 Scene/Physics，由 Ability Active 阶段决定冲刺、闪避等动作何时写入移动意图。

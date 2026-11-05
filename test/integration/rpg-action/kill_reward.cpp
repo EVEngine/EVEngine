@@ -22,6 +22,8 @@
 #include "rpg/WorldState.h"
 #include "zeroerr/unittest.h"
 
+#include <limits>
+
 namespace {
 using namespace eve;
 using namespace eve::rpg;
@@ -380,4 +382,49 @@ TEST_CASE("Action encounter permits disjoint providers without global exclusivit
     REQUIRE(other.hit(true, 20, 1).ok());
     CHECK_EQ(f.enemy->getCurrent("hp"), 90.0);
     CHECK_EQ(otherEnemy->getCurrent("hp"), 80.0);
+}
+
+TEST_CASE("Action encounter failure matrix rejects invalid bind hit and claim edges") {
+    Fixture         f(false);
+    ActionEncounter encounter;
+    CHECK(encounter.isClosed() == false);
+    CHECK(encounter.isBound() == false);
+    CHECK_EQ(encounter.lastTick(), -1);
+    CHECK(!encounter.bind(*f.hero, *f.enemy, "not-a-uuid", f.enemyId.format()).ok());
+    CHECK(!encounter.bind(*f.hero, *f.enemy, f.heroId.format(), f.heroId.format()).ok());
+    CHECK(!encounter.bind(*f.hero, *f.hero, f.heroId.format(), f.enemyId.format()).ok());
+    REQUIRE(encounter.bind(*f.hero, *f.enemy, f.heroId.format(), f.enemyId.format()).ok());
+    CHECK(encounter.isBound());
+    CHECK(!encounter.hit(true, 0.0, 1).ok());
+    CHECK(!encounter.hit(true, -5.0, 1).ok());
+    CHECK(!encounter.hit(true, std::numeric_limits<double>::quiet_NaN(), 1).ok());
+    CHECK_EQ(f.enemy->getCurrent("hp"), 100.0);
+    REQUIRE(encounter.hit(true, 10.0, 1).ok());
+    CHECK_EQ(encounter.lastTick(), 1);
+    REQUIRE(encounter.hit(false, 100.0, 2).ok());
+    CHECK(f.hero->isDead("hp"));
+    CHECK(!encounter.hasPendingReward());
+    CHECK(!encounter.hit(true, 10.0, 3).ok());
+    CHECK_EQ(f.enemy->getCurrent("hp"), 90.0);
+    encounter.close();
+    CHECK(encounter.isClosed());
+    CHECK(!encounter.isBound());
+    CHECK_EQ(encounter.lastTick(), -1);
+    CHECK(!encounter.hit(true, 10.0, 4).ok());
+    auto claimed = encounter.claim(f.state, f.tracker, "wolf");
+    REQUIRE(claimed.ok());
+    CHECK_EQ(claimed.status().code(), StatusCode::NoOp);
+}
+
+TEST_CASE("Action encounter retains pending after enemy destroy until claim succeeds") {
+    Fixture         f(false);
+    ActionEncounter encounter;
+    REQUIRE(encounter.bind(*f.hero, *f.enemy, f.heroId.format(), f.enemyId.format()).ok());
+    REQUIRE(encounter.hit(true, 100.0, 1).ok());
+    REQUIRE(encounter.hasPendingReward());
+    f.enemy->release();
+    f.enemy = nullptr;
+    REQUIRE(encounter.claim(f.state, f.tracker, "wolf").ok());
+    CHECK(!encounter.hasPendingReward());
+    CHECK_EQ(f.state.getVariable("gold"), 10.0);
 }

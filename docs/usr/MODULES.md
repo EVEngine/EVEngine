@@ -68,6 +68,7 @@
 - [事务](modules/transaction.md)：跨参与者准备/提交和失败原子性；C++ 契约章节。
 - [RTS](modules/rts.md)：世界、阵营、单位命令、经济/生产组合与固定步进。
 - [动作战斗](modules/combat.md)：行动协议与命中、伤害、属性结算的组合。
+- [动作 RPG 宿主接线](modules/arpg-host.md)：单机 ARPG 身份映射、时序、失败矩阵与 `RPGActionEncounter`。
 - [战棋](modules/tactics.md)：棋盘拓扑、回合、命令与快照回放。
 - [群体移动](modules/crowd.md)：流场、拥挤避让与单位移动。
 - [感知](modules/sensing.md)：空间查询与感知记录。

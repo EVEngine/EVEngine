@@ -22,6 +22,10 @@
 
 动作战斗竖切（`examples/combat-arena`）当前是**确定性仿真演示**，不以跨会话存档为验收目标；需要持久化时，把 HP/冷却接到 RPG 或自有权威状态后再用上面的会话拼装。
 
+动作 RPG 闭环（`examples/arpg-loop`）用 `RPGSaveSession` 做**安全点**存档：无活动敌人、无
+`hasPendingReward`、玩家存活时才允许保存。读档恢复永久 RPG/背包/任务态并回营地，不恢复半途
+攻击窗口或敌人血量。宿主清单与失败语义见 [动作 RPG 宿主接线](modules/arpg-host.md)。
+
 ## RPG：推荐主路径
 
 以下是已有 RPG 关卡的存档接线片段，不是独立 `main.nut`。先按
