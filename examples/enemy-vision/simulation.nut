@@ -1,5 +1,6 @@
 // Game-owned host: mirrors poses into SensingWorld, runs per-enemy cone queries,
-// writes vision memories into NpcAiWorld, and keeps aggro outside sensing.
+// then applies World2D LOS against authored obstacle AABBs (no World2D LOS
+// capability ships yet). Vision memories stay in NpcAiWorld; aggro stays here.
 function evRequire(result, operation) {
     if (result == null || !result.ok) {
         local summary = result != null && ("status" in result) ? result.status.summary : "null";
@@ -38,6 +39,74 @@ function evConeQueryJson(enemy) {
         "}";
 }
 
+// Segment vs AABB (Liang-Barsky). Returns hit distance along the segment, or -1.
+function evRaycastObstacles(x0, y0, x1, y1, obstacles) {
+    local dx = x1 - x0;
+    local dy = y1 - y0;
+    local bestT = 2.0;
+    foreach (wall in obstacles) {
+        local minX = wall.x;
+        local minY = wall.y;
+        local maxX = wall.x + wall.w;
+        local maxY = wall.y + wall.h;
+        local t0 = 0.0;
+        local t1 = 1.0;
+        local parallel = false;
+        local edges = [
+            [-dx, x0 - minX],
+            [dx, maxX - x0],
+            [-dy, y0 - minY],
+            [dy, maxY - y0]
+        ];
+        foreach (e in edges) {
+            local p = e[0];
+            local q = e[1];
+            if (p == 0.0) {
+                if (q < 0.0) {
+                    parallel = true;
+                    break;
+                }
+            } else {
+                local r = q / p;
+                if (p < 0.0) {
+                    if (r > t1) {
+                        parallel = true;
+                        break;
+                    }
+                    if (r > t0) t0 = r;
+                } else {
+                    if (r < t0) {
+                        parallel = true;
+                        break;
+                    }
+                    if (r < t1) t1 = r;
+                }
+            }
+        }
+        if (parallel) continue;
+        if (t0 <= t1 && t0 >= 0.0 && t0 <= 1.0 && t0 < bestT) bestT = t0;
+    }
+    if (bestT <= 1.0) {
+        return bestT * evLen(dx, dy);
+    }
+    return -1.0;
+}
+
+function evHasLineOfSight(x0, y0, x1, y1, obstacles) {
+    return evRaycastObstacles(x0, y0, x1, y1, obstacles) < 0.0;
+}
+
+function evResolveCircleAabb(px, py, radius, wall) {
+    local nearestX = evClamp(px, wall.x, wall.x + wall.w);
+    local nearestY = evClamp(py, wall.y, wall.y + wall.h);
+    local dx = px - nearestX;
+    local dy = py - nearestY;
+    local dist = evLen(dx, dy);
+    if (dist >= radius || dist < 0.0001) return {x = px, y = py};
+    local push = (radius - dist) / dist;
+    return {x = px + dx * push, y = py + dy * push};
+}
+
 class EnemyVisionSimulation {
     sensingMod = null;
     sensing = null;
@@ -45,6 +114,7 @@ class EnemyVisionSimulation {
     ai = null;
     player = null;
     enemies = null;
+    obstacles = null;
     aggro = null;
     tick = 0;
     time = 0.0;
@@ -71,10 +141,17 @@ class EnemyVisionSimulation {
         enemies = [];
         aggro = {};
         events = [];
-        addEnemy("guard.east", 720.0, 220.0, -1.0, 0.0, 0.55, 220.0, 1.6);
-        addEnemy("guard.south", 540.0, 520.0, 0.0, -1.0, 0.70, 180.0, 2.1);
-        addEnemy("guard.west", 880.0, 400.0, -1.0, 0.2, 0.40, 260.0, 1.2);
-        note("three guards online — move into a cone to raise vision memory");
+        // Visible cover: cones still select candidates; host LOS rejects blocked rays.
+        // wall.mid sits inside guard.east's range so both clear and occluded probes fit the cone.
+        obstacles = [
+            {id = "wall.mid", x = 560.0, y = 140.0, w = 36.0, h = 240.0},
+            {id = "wall.low", x = 360.0, y = 400.0, w = 260.0, h = 32.0},
+            {id = "cover.crate", x = 700.0, y = 320.0, w = 70.0, h = 70.0}
+        ];
+        addEnemy("guard.east", 820.0, 240.0, -1.0, 0.0, 0.55, 400.0, 1.6);
+        addEnemy("guard.south", 520.0, 580.0, 0.0, -1.0, 0.70, 260.0, 2.1);
+        addEnemy("guard.west", 960.0, 450.0, -1.0, 0.15, 0.40, 280.0, 1.2);
+        note("walls block LOS — stand in a cone behind cover to stay hidden");
     }
 
     function addEnemy(id, x, y, dirX, dirY, halfAngle, range, patrolSpeed) {
@@ -92,9 +169,11 @@ class EnemyVisionSimulation {
             range = range.tofloat()
             patrolSpeed = patrolSpeed.tofloat()
             chaseSpeed = 110.0
+            radius = 16.0
             agent = agent
             state = "patrol"
             seesPlayer = false
+            blocked = false
             patrolPhase = (enemies.len() * 1.7).tofloat()
             flash = 0.0
         });
@@ -126,32 +205,48 @@ class EnemyVisionSimulation {
         }
     }
 
+    function separateFromWalls(unit) {
+        local pos = {x = unit.x, y = unit.y};
+        foreach (wall in obstacles) {
+            pos = evResolveCircleAabb(pos.x, pos.y, unit.radius, wall);
+        }
+        unit.x = pos.x;
+        unit.y = pos.y;
+    }
+
     function refreshVision() {
         mirrorFacts();
         foreach (enemy in enemies) {
             local found = sensing.query(evConeQueryJson(enemy));
             evRequire(found, "cone query " + enemy.id);
             local ranked = found.value.ranked;
-            local hit = ranked != null && ranked.len() > 0;
+            local inCone = ranked != null && ranked.len() > 0;
+            local clear = false;
+            local subject = player.id;
+            if (inCone) {
+                subject = ranked[0].subject;
+                if (subject == null || subject == "") subject = player.id;
+                clear = evHasLineOfSight(enemy.x, enemy.y, player.x, player.y, obstacles);
+            }
+            local hit = inCone && clear;
+            enemy.blocked = inCone && !clear;
             local previous = enemy.seesPlayer;
             enemy.seesPlayer = hit;
             if (hit) {
-                local subject = ranked[0].subject;
-                if (subject == null || subject == "") subject = player.id;
                 evRequire(ai.setBlackboardString(enemy.agent, "target", subject),
                           "blackboard target " + enemy.id);
                 // Short TTL: stop refreshing and the next AI tick emits perception.forgotten.vision.
-                // Explicit forget() erases memory but does not queue that wake-up signal.
                 evRequire(ai.remember(enemy.agent, subject, "vision", 0.95, tick, 2, "{}"),
                           "remember vision " + enemy.id);
-                // Aggro / primary stay game-owned — sensing never picks a threat table.
                 aggro[enemy.id] <- subject;
                 if (!previous) {
                     enemy.flash = 0.35;
                     note(enemy.id + " saw " + subject);
                 }
+            } else if (enemy.blocked && !previous) {
+                // Still in the geometric cone, but a wall owns the ray.
+                note(enemy.id + " cone blocked by cover");
             }
-            // Missed cone: do not refresh remember; expiry drives patrol transition.
         }
         local report = evRequire(ai.tick(tick, 1.0 / visionHz, enemies.len(), 4), "tick NpcAi");
         foreach (enemy in enemies) {
@@ -175,6 +270,7 @@ class EnemyVisionSimulation {
         if (step > n) step = n;
         unit.x += dx / n * step;
         unit.y += dy / n * step;
+        separateFromWalls(unit);
     }
 
     function faceToward(enemy, tx, ty) {
@@ -184,25 +280,29 @@ class EnemyVisionSimulation {
     }
 
     function verifyPipeline() {
-        // Deterministic smoke: place the player inside guard.east's cone, then outside.
         local guard = enemies[0];
-        player.x = guard.x + guard.dirX * (guard.range * 0.45);
-        player.y = guard.y + guard.dirY * (guard.range * 0.45);
+        // Clear LOS: between guard.east (x=820) and wall.mid (x=560..596).
+        player.x = 680.0;
+        player.y = 240.0;
         for (local i = 0; i < 4; i += 1) {
             tick += 1;
             refreshVision();
         }
-        if (guard.state != "chase") throw "verify: expected chase after cone hit, got " + guard.state;
-        if (!(guard.id in aggro)) throw "verify: aggro missing after vision";
-        player.x = 40.0;
-        player.y = 40.0;
+        if (guard.state != "chase") throw "verify: expected chase with clear LOS, got " + guard.state;
+        if (!(guard.id in aggro)) throw "verify: aggro missing after clear vision";
+
+        // Same facing cone, west of wall.mid — still in range (820-440=380 < 400), ray occluded.
+        player.x = 440.0;
+        player.y = 240.0;
         for (local i = 0; i < 6; i += 1) {
             tick += 1;
             refreshVision();
         }
-        if (guard.state != "patrol") throw "verify: expected patrol after leave, got " + guard.state;
-        if (guard.id in aggro) throw "verify: aggro should clear on forgotten vision";
-        note("pipeline verify passed");
+        if (guard.state != "patrol") throw "verify: expected patrol behind cover, got " + guard.state;
+        if (guard.id in aggro) throw "verify: aggro should clear when LOS blocked";
+        if (!guard.blocked) throw "verify: expected blocked=true while player stays in cone behind wall";
+
+        note("pipeline verify passed (LOS + cover)");
         return true;
     }
 
@@ -216,8 +316,8 @@ class EnemyVisionSimulation {
         player.vy = input.y * speed;
         player.x = evClamp(player.x + player.vx * dt, 40.0, 1060.0);
         player.y = evClamp(player.y + player.vy * dt, 40.0, 660.0);
+        separateFromWalls(player);
 
-        // Vision queries are rate-limited; movement still runs at simulation Hz.
         while (visionAccum >= 1.0 / visionHz) {
             visionAccum -= 1.0 / visionHz;
             refreshVision();
@@ -230,8 +330,8 @@ class EnemyVisionSimulation {
                 moveToward(enemy, player.x, player.y, enemy.chaseSpeed, dt);
             } else {
                 enemy.patrolPhase += dt;
-                local ox = cos(enemy.patrolPhase) * 36.0;
-                local oy = sin(enemy.patrolPhase * 0.7) * 22.0;
+                local ox = cos(enemy.patrolPhase) * 28.0;
+                local oy = sin(enemy.patrolPhase * 0.7) * 18.0;
                 local tx = enemy.homeX + ox;
                 local ty = enemy.homeY + oy;
                 faceToward(enemy, tx, ty);

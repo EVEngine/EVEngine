@@ -1,9 +1,15 @@
-# Enemy Vision — 每敌人锥形视野 + 感知记忆
+# Enemy Vision — 锥形视野 + 墙体遮挡 + 感知记忆
 
 演示「给每个敌人加视野」的引擎推荐路径：游戏宿主镜像位姿到 `SensingWorld`，
-对每个敌人跑 `QueryCone`，命中后 `NpcAiWorld.remember(..., sense="vision")`，
-行为图用 `perception.vision` / `perception.forgotten.vision` 在 `patrol` ↔ `chase`
-之间切换。仇恨表（`aggro`）留在游戏侧，不放进 sensing。
+对每个敌人跑 `QueryCone`，再用**宿主侧 World2D 视线**对障碍 AABB 做遮挡判定，
+命中后 `NpcAiWorld.remember(..., sense="vision")`，行为图用
+`perception.vision` / `perception.forgotten.vision` 在 `patrol` ↔ `chase` 之间切换。
+仇恨表（`aggro`）留在游戏侧。
+
+> 引擎尚未提供开箱的 World2D `ILineOfSightQuery`（physics 只认领 World3D）。
+> 本示例把墙体 LOS 写在宿主里，并让锥体绘制在墙处截断，方便肉眼确认遮挡。
+> 正式项目可实现并 `ensureLineOfSightRouter()->addProvider(World2D, …)`，再在
+> query JSON 里开 `"lineOfSight":true`。
 
 ## 运行
 
@@ -17,19 +23,20 @@ make run/<platform>-debug GAME=examples/enemy-vision
 cd examples/enemy-vision && ../../build/linux-debug/src/engine/eve run
 ```
 
-操作：`WASD` / 方向键移动玩家（绿色方块）。走进某守卫的半透明锥体后，
-该守卫变红并追击；离开锥体一小段时间后记忆过期，回到巡逻。
+操作：`WASD` / 方向键移动。走进守卫锥体且**无墙遮挡**会追击；躲到墙后同一锥体内
+只会看到 `(blocked)`，不会进入 `chase`。
 
 ## 管线
 
-1. `upsert` 玩家与守卫到共享 `SensingWorld`（事实镜像，不是权威根）。
-2. 每敌人自定义 `halfAngle` / `range`，用 `world.query(eve.sensing.query JSON)` 做锥形查询。
-3. 命中 → `setBlackboardString(target)` + `remember(sense="vision", forgetAfterTicks=2)`，并写入游戏 `aggro`。
-4. 未命中 → **不**刷新 remember；下次 `tick` 过期时发出 `perception.forgotten.vision`（显式 `forget()` 不会发该信号）。
-5. `NpcAiWorld.tick` 应用行为转换；宿主按 `activeState` 执行巡逻/追击位移。
+1. `upsert` 玩家与守卫到共享 `SensingWorld`。
+2. 每敌人 `world.query(eve.sensing.query JSON)` 做锥形候选。
+3. 宿主 `evHasLineOfSight` 对 `obstacles` AABB 做段检测；被挡则 `blocked=true`，不 `remember`。
+4. 通视 → `setBlackboardString(target)` + `remember(sense="vision")` + 写入 `aggro`。
+5. 不通视 / 离开锥体 → 不刷新 remember；过期发出 `perception.forgotten.vision`。
+6. `NpcAiWorld.tick` 切换状态；宿主按 `activeState` 巡逻/追击，并与墙体做圆-AABB 分离。
 
-本示例刻意不接几何 LOS：2D 场景没有开箱 World2D LOS provider。需要遮挡时，
-在 3D 路径注册 physics World3D LOS，或自写 World2D `ILineOfSightQuery` 后在 query JSON 里设 `"lineOfSight":true`。
+启动时 `verifyPipeline()` 先测通视追击，再把玩家放到 `wall.mid` 西侧（仍在锥内）确认
+回到 `patrol` 且 `blocked=true`，打印 `ENEMY_VISION_READY ... verify=pass`。
 
 ## 文件
 
@@ -37,8 +44,8 @@ cd examples/enemy-vision && ../../build/linux-debug/src/engine/eve run
 |---|---|
 | `config.nut` | 窗口 + `sensing` / `npc_ai` / `keyboard` / `font` |
 | `behavior.nut` | `enemy.vision` BehaviorDefinition JSON |
-| `simulation.nut` | Sensing 镜像、锥查询、记忆、aggro、位移 |
-| `main.nut` | 输入、固定 60Hz 步进、锥体可视化 |
+| `simulation.nut` | 障碍、锥查询、LOS、记忆、aggro、位移 |
+| `main.nut` | 输入、墙/锥可视化（锥体在墙处截断） |
 | `README.md` | 本说明 |
 
 ## 相关
