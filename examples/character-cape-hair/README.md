@@ -45,3 +45,14 @@ cd examples/character-cape-hair && ../../build/linux-debug/src/engine/eve run
   (VRM `*Shoulder` bones sit near the neck) after Dynamic Bone updates.
 - Body collision: a back-facing lattice of kinematic spheres (torso + thighs);
   `cape.setCollideWorld(bodyWorld)` probes them each step.
+- Hair↔cape anti-clip:
+  - Cloth/mesh space uses `worldPos` (+`offsetY`) once — body/hair kinematic spheres
+    must not add `offsetY` again.
+  - Cape DynamicBone proxies are published in pose space (`particleY - offsetY`) via
+    `setColliderCenter`, cover the full pad + hanging sheet, and lift pad centers so
+    hair rests on the leather plate.
+  - Shoulder pin is U-shaped: outer deltoid columns stay pinned; the spine channel is
+    free cloth that hair volume can push back.
+  - Every hair bone after the root is a kinematic sphere in `bodyWorld` so free cape
+    cloth cannot sink into the hair curtain.
+  - Same-frame second DynamicBone pass after `cape.update` removes one-tick lag.

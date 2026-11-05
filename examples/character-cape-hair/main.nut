@@ -5,6 +5,7 @@
 //   - DynamicBone hair chains on J_Sec_Hair* secondary bones
 //   - DynamicBone clothing chains on Tops hem/sleeve (+ bust) secondary bones
 //   - Cloth3D cape pinned across the shoulder tops with body-shield collision
+//   - Bidirectional hair↔cape proxies (hair bone spheres + cape-surface DynamicBone spheres)
 //
 // Controls:
 //   Space       — toggle wind
@@ -31,6 +32,10 @@ persist clothModule = null
 persist physics = null
 persist bodyWorld = null
 persist bodyColliders = []
+persist hairProxyBones = [] // hair bones that push the cape away
+persist hairProxyColliders = [] // kinematic spheres in bodyWorld
+persist capeProxyColliderStart = -1 // DynamicBone world spheres that keep hair off the cape
+persist capeProxyParticleIndices = []
 persist cape = null
 persist capeCols = 11
 persist capeRows = 14
@@ -192,15 +197,98 @@ function buildBodyColliders() {
 function syncBodyColliders() {
     local axes = bodyAxes()
     foreach (c in bodyColliders) {
-        local p = worldPos(c.bone)
+        local p = worldPos(c.bone) // already mesh/cloth space (+offsetY)
         local x = c.x
         local y = c.y
         local back = c.back
         c.body.setPosition(
             p[0] + axes.right[0] * x + axes.back[0] * back,
-            p[1] + y + axes.back[1] * back + offsetY,
+            p[1] + y + axes.back[1] * back,
             p[2] + axes.right[2] * x + axes.back[2] * back)
     }
+    syncHairProxyColliders()
+}
+
+function syncHairProxyColliders() {
+    // Cape probes these kinematic spheres so free cloth cannot tunnel through hair.
+    foreach (c in hairProxyColliders) {
+        local p = worldPos(c.bone) // already mesh/cloth space
+        c.body.setPosition(p[0], p[1], p[2])
+    }
+}
+
+function syncCapeProxyColliders() {
+    // Hair DynamicBone probes these world spheres so strands stay on the body side of
+    // the cape. Cape particles are mesh/cloth space (+offsetY); DynamicBone is pose
+    // space — strip offsetY. Bias centers slightly toward the body so outside-sphere
+    // resolution pushes hair forward (not through to the cape exterior). Pad rows get
+    // an extra upward lift so hair rests on the leather plate instead of stabbing it.
+    if (dynamic == null || cape == null || capeProxyColliderStart < 0) return
+    local axes = bodyAxes()
+    local bias = -0.03 // toward body (opposite of back)
+    local pad = capePadRows
+    if (pad < 1) pad = 1
+    for (local i = 0; i < capeProxyParticleIndices.len(); ++i) {
+        local idx = capeProxyParticleIndices[i]
+        local row = idx / capeCols
+        local upLift = row < pad ? 0.05 : 0.0
+        dynamic.setColliderCenter(
+            capeProxyColliderStart + i,
+            cape.getParticleX(idx) + axes.back[0] * bias,
+            cape.getParticleY(idx) - offsetY + axes.back[1] * bias + upLift,
+            cape.getParticleZ(idx) + axes.back[2] * bias)
+    }
+}
+
+function buildHairCapeCollision() {
+    hairProxyColliders = []
+    foreach (boneName in hairProxyBones) {
+        // Soft hair volume so the free cape sheet rests behind the curtain.
+        local radius = 0.12
+        hairProxyColliders.append({
+            body = addBackSphere(radius), kind = "hair",
+            bone = boneName, x = 0.0, y = 0.0, back = 0.0, radius = radius
+        })
+    }
+
+    capeProxyParticleIndices = []
+    capeProxyColliderStart = dynamic.getColliderCount()
+    local pad = capePadRows
+    if (pad < 1) pad = 1
+    local axes = bodyAxes()
+    local bias = -0.03 // toward body
+    // Full shoulder pad + hanging sheet samples.
+    for (local row = 0; row < capeRows; row += 1) {
+        for (local col = 0; col < capeCols; col += 1) {
+            if (row >= pad && ((row + col) % 2 == 1)) continue
+            local idx = row * capeCols + col
+            capeProxyParticleIndices.append(idx)
+            local radius = row < pad ? 0.15 : 0.11
+            local upLift = row < pad ? 0.05 : 0.0
+            dynamic.addColliderSphere(
+                cape.getParticleX(idx) + axes.back[0] * bias,
+                cape.getParticleY(idx) - offsetY + axes.back[1] * bias + upLift,
+                cape.getParticleZ(idx) + axes.back[2] * bias,
+                radius)
+        }
+    }
+    // Upper-back torso shields (pose space) so long hair cannot swing through the body
+    // into the cape from the inside.
+    if (UPPER_CHEST_BONE in bones) {
+        dynamic.addBoneColliderSphere(bones[UPPER_CHEST_BONE], 0.0, 0.02, -0.06, 0.16)
+        dynamic.addBoneColliderSphere(bones[UPPER_CHEST_BONE], 0.0, -0.06, -0.10, 0.14)
+    }
+    if (CHEST_BONE in bones) {
+        dynamic.addBoneColliderSphere(bones[CHEST_BONE], 0.0, 0.0, -0.08, 0.15)
+    }
+    // Mild stiffness + fat particles so cape/torso colliders win without limp strands.
+    for (local c = 0; c < hairChainCount; ++c) {
+        for (local p = 1; p < 24; ++p) {
+            dynamic.setChainParticleParameters(c, p, 0.09, 0.24, 0.75, 1.0, 0.06)
+        }
+    }
+    print("HAIR_CAPE_COLLISION hairProxies=" + hairProxyColliders.len() +
+          " capeProxies=" + capeProxyParticleIndices.len() + "\n")
 }
 
 function hairSegIndex(name) {
@@ -228,8 +316,18 @@ function hairChainId(name) {
     return name.slice(last + 1)
 }
 
+function rememberHairProxyBone(name) {
+    if (!(name in bones)) return
+    foreach (existing in hairProxyBones) {
+        if (existing == name) return
+    }
+    if (hairProxyBones.len() >= 48) return
+    hairProxyBones.append(name)
+}
+
 function discoverHairChains() {
     local groups = {}
+    hairProxyBones = []
     for (local i = 0; i < skeleton.getBoneCount(); ++i) {
         local name = skeleton.getBoneName(i)
         if (name.len() < 12) continue
@@ -253,10 +351,15 @@ function discoverHairChains() {
                 }
             }
         }
+        if (names.len() < 2) continue
         local root = names[0]
         local tip = names[names.len() - 1]
         local chain = anim.setupHairChain(dynamic, root, tip, 0.12, 0.18, 0.8, 0.08, true)
         if (chain >= 0) {
+            // Proxy every bone after the root so the cape cannot sink into long hair.
+            for (local bi = 1; bi < names.len(); ++bi) {
+                rememberHairProxyBone(names[bi])
+            }
             count += 1
             print("HAIR_CHAIN " + root + " -> " + tip + " idx=" + chain + "\n")
         } else {
@@ -359,26 +462,29 @@ function loadCharacter() {
 function capeTopAnchor(t) {
     // Outer tips sit on the visible deltoid tops (past the hair curtain); the middle
     // bows behind the neck as a collar. Mesh parts use +offsetY — Cloth3D must match.
-    local left = worldPos(L_UPPER_ARM)
+    local left = worldPos(L_UPPER_ARM) // mesh/cloth space already (+offsetY)
     local right = worldPos(R_UPPER_ARM)
     local neck = worldPos(NECK_BONE)
     local axes = bodyAxes()
-    local lift = 0.10
+    local lift = 0.03 // sit on the deltoid crest (do not add offsetY again)
     local out = 0.08 // on the deltoid top, not past the upper-arm silhouette
+    // Keep the plate behind the hair curtain so strands stay between body and cape.
+    local backSet = 0.16
     local ls = [
-        left[0] + axes.right[0] * (-out),
-        left[1] + lift + offsetY,
-        left[2] + axes.right[2] * (-out)
+        left[0] + axes.right[0] * (-out) + axes.back[0] * backSet,
+        left[1] + lift,
+        left[2] + axes.right[2] * (-out) + axes.back[2] * backSet
     ]
     local rs = [
-        right[0] + axes.right[0] * out,
-        right[1] + lift + offsetY,
-        right[2] + axes.right[2] * out
+        right[0] + axes.right[0] * out + axes.back[0] * backSet,
+        right[1] + lift,
+        right[2] + axes.right[2] * out + axes.back[2] * backSet
     ]
+    // Deeper collar recess — a hair channel down the spine so the pad is U-shaped.
     local collar = [
-        neck[0] + axes.back[0] * 0.05,
-        ((ls[1] + rs[1]) * 0.5),
-        neck[2] + axes.back[2] * 0.05
+        neck[0] + axes.back[0] * (0.10 + backSet + 0.08),
+        ((ls[1] + rs[1]) * 0.5) - 0.02,
+        neck[2] + axes.back[2] * (0.10 + backSet + 0.08)
     ]
     if (t < 0.5) {
         local u = t * 2.0
@@ -403,9 +509,12 @@ function capeShoulderPoint(t, depth) {
     local c = capeTopAnchor(t)
     local axes = bodyAxes()
     local edge = fabs(t - 0.5) * 2.0
+    local center = 1.0 - edge // 1 at spine, 0 at outer tips
     local padDepth = 0.06 + 0.16 * edge
     // Slight forward bias so the pad sits on the shoulder top, not behind the scapula.
     local along = (depth - 0.3) * padDepth
+    // Extra back recess near the spine so long hair has a clear channel through the pad.
+    along += center * center * 0.10 * depth
     // Flat plateau across the deltoid crest, then drop toward the front/back faces.
     local yOff = 0.02 * edge
     if (depth < 0.25) yOff -= (0.25 - depth) * 0.10
@@ -452,8 +561,8 @@ function buildCape() {
     cape.setStiffness(0.92)
     cape.setIterations(8)
     cape.setDamping(0.02)
-    // Smaller probe radius so the shoulder pad is not shoved off the deltoids.
-    cape.setParticleSize(0.045)
+    // Probe radius: large enough for hair volume, small enough to keep deltoid tips seated.
+    cape.setParticleSize(0.055)
     cape.setParticleMass(0.03)
     cape.setSelfCollision(true)
     cape.setFoldStiffness(0.55)
@@ -461,7 +570,7 @@ function buildCape() {
     cape.setAerodynamics(1.225, 1.05, 0.18)
     cape.setCollisionMaterial(0.35, 0.0)
     // Bright cool tint so the cloth does not read as brown hair under modest light.
-    cape.setColor(0.35, 0.75, 0.95, 1.0)
+    cape.setColor(0.25, 0.70, 0.95, 1.0)
     cape.setBounds(-2.5, -0.2, -2.5, 5.0, 3.0, 5.0)
     cape.setCollideWorld(bodyWorld)
     syncBodyColliders()
@@ -471,12 +580,21 @@ function buildCape() {
     local pad = capePadRows
     if (pad < 1) pad = 1
     if (pad > capeRows) pad = capeRows
+    // U-shaped pin: outer deltoid tips stay pinned; the spine channel stays free so
+    // long hair can fall through and push that cloth back via hair proxies.
     for (local row = 0; row < pad; ++row) {
         local depth = pad <= 1 ? 1.0 : row.tofloat() / (pad - 1).tofloat()
         for (local col = 0; col < capeCols; ++col) {
             local idx = row * capeCols + col
             local t = capeCols <= 1 ? 0.5 : col.tofloat() / (capeCols - 1).tofloat()
+            local edge = fabs(t - 0.5) * 2.0
             local p = capeShoulderPoint(t, depth)
+            if (edge < 0.38) {
+                // Free spine channel — starts in the recess, then collides with hair.
+                cape.setParticleInverseMass(idx, 1.0 / 0.03)
+                cape.setParticlePosition(idx, p[0], p[1], p[2])
+                continue
+            }
             cape.setParticleInverseMass(idx, 0.0)
             cape.attachParticle(idx, p[0], p[1], p[2], 0.0)
             capeAttach.append({ index = idx, t = t, depth = depth })
@@ -485,6 +603,9 @@ function buildCape() {
     print("CAPE_ATTACH=" + capeAttach.len() + " padRows=" + pad +
           " particles=" + cape.getParticleCount() +
           " bodyColliders=" + bodyColliders.len() + "\n")
+    buildHairCapeCollision()
+    syncHairProxyColliders()
+    syncCapeProxyColliders()
 }
 
 function syncCapeAttachments() {
@@ -602,6 +723,10 @@ eve_reload <- function() {
     dynamic = null
     bodyWorld = null
     bodyColliders = []
+    hairProxyBones = []
+    hairProxyColliders = []
+    capeProxyColliderStart = -1
+    capeProxyParticleIndices = []
     parts = []
     skins = []
     loadCharacter()
@@ -657,7 +782,6 @@ eve_update <- function(dt) {
     dynamic.update(pose, dt)
     pose.computeWorld(skeleton)
     updateFootOffset()
-    applySkins()
     syncBodyColliders()
 
     if (cape != null) {
@@ -687,7 +811,15 @@ eve_update <- function(dt) {
         // Kinematic body poses are written directly; cloth probes them during update.
         if (bodyWorld != null) bodyWorld.update(dt)
         cape.update(dt)
+        // Same-frame resolve: publish new cape spheres, then a short DynamicBone pass so
+        // hair reacts to this frame's cloth instead of lagging one tick behind.
+        syncCapeProxyColliders()
+        dynamic.setExternalForce(0.0, 0.0, 0.0)
+        dynamic.update(pose, 1.0 / 120.0)
+        pose.computeWorld(skeleton)
+        syncHairProxyColliders()
     }
+    applySkins()
 }
 
 eve_render <- function() {
