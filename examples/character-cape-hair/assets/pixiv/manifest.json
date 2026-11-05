@@ -1,0 +1,9 @@
+{
+  "source": "https://github.com/pixiv/three-vrm",
+  "revision": "68c7d6b1f73b79568f81139be62831968bff7876",
+  "path": "packages/three-vrm/examples/models/VRM1_Constraint_Twist_Sample.vrm",
+  "sha256": "12c2b97e95e700783a6a550dc0eee2d7880aeedccef9ae67bc4c5a2f0f2631a2",
+  "author": "pixiv Inc.",
+  "license": "VRM Public License 1.0; embedded VRMC_vrm.meta settings",
+  "changes": "None; original file copied byte for byte"
+}
