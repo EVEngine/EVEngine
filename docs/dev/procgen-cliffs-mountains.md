@@ -38,9 +38,13 @@ Script: `eve.MountainRecipeSettings`, `eve.CliffBandMeshSettings`, Heightmap
 
 Cliff cladding uses `tex.cliff.strata` / `pbr.cliff.strata` (albedo + normal + height).
 The mesh is the steep heightfield surface itself (Pegasus), not dual-edge fence wafers:
-per-bed XZ extrusion, Worley F2−F1 macro blocks, cladding offset, and Laplacian blur
-(`claddingOffset` / `macroAmplitude` / `smoothIterations` / `strataTilt`). UVs stay
-world-XZ → U and world-Y → V so beds read horizontal.
+full-cell emission (no diagonal holes), soft sine bed undulation, Worley F2−F1 rock
+blocks, cladding offset, optional `shellThickness` back face, and Laplacian blur
+(`claddingOffset` / `shellThickness` / `macroAmplitude` / `smoothIterations` /
+`strataTilt`). UVs stay world-XZ → U and world-Y → V so beds read horizontal. The
+example authors a multi-cell steep scarp, extracts the band, then buries the
+heightfield face under a soft ramp so the green terrain skin does not double the
+beige cliff shell.
 
 ## Example
 

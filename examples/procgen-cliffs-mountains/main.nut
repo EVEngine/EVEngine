@@ -97,23 +97,41 @@ eve_init = function() {
     local cliffMask = retain(requireOk(procgen.newHeightmap(mapSize, mapSize), "cliff"));
     requireOk(eve.bakeMountainRecipe(heightmap, settings, slopeMask, cliffMask), "bakeMountain");
 
-    // 1) Hard noise-warped scarp for cliff extraction (Pegasus needs real steep faces).
+    // 1) Multi-cell steep scarp (Pegasus needs real face area, not a 1-cell knife edge).
+    //    faceWidth cells of steep drop → extracted mesh has depth for strata shelves.
+    local faceWidth = 7.0;
     for (local z = 12; z < 116; ++z) {
         local front = 56.0 + math.noise2(z * 0.07, 1.7) * 6.0 + math.noise2(z * 0.03, 4.2) * 3.0;
+        // Local face thickness varies so the silhouette breaks into buttresses.
+        local width = faceWidth + math.noise2(z * 0.11, 8.3) * 2.2;
         for (local x = 0; x < mapSize; ++x) {
-            if (x + 0.0 < front) continue;
-            local h = heightmap.height(x, z);
-            heightmap.setHeight(x, z, h * 0.11);
+            local xf = x + 0.0;
+            if (xf < front - width) continue;
+            local plateau = heightmap.height(x, z);
+            local valley = plateau * 0.10;
+            if (xf >= front) {
+                heightmap.setHeight(x, z, valley);
+                continue;
+            }
+            // Steep ease: stay near-vertical mid-face, soften only at lip/toe.
+            local t = (xf - (front - width)) / width;
+            t = math.clamp(t, 0.0, 1.0);
+            // Bias toward a sheer mid-face (pow > 1 keeps upper cells high longer).
+            local sheer = pow(t, 0.55);
+            // Small lateral noise so the face is not a perfect plane.
+            local n = math.noise2(x * 0.35, z * 0.22) * 0.06;
+            sheer = math.clamp(sheer + n, 0.0, 1.0);
+            heightmap.setHeight(x, z, plateau * (1.0 - sheer) + valley * sheer);
         }
     }
     requireOk(eve.generateCliffFitnessMask(cliffMask, heightmap, cellSize, cellSize, heightScale, 0.36, 1.0),
         "cliffFitness");
-    // Keep fitness only along the authored scarp — alpine ridges elsewhere must not
-    // become beige cladding that swallows the whole view.
+    // Scope fitness to the authored scarp band only (skip alpine ridges elsewhere).
     for (local z = 0; z < mapSize; ++z) {
         local front = 56.0 + math.noise2(z * 0.07, 1.7) * 6.0 + math.noise2(z * 0.03, 4.2) * 3.0;
+        local width = faceWidth + math.noise2(z * 0.11, 8.3) * 2.2;
         for (local x = 0; x < mapSize; ++x) {
-            if (z < 12 || z >= 116 || x < front - 3.0 || x > front + 2.0) {
+            if (z < 12 || z >= 116 || x < front - width - 1.0 || x > front + 1.5) {
                 cliffMask.setHeight(x, z, 0.0);
             }
         }
@@ -123,44 +141,79 @@ eve_init = function() {
     cliffSettings.setOrigin(0.0, 0.0);
     cliffSettings.setSpacing(cellSize, cellSize);
     cliffSettings.heightScale = heightScale;
-    cliffSettings.slopeMin = 0.58;  // ~55°+ faces only — skip mild ramps/shelves
-    cliffSettings.minRelief = 1.4;
+    cliffSettings.slopeMin = 0.42;  // keep the thick face; still skip soft plateaus
+    cliffSettings.minRelief = 0.85;
     cliffSettings.subdivisions = 3;
-    cliffSettings.strataAmplitude = 0.65;
-    cliffSettings.strataScale = 0.40;
-    cliffSettings.strataVertical = 1.10;
-    cliffSettings.ledgeHeight = 1.0;
-    cliffSettings.outwardBias = 0.93;
-    cliffSettings.claddingOffset = 1.8;  // sit clearly in front of the terrain skin
-    cliffSettings.strataTilt = 0.04;
-    cliffSettings.macroAmplitude = 0.70;
-    cliffSettings.smoothIterations = 1;
-    cliffSettings.uvScaleU = 0.10;
-    cliffSettings.uvScaleV = 0.12;
+    cliffSettings.strataAmplitude = 0.28;  // subtle bed banding — keep the wall continuous
+    cliffSettings.strataScale = 0.38;
+    cliffSettings.strataVertical = 0.95;
+    cliffSettings.ledgeHeight = 1.80;
+    cliffSettings.outwardBias = 0.90;
+    cliffSettings.claddingOffset = 0.40;
+    cliffSettings.shellThickness = 2.20;  // closed shell depth so silhouette is solid rock
+    cliffSettings.strataTilt = 0.03;
+    cliffSettings.macroAmplitude = 0.55;  // Worley rock blocks for fractured face detail
+    cliffSettings.smoothIterations = 2;
+    cliffSettings.uvScaleU = 0.07;
+    cliffSettings.uvScaleV = 0.10;
     cliffSettings.setSeed(20261105);
     cliffSettings.maxTriangles = 500000;
     local cliffCpu = retain(requireOk(eve.generateCliffBandMesh(heightmap, cliffSettings, cliffMask), "cliffBand"));
     print("procgen-cliffs-mountains cliff band: verts=" + cliffCpu.getVertexCount() +
         " tris=" + (cliffCpu.getIndexCount() / 3) + "\n");
     if (cliffCpu.getVertexCount() <= 0) throw "procgen-cliffs-mountains: empty cliff band";
+    // Debug AABB (skip non-finite verts — a few bad samples must not break framing).
+    local minX = 1e9; local maxX = -1e9;
+    local minY = 1e9; local maxY = -1e9;
+    local minZ = 1e9; local maxZ = -1e9;
+    local bad = 0;
+    local vc = cliffCpu.getVertexCount();
+    for (local i = 0; i < vc; ++i) {
+        local x = cliffCpu.getPositionX(i);
+        local y = cliffCpu.getPositionY(i);
+        local z = cliffCpu.getPositionZ(i);
+        if (!(x == x) || !(y == y) || !(z == z) || x < -1e5 || x > 1e5 || z < -1e5 || z > 1e5) {
+            if (bad < 3) {
+                print("procgen-cliffs-mountains bad vert " + i + ": (" + x + "," + y + "," + z + ")\n");
+            }
+            ++bad;
+            continue;
+        }
+        if (x < minX) minX = x; if (x > maxX) maxX = x;
+        if (y < minY) minY = y; if (y > maxY) maxY = y;
+        if (z < minZ) minZ = z; if (z > maxZ) maxZ = z;
+    }
+    print("procgen-cliffs-mountains cliff aabb: (" + minX + "," + minY + "," + minZ +
+        ")..(" + maxX + "," + maxY + "," + maxZ + ")\n");
+    local midX = (minX + maxX) * 0.5;
+    local midY = (minY + maxY) * 0.5;
+    local midZ = (minZ + maxZ) * 0.5;
+    local faceDepth = maxX - minX;
+    if (!(faceDepth > 0.05) || midX < -1e4 || midX > 1e4 || minY > maxY) {
+        midX = 22.0; midY = 10.0; midZ = 26.0; maxX = 25.0; minZ = 10.0; maxZ = 40.0;
+    }
 
-    // 2) Soften only the plateau lip AFTER extraction (do not rebuild the sheer face).
+    // 2) After extraction, bury the terrain's sheer face under a soft ramp so the
+    //    green heightfield skin does not double the beige cliff cladding (wafer pair).
+    //    Cliff mesh already captured the hard scarp; terrain only needs a support ramp.
     for (local z = 12; z < 116; ++z) {
         local front = 56.0 + math.noise2(z * 0.07, 1.7) * 6.0 + math.noise2(z * 0.03, 4.2) * 3.0;
-        local rimX = front - 5.0;
-        local lowX = front - 0.5;  // stop before the scarp cell so cladding stays exposed
+        local width = faceWidth + math.noise2(z * 0.11, 8.3) * 2.2;
+        local rimX = front - width - 2.5;
+        local toeX = front + 3.5;
         local xi0 = rimX.tointeger();
-        local xi1 = lowX.tointeger();
+        local xi1 = toeX.tointeger();
         if (xi1 <= xi0) continue;
         if (xi0 < 1) xi0 = 1;
         if (xi1 > mapSize - 2) xi1 = mapSize - 2;
         local rim = heightmap.height(xi0, z);
-        local low = heightmap.height(xi1, z);
+        local toe = heightmap.height(xi1, z);
         for (local x = xi0; x <= xi1; ++x) {
-            local t = (x - rimX) / (lowX - rimX);
+            local t = (x - rimX) / (toeX - rimX);
             t = math.clamp(t, 0.0, 1.0);
+            // Smoothstep ramp — shallow enough that terrain no longer reads as a wall.
             t = t * t * (3.0 - 2.0 * t);
-            heightmap.setHeight(x, z, rim * (1.0 - t) + low * t);
+            heightmap.setHeight(x, z, rim * (1.0 - t) + toe * t);
         }
     }
 
@@ -192,34 +245,38 @@ eve_init = function() {
 
     local shapes = ["boulder", "shard", "cliff", "block"];
     local rockCount = 0;
-    for (local i = 0; i < 20; ++i) {
+    for (local i = 0; i < 16; ++i) {
         local rockParams = retain(requireOk(procgen.newParams(), "rockParams" + i));
         rockParams.setSeed(107 + i * 17);
         rockParams.setString("baseShape", shapes[i % 4]);
-        rockParams.setFloat("scale", 1.4 + 0.30 * (i % 5));
+        rockParams.setFloat("scale", 1.2 + 0.25 * (i % 5));
         rockParams.setInt("subdivisions", 3);
         local rockMesh = retain(requireOk(procgen.generateMesh("mesh.rock", rockParams, gfx), "rockMesh" + i));
         local ent = retain(eve.Renderable3D());
         ent.setMesh(rockMesh);
         ent.setMaterial(propMat);
-        local px = 27.5 + (i % 5) * 0.75 + math.noise2(i * 0.4, 0.7) * 0.9;
-        local pz = 12.0 + i * 1.55 + math.noise2(1.3, i * 0.33) * 0.8;
+        // Valley-floor talus only — never mid-face (avoids floating props).
+        local pz = 14.0 + i * 1.85 + math.noise2(1.3, i * 0.33) * 0.9;
+        local frontCell = 56.0 + math.noise2((pz / cellSize) * 0.07, 1.7) * 6.0 +
+            math.noise2((pz / cellSize) * 0.03, 4.2) * 3.0;
+        local px = (frontCell + 2.5 + (i % 4) * 1.1 + math.noise2(i * 0.4, 0.7) * 0.8) * cellSize;
         local py = heightmap.sampleBilinear(px / cellSize, pz / cellSize) * heightScale;
-        ent.setPosition(px, py + 0.08, pz);
+        ent.setPosition(px, py + 0.05, pz);
         ent.setYaw(i * 1.05);
-        local sc = 0.45 + 0.24 * (i % 5);
+        local sc = 0.38 + 0.20 * (i % 5);
         ent.setScale(sc * (0.8 + 0.3 * (i % 3)), sc * (0.55 + 0.35 * (i % 4)), sc);
         ++rockCount;
     }
     print("procgen-cliffs-mountains rock props: " + rockCount + "\n");
 
     camera = retain(eve.Camera3D());
-    // Side-oblique view: scarp as a vertical band with terrain context.
-    camera.setEye(48.0, 16.0, 55.0);
-    camera.setTarget(24.0, 6.5, 28.0);
+    // Landscape 3/4 on the front skin: enough Z offset for depth, not so much that
+    // the wall collapses into a wafer silhouette.
+    camera.setEye(maxX + 12.0, midY + 3.5, midZ + (maxZ - minZ) * 0.22);
+    camera.setTarget(maxX - 1.0, midY * 0.75, midZ - (maxZ - minZ) * 0.05);
     camera.setUp(0.0, 1.0, 0.0);
-    camera.setFov(46.0);
-    camera.setAmbient(0.25, 0.29, 0.35);
+    camera.setFov(50.0);
+    camera.setAmbient(0.34, 0.36, 0.40);
     camera.setActive(true);
 };
 

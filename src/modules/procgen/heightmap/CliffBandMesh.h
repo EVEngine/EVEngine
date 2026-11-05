@@ -38,6 +38,7 @@ struct EVENGINE_API_DOMAINS CliffBandMeshSettings {
     float         ledgeHeight      = 0.f;    ///< >0 overrides bed height in world meters.
     float         outwardBias      = 0.85f;  ///< Blend of horizontal outward vs surface-normal displace.
     float         claddingOffset   = 0.15f;  ///< Uniform push along outward so cladding clears terrain.
+    float         shellThickness   = 0.f;    ///< >0 extrudes a back face (-outward) so the wall is not a wafer.
     float         strataTilt       = 0.04f;  ///< Soft world tilt of bedding planes (Houdini strata tilt).
     float         macroAmplitude   = 0.35f;  ///< Worley F2-F1 rock block displace (Pegasus detail).
     int           smoothIterations = 2;      ///< Laplacian blur passes after displace (shape blur).

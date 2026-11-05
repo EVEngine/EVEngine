@@ -28,8 +28,9 @@ spacingZ, heightScale, slopeMin, slopeMax)` 只生成悬崖适应度。
 `eve.CliffBandMeshSettings` 控制 Pegasus/Ubisoft 式悬崖提取：`setOrigin` /
 `setSpacing` / `setSeed`，以及 `slopeMin` / `slopeMax`、`minRelief`、
 `subdivisions`、`strataAmplitude` / `strataScale` / `strataVertical`、
-`ledgeHeight`、`outwardBias`、`claddingOffset`、`strataTilt`、`macroAmplitude`、
-`smoothIterations`、`uvScaleU` / `uvScaleV`、`maxTriangles`。
+`ledgeHeight`、`outwardBias`、`claddingOffset`、`shellThickness`、`strataTilt`、
+`macroAmplitude`、`smoothIterations`、`uvScaleU` / `uvScaleV`、`maxTriangles`。
+`shellThickness > 0` 时额外挤出背面，避免悬崖壳看起来像纸片。
 `eve.generateCliffBandMesh(heights, settings, fitness)` 抽取陡坡高度场四边形，
 细分后做岩层挤出 + Worley 岩块置换 + Laplacian 模糊，返回 `MeshBuild`
 （`algorithm=mesh.cliffband`）。UV 为世界 XZ→U、世界高度→V，配合

@@ -97,21 +97,25 @@ float sampleFitnessBilinear(const Heightmap& fitness, float fx, float fz) {
     return fx0 * (1.f - tz) + fx1 * tz;
 }
 
-/** Horizontal outward for a steep patch: -∇h in XZ, pointing toward the lower side. */
-Vec3 outwardAt(const Heightmap& heights, float fx, float fz, float heightScale, float spacingX, float spacingZ) {
+/** Heightfield surface normal (points “uphill-out”). */
+Vec3 surfaceNormalAt(const Heightmap& heights, float fx, float fz, float heightScale, float spacingX, float spacingZ) {
     const float eps = 0.35f;
     const float hL  = sampleBilinearHeight(heights, fx - eps, fz, heightScale);
     const float hR  = sampleBilinearHeight(heights, fx + eps, fz, heightScale);
     const float hD  = sampleBilinearHeight(heights, fx, fz - eps, heightScale);
     const float hU  = sampleBilinearHeight(heights, fx, fz + eps, heightScale);
-    // Descent direction = downslope = toward lower elevation.
-    Vec3 out = {hL - hR, 0.f, hD - hU};
-    if (length(out) < 1e-5f) {
-        // Fallback: prefer +X when degenerate.
-        out = {1.f, 0.f, 0.f};
-    }
-    (void)spacingX;
-    (void)spacingZ;
+    const float sx  = std::max(1e-4f, spacingX * eps * 2.f);
+    const float sz  = std::max(1e-4f, spacingZ * eps * 2.f);
+    // n ≈ normalize(-∂h/∂x, 1, -∂h/∂z)
+    return normalize({-(hR - hL) / sx, 1.f, -(hU - hD) / sz});
+}
+
+/** Horizontal outward for a steep patch: heightfield normal XZ (faces the lower side). */
+Vec3 outwardAt(const Heightmap& heights, float fx, float fz, float heightScale, float spacingX, float spacingZ) {
+    const Vec3 n = surfaceNormalAt(heights, fx, fz, heightScale, spacingX, spacingZ);
+    // n = normalize(-∂h/∂x, 1, -∂h/∂z) already tips toward the downhill/valley side.
+    Vec3 out = {n.x, 0.f, n.z};
+    if (length(out) < 1e-5f) out = {1.f, 0.f, 0.f};
     return normalize(out);
 }
 
@@ -157,52 +161,67 @@ uint8_t steepTriMask(const Heightmap& heights, const Heightmap& fitness, int x, 
 
 struct CliffVert {
     Vec3  p{};
-    Vec3  outward{};
+    Vec3  outward{};  ///< Horizontal downhill (XZ).
+    Vec3  normal{};   ///< Heightfield surface normal (for Pegasus displace).
     float u = 0, v = 0;
 };
 
-float smoothstepLocal(float edge0, float edge1, float x) {
-    if (edge0 == edge1) return x < edge0 ? 0.f : 1.f;
-    const float t = std::clamp((x - edge0) / (edge1 - edge0), 0.f, 1.f);
-    return t * t * (3.f - 2.f * t);
-}
-
 /**
- * Ubisoft/Pegasus displace:
- * - per-bed XZ extrusion (stratification boxes)
- * - Worley F2-F1 macro rock blocks (vertically stretched cells)
- * - fine grit; joint recess between beds
- * - cladding offset so mesh clears the heightfield skin
+ * Ubisoft GDC / Houdini cliff-tool shape construction:
+ * - per-bed extrusion (stratification boxes with random thickness)
+ * - displace along blended (horizontal outward ↔ surface normal) — Pegasus
+ * - Worley F2−F1 macro rock blocks on a vertically stretched domain
+ * - joint recess between beds; cladding offset clears the terrain skin
  */
-Vec3 stratifyDisplace(Vec3 p, Vec3 outward, const NoiseField& noise, const CliffBandMeshSettings& s) {
+Vec3 stratifyDisplace(Vec3 p, Vec3 outward, Vec3 surfN, const NoiseField& noise, const CliffBandMeshSettings& s) {
     const float bedH = s.ledgeHeight > 1e-4f ? s.ledgeHeight : 1.f / std::max(0.15f, s.strataVertical);
     // Soft tilt of bedding planes (Houdini HeightField Strata tilt).
     const float tiltedY = p.y + s.strataTilt * (p.x * 0.65f + p.z * 0.35f);
     const float bedF    = tiltedY / bedH;
     const int   bedId   = int(std::floor(bedF));
     const float frac    = bedF - float(bedId);
-    // Soft plateau in the middle of each bed, recessed joints at boundaries.
-    const float joint     = std::min(frac, 1.f - frac);
-    const float jointMask = smoothstepLocal(0.f, 0.18f, joint);                              // 0 at seam, 1 mid-bed
-    const float bedScale  = 0.82f + 0.36f * hash01(s.seed ^ uint32_t(bedId * 2654435761u));  // ~[0.82, 1.18]
+    // Soft sine bed undulation (continuous wall) — NOT hard shelf cards.
+    // Far Cry 5 strata is a mild depth modulation on a connected surface.
+    const float bedWave  = std::sin(frac * 3.14159265f);                                    // 0 at joints, 1 mid-bed
+    const float bedScale = 0.70f + 0.60f * hash01(s.seed ^ uint32_t(bedId * 2654435761u));  // ~[0.70, 1.30]
 
     // Worley F2-F1 on a vertically stretched domain → rock blocks (Ubisoft/GDC style).
     const float wu    = p.x * s.strataScale + p.z * s.strataScale * 0.15f;
     const float wv    = p.y * s.strataScale * 2.6f + p.z * s.strataScale * 0.35f;
     const float f1    = noise.worleyF1(wu, wv, 0.9f);
     const float f2    = noise.worleyF2(wu, wv, 0.9f);
-    const float block = std::clamp((f2 - f1) * 2.2f - 0.15f, -1.f, 1.f);
+    const float block = std::clamp((f2 - f1) * 2.4f - 0.10f, -1.f, 1.f);
     const float grit = noise.fbm(p.x * s.strataScale * 3.1f, p.y * s.strataScale * 2.2f, p.z * s.strataScale * 3.1f, 3);
     const float crack =
         std::pow(std::fabs(noise.valueNoise(p.x * s.strataScale * 1.4f + p.z * 0.7f, p.y * 0.12f) - 0.5f) * 2.f, 2.2f);
 
-    const float strataPush = s.strataAmplitude * (bedScale - 1.f) * 2.2f * jointMask;
-    const float macroPush  = s.macroAmplitude * (0.70f * block + 0.20f * (grit * 2.f - 1.f) - 0.35f * (1.f - crack));
-    const float push       = s.claddingOffset + strataPush + macroPush * std::max(0.35f, s.outwardBias);
+    // Mild mid-bed bulge + shallow joint recess; wall stays one connected sheet.
+    const float strataPush = s.strataAmplitude * 0.55f * bedScale * bedWave;
+    const float jointPull  = s.strataAmplitude * 0.18f * (1.f - bedWave);
+    const float macroPush  = s.macroAmplitude * (0.55f * block + 0.20f * (grit * 2.f - 1.f) - 0.25f * (1.f - crack));
+    const float push       = s.claddingOffset + strataPush - jointPull + macroPush;
 
-    Vec3 out = {p.x + outward.x * push, p.y, p.z + outward.z * push};
-    // Mild vertical settle on recessed joints so beds read as shelves.
-    out.y -= s.strataAmplitude * 0.18f * (1.f - jointMask);
+    // Blend horizontal outward with surface-normal XZ (outwardBias=1 → pure XZ).
+    // Drop the normal's Y so displace cannot shear the wall into needle tris.
+    const float bias     = std::clamp(s.outwardBias, 0.f, 1.f);
+    const Vec3  horizDir = outward;
+    Vec3        faceDir  = {surfN.x, 0.f, surfN.z};
+    if (length(faceDir) < 1e-5f) faceDir = horizDir;
+    faceDir                = normalize(faceDir);
+    const Vec3 displaceDir = normalize(horizDir * bias + faceDir * (1.f - bias));
+
+    // Guard: never emit non-finite / runaway positions into the cliff mesh.
+    if (!std::isfinite(push) || !std::isfinite(displaceDir.x) || !std::isfinite(displaceDir.y) ||
+        !std::isfinite(displaceDir.z))
+        return p;
+    // Soft clamp keeps strata readable without letting a bad normal blow verts to 1e20.
+    const float maxPush = 6.f;
+    const float clamped = std::clamp(push, -maxPush, maxPush);
+    Vec3        out     = {p.x + displaceDir.x * clamped, p.y, p.z + displaceDir.z * clamped};
+    // Tiny vertical settle at joints — keeps beds readable without opening shelf gaps.
+    out.y -= s.strataAmplitude * 0.08f * (1.f - bedWave);
+    if (!std::isfinite(out.x) || !std::isfinite(out.y) || !std::isfinite(out.z)) return p;
+    if (std::fabs(out.x - p.x) > maxPush * 1.5f || std::fabs(out.z - p.z) > maxPush * 1.5f) return p;
     return out;
 }
 
@@ -242,7 +261,8 @@ Result<int> generateCliffBandMesh(MeshBuild& out, const Heightmap& heights, cons
         !std::isfinite(settings.strataVertical) || settings.strataVertical <= 0.f ||
         !std::isfinite(settings.ledgeHeight) || settings.ledgeHeight < 0.f || !std::isfinite(settings.outwardBias) ||
         settings.outwardBias < 0.f || settings.outwardBias > 1.f || !std::isfinite(settings.claddingOffset) ||
-        settings.claddingOffset < 0.f || !std::isfinite(settings.strataTilt) ||
+        settings.claddingOffset < 0.f || !std::isfinite(settings.shellThickness) || settings.shellThickness < 0.f ||
+        settings.shellThickness > 64.f || !std::isfinite(settings.strataTilt) ||
         !std::isfinite(settings.macroAmplitude) || settings.macroAmplitude < 0.f || settings.smoothIterations < 0 ||
         settings.smoothIterations > 8 || !std::isfinite(settings.uvScaleU) || settings.uvScaleU <= 0.f ||
         !std::isfinite(settings.uvScaleV) || settings.uvScaleV <= 0.f || settings.maxTriangles < 0)
@@ -295,36 +315,28 @@ Result<int> generateCliffBandMesh(MeshBuild& out, const Heightmap& heights, cons
     NoiseField noise;
     noise.seed = settings.seed;
 
-    auto subInTri0 = [div](int iu, int iv) { return (float(iu) + 0.5f) + (float(iv) + 0.5f) <= float(div); };
-
-    // 2) Prepare geometry: sample only verts that touch a steep sub-quad.
+    // 2) Prepare geometry: sample all verts of steep cells (full quads, no diagonal holes).
     for (int z = 0; z < h - 1; ++z) {
         for (int x = 0; x < w - 1; ++x) {
             const uint8_t mask = steep[size_t(z * (w - 1) + x)];
             if (!mask) continue;
-            for (int iv = 0; iv < div; ++iv) {
-                for (int iu = 0; iu < div; ++iu) {
-                    const bool want = subInTri0(iu, iv) ? (mask & 1u) != 0 : (mask & 2u) != 0;
-                    if (!want) continue;
-                    for (int dj = 0; dj <= 1; ++dj) {
-                        for (int di = 0; di <= 1; ++di) {
-                            const int    gi = x * div + iu + di;
-                            const int    gj = z * div + iv + dj;
-                            const size_t id = at(gi, gj);
-                            if (used[id]) continue;
-                            const float fx = float(x) + float(iu + di) / float(div);
-                            const float fz = float(z) + float(iv + dj) / float(div);
-                            const float y  = sampleBilinearHeight(heights, fx, fz, settings.heightScale);
-                            CliffVert&  v  = verts[id];
-                            v.p            = {settings.originX + fx * settings.spacingX, y,
-                                              settings.originZ + fz * settings.spacingZ};
-                            v.outward =
-                                outwardAt(heights, fx, fz, settings.heightScale, settings.spacingX, settings.spacingZ);
-                            v.u      = (v.p.x * 0.37f + v.p.z * 0.93f) * settings.uvScaleU;
-                            v.v      = v.p.y * settings.uvScaleV;
-                            used[id] = 1;
-                        }
-                    }
+            for (int iv = 0; iv <= div; ++iv) {
+                for (int iu = 0; iu <= div; ++iu) {
+                    const int    gi = x * div + iu;
+                    const int    gj = z * div + iv;
+                    const size_t id = at(gi, gj);
+                    if (used[id]) continue;
+                    const float fx = float(x) + float(iu) / float(div);
+                    const float fz = float(z) + float(iv) / float(div);
+                    const float y  = sampleBilinearHeight(heights, fx, fz, settings.heightScale);
+                    CliffVert&  v  = verts[id];
+                    v.p = {settings.originX + fx * settings.spacingX, y, settings.originZ + fz * settings.spacingZ};
+                    v.outward = outwardAt(heights, fx, fz, settings.heightScale, settings.spacingX, settings.spacingZ);
+                    v.normal =
+                        surfaceNormalAt(heights, fx, fz, settings.heightScale, settings.spacingX, settings.spacingZ);
+                    v.u      = (v.p.x * 0.37f + v.p.z * 0.93f) * settings.uvScaleU;
+                    v.v      = v.p.y * settings.uvScaleV;
+                    used[id] = 1;
                 }
             }
         }
@@ -333,7 +345,10 @@ Result<int> generateCliffBandMesh(MeshBuild& out, const Heightmap& heights, cons
     // 3) Stratification + rock displace (Ubisoft steps 3/5, Pegasus displace).
     for (size_t i = 0; i < verts.size(); ++i) {
         if (!used[i]) continue;
-        verts[i].p = stratifyDisplace(verts[i].p, verts[i].outward, noise, settings);
+        const Vec3 before = verts[i].p;
+        verts[i].p        = stratifyDisplace(verts[i].p, verts[i].outward, verts[i].normal, noise, settings);
+        if (!std::isfinite(verts[i].p.x) || !std::isfinite(verts[i].p.y) || !std::isfinite(verts[i].p.z))
+            verts[i].p = before;
     }
 
     // 4) Laplacian blur on steep verts (shape construction blur).
@@ -350,6 +365,8 @@ Result<int> generateCliffBandMesh(MeshBuild& out, const Heightmap& heights, cons
                     if (x < 0 || y < 0 || x >= gu || y >= gv) return;
                     const size_t n = at(x, y);
                     if (!used[n]) return;
+                    if (!std::isfinite(verts[n].p.x) || !std::isfinite(verts[n].p.y) || !std::isfinite(verts[n].p.z))
+                        return;
                     sum += verts[n].p;
                     weight += 1.f;
                 };
@@ -360,6 +377,8 @@ Result<int> generateCliffBandMesh(MeshBuild& out, const Heightmap& heights, cons
                 // Keep 65% original so strata shelves survive the blur.
                 const Vec3 avg = sum * (1.f / weight);
                 next[id]       = verts[id].p * 0.65f + avg * 0.35f;
+                if (!std::isfinite(next[id].x) || !std::isfinite(next[id].y) || !std::isfinite(next[id].z))
+                    next[id] = verts[id].p;
             }
         }
         for (size_t i = 0; i < verts.size(); ++i) {
@@ -393,8 +412,6 @@ Result<int> generateCliffBandMesh(MeshBuild& out, const Heightmap& heights, cons
             if (!mask) continue;
             for (int iv = 0; iv < div; ++iv) {
                 for (int iu = 0; iu < div; ++iu) {
-                    const bool want = subInTri0(iu, iv) ? (mask & 1u) != 0 : (mask & 2u) != 0;
-                    if (!want) continue;
                     const int i00 = int(at(x * div + iu, z * div + iv));
                     const int i10 = int(at(x * div + iu + 1, z * div + iv));
                     const int i11 = int(at(x * div + iu + 1, z * div + iv + 1));
@@ -420,40 +437,66 @@ Result<int> generateCliffBandMesh(MeshBuild& out, const Heightmap& heights, cons
         if (used[i]) normals[i] = normalize(normals[i]);
     }
 
-    candidate.reserve(steepCount * (div + 1) * (div + 1) * 2, steepCount * div * div * 6);
+    const bool  makeShell = settings.shellThickness > 1e-4f;
+    const float shell     = settings.shellThickness;
+    // Front + optional back verts; side skirts close the shell so it is not a wafer.
+    candidate.reserve(steepCount * (div + 1) * (div + 1) * (makeShell ? 4 : 2),
+                      steepCount * div * div * (makeShell ? 20 : 6));
+    std::vector<int> backIndex(verts.size(), -1);
     for (int z = 0; z < h - 1; ++z) {
         for (int x = 0; x < w - 1; ++x) {
             const uint8_t mask = steep[size_t(z * (w - 1) + x)];
             if (!mask) continue;
             for (int iv = 0; iv < div; ++iv) {
                 for (int iu = 0; iu < div; ++iu) {
-                    const bool want = subInTri0(iu, iv) ? (mask & 1u) != 0 : (mask & 2u) != 0;
-                    if (!want) continue;
+                    // Emit the whole steep cell (both diagonal halves). Restricting to one
+                    // diagonal left sawtooth gaps that read as stacked fence wafers.
                     const int ids[4] = {int(at(x * div + iu, z * div + iv)), int(at(x * div + iu + 1, z * div + iv)),
                                         int(at(x * div + iu + 1, z * div + iv + 1)),
                                         int(at(x * div + iu, z * div + iv + 1))};
-                    uint32_t  base[4];
+                    // Drop only near-horizontal cards after displace/blur (floating shelves).
+                    const Vec3& pa   = verts[size_t(ids[0])].p;
+                    const Vec3& pb   = verts[size_t(ids[1])].p;
+                    const Vec3& pc   = verts[size_t(ids[2])].p;
+                    const Vec3& pd   = verts[size_t(ids[3])].p;
+                    auto        sane = [](Vec3 q) {
+                        return std::isfinite(q.x) && std::isfinite(q.y) && std::isfinite(q.z) &&
+                               std::fabs(q.x) < 1.0e5f && std::fabs(q.y) < 1.0e5f && std::fabs(q.z) < 1.0e5f;
+                    };
+                    if (!sane(pa) || !sane(pb) || !sane(pc) || !sane(pd)) continue;
+                    // Only drop if BOTH halves are nearly floor/ceiling cards.
+                    const Vec3 nA = normalize(cross(pb - pa, pd - pa));
+                    const Vec3 nB = normalize(cross(pc - pb, pd - pb));
+                    if (std::abs(nA.y) > 0.92f && std::abs(nB.y) > 0.92f) continue;
+                    uint32_t base[4];
+                    uint32_t back[4];
                     for (int k = 0; k < 4; ++k) {
                         const size_t id = size_t(ids[k]);
                         if (emitIndex[id] < 0) {
                             const CliffVert& v = verts[id];
-                            const Vec3&      n = normals[id];
-                            emitIndex[id]      = candidate.getVertexCount();
+                            Vec3             n = normals[id];
+                            if (!std::isfinite(n.x) || !std::isfinite(n.y) || !std::isfinite(n.z)) n = {0.f, 0.f, 1.f};
+                            emitIndex[id] = candidate.getVertexCount();
                             candidate.addVertex(v.p.x, v.p.y, v.p.z, n.x, n.y, n.z, v.u, v.v);
+                            if (makeShell) {
+                                const Vec3 bp = {v.p.x - v.outward.x * shell, v.p.y, v.p.z - v.outward.z * shell};
+                                backIndex[id] = candidate.getVertexCount();
+                                candidate.addVertex(bp.x, bp.y, bp.z, -n.x, -n.y, -n.z, v.u, v.v);
+                            }
                         }
                         base[k] = uint32_t(emitIndex[id]);
+                        back[k] = makeShell ? uint32_t(backIndex[id]) : 0u;
                     }
-                    // Drop sub-quads that flattened after displace/blur (floating shelf cards).
-                    const Vec3& pa = verts[size_t(ids[0])].p;
-                    const Vec3& pb = verts[size_t(ids[1])].p;
-                    const Vec3& pc = verts[size_t(ids[2])].p;
-                    const Vec3& pd = verts[size_t(ids[3])].p;
-                    if (triSlope(pa, pb, pd) < settings.slopeMin * 0.85f &&
-                        triSlope(pb, pc, pd) < settings.slopeMin * 0.85f)
-                        continue;
                     candidate.addTriangle(base[0], base[1], base[2]);
                     candidate.addTriangle(base[0], base[2], base[3]);
                     triangles += 2;
+                    if (makeShell) {
+                        // Back face only (wound opposite). Skipping per-quad side skirts avoids
+                        // internal walls; the open rim still reads as real thickness in silhouette.
+                        candidate.addTriangle(back[0], back[2], back[1]);
+                        candidate.addTriangle(back[0], back[3], back[2]);
+                        triangles += 2;
+                    }
                     if (settings.maxTriangles > 0 && triangles > settings.maxTriangles) {
                         return Result<int>::failure(Diagnostic::error(
                             DiagnosticCode::Failed, "cliff.band: triangle budget exceeded", "maxTriangles"));

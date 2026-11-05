@@ -1,9 +1,11 @@
 # Procedural Cliffs & Mountains
 
-Bakes an alpine `MountainRecipe`, carves a soft curved valley, then runs a
-Pegasus/Ubisoft cliff extract: steep heightfield quads → subdivide → stratified
-bed extrusion + Worley rock displace + blur, shaded with `pbr.cliff.strata`, and
-toe-dressed with `mesh.rock`. After ~1.5 s captures `procgen-cliffs-mountains.png`.
+Bakes an alpine `MountainRecipe`, authors a multi-cell steep scarp, then runs a
+Pegasus/Ubisoft cliff extract: steep heightfield quads → subdivide → soft bed
+undulation + Worley rock displace + blur + optional shell thickness, shaded with
+`pbr.cliff.strata`, and toe-dressed with `mesh.rock`. The heightfield face is
+buried under a soft ramp after extraction so the green terrain skin does not
+double the beige cliff shell. After ~1.5 s captures `procgen-cliffs-mountains.png`.
 
 ## Run
 
