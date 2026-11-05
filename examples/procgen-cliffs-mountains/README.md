@@ -1,9 +1,10 @@
 # Procedural Cliffs & Mountains
 
-Bakes an alpine `MountainRecipe`, carves a midfield basin so a long vertical scarp
-is unmistakable, overlays cliff-band wall shells extracted from steep heightfield
-edges (strata + ledge displace), and scatters cliff rock props on the fitness mask.
-After ~1.5 s captures `procgen-cliffs-mountains.png` for visual audit.
+Bakes an alpine `MountainRecipe`, carves a midfield basin for a long scarp, extracts
+continuous cliff-band rock strips (shared verts, smoothed lip, strata displace +
+bedding albedo), softens the heightmap ramp so terrain splat does not own the sheer
+face, and dresses the toe with varied `mesh.rock` props. After ~1.5 s captures
+`procgen-cliffs-mountains.png` for visual audit.
 
 ## Run
 

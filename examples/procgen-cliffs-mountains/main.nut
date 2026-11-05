@@ -1,9 +1,8 @@
-// Alpine mountain recipe + vertical cliff-band walls + rock scatter demo.
+// Alpine mountain recipe + continuous cliff-band rock strips + rock scatter demo.
 
 local retained = [];
 local camera = null;
 local terrainShader = null;
-local rockShader = null;
 local elapsed = 0.0;
 local renderedFrames = 0;
 local saved = false;
@@ -22,14 +21,44 @@ function requireOk(result, label) {
     return result.value;
 }
 
+function makeStrataTexture(size) {
+    local image = eve.Image();
+    local pixels = retain(image.newEmptyImageData(size, size, "RGBA8"));
+    for (local y = 0; y < size; ++y) {
+        // Strong horizontal beds (V = world height on cliff mesh).
+        local band = ((y / 10) % 2 == 0) ? 0.18 : -0.08;
+        local bed = math.noise2(0.2, y * 0.09) * 0.35 + band;
+        for (local x = 0; x < size; ++x) {
+            local n = math.noise2(x * 0.04, y * 0.11) * 0.12;
+            local grit = math.noise2(x * 0.35, y * 0.35) * 0.08;
+            local shade = 0.50 + bed + n + grit;
+            if (shade < 0.22) shade = 0.22;
+            if (shade > 0.90) shade = 0.90;
+            pixels.setPixel(x, y, shade * 0.95 + 0.05, shade * 0.68 + 0.04, shade * 0.42 + 0.02, 1.0);
+        }
+    }
+    return retain(gfx.newTexture(pixels, true, true));
+}
+
+function makeRockMaterial(r, g, b, roughness, texture) {
+    local m = retain(gfx.newMaterial());
+    if (texture != null) m.setAlbedoTexture(texture);
+    m.setTint(r, g, b, 1.0);
+    m.setMetallic(0.04);
+    m.setRoughness(roughness);
+    return m;
+}
+
 eve_init = function() {
-    gfx.setBackgroundColor(0.52, 0.68, 0.86, 1.0);
-    gfx.setDirectionalLight(-0.62, 0.55, 0.40, 2.2, 1.9, 1.5);
+    gfx.setBackgroundColor(0.56, 0.70, 0.88, 1.0);
+    gfx.setDirectionalLight(-0.95, 0.32, 0.10, 2.7, 2.2, 1.55);
     terrainShader = retain(procgen.createTerrainMaterialShader(gfx));
-    rockShader = retain(procgen.createTerrainMaterialShader(gfx));
+    local strataTex = makeStrataTexture(256);
+    local cliffMat = makeRockMaterial(0.95, 0.72, 0.48, 0.82, strataTex);
+    local propMat = makeRockMaterial(0.70, 0.48, 0.30, 0.90, strataTex);
 
     local settings = retain(eve.MountainRecipeSettings());
-    settings.setPreset(0); // AlpineRidge
+    settings.setPreset(0);
     settings.setSize(mapSize, mapSize);
     settings.setSeed(20261105);
     settings.spacingX = cellSize;
@@ -49,15 +78,45 @@ eve_init = function() {
     local cliffMask = retain(requireOk(procgen.newHeightmap(mapSize, mapSize), "cliff"));
     requireOk(eve.bakeMountainRecipe(heightmap, settings, slopeMask, cliffMask), "bakeMountain");
 
-    // Carve a midfield basin so the cliff-band extractor has a long vertical scarp at x≈58.
-    for (local z = 20; z < 110; ++z) {
-        for (local x = 58; x < 120; ++x) {
-            local h = heightmap.height(x, z);
-            heightmap.setHeight(x, z, h * 0.15);
+    // Hard basin for cliff extraction.
+    for (local z = 16; z < 114; ++z) {
+        for (local x = 58; x < 122; ++x) {
+            heightmap.setHeight(x, z, heightmap.height(x, z) * 0.12);
         }
     }
-    requireOk(eve.generateCliffFitnessMask(cliffMask, heightmap, cellSize, cellSize, heightScale, 0.48, 1.0),
+    requireOk(eve.generateCliffFitnessMask(cliffMask, heightmap, cellSize, cellSize, heightScale, 0.42, 1.0),
         "cliffFitness");
+
+    local cliffSettings = retain(eve.CliffBandMeshSettings());
+    cliffSettings.setOrigin(0.0, 0.0);
+    cliffSettings.setSpacing(cellSize, cellSize);
+    cliffSettings.heightScale = heightScale;
+    cliffSettings.slopeMin = 0.42;
+    cliffSettings.minRelief = 1.6;
+    cliffSettings.subdivisions = 4;
+    cliffSettings.strataAmplitude = 0.85;
+    cliffSettings.strataScale = 0.95;
+    cliffSettings.strataVertical = 3.2;
+    // Texture carries bedding; geometric ledges read as cardboard stairs under soft light.
+    cliffSettings.ledgeHeight = 0.0;
+    cliffSettings.outwardBias = 0.9;
+    cliffSettings.setSeed(20261105);
+    cliffSettings.maxTriangles = 400000;
+    local cliffCpu = retain(requireOk(eve.generateCliffBandMesh(heightmap, cliffSettings, cliffMask), "cliffBand"));
+    print("procgen-cliffs-mountains cliff band: verts=" + cliffCpu.getVertexCount() +
+        " tris=" + (cliffCpu.getIndexCount() / 3) + "\n");
+    if (cliffCpu.getVertexCount() <= 0) throw "procgen-cliffs-mountains: empty cliff band";
+
+    // Widen the terrain ramp so splat no longer owns a sheer face under the cladding.
+    for (local z = 16; z < 114; ++z) {
+        local rim = heightmap.height(48, z);
+        local low = heightmap.height(58, z);
+        for (local x = 49; x < 58; ++x) {
+            local t = (x - 48) * 1.0 / 10.0;
+            t = t * t * (3.0 - 2.0 * t);
+            heightmap.setHeight(x, z, rim * (1.0 - t) + low * t);
+        }
+    }
 
     local layers = retain(procgen.analyzeTerrain(heightmap, 360.0, 0.14, 0.36));
     local chunkCells = 64;
@@ -74,78 +133,49 @@ eve_init = function() {
             entity.setMesh(mesh);
             entity.setTexture(texture);
             entity.setShader(terrainShader);
-            entity.setTint(0.90, 0.93, 0.86, 1.0);
-            entity.setMetallic(0.0);
-            entity.setRoughness(0.94);
+            entity.setTint(0.84, 0.88, 0.80, 1.0);
+            entity.setRoughness(0.96);
             entity.setPosition(ox * cellSize, 0.0, oy * cellSize);
         }
     }
 
-    local cliffSettings = retain(eve.CliffBandMeshSettings());
-    cliffSettings.setOrigin(0.0, 0.0);
-    cliffSettings.setSpacing(cellSize, cellSize);
-    cliffSettings.heightScale = heightScale;
-    cliffSettings.slopeMin = 0.48;
-    cliffSettings.minRelief = 2.0;
-    cliffSettings.subdivisions = 3;
-    cliffSettings.strataAmplitude = 0.55;
-    cliffSettings.strataScale = 0.95;
-    cliffSettings.strataVertical = 3.4;
-    cliffSettings.ledgeHeight = 0.55;
-    cliffSettings.outwardBias = 0.95;
-    cliffSettings.setSeed(20261105);
-    cliffSettings.maxTriangles = 250000;
-    local cliffCpu = retain(requireOk(eve.generateCliffBandMesh(heightmap, cliffSettings, cliffMask), "cliffBand"));
-    local cliffVerts = cliffCpu.getVertexCount();
-    local cliffTris = cliffCpu.getIndexCount() / 3;
-    print("procgen-cliffs-mountains cliff band: verts=" + cliffVerts + " tris=" + cliffTris + "\n");
-    if (cliffVerts <= 0 || cliffTris <= 0)
-        throw "procgen-cliffs-mountains: cliff band produced no geometry";
     local cliffGpu = retain(requireOk(procgen.uploadMesh(cliffCpu, gfx), "cliffUpload"));
     local cliffEntity = retain(eve.Renderable3D());
     cliffEntity.setMesh(cliffGpu);
-    cliffEntity.setShader(rockShader);
-    cliffEntity.setTint(0.72, 0.38, 0.16, 1.0);
-    cliffEntity.setMetallic(0.01);
-    cliffEntity.setRoughness(0.98);
-    cliffEntity.setPosition(0.0, 0.0, 0.0);
+    cliffEntity.setMaterial(cliffMat);
 
-    local worldWidth = 128.0 * cellSize;
-    local worldDepth = 128.0 * cellSize;
-    local placement = retain(eve.TerrainObjectPlacementSettings());
-    requireOk(eve.configureCliffRockScatterDefaults(placement, 0.0, 0.0, worldWidth, worldDepth,
-        heightScale, 20261105, 9.0, 0.50, "mesh.rock:cliff"), "cliffScatter");
-    local points = retain(requireOk(procgen.newPointSet(), "points"));
-    local exportResult = placement.exportPoints(points, cliffMask, heightmap);
-    if (exportResult.ok && exportResult.value > 0) {
-        local rockParams = retain(requireOk(procgen.newParams(), "rockParams"));
-        rockParams.setSeed(91);
-        rockParams.setString("baseShape", "cliff");
-        rockParams.setFloat("scale", 2.2);
-        rockParams.setInt("subdivisions", 2);
-        local rockMesh = retain(requireOk(procgen.generateMesh("mesh.rock", rockParams, gfx), "rockMesh"));
-        local count = points.getCount();
-        local limit = count > 16 ? 16 : count;
-        for (local i = 0; i < limit; ++i) {
-            local ent = retain(eve.Renderable3D());
-            ent.setMesh(rockMesh);
-            ent.setShader(rockShader);
-            ent.setTint(0.36, 0.26, 0.18, 1.0);
-            ent.setRoughness(0.95);
-            ent.setPosition(points.getX(i), points.getY(i), points.getZ(i));
-            local sc = 0.85 + 0.10 * (i % 5);
-            ent.setScale(sc, sc, sc);
-        }
-        print("procgen-cliffs-mountains rock props: " + limit + "\n");
+    // Toe rocks sit on the basin floor along the scarp.
+    local rockParams = retain(requireOk(procgen.newParams(), "rockParams"));
+    rockParams.setSeed(107);
+    local shapes = ["boulder", "shard", "cliff", "block"];
+    local rockCount = 0;
+    for (local i = 0; i < 18; ++i) {
+        local rockParams = retain(requireOk(procgen.newParams(), "rockParams" + i));
+        rockParams.setSeed(107 + i * 17);
+        rockParams.setString("baseShape", shapes[i % 4]);
+        rockParams.setFloat("scale", 1.6 + 0.35 * (i % 5));
+        rockParams.setInt("subdivisions", 3);
+        local rockMesh = retain(requireOk(procgen.generateMesh("mesh.rock", rockParams, gfx), "rockMesh" + i));
+        local ent = retain(eve.Renderable3D());
+        ent.setMesh(rockMesh);
+        ent.setMaterial(propMat);
+        local pz = 13.5 + i * 1.95 + ((i % 3) * 0.45);
+        local cellZ = pz / cellSize;
+        local py = heightmap.sampleBilinear(59.0, cellZ) * heightScale;
+        ent.setPosition(24.6 + 0.9 * ((i * 5) % 4) * 0.35, py + 0.15, pz);
+        ent.setYaw(i * 1.15);
+        local sc = 0.50 + 0.28 * (i % 5);
+        ent.setScale(sc * (0.75 + 0.35 * (i % 3)), sc * (0.55 + 0.4 * (i % 4)), sc);
+        ++rockCount;
     }
+    print("procgen-cliffs-mountains rock props: " + rockCount + "\n");
 
     camera = retain(eve.Camera3D());
-    // Basin is world x>23.2; scarp face at x≈23.2. Slight oblique so ledges read.
-    camera.setEye(41.0, 13.0, 30.0);
-    camera.setTarget(23.0, 6.5, 26.0);
+    camera.setEye(42.0, 12.0, 35.0);
+    camera.setTarget(24.5, 7.0, 26.0);
     camera.setUp(0.0, 1.0, 0.0);
-    camera.setFov(48.0);
-    camera.setAmbient(0.36, 0.40, 0.46);
+    camera.setFov(44.0);
+    camera.setAmbient(0.26, 0.30, 0.36);
     camera.setActive(true);
 };
 

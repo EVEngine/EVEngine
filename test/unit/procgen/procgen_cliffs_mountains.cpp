@@ -69,12 +69,14 @@ TEST_CASE("procgen.mountain.recipe_replaysSeedAndWritesCliffMask") {
 
 TEST_CASE("procgen.cliff.band_flatIsEmpty_stepEmitsWall_replayStable") {
     CliffBandMeshSettings settings;
-    settings.spacingX     = 1.f;
-    settings.spacingZ     = 1.f;
-    settings.heightScale  = 1.f;
-    settings.slopeMin     = 0.35f;
-    settings.subdivisions = 0;
-    settings.seed         = 7;
+    settings.spacingX        = 1.f;
+    settings.spacingZ        = 1.f;
+    settings.heightScale     = 1.f;
+    settings.slopeMin        = 0.35f;
+    settings.minRelief       = 0.5f;
+    settings.subdivisions    = 1;
+    settings.strataAmplitude = 0.2f;
+    settings.seed            = 7;
 
     Heightmap flat(8, 8);
     flat.data().assign(64, 0.2f);

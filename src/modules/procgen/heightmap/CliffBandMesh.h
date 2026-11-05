@@ -36,13 +36,16 @@ struct EVENGINE_API_DOMAINS CliffBandMeshSettings {
 };
 
 /**
- * @brief Emit vertical wall quads along steep grid edges, subdivide, and strata-displace.
+ * @brief Emit continuous cliff strips along steep dual edges, subdivide, and rock-displace.
+ *
+ * Adjacent cliff edges are welded into shared-vertex strips with averaged normals,
+ * soft bedding ledges, lip/toe relief, and strata/fracture noise (hex addCliff style).
  * @param out Cleared then filled; published only after a complete candidate succeeds.
  * @param heights Finite heightmap with both dimensions at least 2.
  * @param settings Finite positive spacing/scale, slope range, subdivision and triangle budget.
  * @param cliffFitness Optional matching fitness raster in [0,1]; null derives slope inline.
  * @return Emitted triangle count, or InvalidArgument / Failed (budget) without mutating out.
- * @cost Linear in grid edges times subdivision^2; keep maxTriangles bounded for gameplay meshes.
+ * @cost Linear in cliff-edge runs times subdivision^2; keep maxTriangles bounded for gameplay meshes.
  * @thread Synchronous exclusive out; immutable inputs; deterministic for a fixed seed.
  */
 [[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateCliffBandMesh(MeshBuild& out, const Heightmap& heights,
