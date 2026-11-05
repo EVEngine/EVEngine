@@ -6,7 +6,9 @@ build/test/run commands live in [`Readme.en.md`](Readme.en.md) and the root
 caveats. The Cursor Cloud VM is Linux; on a Windows host use the Windows section.
 
 Game-script agents: read [`.cursor/skills/evescript/SKILL.md`](.cursor/skills/evescript/SKILL.md)
-and [`docs/dev/AI知识补偿.md`](docs/dev/AI知识补偿.md). Look up EveScript APIs with MCP
+and [`docs/dev/AI知识补偿.md`](docs/dev/AI知识补偿.md). Mature playbooks (agent loop, game
+scaffold, ARPG/RPG/RTS, 2D action guide) live under [`.cursor/skills/`](.cursor/skills/README.md)
+— load the skill matching the task. Look up EveScript APIs with MCP
 `eve_api_search` / `eve_api_get` (or `python3 scripts/generate_binding_contracts.py --json-output eve-api.json`).
 Do not invent Unity/Godot APIs. Do not use `eve_eval` as the official gameplay path.
 

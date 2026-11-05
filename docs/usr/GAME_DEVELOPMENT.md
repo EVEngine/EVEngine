@@ -5,6 +5,9 @@
 [examples/game-tutorial](../../examples/game-tutorial/)，完整源码包含配置、主入口和规则
 模块。它用方向键收集目标，提供 HUD、重新开始、分数存档和热重载。
 
+Agent 短入口（Cursor skill）：[`.cursor/skills/eve-game-loop/SKILL.md`](../../.cursor/skills/eve-game-loop/SKILL.md)；
+其它成熟玩法范式见 [`.cursor/skills/README.md`](../../.cursor/skills/README.md)。
+
 ## 1. 先建立可运行工程
 
 确认 `eve -v`，使用与运行时同源的 `share/eve/ai/eve-api.json` 查接口。可以
