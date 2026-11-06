@@ -148,6 +148,22 @@ struct Analysis {
         edgeKeys.emplace(key, value);
         snapshot.edges.push_back(value);
     }
+    /** @brief Host-qualified scene entity; label/definitionCoverage enrich without inventing hosts. */
+    Object::Ptr sceneEntity(const std::string& host, const std::string& nodeId, Object::Ptr origin,
+                            const std::string& displayName = {}, const std::string& coverage = "script-ref-only") {
+        auto id   = "entity:" + host + "/" + nodeId;
+        auto item = node(id, "scene_entity", origin);
+        item->set("sceneHost", host);
+        item->set("nodeId", nodeId);
+        if (!displayName.empty())
+            item->set("label", displayName);
+        else if (!item->has("label") || item->getValue<std::string>("label") == id)
+            item->set("label", nodeId);
+        const auto existing = item->optValue<std::string>("definitionCoverage", "");
+        if (existing.empty() || existing == "script-ref-only" || coverage != "script-ref-only")
+            item->set("definitionCoverage", coverage);
+        return item;
+    }
     std::string functionId(const std::string& name) const {
         auto found = functions.find(name);
         if (found == functions.end() || found->second.size() != 1) return "";
@@ -163,6 +179,13 @@ struct Analysis {
                 else
                     methods[key] = registry.find(api.key());
             }
+        }
+        // Root slots from load.nut (`gfx`, `scene`, …) are module receivers; seed
+        // them so `gfx.loadTexture("…")` resolves without requiring eve.Graphics().
+        for (const auto& entry : factories) {
+            Type slot;
+            slot.name                           = "module:" + entry.second;
+            variables["global:" + entry.second] = slot;
         }
         for (const auto& [path, file] : snapshot.files) {
             if (!file->error.empty()) continue;
@@ -323,9 +346,17 @@ struct Analysis {
             }
         }
         std::map<std::string, std::set<std::string>> nativeByFunction, calledFunctions;
+        struct SceneDefine {
+            std::string nodeId, displayName, from, parentId;
+            bool        opens = true;
+            Object::Ptr origin;
+        };
         for (const auto& [path, file] : snapshot.files) {
             if (!file->error.empty()) continue;
-            std::map<std::string, std::set<std::string>> filters, subjects;
+            std::map<std::string, std::set<std::string>>    filters, subjects, mounts;
+            std::map<std::string, std::vector<SceneDefine>> defines;
+            std::map<std::string, std::vector<std::string>> openStacks;
+            int                                             unresolvedDefines = 0;
             for (const auto& call : file->structure.calls) {
                 const auto& expression = call.expression;
                 if (expression.operands.empty()) continue;
@@ -372,15 +403,59 @@ struct Analysis {
                 auto        identity = argument(expression, rule.identityArgument, path, call.scope);
                 if (rule.role == "scene_ref" && identity.values.size() == 1) {
                     auto host = argument(expression, rule.relatedArgument, path, call.scope);
-                    if (host.values.size() == 1)
-                        node("entity:" + *host.values.begin() + "/" + *identity.values.begin(), "scene_entity", origin);
+                    if (host.values.size() == 1) sceneEntity(*host.values.begin(), *identity.values.begin(), origin);
+                } else if ((rule.role == "scene_define" || rule.role == "scene_leaf") && identity.values.size() == 1) {
+                    auto&       stack   = openStacks[call.scope];
+                    auto        related = argument(expression, rule.relatedArgument, path, call.scope);
+                    std::string display;
+                    if (related.values.size() == 1) display = *related.values.begin();
+                    const bool opens = rule.role == "scene_define";
+                    if (!opens && stack.empty()) {
+                        ++unresolvedDefines;
+                    } else {
+                        const auto parent = stack.empty() ? "" : stack.back();
+                        defines[call.scope].push_back({*identity.values.begin(), display, from, parent, opens, origin});
+                        if (opens) stack.push_back(*identity.values.begin());
+                    }
+                } else if (rule.role == "scene_pop") {
+                    auto& stack = openStacks[call.scope];
+                    if (!stack.empty())
+                        stack.pop_back();
+                    else
+                        ++unresolvedDefines;
+                } else if (rule.role == "scene_mount" && identity.values.size() == 1) {
+                    mounts[call.scope].insert(*identity.values.begin());
+                } else if (rule.role == "resource_load" && identity.values.size() == 1) {
+                    const auto rel  = *identity.values.begin();
+                    const auto norm = pathText(sourcePath(rel).lexically_normal());
+                    if (sourcePath(rel).is_absolute() || norm.starts_with("../") ||
+                        norm.find("/../") != std::string::npos) {
+                        Object::Ptr diagnostic = new Object();
+                        diagnostic->set("code", "resource_path_escaped");
+                        diagnostic->set("path", rel);
+                        diagnostic->set("loaderApi", api->key());
+                        snapshot.diagnostics.push_back(diagnostic);
+                    } else {
+                        auto assetId = "asset:" + rel;
+                        auto asset   = node(assetId, "project_asset", origin);
+                        asset->set("path", rel);
+                        asset->set("loaderApi", api->key());
+                        asset->set("label", rel);
+                        std::string presence = "unchecked";
+                        if (!snapshot.projectDir.empty()) {
+                            std::error_code error;
+                            const auto      full = sourcePath(snapshot.projectDir) / sourcePath(rel);
+                            presence = std::filesystem::is_regular_file(full, error) && !error ? "present" : "absent";
+                        }
+                        asset->set("filePresence", presence);
+                        if (!from.empty()) edge(from, assetId, "uses_asset", origin);
+                    }
                 } else if (rule.role == "scene_write" && callee.kind == "member" && !callee.operands.empty()) {
                     auto target = type(callee.operands[0], path, call.scope);
                     if (target.identities.size() == 1 && target.hosts.size() == 1) {
-                        auto entityId = "entity:" + *target.hosts.begin() + "/" + *target.identities.begin();
-                        node(entityId, "scene_entity", origin);
-                        edge(from, entityId, "updates", origin);
-                        edge(entityId, apiId, "uses", origin);
+                        auto entity = sceneEntity(*target.hosts.begin(), *target.identities.begin(), origin);
+                        edge(from, entity->getValue<std::string>("id"), "updates", origin);
+                        edge(entity->getValue<std::string>("id"), apiId, "uses", origin);
                     } else
                         item->set("targetCoverage", "dynamic-or-ambiguous");
                 } else if (rule.role == "event_emit" && identity.values.size() == 1) {
@@ -404,6 +479,34 @@ struct Analysis {
                         edge("quest:" + *identity.values.begin(), from,
                              rule.role == "quest_read" ? "read_by" : "completion_candidate", origin);
                 }
+            }
+            // Scene adapter: beginNode/beginGroup/addNode identities bind to a unique
+            // mount/remount host in the same function. begin/end order reconstructs
+            // contains edges. Missing/ambiguous hosts stay unpublished.
+            for (const auto& [scope, items] : defines) {
+                const auto hostIt = mounts.find(scope);
+                if (hostIt == mounts.end() || hostIt->second.size() != 1) {
+                    unresolvedDefines += static_cast<int>(items.size());
+                    continue;
+                }
+                if (!openStacks[scope].empty()) unresolvedDefines += static_cast<int>(openStacks[scope].size());
+                const auto& host = *hostIt->second.begin();
+                for (const auto& define : items) {
+                    auto entity =
+                        sceneEntity(host, define.nodeId, define.origin, define.displayName, "script-beginNode+mount");
+                    if (!define.parentId.empty()) {
+                        entity->set("parentNodeId", define.parentId);
+                        auto parent = sceneEntity(host, define.parentId, define.origin);
+                        edge(parent->getValue<std::string>("id"), entity->getValue<std::string>("id"), "contains",
+                             define.origin);
+                    }
+                    if (!define.from.empty())
+                        edge(define.from, entity->getValue<std::string>("id"), "defines", define.origin);
+                }
+            }
+            if (unresolvedDefines && snapshot.stats) {
+                snapshot.stats->set("sceneDefinesUnresolved",
+                                    snapshot.stats->optValue<int>("sceneDefinesUnresolved", 0) + unresolvedDefines);
             }
             for (const auto& [scope, events] : filters)
                 for (const auto& event : events)

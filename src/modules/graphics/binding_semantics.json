@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "factory": "Graphics",
+  "slot": "gfx",
+  "bindings": {
+    "loadTexture": {"role": "resource_load", "identityArgument": 0}
+  }
+}
