@@ -107,6 +107,7 @@
 - [通用命令队列](modules/orders.md)：确定性优先级命令、抢占、超时、载荷、生命周期事件和快照。
 - [社会关系图](modules/social.md)：所有权、控制权、角色指派和带权有向关系。
 - [生产队列](modules/production.md)：按 owner 分配并行槽位，确定性推进可暂停、恢复的生产任务。
+- [塔防组合](modules/towerdefense.md)：确定性波次导演、基地漏怪扣命；与 map 路径探测、sensing 选敌策略组合。
 - [工厂物流](modules/logistics.md)：2D 传送带 / 离散物品 SoA / 机器缓冲与合成；GPU 只做可视化位置解算。
 - [权限规则](modules/authority.md)：按 actor、scope 和 capability 仲裁有优先级、可过期的允许/拒绝规则。
 
