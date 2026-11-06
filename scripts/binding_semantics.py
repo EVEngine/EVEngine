@@ -4,7 +4,7 @@ import re
 
 
 def attach_semantics(contracts, sources, root, files, mask_source):
-    roles = {"scene_ref", "scene_define", "scene_write", "event_log", "event_read",
+    roles = {"scene_ref", "scene_define", "scene_mount", "scene_write", "event_log", "event_read",
              "event_emit", "event_type", "event_subject", "quest_read", "quest_complete", "quest_schema"}
     known = {contract.key: contract for contract in contracts}
     # Constructor names come from native registration, never from capitalization

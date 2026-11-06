@@ -3,7 +3,9 @@
   "factory": "Scene",
   "bindings": {
     "getNodeRefAt": {"role":"scene_ref","resultClass":"SceneNodeRef","identityArgument":1,"relatedArgument":0},
-    "beginNode": {"role":"scene_define","identityArgument":0},
+    "beginNode": {"role":"scene_define","identityArgument":0,"relatedArgument":1},
+    "mountBuildAs": {"role":"scene_mount","identityArgument":0},
+    "remountBuildAs": {"role":"scene_mount","identityArgument":0},
     "SceneNodeRef.setVisible": {"role":"scene_write"}
   }
 }

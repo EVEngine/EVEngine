@@ -505,7 +505,12 @@ TEST_CASE("devtools.projectIndex.realQuestChainAndVersionedContext") {
     CHECK_EQ(context->getValue<std::string>("schema"), std::string("eve.project-context"));
     CHECK_EQ(context->getValue<int>("schemaVersion"), 2);
     REQUIRE(findNode(context, "event:quest.completed"));
-    REQUIRE(findNode(context, "entity:rpg-classic.quests/quest.slayer.marker"));
+    auto marker = findNode(context, "entity:rpg-classic.quests/quest.slayer.marker");
+    REQUIRE(marker);
+    CHECK_EQ(marker->getValue<std::string>("sceneHost"), std::string("rpg-classic.quests"));
+    CHECK_EQ(marker->getValue<std::string>("nodeId"), std::string("quest.slayer.marker"));
+    CHECK_EQ(marker->getValue<std::string>("label"), std::string("Slayer completion marker"));
+    CHECK_EQ(marker->getValue<std::string>("definitionCoverage"), std::string("script-beginNode+mount"));
     REQUIRE(findNode(context, "api:scene/SceneNodeRef.setVisible"));
     REQUIRE(findNode(context, "test:runQuestSceneProbe"));
     CHECK(context->getArray("contracts")->size() >= 1);
@@ -513,6 +518,17 @@ TEST_CASE("devtools.projectIndex.realQuestChainAndVersionedContext") {
     CHECK(findNode(context, "quest:quest.slayer")->getObject("definition")->has("objectives"));
     CHECK_EQ(findNode(context, "script:onQuestCompleted")->getObject("source")->getValue<std::string>("file"),
              std::string("quest_scene.nut"));
+    auto edges         = context->getArray("edges");
+    bool definesMarker = false;
+    if (edges)
+        for (size_t i = 0; i < edges->size(); ++i) {
+            auto edge = edges->getObject(static_cast<unsigned>(i));
+            if (edge->getValue<std::string>("from") == "script:initializeQuestScene" &&
+                edge->getValue<std::string>("to") == "entity:rpg-classic.quests/quest.slayer.marker" &&
+                edge->getValue<std::string>("relation") == "defines")
+                definesMarker = true;
+        }
+    CHECK(definesMarker);
     auto unchanged = refresh(projectRoot());
     CHECK_EQ(unchanged->getValue<std::string>("revision"), revision);
     CHECK_EQ(unchanged->getObject("stats")->getValue<int>("parsed"), 0);
@@ -737,6 +753,65 @@ TEST_CASE("devtools.projectIndex.automaticInferenceAndInvalidationContracts") {
                  std::string("unknown_seed"));
         std::filesystem::remove(fixture.root / "renamed.nut");
         input->set("seed", "script:afterEvent");
+        CHECK_EQ(payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))
+                     ->getValue<std::string>("error"),
+                 std::string("unknown_seed"));
+    };
+    SUB_CASE("devtools.projectIndex.sceneDefineMountAdapterPublishesHostQualifiedEntities") {
+        Fixture fixture(false, false);
+        write(fixture.root / "stage.nut", R"SQ(
+            throw "Indexing must not execute this script";
+            function buildStage() {
+                local scene = eve.Scene();
+                scene.beginBuild();
+                scene.beginNode("root", "Stage root");
+                scene.beginNode("door", "Front door");
+                scene.end();
+                scene.end();
+                scene.remountBuildAs("stage.main");
+            }
+            function orphanDefine() {
+                local scene = eve.Scene();
+                scene.beginNode("ghost", "No host");
+            }
+        )SQ");
+        auto first = refresh(fixture.root);
+        REQUIRE(first->getValue<bool>("ok"));
+        CHECK_EQ(first->getObject("stats")->getValue<int>("sceneDefinesUnresolved"), 1);
+        auto input = args(fixture.root);
+        input->set("seed", "entity:stage.main/door");
+        input->set("task", "Inspect scene define adapter");
+        auto context = payload(eve::dev::callMcpArchitectureTool("eve_task_context", input));
+        REQUIRE(context->getValue<bool>("ok"));
+        auto door = findNode(context, "entity:stage.main/door");
+        REQUIRE(door);
+        CHECK_EQ(door->getValue<std::string>("label"), std::string("Front door"));
+        CHECK_EQ(door->getValue<std::string>("definitionCoverage"), std::string("script-beginNode+mount"));
+        REQUIRE(findNode(context, "entity:stage.main/root"));
+        CHECK(findNode(context, "script:buildStage"));
+        input->set("seed", "entity:stage.main/ghost");
+        CHECK_EQ(payload(eve::dev::callMcpArchitectureTool("eve_task_context", input))->getValue<std::string>("error"),
+                 std::string("unknown_seed"));
+        auto script = read(fixture.root / "stage.nut");
+        script.replace(script.find("\"door\""), 6, "\"gate\"");
+        write(fixture.root / "stage.nut", script);
+        auto renamed = refresh(fixture.root);
+        REQUIRE(renamed->getValue<bool>("ok"));
+        CHECK(renamed->getValue<std::string>("revision") != first->getValue<std::string>("revision"));
+        input = args(fixture.root);
+        input->set("seed", "entity:stage.main/door");
+        CHECK_EQ(payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))
+                     ->getValue<std::string>("error"),
+                 std::string("unknown_seed"));
+        input->set("seed", "entity:stage.main/gate");
+        auto gate = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
+        REQUIRE(gate->getValue<bool>("ok"));
+        REQUIRE(findNode(gate, "entity:stage.main/gate"));
+        std::filesystem::remove(fixture.root / "stage.nut");
+        auto deleted = refresh(fixture.root);
+        REQUIRE(deleted->getValue<bool>("ok"));
+        input = args(fixture.root);
+        input->set("seed", "entity:stage.main/gate");
         CHECK_EQ(payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))
                      ->getValue<std::string>("error"),
                  std::string("unknown_seed"));
