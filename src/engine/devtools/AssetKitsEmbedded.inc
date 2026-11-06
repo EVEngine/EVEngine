@@ -9,7 +9,9 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
       "genre": "card",
       "title": "Standard 52-card playing deck",
       "summary": "Opaque full-card face PNGs for poker / blackjack / Solitaire-style games using eve.Card(). Matches examples/cardgame (262×372 source, ~2:3).",
-      "modules": ["card"],
+      "modules": [
+        "card"
+      ],
       "referenceExample": "examples/cardgame",
       "window": {
         "width": 1280,
@@ -27,13 +29,23 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
           "id": "face",
           "role": "full-card-face",
           "required": true,
-          "count": { "min": 52, "max": 52, "typical": 52 },
-          "pixelSize": { "width": 262, "height": 372 },
+          "count": {
+            "min": 52,
+            "max": 52,
+            "typical": 52
+          },
+          "pixelSize": {
+            "width": 262,
+            "height": 372
+          },
           "aspectRatio": "131:186",
           "format": "png",
           "colorType": "rgba",
           "alpha": "optional",
-          "displaySize": { "width": 110, "height": 150 },
+          "displaySize": {
+            "width": 110,
+            "height": 150
+          },
           "pathPattern": "assets/playing-cards/{suit}_{rank}.png",
           "safeMargin": 0.04,
           "constraints": [
@@ -50,13 +62,23 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
           "id": "back",
           "role": "card-back",
           "required": false,
-          "count": { "min": 0, "max": 1, "typical": 1 },
-          "pixelSize": { "width": 262, "height": 372 },
+          "count": {
+            "min": 0,
+            "max": 1,
+            "typical": 1
+          },
+          "pixelSize": {
+            "width": 262,
+            "height": 372
+          },
           "aspectRatio": "131:186",
           "format": "png",
           "colorType": "rgba",
           "alpha": "optional",
-          "displaySize": { "width": 110, "height": 150 },
+          "displaySize": {
+            "width": 110,
+            "height": 150
+          },
           "pathPattern": "assets/playing-cards/back.png",
           "safeMargin": 0.04,
           "constraints": [
@@ -67,6 +89,26 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
           "promptTemplate": "Create one playing-card BACK PNG at {width}x{height} ({aspectRatio}). Decorative symmetric pattern, no rank or suit, no watermark, flat card only. Style: {style}.",
           "consumer": "Used when Hand.setFaceDown(true); bind via setArt or project-owned draw path."
         }
+      ],
+      "tags": [
+        "card",
+        "playing-cards",
+        "2d",
+        "opaque-face"
+      ],
+      "bindings": [
+        {
+          "system": "evescript",
+          "kind": "texture-bind",
+          "ref": "eve.Card / CardData.setArt",
+          "notes": "See slot.consumer"
+        },
+        {
+          "system": "pipeline",
+          "kind": "file-drop",
+          "ref": "assets/playing-cards/",
+          "notes": "Write pathPattern outputs into the project tree"
+        }
       ]
     },
     {
@@ -74,7 +116,9 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
       "genre": "card",
       "title": "Collectible / CCG card art",
       "summary": "Illustrated card faces for Hearthstone / MTG / Slay-the-Spire style games. Engine default on-screen card is 110×150; source art is 512×724 (~2.5×3.5 trading-card proportion).",
-      "modules": ["card"],
+      "modules": [
+        "card"
+      ],
       "referenceExample": "examples/rts-cardfront",
       "window": {
         "width": 1280,
@@ -92,13 +136,22 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
           "id": "face",
           "role": "full-card-composite",
           "required": true,
-          "count": { "min": 1, "typical": 20 },
-          "pixelSize": { "width": 512, "height": 724 },
+          "count": {
+            "min": 1,
+            "typical": 20
+          },
+          "pixelSize": {
+            "width": 512,
+            "height": 724
+          },
           "aspectRatio": "128:181",
           "format": "png",
           "colorType": "rgba",
           "alpha": "optional",
-          "displaySize": { "width": 110, "height": 150 },
+          "displaySize": {
+            "width": 110,
+            "height": 150
+          },
           "pathPattern": "assets/cards/{cardId}.png",
           "safeMargin": 0.06,
           "constraints": [
@@ -114,8 +167,14 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
           "id": "illustration",
           "role": "art-window-only",
           "required": false,
-          "count": { "min": 0, "typical": 20 },
-          "pixelSize": { "width": 512, "height": 384 },
+          "count": {
+            "min": 0,
+            "typical": 20
+          },
+          "pixelSize": {
+            "width": 512,
+            "height": 384
+          },
           "aspectRatio": "4:3",
           "format": "png",
           "colorType": "rgba",
@@ -134,13 +193,23 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
           "id": "back",
           "role": "card-back",
           "required": false,
-          "count": { "min": 0, "max": 1, "typical": 1 },
-          "pixelSize": { "width": 512, "height": 724 },
+          "count": {
+            "min": 0,
+            "max": 1,
+            "typical": 1
+          },
+          "pixelSize": {
+            "width": 512,
+            "height": 724
+          },
           "aspectRatio": "128:181",
           "format": "png",
           "colorType": "rgba",
           "alpha": "optional",
-          "displaySize": { "width": 110, "height": 150 },
+          "displaySize": {
+            "width": 110,
+            "height": 150
+          },
           "pathPattern": "assets/cards/back.png",
           "safeMargin": 0.06,
           "constraints": [
@@ -150,6 +219,26 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
           "promptTemplate": "Collectible card BACK at {width}x{height} ({aspectRatio}). Shared deck pattern, style: {style}. No text identifying a specific card.",
           "consumer": "Hand.setFaceDown(true) path."
         }
+      ],
+      "tags": [
+        "card",
+        "ccg",
+        "2d",
+        "illustrated"
+      ],
+      "bindings": [
+        {
+          "system": "evescript",
+          "kind": "texture-bind",
+          "ref": "eve.Card / registerCardsFromJson",
+          "notes": "See slot.consumer"
+        },
+        {
+          "system": "pipeline",
+          "kind": "file-drop",
+          "ref": "assets/cards/",
+          "notes": "Write pathPattern outputs into the project tree"
+        }
       ]
     },
     {
@@ -157,7 +246,10 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
       "genre": "visual-novel",
       "title": "Visual-novel dialogue stage",
       "summary": "Background plates plus transparent character portraits for eve.Dialogue() + eve.Avatar() image layers. Matches examples/dialogue (1024×1536 portraits displayed at 256×384; stage window 960×540).",
-      "modules": ["dialogue", "avatar"],
+      "modules": [
+        "dialogue",
+        "avatar"
+      ],
       "referenceExample": "examples/dialogue",
       "window": {
         "width": 960,
@@ -168,7 +260,11 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
         "portraitDisplayW": 256,
         "portraitDisplayH": 384,
         "portraitAspect": "2:3",
-        "slots": ["left", "center", "right"],
+        "slots": [
+          "left",
+          "center",
+          "right"
+        ],
         "notes": "Avatar.setLayerSize('portrait', 256, 384); Dialogue.show(id, slot)."
       },
       "slots": [
@@ -176,13 +272,22 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
           "id": "background",
           "role": "stage-background",
           "required": false,
-          "count": { "min": 0, "typical": 3 },
-          "pixelSize": { "width": 1920, "height": 1080 },
+          "count": {
+            "min": 0,
+            "typical": 3
+          },
+          "pixelSize": {
+            "width": 1920,
+            "height": 1080
+          },
           "aspectRatio": "16:9",
           "format": "png",
           "colorType": "rgb",
           "alpha": "forbidden",
-          "displaySize": { "width": 960, "height": 540 },
+          "displaySize": {
+            "width": 960,
+            "height": 540
+          },
           "pathPattern": "assets/backgrounds/{sceneId}.png",
           "safeMargin": 0.08,
           "constraints": [
@@ -198,13 +303,22 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
           "id": "portrait",
           "role": "character-cutout",
           "required": true,
-          "count": { "min": 1, "typical": 2 },
-          "pixelSize": { "width": 1024, "height": 1536 },
+          "count": {
+            "min": 1,
+            "typical": 2
+          },
+          "pixelSize": {
+            "width": 1024,
+            "height": 1536
+          },
           "aspectRatio": "2:3",
           "format": "png",
           "colorType": "rgba",
           "alpha": "required",
-          "displaySize": { "width": 256, "height": 384 },
+          "displaySize": {
+            "width": 256,
+            "height": 384
+          },
           "pathPattern": "assets/{characterId}.png",
           "safeMargin": 0.08,
           "constraints": [
@@ -221,13 +335,22 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
           "id": "portrait-expression",
           "role": "expression-variant",
           "required": false,
-          "count": { "min": 0, "typical": 4 },
-          "pixelSize": { "width": 1024, "height": 1536 },
+          "count": {
+            "min": 0,
+            "typical": 4
+          },
+          "pixelSize": {
+            "width": 1024,
+            "height": 1536
+          },
           "aspectRatio": "2:3",
           "format": "png",
           "colorType": "rgba",
           "alpha": "required",
-          "displaySize": { "width": 256, "height": 384 },
+          "displaySize": {
+            "width": 256,
+            "height": 384
+          },
           "pathPattern": "assets/{characterId}_{expression}.png",
           "safeMargin": 0.08,
           "constraints": [
@@ -236,6 +359,33 @@ static constexpr std::string_view kEmbeddedAssetKitCatalog = R"evekit({
           ],
           "promptTemplate": "Same character cutout as base portrait for {characterId}, expression={expression}, exact {width}x{height} (2:3), identical body framing, transparent alpha, no scenery, no text.",
           "consumer": "av.defineExpression(name, 'portrait=1') with per-expression textures, or layered ImageAvatar parts."
+        }
+      ],
+      "tags": [
+        "visual-novel",
+        "dialogue",
+        "portrait",
+        "background",
+        "alpha"
+      ],
+      "bindings": [
+        {
+          "system": "evescript",
+          "kind": "avatar-layer",
+          "ref": "eve.Avatar / eve.Dialogue",
+          "notes": "See slot.consumer"
+        },
+        {
+          "system": "pipeline",
+          "kind": "file-drop",
+          "ref": "assets/",
+          "notes": "Portraits need real alpha; backgrounds are opaque plates"
+        },
+        {
+          "system": "creative-brain",
+          "kind": "queue-request",
+          "ref": "resource_request.asset_id = kit.slot",
+          "notes": "Use resolve() then enqueue missing paths"
         }
       ]
     }

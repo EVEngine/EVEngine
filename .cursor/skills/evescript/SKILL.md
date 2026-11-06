@@ -73,10 +73,9 @@ eve_render <- function() {
 ## Generating art assets
 
 Before inventing image sizes for cards or visual novels, read an **asset kit**:
-MCP `eve_asset_kit_list` / `eve_asset_kit_get`, or SDK `share/eve/ai/asset-kits/catalog.json`
-(source tree: `cmake/sdk/asset-kits/`). Kits name `pixelSize`, aspect ratio, alpha rules,
-`pathPattern`, and EveScript consumer hints (`setArt`, Avatar layers, …). Do not guess
-Unity/Godot texture sizes.
+MCP `eve_asset_kit_list` / `get` / `resolve`, CLI `python3 scripts/asset_kits.py`, or SDK
+`share/eve/ai/asset-kits/` (see `INTEGRATION.md`). Kits name `pixelSize`, aspect ratio,
+alpha rules, `pathPattern`, and multi-system `bindings`. Do not guess Unity/Godot sizes.
 
 ## Runtime agents
 

@@ -2,9 +2,10 @@
 
 /**
  * @file McpAssetKitTools.hpp
- * @brief MCP discovery for engine-owned AI asset kits (pixel/format contracts).
+ * @brief MCP adapter for eve.asset-kit.api (list / get / resolve).
  *
- * Agents preparing card / visual-novel art must list/get kits before inventing
+ * Same catalog contract as scripts/asset_kits.py and share/eve/ai/asset-kits/.
+ * Agents and internal systems must resolve kits before inventing Unity/Godot
  * sizes. Catalog source: cmake/sdk/asset-kits/catalog.json (embedded at build).
  */
 
@@ -17,7 +18,7 @@
 
 namespace eve::dev {
 
-/** @brief Whether `name` is `eve_asset_kit_list` or `eve_asset_kit_get`. */
+/** @brief Whether `name` is list/get/resolve under the asset-kit family. */
 [[nodiscard]] EVENGINE_API_FOUNDATION bool isMcpAssetKitTool(std::string_view name);
 
 /**

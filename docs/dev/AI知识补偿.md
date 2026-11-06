@@ -80,9 +80,10 @@ AI 生图前必须拿到引擎声明的尺寸 / 比例 / 透明通道 / 路径�
 
 | 入口 | 用途 |
 | --- | --- |
-| MCP `eve_asset_kit_list` / `eve_asset_kit_get` | 运行时发现（只读；各 task profile 可用） |
-| `cmake/sdk/asset-kits/catalog.json` | 源码真源；`python3 scripts/asset_kits.py list\|get\|validate` |
-| SDK `share/eve/ai/asset-kits/` | 解压 SDK 后离线可读（与 MCP 嵌入目录同源） |
+| MCP `eve_asset_kit_list` / `get` / `resolve` | 运行时发现与落盘任务解析（只读；各 task profile 可用） |
+| `cmake/sdk/asset-kits/catalog.json` | 源码真源；`python3 scripts/asset_kits.py list\|get\|resolve\|validate` |
+| `cmake/sdk/asset-kits/protocol.json` + `INTEGRATION.md` | 跨内部系统的稳定 `eve.asset-kit.api`（CLI / 库 / MCP / 文件） |
+| SDK `share/eve/ai/asset-kits/` | 解压 SDK 后离线可读（与 MCP 嵌入目录同源）；`EVE_ASSET_KITS_EXTRA` 可叠公司目录 |
 
 首批 kit：`card.playing`（262×372）、`card.collectible`（512×724）、
 `visual-novel.dialogue`（立绘 1024×1536 / 显示 256×384，背景 1920×1080）。

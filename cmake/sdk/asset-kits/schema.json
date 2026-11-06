@@ -111,8 +111,35 @@
         },
         "consumer": {
           "type": "string",
-          "description": "How EveScript / modules bind the finished file."
+          "description": "How EveScript / modules bind the finished file (legacy single-string hint)."
+        },
+        "bindings": {
+          "type": "array",
+          "description": "Optional multi-system bind hints so non-EveScript pipelines can consume the same slot.",
+          "items": { "$ref": "#/definitions/binding" }
         }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system", "kind"],
+      "properties": {
+        "system": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Integrating system id (evescript, creative-brain, pipeline, http, custom…)."
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1,
+          "description": "How that system uses the asset (texture-bind, file-drop, queue-request, …)."
+        },
+        "ref": {
+          "type": "string",
+          "description": "API / path / recipe id the system should call."
+        },
+        "notes": { "type": "string" }
       }
     },
     "kit": {
@@ -139,6 +166,11 @@
         },
         "title": { "type": "string", "minLength": 1 },
         "summary": { "type": "string", "minLength": 1 },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Discovery tags for internal systems (filter via list tag=)."
+        },
         "modules": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
@@ -163,6 +195,11 @@
           "type": "object",
           "description": "Optional module layout numbers agents should match (e.g. cardW/cardH).",
           "additionalProperties": true
+        },
+        "bindings": {
+          "type": "array",
+          "description": "Optional kit-level bind hints shared by all slots.",
+          "items": { "$ref": "#/definitions/binding" }
         },
         "slots": {
           "type": "array",
