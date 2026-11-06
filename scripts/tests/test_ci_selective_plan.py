@@ -37,6 +37,16 @@ class SelectivePlanTests(unittest.TestCase):
         self.assertFalse(scripts)
         self.assertEqual(["attack-vfx", "unity-vfx-port-lab"], examples)
 
+    def test_non_runnable_example_edits_do_not_expand_smoke_suite(self):
+        # economy is NON_RUNNABLE (eve run -r demo, no main.nut). Editing it must
+        # not fail-closed into every runnable example and blow the 30m smoke step.
+        mode, scripts, examples = scope.source_plan(
+            ["examples/economy/economy_demo.nut", "src/modules/economy/Market.cpp"]
+        )
+        self.assertEqual("full", mode)
+        self.assertFalse(scripts)
+        self.assertEqual([], examples)
+
     def test_particle_effects_pack_with_lab_edits_stays_bounded(self):
         mode, _, examples = scope.source_plan(
             [
