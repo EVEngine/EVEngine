@@ -213,7 +213,10 @@ story village.arrival {
 | `variable` | `name` `op(set\|add)` `value` | 立即 | `GameState` 变量 |
 
 控制流：`if <条件> { … } else { … }`、`choice { option "标签" [when <条件>] { … } }`、
-`call <storyId>`、`wait <秒>`、`end`。
+`call <storyId>` / `common <id>`（CallCommonEvent；顶层也可写 `common <id> { … }`）、
+`loop { … }` / `loop while <条件> { … }` / `loop times=<n> { … }`（`break` / `continue`）、
+`label <名>` / `jump <名>`、`parallel { lane { … } lane { … } }`（fork-join；lane 内仅步骤 /
+`wait` / `label` / `jump`）、`wait <秒>`、`end`。
 
 条件是 `变量 运算符 字面量`，可用 `&&`、`||`、`!` 和括号组合。变量名用点号寻址
 `GameState`：`switch.<名>`、`variable.<名>`、`self.<scope>.<名>`。

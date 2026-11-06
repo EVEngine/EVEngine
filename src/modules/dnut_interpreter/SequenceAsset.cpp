@@ -12,7 +12,8 @@ namespace {
 
 bool isCoreSequenceNodeType(const std::string& type) noexcept {
     return type == "branch" || type == "choice" || type == "call" || type == "command" || type == "wait" ||
-           type == "end";
+           type == "end" || type == "label" || type == "jump" || type == "loop" || type == "break" ||
+           type == "continue" || type == "parallel" || type == "join";
 }
 
 const char* sequenceParameterTypeName(SequenceParameterType type) noexcept {
@@ -126,10 +127,67 @@ eve::Result<void> SequenceAsset::validate() const {
                 return eve::Result<void>::failure(
         eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "branch node '" + node.id + "' requires at least one route", "nodes." + node.id + ".routes", {}, "dnut.sequence"));
         }
+        if (node.type == "label") {
+            const eve::Value* name = node.payload.find("name");
+            if (!name || !name->isString() || name->asString().empty())
+                return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "label node '" + node.id + "' requires a name", "nodes." + node.id + ".payload.name", {}, "dnut.sequence"));
+        }
+        if (node.type == "jump") {
+            const eve::Value* target = node.payload.find("target");
+            if (!target || !target->isString() || target->asString().empty())
+                return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "jump node '" + node.id + "' requires a resolved target", "nodes." + node.id + ".payload.target", {}, "dnut.sequence"));
+            auto jumpTarget = checkReference(node.id, "payload.target", target->asString());
+            if (!jumpTarget.ok()) return jumpTarget;
+        }
+        if (node.type == "loop") {
+            const eve::Value* mode = node.payload.find("mode");
+            if (!mode || !mode->isString())
+                return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "loop node '" + node.id + "' requires mode", "nodes." + node.id + ".payload.mode", {}, "dnut.sequence"));
+            const std::string& modeText = mode->asString();
+            if (modeText != "forever" && modeText != "while" && modeText != "times")
+                return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "loop node '" + node.id + "' has unknown mode '" + modeText + "'", "nodes." + node.id + ".payload.mode", {}, "dnut.sequence"));
+            if (node.routes.empty())
+                return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "loop node '" + node.id + "' requires a body route", "nodes." + node.id + ".routes", {}, "dnut.sequence"));
+            if (modeText == "times") {
+                const eve::Value* count = node.payload.find("count");
+                if (!count || !count->isNumeric())
+                    return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "loop times node '" + node.id + "' requires count", "nodes." + node.id + ".payload.count", {}, "dnut.sequence"));
+            }
+            if (modeText == "while" && node.routes.front().condition.isNull())
+                return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "loop while node '" + node.id + "' requires a condition", "nodes." + node.id + ".routes", {}, "dnut.sequence"));
+        }
+        if (node.type == "parallel") {
+            if (node.routes.size() < 2)
+                return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "parallel node '" + node.id + "' requires at least two lanes", "nodes." + node.id + ".routes", {}, "dnut.sequence"));
+            const eve::Value* join = node.payload.find("join");
+            if (!join || !join->isString() || join->asString().empty())
+                return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "parallel node '" + node.id + "' requires join", "nodes." + node.id + ".payload.join", {}, "dnut.sequence"));
+            auto joinResult = checkReference(node.id, "payload.join", join->asString());
+            if (!joinResult.ok()) return joinResult;
+        }
         for (const auto& route : node.routes) {
             auto routeResult = checkReference(node.id, "routes", route.target);
             if (!routeResult.ok()) return routeResult;
         }
+    }
+
+    std::unordered_set<std::string> labelNames;
+    for (const auto& node : nodes) {
+        if (node.type != "label") continue;
+        const eve::Value* name = node.payload.find("name");
+        if (!name || !name->isString()) continue;
+        if (!labelNames.insert(name->asString()).second)
+            return eve::Result<void>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::AlreadyExists, "duplicate label '" + name->asString() + "'", "nodes." + node.id + ".payload.name", {}, "dnut.sequence"));
     }
     return eve::Result<void>::success();
 }
