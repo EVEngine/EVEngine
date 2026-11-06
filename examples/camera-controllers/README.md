@@ -18,6 +18,9 @@ make run/win32-debug GAME=examples/camera-controllers
 - **firstperson** — 第一人称。`eye` 位于 `target`，用 `yaw` / `pitch` 控制朝向。
 - **cinematic** — 过场 / 自动切换视角。在一组命名 `View` 之间平滑插值。
 
+Story establishing shots and film moves (overview push/pop, dolly/crane/orbit-reveal)
+live on `eve.CinemaDirector` — see [`examples/cinematic-story-camera`](../cinematic-story-camera/).
+
 The center obstacle also exercises camera collision. Cinematic mode plays a looped
 timeline that cuts between rigs and emits `camera.beat` markers.
 
