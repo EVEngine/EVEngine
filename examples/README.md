@@ -129,6 +129,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | 示例 | 演示能力 |
 |---|---|
 | [camera-controllers](camera-controllers/README.md) | 第三人称相机：follow / orbit / topdown / firstperson / cinematic |
+| [fps-arena](fps-arena/README.md) | 第一人称射击 Phase A：镜头 + 胶囊移动 + weapon 事件 → rayCast → combat 伤害 |
 | [character-motion-lab](character-motion-lab/README.md) | 三个人物、八种免费动作、跨骨架重定向、同步播放与逐帧观察 |
 | [control-rig-editor](control-rig-editor/README.md) | 原生 Control Rig 制作：控制器拖动、FK/Aim/IK 求解图、关键帧、事务撤销与 AnimClip 烘焙 |
 | [layered-animation](layered-animation/README.md) | 真实 CC0 KayKit 动作叠加：三段动作单独播放 + `AnimLayerMixer`（走路基底 + 脊柱遮罩攻击覆盖 + 受击叠加） |

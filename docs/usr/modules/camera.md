@@ -9,6 +9,16 @@
 - **不要**：用 `addView` + 手写 `activateRig` 拼装“推全景再还原”——那是过场幻灯片 API，不是故事栈。
 - **相关**：基础视角示例 [`examples/camera-controllers`](../../../examples/camera-controllers/)；故事全景示例 [`examples/cinematic-story-camera`](../../../examples/cinematic-story-camera/)。
 
+## 这篇解决什么
+
+- 可复用视角行为：跟随、环绕、俯视、第一人称、过场与锁定。
+- 第一人称：`setMode("firstperson")`，眼点在 `setTarget`，用 `setYaw`/`setPitch` 或
+  `addInput` 转向；脚本需自持 yaw/pitch 副本（控制器无 `getYaw` 绑定）。相对鼠标见
+  [`mouse`](mouse.md)。推荐灵敏度约 `0.12` 度/相对像素，俯仰钳制 `[-89, 89]`。
+  Head bob 由游戏/combat `FpsHeadBob` 加在 eye Y 上，再写入 `setTarget`。
+  可玩组装：[`examples/fps-arena`](../../examples/fps-arena/)。
+- 不要：把游戏角色移动写进 CameraController；不要用屏幕中心差值替代 `setRelativeMode`。
+
 在 `Camera3D` 之上提供可复用的视角行为：跟随、环绕、俯视、第一人称、过场与锁定。
 模块还提供优先级 Camera Rig、遮挡修正、构图、Impulse Modifier，可发送
 `Event` 的 Camera Timeline，以及故事向的 `CinemaDirector`。`Camera3D` 本身只描述“看哪里”；本模块负责“怎么移动”。
