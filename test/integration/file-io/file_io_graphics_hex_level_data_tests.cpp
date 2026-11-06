@@ -2157,19 +2157,20 @@ TEST_CASE("Database.SQLiteCrudOrmAndECSExport") {
     CHECK_EQ(std::get<std::string>(ranking[0]["name"]), "general");
     CHECK_EQ(ranked->count(), 4);
 
-    CHECK(db.begin());
-    CHECK(db.inTransaction());
+    CHECK(db.beginTransaction().ok());
+    CHECK(db.isInTransaction());
     CHECK_EQ(db.upsertJson("actors", R"({"id":7,"name":"general","hp":120})"), 1);
-    CHECK(db.commit());
-    CHECK(!db.inTransaction());
+    CHECK(db.commitTransaction().ok());
+    CHECK(!db.isInTransaction());
     auto upserted = db.queryByKey("actors", "id", std::int64_t(7));
     CHECK_EQ(upserted.size(), 1);
     CHECK_EQ(std::get<double>(upserted[0]["hp"]), 120.0);
 
     CHECK(db.begin());
+    CHECK(db.inTransaction());
     CHECK_EQ(db.insertJson("actors", R"({"id":8,"name":"rolled","hp":1})"), 1);
     CHECK(db.rollback());
-    CHECK(!db.inTransaction());
+    CHECK(!db.isInTransaction());
     CHECK_EQ(db.queryByKey("actors", "id", std::int64_t(8)).size(), 0);
 
     db.execute("CREATE TABLE forces (id TEXT PRIMARY KEY, name TEXT)");

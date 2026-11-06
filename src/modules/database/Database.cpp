@@ -1,5 +1,8 @@
 #include "database/Database.h"
 
+#include "common/Diagnostic.h"
+#include "common/SquirrelBinding.h"
+
 #include <Poco/Data/RecordSet.h>
 #include <Poco/Data/SQLite/Connector.h>
 #include <Poco/Data/Session.h>
@@ -182,28 +185,58 @@ void Connection::close() {
     }
 }
 
-bool Connection::begin() {
-    if (!isConnected()) return false;
+eve::Result<void> Connection::beginTransaction() {
+    if (!isConnected()) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "database connection is closed",
+                                                                 "database.beginTransaction"));
+    }
     if (transactionDepth_ == 0) execute("BEGIN");
     ++transactionDepth_;
-    return true;
+    return eve::Result<void>::success();
 }
 
-bool Connection::commit() {
-    if (!isConnected() || transactionDepth_ <= 0) return false;
+eve::Result<void> Connection::commitTransaction() {
+    if (!isConnected()) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "database connection is closed",
+                                                                 "database.commitTransaction"));
+    }
+    if (transactionDepth_ <= 0) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "no open database transaction",
+                                                                 "database.commitTransaction"));
+    }
     --transactionDepth_;
     if (transactionDepth_ == 0) execute("COMMIT");
-    return true;
+    return eve::Result<void>::success();
 }
 
-bool Connection::rollback() {
-    if (!isConnected() || transactionDepth_ <= 0) return false;
+eve::Result<void> Connection::rollbackTransaction() {
+    if (!isConnected()) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "database connection is closed",
+                                                                 "database.rollbackTransaction"));
+    }
+    if (transactionDepth_ <= 0) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "no open database transaction",
+                                                                 "database.rollbackTransaction"));
+    }
     transactionDepth_ = 0;
     execute("ROLLBACK");
-    return true;
+    return eve::Result<void>::success();
 }
 
-bool Connection::inTransaction() const { return transactionDepth_ > 0; }
+bool Connection::begin() { return beginTransaction().ok(); }
+
+bool Connection::commit() { return commitTransaction().ok(); }
+
+bool Connection::rollback() { return rollbackTransaction().ok(); }
+
+bool Connection::isInTransaction() const { return transactionDepth_ > 0; }
+
+bool Connection::inTransaction() const { return isInTransaction(); }
 
 int Connection::execute(const std::string& sql) {
     if (!isConnected()) throw std::runtime_error("database connection is closed");
@@ -610,9 +643,36 @@ void Database::expose(ssq::Table& table) {
         "DatabaseConnection", std::function<Connection*()>([] { return new Connection("SQLite", ":memory:"); }), true);
     connection.addFunc("isConnected", &Connection::isConnected);
     connection.addFunc("close", &Connection::close);
+    connection.addFunc("beginTransaction", [](HSQUIRRELVM vm, Connection* self) -> ssq::Table {
+        if (!self) {
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "null DatabaseConnection", "database.beginTransaction")));
+        }
+        return eve::script::projectResult(vm, self->beginTransaction());
+    });
+    connection.addFunc("commitTransaction", [](HSQUIRRELVM vm, Connection* self) -> ssq::Table {
+        if (!self) {
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::InvalidArgument, "null DatabaseConnection", "database.commitTransaction")));
+        }
+        return eve::script::projectResult(vm, self->commitTransaction());
+    });
+    connection.addFunc("rollbackTransaction", [](HSQUIRRELVM vm, Connection* self) -> ssq::Table {
+        if (!self) {
+            return eve::script::projectResult(
+                vm,
+                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                  "null DatabaseConnection",
+                                                                  "database.rollbackTransaction")));
+        }
+        return eve::script::projectResult(vm, self->rollbackTransaction());
+    });
     connection.addFunc("begin", &Connection::begin);
     connection.addFunc("commit", &Connection::commit);
     connection.addFunc("rollback", &Connection::rollback);
+    connection.addFunc("isInTransaction", &Connection::isInTransaction);
     connection.addFunc("inTransaction", &Connection::inTransaction);
     connection.addFunc("execute", &Connection::execute);
     connection.addFunc("queryJson", &Connection::queryJson);

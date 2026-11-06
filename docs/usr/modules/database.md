@@ -76,7 +76,8 @@ local rows = g.allJson();
 ### `Connection`
 
 - `isConnected()`、`close()`。
-- `begin()` / `commit()` / `rollback()` / `inTransaction()`：嵌套计数事务。
+- `beginTransaction()` / `commitTransaction()` / `rollbackTransaction()` / `isInTransaction()`：
+  嵌套计数事务（`Result`）；`begin`/`commit`/`rollback`/`inTransaction` 为兼容布尔门面。
 - `execute(sql)`：任意 DDL/DML。
 - `queryJson(sql)`：返回行数组的 JSON 字符串（再用 `eve.json.decode`）。
 - `insertJson` / `upsertJson` / `updateJson` / `remove`。
