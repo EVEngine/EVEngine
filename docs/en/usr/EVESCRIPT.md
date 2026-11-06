@@ -22,6 +22,8 @@ config <- {
     hotReload = true
     modules = ["gfx", "keyboard", "timer"]
     optionalModules = ["audio"]
+    // Optional for agent / modular projects (empty = block all loaders below):
+    // allowGlobals = []
 }
 ```
 
@@ -32,6 +34,7 @@ config <- {
 - Both fields must be literal string arrays so tools can inspect them without executing configuration code.
 - Projects omitting both fields keep the previous behavior of constructing all compiled modules.
 - Native classes bind lazily on first access to names such as `eve.Graphics`. The Squirrel `in` operator does not trigger binding. Do not test `"Graphics" in eve`; use `eve.moduleList`, `has_module()` or `ensure_module()`.
+- Optional `allowGlobals` is an allowlist over the restricted script loaders (`dofile`, `loadfile`, `compilestring`). When present, every unlisted name in that set is replaced with a throwing stub before `main.nut` loads; `[]` blocks all three. Omit the field to keep the old unrestricted behavior. Engine bootstrap and hot reload still use private `_engine_*` copies — this is project policy for agents/modularity, not a security sandbox. Unknown names fail startup validation (LSP code `EVE1003`).
 
 `scripts/movement.nut`:
 
