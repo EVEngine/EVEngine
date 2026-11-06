@@ -764,6 +764,65 @@ TEST_CASE("devtools.projectIndex.automaticInferenceAndInvalidationContracts") {
                      ->getValue<std::string>("error"),
                  std::string("unknown_seed"));
     };
+    SUB_CASE("devtools.projectIndex.resourceLoadAdapterTracksLiteralAssets") {
+        Fixture fixture(false, false);
+        std::filesystem::create_directories(fixture.root / "assets");
+        write(fixture.root / "assets/disc.png", "png");
+        write(fixture.root / "world.nut", R"SQ(
+            throw "Indexing must not execute this script";
+            function loadArt() {
+                local ok = gfx.loadTexture("assets/disc.png");
+                local missing = gfx.loadTexture("assets/missing.png");
+                local scene = eve.Scene();
+                scene.load("stages/town.json");
+            }
+        )SQ");
+        auto first = refresh(fixture.root);
+        REQUIRE(first->getValue<bool>("ok"));
+        auto input = args(fixture.root);
+        input->set("seed", "asset:assets/disc.png");
+        input->set("task", "Inspect resource load adapter");
+        auto context = payload(eve::dev::callMcpArchitectureTool("eve_task_context", input));
+        REQUIRE(context->getValue<bool>("ok"));
+        auto disc = findNode(context, "asset:assets/disc.png");
+        REQUIRE(disc);
+        CHECK_EQ(disc->getValue<std::string>("filePresence"), std::string("present"));
+        CHECK_EQ(disc->getValue<std::string>("loaderApi"), std::string("gfx/loadTexture"));
+        REQUIRE(findNode(context, "script:loadArt"));
+        auto missing = findNode(context, "asset:assets/missing.png");
+        REQUIRE(missing);
+        CHECK_EQ(missing->getValue<std::string>("filePresence"), std::string("absent"));
+        input = args(fixture.root);
+        input->set("seed", "asset:stages/town.json");
+        auto sceneDoc = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
+        REQUIRE(sceneDoc->getValue<bool>("ok"));
+        auto town = findNode(sceneDoc, "asset:stages/town.json");
+        REQUIRE(town);
+        CHECK_EQ(town->getValue<std::string>("loaderApi"), std::string("scene/load"));
+        CHECK_EQ(town->getValue<std::string>("filePresence"), std::string("absent"));
+        bool usesDisc = false;
+        auto edges    = context->getArray("edges");
+        if (edges)
+            for (size_t i = 0; i < edges->size(); ++i) {
+                auto edge = edges->getObject(static_cast<unsigned>(i));
+                if (edge->getValue<std::string>("from") == "script:loadArt" &&
+                    edge->getValue<std::string>("to") == "asset:assets/disc.png" &&
+                    edge->getValue<std::string>("relation") == "uses_asset")
+                    usesDisc = true;
+            }
+        CHECK(usesDisc);
+        write(fixture.root / "world.nut", R"SQ(
+            function loadArt() { gfx.loadTexture("../secret.png"); }
+        )SQ");
+        auto escaped = refresh(fixture.root);
+        REQUIRE(escaped->getValue<bool>("ok"));
+        CHECK(!escaped->getValue<bool>("declarationsResolved"));
+        input = args(fixture.root);
+        input->set("seed", "asset:../secret.png");
+        CHECK_EQ(payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))
+                     ->getValue<std::string>("error"),
+                 std::string("unknown_seed"));
+    };
     SUB_CASE("devtools.projectIndex.sceneDefineMountAdapterPublishesHostQualifiedEntities") {
         Fixture fixture(false, false);
         write(fixture.root / "stage.nut", R"SQ(

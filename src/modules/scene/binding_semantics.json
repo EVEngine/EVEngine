@@ -9,6 +9,7 @@
     "end": {"role":"scene_pop"},
     "mountBuildAs": {"role":"scene_mount","identityArgument":0},
     "remountBuildAs": {"role":"scene_mount","identityArgument":0},
+    "load": {"role":"resource_load","identityArgument":0},
     "SceneNodeRef.setVisible": {"role":"scene_write"}
   }
 }

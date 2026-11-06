@@ -180,6 +180,13 @@ struct Analysis {
                     methods[key] = registry.find(api.key());
             }
         }
+        // Root slots from load.nut (`gfx`, `scene`, …) are module receivers; seed
+        // them so `gfx.loadTexture("…")` resolves without requiring eve.Graphics().
+        for (const auto& entry : factories) {
+            Type slot;
+            slot.name                           = "module:" + entry.second;
+            variables["global:" + entry.second] = slot;
+        }
         for (const auto& [path, file] : snapshot.files) {
             if (!file->error.empty()) continue;
             for (const auto& value : file->structure.classes) {
@@ -418,6 +425,31 @@ struct Analysis {
                         ++unresolvedDefines;
                 } else if (rule.role == "scene_mount" && identity.values.size() == 1) {
                     mounts[call.scope].insert(*identity.values.begin());
+                } else if (rule.role == "resource_load" && identity.values.size() == 1) {
+                    const auto rel  = *identity.values.begin();
+                    const auto norm = pathText(sourcePath(rel).lexically_normal());
+                    if (sourcePath(rel).is_absolute() || norm.starts_with("../") ||
+                        norm.find("/../") != std::string::npos) {
+                        Object::Ptr diagnostic = new Object();
+                        diagnostic->set("code", "resource_path_escaped");
+                        diagnostic->set("path", rel);
+                        diagnostic->set("loaderApi", api->key());
+                        snapshot.diagnostics.push_back(diagnostic);
+                    } else {
+                        auto assetId = "asset:" + rel;
+                        auto asset   = node(assetId, "project_asset", origin);
+                        asset->set("path", rel);
+                        asset->set("loaderApi", api->key());
+                        asset->set("label", rel);
+                        std::string presence = "unchecked";
+                        if (!snapshot.projectDir.empty()) {
+                            std::error_code error;
+                            const auto      full = sourcePath(snapshot.projectDir) / sourcePath(rel);
+                            presence = std::filesystem::is_regular_file(full, error) && !error ? "present" : "absent";
+                        }
+                        asset->set("filePresence", presence);
+                        if (!from.empty()) edge(from, assetId, "uses_asset", origin);
+                    }
                 } else if (rule.role == "scene_write" && callee.kind == "member" && !callee.operands.empty()) {
                     auto target = type(callee.operands[0], path, call.scope);
                     if (target.identities.size() == 1 && target.hosts.size() == 1) {
