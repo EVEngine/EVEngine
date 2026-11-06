@@ -1,9 +1,9 @@
-// examples/warship 窗口配置。
+// examples/warship — Type 055 3D presentation over warship simulation.
 config = {
-    width = 960
-    height = 640
-    title = "EVEngine Warship — 舱段重组演示"
+    width = 1280
+    height = 720
+    title = "EVEngine Warship — Type 055 + rearrangeable compartments"
     debug = false
     hotReload = true
-    modules = ["warship", "font", "keyboard"]
+    modules = ["warship", "model3d", "font", "keyboard", "gfx"]
 };

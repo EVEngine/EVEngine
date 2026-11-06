@@ -8,7 +8,8 @@
 
 Warship 拥有船体定义、舱段功能目录、布局权威与简易机动。挂点火力、海洋渲染、物理刚体留给与 `weapon` / `fluids` / `physics` 的组合。
 
-完整示例见 `examples/warship`。设计见 `docs/dev/通用战舰系统设计.md`。
+完整示例见 `examples/warship`（表现层用仓库 `assets/models/type055` 做自定义
+3D 视图；仿真仍只走本模块）。设计见 `docs/dev/通用战舰系统设计.md`。
 
 ## 快速用法
 
