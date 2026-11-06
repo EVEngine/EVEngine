@@ -901,6 +901,9 @@ tire.setRollingResistance(0.04)
 ```
 
 切向速度会随 Shape 的朝向旋转，并投影到接触平面，因此旋转传送带形状即可改变输送方向。
+**视觉滚动**不由物理驱动：对皮带 `Material` 每帧调用 `setAlbedoUvOffset`（见
+[graphics 材质](graphics.md#材质material与模型部件)），速度符号与 `setTangentVelocity` 对齐即可；
+完整组合见 `examples/conveyor-belt`。
 滚动阻力只对球体和胶囊体产生物理效果。材质 ID 保留完整低 32 位，可作为有符号脚本整数往返；
 切换 Sensor 或运行时重建几何时，高级材质参数都会保留。Ray Cast 可通过
 `getRayHitMaterialId()` / `getRayResultMaterialId(i)` 读取实际命中的表面材质；Shape Cast

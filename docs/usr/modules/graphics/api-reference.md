@@ -123,6 +123,12 @@
 ## Material
 
 - `getAlbedoTexture()` → `Texture`；[绑定实现 L594](../../../../src/modules/graphics/Graphics.cpp#L594)。
+- `setAlbedoUvOffset(u: float, v: float)` → `Result`；启用扩展 PBR 路径并设置 base-color UV 偏移（传送带滚动）。
+- `getAlbedoUvOffsetU()` / `getAlbedoUvOffsetV()` → `float`。
+- `setAlbedoUvScale(u: float, v: float)` → `Result`；非零有限缩放（平铺）。
+- `getAlbedoUvScaleU()` / `getAlbedoUvScaleV()` → `float`。
+- `setAlbedoUvRotation(radians: float)` → `Result`。
+- `getAlbedoUvRotation()` → `float`。
 - `getCastShadow()` → `bool`；[绑定实现 L622](../../../../src/modules/graphics/Graphics.cpp#L622)。
 - `getHair()` → `bool`；[绑定实现 L628](../../../../src/modules/graphics/Graphics.cpp#L628)。
 - `getHeightTexture()` → `Texture`；[绑定实现 L598](../../../../src/modules/graphics/Graphics.cpp#L598)。

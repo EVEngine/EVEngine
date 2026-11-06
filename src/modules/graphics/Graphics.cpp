@@ -593,6 +593,20 @@ void Graphics::expose(ssq::Table& table) {
     });
     material.addFunc("setAlbedoTexture", &Material::setAlbedoTexture);
     material.addFunc("getAlbedoTexture", &Material::getAlbedoTexture);
+    material.addFunc("setAlbedoUvOffset", [vm = table.getHandle()](Material* self, float u, float v) {
+        return eve::script::projectResult(vm, self->setAlbedoUvOffset(u, v));
+    });
+    material.addFunc("getAlbedoUvOffsetU", &Material::getAlbedoUvOffsetU);
+    material.addFunc("getAlbedoUvOffsetV", &Material::getAlbedoUvOffsetV);
+    material.addFunc("setAlbedoUvScale", [vm = table.getHandle()](Material* self, float u, float v) {
+        return eve::script::projectResult(vm, self->setAlbedoUvScale(u, v));
+    });
+    material.addFunc("getAlbedoUvScaleU", &Material::getAlbedoUvScaleU);
+    material.addFunc("getAlbedoUvScaleV", &Material::getAlbedoUvScaleV);
+    material.addFunc("setAlbedoUvRotation", [vm = table.getHandle()](Material* self, float radians) {
+        return eve::script::projectResult(vm, self->setAlbedoUvRotation(radians));
+    });
+    material.addFunc("getAlbedoUvRotation", &Material::getAlbedoUvRotation);
     material.addFunc("setNormalTexture", &Material::setNormalTexture);
     material.addFunc("getNormalTexture", &Material::getNormalTexture);
     material.addFunc("setHeightTexture", &Material::setHeightTexture);

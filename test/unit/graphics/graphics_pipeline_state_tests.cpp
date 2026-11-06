@@ -34,7 +34,8 @@
     "hair.cpp",
     "indirect_builder.cpp",
     "reflection_probe_culling.cpp",
-    "tree_wind.cpp"
+    "tree_wind.cpp",
+    "MaterialRenderControl.cpp"
   ]
 }
 */
@@ -2992,6 +2993,7 @@ TEST_CASE("graphics.treeWind.invalidGeometryOrSchemaPreservesAllShaderParameters
 #include "graphics/RenderSystem3D.h"
 
 #include <cmath>
+#include <limits>
 #include <string>
 
 namespace test_MaterialRenderControl {
@@ -3032,6 +3034,26 @@ TEST_CASE("Material surface contract") {
         CHECK_EQ(material.getBlendMode(), std::string("premultiplied"));
         CHECK_EQ(material.getAlphaTechnique(), std::string("dither"));
         CHECK_EQ(material.getSortPriority(), 12);
+    };
+
+    SUB_CASE("Material albedo UV transform enables PBR surface for conveyor scroll") {
+        Material material;
+        CHECK(!material.hasPbrSurface());
+        CHECK(std::fabs(material.getAlbedoUvOffsetU()) < 1e-6f);
+        CHECK(std::fabs(material.getAlbedoUvScaleU() - 1.f) < 1e-6f);
+        REQUIRE(material.setAlbedoUvScale(4.f, 1.f).ok());
+        REQUIRE(material.setAlbedoUvOffset(0.25f, -0.5f).ok());
+        REQUIRE(material.setAlbedoUvRotation(0.1f).ok());
+        CHECK(material.hasPbrSurface());
+        CHECK(std::fabs(material.getAlbedoUvScaleU() - 4.f) < 1e-6f);
+        CHECK(std::fabs(material.getAlbedoUvScaleV() - 1.f) < 1e-6f);
+        CHECK(std::fabs(material.getAlbedoUvOffsetU() - 0.25f) < 1e-6f);
+        CHECK(std::fabs(material.getAlbedoUvOffsetV() + 0.5f) < 1e-6f);
+        CHECK(std::fabs(material.getAlbedoUvRotation() - 0.1f) < 1e-6f);
+        CHECK(!material.setAlbedoUvOffset(std::numeric_limits<float>::infinity(), 0.f).ok());
+        CHECK(!material.setAlbedoUvScale(0.f, 1.f).ok());
+        CHECK(std::fabs(material.getAlbedoUvOffsetU() - 0.25f) < 1e-6f);
+        CHECK(std::fabs(material.getAlbedoUvScaleU() - 4.f) < 1e-6f);
     };
 }
 
