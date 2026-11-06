@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdint>
 #include <exception>
+#include <glm/mat4x4.hpp>
 #include <limits>
 #include <vector>
 #include "graphics/Graphics.h"

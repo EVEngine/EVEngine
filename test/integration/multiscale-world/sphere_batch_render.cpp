@@ -11,6 +11,7 @@
 #include <array>
 #include <cmath>
 #include <cstdio>
+#include <glm/mat4x4.hpp>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <span>
 #include <string>

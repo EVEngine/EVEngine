@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <exception>
 #include <future>
+#include <glm/mat4x4.hpp>
 #include <limits>
 #include <new>
 #include <thread>
