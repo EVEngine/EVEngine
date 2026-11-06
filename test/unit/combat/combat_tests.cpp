@@ -501,7 +501,7 @@ TEST_CASE("combat.FpsGait.setProfile: invalid heights are rejected") {
     eve::combat::FpsGaitProfile bad = {};
     bad.crouchHeight                = 2.5;
     bad.standHeight                 = 1.8;
-    CHECK(!gait.setProfile(bad).ok());
+    REQUIRE(!gait.setProfile(bad).ok());
 }
 
 TEST_CASE("combat.FpsHeadBob.solve: scales with speed and respects disable/airborne") {
