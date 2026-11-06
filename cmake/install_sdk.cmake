@@ -230,11 +230,16 @@ install(FILES
     "${CMAKE_BINARY_DIR}/src/engine/common/eve-api.d.ts"
     DESTINATION share/eve/ai
 )
+# Language skill kept at share/eve/ai/SKILL.md for older SDK entry points.
 install(FILES "${CMAKE_SOURCE_DIR}/.cursor/skills/evescript/SKILL.md"
     DESTINATION share/eve/ai
 )
-install(FILES "${CMAKE_SOURCE_DIR}/.cursor/skills/evescript/SKILL.md"
-    DESTINATION .cursor/skills/evescript
+# Paradigm + language skills for Cursor discovery (SKILL.md + optional README).
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/.cursor/skills/"
+    DESTINATION .cursor/skills
+    FILES_MATCHING
+        PATTERN "SKILL.md"
+        PATTERN "README.md"
 )
 install(FILES "${CMAKE_SOURCE_DIR}/cmake/sdk/llms.txt"
     DESTINATION .

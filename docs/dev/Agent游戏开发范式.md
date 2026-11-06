@@ -3,6 +3,8 @@
 状态：v1 已落地。目标是让 Agent 不只“生成代码”，而是在同一套可审计协议中发现能力、修改游戏、
 运行真实引擎、观察结果、验证验收条件，并在失败时恢复后继续迭代。
 
+Agent 短入口（Cursor skill）：[`.cursor/skills/eve-agent-loop/SKILL.md`](../../.cursor/skills/eve-agent-loop/SKILL.md)。
+
 ## 标准闭环
 
 ```text

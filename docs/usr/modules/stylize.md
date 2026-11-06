@@ -91,6 +91,21 @@ mat.setShadingModel("custom");
 // 挂到 Renderable3D：r.setMaterial(mat) / r.setPart(...)
 ```
 
+透视遮挡高亮（狙击 / 子弹时间常用）走独立 overlay，不要把 xray shader 设成主材质：
+
+```squirrel
+local rc = gfx.getRenderControl();
+rc.enable("gbuffer");   // X-ray 采样场景深度，需要 GBuffer
+rc.compile();
+local xray = stylize.newMeshShader(gfx, "xray");
+xray.sendFloat("colorR", 0.95); xray.sendFloat("colorG", 0.2); xray.sendFloat("colorB", 0.15);
+xray.sendFloat("alpha", 0.95);
+target.setXRayShader(xray);
+target.setXRayHighlight(true);   // 命中/过场时打开；平常保持 false
+```
+
+完整过场编排见 [`examples/bullet-time`](../../../examples/bullet-time/)。
+
 常用技能常见视觉风格可直接通过 `StyleInstance` 新建并映射为角色网格材质：
 
 - `slash`：刀光/斩击轨迹

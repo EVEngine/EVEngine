@@ -14,7 +14,7 @@ Do not invent Unity C#, Godot GDScript, Lua, or JavaScript APIs. EVEngine games 
 3. Never rebuild a documented higher-level feature from primitives (example: do not iterate every enemy unit to find in-range targets when `sensing` query / `circle` exists).
 4. Suspect cost → profile at scale (`profiler.hotspots(limit, minSelfMs)`, MCP `eve_profiler_hotspots`). Small scenes do not prove the path is fine. See `docs/dev/API成本与Profiler约定.md`.
 
-Cursor skill copy in an unzipped SDK: `.cursor/skills/evescript/SKILL.md`. Human tutorial: `docs/usr/EVESCRIPT.md` in the source tree / online docs. Longer engine-maintainer note: `docs/dev/AI知识补偿.md`. Template problem headers: `docs/usr/modules/sensing.md`, `docs/usr/modules/spatial.md`.
+Cursor skill copy in an unzipped SDK: `.cursor/skills/evescript/SKILL.md`. Human tutorial: `docs/usr/EVESCRIPT.md` in the source tree / online docs. Longer engine-maintainer note: `docs/dev/AI知识补偿.md`. Template problem headers: `docs/usr/modules/sensing.md`, `docs/usr/modules/spatial.md`. Mature game paradigms (agent loop, game scaffold, ARPG/RPG/RTS, 2D action guide): [`.cursor/skills/README.md`](../README.md).
 
 ## Language (differences from JS/C#)
 

@@ -295,10 +295,20 @@
 - `getBeginContactBodyBId(index: int)` → `int`；[绑定实现 L128](../../../../src/modules/physics/Physics.cpp#L128)。
 - `getBeginContactFixtureATag(index: int)` → `string`；[绑定实现 L129](../../../../src/modules/physics/Physics.cpp#L129)。
 - `getBeginContactFixtureBTag(index: int)` → `string`；[绑定实现 L130](../../../../src/modules/physics/Physics.cpp#L130)。
+- `getBeginTriggerCount()` → `int`；Sensor/Visitor 进入缓冲（与 World3D 同构）。
+- `getBeginTriggerSensorBodyId(index: int)` → `int`。
+- `getBeginTriggerVisitorBodyId(index: int)` → `int`。
+- `getBeginTriggerSensorFixtureTag(index: int)` → `string`。
+- `getBeginTriggerVisitorFixtureTag(index: int)` → `string`。
 - `getEndContactBodyAId(index: int)` → `int`；[绑定实现 L132](../../../../src/modules/physics/Physics.cpp#L132)。
 - `getEndContactBodyBId(index: int)` → `int`；[绑定实现 L133](../../../../src/modules/physics/Physics.cpp#L133)。
 - `getEndContactFixtureATag(index: int)` → `string`；[绑定实现 L134](../../../../src/modules/physics/Physics.cpp#L134)。
 - `getEndContactFixtureBTag(index: int)` → `string`；[绑定实现 L135](../../../../src/modules/physics/Physics.cpp#L135)。
+- `getEndTriggerCount()` → `int`。
+- `getEndTriggerSensorBodyId(index: int)` → `int`。
+- `getEndTriggerVisitorBodyId(index: int)` → `int`。
+- `getEndTriggerSensorFixtureTag(index: int)` → `string`。
+- `getEndTriggerVisitorFixtureTag(index: int)` → `string`。
 - `getGravityX()` → `float`；[绑定实现 L97](../../../../src/modules/physics/Physics.cpp#L97)。
 - `getGravityY()` → `float`；[绑定实现 L98](../../../../src/modules/physics/Physics.cpp#L98)。
 - `getImpactBodyAId(index: int)` → `int`；[绑定实现 L137](../../../../src/modules/physics/Physics.cpp#L137)。

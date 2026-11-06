@@ -59,9 +59,9 @@ SoftBody3D* Physics::newSoftBody3D(int cols, int rows, int layers, float spacing
 
 SoftBody3DRenderer* Physics::newSoftBody3DRenderer(SoftBody3D* body) { return new SoftBody3DRenderer(body); }
 
-Fluid2D *Physics::newFluid2D(int capacity) { return new Fluid2D(capacity); }
+Fluid2D* Physics::newFluid2D(int capacity) { return new Fluid2D(capacity); }
 
-void Physics::expose(ssq::Table &table) {
+void Physics::expose(ssq::Table& table) {
     PhysicsBake::expose(table);
     PhysicsBakeRecording::expose(table);
     exposeForceBindings(table);
@@ -129,6 +129,16 @@ void Physics::expose(ssq::Table &table) {
     world.addFunc("getEndContactBodyBId", &World::getEndContactBodyBId);
     world.addFunc("getEndContactFixtureATag", &World::getEndContactFixtureATag);
     world.addFunc("getEndContactFixtureBTag", &World::getEndContactFixtureBTag);
+    world.addFunc("getBeginTriggerCount", &World::getBeginTriggerCount);
+    world.addFunc("getBeginTriggerSensorBodyId", &World::getBeginTriggerSensorBodyId);
+    world.addFunc("getBeginTriggerVisitorBodyId", &World::getBeginTriggerVisitorBodyId);
+    world.addFunc("getBeginTriggerSensorFixtureTag", &World::getBeginTriggerSensorFixtureTag);
+    world.addFunc("getBeginTriggerVisitorFixtureTag", &World::getBeginTriggerVisitorFixtureTag);
+    world.addFunc("getEndTriggerCount", &World::getEndTriggerCount);
+    world.addFunc("getEndTriggerSensorBodyId", &World::getEndTriggerSensorBodyId);
+    world.addFunc("getEndTriggerVisitorBodyId", &World::getEndTriggerVisitorBodyId);
+    world.addFunc("getEndTriggerSensorFixtureTag", &World::getEndTriggerSensorFixtureTag);
+    world.addFunc("getEndTriggerVisitorFixtureTag", &World::getEndTriggerVisitorFixtureTag);
     world.addFunc("getImpactCount", &World::getImpactCount);
     world.addFunc("getImpactBodyAId", &World::getImpactBodyAId);
     world.addFunc("getImpactBodyBId", &World::getImpactBodyBId);
@@ -402,7 +412,7 @@ void Physics::expose(ssq::Table &table) {
 
     auto sdf = table.addClass<DistanceField3D>(
         "DistanceField3D", std::function<DistanceField3D*()>([]() -> DistanceField3D* { return nullptr; }), true);
-    sdf.addFunc("setDistances", [](DistanceField3D *field, ssq::Array values) {
+    sdf.addFunc("setDistances", [](DistanceField3D* field, ssq::Array values) {
         std::vector<float> distances;
         distances.reserve(values.size());
         const size_t count = values.size();
@@ -615,7 +625,7 @@ void Physics::expose(ssq::Table &table) {
     body3.addFunc("newBoxShape", &Body3D::newBoxShape);
     body3.addFunc("newSphereShape", &Body3D::newSphereShape);
     body3.addFunc("newCapsuleShape", &Body3D::newCapsuleShape);
-    body3.addFunc("newConvexHullShape", [](Body3D *body, ssq::Array values, int maxVertices) {
+    body3.addFunc("newConvexHullShape", [](Body3D* body, ssq::Array values, int maxVertices) {
         std::vector<float> vertices;
         vertices.reserve(values.size());
         for (size_t i = 0; i < values.size(); ++i) vertices.push_back(values.get<float>(i));
@@ -824,7 +834,7 @@ void Physics::expose(ssq::Table &table) {
         });
     shape3.addFunc("getTriangleMeshVertexCount", &Shape3D::getTriangleMeshVertexCount);
     shape3.addFunc("getTriangleMeshTriangleCount", &Shape3D::getTriangleMeshTriangleCount);
-    shape3.addFunc("setTriangleMeshMaterialIndices", [](Shape3D *shape, ssq::Array values) {
+    shape3.addFunc("setTriangleMeshMaterialIndices", [](Shape3D* shape, ssq::Array values) {
         std::vector<int32_t> indices;
         indices.reserve(values.size());
         for (size_t i = 0; i < values.size(); ++i) indices.push_back(values.get<int32_t>(i));
@@ -837,7 +847,7 @@ void Physics::expose(ssq::Table &table) {
     shape3.addFunc("getTriangleMeshMaterialRestitution", &Shape3D::getTriangleMeshMaterialRestitution);
     shape3.addFunc("getTriangleMeshMaterialRollingResistance", &Shape3D::getTriangleMeshMaterialRollingResistance);
     shape3.addFunc("getTriangleMeshMaterialId", &Shape3D::getTriangleMeshMaterialId);
-    shape3.addFunc("setHeightFieldHeights", [](Shape3D *shape, ssq::Array values) {
+    shape3.addFunc("setHeightFieldHeights", [](Shape3D* shape, ssq::Array values) {
         std::vector<float> heights;
         heights.reserve(values.size());
         for (size_t i = 0; i < values.size(); ++i) heights.push_back(values.get<float>(i));
@@ -901,12 +911,12 @@ void Physics::expose(ssq::Table &table) {
     shape3.addFunc("getMaskBits", [](Shape3D* shape) { return static_cast<int64_t>(shape->getMaskBits()); });
     shape3.addFunc("setGroupIndex", &Shape3D::setGroupIndex);
     shape3.addFunc("getGroupIndex", &Shape3D::getGroupIndex);
-    shape3.addFunc("getBody", [](Shape3D *shape) { return shape->getBody(); });
+    shape3.addFunc("getBody", [](Shape3D* shape) { return shape->getBody(); });
     shape3.addFunc("testPoint", &Shape3D::testPoint);
     shape3.addFunc("destroy", &Shape3D::destroy);
 
     auto soft3 = table.addClass<SoftBody3D>(
-        "SoftBody3D", std::function<SoftBody3D *()>([]() -> SoftBody3D * { return nullptr; }), true);
+        "SoftBody3D", std::function<SoftBody3D*()>([]() -> SoftBody3D* { return nullptr; }), true);
     soft3.addFunc("update", &SoftBody3D::update);
     soft3.addFunc("setGravity", &SoftBody3D::setGravity);
     soft3.addFunc("getGravityX", &SoftBody3D::getGravityX);
@@ -998,7 +1008,7 @@ void Physics::expose(ssq::Table &table) {
     fluid.addFunc("destroy", &Fluid2D::destroy);
 }
 
-void Physics::expose(ssq::Class &cls) {
+void Physics::expose(ssq::Class& cls) {
     const auto vm = cls.getHandle();
     cls.addFunc("getName", &Physics::getName);
     cls.addFunc("setMeter", &Physics::setMeter);
