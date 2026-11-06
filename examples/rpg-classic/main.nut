@@ -1029,11 +1029,11 @@ function beginQuestNpcDialogue(index) {
         logMessage("dialogue.invalidNpc");
         return false;
     }
-    local suffix = "offer";
-    if (questState == "active") suffix = "active";
-    else if (questState == "ready") suffix = "turnin";
-    else if (questState == "completed") suffix = "completed";
-    local id = dialogueBase + "." + suffix;
+    local id = quest.dialogueConversationId(questId, dialogueBase);
+    if (id == "") {
+        logMessage("dialogue.invalidNpc");
+        return false;
+    }
     local started = dialogueFlow.startChecked(id, {});
     if (!started.ok) {
         reportDialogueDiagnostics();

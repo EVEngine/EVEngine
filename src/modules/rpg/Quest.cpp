@@ -41,6 +41,11 @@ std::string normalizeStart(const std::string &policy) { return policy == "auto" 
 
 std::string normalizeComplete(const std::string &policy) { return policy == "claim" ? "claim" : "auto"; }
 
+std::string normalizeObjectivePolicy(const std::string &policy) {
+    if (policy == "any" || policy == "ordered") return policy;
+    return "all";
+}
+
 // 环检测：图的边是 id -> requires[i]；未在表中的前置 id 不算环。自依赖是环。
 bool idOnCycle(const std::unordered_map<std::string, QuestDefinition> &table, const std::string &start) {
     std::unordered_set<std::string>          visiting;
@@ -64,10 +69,11 @@ bool idOnCycle(const std::unordered_map<std::string, QuestDefinition> &table, co
 QuestObjective parseObjective(Value o) {
     QuestObjective obj;
     if (!o.isObject()) return obj;
-    obj.id     = o.getString("id");
-    obj.topic  = o.getString("topic");
-    obj.target = o.getString("target");
-    obj.count  = o.getInt("count", 1);
+    obj.id       = o.getString("id");
+    obj.topic    = o.getString("topic");
+    obj.target   = o.getString("target");
+    obj.count    = o.getInt("count", 1);
+    obj.optional = o.getBool("optional", false);
     if (obj.count <= 0) obj.count = 1;
     return obj;
 }
@@ -85,12 +91,16 @@ RewardSpec parseReward(Value o) {
 QuestDefinition parseQuestObject(Value o) {
     QuestDefinition def;
     if (!o.isObject()) return def;
-    def.id             = o.getString("id");
-    def.startPolicy    = normalizeStart(o.getString("startPolicy", "manual"));
-    def.completePolicy = normalizeComplete(o.getString("completePolicy", "auto"));
-    def.requiresIds    = o.getStringArray("requires");
-    def.tags           = o.getStringArray("tags");
-    def.extra          = o.getStringMap("extra");
+    def.id               = o.getString("id");
+    def.startPolicy      = normalizeStart(o.getString("startPolicy", "manual"));
+    def.completePolicy   = normalizeComplete(o.getString("completePolicy", "auto"));
+    def.objectivePolicy  = normalizeObjectivePolicy(o.getString("objectivePolicy", "all"));
+    def.requiresIds      = o.getStringArray("requires");
+    def.tags             = o.getStringArray("tags");
+    def.extra            = o.getStringMap("extra");
+    def.timeLimitSeconds = o.getDouble("timeLimitSeconds", 0.0);
+    if (!(def.timeLimitSeconds > 0.0) || !std::isfinite(def.timeLimitSeconds)) def.timeLimitSeconds = 0.0;
+    def.refreshKey = o.getString("refreshKey");
 
     const Value                     objectives = o.get("objectives");
     std::unordered_set<std::string> seen;
@@ -152,7 +162,10 @@ void QuestRegistry::registerQuest(const QuestDefinition &def) {
     QuestDefinition normalized = def;
     normalized.startPolicy     = normalizeStart(def.startPolicy);
     normalized.completePolicy  = normalizeComplete(def.completePolicy);
-    t[def.id]                  = normalized;
+    normalized.objectivePolicy = normalizeObjectivePolicy(def.objectivePolicy);
+    if (!(normalized.timeLimitSeconds > 0.0) || !std::isfinite(normalized.timeLimitSeconds))
+        normalized.timeLimitSeconds = 0.0;
+    t[def.id] = normalized;
     if (idOnCycle(t, def.id)) {
         if (hadOld) {
             t[def.id] = saved;
@@ -270,6 +283,29 @@ eve::Result<int> QuestRegistry::replaceFromJsonStrict(const std::string &json) {
             return strictFailure("completePolicy must be 'auto' or 'claim'", base + ".completePolicy");
         definition.completePolicy = completePolicy ? completePolicy.asString() : "auto";
 
+        const Value objectivePolicy = object.get("objectivePolicy");
+        if (objectivePolicy && (!objectivePolicy.isString() ||
+                                (objectivePolicy.asString() != "all" && objectivePolicy.asString() != "any" &&
+                                 objectivePolicy.asString() != "ordered")))
+            return strictFailure("objectivePolicy must be 'all', 'any', or 'ordered'", base + ".objectivePolicy");
+        definition.objectivePolicy = objectivePolicy ? objectivePolicy.asString() : "all";
+
+        const Value timeLimitSeconds = object.get("timeLimitSeconds");
+        if (timeLimitSeconds) {
+            if (!timeLimitSeconds.isNumber() || !std::isfinite(timeLimitSeconds.asDouble()) ||
+                timeLimitSeconds.asDouble() < 0.0)
+                return strictFailure("timeLimitSeconds must be a finite non-negative number",
+                                     base + ".timeLimitSeconds");
+            definition.timeLimitSeconds = timeLimitSeconds.asDouble();
+        }
+
+        const Value refreshKey = object.get("refreshKey");
+        if (refreshKey) {
+            if (!refreshKey.isString() || (!refreshKey.asString().empty() && !validContentId(refreshKey.asString())))
+                return strictFailure("refreshKey must be empty or a stable id", base + ".refreshKey");
+            definition.refreshKey = refreshKey.asString();
+        }
+
         const Value prerequisites = object.get("requires");
         if (prerequisites && !stringArrayIsStrict(prerequisites))
             return strictFailure("requires must be an array of quest ids", base + ".requires");
@@ -303,9 +339,12 @@ eve::Result<int> QuestRegistry::replaceFromJsonStrict(const std::string &json) {
             const Value count = item.get("count");
             if (count && (!count.isInt64() || count.asInt64() <= 0 || count.asInt64() > INT_MAX))
                 return strictFailure("objective count must be a positive integer", path + ".count");
+            const Value optional = item.get("optional");
+            if (optional && !optional.isBool())
+                return strictFailure("objective optional must be a boolean", path + ".optional");
             definition.objectives.push_back({objectiveId.asString(), topic.asString(),
                                              target ? target.asString() : std::string{},
-                                             count ? int(count.asInt64()) : 1});
+                                             count ? int(count.asInt64()) : 1, optional ? optional.asBool() : false});
         }
 
         const Value rewards = object.get("rewards");
@@ -462,9 +501,45 @@ namespace eve::rpg {
 
 namespace {
 
-bool objectivesFull(const QuestRuntime &rt) {
-    for (const auto &o : rt.objectives) {
-        if (!o.done) return false;
+bool objectivesSatisfiedFor(const QuestDefinition *def, const QuestRuntime &rt) {
+    if (!def) {
+        for (const auto &o : rt.objectives) {
+            if (!o.done) return false;
+        }
+        return true;
+    }
+    const size_t n = std::min(def->objectives.size(), rt.objectives.size());
+    if (def->objectivePolicy == "any") {
+        bool hasRequired = false;
+        for (size_t i = 0; i < n; ++i) {
+            if (def->objectives[i].optional) continue;
+            hasRequired = true;
+            if (rt.objectives[i].done) return true;
+        }
+        if (!hasRequired) {
+            if (n == 0) return true;
+            for (size_t i = 0; i < n; ++i) {
+                if (rt.objectives[i].done) return true;
+            }
+            return false;
+        }
+        return false;
+    }
+    for (size_t i = 0; i < n; ++i) {
+        if (def->objectives[i].optional) continue;
+        if (!rt.objectives[i].done) return false;
+    }
+    return true;
+}
+
+bool objectiveAcceptsNotify(const QuestDefinition &def, const QuestRuntime &rt, size_t index) {
+    if (index >= def.objectives.size() || index >= rt.objectives.size()) return false;
+    if (rt.objectives[index].done) return false;
+    if (def.objectivePolicy != "ordered") return true;
+    if (def.objectives[index].optional) return true;
+    for (size_t i = 0; i < index; ++i) {
+        if (def.objectives[i].optional) continue;
+        if (!rt.objectives[i].done) return false;
     }
     return true;
 }
@@ -493,6 +568,8 @@ void onObjectivesFull(Tracker *t, QuestRuntime &rt) {
         QuestSystem::syncAuto(t);
     }
 }
+
+void clearDeadline(QuestRuntime &rt) { rt.deadlineAt = 0.0; }
 
 }  // namespace
 
@@ -540,8 +617,11 @@ void QuestSystem::syncAuto(Tracker *t) {
             if (!hasMetRequirements(*t, *def)) continue;
             const std::string newState = stateForUnlocked(*def);
             rt.state                   = newState;
-            if (newState == "active") pushEvent(t, {id, "", "activate", "", "", 0, ""});
-            if (newState == "active" && objectivesFull(rt)) onObjectivesFull(t, rt);
+            if (newState == "active") {
+                clearDeadline(rt);
+                pushEvent(t, {id, "", "activate", "", "", 0, ""});
+            }
+            if (newState == "active" && objectivesSatisfiedFor(def, rt)) onObjectivesFull(t, rt);
             changed = true;
         }
         if (!changed) break;
@@ -588,8 +668,10 @@ bool QuestSystem::activate(Tracker *t, const std::string &id, std::string *reaso
         return false;
     }
     it->second.state = "active";
+    clearDeadline(it->second);
     pushEvent(t, {id, "", "activate", "", "", 0, ""});
-    if (objectivesFull(it->second)) onObjectivesFull(t, it->second);
+    const QuestDefinition *def = QuestRegistry::find(id);
+    if (objectivesSatisfiedFor(def, it->second)) onObjectivesFull(t, it->second);
     return true;
 }
 
@@ -604,7 +686,7 @@ void QuestSystem::notify(Tracker *t, const std::string &topic, const std::string
         for (size_t i = 0; i < n; ++i) {
             const auto &objDef = def->objectives[i];
             auto       &rtObj  = rt.objectives[i];
-            if (rtObj.done) continue;
+            if (!objectiveAcceptsNotify(*def, rt, i)) continue;
             if (rtObj.count <= 0) rtObj.count = 1;
             const bool match = objDef.topic == topic && (objDef.target.empty() || objDef.target == target);
             if (!match) continue;
@@ -613,7 +695,7 @@ void QuestSystem::notify(Tracker *t, const std::string &topic, const std::string
             if (rtObj.current >= rtObj.count) rtObj.done = true;
             pushEvent(t, {id, rtObj.id, "progress", topic, target, added, ""});
         }
-        if (objectivesFull(rt)) fullIds.push_back(id);
+        if (objectivesSatisfiedFor(def, rt)) fullIds.push_back(id);
     }
     for (const auto &fid : fullIds) {
         auto it = t->entries.find(fid);
@@ -650,6 +732,7 @@ bool QuestSystem::reset(Tracker *t, const std::string &id) {
     const QuestDefinition *def = QuestRegistry::find(id);
     QuestRuntime          &rt  = it->second;
     rt.objectives.clear();
+    clearDeadline(rt);
     if (def) {
         for (const auto &obj : def->objectives) {
             ObjectiveRuntime orun;
@@ -662,7 +745,7 @@ bool QuestSystem::reset(Tracker *t, const std::string &id) {
     }
     rt.state = (def && hasMetRequirements(*t, *def)) ? stateForUnlocked(*def) : std::string("locked");
     pushEvent(t, {id, "", "reset", "", "", 0, ""});
-    if (rt.state == "active" && objectivesFull(rt)) onObjectivesFull(t, rt);
+    if (rt.state == "active" && objectivesSatisfiedFor(def, rt)) onObjectivesFull(t, rt);
     return true;
 }
 
@@ -680,6 +763,7 @@ bool failImpl(Tracker *t, const std::string &id, const std::string &reason) {
         return false;
     }
     it->second.state = "failed";
+    clearDeadline(it->second);
     pushEvent(t, {id, "", "fail", "", "", 0, reason});
     return true;
 }
@@ -688,6 +772,72 @@ bool failImpl(Tracker *t, const std::string &id, const std::string &reason) {
 bool QuestSystem::abandon(Tracker *t, const std::string &id) { return failImpl(t, id, "abandon"); }
 
 bool QuestSystem::fail(Tracker *t, const std::string &id, const std::string &reason) { return failImpl(t, id, reason); }
+
+bool QuestSystem::isObjectivesSatisfied(const Tracker &t, const std::string &id) {
+    auto it = t.entries.find(id);
+    if (it == t.entries.end()) return false;
+    return objectivesSatisfiedFor(QuestRegistry::find(id), it->second);
+}
+
+std::string QuestSystem::dialoguePhase(const Tracker &t, const std::string &questId) {
+    const std::string state = [&]() -> std::string {
+        auto it = t.entries.find(questId);
+        return it == t.entries.end() ? std::string{} : it->second.state;
+    }();
+    if (state.empty()) return {};
+    if (state == "locked" || state == "inactive") return "offer";
+    if (state == "active") return "active";
+    if (state == "ready") return "turnin";
+    if (state == "completed") return "completed";
+    if (state == "failed") return "failed";
+    return {};
+}
+
+std::string QuestSystem::dialogueConversationId(const Tracker &t, const std::string &questId,
+                                                const std::string &dialogueBase) {
+    if (dialogueBase.empty()) return {};
+    const std::string phase = dialoguePhase(t, questId);
+    if (phase.empty()) return {};
+    return dialogueBase + "." + phase;
+}
+
+int QuestSystem::applyClock(Tracker *t, double nowSeconds) {
+    if (!t || !std::isfinite(nowSeconds)) return 0;
+    int failed = 0;
+    for (auto &id : t->order) {
+        auto it = t->entries.find(id);
+        if (it == t->entries.end()) continue;
+        QuestRuntime &rt = it->second;
+        if (rt.state != "active" && rt.state != "ready") continue;
+        const QuestDefinition *def = QuestRegistry::find(id);
+        if (!def || !(def->timeLimitSeconds > 0.0)) continue;
+        if (!(rt.deadlineAt > 0.0)) rt.deadlineAt = nowSeconds + def->timeLimitSeconds;
+        if (nowSeconds >= rt.deadlineAt) {
+            if (failImpl(t, id, "expired")) ++failed;
+        }
+    }
+    return failed;
+}
+
+int QuestSystem::refreshByKey(Tracker *t, const std::string &refreshKey, const std::string &stamp) {
+    if (!t || refreshKey.empty()) return 0;
+    int refreshed = 0;
+    // Copy ids: reset may mutate state but not order/identity of entries.
+    const std::vector<std::string> ids = t->order;
+    for (const auto &id : ids) {
+        const QuestDefinition *def = QuestRegistry::find(id);
+        if (!def || def->refreshKey != refreshKey) continue;
+        auto it = t->entries.find(id);
+        if (it == t->entries.end()) continue;
+        if (it->second.refreshStamp == stamp) continue;
+        if (!QuestSystem::reset(t, id)) continue;
+        it = t->entries.find(id);
+        if (it == t->entries.end()) continue;
+        it->second.refreshStamp = stamp;
+        ++refreshed;
+    }
+    return refreshed;
+}
 
 void QuestSystem::pollEvents(Tracker *t, std::vector<QuestEvent> &out) {
     out.clear();
