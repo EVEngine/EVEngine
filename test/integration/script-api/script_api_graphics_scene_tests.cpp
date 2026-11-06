@@ -2285,7 +2285,7 @@ TEST_CASE("scriptConfig.allowGlobalsRejectsUnknownName") {
     } catch (const ScriptException& error) {
         rejected = std::string(error.what()).find("config.allowGlobals unknown name: eval") != std::string::npos;
     }
-    CHECK(rejected);
+    REQUIRE(rejected);
 }
 
 TEST_CASE("scriptConfig.allowGlobalsEmptyBlocksDofile") {
@@ -2300,8 +2300,8 @@ TEST_CASE("scriptConfig.allowGlobalsEmptyBlocksDofile") {
         "}\n"
         "_engine_still_callable <- typeof _engine_dofile == \"function\"\n",
         "config-allow-empty-test.nut");
-    CHECK(runtime.vm().get<bool>("_blocked_ok"));
-    CHECK(runtime.vm().get<bool>("_engine_still_callable"));
+    REQUIRE(runtime.vm().get<bool>("_blocked_ok"));
+    REQUIRE(runtime.vm().get<bool>("_engine_still_callable"));
 }
 
 TEST_CASE("scriptConfig.allowGlobalsCanKeepDofile") {
@@ -2316,8 +2316,8 @@ TEST_CASE("scriptConfig.allowGlobalsCanKeepDofile") {
         "  _loadfile_blocked = (\"\" + e).find(\"not allowed by config.allowGlobals\") != null\n"
         "}\n",
         "config-allow-keep-dofile-test.nut");
-    CHECK(runtime.vm().get<bool>("_dofile_ok"));
-    CHECK(runtime.vm().get<bool>("_loadfile_blocked"));
+    REQUIRE(runtime.vm().get<bool>("_dofile_ok"));
+    REQUIRE(runtime.vm().get<bool>("_loadfile_blocked"));
 }
 
 TEST_CASE("scriptConfig.allowGlobalsAbsentKeepsDofile") {
@@ -2327,7 +2327,7 @@ TEST_CASE("scriptConfig.allowGlobalsAbsentKeepsDofile") {
         "apply_allow_globals()\n"
         "_dofile_ok <- typeof dofile == \"function\"\n",
         "config-allow-absent-test.nut");
-    CHECK(runtime.vm().get<bool>("_dofile_ok"));
+    REQUIRE(runtime.vm().get<bool>("_dofile_ok"));
 }
 }  // namespace test_script_config
 
