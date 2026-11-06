@@ -54,22 +54,33 @@
 
 ```
 document   := block*
-block      := 'story' IDENT modifier* '{' statement* '}'
+block      := ('story' | 'common') IDENT modifier* '{' statement* '}'
             | <其他方言的顶层块，直接跳过>
 modifier   := 'repeatable' | 'version' '=' INT
-statement  := step | ifStmt | choiceStmt | 'end'
+statement  := step | ifStmt | choiceStmt | loopStmt | parallelStmt
+            | 'break' | 'continue' | 'label' IDENT | 'jump' IDENT
+            | 'call' IDENT | 'common' IDENT | 'wait' … | 'end'
 step       := IDENT (IDENT '=' value)*
 ifStmt     := 'if' condition block ['else' block]
 choiceStmt := 'choice' '{' ('option' STRING ['when' condition] block)+ '}'
+loopStmt   := 'loop' block
+            | 'loop' 'while' condition block
+            | 'loop' 'times' '=' value block
+parallelStmt := 'parallel' '{' ('lane' block)+ '}'
 value      := STRING | NUMBER | 'true' | 'false' | IDENT | '-' NUMBER
 condition  := 比较 / '&&' / '||' / '!' / '(' ')'
 ```
 
-- `story` 之外的顶层块（`pool`、`conversation`）被**跳过**，因此一个文件可以同时
-  容纳其他方言而不被本编译器拒绝。
-- 控制流关键字只有 `if` / `choice` / `call` / `wait` / `end`；它们分别下降到
-  `branch` / `choice` / `call` / `wait` / `end` 节点。**步骤类型不是关键字**：
+- `story` / `common` 之外的顶层块（`pool`、`conversation`）被**跳过**，因此一个文件可以同时
+  容纳其他方言而不被本编译器拒绝。顶层 `common` 与 `story` 产出同一 `SequenceAsset`
+  （默认 `repeatable`），供 `call` / `common` 语句调用（CallCommonEvent）。
+- 控制流关键字：`if` / `choice` / `call` / `common` / `wait` / `end` /
+  `loop` / `break` / `continue` / `label` / `jump` / `parallel`；它们分别下降到
+  `branch` / `choice` / `call` / `wait` / `end` / `loop` / `break` / `continue` /
+  `label` / `jump` / `parallel`(+`join`) 节点。**步骤类型不是关键字**：
   `mark`、`skill`、`story:move` 一样由注册表声明。
+- `parallel` 的 lane 只支持领域步骤、`wait`、`label`、`jump`；嵌套 `if`/`choice`/
+  `call`/`loop`/`parallel` 在运行时拒绝（保持单游标 fork-join）。
 - 条件编译为 `eve::Value` 对象：`{var,op,value}`、`{all:[…]}`、`{any:[…]}`、`{not:…}`，
   `op ∈ eq|ne|gt|lt|ge|le`。**求值器由消费者注入**：语言核心不知道 `switch.x` 是什么。
 
@@ -121,8 +132,8 @@ StepKindDescriptor {
 | 债务 | owner | 原因 | 移除条件 |
 | --- | --- | --- | --- |
 | `SequenceDocument`（作者字段反射）尚未落地；dialogue 的兼容 `ConversationDocument` 仍有手写字段投影 | dnut_interpreter | 本轮优先完成编译器、运行时与 `DialogueFlow` 的唯一控制流 owner 切换；兼容作者 API 暂时直接编辑 `SequenceAsset`，不拥有执行语义 | 作者 UI 改为从 `StepKindRegistry::payloadSchema` 派生字段后删除兼容投影 |
-| `Loop` / `Label`+`Jump` / `Parallel` / `CallCommonEvent` | dnut_interpreter | 阶段 4 控制流扩展；现有 `if`/`choice`/`call`/`wait`/`end` 已覆盖 RPG 示例 | 设计文档 §8 阶段 4 |
-| `rpg::StoryEvent`（JSON 闭集）与 `.dnut` 故事并存 | rpg | 既有 JSON 路径有测试与线格式兼容要求；`rpg-classic` 已切到 `.dnut`，JSON 降为兼容门面 | 设计文档 §8 阶段 2 完成且无外部消费者依赖 JSON 时删除 |
+| `parallel` lane 内嵌套 `if`/`choice`/`call`/`loop`/`parallel` | dnut_interpreter | 阶段 4 先交付 fork-join + 宿主 `wait`；嵌套结构化控制需要每 lane 独立调用栈 | 有产品用例且补齐 per-lane 调用栈后删除 |
+| `rpg::StoryEvent`（JSON 闭集）与 `.dnut` 故事并存 | rpg | 既有 JSON 路径有测试与线格式兼容要求；`rpg-classic` 已切到 `.dnut`，JSON 降为兼容门面 | 无外部消费者依赖 JSON 时删除 |
 
 债务没有第二真相源：`.dnut` 的语法、模型与游标只有本模块一份实现；
 `StoryEvent` 是**另一种内容格式**，不是同一事实的第二份表示。

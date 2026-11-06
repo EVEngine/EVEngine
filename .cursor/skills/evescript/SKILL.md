@@ -24,7 +24,8 @@ Cursor skill copy in an unzipped SDK: `.cursor/skills/evescript/SKILL.md`. Human
 - Modules: `config.nut` lists `modules` / `optionalModules` by **root slot** (`gfx`, not CMake `graphics`).
 - Do not use `"Graphics" in eve` — `in` does not trigger lazy binding. Use `eve.moduleList` / `has_module("gfx")` / `ensure_module("audio")`.
 - `switch` is a Squirrel keyword. UI factory: `ui["switch"]`.
-- Import: `import { x } from "./scripts/foo.nut"` then `export function`.
+- Import: `import { x } from "./scripts/foo.nut"` then `export function`. Prefer import modules over `dofile` / `loadfile`.
+- Agent-oriented projects may set `config.allowGlobals = []` (or only list needed loaders among `dofile` / `loadfile` / `compilestring`) so unlisted loaders throw after bootstrap; keep `main.nut` as an orchestration layer.
 - Types are gradual (`float`, `int`, `->`). They erase at runtime; they help the compiler/LSP.
 
 Minimal game:

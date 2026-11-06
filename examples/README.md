@@ -65,6 +65,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [physics-bake-replay](physics-bake-replay/README.md) | 刚体、布料、绳索、粒子真实录制与持久化，源停用后双实例独立重放 |
 | [railgun-3d](railgun-3d/README.md) | 超电磁炮 3D：瞬闪光束、黄红冷却弹道、等距烟圈与白蓝飘散粒子 |
 | [physics-workshop](physics-workshop/README.md) | 3D 悬索、气动布帆、双配重滑轮与共享阵风场综合模拟 |
+| [conveyor-belt](conveyor-belt/README.md) | 3D 传送带：材质 UV 滚动 + Shape3D 切向速度同速驱动货物 |
 | [physics-force-lab](physics-force-lab/README.md) | 2D/3D 场效果、排水浮力、机翼升阻力与轮胎转动 |
 | [devlab](devlab/README.md) | 运行时即编辑器：`--debug` 下的控制台 / REPL、快照、暂停、热重载、错误切片、AI 面板（**旗舰示例，先跑这个**） |
 | [ai-game](ai-game/README.md) | AI 驾驶真实游戏：Agent 通过 MCP 读状态 / 改数值 / 截图 / 快照复位（含一键复现脚本 `agent_demo.py`） |

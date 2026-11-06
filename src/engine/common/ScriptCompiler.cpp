@@ -15,6 +15,7 @@
 #include <mutex>
 #include <regex>
 #include <sstream>
+#include <unordered_set>
 
 namespace eve::script {
 namespace {
@@ -784,10 +785,12 @@ std::vector<ScriptDiagnostic> ScriptCompiler::validateProjectConfig(std::string_
                                                                     std::string_view                canonicalUri,
                                                                     const std::vector<std::string>& knownModules,
                                                                     const std::vector<std::string>& activeModules) {
-    std::vector<ScriptDiagnostic> result;
-    const std::string             scanned = maskComments(source);
-    static const std::regex       listPattern(R"(\b(modules|optionalModules)\s*=\s*\[([^\]]*)\])");
-    static const std::regex       valuePattern(R"([\"']([^\"']+)[\"'])");
+    std::vector<ScriptDiagnostic>                result;
+    const std::string                            scanned = maskComments(source);
+    static const std::regex                      listPattern(R"(\b(modules|optionalModules)\s*=\s*\[([^\]]*)\])");
+    static const std::regex                      allowPattern(R"(\ballowGlobals\s*=\s*\[([^\]]*)\])");
+    static const std::regex                      valuePattern(R"([\"']([^\"']+)[\"'])");
+    static const std::unordered_set<std::string> knownAllowGlobals = {"dofile", "loadfile", "compilestring"};
     forMatches(scanned, listPattern, [&](const std::smatch& list, size_t listOffset) {
         const bool        required = list[1].str() == "modules";
         const std::string values   = list[2].str();
@@ -805,6 +808,21 @@ std::vector<ScriptDiagnostic> ScriptCompiler::validateProjectConfig(std::string_
             diagnostic.related  = name;
             diagnostic.fix      = known ? "enable the module in the selected build profile"
                                         : "use a root slot from the generated Module Contract";
+            result.push_back(std::move(diagnostic));
+        });
+    });
+    forMatches(scanned, allowPattern, [&](const std::smatch& list, size_t listOffset) {
+        const std::string values = list[1].str();
+        forMatches(values, valuePattern, [&](const std::smatch& value, size_t valueOffset) {
+            const std::string name = value[1].str();
+            if (knownAllowGlobals.count(name) != 0) return;
+            ScriptDiagnostic diagnostic;
+            diagnostic.code         = "EVE1003";
+            diagnostic.message      = "config.allowGlobals contains an unknown name: " + name;
+            diagnostic.canonicalUri = std::string(canonicalUri);
+            diagnostic.position = positionAt(source, listOffset + static_cast<size_t>(list.position(1)) + valueOffset);
+            diagnostic.related  = name;
+            diagnostic.fix      = "use one of: dofile, loadfile, compilestring";
             result.push_back(std::move(diagnostic));
         });
     });

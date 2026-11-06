@@ -281,6 +281,15 @@ mat.setSortPriority(0);             // 同优先级按相机深度从后向前�
 mat.setMetallic(0.2);
 mat.setRoughness(0.5);
 
+// 传送带 / 履带：几何不动，滚动 albedo UV（启用扩展 PBR 路径）。
+// 采样公式 uv' = rotate(uv * scale) + offset；默认 REPEAT。
+eve.result.ignore(mat.setAlbedoUvScale(tilesU, tilesV), "belt tiling");
+eve.result.ignore(mat.setAlbedoUvOffset(scrollU, 0.0), "belt scroll");
+// getAlbedoUvOffsetU/V、getAlbedoUvScaleU/V、set/getAlbedoUvRotation 对应读写。
+// 与 Shape3D.setTangentVelocity 配套时：d(offsetU)/dt = -V * tilesU / beltLengthX
+// （cube 顶面 U 沿 +X；正速度搬送时条纹也应往 +X 走，故 offset 取负号）。
+// 完整示例见 examples/conveyor-belt。
+
 local r = Renderable3D.create();
 r.setMaterial(mat);                 // 整模
 // 或多部件：r.setPart(0, "body", bodyMesh, bodyMat);

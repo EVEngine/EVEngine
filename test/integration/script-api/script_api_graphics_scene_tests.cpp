@@ -2199,8 +2199,9 @@ std::string loadStartupThroughModuleValidation() {
     const std::filesystem::path path = std::filesystem::path(EVENGINE_SOURCE_DIR) / "src" / "scripts" / "load.nut";
     std::ifstream               input(path, std::ios::binary);
     std::string                 source(std::istreambuf_iterator<char>(input), {});
-    const std::string           marker = "validate_project_modules();";
-    const size_t                end    = source.find(marker);
+    // Top-level boot calls; rfind skips the same text inside apply_allow_globals().
+    const std::string marker = "validate_allow_globals();";
+    const size_t      end    = source.rfind(marker);
     if (end == std::string::npos) return {};
     source.resize(end + marker.size());
     return source;
@@ -2272,6 +2273,61 @@ TEST_CASE("scriptConfig.ensureModuleLoadsOmittedSlot") {
         "_ensured <- ensure_module(\"bar\") && has_module(\"bar\")\n",
         "config-ensure-test.nut");
     CHECK(runtime.vm().get<bool>("_ensured"));
+}
+
+TEST_CASE("scriptConfig.allowGlobalsRejectsUnknownName") {
+    Runtime runtime(1024, ssq::Libs::ALL);
+    configureRuntime(runtime);
+    bool rejected = false;
+    try {
+        runtime.runSource("config.allowGlobals <- [\"eval\"]\nvalidate_allow_globals()\n",
+                          "config-allow-unknown-test.nut");
+    } catch (const ScriptException& error) {
+        rejected = std::string(error.what()).find("config.allowGlobals unknown name: eval") != std::string::npos;
+    }
+    REQUIRE(rejected);
+}
+
+TEST_CASE("scriptConfig.allowGlobalsEmptyBlocksDofile") {
+    Runtime runtime(1024, ssq::Libs::ALL);
+    configureRuntime(runtime);
+    runtime.runSource(
+        "config.allowGlobals <- []\n"
+        "apply_allow_globals()\n"
+        "_blocked_ok <- false\n"
+        "try { dofile(\"missing.nut\") } catch (e) {\n"
+        "  _blocked_ok = (\"\" + e).find(\"not allowed by config.allowGlobals\") != null\n"
+        "}\n"
+        "_engine_still_callable <- typeof _engine_dofile == \"function\"\n",
+        "config-allow-empty-test.nut");
+    REQUIRE(runtime.vm().get<bool>("_blocked_ok"));
+    REQUIRE(runtime.vm().get<bool>("_engine_still_callable"));
+}
+
+TEST_CASE("scriptConfig.allowGlobalsCanKeepDofile") {
+    Runtime runtime(1024, ssq::Libs::ALL);
+    configureRuntime(runtime);
+    runtime.runSource(
+        "config.allowGlobals <- [\"dofile\"]\n"
+        "apply_allow_globals()\n"
+        "_dofile_ok <- typeof dofile == \"function\"\n"
+        "_loadfile_blocked <- false\n"
+        "try { loadfile(\"missing.nut\") } catch (e) {\n"
+        "  _loadfile_blocked = (\"\" + e).find(\"not allowed by config.allowGlobals\") != null\n"
+        "}\n",
+        "config-allow-keep-dofile-test.nut");
+    REQUIRE(runtime.vm().get<bool>("_dofile_ok"));
+    REQUIRE(runtime.vm().get<bool>("_loadfile_blocked"));
+}
+
+TEST_CASE("scriptConfig.allowGlobalsAbsentKeepsDofile") {
+    Runtime runtime(1024, ssq::Libs::ALL);
+    configureRuntime(runtime);
+    runtime.runSource(
+        "apply_allow_globals()\n"
+        "_dofile_ok <- typeof dofile == \"function\"\n",
+        "config-allow-absent-test.nut");
+    REQUIRE(runtime.vm().get<bool>("_dofile_ok"));
 }
 }  // namespace test_script_config
 
