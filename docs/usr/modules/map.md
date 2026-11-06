@@ -332,7 +332,7 @@ eve.provider.unload("game.collision")
 - `setOrigin()`、`setTile()`、`setTileSize()`、`setTileset()`、`setTilesetTileSize()`、`setTileVisual()`、`setVisualScale()`、`getVisualScaleX()`、`getVisualScaleY()`、`setTileMetadata()`、`clearTileVisuals()`、`getTileVisualCount()`、`loadTilesetManifest()`、`setTint()`、`setVisible()`、`setReceiveLight()`、`getReceiveLight()`、`tileToWorldX()`
 - `tileToWorldY()`、`update()`、`worldToTileX()`、`worldToTileY()`、`dualGridFrame()`、`dualGridMaskAt()`、`dualGridOffsetX()`、`dualGridOffsetY()`、`lastDualGridError()`
 
-Pathfinder：`setTopology`、`getTopology`、`setDiagonal`、`blockGid`、`unblockGid`、`clearBlockedGids`、`setBlockEmpty`、`setBlocked`、`isWalkable`、`setCellCost`、`getCellCost`、`syncFromLayer`、`findPath`、`buildFlowField`、`followFlow`、`findGroupPath`、`invalidateCache`
+Pathfinder：`setTopology`、`getTopology`、`setDiagonal`、`blockGid`、`unblockGid`、`clearBlockedGids`、`setBlockEmpty`、`setBlocked`、`isWalkable`、`setCellCost`、`getCellCost`、`syncFromLayer`、`findPath`、`keepsPathOpen`、`keepsPathOpenFootprint`、`buildFlowField`、`followFlow`、`findGroupPath`、`invalidateCache`
 
 Path：`getLength`、`getX`、`getY`、`getTotalCost`
 

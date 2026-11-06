@@ -146,6 +146,33 @@ public:
                    /** @brief Float. */
                    const std::function<float(int, int)> &entryPenalty);
 
+    /**
+     * @brief Probe whether spawn→goal stays reachable after temporarily sealing cells.
+     * @param sx Spawn / start cell x.
+     * @param sy Spawn / start cell y.
+     * @param gx Goal / exit cell x.
+     * @param gy Goal / exit cell y.
+     * @param blockX Temporary block cell x.
+     * @param blockY Temporary block cell y.
+     * @return `true` when a route still exists; does not mutate the live grid.
+     * @remarks Blocking the spawn or goal cell itself always returns false. Already
+     *          unwalkable probe cells are ignored. Uses the entry-penalty overlay so
+     *          flow-field caches stay untouched.
+     * @cost One A* probe amortized over the temporary block set.
+     * @thread Map owner / simulation thread; no callbacks.
+     */
+    [[nodiscard]] Result<bool> keepsPathOpen(int sx, int sy, int gx, int gy, int blockX, int blockY);
+
+    /**
+     * @brief Same as keepsPathOpen for an axis-aligned footprint origin+(w,h).
+     * @param footprintW Positive footprint width in cells.
+     * @param footprintH Positive footprint height in cells.
+     * @return `true` when spawn→goal stays reachable after sealing the footprint.
+     * @cost One A* probe; footprint cells outside the grid are rejected.
+     */
+    [[nodiscard]] Result<bool> keepsPathOpenFootprint(int sx, int sy, int gx, int gy, int originX, int originY,
+                                                      int footprintW, int footprintH);
+
     /** @brief Build / reuse cached flow field toward goal. Owned by caller. */
     FlowField *buildFlowField(int gx, int gy);
 
