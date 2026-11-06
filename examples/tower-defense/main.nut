@@ -114,8 +114,8 @@ function archetypeStats(id) {
 }
 
 function towerExtra(id, key, fallback) {
-    // Building definition extras are stringly typed; parse at use sites.
-    local text = building.getBuildingExtra(id, key);
+    // Building extras are stringly typed; Binding Contracts require the fallback arg.
+    local text = building.getBuildingExtra(id, key, "");
     if (text == null || text == "") return fallback;
     return text.tofloat();
 }
