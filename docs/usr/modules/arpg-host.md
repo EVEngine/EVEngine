@@ -102,16 +102,47 @@ if (restartOrLoad) duel.close();   // 放弃瞬时遭遇；读档后重新 bind
 | --- | --- |
 | [action](action.md) | Ability / timeline；每 tick 一次 `advanceAbilities` |
 | [combat](combat.md) | 可选 `CombatLoopRuntime`；每 tick 一次 `advance` |
+| [combat_navigation](combat.md)（可选卫星） | 阻挡格 `navigateTo` 接近敌人；见下节 |
 | [settlement](settlement.md) | 伤害提交；表现只读 `applied` |
-| [rpg](rpg.md) | Vitals、任务、Encounter、存档 |
+| [rpg](rpg.md) | Vitals、任务、Encounter、存档、LootSystem |
 | [inventory](inventory.md) | 掉落与装备 |
 | [SAVE](../SAVE.md) | `RPGSaveSession` 安全点 |
+
+## 可选：阻挡格接近（`combat_navigation`）
+
+`examples/arpg-loop` 的哨兵 AI 仍是脚本直线接近（无格子地图）。需要绕障接近时，**不要**再写第二套
+寻路 AI：在 C++ 宿主安装 `combat_navigation` 的 `PathfinderCombatNavigationProvider`，对敌人位姿
+调用 `CombatLocomotionRuntime::navigateTo`。
+
+```cpp
+map::Pathfinder pathfinder(width, height);
+pathfinder.setTopology("ortho4");
+pathfinder.setBlocked(wallX, wallY, true);
+auto navigation = combat::navigation::PathfinderCombatNavigationProvider::create(
+    pathfinder, {{originX, originZ}, cellSize});
+CombatLocomotionRuntime locomotion(*navigation.value());
+locomotion.registerSubject({subject, owner, startPose, maxSpeed, accel});
+locomotion.navigateTo(subject, {{enemyX, enemyZ}, acceptanceRadius});
+auto frame = locomotion.advance({tick, dt});
+// frame 失败且 DiagnosticCode::NotFound → 整帧不发布；位置不变（无部分移动）
+```
+
+契约验收（已有组合测试，勿重复造轮子）：
+
+- `combatNavigation.pathfinderRoutesAroundBlockedCells`
+- `combatNavigation.locomotionFollowsDetourAndArrives`
+- `combatNavigation.unreachableGoalAbortsLocomotionAtomically`（NotFound + 位置不变）
+
+脚本 `eve.Combat().newRuntime()` 默认仍是 `DirectCombatNavigationProvider`（无障碍 arena）。
+`CombatEnemyIntentSource` 的 Mid/Far 接近也是直线 intent，**不是**本卫星。
 
 ## 验证
 
 - 原生：`test/integration/rpg-action/`（扣血、击杀奖励、遭遇冲突、失败矩阵、满包未领缓存存档、死亡宿主门闩）
 - 存档失败注入：`rpg.saveSession.roundTripAndCrossParticipantRollback`（损坏档）、
   `rpg.saveSession.arpgLoopContentVersionRejectsFutureAndMigratesCompatible`（版本过新 / 兼容迁移）
+- 阻挡接近：`combatNavigation.unreachableGoalAbortsLocomotionAtomically` 等（见上节）
+- 掉落扩展：`Loot weighted…` / `Loot unique…` / `Loot luck…`（`test/integration/rpg-loot/`）
 - 双推进：`action.ability.rejectsDuplicateStepOnSameTick`、`combatLoop.rejectsDuplicateAdvanceOnSameTick`
 - 示例：`MIN_RUN_SECONDS=2 bash scripts/smoke_examples.sh arpg-loop`
 - 一键 Agent：`make check/arpg-loop`（或 `bash scripts/verify_arpg_loop.sh`；无显示时用 `xvfb-run -a`）

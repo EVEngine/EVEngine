@@ -124,6 +124,17 @@ local drops = rpg.rollLoot("goblin", bag, 42);
 `rollLoot` 是兼容计数入口：返回成功入包的掉落表项数，`0` 可能表示未命中或失败。
 同次抽取整批入包；容量不足或命中未知物品时不留下部分奖励、不发库存事件。
 C++ `LootSystem::roll` 使用调用方随机流，失败不推进随机流，成功未命中仍推进。
+结构化入口 `LootSystem::rollDetailed(tableId, bag, rng, {luck})` 返回 `Result`：可诊断
+`NotFound` / `InvalidArgument`，`luck` 只放大 Independent 表的 `chance`
+（`clamp(chance * (1 + luck), 0, 1)`，要求 `luck >= -1`）。
+
+表级 `selectMode`：
+
+| 模式 | 行为 |
+| --- | --- |
+| `independent`（默认） | 每条 `chance` 独立 Bernoulli；可选 `unique` 在背包已有或本批已授予同 `itemId` 时跳过 |
+| `weighted` | 按 `weight>0` 相对权重恰好抽一条；`luck` 忽略；`unique` 仍可跳过 |
+
 库存变更钩子只在整批物品与随机流提交后运行。抽取不负责记录击杀身份或防止重复发奖。
 
 ### 特征 / 职业 / 回合制战斗 / 全局状态
