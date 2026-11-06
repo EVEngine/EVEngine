@@ -74,6 +74,13 @@ local conversation = log.dialogueConversationId("quest.hunt", "village.elder");
 // 限时 / 日刷：定义 timeLimitSeconds / refreshKey，由游戏喂时钟与日历 stamp
 log.applyClock(nowSeconds);
 log.refreshByKey("daily", calendarDayStamp);
+
+// 程序化任务：先发布 archetype 目录，再喂世界实体快照（urgency + tags + vars）
+local archetypes = rpg.replaceQuestGenerationArchetypesFromJson(archetypeJson);
+if (!archetypes.ok) throw archetypes.status.summary;
+local generated = rpg.generateQuestsAndRegister(generateRequestJson);
+if (!generated.ok) throw generated.status.summary;
+log.syncAuto();  // 新定义进入已有 Tracker
 ```
 
 ### 成长与战斗落账

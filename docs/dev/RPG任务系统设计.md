@@ -329,9 +329,16 @@ for (local i = 0; i < log.getEventCount(); i++) {
 - 限时 / 日刷钩子：`timeLimitSeconds` + `applyClock(now)`；`refreshKey` + `refreshByKey(key, stamp)`（仍不接入 `rpg.update(dt)`）
 - 对话相位约定：`dialoguePhase` / `dialogueConversationId`
 
+## 程序化生成（已落地）
+
+`QuestGenerationCatalogue` 持有 archetype（标签过滤、目标/奖励槽位、`idPattern`/`extra` 占位符）。
+`QuestGenerator` 接受 `eve.rpg.quest-generate` 请求（entities + urgency + seed + selection），
+按 `mostUrgent` / `weighted` / `equal` 选出实体并实例化为普通 `QuestDefinition`（自动打 `generated` 标签）。
+`generateAndRegister` 默认可先清掉旧的 `generated` 条目再注册；进度仍走 `Tracker::notify`。
+
 ## 仍非目标
 
-- 节点图 / 程序化任务生成 / 内置 Journal·HUD 套件
+- 节点图编辑器 / 完整 GOAP 规划器 / 内置 Journal·HUD 套件
 - 终身计数账本（条目中心：只给当前 `active` 的目标加分）
 - C++ 自定义目标类型 / 生命周期 hook
 - 与 `event` 模块打通（独立 poll，与 tick/cast 现状一致）

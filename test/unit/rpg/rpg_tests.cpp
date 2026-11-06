@@ -685,6 +685,7 @@ TEST_CASE("Vitals clamp writes damage and healing and revival restores capacity"
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_quest)
 #include "PrivateTestScope.h"
 #include "rpg/Quest.h"
+#include "rpg/QuestGeneration.h"
 #include "rpg/Tracker.h"
 namespace test_rpg_quest_contract {
 using namespace eve::rpg;
@@ -846,6 +847,92 @@ TEST_CASE("Quest replaceFromJsonStrict rejects unknown objectivePolicy") {
     const auto* def = QuestRegistry::find("rewrite.rpg.quest.ok");
     REQUIRE(def != nullptr);
     CHECK(def->objectives.front().optional);
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest generator selects urgent entity and registers a playable definition") {
+    QuestRegistry::clear();
+    QuestGenerationCatalogue::clear();
+    auto archetypes = QuestGenerationCatalogue::replaceFromJsonStrict(R"([{
+      "id":"archetype.slay",
+      "weight":1.0,
+      "requiresEntityTags":["enemy"],
+      "completePolicy":"claim",
+      "idPattern":"gen.slay.{entity}",
+      "objectives":[{"id":"kill","topic":"kill","targetSlot":"entity","countVar":"count"}],
+      "rewards":[{"type":"attribute","id":"gold","amountVar":"gold"}],
+      "extra":{"title":"Hunt {entity}","giver":"{giver}"}
+    }])");
+    REQUIRE(archetypes.ok());
+    CHECK_EQ(archetypes.value(), 1);
+
+    auto registered = QuestGenerator::generateAndRegister(R"({
+      "schema":"eve.rpg.quest-generate",
+      "version":1,
+      "seed":7,
+      "maxQuests":1,
+      "selection":"mostUrgent",
+      "giverId":"npc.elder",
+      "entities":[
+        {"id":"slime","tags":["enemy"],"urgency":10,"vars":{"count":2,"gold":20}},
+        {"id":"wolf","tags":["enemy"],"urgency":90,"vars":{"count":3,"gold":55}}
+      ]
+    })");
+    REQUIRE(registered.ok());
+    CHECK_EQ(registered.value(), 1);
+    const auto* quest = QuestRegistry::find("gen.slay.wolf");
+    REQUIRE(quest != nullptr);
+    CHECK(quest->hasTag("generated"));
+    REQUIRE_EQ(quest->objectives.size(), 1u);
+    CHECK_EQ(quest->objectives.front().target, std::string("wolf"));
+    CHECK_EQ(quest->objectives.front().count, 3);
+    REQUIRE_EQ(quest->rewards.size(), 1u);
+    CHECK_EQ(quest->rewards.front().amount, 55.0);
+    CHECK_EQ(quest->getExtra("title"), std::string("Hunt wolf"));
+    CHECK_EQ(quest->getExtra("giver"), std::string("npc.elder"));
+
+    Tracker tracker;
+    REQUIRE(tracker.activate("gen.slay.wolf"));
+    tracker.notify("kill", "wolf", 3);
+    CHECK_EQ(tracker.getState("gen.slay.wolf"), std::string("ready"));
+
+    auto again = QuestGenerator::generateAndRegister(R"({
+      "schema":"eve.rpg.quest-generate","version":1,"seed":7,"maxQuests":1,"selection":"mostUrgent",
+      "giverId":"npc.elder",
+      "entities":[{"id":"wolf","tags":["enemy"],"urgency":90,"vars":{"count":1,"gold":10}}]
+    })");
+    REQUIRE(again.ok());
+    CHECK_EQ(again.value(), 1);
+    CHECK(QuestRegistry::find("gen.slay.wolf") != nullptr);
+
+    QuestGenerationCatalogue::clear();
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest generator preview json is deterministic for a fixed seed") {
+    QuestRegistry::clear();
+    QuestGenerationCatalogue::clear();
+    REQUIRE(QuestGenerationCatalogue::replaceFromJsonStrict(R"([{
+      "id":"archetype.fetch",
+      "requiresEntityTags":["item"],
+      "objectives":[{"id":"get","topic":"loot","targetSlot":"entity","count":1}],
+      "rewards":[{"type":"attribute","id":"xp","amount":5}]
+    }])")
+                .ok());
+    const char* request = R"({
+      "schema":"eve.rpg.quest-generate","version":1,"seed":99,"maxQuests":1,"selection":"weighted",
+      "entities":[
+        {"id":"herb","tags":["item"],"urgency":40},
+        {"id":"ore","tags":["item"],"urgency":40}
+      ]
+    })";
+    auto        first   = QuestGenerator::generateJson(request);
+    auto        second  = QuestGenerator::generateJson(request);
+    REQUIRE(first.ok());
+    REQUIRE(second.ok());
+    CHECK_EQ(first.value(), second.value());
+    CHECK(first.value().find("\"schema\":\"eve.rpg.quest-generate-result\"") != std::string::npos);
+    QuestGenerationCatalogue::clear();
     QuestRegistry::clear();
 }
 }  // namespace test_rpg_quest_contract
