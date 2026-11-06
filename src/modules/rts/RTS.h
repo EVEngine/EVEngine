@@ -18,6 +18,7 @@
 #include "rts/RTSContent.h"
 #include "rts/RTSEffects.h"
 #include "rts/RTSMatch.h"
+#include "rts/RTSMission.h"
 #include "rts/RTSProductionAction.h"
 #include "rts/RTSReplay.h"
 #include "rts/RTSSnapshot.h"
@@ -185,6 +186,18 @@ public:
     [[nodiscard]] Result<void> addMatchParticipant(Match& match, Faction& faction, int team) const;
     /** @brief Register one campaign objective on an owned setup-phase match. */
     [[nodiscard]] Result<void> addMatchObjective(Match& match, MissionObjectiveSpec objective) const;
+    /** @brief Register one campaign trigger on an owned match. */
+    [[nodiscard]] Result<void> addMatchTrigger(Match& match, MissionTrigger trigger) const;
+    /** @brief Register one campaign region monitor on an owned match. */
+    [[nodiscard]] Result<void> addMatchMonitor(Match& match, MissionRegionMonitor monitor) const;
+    /** @brief Register one campaign timer on an owned match. */
+    [[nodiscard]] Result<void> addMatchTimer(Match& match, MissionTimer timer) const;
+    /** @brief Create or overwrite one campaign variable on an owned match. */
+    [[nodiscard]] Result<void> setMatchVariable(Match& match, std::string id, double value) const;
+    /** @brief Push one campaign event onto an owned match pending queue. */
+    [[nodiscard]] Result<void> pushMatchCampaignEvent(Match& match, MissionPendingEvent event) const;
+    /** @brief Clear retained campaign Script action log entries on an owned match. */
+    [[nodiscard]] Result<void> clearMatchCampaignActions(Match& match) const;
     /** @brief Start one owned match after participant/rule validation. */
     [[nodiscard]] Result<void> startMatch(Match& match) const;
     /** @brief Surrender one owned faction from one owned running match. */

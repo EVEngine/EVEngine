@@ -711,6 +711,7 @@ Match* Match::createMatch(SubjectRef subject) {
     (void)match->scores();
     (void)match->objectives();
     (void)match->events();
+    (void)match->campaign();
     return match;
 }
 

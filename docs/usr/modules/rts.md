@@ -45,6 +45,33 @@
 以及 kind 相关的 `targetFaction` / `targetSubject` / `archetype` /
 `requiredDuration` / `requiredSubjects` / `resourceType` / `targetValue`。
 `inspectMatch` 投影 `objectives[]` 的 `status`（`pending`/`completed`/`failed`）。
+
+## 战役 Trigger / Monitor / Timer
+
+`Match::Campaign` 是 WC3 风格的战役宿主，与 Objectives 分工：Objectives 管胜负，
+Campaign 管中途反应。每帧在 `MatchSystem::step` 之后由 `MissionScriptSystem::step`
+推进。
+
+脚本入口：
+
+| API | 作用 |
+| --- | --- |
+| `addMatchTriggerJson` | 注册 trigger：events（OR）+ conditions（变量 AND）+ actions |
+| `addMatchMonitorJson` | 轴对齐区域，进出产生 `region_entered` / `region_exited` |
+| `addMatchTimer` | 倒计时；到点产生 `timer_elapsed` |
+| `setMatchVariable` | 命名数值变量（供 condition / action 读写） |
+| `pushMatchCampaignEvent` | 脚本推送 custom/域事件 |
+| `clearMatchCampaignActions` | 消费完 `campaignActions` 后清空 |
+
+事件 kind：`match_started` / `match_finished` / `objective_completed` /
+`objective_failed` / `timer_elapsed` / `region_entered` / `region_exited` /
+`unit_died` / `building_destroyed` / `custom`。
+
+内置 action：`set_variable` / `add_variable` / `start_timer` / `stop_timer` /
+`reset_timer` / `enable_trigger` / `disable_trigger` / `enable_monitor` /
+`disable_monitor` / `emit_custom` / `script`（写入 `inspectMatch.campaignActions`
+给游戏层刷兵/对话/过场）。
+
 局中外交、MOBA/塔防仍由游戏脚本组合，不进 Match。
 
 ## 任务一：建立最小阵营世界

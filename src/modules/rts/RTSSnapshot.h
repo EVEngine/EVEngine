@@ -151,6 +151,7 @@ struct RTSMatchSnapshot {
     Match::Scores scores;
     Match::Objectives objectives;
     Match::Events events;
+    Match::Campaign campaign;
 };
 
 /**

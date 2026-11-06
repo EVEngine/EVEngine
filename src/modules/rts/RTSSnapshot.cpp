@@ -334,6 +334,7 @@ Result<RTSStateSnapshot> RTS::snapshotState() const {
         value.state       = *match->state();
         value.scores      = *match->scores();
         value.objectives  = *match->objectives();
+        value.campaign    = *match->campaign();
         value.events      = *match->events();
         for (const auto& participant : match->participants()->entries)
             value.participants.push_back({subjectOf(participant.faction.resolve()), participant.team,
@@ -824,7 +825,36 @@ Result<std::string> RTS::canonicalStateJson() const {
                 {"targetSubject", objective.spec.targetSubject.format()},
                 {"targetValue", objective.spec.targetValue}});
         }
-        matches.emplace_back(Value::Object{{"elapsedNs", value.state.elapsed.nanoseconds()},
+        Value::Array triggers;
+        for (const auto& trigger : value.campaign.triggers)
+            triggers.emplace_back(Value::Object{{"enabled", trigger.enabled},
+                                                {"fired", trigger.fired},
+                                                {"id", trigger.id},
+                                                {"once", trigger.once},
+                                                {"priority", trigger.priority}});
+        Value::Array timers;
+        for (const auto& timer : value.campaign.timers)
+            timers.emplace_back(Value::Object{{"durationNs", timer.duration.nanoseconds()},
+                                              {"elapsedNs", timer.elapsed.nanoseconds()},
+                                              {"id", timer.id},
+                                              {"repeating", timer.repeating},
+                                              {"running", timer.running}});
+        Value::Array variables;
+        for (const auto& variable : value.campaign.variables)
+            variables.emplace_back(Value::Object{{"id", variable.id}, {"value", variable.value}});
+        Value::Array campaignActions;
+        for (const auto& action : value.campaign.actions)
+            campaignActions.emplace_back(Value::Object{{"kind", action.kind},
+                                                       {"numeric", action.numeric},
+                                                       {"sequence", static_cast<std::int64_t>(action.sequence)},
+                                                       {"targetId", action.targetId},
+                                                       {"tick", static_cast<std::int64_t>(action.tick)},
+                                                       {"triggerId", action.triggerId}});
+        matches.emplace_back(Value::Object{{"actionSequence", static_cast<std::int64_t>(value.campaign.actionSequence)},
+                                           {"bridgedEventSequence",
+                                            static_cast<std::int64_t>(value.campaign.bridgedEventSequence)},
+                                           {"campaignActions", Value(std::move(campaignActions))},
+                                           {"elapsedNs", value.state.elapsed.nanoseconds()},
                                            {"events", Value(std::move(events))},
                                            {"objectives", Value(std::move(objectives))},
                                            {"participants", Value(std::move(participants))},
@@ -838,6 +868,9 @@ Result<std::string> RTS::canonicalStateJson() const {
                                            {"suddenDeathActive", value.state.suddenDeathActive},
                                            {"target", value.rules.targetValue},
                                            {"timeLimitNs", value.rules.timeLimit.nanoseconds()},
+                                           {"timers", Value(std::move(timers))},
+                                           {"triggers", Value(std::move(triggers))},
+                                           {"variables", Value(std::move(variables))},
                                            {"winningTeam", value.state.winningTeam}});
     }
     Value::Array movementGroups;
@@ -1235,6 +1268,7 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
         *match->scores()      = value.scores;
         *match->objectives()  = value.objectives;
         *match->events()      = value.events;
+        *match->campaign()    = value.campaign;
         match->participants()->entries.clear();
         for (const auto& participant : value.participants) {
             Match::Participants::Entry entry;

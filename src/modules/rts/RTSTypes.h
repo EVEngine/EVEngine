@@ -1353,6 +1353,125 @@ struct MissionObjectiveState {
     std::uint64_t completedSequence = 0;
 };
 
+/** @brief Domain event kinds that can wake Match campaign triggers. */
+enum class MissionTriggerEventKind : std::uint8_t {
+    MatchStarted,
+    MatchFinished,
+    ObjectiveCompleted,
+    ObjectiveFailed,
+    TimerElapsed,
+    RegionEntered,
+    RegionExited,
+    UnitDied,
+    BuildingDestroyed,
+    Custom,
+};
+
+/** @brief Optional filters that narrow one trigger event subscription. */
+struct MissionTriggerEventFilter {
+    MissionTriggerEventKind kind = MissionTriggerEventKind::Custom;
+    /** @brief Timer, region, objective, or custom id; empty matches any id for that kind. */
+    std::string id;
+    SubjectRef subject;
+    SubjectRef faction;
+    std::string archetype;
+};
+
+/** @brief Variable comparison used as an AND gate on a trigger. */
+enum class MissionVariableCompare : std::uint8_t { Eq, Ne, Lt, Le, Gt, Ge };
+
+/** @brief One variable predicate evaluated against Match::Campaign variables. */
+struct MissionTriggerCondition {
+    std::string variable;
+    MissionVariableCompare op = MissionVariableCompare::Eq;
+    double value = 0.0;
+};
+
+/** @brief Built-in campaign actions; Script entries are retained for the game layer. */
+enum class MissionActionKind : std::uint8_t {
+    SetVariable,
+    AddVariable,
+    StartTimer,
+    StopTimer,
+    ResetTimer,
+    EnableTrigger,
+    DisableTrigger,
+    EnableMonitor,
+    DisableMonitor,
+    EmitCustom,
+    Script,
+};
+
+/** @brief One deferred campaign side-effect descriptor. */
+struct MissionAction {
+    MissionActionKind kind = MissionActionKind::Script;
+    std::string targetId;
+    double numeric = 0.0;
+    Value args = Value::Object{};
+};
+
+/** @brief Authorable trigger: OR of events, AND of variable conditions, then actions. */
+struct MissionTrigger {
+    std::string id;
+    bool enabled = true;
+    bool once = true;
+    int priority = 0;
+    std::vector<MissionTriggerEventFilter> events;
+    std::vector<MissionTriggerCondition> conditions;
+    std::vector<MissionAction> actions;
+    bool fired = false;
+};
+
+/** @brief Axis-aligned world region that emits enter/exit events for live subjects. */
+struct MissionRegionMonitor {
+    std::string id;
+    bool enabled = true;
+    float minX = 0.0f;
+    float minY = 0.0f;
+    float maxX = 0.0f;
+    float maxY = 0.0f;
+    SubjectRef faction;
+    std::vector<SubjectRef> subjects;
+    /** @brief Runtime occupants discovered on the previous step. */
+    std::vector<SubjectRef> occupants;
+};
+
+/** @brief Match-owned countdown that emits TimerElapsed when it reaches zero. */
+struct MissionTimer {
+    std::string id;
+    Duration duration{};
+    Duration elapsed{};
+    bool running = false;
+    bool repeating = false;
+};
+
+/** @brief Named numeric campaign variable. */
+struct MissionVariable {
+    std::string id;
+    double value = 0.0;
+};
+
+/** @brief Queued campaign event waiting to wake triggers. */
+struct MissionPendingEvent {
+    MissionTriggerEventKind kind = MissionTriggerEventKind::Custom;
+    std::string id;
+    SubjectRef subject;
+    SubjectRef faction;
+    std::string archetype;
+    int team = -1;
+};
+
+/** @brief Retained Script-action activation for game-layer consumption. */
+struct MissionActionLogEntry {
+    std::uint64_t sequence = 0;
+    std::uint64_t tick = 0;
+    std::string triggerId;
+    std::string kind;
+    std::string targetId;
+    double numeric = 0.0;
+    Value args = Value::Object{};
+};
+
 /** @brief Independent match composition root; factions may participate in different matches. */
 class EVENGINE_API_DOMAINS Match : public ecs::Entity {
 public:
@@ -1425,6 +1544,23 @@ public:
         };
         std::vector<Event> values;
     };
+    /**
+     * @brief Campaign trigger host owned by the match (WC3-style events/monitors/timers).
+     * @remarks Objectives settle win/fail; Campaign orchestrates mid-mission reactions.
+     */
+    struct Campaign {
+        std::vector<MissionTrigger> triggers;
+        std::vector<MissionRegionMonitor> monitors;
+        std::vector<MissionTimer> timers;
+        std::vector<MissionVariable> variables;
+        std::vector<MissionPendingEvent> pending;
+        std::vector<MissionActionLogEntry> actions;
+        /** @brief Subjects known alive on the previous campaign step for death edges. */
+        std::vector<SubjectRef> trackedAlive;
+        /** @brief Match::Events watermark already bridged into pending. */
+        std::uint64_t bridgedEventSequence = 0;
+        std::uint64_t actionSequence = 0;
+    };
 
     COMPONENT(Identity, identity)
     COMPONENT(Rules, rules)
@@ -1433,6 +1569,7 @@ public:
     COMPONENT(Scores, scores)
     COMPONENT(Objectives, objectives)
     COMPONENT(Events, events)
+    COMPONENT(Campaign, campaign)
 
     /**
      * @brief Create a match and initialize every composition component.

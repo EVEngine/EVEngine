@@ -22,6 +22,7 @@
 #include "zeroerr/assert.h"
 
 #include "RtsCompositionFixtures.h"
+#include "rts/RTSMission.h"
 // rts_combat.cpp
 namespace test_rts_combat {
 // rts_combat.cpp
@@ -3837,6 +3838,73 @@ TEST_CASE("rts.matchHeadquartersResourceVictoryAndTeamSurrender") {
     CHECK_EQ(static_cast<int>(protect->objectives()->values[0].status),
              static_cast<int>(eve::rts::MissionObjectiveStatus::Failed));
 
+    Match* campaign = Match::createMatch(subject("00000000-0000-7000-8000-000000000220"));
+    campaign->rules()->rule = eve::rts::VictoryRule::Annihilation;
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*campaign, *alpha, 1).ok());
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*campaign, *beta, 2).ok());
+    REQUIRE(eve::rts::MissionScriptSystem::setVariable(*campaign, "wave", 0.0).ok());
+    eve::rts::MissionTimer countdown;
+    countdown.id = "countdown";
+    countdown.duration = eve::Duration::fromSeconds(1.0).value();
+    countdown.running = true;
+    REQUIRE(eve::rts::MissionScriptSystem::addTimer(*campaign, countdown).ok());
+    eve::rts::MissionRegionMonitor beach;
+    beach.id = "beach";
+    beach.minX = 0.0f;
+    beach.minY = 0.0f;
+    beach.maxX = 5.0f;
+    beach.maxY = 5.0f;
+    REQUIRE(eve::rts::MissionScriptSystem::addMonitor(*campaign, beach).ok());
+    eve::rts::MissionTrigger onTimer;
+    onTimer.id = "on_countdown";
+    onTimer.once = true;
+    onTimer.events.push_back({eve::rts::MissionTriggerEventKind::TimerElapsed, "countdown", {}, {}, {}});
+    onTimer.actions.push_back(
+        {eve::rts::MissionActionKind::SetVariable, "wave", 1.0, eve::Value::Object{}});
+    onTimer.actions.push_back(
+        {eve::rts::MissionActionKind::Script, "spawn_wave", 0.0, eve::Value::Object{{"count", 3}}});
+    REQUIRE(eve::rts::MissionScriptSystem::addTrigger(*campaign, onTimer).ok());
+    eve::rts::MissionTrigger onEnter;
+    onEnter.id = "on_beach";
+    onEnter.once = true;
+    onEnter.events.push_back({eve::rts::MissionTriggerEventKind::RegionEntered, "beach", {}, {}, {}});
+    onEnter.conditions.push_back({"wave", eve::rts::MissionVariableCompare::Ge, 1.0});
+    onEnter.actions.push_back(
+        {eve::rts::MissionActionKind::Script, "briefing", 0.0, eve::Value::Object{}});
+    REQUIRE(eve::rts::MissionScriptSystem::addTrigger(*campaign, onEnter).ok());
+    REQUIRE(eve::rts::MatchSystem::start(*campaign).ok());
+    Unit* scout = Unit::createUnit(subject("00000000-0000-7000-8000-000000000221"));
+    auto scoutOwner = eve::rts::FactionLink::bind(ecs::handle_of(alpha));
+    REQUIRE(scoutOwner.ok());
+    scout->faction()->link = std::move(scoutOwner).takeValue();
+    scout->durability()->alive = true;
+    scout->durability()->state.health = 10.0;
+    scout->motion()->x = 100.0f;
+    scout->motion()->y = 100.0f;
+    auto campaignSeed = eve::rts::MissionScriptSystem::step(
+        *campaign, eve::SimulationStep{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.5).value()});
+    REQUIRE(campaignSeed.ok());
+    CHECK_EQ(eve::rts::MissionScriptSystem::variable(*campaign, "wave").value(), 0.0);
+    auto campaignTick = eve::rts::MissionScriptSystem::step(
+        *campaign, eve::SimulationStep{eve::SimulationTick{2}, eve::Duration::fromSeconds(0.5).value()});
+    REQUIRE(campaignTick.ok());
+    CHECK_EQ(eve::rts::MissionScriptSystem::variable(*campaign, "wave").value(), 1.0);
+    bool sawSpawn = false;
+    for (const auto& action : campaign->campaign()->actions)
+        if (action.kind == "script" && action.targetId == "spawn_wave") sawSpawn = true;
+    CHECK(sawSpawn);
+    scout->motion()->x = 2.0f;
+    scout->motion()->y = 2.0f;
+    auto campaignEnter = eve::rts::MissionScriptSystem::step(
+        *campaign, eve::SimulationStep{eve::SimulationTick{3}, eve::Duration::zero()});
+    REQUIRE(campaignEnter.ok());
+    bool sawBriefing = false;
+    for (const auto& action : campaign->campaign()->actions)
+        if (action.kind == "script" && action.targetId == "briefing") sawBriefing = true;
+    CHECK(sawBriefing);
+
+    scout->release();
+    campaign->release();
     protect->release();
     vip->release();
     mission->release();

@@ -8,6 +8,9 @@
 ## 接收者见绑定源码
 
 - `addBuildingAmmoSupply(subjectText: string, rounds: float)` → `Table<string, dynamic>`；[绑定实现 L4791](../../../../src/modules/rts/RTS.cpp#L4791)。
+- `addMatchTimer(matchText: string, id: string, seconds: float, repeating: bool, start: bool)` → `Table<string, dynamic>`；战役倒计时。
+- `addMatchTriggerJson(matchText: string, json: string)` → `Table<string, dynamic>`；战役 trigger。
+- `addMatchMonitorJson(matchText: string, json: string)` → `Table<string, dynamic>`；战役区域监视器。
 - `addMatchObjectiveJson(matchText: string, json: string)` → `Table<string, dynamic>`；[绑定实现 L3621](../../../../src/modules/rts/RTS.cpp#L3621)。战役 objective JSON，字段见 [rts.md](../rts.md)。
 - `addMatchParticipant(matchText: string, factionText: string, team: int)` → `Table<string, dynamic>`；[绑定实现 L3607](../../../../src/modules/rts/RTS.cpp#L3607)。
 - `addUnitAmmoSupply(subjectText: string, rounds: float)` → `Table<string, dynamic>`；[绑定实现 L4780](../../../../src/modules/rts/RTS.cpp#L4780)。
@@ -105,6 +108,9 @@
 - `setReinforcementTypePriority(producerText: string, unitType: string, priority: int)` → `Table<string, dynamic>`；[绑定实现 L4166](../../../../src/modules/rts/RTS.cpp#L4166)。
 - `setScriptNavigationBlocked(x: int, y: int, blocked: bool)` → `Table<string, dynamic>`；[绑定实现 L3853](../../../../src/modules/rts/RTS.cpp#L3853)。
 - `setScriptNavigationCost(x: int, y: int, cost: float)` → `Table<string, dynamic>`；[绑定实现 L3856](../../../../src/modules/rts/RTS.cpp#L3856)。
+- `setMatchVariable(matchText: string, id: string, value: float)` → `Table<string, dynamic>`；战役变量。
+- `pushMatchCampaignEvent(matchText: string, kindText: string, id: string)` → `Table<string, dynamic>`；推送战役事件。
+- `clearMatchCampaignActions(matchText: string)` → `Table<string, dynamic>`；清空 campaignActions。
 - `setScriptTerrainElevation(x: int, y: int, elevation: float)` → `Table<string, dynamic>`；[绑定实现 L3859](../../../../src/modules/rts/RTS.cpp#L3859)。
 - `setUnitAutoResupply(subjectText: string, enabled: bool)` → `Table<string, dynamic>`；[绑定实现 L4802](../../../../src/modules/rts/RTS.cpp#L4802)。
 - `setUnitCloaked(unitText: string, cloaked: bool)` → `Table<string, dynamic>`；[绑定实现 L4986](../../../../src/modules/rts/RTS.cpp#L4986)。
