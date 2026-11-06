@@ -357,7 +357,7 @@ Result<void> SensingWorld::upsertPosition(std::string_view id, float x, float y,
     }
     Subject subject{key, x, y, std::string(f), csv(t), csv(v), {}, z};
     if (found != subjects_.end()) {
-        subject.zones        = found->second.zones;
+        // Zones stay owned by setZones: upsert clears them. Preserve TD metrics only.
         subject.pathProgress = found->second.pathProgress;
         subject.strength     = found->second.strength;
     }
