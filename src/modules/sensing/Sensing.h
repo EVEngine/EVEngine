@@ -45,6 +45,8 @@ struct Subject {
     std::set<std::string> visibleTo;
     std::set<std::string> zones; /**< Logical zone ids (LogicalId text). */
     float                 z = 0.f; /**< Actual world Z; indexing never overwrites coordinates. */
+    float pathProgress = 0.f; /**< Higher means further along a route (closer to exit for TD First). */
+    float strength     = 0.f; /**< Higher means stronger / more HP for Strongest targeting. */
 };
 
 /** @brief A deterministic candidate returned by a spatial query. */
@@ -65,7 +67,12 @@ enum class CountPolicy : std::uint8_t {
 /** @brief Ordering applied to ranked query results. */
 enum class SortKey : std::uint8_t {
     None,
-    DistanceAscending,
+    DistanceAscending,       /**< Closest to origin (score = -distance). */
+    DistanceDescending,      /**< Furthest from origin. */
+    PathProgressDescending,  /**< First / closest to exit (score = pathProgress). */
+    PathProgressAscending,   /**< Last / least path progress. */
+    StrengthDescending,      /**< Strongest. */
+    StrengthAscending,       /**< Weakest. */
 };
 
 /** @brief Circle shape for QuerySpec (World2D). */
@@ -154,10 +161,12 @@ struct RankedCandidate {
     float       x            = 0.f;
     float       y            = 0.f;
     float       distance     = 0.f;
-    float       score        = 0.f; /**< Higher is better; Phase 1 uses -distance. */
+    float       score        = 0.f; /**< Higher is better after sort-key scoring. */
     std::string scoreReason;        /**< Stable diagnostic token, e.g. "distance". */
-    float           z     = 0.f;
-    CoordinateSpace space = CoordinateSpace::World2D;
+    float           z            = 0.f;
+    float           pathProgress = 0.f;
+    float           strength     = 0.f;
+    CoordinateSpace space        = CoordinateSpace::World2D;
 };
 
 /** @brief Owning ranked result; does not assign a primary target. */
@@ -206,6 +215,15 @@ public:
      * @thread Call on the sensing world's owning simulation thread.
      */
     [[nodiscard]] eve::Result<void> setZones(std::string_view id, std::string_view zonesCsv);
+    /**
+     * @brief Updates route/threat metrics used by TD-style SortKey policies.
+     * @param id Existing subject id.
+     * @param pathProgress Finite route progress (higher = closer to exit / First).
+     * @param strength Finite strength / HP proxy (higher = Strongest).
+     * @return Applied on success, NotFound when absent, InvalidArgument for non-finite values.
+     * @thread Sensing world owner thread; no callbacks.
+     */
+    [[nodiscard]] eve::Result<void> setMetrics(std::string_view id, float pathProgress, float strength);
 
     /**
      * @brief Enables or disables an compatibility-only XY broadphase; delegates to rebuildIndex (off by default).
@@ -279,6 +297,14 @@ public:
     [[nodiscard]] eve::Result<int> circle(float x, float y, float radius, std::string_view requireTagsCsv,
                                           std::string_view excludeTagsCsv, std::string_view includeFactionsCsv,
                                           std::string_view excludeFactionsCsv, std::string_view visibleTo, int limit);
+    /**
+     * @brief Circle query with an explicit targeting sort policy.
+     * @param sortPolicy One of: closest, furthest, first, last, strongest, weakest, distance, none.
+     */
+    [[nodiscard]] eve::Result<int> circleSorted(float x, float y, float radius, std::string_view requireTagsCsv,
+                                                std::string_view excludeTagsCsv, std::string_view includeFactionsCsv,
+                                                std::string_view excludeFactionsCsv, std::string_view visibleTo,
+                                                int limit, std::string_view sortPolicy);
     /** @brief Queries an axis-aligned box with the same filters as circle(). */
     [[nodiscard]] eve::Result<int> box(float minX, float minY, float maxX, float maxY, std::string_view requireTagsCsv,
                                        std::string_view excludeTagsCsv, std::string_view includeFactionsCsv,

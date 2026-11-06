@@ -8,7 +8,11 @@
 ## 接收者见绑定源码
 
 - `addBuildingAmmoSupply(subjectText: string, rounds: float)` → `Table<string, dynamic>`；[绑定实现 L4791](../../../../src/modules/rts/RTS.cpp#L4791)。
-- `addMatchParticipant(matchText: string, factionText: string, team: int)` → `Table<string, dynamic>`；[绑定实现 L3712](../../../../src/modules/rts/RTS.cpp#L3712)。
+- `addMatchTimer(matchText: string, id: string, seconds: float, repeating: bool, start: bool)` → `Table<string, dynamic>`；战役倒计时。
+- `addMatchTriggerJson(matchText: string, json: string)` → `Table<string, dynamic>`；战役 trigger。
+- `addMatchMonitorJson(matchText: string, json: string)` → `Table<string, dynamic>`；战役区域监视器。
+- `addMatchObjectiveJson(matchText: string, json: string)` → `Table<string, dynamic>`；[绑定实现 L3621](../../../../src/modules/rts/RTS.cpp#L3621)。战役 objective JSON，字段见 [rts.md](../rts.md)。
+- `addMatchParticipant(matchText: string, factionText: string, team: int)` → `Table<string, dynamic>`；[绑定实现 L3607](../../../../src/modules/rts/RTS.cpp#L3607)。
 - `addUnitAmmoSupply(subjectText: string, rounds: float)` → `Table<string, dynamic>`；[绑定实现 L4780](../../../../src/modules/rts/RTS.cpp#L4780)。
 - `addUnitReserveAmmo(subjectText: string, rounds: int)` → `Table<string, dynamic>`；[绑定实现 L4769](../../../../src/modules/rts/RTS.cpp#L4769)。
 - `applyStatusEffect(sourceText: string, targetText: string, effect: string, durationOverride: float)` → `Table<string, dynamic>`；[绑定实现 L4822](../../../../src/modules/rts/RTS.cpp#L4822)。
@@ -29,7 +33,8 @@
 - `clearBuildingRally(producerText: string)` → `Table<string, dynamic>`；[绑定实现 L4123](../../../../src/modules/rts/RTS.cpp#L4123)。
 - `configureAutoConstruction(factionText: string, enabled: bool, maxBuildersPerSite: int, reserveWorkers: int)` → `Table<string, dynamic>`；[绑定实现 L4722](../../../../src/modules/rts/RTS.cpp#L4722)。
 - `configureAutoRepair(factionText: string, enabled: bool, maxRepairersPerBuilding: int, reserveWorkers: int)` → `Table<string, dynamic>`；[绑定实现 L4738](../../../../src/modules/rts/RTS.cpp#L4738)。
-- `configureMatch(matchText: string, ruleText: string, archetype: string, targetValue: float)` → `Table<string, dynamic>`；[绑定实现 L3688](../../../../src/modules/rts/RTS.cpp#L3688)。
+- `configureMatch(matchText: string, ruleText: string, archetype: string, targetValue: float)` → `Table<string, dynamic>`；[绑定实现 L3564](../../../../src/modules/rts/RTS.cpp#L3564)。`ruleText` 为 `annihilation` / `headquarters` / `resource` / `score` / `mission`。
+- `configureMatchTiming(matchText: string, timeLimitSeconds: float, suddenDeath: bool)` → `Table<string, dynamic>`；[绑定实现 L3592](../../../../src/modules/rts/RTS.cpp#L3592)。
 - `configureScriptAI(factionText: string, workerText: string, armyText: string, targetBuildingText: string, desiredWorkers: int, attackThreshold: int, thinkInterval: float, formationSpacing: float, enabled: bool)` → `Table<string, dynamic>`；[绑定实现 L3926](../../../../src/modules/rts/RTS.cpp#L3926)。
 - `configureSettlementRulesJson(json: string)` → `Table<string, dynamic>`；[绑定实现 L3662](../../../../src/modules/rts/RTS.cpp#L3662)。
 - `escortUnits(subjectTexts: string, targetText: string, guardRadius: float, spacing: float)` → `Table<string, dynamic>`；[绑定实现 L4668](../../../../src/modules/rts/RTS.cpp#L4668)。
@@ -42,13 +47,14 @@
 - `holdUnits(subjectTexts: string)` → `Table<string, dynamic>`；[绑定实现 L5003](../../../../src/modules/rts/RTS.cpp#L5003)。
 - `importScriptCommandLog(text: string, clearExisting: bool)` → `Table<string, dynamic>`；[绑定实现 L4234](../../../../src/modules/rts/RTS.cpp#L4234)。
 - `inspectFrameEvents()` → `Table<string, dynamic>`；[绑定实现 L3826](../../../../src/modules/rts/RTS.cpp#L3826)。
-- `inspectMatch(matchText: string)` → `Table<string, dynamic>`；[绑定实现 L3751](../../../../src/modules/rts/RTS.cpp#L3751)。
+- `creditMatchScore(matchText: string, team: int, amount: float)` → `Table<string, dynamic>`；[绑定实现 L3754](../../../../src/modules/rts/RTS.cpp#L3754)。
+- `inspectMatch(matchText: string)` → `Table<string, dynamic>`；[绑定实现 L3765](../../../../src/modules/rts/RTS.cpp#L3765)。
 - `linkBuildingRally(producerText: string, sourceText: string)` → `Table<string, dynamic>`；[绑定实现 L4108](../../../../src/modules/rts/RTS.cpp#L4108)。
-- `matchCount()` → `dynamic`；[绑定实现 L3659](../../../../src/modules/rts/RTS.cpp#L3659)。
+- `matchCount()` → `dynamic`；[绑定实现 L3535](../../../../src/modules/rts/RTS.cpp#L3535)。
 - `moveFormationUnits(texts: Array<dynamic>, x: float, y: float, append: bool, kind: string, spacing: float, columns: int, rotation: float)` → `Table<string, dynamic>`；[绑定实现 L108](../../../../src/modules/rts/RTSFormationBindings.cpp#L108)。
 - `moveGroupUnits(texts: Array<dynamic>, x: float, y: float, kind: string, spacing: float, columns: int, rotation: float, leadDistance: float)` → `Table<string, dynamic>`；[绑定实现 L45](../../../../src/modules/rts/RTSFormationBindings.cpp#L45)。
 - `moveUnits(subjectTexts: Array<dynamic>, x: float, y: float, append: bool, spacing: float)` → `Table<string, dynamic>`；[绑定实现 L79](../../../../src/modules/rts/RTSFormationBindings.cpp#L79)。
-- `newMatch(subjectText: string)` → `Table<string, dynamic>`；[绑定实现 L3682](../../../../src/modules/rts/RTS.cpp#L3682)。
+- `newMatch(subjectText: string)` → `Table<string, dynamic>`；[绑定实现 L3558](../../../../src/modules/rts/RTS.cpp#L3558)。
 - `patrolUnits(subjectTexts: string, x: float, y: float, spacing: float)` → `Table<string, dynamic>`；[绑定实现 L4870](../../../../src/modules/rts/RTS.cpp#L4870)。
 - `playerCount()` → `dynamic`；[绑定实现 L3657](../../../../src/modules/rts/RTS.cpp#L3657)。
 - `queueScriptAbilityCommand(tick: int, casterText: string, ability: string, targetText: string, x: float, y: float)` → `Table<string, dynamic>`；[绑定实现 L4324](../../../../src/modules/rts/RTS.cpp#L4324)。
@@ -102,17 +108,20 @@
 - `setReinforcementTypePriority(producerText: string, unitType: string, priority: int)` → `Table<string, dynamic>`；[绑定实现 L4166](../../../../src/modules/rts/RTS.cpp#L4166)。
 - `setScriptNavigationBlocked(x: int, y: int, blocked: bool)` → `Table<string, dynamic>`；[绑定实现 L3853](../../../../src/modules/rts/RTS.cpp#L3853)。
 - `setScriptNavigationCost(x: int, y: int, cost: float)` → `Table<string, dynamic>`；[绑定实现 L3856](../../../../src/modules/rts/RTS.cpp#L3856)。
+- `setMatchVariable(matchText: string, id: string, value: float)` → `Table<string, dynamic>`；战役变量。
+- `pushMatchCampaignEvent(matchText: string, kindText: string, id: string)` → `Table<string, dynamic>`；推送战役事件。
+- `clearMatchCampaignActions(matchText: string)` → `Table<string, dynamic>`；清空 campaignActions。
 - `setScriptTerrainElevation(x: int, y: int, elevation: float)` → `Table<string, dynamic>`；[绑定实现 L3859](../../../../src/modules/rts/RTS.cpp#L3859)。
 - `setUnitAutoResupply(subjectText: string, enabled: bool)` → `Table<string, dynamic>`；[绑定实现 L4802](../../../../src/modules/rts/RTS.cpp#L4802)。
 - `setUnitCloaked(unitText: string, cloaked: bool)` → `Table<string, dynamic>`；[绑定实现 L4986](../../../../src/modules/rts/RTS.cpp#L4986)。
 - `setUnitMovementPriority(subjectTexts: string, priority: int)` → `Table<string, dynamic>`；[绑定实现 L4689](../../../../src/modules/rts/RTS.cpp#L4689)。
 - `setUnitStance(subjectTexts: string, stanceText: string, leashRange: float)` → `Table<string, dynamic>`；[绑定实现 L4679](../../../../src/modules/rts/RTS.cpp#L4679)。
 - `setWorkerAutoAssignment(subjectTexts: string, enabled: bool)` → `Table<string, dynamic>`；[绑定实现 L4715](../../../../src/modules/rts/RTS.cpp#L4715)。
-- `startMatch(matchText: string)` → `Table<string, dynamic>`；[绑定实现 L3727](../../../../src/modules/rts/RTS.cpp#L3727)。
+- `startMatch(matchText: string)` → `Table<string, dynamic>`；[绑定实现 L3730](../../../../src/modules/rts/RTS.cpp#L3730)。
 - `startScriptConstruction(factionText: string, buildingSubjectText: string, definitionText: string, x: float, y: float, builderText: string)` → `Table<string, dynamic>`；[绑定实现 L3992](../../../../src/modules/rts/RTS.cpp#L3992)。
 - `stopUnits(subjectTexts: string)` → `Table<string, dynamic>`；[绑定实现 L4996](../../../../src/modules/rts/RTS.cpp#L4996)。
 - `suppressAreaUnits(subjectTexts: string, startX: float, startY: float, endX: float, endY: float, width: float, shotsPerUnit: int)` → `Table<string, dynamic>`；[绑定实现 L4658](../../../../src/modules/rts/RTS.cpp#L4658)。
-- `surrenderMatch(matchText: string, factionText: string)` → `Table<string, dynamic>`；[绑定实现 L3737](../../../../src/modules/rts/RTS.cpp#L3737)。
+- `surrenderMatch(matchText: string, factionText: string)` → `Table<string, dynamic>`；[绑定实现 L3741](../../../../src/modules/rts/RTS.cpp#L3741)。
 - `unitCount()` → `dynamic`；[绑定实现 L3654](../../../../src/modules/rts/RTS.cpp#L3654)。
 - `unloadTransport(transportText: string, x: float, y: float)` → `Table<string, dynamic>`；[绑定实现 L4964](../../../../src/modules/rts/RTS.cpp#L4964)。
 

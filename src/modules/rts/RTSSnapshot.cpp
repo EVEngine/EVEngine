@@ -330,9 +330,12 @@ Result<RTSStateSnapshot> RTS::snapshotState() const {
         if (match == nullptr) continue;
         RTSMatchSnapshot value;
         value.subject = match->identity()->subject;
-        value.rules   = *match->rules();
-        value.state   = *match->state();
-        value.events  = *match->events();
+        value.rules       = *match->rules();
+        value.state       = *match->state();
+        value.scores      = *match->scores();
+        value.objectives  = *match->objectives();
+        value.campaign    = *match->campaign();
+        value.events      = *match->events();
         for (const auto& participant : match->participants()->entries)
             value.participants.push_back({subjectOf(participant.faction.resolve()), participant.team,
                                           participant.eliminated, participant.surrendered, participant.reason});
@@ -604,7 +607,8 @@ Result<std::string> RTS::canonicalStateJson() const {
             {"capture", Value(Value::Object{{"blockedByGarrison", value.capture.blockedByGarrison},
                                             {"capturable", value.capture.capturable},
                                             {"duration", value.capture.durationSeconds},
-                                            {"progress", value.capture.progress}})},
+                                            {"progress", value.capture.progress},
+                                            {"scorePerSecond", value.capture.scorePerSecond}})},
             {"combat", Value(Value::Object{
                            {"acquisition", value.combat.acquisitionRange},
                            {"airDefenseNetworkRange", value.combat.airDefenseNetworkRange},
@@ -798,14 +802,75 @@ Result<std::string> RTS::canonicalStateJson() const {
                                               {"reason", event.reason},
                                               {"sequence", static_cast<std::int64_t>(event.sequence)},
                                               {"team", event.team}});
-        matches.emplace_back(Value::Object{{"events", Value(std::move(events))},
+        Value::Array scores;
+        for (const auto& entry : value.scores.entries)
+            scores.emplace_back(Value::Object{{"team", entry.team}, {"value", entry.value}});
+        Value::Array objectives;
+        for (const auto& objective : value.objectives.values) {
+            Value::Array subjects;
+            for (const auto& subject : objective.spec.requiredSubjects) subjects.emplace_back(subject.format());
+            objectives.emplace_back(Value::Object{
+                {"archetype", objective.spec.archetype},
+                {"beneficiaryTeam", objective.spec.beneficiaryTeam},
+                {"completedSequence", static_cast<std::int64_t>(objective.completedSequence)},
+                {"endsMatch", objective.spec.endsMatch},
+                {"failsMatch", objective.spec.failsMatch},
+                {"id", objective.spec.id},
+                {"kind", static_cast<std::int64_t>(objective.spec.kind)},
+                {"requiredDurationNs", objective.spec.requiredDuration.nanoseconds()},
+                {"requiredSubjects", Value(std::move(subjects))},
+                {"resourceType", objective.spec.resourceType},
+                {"status", static_cast<std::int64_t>(objective.status)},
+                {"targetFaction", objective.spec.targetFaction.format()},
+                {"targetSubject", objective.spec.targetSubject.format()},
+                {"targetValue", objective.spec.targetValue}});
+        }
+        Value::Array triggers;
+        for (const auto& trigger : value.campaign.triggers)
+            triggers.emplace_back(Value::Object{{"enabled", trigger.enabled},
+                                                {"fired", trigger.fired},
+                                                {"id", trigger.id},
+                                                {"once", trigger.once},
+                                                {"priority", trigger.priority}});
+        Value::Array timers;
+        for (const auto& timer : value.campaign.timers)
+            timers.emplace_back(Value::Object{{"durationNs", timer.duration.nanoseconds()},
+                                              {"elapsedNs", timer.elapsed.nanoseconds()},
+                                              {"id", timer.id},
+                                              {"repeating", timer.repeating},
+                                              {"running", timer.running}});
+        Value::Array variables;
+        for (const auto& variable : value.campaign.variables)
+            variables.emplace_back(Value::Object{{"id", variable.id}, {"value", variable.value}});
+        Value::Array campaignActions;
+        for (const auto& action : value.campaign.actions)
+            campaignActions.emplace_back(Value::Object{{"kind", action.kind},
+                                                       {"numeric", action.numeric},
+                                                       {"sequence", static_cast<std::int64_t>(action.sequence)},
+                                                       {"targetId", action.targetId},
+                                                       {"tick", static_cast<std::int64_t>(action.tick)},
+                                                       {"triggerId", action.triggerId}});
+        matches.emplace_back(Value::Object{{"actionSequence", static_cast<std::int64_t>(value.campaign.actionSequence)},
+                                           {"bridgedEventSequence",
+                                            static_cast<std::int64_t>(value.campaign.bridgedEventSequence)},
+                                           {"campaignActions", Value(std::move(campaignActions))},
+                                           {"elapsedNs", value.state.elapsed.nanoseconds()},
+                                           {"events", Value(std::move(events))},
+                                           {"objectives", Value(std::move(objectives))},
                                            {"participants", Value(std::move(participants))},
                                            {"phase", static_cast<std::int64_t>(value.state.phase)},
                                            {"rule", static_cast<std::int64_t>(value.rules.rule)},
                                            {"ruleArchetype", value.rules.archetype},
+                                           {"scores", Value(std::move(scores))},
                                            {"sequence", static_cast<std::int64_t>(value.state.updateSequence)},
                                            {"subject", value.subject.format()},
+                                           {"suddenDeath", value.rules.suddenDeath},
+                                           {"suddenDeathActive", value.state.suddenDeathActive},
                                            {"target", value.rules.targetValue},
+                                           {"timeLimitNs", value.rules.timeLimit.nanoseconds()},
+                                           {"timers", Value(std::move(timers))},
+                                           {"triggers", Value(std::move(triggers))},
+                                           {"variables", Value(std::move(variables))},
                                            {"winningTeam", value.state.winningTeam}});
     }
     Value::Array movementGroups;
@@ -1198,9 +1263,12 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
     }
     for (const auto& value : snapshot.matches) {
         auto* match      = findMatch(value.subject);
-        *match->rules()  = value.rules;
-        *match->state()  = value.state;
-        *match->events() = value.events;
+        *match->rules()       = value.rules;
+        *match->state()       = value.state;
+        *match->scores()      = value.scores;
+        *match->objectives()  = value.objectives;
+        *match->events()      = value.events;
+        *match->campaign()    = value.campaign;
         match->participants()->entries.clear();
         for (const auto& participant : value.participants) {
             Match::Participants::Entry entry;

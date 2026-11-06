@@ -708,7 +708,10 @@ Match* Match::createMatch(SubjectRef subject) {
     (void)match->rules();
     (void)match->participants();
     (void)match->state();
+    (void)match->scores();
+    (void)match->objectives();
     (void)match->events();
+    (void)match->campaign();
     return match;
 }
 

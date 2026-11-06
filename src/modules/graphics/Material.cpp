@@ -254,6 +254,34 @@ Result<void> Material::setClearcoat(float factor, float roughness) {
     return setPbrSurface(candidate);
 }
 
+Result<void> Material::setAlbedoUvOffset(float u, float v) {
+    if (!std::isfinite(u) || !std::isfinite(v))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "albedo UV offset must be finite", {}, {}, "graphics.material"));
+    auto candidate                                                    = pbr_;
+    candidate.textures[std::size_t(PbrTextureSlot::BaseColor)].offset = {u, v};
+    return setPbrSurface(candidate);
+}
+
+Result<void> Material::setAlbedoUvScale(float u, float v) {
+    if (!std::isfinite(u) || !std::isfinite(v) || u == 0.f || v == 0.f)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "albedo UV scale must be finite and non-zero", {}, {},
+                                                       "graphics.material"));
+    auto candidate                                                   = pbr_;
+    candidate.textures[std::size_t(PbrTextureSlot::BaseColor)].scale = {u, v};
+    return setPbrSurface(candidate);
+}
+
+Result<void> Material::setAlbedoUvRotation(float radians) {
+    if (!std::isfinite(radians))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "albedo UV rotation must be finite", {}, {}, "graphics.material"));
+    auto candidate                                                      = pbr_;
+    candidate.textures[std::size_t(PbrTextureSlot::BaseColor)].rotation = radians;
+    return setPbrSurface(candidate);
+}
+
 Result<void> Material::setFoliageWind(Texture* motionTexture, Texture* noiseTexture, float directionX, float directionZ,
                                       float strength, float bending, float bendingSpeed, float branch,
                                       float branchSpeed, float flutter, float flutterSpeed, float fadeDistance,
