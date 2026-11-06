@@ -1,8 +1,9 @@
 # IK Spider 3D — 自主爬行蜘蛛
 
 2D 版 [`ik-spider`](../ik-spider/README.md) 的三维对应：用 `eve.IK()` 的
-`Skeleton3D` + `Solver3D` FABRIK，在 XZ 地面上驱动一只 **8 足蜘蛛** 自主游荡。
-每条腿经 `solveChain(hip, foot)` 求解，并用 **极向量（pole）** 把膝盖拉成上拱姿态。
+`Skeleton3D` + `Solver3D` FABRIK，在 **Y-up / XZ 地面**上驱动一只 **8 足蜘蛛**。
+每条腿经世界坐标播种姿态 → `setPole`（上拱膝盖）→ `solveChain(hip, foot)`；
+**画面是带光照 / 阴影的 `Renderable3D` 网格**（球 + Y 轴圆柱），不是 Primitive 调试线。
 
 ```sh
 make run/linux-debug GAME=examples/ik-spider-3d
@@ -13,14 +14,15 @@ make run/linux-debug GAME=examples/ik-spider-3d
 ## 做法
 
 1. **骨架**：根骨为身体；8 条腿各 3 节（hip → knee → foot）。建完后用 `getChild` 取 id。
-2. **约束**：髋 / 膝 / 踝设 yaw+pitch 铰链限，避免腿翻折进身体。
-3. **步态**：偶数组与奇数组交替迈步（tetrapod）；抬步时足尖沿正弦弧离开地面。
-4. **IK**：每帧写根位移与朝向，种子径向 rest pose，再对每条腿
-   `setPole(mid, up)` → `addTarget(foot)` → `solveChain(hip, foot)`。
-5. **表现**：腿用 `PrimitivePolyline3D`（world 线宽）实时 `setPolyline`；关节 / 躯体 /
-   航点用 `PrimitiveSphere3D` + `setTransform`；相机缓缓环绕。
-
-未新增引擎公共 API。同 seed 下航点序列可复现。
+2. **Y-up 姿态播种**：ik.hpp 的 3D yaw/pitch 局部基以 +Z 为优先「上」，不能直接当
+   引擎 Y-up 的水平方位角用。每帧用世界坐标写 hip/knee/foot，再 `updateRotations()`，
+   根骨朝向用 `setOrientation(cos θ, 0, sin θ)`（根上的 `setRotation` 在 orientation
+   非零后会被忽略）。
+3. **着地**：足尖目标 Y 钳在地面（抬步时才抬高）；解算后 tip / knee 再压回地面上。
+4. **防穿模**：极向量在腿中段上方并外展；解算后把塌向身体的膝盖向外推。
+5. **步态**：偶 / 奇组交替迈步（tetrapod）；航点游荡。
+6. **渲染**：共享 `newMeshSphere` / `newMeshCylinder` / `newMeshCube`；圆柱沿骨段
+   A→B 对齐本地 +Y；`Light3D` 投射阴影，地板 `receiveShadow`。
 
 ## 操作
 
@@ -35,8 +37,8 @@ make run/linux-debug GAME=examples/ik-spider-3d
 
 | 路径 | 说明 |
 | --- | --- |
-| `main.nut` | 相机、输入、截图 |
-| `spider3d.nut` | 建骨、步态、FABRIK+pole、Primitive 同步 |
+| `main.nut` | 相机、灯光、输入、截图 |
+| `spider3d.nut` | 建骨、步态、世界坐标播种 + FABRIK+pole、网格同步 |
 | `config.nut` | 1280×720 窗口 |
 
 ## 验证
