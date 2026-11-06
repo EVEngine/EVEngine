@@ -340,13 +340,15 @@ struct Analysis {
         }
         std::map<std::string, std::set<std::string>> nativeByFunction, calledFunctions;
         struct SceneDefine {
-            std::string nodeId, displayName, from;
+            std::string nodeId, displayName, from, parentId;
+            bool        opens = true;
             Object::Ptr origin;
         };
         for (const auto& [path, file] : snapshot.files) {
             if (!file->error.empty()) continue;
             std::map<std::string, std::set<std::string>>    filters, subjects, mounts;
             std::map<std::string, std::vector<SceneDefine>> defines;
+            std::map<std::string, std::vector<std::string>> openStacks;
             int                                             unresolvedDefines = 0;
             for (const auto& call : file->structure.calls) {
                 const auto& expression = call.expression;
@@ -395,11 +397,25 @@ struct Analysis {
                 if (rule.role == "scene_ref" && identity.values.size() == 1) {
                     auto host = argument(expression, rule.relatedArgument, path, call.scope);
                     if (host.values.size() == 1) sceneEntity(*host.values.begin(), *identity.values.begin(), origin);
-                } else if (rule.role == "scene_define" && identity.values.size() == 1) {
+                } else if ((rule.role == "scene_define" || rule.role == "scene_leaf") && identity.values.size() == 1) {
+                    auto&       stack   = openStacks[call.scope];
                     auto        related = argument(expression, rule.relatedArgument, path, call.scope);
                     std::string display;
                     if (related.values.size() == 1) display = *related.values.begin();
-                    defines[call.scope].push_back({*identity.values.begin(), display, from, origin});
+                    const bool opens = rule.role == "scene_define";
+                    if (!opens && stack.empty()) {
+                        ++unresolvedDefines;
+                    } else {
+                        const auto parent = stack.empty() ? "" : stack.back();
+                        defines[call.scope].push_back({*identity.values.begin(), display, from, parent, opens, origin});
+                        if (opens) stack.push_back(*identity.values.begin());
+                    }
+                } else if (rule.role == "scene_pop") {
+                    auto& stack = openStacks[call.scope];
+                    if (!stack.empty())
+                        stack.pop_back();
+                    else
+                        ++unresolvedDefines;
                 } else if (rule.role == "scene_mount" && identity.values.size() == 1) {
                     mounts[call.scope].insert(*identity.values.begin());
                 } else if (rule.role == "scene_write" && callee.kind == "member" && !callee.operands.empty()) {
@@ -432,19 +448,26 @@ struct Analysis {
                              rule.role == "quest_read" ? "read_by" : "completion_candidate", origin);
                 }
             }
-            // Scene adapter: beginNode identities bind to a unique mount/remount host in the
-            // same function. No host or ambiguous hosts stay unpublished (coverage gap, not a
-            // broken declaration) — agents must not invent a scene host.
+            // Scene adapter: beginNode/beginGroup/addNode identities bind to a unique
+            // mount/remount host in the same function. begin/end order reconstructs
+            // contains edges. Missing/ambiguous hosts stay unpublished.
             for (const auto& [scope, items] : defines) {
                 const auto hostIt = mounts.find(scope);
                 if (hostIt == mounts.end() || hostIt->second.size() != 1) {
                     unresolvedDefines += static_cast<int>(items.size());
                     continue;
                 }
+                if (!openStacks[scope].empty()) unresolvedDefines += static_cast<int>(openStacks[scope].size());
                 const auto& host = *hostIt->second.begin();
                 for (const auto& define : items) {
                     auto entity =
                         sceneEntity(host, define.nodeId, define.origin, define.displayName, "script-beginNode+mount");
+                    if (!define.parentId.empty()) {
+                        entity->set("parentNodeId", define.parentId);
+                        auto parent = sceneEntity(host, define.parentId, define.origin);
+                        edge(parent->getValue<std::string>("id"), entity->getValue<std::string>("id"), "contains",
+                             define.origin);
+                    }
                     if (!define.from.empty())
                         edge(define.from, entity->getValue<std::string>("id"), "defines", define.origin);
                 }

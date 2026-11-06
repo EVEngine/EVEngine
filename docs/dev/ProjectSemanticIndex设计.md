@@ -88,14 +88,16 @@ ctest --test-dir <engine-build> -R 'projectIndex|semanticQuestEventSceneRuntime'
 
 ### Scene 只读适配器（已落地）
 
-引擎 `binding_semantics.json` 声明 `scene_define`（`beginNode`）、`scene_mount`（`mountBuildAs` / `remountBuildAs`）、既有 `scene_ref` / `scene_write`。自动图在同一函数作用域内，把字面量节点 id 绑定到唯一的 mount host，发布 `entity:<host>/<nodeId>`，并附带：
+引擎 `binding_semantics.json` 声明 `scene_define`（`beginNode` / `beginGroup`）、`scene_leaf`（`addNode`）、`scene_pop`（`end`）、`scene_mount`（`mountBuildAs` / `remountBuildAs`）、既有 `scene_ref` / `scene_write`。自动图在同一函数作用域内，按调用顺序维护 begin/end 栈，把字面量节点 id 绑定到唯一的 mount host，发布 `entity:<host>/<nodeId>`，并附带：
 
 - `sceneHost` / `nodeId`：稳定拆分字段
-- `label`：来自 `beginNode` 的显示名（无则回退为 nodeId）
+- `label`：来自 `beginNode` / `addNode` 的显示名（无则回退为 nodeId）
+- `parentNodeId`：栈顶父节点（根节点无此字段）
 - `definitionCoverage`：`script-beginNode+mount` 或仅引用时的 `script-ref-only`
 - `defines` 边：定义函数 → 场景实体
+- `contains` 边：父实体 → 子实体（与 begin/end / addNode 层级一致）
 
-无 host 或同一函数内多个 mount host 时**不发明**实体 id；计入 `stats.sceneDefinesUnresolved`，不污染 `declarationsResolved`。删除 / 改名节点 id 会使旧 `entity:` 种子失效（`unknown_seed`），与既有版本合同一致。这是 Semantic World Database 路线图中「只读世界查询」在 Scene 竖切上的项目索引投影，不是运行时 ECS 事务层，也不替代 `eve_scene_info` 活场景真值。
+无 host 或同一函数内多个 mount host 时**不发明**实体 id；空栈上的 `addNode` / 多余的 `end` / 未闭合的 begin 计入 `stats.sceneDefinesUnresolved`，不污染 `declarationsResolved`。删除 / 改名节点 id 会使旧 `entity:` 种子失效（`unknown_seed`），与既有版本合同一致。这是 Semantic World Database 路线图中「只读世界查询」在 Scene 竖切上的项目索引投影，不是运行时 ECS 事务层，也不替代 `eve_scene_info` 活场景真值。
 
 下一步增加故事 DSL、Prefab、资源、编辑器／生成器及规则 Schema 适配器。优先从语言和引擎契约生成事实，项目只补不可表达的设计意图。二进制资源、运行时动态补证／因果追踪、持久索引、向量数据库与完整语言 AST 尚未实现。
 

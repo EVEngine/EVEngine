@@ -518,8 +518,10 @@ TEST_CASE("devtools.projectIndex.realQuestChainAndVersionedContext") {
     CHECK(findNode(context, "quest:quest.slayer")->getObject("definition")->has("objectives"));
     CHECK_EQ(findNode(context, "script:onQuestCompleted")->getObject("source")->getValue<std::string>("file"),
              std::string("quest_scene.nut"));
+    CHECK_EQ(marker->getValue<std::string>("parentNodeId"), std::string("quest.root"));
+    REQUIRE(findNode(context, "entity:rpg-classic.quests/quest.root"));
     auto edges         = context->getArray("edges");
-    bool definesMarker = false;
+    bool definesMarker = false, containsMarker = false;
     if (edges)
         for (size_t i = 0; i < edges->size(); ++i) {
             auto edge = edges->getObject(static_cast<unsigned>(i));
@@ -527,8 +529,13 @@ TEST_CASE("devtools.projectIndex.realQuestChainAndVersionedContext") {
                 edge->getValue<std::string>("to") == "entity:rpg-classic.quests/quest.slayer.marker" &&
                 edge->getValue<std::string>("relation") == "defines")
                 definesMarker = true;
+            if (edge->getValue<std::string>("from") == "entity:rpg-classic.quests/quest.root" &&
+                edge->getValue<std::string>("to") == "entity:rpg-classic.quests/quest.slayer.marker" &&
+                edge->getValue<std::string>("relation") == "contains")
+                containsMarker = true;
         }
     CHECK(definesMarker);
+    CHECK(containsMarker);
     auto unchanged = refresh(projectRoot());
     CHECK_EQ(unchanged->getValue<std::string>("revision"), revision);
     CHECK_EQ(unchanged->getObject("stats")->getValue<int>("parsed"), 0);
@@ -765,7 +772,10 @@ TEST_CASE("devtools.projectIndex.automaticInferenceAndInvalidationContracts") {
                 local scene = eve.Scene();
                 scene.beginBuild();
                 scene.beginNode("root", "Stage root");
-                scene.beginNode("door", "Front door");
+                scene.beginGroup("props");
+                scene.addNode("door", "Front door");
+                scene.beginNode("lamp", "Porch lamp");
+                scene.end();
                 scene.end();
                 scene.end();
                 scene.remountBuildAs("stage.main");
@@ -786,9 +796,28 @@ TEST_CASE("devtools.projectIndex.automaticInferenceAndInvalidationContracts") {
         auto door = findNode(context, "entity:stage.main/door");
         REQUIRE(door);
         CHECK_EQ(door->getValue<std::string>("label"), std::string("Front door"));
+        CHECK_EQ(door->getValue<std::string>("parentNodeId"), std::string("props"));
         CHECK_EQ(door->getValue<std::string>("definitionCoverage"), std::string("script-beginNode+mount"));
+        auto lamp = findNode(context, "entity:stage.main/lamp");
+        REQUIRE(lamp);
+        CHECK_EQ(lamp->getValue<std::string>("parentNodeId"), std::string("props"));
         REQUIRE(findNode(context, "entity:stage.main/root"));
+        REQUIRE(findNode(context, "entity:stage.main/props"));
         CHECK(findNode(context, "script:buildStage"));
+        bool rootContainsProps = false, propsContainsDoor = false, propsContainsLamp = false;
+        auto edges = context->getArray("edges");
+        if (edges)
+            for (size_t i = 0; i < edges->size(); ++i) {
+                auto edge = edges->getObject(static_cast<unsigned>(i));
+                if (edge->getValue<std::string>("relation") != "contains") continue;
+                auto from = edge->getValue<std::string>("from"), to = edge->getValue<std::string>("to");
+                if (from == "entity:stage.main/root" && to == "entity:stage.main/props") rootContainsProps = true;
+                if (from == "entity:stage.main/props" && to == "entity:stage.main/door") propsContainsDoor = true;
+                if (from == "entity:stage.main/props" && to == "entity:stage.main/lamp") propsContainsLamp = true;
+            }
+        CHECK(rootContainsProps);
+        CHECK(propsContainsDoor);
+        CHECK(propsContainsLamp);
         input->set("seed", "entity:stage.main/ghost");
         CHECK_EQ(payload(eve::dev::callMcpArchitectureTool("eve_task_context", input))->getValue<std::string>("error"),
                  std::string("unknown_seed"));
@@ -807,6 +836,7 @@ TEST_CASE("devtools.projectIndex.automaticInferenceAndInvalidationContracts") {
         auto gate = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
         REQUIRE(gate->getValue<bool>("ok"));
         REQUIRE(findNode(gate, "entity:stage.main/gate"));
+        CHECK_EQ(findNode(gate, "entity:stage.main/gate")->getValue<std::string>("parentNodeId"), std::string("props"));
         std::filesystem::remove(fixture.root / "stage.nut");
         auto deleted = refresh(fixture.root);
         REQUIRE(deleted->getValue<bool>("ok"));
