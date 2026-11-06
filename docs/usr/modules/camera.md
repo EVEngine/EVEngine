@@ -7,7 +7,9 @@
 - 可复用视角行为：跟随、环绕、俯视、第一人称、过场与锁定。
 - 第一人称：`setMode("firstperson")`，眼点在 `setTarget`，用 `setYaw`/`setPitch` 或
   `addInput` 转向；脚本需自持 yaw/pitch 副本（控制器无 `getYaw` 绑定）。相对鼠标见
-  [`mouse`](mouse.md)。可玩组装：[`examples/fps-arena`](../../examples/fps-arena/)。
+  [`mouse`](mouse.md)。推荐灵敏度约 `0.12` 度/相对像素，俯仰钳制 `[-89, 89]`。
+  Head bob 由游戏/combat `FpsHeadBob` 加在 eye Y 上，再写入 `setTarget`。
+  可玩组装：[`examples/fps-arena`](../../examples/fps-arena/)。
 - 不要：把游戏角色移动写进 CameraController；不要用屏幕中心差值替代 `setRelativeMode`。
 
 在 `Camera3D` 之上提供可复用的视角行为：跟随、环绕、俯视、第一人称、过场与锁定。

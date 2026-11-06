@@ -220,9 +220,10 @@
 - [x] 至少一把 hitscan 枪：弹匣、装填、开火、命中扣血
 - [x] 后坐力影响视角；ADS 改变 FOV
 - [x] 准星 + 弹药 + HP 可读
-- [ ] 命中有至少一种世界反馈（decal 或闪白/受击）— Phase A 仅有靶 tint / 准星闪；完整表现见 Phase C
+- [x] 命中有至少一种世界反馈（墙面/靶子 impact marks + 靶 punch tint）
 - [x] 用户文档写清组装路径与「武器不结算 HP」边界
-- [ ] `make check` 相关门禁不因该示例/模块回归（示例侧 `check_examples` + smoke 已绿）
+- [ ] `make check` 全量门禁（本变更含 combat 单测；示例 `check_examples` + smoke 已绿）
+- [x] Phase B：Walk/Sprint/Crouch + head bob + 灵敏度文档（C++ `FpsGait` 契约 + 示例镜像）
 
 v1.1：viewmodel（Phase D）。  
 v1.2：步态完整化（Phase B 若未进 v1）+ 简易敌人（Phase F）。
@@ -259,3 +260,4 @@ v1.2：步态完整化（Phase B 若未进 v1）+ 简易敌人（Phase F）。
 |------|------|
 | 2026-11-06 | 初稿：基于引擎能力盘点与 0.6/0.7 路线图边界 |
 | 2026-11-06 | Phase A 落地：`examples/fps-arena` + `weapon`/`camera` 手册交叉链 |
+| 2026-11-06 | Phase B/C：`FpsGait`/`FpsHeadBob` + 示例步态/弹孔标记 + 命中时序文档 |
