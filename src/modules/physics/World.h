@@ -45,20 +45,32 @@ class EVENGINE_API_WORLD World {
 public:
     /** @brief ContactEvent public API. */
     struct ContactEvent {
-        int bodyAId = 0;
-        int bodyBId = 0;
+        int         bodyAId = 0;
+        int         bodyBId = 0;
         std::string fixtureATag;
         std::string fixtureBTag;
     };
 
+    /**
+     * @brief Begin/end sensor overlap with an explicit sensor and visitor side.
+     * Populated when exactly one fixture in the contact is a sensor; both-sensor
+     * overlaps keep FixtureA as sensor. Non-sensor contacts stay in ContactEvent only.
+     */
+    struct TriggerEvent {
+        int         sensorBodyId  = 0;
+        int         visitorBodyId = 0;
+        std::string sensorFixtureTag;
+        std::string visitorFixtureTag;
+    };
+
     struct ImpactEvent : ContactEvent {
-        float pointX = 0.f;
-        float pointY = 0.f;
-        float normalX = 0.f;
-        float normalY = 0.f;
+        float pointX              = 0.f;
+        float pointY              = 0.f;
+        float normalX             = 0.f;
+        float normalY             = 0.f;
         float relativeNormalSpeed = 0.f;
-        float normalImpulse = 0.f;
-        float tangentImpulse = 0.f;
+        float normalImpulse       = 0.f;
+        float tangentImpulse      = 0.f;
     };
 
     /**
@@ -66,11 +78,11 @@ public:
      * Normal points from the shape toward the probed point (pixels).
      */
     struct ClothContact {
-        bool   hit = false;
-        float  nx = 0.f;
-        float  ny = 0.f;
-        float  depth = 0.f;  // radius - distance (pixels); > 0 when inside
-        Body  *body = nullptr;
+        bool  hit   = false;
+        float nx    = 0.f;
+        float ny    = 0.f;
+        float depth = 0.f;  // radius - distance (pixels); > 0 when inside
+        Body *body  = nullptr;
     };
 
     /**
@@ -196,9 +208,8 @@ public:
      * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      * @throws eve::Exception for invalid bodies, anchors, length, or cross-world bodies.
      */
-    Joint2D *newDistanceJoint(Body *bodyA, Body *bodyB, float anchorAX, float anchorAY,
-                              float anchorBX, float anchorBY, float lengthPixels,
-                              bool collideConnected = false);
+    Joint2D *newDistanceJoint(Body *bodyA, Body *bodyB, float anchorAX, float anchorAY, float anchorBX, float anchorBY,
+                              float lengthPixels, bool collideConnected = false);
     /**
      * @brief Creates a revolute hinge at a shared pixel-space anchor.
      * @return Borrowed nullable joint owned by this world.
@@ -209,8 +220,7 @@ public:
      * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      * @throws eve::Exception for invalid/cross-world bodies or non-finite anchors.
      */
-    Joint2D *newRevoluteJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY,
-                              bool collideConnected = false);
+    Joint2D *newRevoluteJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY, bool collideConnected = false);
     /**
      * @brief Creates a prismatic slider along a pixel-space axis.
      * @return Borrowed nullable joint owned by this world.
@@ -221,8 +231,8 @@ public:
      * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      * @throws eve::Exception for invalid bodies or a zero/non-finite axis.
      */
-    Joint2D *newPrismaticJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY, float axisX,
-                               float axisY, bool collideConnected = false);
+    Joint2D *newPrismaticJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY, float axisX, float axisY,
+                               bool collideConnected = false);
     /**
      * @brief Welds two bodies at a shared pixel-space anchor.
      * @return Borrowed nullable joint owned by this world.
@@ -233,8 +243,7 @@ public:
      * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      * @throws eve::Exception for invalid/cross-world bodies or non-finite anchors.
      */
-    Joint2D *newWeldJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY,
-                          bool collideConnected = false);
+    Joint2D *newWeldJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY, bool collideConnected = false);
     /**
      * @brief Creates a wheel joint with a pixel-space suspension axis.
      * @return Borrowed nullable joint owned by this world.
@@ -245,8 +254,8 @@ public:
      * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      * @throws eve::Exception for invalid bodies or a zero/non-finite axis.
      */
-    Joint2D *newWheelJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY, float axisX,
-                           float axisY, bool collideConnected = false);
+    Joint2D *newWheelJoint(Body *bodyA, Body *bodyB, float anchorX, float anchorY, float axisX, float axisY,
+                           bool collideConnected = false);
     /**
      * @brief Creates a motor joint that drives relative pose between bodies.
      * @return Borrowed nullable joint owned by this world.
@@ -279,8 +288,7 @@ public:
      * @thread Call on the owning physics thread.
      * @reentrancy Creation does not invoke callbacks; do not mutate either body re-entrantly.
      */
-    Mechanism2D *newShaft(Body *support, Body *rotor, float anchorX, float anchorY,
-                          bool collideConnected = false);
+    Mechanism2D *newShaft(Body *support, Body *rotor, float anchorX, float anchorY, bool collideConnected = false);
     /**
      * @brief Builds a one-way ratchet around a revolute hinge.
      * @param direction Freewheel direction: +1 or -1.
@@ -302,10 +310,9 @@ public:
      * @reentrancy Creation does not invoke callbacks; do not mutate the input bodies re-entrantly.
      * @throws eve::Exception for invalid body chains or a zero/non-finite slide axis.
      */
-    Mechanism2D *newCrankSlider(Body *frame, Body *crank, Body *rod, Body *slider,
-                                float crankAnchorX, float crankAnchorY, float crankPinX,
-                                float crankPinY, float sliderPinX, float sliderPinY,
-                                float slideAxisX, float slideAxisY, bool collideConnected = false);
+    Mechanism2D *newCrankSlider(Body *frame, Body *crank, Body *rod, Body *slider, float crankAnchorX,
+                                float crankAnchorY, float crankPinX, float crankPinY, float sliderPinX,
+                                float sliderPinY, float slideAxisX, float slideAxisY, bool collideConnected = false);
 
     /** @brief Resolve a persistent joint id in this world, including snapshot-created joints.
      * @return Borrowed reference or StaleHandle when absent.
@@ -337,7 +344,7 @@ public:
      * @brief Closest raycast in pixel space from (x1,y1) to (x2,y2).
      * Returns hit body id, or -1. Read hit details via getRayHit*.
      */
-    int rayCast(float x1, float y1, float x2, float y2);
+    int   rayCast(float x1, float y1, float x2, float y2);
     bool  hasRayHit() const { return rayHitBodyId_ >= 0; }
     int   getRayHitBodyId() const { return rayHitBodyId_; }
     float getRayHitX() const { return rayHitX_; }
@@ -355,29 +362,42 @@ public:
     int getQueryCount() const { return static_cast<int>(queryBodyIds_.size()); }
     int getQueryBodyId(int index) const;
 
-    int getBeginContactCount() const { return int(beginContacts_.size()); }
-    int getBeginContactBodyAId(int index) const;
-    int getBeginContactBodyBId(int index) const;
+    int         getBeginContactCount() const { return int(beginContacts_.size()); }
+    int         getBeginContactBodyAId(int index) const;
+    int         getBeginContactBodyBId(int index) const;
     std::string getBeginContactFixtureATag(int index) const;
     std::string getBeginContactFixtureBTag(int index) const;
-    int getEndContactCount() const { return int(endContacts_.size()); }
-    int getEndContactBodyAId(int index) const;
-    int getEndContactBodyBId(int index) const;
+    int         getEndContactCount() const { return int(endContacts_.size()); }
+    int         getEndContactBodyAId(int index) const;
+    int         getEndContactBodyBId(int index) const;
     std::string getEndContactFixtureATag(int index) const;
     std::string getEndContactFixtureBTag(int index) const;
 
-    int getImpactCount() const { return int(impacts_.size()); }
-    int getImpactBodyAId(int index) const;
-    int getImpactBodyBId(int index) const;
+    /** @brief Sensor/visitor begin overlaps collected during the last step (2D parity with World3D). */
+    int         getBeginTriggerCount() const { return int(beginTriggers_.size()); }
+    int         getBeginTriggerSensorBodyId(int index) const;
+    int         getBeginTriggerVisitorBodyId(int index) const;
+    std::string getBeginTriggerSensorFixtureTag(int index) const;
+    std::string getBeginTriggerVisitorFixtureTag(int index) const;
+    /** @brief Sensor/visitor end overlaps collected during the last step. */
+    int         getEndTriggerCount() const { return int(endTriggers_.size()); }
+    int         getEndTriggerSensorBodyId(int index) const;
+    int         getEndTriggerVisitorBodyId(int index) const;
+    std::string getEndTriggerSensorFixtureTag(int index) const;
+    std::string getEndTriggerVisitorFixtureTag(int index) const;
+
+    int         getImpactCount() const { return int(impacts_.size()); }
+    int         getImpactBodyAId(int index) const;
+    int         getImpactBodyBId(int index) const;
     std::string getImpactFixtureATag(int index) const;
     std::string getImpactFixtureBTag(int index) const;
-    float getImpactPointX(int index) const;
-    float getImpactPointY(int index) const;
-    float getImpactNormalX(int index) const;
-    float getImpactNormalY(int index) const;
-    float getImpactRelativeNormalSpeed(int index) const;
-    float getImpactNormalImpulse(int index) const;
-    float getImpactTangentImpulse(int index) const;
+    float       getImpactPointX(int index) const;
+    float       getImpactPointY(int index) const;
+    float       getImpactNormalX(int index) const;
+    float       getImpactNormalY(int index) const;
+    float       getImpactRelativeNormalSpeed(int index) const;
+    float       getImpactNormalImpulse(int index) const;
+    float       getImpactTangentImpulse(int index) const;
     /** @brief Clears collected begin/end contact and impact event buffers. */
     void clearContactEvents();
 
@@ -417,7 +437,7 @@ public:
     /** @brief Internal: removes a mechanism wrapper from ownership bookkeeping. */
     void forgetMechanism(Mechanism2D *mechanism);
 
-    int nextBodyId();
+    int               nextBodyId();
     PhysicsBodyHandle nextBodyRuntimeHandle();
     /** @brief Internal: next generation-qualified joint handle. */
     PhysicsJointHandle nextJointRuntimeHandle();
@@ -455,27 +475,27 @@ private:
     std::vector<std::unique_ptr<Body>>    restoredBodies_;
     std::vector<std::unique_ptr<Fixture>> restoredFixtures_;
 
-    b2World      *world_ = nullptr;
-    ContactRelay *relay_ = nullptr;
+    b2World                            *world_ = nullptr;
+    ContactRelay                       *relay_ = nullptr;
     std::unique_ptr<ISimulationBackend> simulation_;
     PhysicsWorldHandle                  runtimeHandle_          = PhysicsWorldHandle::invalid();
     std::shared_ptr<const void>         lifetime_               = std::make_shared<int>(0);
     eve::PersistentId                   instanceId_             = eve::PersistentId::nil();
-    float         meter_ = 30.f;
-    int           nextId_ = 1;
-    int           nextJointId_ = 1;
-    int           nextMechanismId_ = 1;
+    float                               meter_                  = 30.f;
+    int                                 nextId_                 = 1;
+    int                                 nextJointId_            = 1;
+    int                                 nextMechanismId_        = 1;
     std::uint32_t                       nextBodyHandleIndex_    = 1u;
     std::uint32_t                       nextJointHandleIndex_   = 1u;
-    bool          destroyed_ = false;
+    bool                                destroyed_              = false;
     eve::SimulationTick                 simulationTick_         = eve::SimulationTick::zero();
     eve::Status                         backendSelectionStatus_ = eve::Status::success();
     bool                                backendFallback_        = false;
 
-    std::unordered_set<Body *>    bodies_;
-    std::unordered_set<Fixture *> fixtures_;
-    std::unordered_set<Joint2D *> joints_;
-    std::unordered_set<Mechanism2D *> mechanisms_;
+    std::unordered_set<Body *>                        bodies_;
+    std::unordered_set<Fixture *>                     fixtures_;
+    std::unordered_set<Joint2D *>                     joints_;
+    std::unordered_set<Mechanism2D *>                 mechanisms_;
     std::unordered_map<PhysicsJointHandle, Joint2D *> jointHandles_;
 
     int   rayHitBodyId_   = -1;
@@ -488,20 +508,24 @@ private:
     std::vector<int> queryBodyIds_;
 
     struct PreSolveData {
-        float pointX = 0.f;
-        float pointY = 0.f;
-        float normalX = 0.f;
-        float normalY = 0.f;
+        float pointX              = 0.f;
+        float pointY              = 0.f;
+        float normalX             = 0.f;
+        float normalY             = 0.f;
         float relativeNormalSpeed = 0.f;
     };
     std::unordered_map<b2Contact *, PreSolveData> preSolve_;
-    std::vector<ContactEvent> beginContacts_;
-    std::vector<ContactEvent> endContacts_;
-    std::vector<ImpactEvent> impacts_;
+    std::vector<ContactEvent>                     beginContacts_;
+    std::vector<ContactEvent>                     endContacts_;
+    std::vector<TriggerEvent>                     beginTriggers_;
+    std::vector<TriggerEvent>                     endTriggers_;
+    std::vector<ImpactEvent>                      impacts_;
+
+    const TriggerEvent &triggerEventAt(const std::vector<TriggerEvent> &events, int index, const char *operation) const;
 
     [[nodiscard]] eve::Result<void> prepareRuntimeHandleRefresh(std::size_t incomingBodyCount) const;
-    void refreshRuntimeHandlesAfterRestore();
-    void adoptPreparedTopology(World &prepared);
+    void                            refreshRuntimeHandlesAfterRestore();
+    void                            adoptPreparedTopology(World &prepared);
 };
 
 }  // namespace eve::physics
