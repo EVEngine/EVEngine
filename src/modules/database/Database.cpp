@@ -187,9 +187,8 @@ void Connection::close() {
 
 eve::Result<void> Connection::beginTransaction() {
     if (!isConnected()) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
-                                                                 "database connection is closed",
-                                                                 "database.beginTransaction"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "database connection is closed", "database.beginTransaction"));
     }
     if (transactionDepth_ == 0) execute("BEGIN");
     ++transactionDepth_;
@@ -198,14 +197,12 @@ eve::Result<void> Connection::beginTransaction() {
 
 eve::Result<void> Connection::commitTransaction() {
     if (!isConnected()) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
-                                                                 "database connection is closed",
-                                                                 "database.commitTransaction"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "database connection is closed", "database.commitTransaction"));
     }
     if (transactionDepth_ <= 0) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
-                                                                 "no open database transaction",
-                                                                 "database.commitTransaction"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::PreconditionViolation, "no open database transaction", "database.commitTransaction"));
     }
     --transactionDepth_;
     if (transactionDepth_ == 0) execute("COMMIT");
@@ -427,13 +424,14 @@ Query* Query::orWhereJson(const std::string& column, const std::string& op, cons
 }
 
 Query* Query::addIn(bool negate, const std::string& column, const std::string& valuesJson) {
-    const auto        values = parseScalarArray(valuesJson);
+    const auto         values = parseScalarArray(valuesJson);
     std::ostringstream list;
     for (std::size_t i = 0; i < values.size(); ++i) {
         if (i) list << ',';
         list << literal(values[i]);
     }
-    predicates_.push_back(Predicate{false, qualifyColumn(column) + (negate ? " NOT IN (" : " IN (") + list.str() + ")"});
+    predicates_.push_back(
+        Predicate{false, qualifyColumn(column) + (negate ? " NOT IN (" : " IN (") + list.str() + ")"});
     return this;
 }
 
@@ -653,19 +651,17 @@ void Database::expose(ssq::Table& table) {
     });
     connection.addFunc("commitTransaction", [](HSQUIRRELVM vm, Connection* self) -> ssq::Table {
         if (!self) {
-            return eve::script::projectResult(
-                vm, eve::Result<void>::failure(eve::Diagnostic::error(
-                        eve::DiagnosticCode::InvalidArgument, "null DatabaseConnection", "database.commitTransaction")));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument, "null DatabaseConnection",
+                                                      "database.commitTransaction")));
         }
         return eve::script::projectResult(vm, self->commitTransaction());
     });
     connection.addFunc("rollbackTransaction", [](HSQUIRRELVM vm, Connection* self) -> ssq::Table {
         if (!self) {
-            return eve::script::projectResult(
-                vm,
-                eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
-                                                                  "null DatabaseConnection",
-                                                                  "database.rollbackTransaction")));
+            return eve::script::projectResult(vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                                                      eve::DiagnosticCode::InvalidArgument, "null DatabaseConnection",
+                                                      "database.rollbackTransaction")));
         }
         return eve::script::projectResult(vm, self->rollbackTransaction());
     });

@@ -2174,7 +2174,8 @@ TEST_CASE("Database.SQLiteCrudOrmAndECSExport") {
     CHECK_EQ(db.queryByKey("actors", "id", std::int64_t(8)).size(), 0);
 
     db.execute("CREATE TABLE forces (id TEXT PRIMARY KEY, name TEXT)");
-    db.execute("CREATE TABLE officers (id TEXT PRIMARY KEY, name TEXT, force_id TEXT, leadership INTEGER, war INTEGER)");
+    db.execute(
+        "CREATE TABLE officers (id TEXT PRIMARY KEY, name TEXT, force_id TEXT, leadership INTEGER, war INTEGER)");
     db.insertJson("forces", R"({"id":"wei","name":"Wei"})");
     db.insertJson("forces", R"({"id":"shu","name":"Shu"})");
     db.insertJson("officers", R"({"id":"cao","name":"Cao","force_id":"wei","leadership":96,"war":72})");
@@ -2195,8 +2196,7 @@ TEST_CASE("Database.SQLiteCrudOrmAndECSExport") {
 
     std::unique_ptr<Query> any(db.from("officers"));
     any->where("force_id", "=", "wei")
-        ->whereAnyJson(
-            R"([{"column":"war","op":">=","value":90},{"column":"leadership","op":">=","value":95}])");
+        ->whereAnyJson(R"([{"column":"war","op":">=","value":90},{"column":"leadership","op":">=","value":95}])");
     CHECK_EQ(any->count(), 2);
 
     std::unique_ptr<Query> between(db.from("officers"));

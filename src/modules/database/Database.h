@@ -89,15 +89,15 @@ public:
     /** @brief Rolls back the whole open transaction and clears nesting. */
     [[nodiscard]] eve::Result<void> rollbackTransaction();
     /** @brief Compatibility-only boolean facade over beginTransaction(). */
-    bool             begin();
+    bool begin();
     /** @brief Compatibility-only boolean facade over commitTransaction(). */
-    bool             commit();
+    bool commit();
     /** @brief Compatibility-only boolean facade over rollbackTransaction(). */
-    bool             rollback();
+    bool rollback();
     /** @brief True while at least one beginTransaction() nesting level is open. */
-    bool             isInTransaction() const;
+    bool isInTransaction() const;
     /** @brief Compatibility-only boolean alias of isInTransaction(). */
-    bool             inTransaction() const;
+    bool inTransaction() const;
     /** @brief Executes a statement; returns the affected row count. */
     int              execute(const std::string& sql);
     /** @brief Runs a SELECT and returns every row as name/value maps. */
@@ -107,7 +107,7 @@ public:
     /** @brief Inserts a row map; returns the affected row count. */
     int              insert(const std::string& table, const Row& values);
     /** @brief Insert-or-replace a row map (`INSERT OR REPLACE`); returns affected rows. */
-    int              upsert(const std::string& table, const Row& values);
+    int upsert(const std::string& table, const Row& values);
     /** @brief Updates rows matching whereClause; returns the affected row count. */
     int              update(const std::string& table, const Row& values, const std::string& whereClause);
     /** @brief Deletes rows matching whereClause; returns the affected row count. */
@@ -209,7 +209,7 @@ public:
      * @ownership Borrowed; returns this for chaining.
      * @lifetime Valid until this Query is destroyed.
      */
-    Query* distinct(bool enabled = true);
+    Query* distinct(bool enabled);
 
     /**
      * @brief INNER JOIN table ON leftColumn = rightColumn (dotted names allowed).
