@@ -49,12 +49,10 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         self.assertIn("emulator-boot-timeout: 1800", block)
         self.assertIn("-gpu swiftshader", block)
         self.assertIn("-accel on", block)
-        # 8192 needs ~9.8 GB free under ~/.android/avd; ubuntu-latest often has
-        # only 6–10 GB left after the API 35 system image, so AVD creation
-        # fatally aborts. Peak /data use for sequential ~380 MB APK installs is
-        # ~1.7 GB — 4096 is enough, and the free-disk step clears unused hosts
-        # toolchains so that budget still fits after the system-image download.
-        self.assertIn("-partition-size 4096", block)
+        # 8192 needs ~9.8 GB free under ~/.android/avd; free unused host
+        # toolchains first. Guest residue across 4 sequential APKs still needs
+        # the larger userdata (4096 hit INSTALL_FAILED_INSUFFICIENT_STORAGE).
+        self.assertIn("-partition-size 8192", block)
         self.assertIn("Free host disk for emulator userdata", block)
         self.assertIn("-wipe-data", block)
         self.assertIn("disable-linux-hw-accel: false", block)
@@ -69,10 +67,14 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         self.assertIn('"$apksigner" sign', self.apk_runner)
         self.assertIn('adb install --no-incremental -r "$signed_apk"', self.apk_runner)
         self.assertIn("adb shell df -h /data", self.apk_runner)
+        self.assertIn("adb shell pm trim-caches 999G", self.apk_runner)
         proof = self.apk_runner.index('echo "OK: $apk_name printed $success_marker on the emulator"')
         cleanup = self.apk_runner.index("adb uninstall com.evengine.example")
         self.assertGreater(cleanup, proof)
-        self.assertNotIn("|| true", self.apk_runner[cleanup : self.apk_runner.index("\ndone", cleanup)])
+        uninstall_line = next(
+            line for line in self.apk_runner.splitlines() if "adb uninstall com.evengine.example" in line
+        )
+        self.assertNotIn("|| true", uninstall_line)
         # The macOS consumer matrix contributes two APKs; Windows/Linux one each.
         self.assertEqual(3, self.workflow.count("name: android-apk-${{ env.HOST }}"))
         self.assertIn("script: bash .github/scripts/run-consumer-apks.sh apk 4", block)

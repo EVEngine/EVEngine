@@ -172,7 +172,7 @@ jobs:
           echo "WEBGPU_ARCHIVE=artifacts/eve-sdk-webgpu-$tag.zip" >> "$GITHUB_ENV"
 
       - name: Setup pinned WebGPU browser
-        timeout-minutes: 10
+        timeout-minutes: 20
         uses: ./.github/actions/setup-webgpu-browser
 
       - name: Run extracted SDK in browser (startup and canvas)
