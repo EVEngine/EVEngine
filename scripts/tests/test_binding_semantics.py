@@ -70,3 +70,19 @@ class BindingSemanticsTests(unittest.TestCase):
         self.rules["bindings"]["lookup"]["schema"] = {"kind": "entity", "identityField": "id", "fields": {"x": "invented"}}
         with self.assertRaises(ValueError):
             self.attach()
+
+    def test_slot_overrides_contract_module_key(self):
+        package = self.root / "src/modules/graphics"
+        package.mkdir(parents=True)
+        (package / "Graphics.cpp").write_text("Module_REG(Graphics);", encoding="utf-8")
+        self.sources[package / "Graphics.cpp"] = "Module_REG(Graphics);"
+        path = package / "binding_semantics.json"
+        path.write_text(json.dumps({
+            "schemaVersion": 1, "factory": "Graphics", "slot": "gfx",
+            "bindings": {"loadTexture": {"role": "resource_load", "identityArgument": 0}}
+        }), encoding="utf-8")
+        contracts = [Contract("gfx", "", "loadTexture", [Parameter("filename", "std::string", "string")],
+                              "dynamic", False, "value", "main", [], "gfx.loadTexture", "Graphics.cpp:1")]
+        attach_semantics(contracts, self.sources, self.root, [path], mask_comments)
+        self.assertEqual(contracts[0].semantics["role"], "resource_load")
+        self.assertEqual(contracts[0].semantics["factory"], "Graphics")

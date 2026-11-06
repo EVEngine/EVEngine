@@ -47,8 +47,7 @@ void refresh(const std::filesystem::path& root, State& state) {
         state.snapshot.stats = stats;
         return;
     }
-    auto candidate       = project(std::move(files), stats, pathText(root.filename()));
-    candidate.projectDir = pathText(root);
+    auto candidate = project(std::move(files), stats, pathText(root.filename()), pathText(root));
     // Detect a changed read set before publication; this is not a filesystem
     // transaction. Consumers must recheck revision before a later action.
     Object::Ptr confirmation = new Object();

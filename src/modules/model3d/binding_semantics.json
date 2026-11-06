@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "factory": "Model3D",
+  "bindings": {
+    "loadModelDataWithOptions": {"role": "resource_load", "identityArgument": 0}
+  }
+}

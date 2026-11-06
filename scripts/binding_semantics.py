@@ -4,8 +4,9 @@ import re
 
 
 def attach_semantics(contracts, sources, root, files, mask_source):
-    roles = {"scene_ref", "scene_define", "scene_write", "event_log", "event_read",
-             "event_emit", "event_type", "event_subject", "quest_read", "quest_complete", "quest_schema"}
+    roles = {"scene_ref", "scene_define", "scene_leaf", "scene_pop", "scene_mount", "scene_write",
+             "resource_load", "event_log", "event_read", "event_emit", "event_type", "event_subject",
+             "quest_read", "quest_complete", "quest_schema"}
     known = {contract.key: contract for contract in contracts}
     # Constructor names come from native registration, never from capitalization
     # guesses or project annotations. Ambiguous module factories remain unknown.
@@ -26,21 +27,24 @@ def attach_semantics(contracts, sources, root, files, mask_source):
         data = json.loads(path.read_text(encoding="utf-8"))
         if data.get("schemaVersion") != 1 or not isinstance(data.get("bindings"), dict):
             raise ValueError(f"Invalid binding semantics: {path}")
-        module = path.parent.name
+        package = path.parent.name
+        slot = data.get("slot", package)
+        if not isinstance(slot, str) or not re.fullmatch(r"[A-Za-z_]\w*", slot):
+            raise ValueError(f"Invalid semantic slot: {path}")
         factory = data.get("factory", "")
         if not isinstance(factory, str) or not re.fullmatch(r"[A-Za-z_]\w*", factory):
             raise ValueError("Invalid semantic factory")
         source = "\n".join(mask_source(text) for file, text in sources.items()
-                           if file.is_relative_to(root / "src/modules" / module))
+                           if file.is_relative_to(root / "src/modules" / package))
         if not (re.search(r"\bModule_REG\s*\(\s*" + re.escape(factory) + r"\s*\)", source)
                 or re.search(r'\bModuleRegister\s+\w+\s*\(\s*"' + re.escape(factory) + '"', source)):
             raise ValueError(f"Semantic factory has no native registration: {factory}")
-        enabled = any(contract.module == module for contract in contracts)
+        enabled = any(contract.module == slot for contract in contracts)
         for contract in contracts:
-            if contract.module == module:
+            if contract.module == slot:
                 contract.semantics = dict(factory=factory, role="", resultClass="", identityArgument=-1, relatedArgument=-1)
         for name, rule in data["bindings"].items():
-            key = f"{module}/{name}"
+            key = f"{slot}/{name}"
             if enabled and key not in known:
                 raise ValueError(f"Semantic binding is absent: {key}")
             if rule.get("role") not in roles:

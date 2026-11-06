@@ -42,7 +42,7 @@ inline std::filesystem::path sourcePath(const std::string& text) {
 /** @brief Bounded filesystem scan. Parses only changed files; symlinks are excluded. */
 Files scan(const std::filesystem::path& root, const Files& previous, Object::Ptr stats);
 /** @brief Build a candidate evidence graph without touching the published snapshot. */
-Snapshot project(Files files, Object::Ptr stats, std::string defaultProjectId);
+Snapshot project(Files files, Object::Ptr stats, std::string defaultProjectId, std::string projectDir = {});
 /** @brief Project typed compiler syntax through generated engine contracts; no project declarations required. */
 void automaticGraph(Snapshot& snapshot, std::string& version);
 /** @brief Strict source string fields; invalid manifest shapes throw a diagnostic exception. */
