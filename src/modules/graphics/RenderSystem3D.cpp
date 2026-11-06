@@ -8,6 +8,7 @@
 #include "common/Status.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
+#include "graphics/CameraPixel.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/ContactShadow.h"
@@ -35,8 +36,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <glm/geometric.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/vec3.hpp>
 #include <vector>
 
 namespace eve::graphics {
@@ -232,6 +235,119 @@ void Camera3D::setOrthographic(float height) {
 }
 
 void Camera3D::setPerspective() { data()->orthographic = false; }
+
+bool Camera3D::isOrthographic() { return data()->orthographic; }
+
+float Camera3D::getOrthoHeight() { return data()->orthoHeight; }
+
+Result<void> Camera3D::setPixelConfig(float pixelsPerUnit, int refWidth, int refHeight) {
+    if (!std::isfinite(pixelsPerUnit) || pixelsPerUnit <= 0.f)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "pixelsPerUnit must be finite and > 0", "camera3d.pixelsPerUnit"));
+    if (refWidth < 0 || refHeight < 0)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "pixel reference size must be >= 0", "camera3d.pixelRef"));
+    if ((refWidth == 0) != (refHeight == 0))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "pixel reference width and height must both be set or both 0",
+                                                       "camera3d.pixelRef"));
+    auto d            = data();
+    d->pixelsPerUnit  = pixelsPerUnit;
+    d->pixelRefWidth  = refWidth;
+    d->pixelRefHeight = refHeight;
+    return Result<void>::success();
+}
+
+void Camera3D::clearPixelConfig() {
+    auto d            = data();
+    d->pixelsPerUnit  = 0.f;
+    d->pixelRefWidth  = 0;
+    d->pixelRefHeight = 0;
+    d->pixelScale     = 1;
+}
+
+bool Camera3D::hasPixelConfig() { return data()->pixelsPerUnit > 0.f; }
+
+void Camera3D::setPixelSnap(bool enabled) { data()->pixelSnap = enabled; }
+
+bool Camera3D::getPixelSnap() { return data()->pixelSnap; }
+
+float Camera3D::getPixelsPerUnit() { return data()->pixelsPerUnit; }
+
+int Camera3D::getPixelRefWidth() { return data()->pixelRefWidth; }
+
+int Camera3D::getPixelRefHeight() { return data()->pixelRefHeight; }
+
+int Camera3D::getPixelScale() { return data()->pixelScale; }
+
+Result<void> Camera3D::applyPixelPerfect(int viewWidth, int viewHeight) {
+    if (viewWidth <= 0 || viewHeight <= 0)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "viewport size must be > 0", "camera3d.viewport"));
+    auto d = data();
+    if (!(d->pixelsPerUnit > 0.f))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "pixel config requires pixelsPerUnit > 0", "camera3d.pixelsPerUnit"));
+    const auto sized =
+        computePixelPerfectScale(d->pixelsPerUnit, d->pixelRefWidth, d->pixelRefHeight, viewWidth, viewHeight);
+    d->pixelScale   = sized.scale;
+    d->orthographic = true;
+    d->orthoHeight  = sized.orthoHeight;
+    if (d->pixelSnap) snapToPixelGrid(viewWidth, viewHeight);
+    return Result<void>::success();
+}
+
+Result<void> Camera3D::setPixelOrthographic(float pixelsPerUnit, int viewWidth, int viewHeight, int refWidth,
+                                            int refHeight) {
+    auto configured = setPixelConfig(pixelsPerUnit, refWidth, refHeight);
+    if (!configured.ok()) return configured;
+    return applyPixelPerfect(viewWidth, viewHeight);
+}
+
+void Camera3D::snapToPixelGrid(int viewWidth, int viewHeight) {
+    auto  d             = data();
+    float worldPerPixel = 0.f;
+    if (d->pixelsPerUnit > 0.f) {
+        const auto sized =
+            computePixelPerfectScale(d->pixelsPerUnit, d->pixelRefWidth, d->pixelRefHeight, viewWidth, viewHeight);
+        worldPerPixel = sized.worldPerPixel;
+    } else if (d->orthographic && viewHeight > 0) {
+        worldPerPixel = d->orthoHeight / float(viewHeight);
+    }
+    if (!(worldPerPixel > 0.f) || !std::isfinite(worldPerPixel)) return;
+
+    const glm::vec3 eye(d->eyeX, d->eyeY, d->eyeZ);
+    const glm::vec3 target(d->targetX, d->targetY, d->targetZ);
+    glm::vec3       forward = target - eye;
+    const float     flen    = glm::length(forward);
+    if (flen < 1e-6f) return;
+    forward /= flen;
+    glm::vec3 up(d->upX, d->upY, d->upZ);
+    if (glm::length(up) < 1e-6f)
+        up = glm::vec3(0.f, 1.f, 0.f);
+    else
+        up = glm::normalize(up);
+    glm::vec3 right = glm::cross(forward, up);
+    if (glm::length(right) < 1e-6f)
+        right = glm::vec3(1.f, 0.f, 0.f);
+    else
+        right = glm::normalize(right);
+    up = glm::normalize(glm::cross(right, forward));
+
+    const float     alongRight = glm::dot(eye, right);
+    const float     alongUp    = glm::dot(eye, up);
+    const float     alongFwd   = glm::dot(eye, forward);
+    const float     snappedR   = std::round(alongRight / worldPerPixel) * worldPerPixel;
+    const float     snappedU   = std::round(alongUp / worldPerPixel) * worldPerPixel;
+    const glm::vec3 snappedEye = right * snappedR + up * snappedU + forward * alongFwd;
+    const glm::vec3 delta      = snappedEye - eye;
+    d->eyeX                    = snappedEye.x;
+    d->eyeY                    = snappedEye.y;
+    d->eyeZ                    = snappedEye.z;
+    d->targetX += delta.x;
+    d->targetY += delta.y;
+    d->targetZ += delta.z;
+}
 
 void Camera3D::setClipPlanes(float nearZ, float farZ) {
     data()->nearZ = std::max(0.001f, nearZ);

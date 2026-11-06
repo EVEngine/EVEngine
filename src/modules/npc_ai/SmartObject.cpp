@@ -106,7 +106,7 @@ Result<void> SmartObjectWorld::removeObject(SmartObjectHandle object, SmartObjec
         (void)slot;
         claims.push_back(claim);
     }
-    for (const auto claim : claims) releaseClaimUnchecked(claim);
+    for (const auto claim : claims) releaseClaimUnchecked(claim, "cancel", 0);
     objectsByLogicalId_.erase(value.definition.logicalId);
     auto& slot = objects_[object.index()];
     slot.value.reset();
@@ -204,16 +204,26 @@ Result<void> SmartObjectWorld::release(SmartObjectClaimHandle claimHandle, Agent
     if (resolved.value().get().agent != agent)
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::Conflict, "smart object claim owner mismatch",
                                                        {}, {}, "npc_ai.smart_object"));
-    releaseClaimUnchecked(claimHandle);
+    releaseClaimUnchecked(claimHandle, "release", 0);
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
-void SmartObjectWorld::releaseClaimUnchecked(SmartObjectClaimHandle handle) noexcept {
+void SmartObjectWorld::releaseClaimUnchecked(SmartObjectClaimHandle handle, std::string_view reason,
+                                             std::uint64_t tick) noexcept {
     if (!handle.isValid() || handle.index() >= claims_.size()) return;
     auto& slot = claims_[handle.index()];
     if (!slot.value || slot.generation != handle.generation()) return;
-    auto object = resolveObject(slot.value->object);
-    if (object.ok()) object.value().get().claimsBySlot.erase(slot.value->slotId);
+    SmartObjectVacancy vacancy;
+    vacancy.slotId = slot.value->slotId;
+    vacancy.agent  = slot.value->agent;
+    vacancy.tick   = tick;
+    vacancy.reason = std::string(reason);
+    auto object    = resolveObject(slot.value->object);
+    if (object.ok()) {
+        vacancy.logicalId = object.value().get().definition.logicalId;
+        object.value().get().claimsBySlot.erase(slot.value->slotId);
+    }
+    vacancies_.push_back(std::move(vacancy));
     slot.value.reset();
     const auto next = SmartObjectClaimHandle::nextGeneration(slot.generation);
     if (next) {
@@ -230,7 +240,7 @@ Result<std::uint32_t> SmartObjectWorld::releaseAgentClaims(AgentHandle agent) {
     for (std::uint32_t index = 0; index < claims_.size(); ++index)
         if (claims_[index].value && claims_[index].value->agent == agent)
             owned.emplace_back(index, claims_[index].generation);
-    for (const auto claim : owned) releaseClaimUnchecked(claim);
+    for (const auto claim : owned) releaseClaimUnchecked(claim, "agent", 0);
     return Result<std::uint32_t>::success(static_cast<std::uint32_t>(owned.size()));
 }
 
@@ -239,7 +249,7 @@ Result<SmartObjectExpirationReport> SmartObjectWorld::expire(std::uint64_t curre
     for (std::uint32_t index = 0; index < claims_.size(); ++index)
         if (claims_[index].value && claims_[index].value->expiresAtTick <= currentTick)
             expired.emplace_back(index, claims_[index].generation);
-    for (const auto claim : expired) releaseClaimUnchecked(claim);
+    for (const auto claim : expired) releaseClaimUnchecked(claim, "expire", currentTick);
     return Result<SmartObjectExpirationReport>::success({static_cast<std::uint32_t>(expired.size())});
 }
 
@@ -250,5 +260,16 @@ Result<SmartObjectClaimSnapshot> SmartObjectWorld::snapshot(SmartObjectClaimHand
     return Result<SmartObjectClaimSnapshot>::success(
         {claimHandle, claim.object, claim.slotId, claim.agent, claim.expiresAtTick});
 }
+
+int SmartObjectWorld::vacancyCount() const noexcept { return static_cast<int>(vacancies_.size()); }
+
+Result<SmartObjectVacancy> SmartObjectWorld::vacancyAt(int index) const {
+    if (index < 0 || static_cast<std::size_t>(index) >= vacancies_.size())
+        return Result<SmartObjectVacancy>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "smart object vacancy index out of range", {}, {}, "npc_ai.smart_object"));
+    return Result<SmartObjectVacancy>::success(vacancies_[static_cast<std::size_t>(index)]);
+}
+
+void SmartObjectWorld::clearVacancies() noexcept { vacancies_.clear(); }
 
 }  // namespace eve::npc_ai

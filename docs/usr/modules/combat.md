@@ -61,6 +61,7 @@ TileLayer revision 或代价改变会在下一步重新规划。不可达目标�
 | `CombatCharacterPoseSource` | 把角色位置/朝向变成 melee pose（局部 +Z 为面朝方向） |
 | `CombatMotionWarp` | 攻击中向 lock-on 目标做有预算的水平校正 |
 | `CombatCameraFraming` | 锁定镜头数学（eye/lookAt）；camera 模块只负责 apply |
+| `FpsGait` / `FpsHeadBob` | 第一人称 Walk/Sprint/Crouch 姿态与 head bob（不含物理积分；示例 `fps-arena` 镜像契约） |
 | `CombatCancelResolver` | 输入缓冲 + cancel/combo 窗口 + `ComboGraph` 一帧解析（不激活 Ability） |
 | `CombatLoopRuntime` | 一帧顺序焊接 steering/cancel → warp → character → hurtbox → melee → dodge/guard/feel/reaction → camera |
 | `HitFeelRuntime` | 命中停顿与受击硬直时长（注入仿真时间） |

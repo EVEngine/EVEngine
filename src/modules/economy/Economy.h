@@ -56,6 +56,61 @@ public:
     /** @brief 按 id 字典序返回第 index 个资源类型 id；越界返回空串。 */
     std::string getTypeId(int index);
 
+    // ---- 地区 / 全国市场配置 ----
+    /**
+     * @brief 从 JSON 注册地区或全国市场（对象或数组）。
+     * @param json `eve.economy.market` v1；见用户手册。
+     * @return 成功时为注册/替换的市场数量。
+     * @cost Cheap JSON parse of authoring-size market tables; amortize at load.
+     */
+    [[nodiscard]] static Result<int> registerMarketsFromJson(const std::string& json);
+    /** @brief 清空市场配置（测试用）。 */
+    static void clearMarkets();
+    /** @brief 已注册市场数量。 */
+    [[nodiscard]] static int marketCount();
+    /** @brief 市场 id 是否已注册。 */
+    [[nodiscard]] static bool hasMarket(const std::string& id);
+    /** @brief 按 id 字典序返回第 index 个市场 id；越界返回空串。 */
+    [[nodiscard]] static std::string getMarketId(int index);
+    /** @brief 市场范围文本（regional/national）；未知 id 返回空串。 */
+    [[nodiscard]] static std::string getMarketScope(const std::string& id);
+    /** @brief 地区市场的 regionId；全国市场或未知 id 返回空串。 */
+    [[nodiscard]] static std::string getMarketRegionId(const std::string& id);
+    /** @brief 市场挂靠/绑定的 nationId；未知 id 返回空串。 */
+    [[nodiscard]] static std::string getMarketNationId(const std::string& id);
+    /** @brief 市场报价货币类型；未知 id 返回空串。 */
+    [[nodiscard]] static std::string getMarketCurrencyType(const std::string& id);
+    /** @brief 市场关税配置（万分比）；未知 id 返回 0。 */
+    [[nodiscard]] static int getMarketTariffBps(const std::string& id);
+    /** @brief 市场是否启用；未知 id 返回 false。 */
+    [[nodiscard]] static bool isMarketEnabled(const std::string& id);
+    /**
+     * @brief 按 regionId 查找启用中的地区市场 id。
+     * @return 未找到返回空串。
+     */
+    [[nodiscard]] static std::string findRegionalMarket(const std::string& regionId);
+    /**
+     * @brief 按 nationId 查找启用中的全国市场 id。
+     * @return 未找到返回空串。
+     */
+    [[nodiscard]] static std::string findNationalMarket(const std::string& nationId);
+    /** @brief 市场挂牌数量；未知市场返回 0。 */
+    [[nodiscard]] static int getMarketListingCount(const std::string& marketId);
+    /** @brief 第 index 个挂牌的资源类型；越界/未知返回空串。 */
+    [[nodiscard]] static std::string getMarketListingResourceType(const std::string& marketId, int index);
+    /** @brief 第 index 个挂牌的基准价；越界/未知返回 0。 */
+    [[nodiscard]] static int getMarketListingBasePrice(const std::string& marketId, int index);
+    /**
+     * @brief 买入报价。
+     * @return 市场或挂牌缺失时 NotFound。
+     */
+    [[nodiscard]] static Result<int> quoteBuyPrice(const std::string& marketId, const std::string& resourceType);
+    /**
+     * @brief 卖出报价。
+     * @return 市场或挂牌缺失时 NotFound。
+     */
+    [[nodiscard]] static Result<int> quoteSellPrice(const std::string& marketId, const std::string& resourceType);
+
     // ---- 事件 ----
     /** @brief 清空事件队列。 */
     static void clearEvents();

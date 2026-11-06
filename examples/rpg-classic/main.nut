@@ -58,8 +58,9 @@ persist text = eve.I18n()
 
 const BASE_HP = 100.0;
 const BASE_MP = 40.0;
-const SAVE_CONTENT_VERSION = "rpg-classic.content.v10";
-const PREVIOUS_SAVE_CONTENT_VERSION = "rpg-classic.content.v9";
+const SAVE_CONTENT_VERSION = "rpg-classic.content.v11";
+const PREVIOUS_SAVE_CONTENT_VERSION = "rpg-classic.content.v10";
+const PRE_ENRICHED_STORY_SAVE_CONTENT_VERSION = "rpg-classic.content.v9";
 const PRE_DNUT_STORY_SAVE_CONTENT_VERSION = "rpg-classic.content.v8";
 const PRE_LOCALIZATION_SAVE_CONTENT_VERSION = "rpg-classic.content.v7";
 const SINGLE_ACTOR_SAVE_CONTENT_VERSION = "rpg-classic.content.v6";
@@ -99,6 +100,26 @@ pendingBattleTacticsContent <- null
 pendingStoryContent <- null
 pendingLocalizationContent <- null
 storyWaitRemaining <- 0.0
+storyMovePath <- null
+storyMoveIndex <- 0
+storyMoveStepSeconds <- 0.0
+storyMoveCooldown <- 0.0
+storyCameraRemaining <- 0.0
+storyCameraDuration <- 0.0
+storyCameraFromX <- 0.0
+storyCameraFromY <- 0.0
+storyCameraToX <- 0.0
+storyCameraToY <- 0.0
+storyCameraFocusX <- 0
+storyCameraFocusY <- 0
+storyCameraActive <- false
+storyCameraHasFocus <- false
+storyMapOriginX <- 0.0
+storyMapOriginY <- 0.0
+storyMapOriginSaved <- false
+storyAnimRemaining <- 0.0
+storyAnimClip <- ""
+storyAnimHold <- false
 
 shop <- []
 
@@ -429,6 +450,7 @@ function loadWorldMap(mapId, x, y, fx, fy) {
     worldPath = candidatePath;
     worldMapId = mapId;
     worldX = x; worldY = y; facingX = fx; facingY = fy;
+    storyMapOriginSaved = false;
     return true;
 }
 
@@ -748,6 +770,186 @@ function refreshDialogueUI() {
     }
 }
 
+function rememberStoryMapOrigin() {
+    if (storyMapOriginSaved || worldLayer == null) return;
+    storyMapOriginX = worldLayer.getX();
+    storyMapOriginY = worldLayer.getY();
+    storyMapOriginSaved = true;
+}
+
+function restoreStoryMapOrigin() {
+    if (!storyMapOriginSaved || worldLayer == null) return;
+    worldLayer.setOrigin(storyMapOriginX, storyMapOriginY);
+    storyMapOriginSaved = false;
+}
+
+function clearStoryPresentation() {
+    storyWaitRemaining = 0.0;
+    storyMovePath = null;
+    storyMoveIndex = 0;
+    storyMoveStepSeconds = 0.0;
+    storyMoveCooldown = 0.0;
+    storyCameraRemaining = 0.0;
+    storyCameraDuration = 0.0;
+    storyCameraActive = false;
+    storyCameraHasFocus = false;
+    storyAnimRemaining = 0.0;
+    storyAnimClip = "";
+    storyAnimHold = false;
+    restoreStoryMapOrigin();
+}
+
+function finishStoryPresentationStep() {
+    if (storySession == null || !storySession.isActive()) {
+        clearStoryPresentation();
+        return false;
+    }
+    local advanced = storySession.advance();
+    if (!advanced.ok) {
+        logMessage("story.advanceFailed", {error = advanced.status.summary});
+        return false;
+    }
+    return presentStoryStep();
+}
+
+function beginStoryCamera() {
+    if (worldLayer == null) {
+        logMessage("story.cameraRejected");
+        return false;
+    }
+    rememberStoryMapOrigin();
+    storyCameraFocusX = storySession.getStepNumber("x").tointeger();
+    storyCameraFocusY = storySession.getStepNumber("y").tointeger();
+    local duration = storySession.getStepNumber("duration");
+    if (duration <= 0.0) duration = 0.35;
+    local tileW = worldLayer.getTileWidth();
+    local tileH = worldLayer.getTileHeight();
+    storyCameraFromX = worldLayer.getX();
+    storyCameraFromY = worldLayer.getY();
+    storyCameraToX = config.width * 0.5 - (storyCameraFocusX.tofloat() + 0.5) * tileW;
+    storyCameraToY = config.height * 0.45 - (storyCameraFocusY.tofloat() + 0.5) * tileH;
+    storyCameraDuration = duration;
+    storyCameraRemaining = duration;
+    storyCameraActive = true;
+    storyCameraHasFocus = true;
+    logMessage("story.camera", {x = storyCameraFocusX, y = storyCameraFocusY});
+    return true;
+}
+
+// Returns 1 when the story should wait for path playback, 0 when the actor is
+// already on the destination (advance immediately), and -1 on hard failure.
+function beginStoryMove() {
+    local actorId = storySession.getStepString("actor");
+    local destX = storySession.getStepNumber("x").tointeger();
+    local destY = storySession.getStepNumber("y").tointeger();
+    if ((actorId != "player" && actorId != "hero") || worldPath == null ||
+        !worldPath.isWalkable(destX, destY)) {
+        logMessage("story.moveRejected");
+        return -1;
+    }
+    local path = worldPath.findPath(worldX, worldY, destX, destY);
+    if (path == null || path.getLength() <= 0) {
+        logMessage("story.moveRejected");
+        return -1;
+    }
+    local index = 0;
+    if (path.getX(0) == worldX && path.getY(0) == worldY) index = 1;
+    local remaining = path.getLength() - index;
+    if (remaining <= 0) {
+        logMessage("story.moveStarted", {x = destX, y = destY});
+        return 0;
+    }
+    local duration = storySession.getStepNumber("duration");
+    if (duration <= 0.0) duration = 0.12 * remaining.tofloat();
+    storyMovePath = path;
+    storyMoveIndex = index;
+    storyMoveStepSeconds = duration / remaining.tofloat();
+    if (storyMoveStepSeconds < 0.05) storyMoveStepSeconds = 0.05;
+    storyMoveCooldown = 0.0;
+    logMessage("story.moveStarted", {x = destX, y = destY});
+    return 1;
+}
+
+function beginStoryAnimation() {
+    local targetId = storySession.getStepString("target");
+    if (targetId != "player" && targetId != "hero") {
+        logMessage("story.animationRejected");
+        return false;
+    }
+    storyAnimClip = storySession.getStepString("clip");
+    storyAnimHold = storySession.getStepBool("hold");
+    storyAnimRemaining = storyAnimHold ? 0.55 : 0.35;
+    logMessage("story.animationPlayed", {clip = storyAnimClip});
+    return true;
+}
+
+function updateStoryPresentation(dt) {
+    if (storySession == null || !storySession.isActive()) return;
+
+    if (storyCameraActive) {
+        storyCameraRemaining -= dt;
+        local t = 1.0;
+        if (storyCameraDuration > 0.0)
+            t = 1.0 - (storyCameraRemaining / storyCameraDuration);
+        if (t < 0.0) t = 0.0;
+        if (t > 1.0) t = 1.0;
+        // Smoothstep keeps the authored camera beat from feeling like a teleport.
+        local s = t * t * (3.0 - 2.0 * t);
+        if (worldLayer != null) {
+            worldLayer.setOrigin(
+                storyCameraFromX + (storyCameraToX - storyCameraFromX) * s,
+                storyCameraFromY + (storyCameraToY - storyCameraFromY) * s);
+        }
+        if (storyCameraRemaining <= 0.0) {
+            storyCameraActive = false;
+            finishStoryPresentationStep();
+        }
+        return;
+    }
+
+    if (storyMovePath != null) {
+        storyMoveCooldown -= dt;
+        while (storyMoveCooldown <= 0.0 && storyMovePath != null) {
+            if (storyMoveIndex >= storyMovePath.getLength()) {
+                storyMovePath = null;
+                finishStoryPresentationStep();
+                return;
+            }
+            local nextX = storyMovePath.getX(storyMoveIndex);
+            local nextY = storyMovePath.getY(storyMoveIndex);
+            facingX = nextX - worldX;
+            facingY = nextY - worldY;
+            if (facingX < -1) facingX = -1;
+            if (facingX > 1) facingX = 1;
+            if (facingY < -1) facingY = -1;
+            if (facingY > 1) facingY = 1;
+            if (facingX == 0 && facingY == 0) { facingX = 1; facingY = 0; }
+            worldX = nextX;
+            worldY = nextY;
+            storyMoveIndex += 1;
+            storyMoveCooldown += storyMoveStepSeconds;
+        }
+        return;
+    }
+
+    if (storyAnimRemaining > 0.0) {
+        storyAnimRemaining -= dt;
+        if (storyAnimRemaining <= 0.0) {
+            storyAnimRemaining = 0.0;
+            finishStoryPresentationStep();
+        }
+        return;
+    }
+
+    if (storySession.getStepKind() == "wait") {
+        storyWaitRemaining -= dt;
+        if (storyWaitRemaining <= 0.0) {
+            storyWaitRemaining = 0.0;
+            finishStoryPresentationStep();
+        }
+    }
+}
+
 function presentStoryStep() {
     while (storySession != null && storySession.isActive()) {
         local kind = storySession.getStepKind();
@@ -767,32 +969,27 @@ function presentStoryStep() {
             refreshDialogueUI();
             return true;
         }
-        if (kind == "wait") {
-            storyWaitRemaining = storySession.getStepNumber("duration");
+        if (kind == "camera") {
+            if (!beginStoryCamera()) return false;
             return true;
         }
-        if (kind == "message") {
+        if (kind == "move") {
+            local moveState = beginStoryMove();
+            if (moveState < 0) return false;
+            if (moveState > 0) return true;
+            // Already on the destination tile: acknowledge and continue.
+        } else if (kind == "animation") {
+            if (!beginStoryAnimation()) return false;
+            return true;
+        } else if (kind == "wait") {
+            storyWaitRemaining = storySession.getStepNumber("duration");
+            return true;
+        } else if (kind == "message") {
             // Authored `text=` is treated as an i18n key when present in the bundle.
             logLine(tr(storySession.getStepString("text")));
-        } else if (kind == "move") {
-            local actorId = storySession.getStepString("actor");
-            local destX = storySession.getStepNumber("x").tointeger();
-            local destY = storySession.getStepNumber("y").tointeger();
-            if ((actorId != "player" && actorId != "hero") ||
-                !worldPath.isWalkable(destX, destY)) {
-                logMessage("story.moveRejected");
-                return false;
-            }
-            worldX = destX;
-            worldY = destY;
-        } else if (kind == "camera") {
-            logMessage("story.camera", {
-                x = storySession.getStepNumber("x"),
-                y = storySession.getStepNumber("y")
-            });
-        } else if (kind == "animation" || kind == "select") {
-            // Host-presented presentation steps: acknowledge immediately in this demo.
-        } else {
+        } else if (kind == "select") {
+            logMessage("story.select", {object = storySession.getStepString("object")});
+        } else if (kind != "move") {
             logMessage("story.unknownStep");
             return false;
         }
@@ -802,7 +999,7 @@ function presentStoryStep() {
             return false;
         }
     }
-    storyWaitRemaining = 0.0;
+    clearStoryPresentation();
     return true;
 }
 
@@ -811,7 +1008,7 @@ function startStoryEvent(eventId) {
     local begun = candidate.begin(eventId, gs, party, bag, equip);
     if (!begun.ok) return false;
     storySession = candidate;
-    storyWaitRemaining = 0.0;
+    clearStoryPresentation();
     return presentStoryStep();
 }
 
@@ -832,11 +1029,11 @@ function beginQuestNpcDialogue(index) {
         logMessage("dialogue.invalidNpc");
         return false;
     }
-    local suffix = "offer";
-    if (questState == "active") suffix = "active";
-    else if (questState == "ready") suffix = "turnin";
-    else if (questState == "completed") suffix = "completed";
-    local id = dialogueBase + "." + suffix;
+    local id = quest.dialogueConversationId(questId, dialogueBase);
+    if (id == "") {
+        logMessage("dialogue.invalidNpc");
+        return false;
+    }
     local started = dialogueFlow.startChecked(id, {});
     if (!started.ok) {
         reportDialogueDiagnostics();
@@ -1629,6 +1826,7 @@ function makeSaveSession() {
     local session = eve.RPGSaveSession();
     if (session.setContentVersion(SAVE_CONTENT_VERSION) == 0 ||
         session.allowCompatibleContentVersion(PREVIOUS_SAVE_CONTENT_VERSION) == 0 ||
+        session.allowCompatibleContentVersion(PRE_ENRICHED_STORY_SAVE_CONTENT_VERSION) == 0 ||
         session.allowCompatibleContentVersion(PRE_DNUT_STORY_SAVE_CONTENT_VERSION) == 0 ||
         session.allowCompatibleContentVersion(PRE_LOCALIZATION_SAVE_CONTENT_VERSION) == 0 ||
         session.allowSingleActorPartyMigration(SINGLE_ACTOR_SAVE_CONTENT_VERSION) == 0 ||
@@ -1895,7 +2093,7 @@ function loadCheckpoint(replaceUnsavedNewRun = false) {
     logMessage("save.loaded", {area = worldMapTitle("village")});
     refreshHud();
     storySession = null;
-    storyWaitRemaining = 0.0;
+    clearStoryPresentation();
     resumePendingStoryEvent();
     return true;
 }
@@ -1911,7 +2109,7 @@ function startNewGame(slot = activeSaveSlot) {
     activeEncounter = "";
     activeEncounterId = "";
     storySession = null;
-    storyWaitRemaining = 0.0;
+    clearStoryPresentation();
     battleLog = [];
     hitFlash.player = 0.0; hitFlash.enemy = 0.0;
     state = "idle";
@@ -2016,14 +2214,9 @@ eve_update = function(dt) {
     }
     if (hitFlash.player > 0.0) hitFlash.player -= dt;
     if (hitFlash.enemy > 0.0) hitFlash.enemy -= dt;
-    if (storySession != null && storySession.isActive() && storySession.getStepKind() == "wait") {
-        storyWaitRemaining -= dt;
-        if (storyWaitRemaining <= 0.0) {
-            local advancedStory = storySession.advance();
-            if (!advancedStory.ok) logMessage("story.advanceFailed", {error = advancedStory.status.summary});
-            else presentStoryStep();
-        }
-    }
+    if (storySession != null && storySession.isActive() && screen != "dialogue" &&
+        screen != "pause")
+        updateStoryPresentation(dt);
     if (screen == "title") {
     } else if (screen == "pause") {
         if (key_just_pressed("escape", "Escape")) resumeFromPause();
@@ -2045,9 +2238,9 @@ eve_update = function(dt) {
     } else if (state == "gameover") {
         if (key_just_pressed("E")) recoverPartyAtVillage();
         else if (key_just_pressed("R")) startNewGame(activeSaveSlot);
-    } else if (storySession != null && storySession.isActive() &&
-               storySession.getStepKind() == "wait") {
+    } else if (storySession != null && storySession.isActive()) {
         if (key_just_pressed("F5")) saveCheckpoint();
+        else if (key_just_pressed("escape", "Escape")) openPauseMenu();
     } else if (screen == "explore") {
         if (key_just_pressed("escape", "Escape")) openPauseMenu();
         else if (key_just_pressed("Up", "W")) tryWorldMove(0, -1);
@@ -2101,11 +2294,22 @@ eve_render = function() {
             else if (type == "loot") gfx.drawSolidRect(ox + 5.0, oy + 11.0, 22.0, 15.0, 0.7, 0.4, 0.12, 1.0);
             else if (type == "portal") gfx.drawSolidRect(ox + 9.0, oy + 2.0, 14.0, 28.0, 0.25, 0.85, 0.95, 1.0);
         }
+        if (storyCameraHasFocus && worldLayer != null &&
+            storySession != null && storySession.isActive()) {
+            local cx = worldLayer.tileToWorldX(storyCameraFocusX, storyCameraFocusY);
+            local cy = worldLayer.tileToWorldY(storyCameraFocusX, storyCameraFocusY);
+            gfx.drawSolidRect(cx + 2.0, cy + 2.0, 28.0, 28.0, 1.0, 0.85, 0.2, 0.28);
+        }
         local wx = worldLayer.tileToWorldX(worldX, worldY);
         local wy = worldLayer.tileToWorldY(worldX, worldY);
         gfx.drawSolidRect(wx + 5.0, wy + 4.0, 22.0, 25.0, 0.25, 0.55, 1.0, 1.0);
         gfx.drawSolidRect(wx + 12.0 + facingX * 7.0, wy + 11.0 + facingY * 7.0, 8.0, 8.0,
                           0.95, 0.95, 1.0, 1.0);
+        if (storyAnimRemaining > 0.0) {
+            local pulse = storyAnimRemaining;
+            gfx.drawSolidRect(wx + 8.0, wy - 10.0 - pulse * 4.0, 16.0, 10.0, 1.0, 0.92, 0.35, 0.95);
+            gfx.drawSolidRect(wx + 12.0, wy - 14.0 - pulse * 4.0, 8.0, 6.0, 1.0, 0.75, 0.2, 1.0);
+        }
     } else {
         gfx.drawSolidRect(0.0, config.height - 60.0, config.width * 1.0, 60.0, 0.12, 0.1, 0.14, 1.0);
         local px = config.width * 0.28; local py = config.height - 150.0;

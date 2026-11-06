@@ -50,6 +50,10 @@ void exposeRenderable3DBindings(ssq::Table& table) {
     ent.addFunc("setShader", &Renderable3D::setShader);
     ent.addFunc("setMaterial", &Renderable3D::setMaterial);
     ent.addFunc("getMaterial", &Renderable3D::getMaterial);
+    ent.addFunc("setXRayShader", &Renderable3D::setXRayShader);
+    ent.addFunc("getXRayShader", &Renderable3D::getXRayShader);
+    ent.addFunc("setXRayHighlight", &Renderable3D::setXRayHighlight);
+    ent.addFunc("getXRayHighlight", &Renderable3D::getXRayHighlight);
     ent.addFunc("setPart", &Renderable3D::setPart);
     ent.addFunc("setPartSortPriority", &Renderable3D::setPartSortPriority);
     ent.addFunc("clearPartSortPriority", &Renderable3D::clearPartSortPriority);

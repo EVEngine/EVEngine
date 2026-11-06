@@ -12,7 +12,10 @@ EditorValue vec2(glm::vec2 v){return EditorValue::Array{v.x,v.y};}
 EditorValue vec3(glm::vec3 v){return EditorValue::Array{v.x,v.y,v.z};}
 bool readVec(const EditorValue* value,float* out,std::size_t count){const auto* array=value?value->getIf<EditorValue::Array>():nullptr;if(!array||array->size()!=count)return false;for(std::size_t i=0;i<count;++i){const auto* number=(*array)[i].getIf<double>();if(!number||!std::isfinite(*number))return false;out[i]=static_cast<float>(*number);}return true;}
 bool finite(float value){return std::isfinite(value);}
-bool modeValid(const std::string& value){return value=="follow"||value=="orbit"||value=="topdown"||value=="firstperson"||value=="cinematic";}
+bool modeValid(const std::string& value) {
+    return value == "follow" || value == "orbit" || value == "topdown" || value == "ortho" || value == "firstperson" ||
+           value == "cinematic";
+}
 bool propertyValid(const std::string& value){return value=="fov"||value=="radius"||value=="smooth"||value=="compositionX"||value=="compositionY";}
 EditorValue rigValue(const CameraRigValue& r){return EditorValue::Object{{"id",r.id.value()},{"name",r.name},{"mode",r.mode},{"priority",int64_t{r.priority}},{"enabled",r.enabled},{"target",vec3(r.target)},{"offset",vec3(r.offset)},{"lookAhead",vec3(r.lookAhead)},{"composition",vec2(r.composition)},{"radius",r.radius},{"azimuth",r.azimuth},{"elevation",r.elevation},{"yaw",r.yaw},{"pitch",r.pitch},{"fov",r.fov},{"smooth",r.smooth},{"maxSpeed",r.maxSpeed}};}
 EditorValue keyValue(const CameraTimelineKeyValue& k){return EditorValue::Object{{"id",k.id.value()},{"kind",k.kind},{"time",k.time},{"rig",k.rig.value()},{"blend",k.blend},{"property",k.property},{"value",k.value},{"name",k.name},{"data",k.data}};}

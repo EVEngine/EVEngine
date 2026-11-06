@@ -8,6 +8,7 @@
 #include "economy/EconomyControl.h"
 #include "economy/EconomySystem.h"
 #include "economy/GatherNode.h"
+#include "economy/Market.h"
 #include "economy/ResourceType.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -78,6 +79,84 @@ int Economy::getStockMax(const std::string& id) {
 std::string Economy::getTypeId(int index) {
     const auto* def = ResourceTypeRegistry::typeAt(index);
     return def ? def->id : std::string{};
+}
+
+Result<int> Economy::registerMarketsFromJson(const std::string& json) { return MarketRegistry::loadFromJson(json); }
+
+void Economy::clearMarkets() { MarketRegistry::clear(); }
+
+int Economy::marketCount() { return MarketRegistry::count(); }
+
+bool Economy::hasMarket(const std::string& id) { return MarketRegistry::has(id); }
+
+std::string Economy::getMarketId(int index) {
+    const auto* market = MarketRegistry::marketAt(index);
+    return market ? market->id : std::string{};
+}
+
+std::string Economy::getMarketScope(const std::string& id) {
+    const auto* market = MarketRegistry::find(id);
+    return market ? marketScopeName(market->scope) : std::string{};
+}
+
+std::string Economy::getMarketRegionId(const std::string& id) {
+    const auto* market = MarketRegistry::find(id);
+    return market ? market->regionId : std::string{};
+}
+
+std::string Economy::getMarketNationId(const std::string& id) {
+    const auto* market = MarketRegistry::find(id);
+    return market ? market->nationId : std::string{};
+}
+
+std::string Economy::getMarketCurrencyType(const std::string& id) {
+    const auto* market = MarketRegistry::find(id);
+    return market ? market->currencyType : std::string{};
+}
+
+int Economy::getMarketTariffBps(const std::string& id) {
+    const auto* market = MarketRegistry::find(id);
+    return market ? market->tariffBps : 0;
+}
+
+bool Economy::isMarketEnabled(const std::string& id) {
+    const auto* market = MarketRegistry::find(id);
+    return market ? market->enabled : false;
+}
+
+std::string Economy::findRegionalMarket(const std::string& regionId) {
+    const auto* market = MarketRegistry::findRegional(regionId);
+    return market ? market->id : std::string{};
+}
+
+std::string Economy::findNationalMarket(const std::string& nationId) {
+    const auto* market = MarketRegistry::findNational(nationId);
+    return market ? market->id : std::string{};
+}
+
+int Economy::getMarketListingCount(const std::string& marketId) {
+    const auto* market = MarketRegistry::find(marketId);
+    return market ? static_cast<int>(market->listings.size()) : 0;
+}
+
+std::string Economy::getMarketListingResourceType(const std::string& marketId, int index) {
+    const auto* market = MarketRegistry::find(marketId);
+    if (market == nullptr || index < 0 || index >= static_cast<int>(market->listings.size())) return {};
+    return market->listings[static_cast<std::size_t>(index)].resourceType;
+}
+
+int Economy::getMarketListingBasePrice(const std::string& marketId, int index) {
+    const auto* market = MarketRegistry::find(marketId);
+    if (market == nullptr || index < 0 || index >= static_cast<int>(market->listings.size())) return 0;
+    return market->listings[static_cast<std::size_t>(index)].basePrice;
+}
+
+Result<int> Economy::quoteBuyPrice(const std::string& marketId, const std::string& resourceType) {
+    return MarketRegistry::quoteBuyPrice(marketId, resourceType);
+}
+
+Result<int> Economy::quoteSellPrice(const std::string& marketId, const std::string& resourceType) {
+    return MarketRegistry::quoteSellPrice(marketId, resourceType);
 }
 
 void Economy::clearEvents() { EconomySystem::clearEvents(); }
@@ -183,6 +262,41 @@ void Economy::expose(ssq::Class& cls) {
     cls.addFunc("getEventType", [](Economy*, int index) { return Economy::eventType(index); });
     cls.addFunc("getEventAmount", [](Economy*, int index) { return Economy::eventAmount(index); });
     cls.addFunc("getTypeId", &Economy::getTypeId);
+
+    cls.addFunc("registerMarketsFromJson", [vm = cls.getHandle()](Economy*, const std::string& json) {
+        auto projector = [](int count) { return eve::Value(static_cast<std::int64_t>(count)); };
+        return eve::script::projectResult(vm, Economy::registerMarketsFromJson(json), projector);
+    });
+    cls.addFunc("clearMarkets", [](Economy*) { Economy::clearMarkets(); });
+    cls.addFunc("marketCount", [](Economy*) { return Economy::marketCount(); });
+    cls.addFunc("hasMarket", [](Economy*, std::string id) { return Economy::hasMarket(id); });
+    cls.addFunc("getMarketId", [](Economy*, int index) { return Economy::getMarketId(index); });
+    cls.addFunc("getMarketScope", [](Economy*, std::string id) { return Economy::getMarketScope(id); });
+    cls.addFunc("getMarketRegionId", [](Economy*, std::string id) { return Economy::getMarketRegionId(id); });
+    cls.addFunc("getMarketNationId", [](Economy*, std::string id) { return Economy::getMarketNationId(id); });
+    cls.addFunc("getMarketCurrencyType", [](Economy*, std::string id) { return Economy::getMarketCurrencyType(id); });
+    cls.addFunc("getMarketTariffBps", [](Economy*, std::string id) { return Economy::getMarketTariffBps(id); });
+    cls.addFunc("isMarketEnabled", [](Economy*, std::string id) { return Economy::isMarketEnabled(id); });
+    cls.addFunc("findRegionalMarket",
+                [](Economy*, std::string regionId) { return Economy::findRegionalMarket(regionId); });
+    cls.addFunc("findNationalMarket",
+                [](Economy*, std::string nationId) { return Economy::findNationalMarket(nationId); });
+    cls.addFunc("getMarketListingCount",
+                [](Economy*, std::string marketId) { return Economy::getMarketListingCount(marketId); });
+    cls.addFunc("getMarketListingResourceType", [](Economy*, std::string marketId, int index) {
+        return Economy::getMarketListingResourceType(marketId, index);
+    });
+    cls.addFunc("getMarketListingBasePrice", [](Economy*, std::string marketId, int index) {
+        return Economy::getMarketListingBasePrice(marketId, index);
+    });
+    cls.addFunc("quoteBuyPrice", [vm = cls.getHandle()](Economy*, std::string marketId, std::string resourceType) {
+        auto projector = [](int price) { return eve::Value(static_cast<std::int64_t>(price)); };
+        return eve::script::projectResult(vm, Economy::quoteBuyPrice(marketId, resourceType), projector);
+    });
+    cls.addFunc("quoteSellPrice", [vm = cls.getHandle()](Economy*, std::string marketId, std::string resourceType) {
+        auto projector = [](int price) { return eve::Value(static_cast<std::int64_t>(price)); };
+        return eve::script::projectResult(vm, Economy::quoteSellPrice(marketId, resourceType), projector);
+    });
 
     // 把玩家账本发布到共享玩法协议（`eve_gameplay` / MCP）。返回 {ok, message}：
     // 失败原因（非规范持久 id、重复实例）不被丢弃。

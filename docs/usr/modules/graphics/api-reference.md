@@ -174,27 +174,31 @@
 
 ## Renderable3D
 
-- `clearMeshLod()` → `void`；[绑定实现 L90](../../../../src/modules/graphics/Renderable3DBindings.cpp#L90)。
-- `clearParts()` → `void`；[绑定实现 L55](../../../../src/modules/graphics/Renderable3DBindings.cpp#L55)。
-- `getHair()` → `bool`；[绑定实现 L61](../../../../src/modules/graphics/Renderable3DBindings.cpp#L61)。
-- `getMaterial()` → `Material`；[绑定实现 L50](../../../../src/modules/graphics/Renderable3DBindings.cpp#L50)。
-- `getMeshLodCount()` → `int`；[绑定实现 L91](../../../../src/modules/graphics/Renderable3DBindings.cpp#L91)。
-- `getMeshLodLevelAtDistance(distance: float)` → `int`；[绑定实现 L92](../../../../src/modules/graphics/Renderable3DBindings.cpp#L92)。
-- `getParallaxMaxLayers()` → `float`；[绑定实现 L76](../../../../src/modules/graphics/Renderable3DBindings.cpp#L76)。
-- `getParallaxMinLayers()` → `float`；[绑定实现 L75](../../../../src/modules/graphics/Renderable3DBindings.cpp#L75)。
-- `getParallaxScale()` → `float`；[绑定实现 L74](../../../../src/modules/graphics/Renderable3DBindings.cpp#L74)。
-- `getPartCount()` → `int`；[绑定实现 L56](../../../../src/modules/graphics/Renderable3DBindings.cpp#L56)。
-- `getPartMaterial(index: int)` → `Material`；[绑定实现 L59](../../../../src/modules/graphics/Renderable3DBindings.cpp#L59)。
-- `getPartMesh(index: int)` → `Mesh`；[绑定实现 L58](../../../../src/modules/graphics/Renderable3DBindings.cpp#L58)。
-- `getPartName(index: int)` → `string`；[绑定实现 L57](../../../../src/modules/graphics/Renderable3DBindings.cpp#L57)。
-- `getTexCellBombRotation()` → `float`；[绑定实现 L72](../../../../src/modules/graphics/Renderable3DBindings.cpp#L72)。
-- `getTexCellBombScale()` → `float`；[绑定实现 L70](../../../../src/modules/graphics/Renderable3DBindings.cpp#L70)。
-- `getTexCellBombStrength()` → `float`；[绑定实现 L71](../../../../src/modules/graphics/Renderable3DBindings.cpp#L71)。
-- `getYaw()` → `float`；[绑定实现 L18](../../../../src/modules/graphics/Renderable3DBindings.cpp#L18)。
-- `setPackedNormalMask(enabled: bool)` → `void`；[绑定实现 L46](../../../../src/modules/graphics/Renderable3DBindings.cpp#L46)。
-- `setReceiveShadow(receive: bool)` → `void`；[绑定实现 L85](../../../../src/modules/graphics/Renderable3DBindings.cpp#L85)。
-- `setTint(r: float, g: float, b: float, a: float)` → `void`；[绑定实现 L62](../../../../src/modules/graphics/Renderable3DBindings.cpp#L62)。
-- `setYaw(yaw: float)` → `void`；[绑定实现 L17](../../../../src/modules/graphics/Renderable3DBindings.cpp#L17)。
+- `clearMeshLod()` → `void`；[绑定实现 L97](../../../../src/modules/graphics/Renderable3DBindings.cpp#L97)。
+- `clearParts()` → `void`；[绑定实现 L61](../../../../src/modules/graphics/Renderable3DBindings.cpp#L61)。
+- `getHair()` → `bool`；[绑定实现 L67](../../../../src/modules/graphics/Renderable3DBindings.cpp#L67)。
+- `getMaterial()` → `Material`；[绑定实现 L52](../../../../src/modules/graphics/Renderable3DBindings.cpp#L52)。
+- `getMeshLodCount()` → `int`；[绑定实现 L98](../../../../src/modules/graphics/Renderable3DBindings.cpp#L98)。
+- `getMeshLodLevelAtDistance(distance: float)` → `int`；[绑定实现 L99](../../../../src/modules/graphics/Renderable3DBindings.cpp#L99)。
+- `getParallaxMaxLayers()` → `float`；[绑定实现 L82](../../../../src/modules/graphics/Renderable3DBindings.cpp#L82)。
+- `getParallaxMinLayers()` → `float`；[绑定实现 L81](../../../../src/modules/graphics/Renderable3DBindings.cpp#L81)。
+- `getParallaxScale()` → `float`；[绑定实现 L80](../../../../src/modules/graphics/Renderable3DBindings.cpp#L80)。
+- `getPartCount()` → `int`；[绑定实现 L62](../../../../src/modules/graphics/Renderable3DBindings.cpp#L62)。
+- `getPartMaterial(index: int)` → `Material`；[绑定实现 L65](../../../../src/modules/graphics/Renderable3DBindings.cpp#L65)。
+- `getPartMesh(index: int)` → `Mesh`；[绑定实现 L64](../../../../src/modules/graphics/Renderable3DBindings.cpp#L64)。
+- `getPartName(index: int)` → `string`；[绑定实现 L63](../../../../src/modules/graphics/Renderable3DBindings.cpp#L63)。
+- `getTexCellBombRotation()` → `float`；[绑定实现 L78](../../../../src/modules/graphics/Renderable3DBindings.cpp#L78)。
+- `getTexCellBombScale()` → `float`；[绑定实现 L76](../../../../src/modules/graphics/Renderable3DBindings.cpp#L76)。
+- `getTexCellBombStrength()` → `float`；[绑定实现 L77](../../../../src/modules/graphics/Renderable3DBindings.cpp#L77)。
+- `getXRayHighlight()` → `bool`；[绑定实现 L56](../../../../src/modules/graphics/Renderable3DBindings.cpp#L56)。
+- `getXRayShader()` → `Shader`；[绑定实现 L54](../../../../src/modules/graphics/Renderable3DBindings.cpp#L54)。
+- `getYaw()` → `float`；[绑定实现 L20](../../../../src/modules/graphics/Renderable3DBindings.cpp#L20)。
+- `setPackedNormalMask(enabled: bool)` → `void`；[绑定实现 L48](../../../../src/modules/graphics/Renderable3DBindings.cpp#L48)。
+- `setReceiveShadow(receive: bool)` → `void`；[绑定实现 L92](../../../../src/modules/graphics/Renderable3DBindings.cpp#L92)。
+- `setTint(r: float, g: float, b: float, a: float)` → `void`；[绑定实现 L68](../../../../src/modules/graphics/Renderable3DBindings.cpp#L68)。
+- `setXRayHighlight(on: bool)` → `void`；[绑定实现 L55](../../../../src/modules/graphics/Renderable3DBindings.cpp#L55)。
+- `setXRayShader(shader: Shader)` → `void`；[绑定实现 L53](../../../../src/modules/graphics/Renderable3DBindings.cpp#L53)。
+- `setYaw(yaw: float)` → `void`；[绑定实现 L19](../../../../src/modules/graphics/Renderable3DBindings.cpp#L19)。
 
 ## ScreenSpaceReflection
 

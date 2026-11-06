@@ -11,7 +11,9 @@
 
 ## For coding agents
 
-- [share/eve/ai/SKILL.md](share/eve/ai/SKILL.md): short EveScript + conventions + concept map
+- [share/eve/ai/SKILL.md](share/eve/ai/SKILL.md): EveScript + conventions + concept map (compat copy)
+- [.cursor/skills/README.md](.cursor/skills/README.md): skill index (language + mature game paradigms)
+- Paradigm skills under `.cursor/skills/`: `evescript`, `eve-agent-loop`, `eve-game-loop`, `eve-arpg`, `eve-rpg`, `eve-rts`, `eve-action-guide`
 - [share/eve/ai/eve-api.json](share/eve/ai/eve-api.json): this SDK build's Binding Contracts (`eve.binding-api`)
 - [share/eve/ai/eve-api.d.ts](share/eve/ai/eve-api.d.ts): TypeScript-shaped signatures (not a second runtime)
 - [share/eve/examples/basic/main.nut](share/eve/examples/basic/main.nut): gold example
@@ -22,4 +24,5 @@
 - `bin/eve run --debug --mcp-port=7529 share/eve/examples/basic`
 - MCP stdio bridge: `share/eve/ai/eve-mcp/` (see its README)
 - Tools: `eve_api_search` / `eve_api_get` (lookup), `eve_play` (observe/act), `eve_screenshot` (engine PNG), `eve_profiler_frame` / `eve_profiler_report` (hotspots)
+- Agent verify loop: `.cursor/skills/eve-agent-loop/SKILL.md`
 - Do not use `eve_eval` as the official gameplay path

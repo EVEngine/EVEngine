@@ -242,6 +242,9 @@ TEST_CASE("graphics.cubemapPrefilter.bilinearTapNearCubeEdgeSamplesNeighborFace"
 #include "graphics/RenderSystem.h"
 #include "zeroerr/unittest.h"
 
+#include <cmath>
+#include <string>
+
 namespace test_lighting_2d {
 using namespace eve::graphics;
 
@@ -283,6 +286,29 @@ TEST_CASE("graphics.camera2d.ambientValuesAreOwnedByCreatedCamera") {
     CHECK_EQ(camera->data()->ambientR, 0.2f);
     CHECK_EQ(camera->data()->ambientG, 0.3f);
     CHECK_EQ(camera->data()->ambientB, 0.4f);
+    ecs::DestroyEntity(camera);
+}
+
+TEST_CASE("graphics.camera2d.pixelPerfectResolvesIntegerZoomAndSnapsCenter") {
+    ecs::Table       table;
+    ecs::ScopedTable scope(table);
+    auto*            camera = Camera2D::createCamera();
+    REQUIRE(camera != nullptr);
+    auto bad = camera->setPixelConfig(0.f, 320, 180);
+    REQUIRE(!bad.ok());
+    bad.ignore("expected invalid ppu");
+    auto ok = camera->setPixelConfig(1.f, 320, 180);
+    REQUIRE(ok.ok());
+    camera->setPosition(10.4f, -3.6f);
+    auto applied = camera->applyPixelPerfect(1280, 720);
+    REQUIRE(applied.ok());
+    CHECK(camera->getPixelPerfect());
+    CHECK_EQ(camera->getPixelScale(), 4);
+    CHECK_EQ(camera->getZoom(), 4.f);
+    CHECK_EQ(camera->getX(), 10.5f);
+    CHECK_EQ(camera->getY(), -3.5f);
+    const float screenX = camera->worldToScreenX(10.5f, -3.5f, 1280.f, 720.f);
+    CHECK_LT(std::fabs(std::round(screenX) - screenX), 1e-4f);
     ecs::DestroyEntity(camera);
 }
 }  // namespace test_lighting_2d
@@ -552,6 +578,41 @@ TEST_CASE("graphics.camera3d.screenToRayUsesPerspectiveEyeOrOrthographicNearPlan
         CHECK_LT(camera->getScreenRayDirZ(), -0.99f);
         ecs::DestroyEntity(camera);
     };
+    SUB_CASE("pixel orthographic uses reference height over pixels-per-unit with integer scale") {
+        ecs::Table       table;
+        ecs::ScopedTable scope(table);
+        auto*            camera = Camera3D::createCamera();
+        REQUIRE(camera != nullptr);
+        camera->setEye(0.27f, 0.f, 8.f);
+        camera->setTarget(0.27f, 0.f, 0.f);
+        auto applied = camera->setPixelOrthographic(16.f, 1280, 720, 320, 180);
+        REQUIRE(applied.ok());
+        CHECK(camera->isOrthographic());
+        CHECK_EQ(camera->getPixelScale(), 4);
+        CHECK_LT(std::fabs(camera->getOrthoHeight() - (180.f / 16.f)), 1e-4f);
+        CHECK(camera->hasPixelConfig());
+        CHECK_EQ(camera->getPixelsPerUnit(), 16.f);
+        // One framebuffer pixel at scale 4 and ppu 16 is 1/64 world units.
+        const float step = 1.f / 64.f;
+        const float rem  = std::fabs(camera->getEyeX() / step - std::round(camera->getEyeX() / step));
+        CHECK_LT(rem, 1e-4f);
+        ecs::DestroyEntity(camera);
+    };
+}
+
+TEST_CASE("graphics.camera3d.pixelConfigRejectsInvalidSizing") {
+    ecs::Table       table;
+    ecs::ScopedTable scope(table);
+    auto*            camera = Camera3D::createCamera();
+    REQUIRE(camera != nullptr);
+    auto missingHeight = camera->setPixelConfig(8.f, 320, 0);
+    REQUIRE(!missingHeight.ok());
+    missingHeight.ignore("expected mismatched ref");
+    auto zeroView = camera->setPixelOrthographic(8.f, 0, 720);
+    REQUIRE(!zeroView.ok());
+    zeroView.ignore("expected zero viewport");
+    CHECK(!camera->isOrthographic());
+    ecs::DestroyEntity(camera);
 }
 
 TEST_CASE("graphics.renderSystem3d.shadowDrawerRegistrationIssuesUniqueTokensAndRemovalIsIdempotent") {
