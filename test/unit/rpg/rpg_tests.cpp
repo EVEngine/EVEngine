@@ -21,7 +21,8 @@
     "rpg_skill_condition.cpp",
     "rpg_story_event.cpp",
     "rpg_trait.cpp",
-    "status_effect_adapter.cpp"
+    "status_effect_adapter.cpp",
+    "rpg_equipment_upgrade.cpp"
   ]
 }
 */
@@ -1562,4 +1563,205 @@ TEST_CASE("Canonical RPG restore rejects malformed later actor without applying 
     SkillRegistry::remove(skill.id);
 }
 }  // namespace test_rpg_composition_contract
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_equipment_upgrade)
+#include "PrivateTestScope.h"
+
+#include <cmath>
+#include "inventory/Bag.h"
+#include "inventory/Equipment.h"
+#include "inventory/InventoryResourceAccount.h"
+#include "inventory/InventorySystem.h"
+#include "inventory/Item.h"
+#include "production/Production.h"
+#include "rpg/EquipmentSystem.h"
+#include "rpg/EquipmentUpgrade.h"
+#include "rpg/ForgeBench.h"
+#include "rpg/RPG.h"
+#include "rpg/RPGActor.h"
+
+namespace test_rpg_equipment_upgrade {
+using namespace eve;
+
+TEST_CASE("rpg.equipmentUpgradePaysQueuesAndMutatesEnhanceOnce") {
+    inventory::ItemRegistry::clear();
+    inventory::InventorySystem::clearEvents();
+    inventory::InventorySystem::ensureBuiltins();
+    inventory::ItemDefinition blade;
+    blade.id        = "sword.ember";
+    blade.maxStack  = 1;
+    blade.equipSlot = "weapon";
+    blade.tags      = {"weapon"};
+    inventory::ItemRegistry::registerItem(blade);
+    inventory::ItemDefinition stone;
+    stone.id       = "emberstone";
+    stone.maxStack = 99;
+    inventory::ItemRegistry::registerItem(stone);
+
+    inventory::Bag bag(4);
+    bag.setId("forge.bag");
+    REQUIRE_EQ(bag.addItem("sword.ember", 1), 1);
+    REQUIRE_EQ(bag.addItem("emberstone", 3), 3);
+    const int slot = bag.findItem("sword.ember");
+    REQUIRE(slot >= 0);
+    const int instanceId = bag.getSlotInstanceId(slot);
+    CHECK_EQ(bag.getSlotProp(slot, rpg::kEquipmentEnhanceProp, "0"), "0");
+
+    auto cost = resource::CostSpec::single("emberstone", 1);
+    REQUIRE(cost.ok());
+    rpg::EquipmentUpgradeRecipe recipe;
+    recipe.id          = "enhance.ember.0";
+    recipe.process     = "upgrade";
+    recipe.itemId      = "sword.ember";
+    recipe.fromLevel   = 0;
+    recipe.toLevel     = 1;
+    recipe.ingredients = std::move(cost).takeValue();
+    recipe.duration    = Duration::fromSeconds(1.0).expect("upgrade duration");
+
+    production::WorkQueue               queue;
+    inventory::InventoryResourceAccount account(bag);
+    rpg::EquipmentUpgradeRequest        request;
+    request.production         = &queue;
+    request.ingredients        = &account;
+    request.bag                = &bag;
+    request.bagSlot            = slot;
+    request.expectedInstanceId = instanceId;
+    request.owner              = "forge";
+    request.recipe             = recipe;
+    auto begun                 = rpg::EquipmentUpgrade::begin(std::move(request));
+    REQUIRE(begun.ok());
+    CHECK_EQ(bag.countItem("emberstone"), 2);
+    const std::string taskId = begun.value().productionTaskId;
+    REQUIRE(queue.advance({SimulationTick(1), recipe.duration}).ok());
+    CHECK_EQ(queue.find(taskId)->get().state, production::TaskState::ReadyToSettle);
+
+    auto settled = rpg::EquipmentUpgrade::settle(queue, bag, taskId);
+    REQUIRE(settled.ok());
+    CHECK_EQ(settled.value(), 1);
+    CHECK_EQ(bag.getSlotProp(slot, rpg::kEquipmentEnhanceProp, "0"), "1");
+    CHECK_EQ(bag.getSlotInstanceId(slot), instanceId);
+
+    auto repeated = rpg::EquipmentUpgrade::settle(queue, bag, taskId);
+    REQUIRE(repeated.ok());
+    CHECK_EQ(repeated.status().code(), StatusCode::NoOp);
+    CHECK_EQ(bag.getSlotProp(slot, rpg::kEquipmentEnhanceProp, "0"), "1");
+}
+
+TEST_CASE("rpg.equipmentUpgradeRejectsWrongLevelWithoutPayment") {
+    inventory::ItemRegistry::clear();
+    inventory::InventorySystem::ensureBuiltins();
+    inventory::ItemDefinition blade;
+    blade.id       = "sword.ember";
+    blade.maxStack = 1;
+    inventory::ItemRegistry::registerItem(blade);
+    inventory::ItemDefinition stone;
+    stone.id       = "emberstone";
+    stone.maxStack = 99;
+    inventory::ItemRegistry::registerItem(stone);
+
+    inventory::Bag bag(2);
+    REQUIRE_EQ(bag.addItem("sword.ember", 1), 1);
+    REQUIRE_EQ(bag.addItem("emberstone", 2), 2);
+    const int slot = bag.findItem("sword.ember");
+    bag.setSlotProp(slot, rpg::kEquipmentEnhanceProp, "2");
+    auto cost = resource::CostSpec::single("emberstone", 1);
+    REQUIRE(cost.ok());
+    rpg::EquipmentUpgradeRecipe recipe;
+    recipe.id          = "enhance.bad";
+    recipe.itemId      = "sword.ember";
+    recipe.fromLevel   = 0;
+    recipe.toLevel     = 1;
+    recipe.ingredients = std::move(cost).takeValue();
+    recipe.duration    = Duration::fromSeconds(0.5).expect("upgrade duration");
+    production::WorkQueue               queue;
+    inventory::InventoryResourceAccount account(bag);
+    rpg::EquipmentUpgradeRequest request{&queue, &account, &bag, slot, bag.getSlotInstanceId(slot), "forge", recipe};
+    auto                         result = rpg::EquipmentUpgrade::begin(std::move(request));
+    CHECK(!result.ok());
+    CHECK_EQ(bag.countItem("emberstone"), 2);
+    CHECK_EQ(queue.taskCount(), 0);
+}
+
+TEST_CASE("rpg.forgeBenchCraftUpgradeAndEnhanceScalesEquipAttack") {
+    inventory::ItemRegistry::clear();
+    inventory::InventorySystem::ensureBuiltins();
+    inventory::ItemDefinition ore;
+    ore.id       = "ore.iron";
+    ore.maxStack = 99;
+    inventory::ItemRegistry::registerItem(ore);
+    inventory::ItemDefinition coal;
+    coal.id       = "coal";
+    coal.maxStack = 99;
+    inventory::ItemRegistry::registerItem(coal);
+    inventory::ItemDefinition stone;
+    stone.id       = "emberstone";
+    stone.maxStack = 99;
+    inventory::ItemRegistry::registerItem(stone);
+    inventory::ItemDefinition blade;
+    blade.id        = "sword.ember";
+    blade.maxStack  = 1;
+    blade.equipSlot = "weapon";
+    blade.tags      = {"weapon"};
+    inventory::ItemRegistry::registerItem(blade);
+
+    auto* rpgModule = rpg::RPG::create();
+    rpgModule->clearAllItemStats();
+    REQUIRE_EQ(
+        rpgModule->registerItemStatsFromJson("sword.ember", R"([{"attribute":"attack","op":"add","value":12.0}])"), 1);
+
+    inventory::Bag bag(8);
+    bag.setId("forge.bag");
+    REQUIRE_EQ(bag.addItem("ore.iron", 3), 3);
+    REQUIRE_EQ(bag.addItem("coal", 1), 1);
+    REQUIRE_EQ(bag.addItem("emberstone", 2), 2);
+    inventory::EquipmentSet gear;
+    gear.defineSlot("weapon");
+    gear.addSlotAllowedTag("weapon", "weapon");
+    rpg::RPGActor* hero = rpgModule->newActor();
+    REQUIRE(hero != nullptr);
+    hero->setBaseAttribute("attack", 8.0);
+
+    rpg::ForgeBench forge;
+    REQUIRE(forge.bind(&bag, &gear, hero).ok());
+    auto crafted = forge.craftFromJson(R"({
+      "id":"forge.ember_blade",
+      "process":"craft",
+      "ingredients":{"ore.iron":3,"coal":1},
+      "outputs":[{"item":"sword.ember","quantity":1}],
+      "duration":0.5
+    })");
+    REQUIRE(crafted.ok());
+    REQUIRE(forge.advance(SimulationTick(1), Duration::fromSeconds(0.5).expect("dt")).ok());
+    auto settledCraft = forge.settleReady();
+    REQUIRE(settledCraft.ok());
+    CHECK_EQ(settledCraft.value(), 1);
+    CHECK_EQ(bag.countItem("sword.ember"), 1);
+
+    const int slot = bag.findItem("sword.ember");
+    REQUIRE(slot >= 0);
+    auto upgraded = forge.upgradeFromJson(R"({
+      "id":"enhance.ember.0",
+      "process":"upgrade",
+      "itemId":"sword.ember",
+      "fromLevel":0,
+      "toLevel":1,
+      "ingredients":{"emberstone":1},
+      "duration":0.4
+    })",
+                                          slot, bag.getSlotInstanceId(slot));
+    REQUIRE(upgraded.ok());
+    REQUIRE(forge.advance(SimulationTick(2), Duration::fromSeconds(0.4).expect("dt")).ok());
+    auto settledUpgrade = forge.settleReady();
+    REQUIRE(settledUpgrade.ok());
+    CHECK_EQ(settledUpgrade.value(), 1);
+    CHECK_EQ(bag.getSlotProp(slot, rpg::kEquipmentEnhanceProp, "0"), "1");
+    CHECK_EQ(bag.countItem("emberstone"), 1);
+
+    REQUIRE(gear.equipFromBag("weapon", &bag, slot));
+    CHECK_EQ(forge.syncEquipment(), 1);
+    // base 8 + blade 12 + enhance bonus max(1, floor(12*0.25+0.5))=3 → 23
+    CHECK(std::abs(hero->getFinalAttribute("attack") - 23.0) < 1e-9);
+}
+}  // namespace test_rpg_equipment_upgrade
 #endif

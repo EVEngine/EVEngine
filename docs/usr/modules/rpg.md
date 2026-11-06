@@ -108,6 +108,12 @@ local bag = inv.newBag(20);                 // 或任何 inventory::Bag
 local drops = rpg.rollLoot("goblin", bag, 42);
 ```
 
+装备实例可带 `enhance` 属性（字符串整数）。`syncEquipModifiers` 会对每个 `add` /
+`additive_percent` 加成按等级追加 `max(1, floor(|value|*0.25+0.5))`。合成与强化不要写进
+`economy`：用 `eve.RPGForge()` 绑背包（可选装备栏与 Actor），`craftFromJson` /
+`upgradeFromJson` 走 `production` 队列，结算时 craft 发放物品、upgrade 就地改 `enhance`。
+完整切片见 `examples/emberforge/`。
+
 `rollLoot` 是兼容计数入口：返回成功入包的掉落表项数，`0` 可能表示未命中或失败。
 同次抽取整批入包；容量不足或命中未知物品时不留下部分奖励、不发库存事件。
 C++ `LootSystem::roll` 使用调用方随机流，失败不推进随机流，成功未命中仍推进。

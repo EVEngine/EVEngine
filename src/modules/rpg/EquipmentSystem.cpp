@@ -3,8 +3,10 @@
 #include "common/Json.h"
 #include "inventory/Equipment.h"
 #include "rpg/AttributeSystem.h"
+#include "rpg/EquipmentUpgrade.h"
 #include "rpg/RPGActor.h"
 
+#include <algorithm>
 #include <cmath>
 #include <unordered_map>
 
@@ -58,6 +60,30 @@ void EquipmentSystem::clearAll() { itemStatsTable().clear(); }
 
 int EquipmentSystem::statItemCount() { return int(itemStatsTable().size()); }
 
+namespace {
+
+bool isAdditiveEquipmentOp(std::string_view op) { return op.empty() || op == "add" || op == "additive_percent"; }
+
+double enhanceBonusPerLevel(const EquipmentStat& stat) {
+    // Classic forge step: each enhance level adds at least +1, else ~25% of the base add.
+    const double magnitude = std::abs(stat.value);
+    return std::max(1.0, std::floor(magnitude * 0.25 + 0.5));
+}
+
+std::vector<EquipmentStat> scaleStatsForEnhance(std::span<const EquipmentStat> stats, int enhanceLevel) {
+    std::vector<EquipmentStat> scaled;
+    scaled.reserve(stats.size());
+    for (const EquipmentStat& stat : stats) {
+        EquipmentStat next = stat;
+        if (enhanceLevel > 0 && isAdditiveEquipmentOp(stat.op))
+            next.value = stat.value + static_cast<double>(enhanceLevel) * enhanceBonusPerLevel(stat);
+        scaled.push_back(std::move(next));
+    }
+    return scaled;
+}
+
+}  // namespace
+
 int EquipmentSystem::syncEquipModifiers(RPGActor *actor, eve::inventory::EquipmentSet *equip) {
     if (!actor || !equip) return 0;
     int applied = 0;
@@ -69,9 +95,18 @@ int EquipmentSystem::syncEquipModifiers(RPGActor *actor, eve::inventory::Equipme
         }
         const std::string itemId = equip->getSlotItemId(slot);
         auto it = itemStatsTable().find(itemId);
-        auto result = projectSlot(*actor, slot,
-                                  it == itemStatsTable().end() ? std::span<const EquipmentStat>{}
-                                                               : std::span<const EquipmentStat>(it->second));
+        if (it == itemStatsTable().end()) {
+            auto result = projectSlot(*actor, slot, {});
+            if (result) applied += result.value();
+            continue;
+        }
+        int enhanceLevel = 0;
+        if (const inventory::ItemStack* stack = equip->stackAt(slot)) {
+            auto parsed = EquipmentUpgrade::parseEnhanceLevel(stack->getProp(kEquipmentEnhanceProp, "0"));
+            if (parsed) enhanceLevel = parsed.value();
+        }
+        const std::vector<EquipmentStat> scaled = scaleStatsForEnhance(it->second, enhanceLevel);
+        auto                             result = projectSlot(*actor, slot, scaled);
         if (result) applied += result.value();
     }
     return applied;
