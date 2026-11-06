@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tempfile
@@ -61,8 +62,9 @@ endif()
             self.assertEqual(configured.returncode, 0, configured.stdout + configured.stderr)
         test_cmake = (ROOT / "test/CMakeLists.txt").read_text(encoding="utf-8")
         self.assertIn("eve_configure_monolithic_test_linker(unit_test)", test_cmake)
-        workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
-        arm_lane = workflow.split("  linux-arm64:", 1)[1].split("  windows:", 1)[0]
+        workflow = (ROOT / ".github/workflows/release-ci.yml").read_text(encoding="utf-8")
+        arm_lane = re.split(r"^  [a-z0-9_-]+:", workflow.split("  linux-arm64:\n", 1)[1],
+                            maxsplit=1, flags=re.MULTILINE)[0]
         self.assertIn("build-essential cmake ninja-build lld", arm_lane)
         self.assertIn("CC: gcc", arm_lane)
         self.assertIn("CXX: g++", arm_lane)

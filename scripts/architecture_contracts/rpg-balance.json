@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "scope": "src/modules/rpg/balance/*",
+      "owner": "rpg",
+      "issue": "EVENGINE-RPG-BALANCE",
+      "reason": "The RPG balance satellite composes production combat with offline parameter search.",
+      "expiry": "2027-10-28",
+      "evidence": [
+        "docs/usr/modules/rpg-balance.md",
+        "src/modules/rpg/balance/RPGBalance.h"
+      ],
+      "tests": [
+        "test/integration/rpg-balance/rpg_balance.cpp",
+        "examples/rpg-balance/main.nut"
+      ],
+      "id": "rpg-balance-module-interface",
+      "rule": "module-interface",
+      "provides": [],
+      "requires": [
+        {
+          "capability": "rpg production registries, battle and settlement",
+          "kind": "hard",
+          "absent_behavior": "rpg_balance is excluded when rpg is unavailable."
+        },
+        {
+          "capability": "agent balance search",
+          "kind": "hard",
+          "absent_behavior": "rpg_balance is excluded when agent is unavailable."
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "RPGBalanceSuite.configure",
+        "RPGBalanceSuite.targets",
+        "RPGBalanceSuite.measure"
+      ],
+      "protocol": [
+        "evengine.rpg.balance.suite/1",
+        "evengine.rpg.balance.report/1"
+      ],
+      "thread_affinity": "RPG owner thread; synchronous and nonreentrant measure",
+      "trim": {
+        "absent_profile": "L2 evidence: test/balance EVE_BALANCE_SCRIPT=OFF builds and passes 7 cases without RPG; test/rpg-balance builds the RPG module and passes 12 cases. No L3/L4 trim claim."
+      },
+      "cost_notes": [
+        "Measure evaluates every build pair, independent strategy pair, scenario, seed and both orders; use offline.",
+        "Each bout owns an isolated ECS table, event scope and battle actors; results are owning values."
+      ],
+      "hot_path": []
+    }
+  ]
+}

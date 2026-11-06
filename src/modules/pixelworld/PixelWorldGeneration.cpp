@@ -60,8 +60,7 @@ MaterialId terrainMaterial(PixelBiome biome, int depth, std::uint64_t feature) n
 eve::Result<PixelWorldGenerationOutput> invalidGeneration(std::string message,
                                                           std::string path) {
     return eve::Result<PixelWorldGenerationOutput>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, message, path, {},
-        "pixelworld.generation"));
+        eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path), {}, "pixelworld.generation"));
 }
 
 void hashByte(std::uint64_t& hash, std::uint8_t value) noexcept {

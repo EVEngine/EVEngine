@@ -4,7 +4,8 @@
 
 #include "stylize/TrailEffect.h"
 
-#include <glm/vec3.hpp>
+// Incomplete glm::vec3 is enough for const-reference parameters.
+#include <glm/fwd.hpp>
 
 #include <cstdint>
 

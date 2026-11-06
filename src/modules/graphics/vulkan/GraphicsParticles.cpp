@@ -596,9 +596,7 @@ void Graphics::recordGpuParticleCompute(vk::CommandBuffer cb) {
         afterCompute[1].buffer        = slot.meta.buffer;
         afterCompute[1].size          = VK_WHOLE_SIZE;
         afterCompute[1].srcAccessMask = vk::AccessFlagBits::eShaderWrite;
-        afterCompute[1].dstAccessMask =
-            needsSort ? (vk::AccessFlagBits::eShaderRead | vk::AccessFlagBits::eTransferRead)
-                      : vk::AccessFlagBits::eTransferRead;
+        afterCompute[1].dstAccessMask = needsSort ? vk::AccessFlagBits::eShaderRead : vk::AccessFlagBits::eTransferRead;
         cb.pipelineBarrier(vk::PipelineStageFlagBits::eComputeShader,
                            needsSort ? vk::PipelineStageFlagBits::eComputeShader
                                      : (vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eTransfer),

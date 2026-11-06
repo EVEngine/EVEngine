@@ -262,6 +262,7 @@ Result<void> StylizeRecipeTarget::commitDomainState(std::unique_ptr<IDomainOpera
 }
 std::vector<StylizePassValue> StylizeRecipeTarget::passes() const {
     std::vector<StylizePassValue> result;
+    result.reserve(order_.size());
     for (const auto& id : order_) result.push_back(passes_.at(id));
     return result;
 }

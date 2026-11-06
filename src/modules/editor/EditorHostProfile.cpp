@@ -98,7 +98,7 @@ void EditorInspector::addFloat(const std::string &id, const std::string &label, 
     f.minV  = minV;
     f.maxV  = maxV;
     f.step  = step;
-    fields_.push_back(f);
+    fields_.push_back(std::move(f));
 }
 
 void EditorInspector::addFloat3(const std::string &id, const std::string &label, float x, float y, float z) {
@@ -110,7 +110,7 @@ void EditorInspector::addFloat3(const std::string &id, const std::string &label,
     f.f0    = x;
     f.f1    = y;
     f.f2    = z;
-    fields_.push_back(f);
+    fields_.push_back(std::move(f));
 }
 
 void EditorInspector::addBool(const std::string &id, const std::string &label, bool value) {
@@ -120,7 +120,7 @@ void EditorInspector::addBool(const std::string &id, const std::string &label, b
     f.id    = id;
     f.label = label;
     f.b     = value;
-    fields_.push_back(f);
+    fields_.push_back(std::move(f));
 }
 
 void EditorInspector::addString(const std::string &id, const std::string &label, const std::string &value) {
@@ -130,7 +130,7 @@ void EditorInspector::addString(const std::string &id, const std::string &label,
     f.id    = id;
     f.label = label;
     f.s     = value;
-    fields_.push_back(f);
+    fields_.push_back(std::move(f));
 }
 
 void EditorInspector::addChoice(const std::string &id, const std::string &label, const std::string &choicesCsv,
@@ -142,7 +142,7 @@ void EditorInspector::addChoice(const std::string &id, const std::string &label,
     f.label   = label;
     f.choices = choicesCsv;
     f.s       = selected;
-    fields_.push_back(f);
+    fields_.push_back(std::move(f));
 }
 
 std::string EditorInspector::getFieldKind(int index) const {
@@ -369,10 +369,11 @@ Result<EditorPersistenceSnapshot> EditorPersistenceAdapter::commit(const EditorP
         return persistenceError(EditorStatus::Rejected, "editor.persistence.kind-mismatch",
                                 "Persistence checkpoint belongs to another backend kind");
     EditorValue::Array serializedJournal;
+    serializedJournal.reserve(journal.size());
     for (const DomainOperation &operation : journal) serializedJournal.push_back(operationValue(operation));
     EditorValue::Object envelope;
     envelope["schemaVersion"] = EditorValue(1);
-    envelope["content"]       = content;
+    envelope["content"]       = std::move(content);
     envelope["journal"]       = EditorValue(std::move(serializedJournal));
     auto stored =
         store_->compareAndSwap(resourceUri_, base.revision, base.contentHash, EditorValue(std::move(envelope)));

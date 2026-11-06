@@ -1,5 +1,6 @@
 ﻿#include "physics/World.h"
 #include "physics/Body.h"
+#include "physics/Box2DSimulationBackend.h"
 #include "physics/Fixture.h"
 #include "physics/Joint2D.h"
 #include "physics/Mechanism2D.h"
@@ -16,6 +17,7 @@
 #include <cmath>
 #include <cstring>
 #include <limits>
+#include <optional>
 #include <utility>
 
 namespace eve::physics {
@@ -24,8 +26,7 @@ b2BodyType parseBodyType(const std::string &type) {
     if (type == "static") return b2_staticBody;
     if (type == "kinematic") return b2_kinematicBody;
     if (type == "dynamic") return b2_dynamicBody;
-    throw eve::Exception("World.newBody: unknown body type '%s' (use static|kinematic|dynamic)",
-                         type.c_str());
+    throw eve::Exception("World.newBody: unknown body type '%s' (use static|kinematic|dynamic)", type.c_str());
 }
 
 Body *bodyFromFixture(b2Fixture *f) {
@@ -35,25 +36,22 @@ Body *bodyFromFixture(b2Fixture *f) {
     return static_cast<Body *>(b->GetUserData());
 }
 
-Fixture *fixtureFromRaw(b2Fixture *f) {
-    return f ? static_cast<Fixture *>(f->GetUserData()) : nullptr;
-}
+Fixture *fixtureFromRaw(b2Fixture *f) { return f ? static_cast<Fixture *>(f->GetUserData()) : nullptr; }
 
 // Signed distance from a world point to a shape (meters). Negative when inside.
 // `normal` points from the shape toward the point (world space, unit length).
-bool shapePointDistance(const b2Shape *shape, const b2Transform &xf, const b2Vec2 &p,
-                        float &dist, b2Vec2 &normal) {
+bool shapePointDistance(const b2Shape *shape, const b2Transform &xf, const b2Vec2 &p, float &dist, b2Vec2 &normal) {
     dist   = 0.f;
     normal = b2Vec2(0.f, 1.f);
     if (!shape) return false;
 
     if (shape->GetType() == b2Shape::e_circle) {
-        const auto *circle = static_cast<const b2CircleShape *>(shape);
+        const auto  *circle = static_cast<const b2CircleShape *>(shape);
         const b2Vec2 center = b2Mul(xf, circle->m_p);
         const b2Vec2 d      = p - center;
         const float  r      = circle->m_radius;
-        dist = b2Distance(p, center) - r;
-        const float len = d.Length();
+        dist                = b2Distance(p, center) - r;
+        const float len     = d.Length();
         if (len > 1e-6f) {
             normal = (1.f / len) * d;
         } else if (r > 0.f) {
@@ -63,34 +61,34 @@ bool shapePointDistance(const b2Shape *shape, const b2Transform &xf, const b2Vec
     }
 
     if (shape->GetType() == b2Shape::e_polygon) {
-        const auto *poly = static_cast<const b2PolygonShape *>(shape);
+        const auto  *poly  = static_cast<const b2PolygonShape *>(shape);
         const b2Vec2 local = b2MulT(xf, p);
-        const int n = poly->m_count;
+        const int    n     = poly->m_count;
         if (n < 3) return false;
 
         // Signed distance to each edge: positive outside for Box2D CCW polygons
         // (m_normals point outward). Inside when every side <= 0.
-        float minSide  = std::numeric_limits<float>::max();
-        float bestEdge = std::numeric_limits<float>::max();
+        float  minSide  = std::numeric_limits<float>::max();
+        float  bestEdge = std::numeric_limits<float>::max();
         b2Vec2 bestN(0.f, 1.f);
         b2Vec2 bestQ;
-        bool inside = true;
+        bool   inside = true;
         for (int i = 0; i < n; ++i) {
-            const b2Vec2 &a = poly->m_vertices[i];
-            const b2Vec2 &b = poly->m_vertices[(i + 1) % n];
-            const float side = b2Dot(local - a, poly->m_normals[i]);
+            const b2Vec2 &a    = poly->m_vertices[i];
+            const b2Vec2 &b    = poly->m_vertices[(i + 1) % n];
+            const float   side = b2Dot(local - a, poly->m_normals[i]);
             if (side > 0.f) inside = false;
             if (side < minSide) {
                 minSide = side;
                 bestN   = poly->m_normals[i];
             }
             // Closest point on the edge segment.
-            const b2Vec2 ab = b - a;
-            const float len2 = b2Dot(ab, ab);
-            float t = 0.f;
+            const b2Vec2 ab   = b - a;
+            const float  len2 = b2Dot(ab, ab);
+            float        t    = 0.f;
             if (len2 > 1e-12f) t = b2Clamp(b2Dot(local - a, ab) / len2, 0.f, 1.f);
-            const b2Vec2 q = a + t * ab;
-            const float d2 = b2DistanceSquared(local, q);
+            const b2Vec2 q  = a + t * ab;
+            const float  d2 = b2DistanceSquared(local, q);
             if (d2 < bestEdge) {
                 bestEdge = d2;
                 bestQ    = q;
@@ -100,7 +98,7 @@ bool shapePointDistance(const b2Shape *shape, const b2Transform &xf, const b2Vec
             dist   = minSide;  // negative penetration
             normal = b2Mul(xf.q, bestN);
         } else {
-            dist = std::sqrt(bestEdge);
+            dist               = std::sqrt(bestEdge);
             const b2Vec2 delta = local - bestQ;
             if (delta.LengthSquared() > 1e-8f) {
                 normal = b2Mul(xf.q, (1.f / delta.Length()) * delta);
@@ -112,16 +110,16 @@ bool shapePointDistance(const b2Shape *shape, const b2Transform &xf, const b2Vec
     }
 
     if (shape->GetType() == b2Shape::e_edge) {
-        const auto *edge = static_cast<const b2EdgeShape *>(shape);
-        const b2Vec2 a = b2Mul(xf, edge->m_vertex1);
-        const b2Vec2 b = b2Mul(xf, edge->m_vertex2);
-        const b2Vec2 ab = b - a;
-        const float len2 = b2Dot(ab, ab);
-        float t = 0.f;
+        const auto  *edge = static_cast<const b2EdgeShape *>(shape);
+        const b2Vec2 a    = b2Mul(xf, edge->m_vertex1);
+        const b2Vec2 b    = b2Mul(xf, edge->m_vertex2);
+        const b2Vec2 ab   = b - a;
+        const float  len2 = b2Dot(ab, ab);
+        float        t    = 0.f;
         if (len2 > 1e-12f) t = b2Clamp(b2Dot(p - a, ab) / len2, 0.f, 1.f);
-        const b2Vec2 q = a + t * ab;
+        const b2Vec2 q     = a + t * ab;
         const b2Vec2 delta = p - q;
-        dist = delta.Length();
+        dist               = delta.Length();
         if (dist > 1e-6f) {
             normal = (1.f / dist) * delta;
         } else if (len2 > 1e-12f) {
@@ -132,24 +130,22 @@ bool shapePointDistance(const b2Shape *shape, const b2Transform &xf, const b2Vec
 
     if (shape->GetType() == b2Shape::e_chain) {
         const auto *chain = static_cast<const b2ChainShape *>(shape);
-        float best = std::numeric_limits<float>::max();
-        b2Vec2 bestN(0.f, 1.f);
+        float       best  = std::numeric_limits<float>::max();
+        b2Vec2      bestN(0.f, 1.f);
         for (int i = 0; i + 1 < chain->m_count; ++i) {
-            const b2Vec2 a = b2Mul(xf, chain->m_vertices[i]);
-            const b2Vec2 b = b2Mul(xf, chain->m_vertices[i + 1]);
-            const b2Vec2 ab = b - a;
-            const float len2 = b2Dot(ab, ab);
-            float t = 0.f;
+            const b2Vec2 a    = b2Mul(xf, chain->m_vertices[i]);
+            const b2Vec2 b    = b2Mul(xf, chain->m_vertices[i + 1]);
+            const b2Vec2 ab   = b - a;
+            const float  len2 = b2Dot(ab, ab);
+            float        t    = 0.f;
             if (len2 > 1e-12f) t = b2Clamp(b2Dot(p - a, ab) / len2, 0.f, 1.f);
-            const b2Vec2 q = a + t * ab;
+            const b2Vec2 q     = a + t * ab;
             const b2Vec2 delta = p - q;
-            const float d = delta.Length();
+            const float  d     = delta.Length();
             if (d < best) {
-                best = d;
-                bestN = d > 1e-6f
-                            ? (1.f / d) * delta
-                            : (len2 > 1e-12f ? (1.f / std::sqrt(len2)) * b2Vec2(-ab.y, ab.x)
-                                             : b2Vec2(0.f, 1.f));
+                best  = d;
+                bestN = d > 1e-6f ? (1.f / d) * delta
+                                  : (len2 > 1e-12f ? (1.f / std::sqrt(len2)) * b2Vec2(-ab.y, ab.x) : b2Vec2(0.f, 1.f));
             }
         }
         if (best < std::numeric_limits<float>::max()) {
@@ -167,12 +163,41 @@ World::ContactEvent contactEventFrom(b2Contact *contact) {
     Fixture *fa = fixtureFromRaw(contact->GetFixtureA());
     Fixture *fb = fixtureFromRaw(contact->GetFixtureB());
     if (fa) {
-        out.bodyAId = fa->getBodyId();
+        out.bodyAId     = fa->getBodyId();
         out.fixtureATag = fa->getTag();
     }
     if (fb) {
-        out.bodyBId = fb->getBodyId();
+        out.bodyBId     = fb->getBodyId();
         out.fixtureBTag = fb->getTag();
+    }
+    return out;
+}
+
+// Exactly one sensor → that side is Sensor; both sensors → FixtureA is Sensor; else nullopt.
+std::optional<World::TriggerEvent> triggerEventFrom(b2Contact *contact) {
+    if (!contact) return std::nullopt;
+    Fixture *fa = fixtureFromRaw(contact->GetFixtureA());
+    Fixture *fb = fixtureFromRaw(contact->GetFixtureB());
+    if (!fa || !fb) return std::nullopt;
+    const bool aSensor = fa->isSensor();
+    const bool bSensor = fb->isSensor();
+    if (!aSensor && !bSensor) return std::nullopt;
+    World::TriggerEvent out;
+    if (aSensor && !bSensor) {
+        out.sensorBodyId      = fa->getBodyId();
+        out.sensorFixtureTag  = fa->getTag();
+        out.visitorBodyId     = fb->getBodyId();
+        out.visitorFixtureTag = fb->getTag();
+    } else if (!aSensor && bSensor) {
+        out.sensorBodyId      = fb->getBodyId();
+        out.sensorFixtureTag  = fb->getTag();
+        out.visitorBodyId     = fa->getBodyId();
+        out.visitorFixtureTag = fa->getTag();
+    } else {
+        out.sensorBodyId      = fa->getBodyId();
+        out.sensorFixtureTag  = fa->getTag();
+        out.visitorBodyId     = fb->getBodyId();
+        out.visitorFixtureTag = fb->getTag();
     }
     return out;
 }
@@ -317,7 +342,7 @@ void World::destroy() {
         world_ = nullptr;
     }
     delete relay_;
-    relay_ = nullptr;
+    relay_         = nullptr;
     runtimeHandle_ = PhysicsWorldHandle::invalid();
 }
 
@@ -325,23 +350,22 @@ bool World::pointProbe(float x, float y, float radius, ClothContact *out) const 
     if (out) *out = ClothContact{};
     if (!isValid() || radius <= 0.f) return false;
 
-    const float rM = toMeters(radius);
+    const float  rM = toMeters(radius);
     const b2Vec2 centerM(toMeters(x), toMeters(y));
 
     struct Probe : b2QueryCallback {
-        const World    *world = nullptr;
-        ClothContact   *best  = nullptr;
-        b2Vec2          center;
-        float           radiusM = 0.f;
+        const World  *world = nullptr;
+        ClothContact *best  = nullptr;
+        b2Vec2        center;
+        float         radiusM = 0.f;
 
         bool ReportFixture(b2Fixture *fixture) override {
             if (!fixture || fixture->IsSensor()) return true;
             const b2Shape *shape = fixture->GetShape();
             if (!shape) return true;
-            float dist;
+            float  dist;
             b2Vec2 normal;
-            if (!shapePointDistance(shape, fixture->GetBody()->GetTransform(), center, dist,
-                                    normal)) {
+            if (!shapePointDistance(shape, fixture->GetBody()->GetTransform(), center, dist, normal)) {
                 return true;
             }
             const float depth = radiusM - dist;
@@ -436,8 +460,7 @@ float World::getGravityY() const {
 }
 
 void World::setMeter(float pixelsPerMeter) {
-    if (pixelsPerMeter <= 0.f)
-        throw eve::Exception("World.setMeter: pixelsPerMeter must be > 0");
+    if (pixelsPerMeter <= 0.f) throw eve::Exception("World.setMeter: pixelsPerMeter must be > 0");
     meter_ = pixelsPerMeter;
 }
 
@@ -460,7 +483,7 @@ Body *World::newBody(const std::string &bodyType, float x, float y) {
     def.position = b2Vec2(toMeters(x), toMeters(y));
 
     const PhysicsBodyHandle runtimeHandle = nextBodyRuntimeHandle();
-    b2Body *raw = world_->CreateBody(&def);
+    b2Body                 *raw           = world_->CreateBody(&def);
     Body                   *body          = new Body(this, raw, nextBodyId(), runtimeHandle);
     raw->SetUserData(body);
     bodies_.insert(body);
@@ -492,25 +515,31 @@ void World::forgetBody(Body *body) {
     if (!body) return;
     const int id = body->getId();
     bodies_.erase(body);
-    auto touches = [id](const ContactEvent &e) { return e.bodyAId == id || e.bodyBId == id; };
-    beginContacts_.erase(std::remove_if(beginContacts_.begin(), beginContacts_.end(), touches),
-                         beginContacts_.end());
-    endContacts_.erase(std::remove_if(endContacts_.begin(), endContacts_.end(), touches),
-                       endContacts_.end());
+    auto touches        = [id](const ContactEvent &e) { return e.bodyAId == id || e.bodyBId == id; };
+    auto triggerTouches = [id](const TriggerEvent &e) { return e.sensorBodyId == id || e.visitorBodyId == id; };
+    beginContacts_.erase(std::remove_if(beginContacts_.begin(), beginContacts_.end(), touches), beginContacts_.end());
+    endContacts_.erase(std::remove_if(endContacts_.begin(), endContacts_.end(), touches), endContacts_.end());
+    beginTriggers_.erase(std::remove_if(beginTriggers_.begin(), beginTriggers_.end(), triggerTouches),
+                         beginTriggers_.end());
+    endTriggers_.erase(std::remove_if(endTriggers_.begin(), endTriggers_.end(), triggerTouches), endTriggers_.end());
     impacts_.erase(std::remove_if(impacts_.begin(), impacts_.end(), touches), impacts_.end());
 }
 void World::forgetFixture(Fixture *fixture) {
     if (!fixture) return;
-    const int bodyId = fixture->getBodyId();
-    const std::string tag = fixture->getTag();
-    auto touches = [&](const ContactEvent &e) {
-        return (e.bodyAId == bodyId && e.fixtureATag == tag) ||
-               (e.bodyBId == bodyId && e.fixtureBTag == tag);
+    const int         bodyId  = fixture->getBodyId();
+    const std::string tag     = fixture->getTag();
+    auto              touches = [&](const ContactEvent &e) {
+        return (e.bodyAId == bodyId && e.fixtureATag == tag) || (e.bodyBId == bodyId && e.fixtureBTag == tag);
     };
-    beginContacts_.erase(std::remove_if(beginContacts_.begin(), beginContacts_.end(), touches),
-                         beginContacts_.end());
-    endContacts_.erase(std::remove_if(endContacts_.begin(), endContacts_.end(), touches),
-                       endContacts_.end());
+    auto triggerTouches = [&](const TriggerEvent &e) {
+        return (e.sensorBodyId == bodyId && e.sensorFixtureTag == tag) ||
+               (e.visitorBodyId == bodyId && e.visitorFixtureTag == tag);
+    };
+    beginContacts_.erase(std::remove_if(beginContacts_.begin(), beginContacts_.end(), touches), beginContacts_.end());
+    endContacts_.erase(std::remove_if(endContacts_.begin(), endContacts_.end(), touches), endContacts_.end());
+    beginTriggers_.erase(std::remove_if(beginTriggers_.begin(), beginTriggers_.end(), triggerTouches),
+                         beginTriggers_.end());
+    endTriggers_.erase(std::remove_if(endTriggers_.begin(), endTriggers_.end(), triggerTouches), endTriggers_.end());
     impacts_.erase(std::remove_if(impacts_.begin(), impacts_.end(), touches), impacts_.end());
     b2Fixture *raw = fixture->raw();
     for (auto it = preSolve_.begin(); it != preSolve_.end();) {
@@ -524,36 +553,50 @@ void World::forgetFixture(Fixture *fixture) {
 }
 
 void World::onBeginContact(b2Contact *contact) {
-    if (!contact || !fixtureFromRaw(contact->GetFixtureA()) ||
-        !fixtureFromRaw(contact->GetFixtureB())) return;
+    if (!contact || !fixtureFromRaw(contact->GetFixtureA()) || !fixtureFromRaw(contact->GetFixtureB())) return;
     Body *a = bodyFromFixture(contact->GetFixtureA());
     Body *b = bodyFromFixture(contact->GetFixtureB());
     if (!a || !b) return;
 
     beginContacts_.push_back(contactEventFrom(contact));
+    auto trigger = triggerEventFrom(contact);
+    if (trigger) beginTriggers_.push_back(*trigger);
 
     auto *ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return;
     std::vector<eve::platform_event::Variant> args = {eve::platform_event::Variant::makeInt(a->getId()),
                                                       eve::platform_event::Variant::makeInt(b->getId())};
     ev->push(new eve::platform_event::Message("begincontact", args));
+    if (trigger) {
+        std::vector<eve::platform_event::Variant> triggerArgs = {
+            eve::platform_event::Variant::makeInt(trigger->sensorBodyId),
+            eve::platform_event::Variant::makeInt(trigger->visitorBodyId)};
+        ev->push(new eve::platform_event::Message("begintrigger", triggerArgs));
+    }
 }
 
 void World::onEndContact(b2Contact *contact) {
     preSolve_.erase(contact);
-    if (!contact || !fixtureFromRaw(contact->GetFixtureA()) ||
-        !fixtureFromRaw(contact->GetFixtureB())) return;
+    if (!contact || !fixtureFromRaw(contact->GetFixtureA()) || !fixtureFromRaw(contact->GetFixtureB())) return;
     Body *a = bodyFromFixture(contact->GetFixtureA());
     Body *b = bodyFromFixture(contact->GetFixtureB());
     if (!a || !b) return;
 
     endContacts_.push_back(contactEventFrom(contact));
+    auto trigger = triggerEventFrom(contact);
+    if (trigger) endTriggers_.push_back(*trigger);
 
     auto *ev = eve::ModuleManager::getInstance<eve::platform_event::PlatformEvent>("PlatformEvent");
     if (!ev) return;
     std::vector<eve::platform_event::Variant> args = {eve::platform_event::Variant::makeInt(a->getId()),
                                                       eve::platform_event::Variant::makeInt(b->getId())};
     ev->push(new eve::platform_event::Message("endcontact", args));
+    if (trigger) {
+        std::vector<eve::platform_event::Variant> triggerArgs = {
+            eve::platform_event::Variant::makeInt(trigger->sensorBodyId),
+            eve::platform_event::Variant::makeInt(trigger->visitorBodyId)};
+        ev->push(new eve::platform_event::Message("endtrigger", triggerArgs));
+    }
 }
 
 void World::onPreSolve(b2Contact *contact, const b2Manifold * /*oldManifold*/) {
@@ -567,16 +610,16 @@ void World::onPreSolve(b2Contact *contact, const b2Manifold * /*oldManifold*/) {
     b2Body *b = contact->GetFixtureB()->GetBody();
     if (!a || !b) return;
     const b2Vec2 point = manifold.points[0];
-    const b2Vec2 va = a->GetLinearVelocityFromWorldPoint(point);
-    const b2Vec2 vb = b->GetLinearVelocityFromWorldPoint(point);
+    const b2Vec2 va    = a->GetLinearVelocityFromWorldPoint(point);
+    const b2Vec2 vb    = b->GetLinearVelocityFromWorldPoint(point);
 
     PreSolveData data;
-    data.pointX = toPixels(point.x);
-    data.pointY = toPixels(point.y);
-    data.normalX = manifold.normal.x;
-    data.normalY = manifold.normal.y;
+    data.pointX              = toPixels(point.x);
+    data.pointY              = toPixels(point.y);
+    data.normalX             = manifold.normal.x;
+    data.normalY             = manifold.normal.y;
     data.relativeNormalSpeed = toPixels(std::max(0.f, b2Dot(va - vb, manifold.normal)));
-    preSolve_[contact] = data;
+    preSolve_[contact]       = data;
 }
 
 void World::onPostSolve(b2Contact *contact, const b2ContactImpulse *impulse) {
@@ -586,12 +629,12 @@ void World::onPostSolve(b2Contact *contact, const b2ContactImpulse *impulse) {
 
     ImpactEvent out;
     static_cast<ContactEvent &>(out) = contactEventFrom(contact);
-    out.pointX = found->second.pointX;
-    out.pointY = found->second.pointY;
-    out.normalX = found->second.normalX;
-    out.normalY = found->second.normalY;
-    out.relativeNormalSpeed = found->second.relativeNormalSpeed;
-    const int count = contact->GetManifold() ? contact->GetManifold()->pointCount : 0;
+    out.pointX                       = found->second.pointX;
+    out.pointY                       = found->second.pointY;
+    out.normalX                      = found->second.normalX;
+    out.normalY                      = found->second.normalY;
+    out.relativeNormalSpeed          = found->second.relativeNormalSpeed;
+    const int count                  = contact->GetManifold() ? contact->GetManifold()->pointCount : 0;
     for (int i = 0; i < count; ++i) {
         out.normalImpulse += toPixels(impulse->normalImpulses[i]);
         out.tangentImpulse += toPixels(std::fabs(impulse->tangentImpulses[i]));
@@ -607,66 +650,118 @@ const Event *eventAt(const std::vector<Event> &events, int index) {
 }  // namespace
 
 int World::getBeginContactBodyAId(int index) const {
-    auto *e = eventAt(beginContacts_, index); return e ? e->bodyAId : 0;
+    auto *e = eventAt(beginContacts_, index);
+    return e ? e->bodyAId : 0;
 }
 int World::getBeginContactBodyBId(int index) const {
-    auto *e = eventAt(beginContacts_, index); return e ? e->bodyBId : 0;
+    auto *e = eventAt(beginContacts_, index);
+    return e ? e->bodyBId : 0;
 }
 std::string World::getBeginContactFixtureATag(int index) const {
-    auto *e = eventAt(beginContacts_, index); return e ? e->fixtureATag : std::string();
+    auto *e = eventAt(beginContacts_, index);
+    return e ? e->fixtureATag : std::string();
 }
 std::string World::getBeginContactFixtureBTag(int index) const {
-    auto *e = eventAt(beginContacts_, index); return e ? e->fixtureBTag : std::string();
+    auto *e = eventAt(beginContacts_, index);
+    return e ? e->fixtureBTag : std::string();
 }
 int World::getEndContactBodyAId(int index) const {
-    auto *e = eventAt(endContacts_, index); return e ? e->bodyAId : 0;
+    auto *e = eventAt(endContacts_, index);
+    return e ? e->bodyAId : 0;
 }
 int World::getEndContactBodyBId(int index) const {
-    auto *e = eventAt(endContacts_, index); return e ? e->bodyBId : 0;
+    auto *e = eventAt(endContacts_, index);
+    return e ? e->bodyBId : 0;
 }
 std::string World::getEndContactFixtureATag(int index) const {
-    auto *e = eventAt(endContacts_, index); return e ? e->fixtureATag : std::string();
+    auto *e = eventAt(endContacts_, index);
+    return e ? e->fixtureATag : std::string();
 }
 std::string World::getEndContactFixtureBTag(int index) const {
-    auto *e = eventAt(endContacts_, index); return e ? e->fixtureBTag : std::string();
+    auto *e = eventAt(endContacts_, index);
+    return e ? e->fixtureBTag : std::string();
+}
+
+const World::TriggerEvent &World::triggerEventAt(const std::vector<TriggerEvent> &events, int index,
+                                                 const char *operation) const {
+    if (index < 0 || index >= int(events.size())) throw eve::Exception("World.%s: index out of range", operation);
+    return events[size_t(index)];
+}
+
+int World::getBeginTriggerSensorBodyId(int index) const {
+    return triggerEventAt(beginTriggers_, index, "getBeginTriggerSensorBodyId").sensorBodyId;
+}
+int World::getBeginTriggerVisitorBodyId(int index) const {
+    return triggerEventAt(beginTriggers_, index, "getBeginTriggerVisitorBodyId").visitorBodyId;
+}
+std::string World::getBeginTriggerSensorFixtureTag(int index) const {
+    return triggerEventAt(beginTriggers_, index, "getBeginTriggerSensorFixtureTag").sensorFixtureTag;
+}
+std::string World::getBeginTriggerVisitorFixtureTag(int index) const {
+    return triggerEventAt(beginTriggers_, index, "getBeginTriggerVisitorFixtureTag").visitorFixtureTag;
+}
+int World::getEndTriggerSensorBodyId(int index) const {
+    return triggerEventAt(endTriggers_, index, "getEndTriggerSensorBodyId").sensorBodyId;
+}
+int World::getEndTriggerVisitorBodyId(int index) const {
+    return triggerEventAt(endTriggers_, index, "getEndTriggerVisitorBodyId").visitorBodyId;
+}
+std::string World::getEndTriggerSensorFixtureTag(int index) const {
+    return triggerEventAt(endTriggers_, index, "getEndTriggerSensorFixtureTag").sensorFixtureTag;
+}
+std::string World::getEndTriggerVisitorFixtureTag(int index) const {
+    return triggerEventAt(endTriggers_, index, "getEndTriggerVisitorFixtureTag").visitorFixtureTag;
 }
 int World::getImpactBodyAId(int index) const {
-    auto *e = eventAt(impacts_, index); return e ? e->bodyAId : 0;
+    auto *e = eventAt(impacts_, index);
+    return e ? e->bodyAId : 0;
 }
 int World::getImpactBodyBId(int index) const {
-    auto *e = eventAt(impacts_, index); return e ? e->bodyBId : 0;
+    auto *e = eventAt(impacts_, index);
+    return e ? e->bodyBId : 0;
 }
 std::string World::getImpactFixtureATag(int index) const {
-    auto *e = eventAt(impacts_, index); return e ? e->fixtureATag : std::string();
+    auto *e = eventAt(impacts_, index);
+    return e ? e->fixtureATag : std::string();
 }
 std::string World::getImpactFixtureBTag(int index) const {
-    auto *e = eventAt(impacts_, index); return e ? e->fixtureBTag : std::string();
+    auto *e = eventAt(impacts_, index);
+    return e ? e->fixtureBTag : std::string();
 }
 float World::getImpactPointX(int index) const {
-    auto *e = eventAt(impacts_, index); return e ? e->pointX : 0.f;
+    auto *e = eventAt(impacts_, index);
+    return e ? e->pointX : 0.f;
 }
 float World::getImpactPointY(int index) const {
-    auto *e = eventAt(impacts_, index); return e ? e->pointY : 0.f;
+    auto *e = eventAt(impacts_, index);
+    return e ? e->pointY : 0.f;
 }
 float World::getImpactNormalX(int index) const {
-    auto *e = eventAt(impacts_, index); return e ? e->normalX : 0.f;
+    auto *e = eventAt(impacts_, index);
+    return e ? e->normalX : 0.f;
 }
 float World::getImpactNormalY(int index) const {
-    auto *e = eventAt(impacts_, index); return e ? e->normalY : 0.f;
+    auto *e = eventAt(impacts_, index);
+    return e ? e->normalY : 0.f;
 }
 float World::getImpactRelativeNormalSpeed(int index) const {
-    auto *e = eventAt(impacts_, index); return e ? e->relativeNormalSpeed : 0.f;
+    auto *e = eventAt(impacts_, index);
+    return e ? e->relativeNormalSpeed : 0.f;
 }
 float World::getImpactNormalImpulse(int index) const {
-    auto *e = eventAt(impacts_, index); return e ? e->normalImpulse : 0.f;
+    auto *e = eventAt(impacts_, index);
+    return e ? e->normalImpulse : 0.f;
 }
 float World::getImpactTangentImpulse(int index) const {
-    auto *e = eventAt(impacts_, index); return e ? e->tangentImpulse : 0.f;
+    auto *e = eventAt(impacts_, index);
+    return e ? e->tangentImpulse : 0.f;
 }
 
 void World::clearContactEvents() {
     beginContacts_.clear();
     endContacts_.clear();
+    beginTriggers_.clear();
+    endTriggers_.clear();
     impacts_.clear();
     preSolve_.clear();
 }
@@ -721,8 +816,8 @@ int World::queryAABB(float x, float y, float w, float h) {
     if (!world_ || destroyed_) return 0;
 
     struct Collector : public b2QueryCallback {
-        World             *world = nullptr;
-        std::vector<int>  *ids   = nullptr;
+        World                  *world = nullptr;
+        std::vector<int>       *ids   = nullptr;
         std::unordered_set<int> seen;
 
         bool ReportFixture(b2Fixture *fixture) override {
@@ -737,10 +832,10 @@ int World::queryAABB(float x, float y, float w, float h) {
     cb.ids   = &queryBodyIds_;
 
     b2AABB aabb;
-    float x0 = toMeters(x);
-    float y0 = toMeters(y);
-    float x1 = toMeters(x + w);
-    float y1 = toMeters(y + h);
+    float  x0       = toMeters(x);
+    float  y0       = toMeters(y);
+    float  x1       = toMeters(x + w);
+    float  y1       = toMeters(y + h);
     aabb.lowerBound = b2Vec2(std::min(x0, x1), std::min(y0, y1));
     aabb.upperBound = b2Vec2(std::max(x0, x1), std::max(y0, y1));
     world_->QueryAABB(&cb, aabb);

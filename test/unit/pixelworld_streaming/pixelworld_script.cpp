@@ -69,6 +69,7 @@ TEST_CASE("pixelworld.cursor_interest_move_emits_entry_and_eviction_then_noop") 
     REQUIRE_EQ(first.batch.chunks.size(), std::size_t{1});
     PixelWorld replica(8301);
     replica.applyChunkBatch(first.batch, 0).expect("initial projection");
+    CHECK_EQ(replica.seed(), source.seed());
     CHECK_EQ(replica.getMaterial(1, 1), int(MaterialId::Stone));
     CHECK_EQ(replica.getMaterial(2 * kPixelChunkSize + 1, 1), int(MaterialId::Air));
 
@@ -132,6 +133,7 @@ TEST_CASE("pixelworld.cursor_empty_full_resync_replaces_old_projection_and_revis
     const auto             populated = cursor.capture(source, {0, 0, 0, 0}).expect("populated");
     PixelWorld replica(8304);
     replica.applyChunkBatch(populated.batch, 0).expect("apply populated");
+    CHECK_EQ(replica.seed(), source.seed());
     CHECK_EQ(replica.getMaterial(3, 3), int(MaterialId::Stone));
 
     PixelWorld empty(8304);

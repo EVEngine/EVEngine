@@ -1,3 +1,4 @@
+#include "graphics/GraphicsVisibility.h"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -6,9 +7,8 @@
 #include "graphics/vulkan/GraphicsInternal.h"
 
 namespace eve::graphics::vulkan {
-Result<eve::graphics::Graphics::VisibilityPixels> Graphics::captureVisibilityPixels(
-    const std::vector<eve::graphics::Graphics::EntityIdDraw> &draws, const glm::mat4 &viewProj, int maskW,
-    int maskH) try {
+Result<eve::graphics::VisibilityPixels> Graphics::captureVisibilityPixels(
+    const std::vector<eve::graphics::EntityIdDraw>& draws, const glm::mat4& viewProj, int maskW, int maskH) try {
     const auto reject = [](DiagnosticCode code, const char *message) {
         return Result<VisibilityPixels>::failure(Diagnostic::error(code, message));
     };
@@ -62,7 +62,7 @@ Result<eve::graphics::Graphics::VisibilityPixels> Graphics::captureVisibilityPix
     idDraws.reserve(draws.size());
     auto u8 = [](float x) -> uint32_t { return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 255.f)); };
     for (const auto &d : draws) {
-        if (!d.mesh || !describeMesh(d.mesh))
+        if (!d.mesh || !describeMesh(d.mesh).ok())
             return reject(DiagnosticCode::StaleHandle, "Visibility mesh does not belong to this backend");
         GBufferDraw gd{};
         gd.mesh               = d.mesh;
@@ -155,7 +155,7 @@ Result<eve::graphics::Graphics::VisibilityPixels> Graphics::captureVisibilityPix
     staging.unmap();
     staging.release();
     return Result<VisibilityPixels>::success(std::move(output));
-} catch (const std::exception &error) {
+} catch (const std::exception& error) {
     return Result<VisibilityPixels>::failure(
         Diagnostic::error(DiagnosticCode::Failed, std::string("Visibility GPU capture failed: ") + error.what()));
 }

@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <cmath>
 #include <glm/geometric.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <new>
 #include "graphics/Mesh.h"
@@ -160,6 +162,7 @@ Result<void> Mesh::adoptTangentFrame(std::vector<float>&& tangents, std::vector<
     if (!valid) return valid;
     importedTangents_.swap(tangents);
     importedBitangents_.swap(bitangents);
+    markTangentFrameChanged();
     return Result<void>::success();
 }
 Result<void> Mesh::setTangentFrame(std::span<const float> tangents, std::span<const float> bitangents) {
@@ -169,6 +172,7 @@ Result<void> Mesh::setTangentFrame(std::span<const float> tangents, std::span<co
         std::vector<float> t(tangents.begin(), tangents.end()), b(bitangents.begin(), bitangents.end());
         importedTangents_.swap(t);
         importedBitangents_.swap(b);
+        markTangentFrameChanged();
         return Result<void>::success();
     } catch (const std::bad_alloc&) {
         return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "tangent frame allocation failed"));

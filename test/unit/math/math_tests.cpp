@@ -149,6 +149,47 @@ TEST_CASE("math.random.reseedRepeatsSequenceAndNoiseIsPure") {
     const float noise = math.noise2(.2f, .7f);
     CHECK(noise >= 0.f);
     CHECK(noise <= 1.f);
+    CHECK_EQ(math.simplex2(.2f, .7f), math.noise2(.2f, .7f));
+    CHECK_EQ(math.billow2(.2f, .7f, 3), math.turbulence2(.2f, .7f, 3));
+    const float value  = math.value2(.2f, .7f);
+    const float white  = math.white2(.2f, .7f);
+    const float worley = math.worley2(.2f, .7f);
+    const float deep   = math.warpNoise2Deep(.2f, .7f, 1.f);
+    CHECK(value >= 0.f);
+    CHECK(value <= 1.f);
+    CHECK(white >= 0.f);
+    CHECK(white <= 1.f);
+    CHECK(worley >= 0.f);
+    CHECK(worley <= 1.f);
+    CHECK(deep >= 0.f);
+    CHECK(deep <= 1.f);
+    CHECK_EQ(math.white2(.2f, .7f), math.white2(0.f, 0.f));  // floor lattice
+    CHECK(math.voronoiF2_2(.2f, .7f) >= math.voronoi2(.2f, .7f));
+    CHECK(math.worleyManhattan2(.2f, .7f) >= 0.f);
+    CHECK(math.worleyChebyshev2(.2f, .7f) >= 0.f);
+    CHECK(math.worleySmooth2(.2f, .7f, .25f) >= 0.f);
+    CHECK(math.worleySmooth2(.2f, .7f, .25f) <= 1.f);
+    CHECK(std::isfinite(math.curlNoise2X(.2f, .7f, 1e-3f)));
+    CHECK(std::isfinite(math.curlNoise2Y(.2f, .7f, 1e-3f)));
+    CHECK(math.hexEdge2(.2f, .7f, .05f, .02f) >= 0.f);
+    CHECK(math.hexEdge2(.2f, .7f, .05f, .02f) <= 1.f);
+    CHECK(math.gyroid3(.2f, .7f, .3f) >= 0.f);
+    CHECK(math.gyroidFbm3(.2f, .7f, .3f, 3) <= 1.f);
+    CHECK(math.swiss2(.2f, .7f, 3, 2.f, .5f, .15f) >= 0.f);
+    CHECK(math.hybrid2(.2f, .7f, 3, 2.f, .5f, .7f) <= 1.f);
+    CHECK(math.jordan2(.2f, .7f, 3, 2.f, .5f, .35f) >= 0.f);
+    CHECK(math.jordan2(.2f, .7f, 3, 2.f, .5f, .35f) <= 1.f);
+    CHECK(math.gabor2(.2f, .7f, 0.f, 0.f, 6.2831853f) >= 0.f);
+    CHECK(math.gaborFbm2(.2f, .7f, 3, 0.f, 0.f) <= 1.f);
+    CHECK(math.valueSlope2(.2f, .7f, 1e-3f) >= 0.f);
+    CHECK(math.isoLine2(.2f, .7f, 8, .04f) >= 0.f);
+    CHECK(math.isoLine2(.2f, .7f, 8, .04f) <= 1.f);
+    CHECK(math.banding2(.2f, .7f, 5) >= 0.f);
+    CHECK(math.banding2(.2f, .7f, 5) <= 1.f);
+    CHECK(math.fbmColor2(.2f, .7f, 0, 3, 2.f, .5f) != math.fbmColor2(.2f, .7f, 1, 3, 2.f, .5f));
+    CHECK(math.value3(.2f, .7f, .3f) >= 0.f);
+    CHECK(math.worley3(.2f, .7f, .3f) <= 1.f);
+    CHECK_EQ(math.white3(.2f, .7f, .3f), math.white3(0.f, 0.f, 0.f));
 }
 
 TEST_CASE("math.curves.endpointsAndLinearControlPoints") {
@@ -232,4 +273,147 @@ TEST_CASE("math.steering.pathAndInvalidInputsHaveStableFallbacks") {
 }
 
 }  // namespace math_advanced_contract
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_math)
+#include "math/ConvexHull.h"
+#include "zeroerr/unittest.h"
+
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <map>
+#include <random>
+
+namespace convex_hull_contract {
+using namespace eve::math;
+
+TEST_CASE("math.convexHull2D.boundaryAndDegeneracies") {
+    const std::vector<HullPoint2> points{{1, 1}, {0, 0}, {1, 0}, {0, 1}, {.5f, .5f}, {0, 0}, {.5f, 0}};
+    auto                          result = convexHull2D(points);
+    REQUIRE(result.ok());
+    const std::vector<HullPoint2> expected{{0, 0}, {1, 0}, {1, 1}, {0, 1}};
+    CHECK(result.value().vertices == expected);
+    CHECK(result.value().dimension == HullDimension::Plane);
+    auto empty = convexHull2D({});
+    REQUIRE(empty.ok());
+    CHECK(empty.value().dimension == HullDimension::Empty);
+    const std::vector<HullPoint2> line{{0, 0}, {1, 1}, {2, 2}, {1, 1}};
+    auto                          segment = convexHull2D(line);
+    REQUIRE(segment.ok());
+    CHECK_EQ(segment.value().vertices.size(), 2U);
+    CHECK(segment.value().dimension == HullDimension::Segment);
+    auto point = convexHull2D(std::vector<HullPoint2>{{1, 2}, {1, 2}});
+    REQUIRE(point.ok());
+    CHECK(point.value().dimension == HullDimension::Point);
+}
+
+TEST_CASE("math.convexHull3D.degenerateInputs") {
+    auto empty = convexHull3D({});
+    REQUIRE(empty.ok());
+    CHECK(empty.value().dimension == HullDimension::Empty);
+    auto point = convexHull3D(std::vector<HullPoint3>{{1, 2, 3}, {1, 2, 3}});
+    REQUIRE(point.ok());
+    CHECK(point.value().dimension == HullDimension::Point);
+    auto line = convexHull3D(std::vector<HullPoint3>{{0, 0, 0}, {1, 1, 1}, {2, 2, 2}});
+    REQUIRE(line.ok());
+    CHECK(line.value().dimension == HullDimension::Segment);
+    CHECK_EQ(line.value().vertices.size(), 2U);
+    CHECK(line.value().faces.empty());
+    auto plane = convexHull3D(std::vector<HullPoint3>{{0, 0, 0}, {1, 0, 1}, {1, 1, 2}, {0, 1, 1}, {.5f, .5f, 1}});
+    REQUIRE(plane.ok());
+    CHECK(plane.value().dimension == HullDimension::Plane);
+    CHECK_EQ(plane.value().vertices.size(), 4U);
+    CHECK_EQ(plane.value().faces.size(), 2U);
+    auto nearPlane =
+        convexHull3D(std::vector<HullPoint3>{{0, 0, 0}, {1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {.5f, .5f, 1e-8f}}, 1e-6);
+    REQUIRE(nearPlane.ok());
+    CHECK(nearPlane.value().dimension == HullDimension::Plane);
+}
+
+using DPoint = std::array<double, 3>;
+DPoint difference(const HullPoint3& a, const HullPoint3& b) {
+    return {double(a[0]) - b[0], double(a[1]) - b[1], double(a[2]) - b[2]};
+}
+DPoint cross(const DPoint& a, const DPoint& b) {
+    return {a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]};
+}
+double dot(const DPoint& a, const DPoint& b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+
+double checkSolid(const std::vector<HullPoint3>& points) {
+    auto result = convexHull3D(points);
+    REQUIRE(result.ok());
+    const auto& hull = result.value();
+    REQUIRE(hull.dimension == HullDimension::Volume);
+    std::map<std::pair<std::size_t, std::size_t>, int> edges;
+    double                                             volume = 0;
+    const auto                                         origin = hull.vertices.front();
+    for (const auto& f : hull.faces) {
+        for (auto index : f) REQUIRE(index < hull.vertices.size());
+        const auto a = hull.vertices[f[0]], b = hull.vertices[f[1]], c = hull.vertices[f[2]];
+        const auto n = cross(difference(b, a), difference(c, a));
+        REQUIRE(dot(n, n) > 0);
+        for (const auto& p : points) CHECK(dot(n, difference(p, a)) <= 1e-7);
+        volume += dot(difference(a, origin), cross(difference(b, origin), difference(c, origin))) / 6;
+        for (std::size_t i = 0; i < 3; ++i) ++edges[{f[i], f[(i + 1) % 3]}];
+    }
+    for (const auto& entry : edges) {
+        CHECK_EQ(entry.second, 1);
+        const auto reverse = edges.find({entry.first.second, entry.first.first});
+        REQUIRE(reverse != edges.end());
+        CHECK_EQ(reverse->second, 1);
+    }
+    CHECK_EQ(hull.vertices.size() + hull.faces.size(), edges.size() / 2 + 2);
+    CHECK(volume > 0);
+    auto reversed = points;
+    std::reverse(reversed.begin(), reversed.end());
+    auto again = convexHull3D(reversed);
+    REQUIRE(again.ok());
+    CHECK(again.value().vertices == hull.vertices);
+    CHECK(again.value().faces == hull.faces);
+    return volume;
+}
+
+TEST_CASE("math.convexHull3D.closedOrientedCubeAndTetrahedron") {
+    std::vector<HullPoint3> cube;
+    for (float x : {0.f, 1.f})
+        for (float y : {0.f, 1.f})
+            for (float z : {0.f, 1.f}) cube.push_back({x, y, z});
+    cube.push_back({.5f, .5f, .5f});
+    cube.push_back({0, 0, 0});
+    CHECK(std::abs(checkSolid(cube) - 1) < 1e-10);
+    CHECK(std::abs(checkSolid({{0, 0, 0}, {1, 0, 0}, {0, 1, 0}, {0, 0, 1}}) - 1.0 / 6) < 1e-10);
+}
+
+TEST_CASE("math.convexHull3D.randomCloudTopology") {
+    std::mt19937                          random(42);
+    std::uniform_real_distribution<float> coordinate(-1, 1);
+    for (int trial = 0; trial < 30; ++trial) {
+        std::vector<HullPoint3> points;
+        for (int i = 0; i < 60; ++i) points.push_back({coordinate(random), coordinate(random), coordinate(random)});
+        CHECK(checkSolid(points) > 0);
+    }
+}
+
+TEST_CASE("math.convexHull.invalidArgumentsAndScale") {
+    auto bad2 = convexHull2D(std::vector<HullPoint2>{{0, std::numeric_limits<float>::quiet_NaN()}});
+    REQUIRE(!bad2.ok());
+    CHECK(bad2.error()->code() == eve::DiagnosticCode::InvalidArgument);
+    auto bad3 = convexHull3D(std::vector<HullPoint3>{{0, 0, std::numeric_limits<float>::infinity()}});
+    REQUIRE(!bad3.ok());
+    CHECK(bad3.error()->code() == eve::DiagnosticCode::InvalidArgument);
+    for (double tolerance : {-1., 1., std::numeric_limits<double>::quiet_NaN()}) {
+        auto bad = convexHull3D({}, tolerance);
+        REQUIRE(!bad.ok());
+        CHECK(bad.error()->path() == "tolerance");
+    }
+    for (float scale : {1e-30f, 1e30f}) {
+        auto hull = convexHull3D(std::vector<HullPoint3>{{0, 0, 0}, {scale, 0, 0}, {0, scale, 0}, {0, 0, scale}});
+        REQUIRE(hull.ok());
+        CHECK(hull.value().dimension == HullDimension::Volume);
+        CHECK_EQ(hull.value().vertices.size(), 4U);
+        CHECK_EQ(hull.value().faces.size(), 4U);
+    }
+}
+}  // namespace convex_hull_contract
 #endif

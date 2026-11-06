@@ -58,43 +58,11 @@ layout(set = 0, binding = 11) uniform sampler2DArrayShadow shadowMap;
 layout(location = 0) in vec2 vUV;
 layout(location = 0) out vec4 outColor;
 
-const float PI = 3.14159265359;
-
-float DistributionGGX(vec3 N, vec3 H, float roughness) {
-    float a = max(roughness * roughness, 0.002);
-    float a2 = a * a;
-    float NdotH = max(dot(N, H), 0.0);
-    float denom = (NdotH * NdotH * (a2 - 1.0) + 1.0);
-    return a2 / max(PI * denom * denom, 1e-4);
-}
-
-float GeometrySchlickGGX(float NdotV, float roughness) {
-    float r = roughness + 1.0;
-    float k = (r * r) / 8.0;
-    return NdotV / max(NdotV * (1.0 - k) + k, 1e-4);
-}
-
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness) {
-    return GeometrySchlickGGX(max(dot(N, V), 0.0), roughness) *
-           GeometrySchlickGGX(max(dot(N, L), 0.0), roughness);
-}
-
-vec3 fresnelSchlick(float cosTheta, vec3 F0) {
-    return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
-}
+#include "core_pbr_lighting.glsl"
 
 vec3 shadeLight(vec3 N, vec3 V, vec3 L, vec3 radiance, vec3 albedo, float metallic,
                 float roughness, float specularFactor) {
-    float NdotL = max(dot(N, L), 0.0);
-    if (NdotL <= 0.0) return vec3(0.0);
-    vec3 H = normalize(V + L);
-    vec3 F0 = mix(vec3(0.04 * specularFactor), albedo, metallic);
-    float NDF = DistributionGGX(N, H, roughness);
-    float G = GeometrySmith(N, V, L, roughness);
-    vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-    vec3 specular = (NDF * G * F) / max(4.0 * max(dot(N, V), 0.0) * NdotL, 1e-4);
-    vec3 kD = (vec3(1.0) - F) * (1.0 - metallic);
-    return (kD * albedo / PI + specular) * radiance * NdotL;
+    return eveCoreShadeLight(N, V, albedo, metallic, roughness, L, radiance, specularFactor);
 }
 
 #include "shadow_cascade_uv.glsl"
@@ -188,8 +156,8 @@ void main() {
         float radius = max(light.posRadius.w, 1e-3);
         if (dist >= radius) continue;
         vec3 L = toLight / max(dist, 1e-4);
-        float atten = 1.0 - smoothstep(radius * 0.8, radius, dist);
-        atten /= max(dist * dist, 1e-4);
+        float atten = clamp(1.0 - dist / radius, 0.0, 1.0);
+        atten *= atten;
         atten *= spotAttenuation3D(-L, light.spot, light.color.a);
         int si = spotLocalShadowSlot(light.spot);
         if (si >= 0) {
@@ -206,7 +174,9 @@ void main() {
                          specularFactor);
     }
 
-    vec3 ambient = ubo.ambient.rgb * albedo * (1.0 - metallic) * occlusion;
+    vec3 irradiance = eveHemisphereIrradiance(N, ubo.ambient.rgb, ubo.lightColor.rgb);
+    vec3 ambient = eveCoreIndirect(N, normalize(ubo.lightDir.xyz), ubo.lightColor.rgb,
+                                  albedo, metallic, occlusion, irradiance);
     vec3 color = ambient + Lo + emissive;
     outColor = vec4(color, 1.0);
     // Copy GBuffer HW depth into scene color so transparent Forward+ depth-tests

@@ -33,7 +33,7 @@ public:
     /** @brief Resize. */
     void resize(int boneCount);
     /** @brief Returns the bone count. */
-    int  getBoneCount() const { return static_cast<int>(locals_.size()); }
+    int getBoneCount() const noexcept { return static_cast<int>(locals_.size()); }
 
     /** @brief Copies from. */
     void copyFrom(const AnimPose *other);

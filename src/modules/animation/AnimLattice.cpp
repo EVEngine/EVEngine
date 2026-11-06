@@ -26,12 +26,12 @@ void computeAxis(float u, int divisions, bool clamp, int& i0, float& fu) {
         }
     }
     i0 = static_cast<int>(std::floor(scaled));
-    fu = scaled - static_cast<float>(i0);
     if (i0 < 0) {
         i0 = 0;
     } else if (i0 > divisions - 2) {
         i0 = divisions - 2;
     }
+    fu = scaled - static_cast<float>(i0);
 }
 
 }  // namespace

@@ -252,6 +252,7 @@ function(check_third_party_project name repo)
             -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
             -DCMAKE_SYSTEM_NAME=Emscripten
             -DCMAKE_MAKE_PROGRAM=${_eve_ninja}
+            "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS} -fexceptions"
         )
         set(_eve_tp_use_ninja TRUE)
         message(STATUS "third-party Emscripten toolchain: ${CMAKE_TOOLCHAIN_FILE}")

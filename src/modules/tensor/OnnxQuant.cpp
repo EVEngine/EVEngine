@@ -60,7 +60,12 @@ std::vector<RuntimeTensor> executeQuant(const Node& n, const std::vector<const R
                 "q=isnan(v)?0u:uint(clamp(roundEven(v/p[0])+p[1],0.0,255.0));packed|=q<<(c*8u);}}y[word]=packed;}";
             const std::vector<OnnxBuffer> inputs{x.bytes.buffer(), params.bytes.buffer()};
             auto q = checked(compute->enqueue(source, inputs, total, static_cast<uint32_t>((total + 3) / 4)));
-            return {{OnnxElement::UInt8, x.shape, std::move(q)}, std::move(scale), std::move(zeroPoint)};
+            std::vector<RuntimeTensor> result;
+            result.reserve(3);
+            result.emplace_back(RuntimeTensor{OnnxElement::UInt8, x.shape, std::move(q)});
+            result.emplace_back(std::move(scale));
+            result.emplace_back(std::move(zeroPoint));
+            return result;
         }
         auto input = floats(x);
         // ORT CPU DynamicQuantizeLinear ignores NaN for range estimation and stores code 0.
@@ -73,9 +78,12 @@ std::vector<RuntimeTensor> executeQuant(const Node& n, const std::vector<const R
             }
         auto q = checked(affine::dynamicQuantize(input));
         for (auto i : nanPositions) q.values[i] = 0;
-        return {{OnnxElement::UInt8, x.shape, std::move(q.values)},
-                make(OnnxElement::Float32, {}, std::vector<float>{q.scale}),
-                make(OnnxElement::UInt8, {}, std::vector<uint8_t>{q.zeroPoint})};
+        std::vector<RuntimeTensor> result;
+        result.reserve(3);
+        result.emplace_back(RuntimeTensor{OnnxElement::UInt8, x.shape, std::move(q.values)});
+        result.emplace_back(make(OnnxElement::Float32, {}, std::vector<float>{q.scale}));
+        result.emplace_back(make(OnnxElement::UInt8, {}, std::vector<uint8_t>{q.zeroPoint}));
+        return result;
     }
     if (n.op == "QuantizeLinear" || n.op == "DequantizeLinear") {
         const auto scales = floats(required(in, 1));
@@ -97,7 +105,8 @@ std::vector<RuntimeTensor> executeQuant(const Node& n, const std::vector<const R
             for (size_t i = a + 1; i < x.shape.size(); ++i) inner *= x.shape[i];
         }
         if (n.op == "DequantizeLinear")
-            return {make(OnnxElement::Float32, x.shape, checked(affine::dequantize(bytes(x), scales, zeros, inner)))};
+            return single(
+                make(OnnxElement::Float32, x.shape, checked(affine::dequantize(bytes(x), scales, zeros, inner))));
         const auto           values = floats(x);
         std::vector<uint8_t> out(values.size());
         for (size_t i = 0; i < values.size(); i += inner) {
@@ -106,7 +115,7 @@ std::vector<RuntimeTensor> executeQuant(const Node& n, const std::vector<const R
                                               type == OnnxElement::Int8));
             std::copy(q.begin(), q.end(), out.begin() + i);
         }
-        return {{type, x.shape, std::move(out)}};
+        return single(RuntimeTensor{type, x.shape, std::move(out)});
     }
     if (n.op == "MatMulInteger") {
         const auto& b = required(in, 1);
@@ -122,13 +131,14 @@ std::vector<RuntimeTensor> executeQuant(const Node& n, const std::vector<const R
                 (b.element != OnnxElement::Int8 && b.element != OnnxElement::UInt8))
                 throw Failure("Expected packed integer matrices");
             std::vector<int32_t> bz{zero(in, 3, b)};
-            return {{OnnxElement::Int32, shape,
-                     gpuMatmulResident(*compute, x.bytes.buffer(), b.bytes.buffer(), x.element == OnnxElement::Int8,
-                                       b.element == OnnxElement::Int8, rows, k, columns, zero(in, 2, x), bz)}};
+            return single(RuntimeTensor{
+                OnnxElement::Int32, shape,
+                gpuMatmulResident(*compute, x.bytes.buffer(), b.bytes.buffer(), x.element == OnnxElement::Int8,
+                                  b.element == OnnxElement::Int8, rows, k, columns, zero(in, 2, x), bz)});
         }
-        return {make(
+        return single(make(
             OnnxElement::Int32, shape,
-            checked(affine::matmul(bytes(x), bytes(b), rows, k, columns, zero(in, 2, x), zero(in, 3, b), compute)))};
+            checked(affine::matmul(bytes(x), bytes(b), rows, k, columns, zero(in, 2, x), zero(in, 3, b), compute))));
     }
     if (n.op == "ConvInteger") {
         const auto& w = required(in, 1);
@@ -184,9 +194,10 @@ std::vector<RuntimeTensor> executeQuant(const Node& n, const std::vector<const R
             std::vector<int64_t> outputShape{s.batch, s.outputs};
             if (spatial == 2) outputShape.push_back(extent.height);
             outputShape.push_back(extent.width);
-            return {{OnnxElement::Int32, outputShape,
-                     gpuConvResident(*compute, x.bytes.buffer(), w.bytes.buffer(), x.element == OnnxElement::Int8,
-                                     w.element == OnnxElement::Int8, s, zero(in, 2, x), wz)}};
+            return single(RuntimeTensor{
+                OnnxElement::Int32, outputShape,
+                gpuConvResident(*compute, x.bytes.buffer(), w.bytes.buffer(), x.element == OnnxElement::Int8,
+                                w.element == OnnxElement::Int8, s, zero(in, 2, x), wz)});
         }
         auto                 values = checked(affine::conv(bytes(x), bytes(w), s, zero(in, 2, x), wz, compute));
         std::vector<int64_t> shape{s.batch, s.outputs};
@@ -195,7 +206,7 @@ std::vector<RuntimeTensor> executeQuant(const Node& n, const std::vector<const R
                 (s.height + s.padTop + s.padBottom - int64_t(s.dilationH) * (s.kernelH - 1) - 1) / s.strideH + 1);
         shape.push_back((s.width + s.padLeft + s.padRight - int64_t(s.dilationW) * (s.kernelW - 1) - 1) / s.strideW +
                         1);
-        return {make(OnnxElement::Int32, shape, values)};
+        return single(make(OnnxElement::Int32, shape, values));
     }
     throw Failure("Unsupported quantized operation", DiagnosticCode::Unsupported);
 }
@@ -826,6 +837,7 @@ std::vector<Value> control(const Node& n, const std::vector<Value>& in, const Va
         const auto& s = seq(0);
         if (s.empty()) throw Failure("Cannot concatenate empty sequence");
         std::vector<RuntimeTensor>        tensors;
+        tensors.reserve(s.size());
         std::vector<const RuntimeTensor*> inputs;
         for (const auto& v : s) {
             tensors.push_back(v.tensor());
@@ -834,6 +846,7 @@ std::vector<Value> control(const Node& n, const std::vector<Value>& in, const Va
                 tensors.back().shape.insert(tensors.back().shape.begin() + a, 1);
             }
         }
+        inputs.reserve(tensors.size());
         for (const auto& t : tensors) inputs.push_back(&t);
         Node concat = n;
         concat.op   = "Concat";
@@ -902,9 +915,11 @@ std::vector<Value> control(const Node& n, const std::vector<Value>& in, const Va
         return {hold(make(OnnxElement::Float32, x.shape, v), c)};
     }
     std::vector<const RuntimeTensor*> tensors;
+    tensors.reserve(in.size());
     for (const auto& v : in) tensors.push_back(v.borrowed || v.owned ? &v.tensor() : nullptr);
     auto               outputs = execute(n, tensors, c.compute);
     std::vector<Value> result;
+    result.reserve(outputs.size());
     for (auto& t : outputs) result.push_back(hold(std::move(t), c));
     return result;
 }

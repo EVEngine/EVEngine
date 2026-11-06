@@ -22,6 +22,7 @@ namespace {
 constexpr int kPointFloats   = 11;
 constexpr int kWorkgroupSize = 64;
 constexpr int kMaxTransforms = 4;
+constexpr int kRotationFloats = kMaxTransforms * 2;
 
 bool forcedFailure(const char* stage) {
     const char* requested = std::getenv("EVENGINE_POINT_COMPUTE_FAIL");
@@ -54,9 +55,9 @@ fn main(@builtin(global_invocation_id) gid: vec3u) {
         let sy = parameter(offset + 4u);
         let sz = parameter(offset + 5u);
         let yaw = parameter(offset + 6u);
-        let radians = yaw * 0.017453292519943295;
-        let c = cos(radians);
-        let s = sin(radians);
+        let rotation = u32(parameter(0u)) * 11u + operation * 2u;
+        let c = points.values[rotation];
+        let s = points.values[rotation + 1u];
         let x = points.values[base] * sx;
         let z = points.values[base + 2u] * sz;
         points.values[base] = x * c - z * s + parameter(offset);
@@ -90,8 +91,8 @@ void main() {
         int offset = 2 + operation * 7;
         float sx = push.data[offset + 3], sy = push.data[offset + 4], sz = push.data[offset + 5];
         float yaw = push.data[offset + 6];
-        float radians = yaw * 0.017453292519943295;
-        float c = cos(radians), s = sin(radians);
+        uint rotation = uint(push.data[0]) * 11u + uint(operation) * 2u;
+        float c = points.values[rotation], s = points.values[rotation + 1u];
         float x = points.values[base] * sx;
         float z = points.values[base + 2u] * sz;
         points.values[base] = x * c - z * s + push.data[offset];
@@ -160,7 +161,8 @@ bool PointCompute::transformChain(const PointSet& input, PointSet& output, const
         return true;
     }
     constexpr size_t bytesPerPoint = size_t(kPointFloats) * sizeof(float);
-    if (size_t(input.getCount()) > size_t(std::numeric_limits<int>::max()) / bytesPerPoint) {
+    if (size_t(input.getCount()) >
+        (size_t(std::numeric_limits<int>::max()) - kRotationFloats * sizeof(float)) / bytesPerPoint) {
         error_ = "point data exceeds GPU buffer address range";
         return false;
     }
@@ -176,7 +178,8 @@ bool PointCompute::transformChain(const PointSet& input, PointSet& output, const
             return false;
         }
 
-        impl_->packed.resize(size_t(input.getCount()) * kPointFloats);
+        const size_t rotationOffset = size_t(input.getCount()) * kPointFloats;
+        impl_->packed.resize(rotationOffset + kRotationFloats);
         std::vector<float>& packed = impl_->packed;
         for (int index = 0; index < input.getCount(); ++index) {
             const ProcgenPoint& point  = input.points()[size_t(index)];
@@ -192,6 +195,13 @@ bool PointCompute::transformChain(const PointSet& input, PointSet& output, const
             values[8]                  = point.scaleY;
             values[9]                  = point.scaleZ;
             values[10]                 = point.density;
+        }
+        // Match the CPU transform's rotation coefficients, independent of GPU
+        // transcendental precision, and calculate them once per operation.
+        for (size_t index = 0; index < transforms.size(); ++index) {
+            const float radians                    = transforms[index].yaw * 0.017453292519943295f;
+            packed[rotationOffset + index * 2]     = std::cos(radians);
+            packed[rotationOffset + index * 2 + 1] = std::sin(radians);
         }
         const int byteSize = int(packed.size() * sizeof(float));
         if (!impl_->shader) impl_->shader.reset(gpu->newShader(transformKernel()));

@@ -135,6 +135,34 @@ story forest.arrival repeatable version=2 {
     CHECK_EQ(node(asset, wait.next).type, std::string("end"));
 }
 
+TEST_CASE("dnut.compiler.nestedConditionsPreservePrecedenceAndOperandOwnership") {
+    auto registry = vocabulary();
+    auto output   = compileDnut(R"(
+story condition.ownership {
+    if (switch.a == true || switch.b == false) && variable.gold >= 10 && variable.level > 2 {
+        end
+    } else {
+        end
+    }
+}
+)",
+                                "conditions.dnut", registry);
+    REQUIRE(!output.hasErrors());
+    REQUIRE_EQ(output.assets.size(), size_t{1});
+    const auto& asset  = output.assets.front();
+    const auto& branch = node(asset, asset.entry);
+    REQUIRE_EQ(branch.routes.size(), size_t{1});
+    auto expected = eve::Value::fromJson(R"({"all":[
+        {"any":[{"var":"switch.a","op":"eq","value":true},
+                {"var":"switch.b","op":"eq","value":false}]},
+        {"var":"variable.gold","op":"ge","value":10},
+        {"var":"variable.level","op":"gt","value":2}
+    ]})");
+    REQUIRE(expected.ok());
+    CHECK(branch.routes.front().condition == expected.value());
+    REQUIRE(asset.validate().ok());
+}
+
 TEST_CASE("dnut.compiler.rejectsUnknownMissingWrongAndExtraStepFields") {
     auto registry = vocabulary();
     const struct {

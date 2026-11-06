@@ -35,7 +35,11 @@ bool fromTo(float ax, float ay, float az, float bx, float by, float bz, Quat& ou
     by /= bl;
     bz /= bl;
     const float dot = clampf(ax * bx + ay * by + az * bz, -1.f, 1.f);
-    if (dot < -0.9999f) {
+    const float cx          = ay * bz - az * by;
+    const float cy          = az * bx - ax * bz;
+    const float cz          = ax * by - ay * bx;
+    const float crossLength = std::hypot(cx, cy, cz);
+    if (dot < 0.f && crossLength < 1e-7f) {
         float       ox = std::fabs(ax) < 0.8f ? 1.f : 0.f;
         float       oy = std::fabs(ax) < 0.8f ? 0.f : 1.f;
         float       oz = 0.f;
@@ -46,15 +50,15 @@ bool fromTo(float ax, float ay, float az, float bx, float by, float bz, Quat& ou
         out            = {cx / cl, cy / cl, cz / cl, 0.f};
         return true;
     }
-    const float cx = ay * bz - az * by;
-    const float cy = az * bx - ax * bz;
-    const float cz = ax * by - ay * bx;
-    out            = {cx, cy, cz, 1.f + dot};
-    const float ql = std::sqrt(out.x * out.x + out.y * out.y + out.z * out.z + out.w * out.w);
-    out.x /= ql;
-    out.y /= ql;
-    out.z /= ql;
-    out.w /= ql;
+    if (crossLength < 1e-7f) {
+        out = {};
+        return true;
+    }
+    // atan2 preserves the small deviation from pi for nearly folded chains;
+    // 1 + dot loses that deviation when the float dot rounds to -1.
+    const float halfAngle = 0.5f * std::atan2(crossLength, dot);
+    const float scale     = std::sin(halfAngle) / crossLength;
+    out                   = {cx * scale, cy * scale, cz * scale, std::cos(halfAngle)};
     return true;
 }
 

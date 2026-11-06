@@ -91,6 +91,7 @@ TEST_CASE("graphics.renderable.meshLod_distanceFadeAndClearContract") {
     };
 
     SUB_CASE("fade policy produces a second level and continuous weight at boundary") {
+        REQUIRE(renderable->setMeshLodFadePolicy(1, false, .5f).ok());
         REQUIRE(renderable->setMeshLodFadeWidth(0, .25f).ok());
         CHECK_EQ(renderable->getMeshLodSecondaryLevelAtDistance(17.5f), 1);
         CHECK(std::abs(renderable->getMeshLodSecondaryWeightAtDistance(17.5f) - .5f) < .0001f);
@@ -331,6 +332,8 @@ TEST_CASE("procgen.rng.cellularGeneration_usesOnlyExplicitSeed") {
 #include "procgen/heightmap/TerrainAsset.h"
 #include "procgen/heightmap/TerrainPipeline.h"
 #include "procgen/heightmap/TerrainStreaming.h"
+#include "procgen/texture/CloudField.h"
+#include "procgen/texture/CloudShadow.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/PbrMaterial.h"
@@ -628,6 +631,23 @@ TEST_CASE("procgen.marchingCubes.invalidBufferShapeAndField_haveExplicitErrors")
     CHECK_EQ(nz, 8);
     CHECK_EQ(density.size(), static_cast<size_t>(8 * 8 * 8));
 
+    SUB_CASE("rectangular defaults and explicit axes override uniform resolution") {
+        Params rectangular;
+        rectangular.setSize(6, 7);
+        rectangular.setString("field", "sphere");
+        REQUIRE(fillDensityField(rectangular, density, nx, ny, nz, error));
+        CHECK_EQ(nx, 6);
+        CHECK_EQ(ny, 7);
+        CHECK_EQ(nz, 6);
+        valid.setInt("nx", 6);
+        valid.setInt("ny", 7);
+        valid.setInt("nz", 5);
+        REQUIRE(fillDensityField(valid, density, nx, ny, nz, error));
+        CHECK_EQ(nx, 6);
+        CHECK_EQ(ny, 7);
+        CHECK_EQ(nz, 5);
+    };
+
     SUB_CASE("unknown field") {
         valid.setString("field", "unknown");
         CHECK(!fillDensityField(valid, density, nx, ny, nz, error));
@@ -648,7 +668,8 @@ TEST_CASE("procgen.meshRecipes.shapeReplayParameterAndValidationContract") {
     SUB_CASE("registered shapes replay and produce valid triangle topology") {
         auto& registry = MeshRecipeRegistry::instance();
         registry.registerBuiltins();
-        const char* ids[] = {"mesh.rock", "mesh.tree", "mesh.skyscraper", "mesh.flower", "mesh.bush"};
+        const char* ids[] = {"mesh.rock", "mesh.tree", "mesh.skyscraper", "mesh.flower", "mesh.bush",
+                             "mesh.water_splash"};
         for (const char* id : ids) {
             REQUIRE(registry.has(id));
             Params params;
@@ -736,6 +757,143 @@ TEST_CASE("procgen.texture.noisePeriodAndRamp_samplesAreDeterministic") {
     ramp.add(0.f, 0, 0, 0);
     ramp.add(1.f, 255, 255, 255);
     CHECK(ramp.sampleBanded(.1f, 3).r < ramp.sampleBanded(.9f, 3).r);
+}
+
+TEST_CASE("procgen.texture.noiseField_noisecreaterFamily_isBoundedDeterministicAndTileable") {
+    NoiseField  tiling{7, 16, 16};
+    NoiseField  replay{7, 16, 16};
+    const float x = 3.25f;
+    const float y = 9.75f;
+
+    const float white   = tiling.whiteNoise(3, 9);
+    const float value   = tiling.valueNoise(x, y);
+    const float perlin  = tiling.perlinNoise(x, y);
+    const float simplex = tiling.simplexNoise(x, y);
+    const float worley  = tiling.worleyNoise(x, y);
+    const float edge    = tiling.worleyEdge(x, y);
+    const float billow  = tiling.billow(x, y, 3);
+    const float cloud   = tiling.perlinWorley(x, y, 3);
+    const float deep    = tiling.warpDeep(x, y, 1.5f, 3);
+    const float rotated = tiling.fbmRotated(x, y, 4);
+    const float fbmS    = tiling.fbmSimplex(x, y, 3);
+    const float swiss   = tiling.swiss(x, y, 3, 2.f, 0.5f, 0.15f);
+    const float hybrid  = tiling.hybrid(x, y, 3, 2.f, 0.5f, 0.7f);
+    const float jordan  = tiling.jordan(x, y, 3, 2.f, 0.5f, 0.35f);
+    const float gabor   = tiling.gabor(x, y);
+    const float gaborF  = tiling.gaborFbm(x, y, 3);
+    const float smoothW = tiling.worleySmooth(x, y, 0.3f);
+    const float hexE    = tiling.hexEdge(x, y, 0.05f, 0.02f);
+    const float gyro    = tiling.gyroid(x, y, 0.5f);
+    const float gyroF   = tiling.gyroidFbm(x, y, 0.5f, 3);
+    const float manh    = tiling.worleyF1(x, y, 1.f, WorleyMetric::Manhattan);
+    const float cheb    = tiling.worleyF1(x, y, 1.f, WorleyMetric::Chebyshev);
+    const float f2      = tiling.worleyF2(x, y);
+    const float comb    = tiling.worleyCombine(x, y);
+    const float iso     = tiling.isoLine(x, y, 8, 0.04f);
+    const float bands   = tiling.banding(x, y, 5);
+    const float col0    = tiling.fbmColor(x, y, 0, 3);
+    const float col1    = tiling.fbmColor(x, y, 1, 3);
+
+    const float cx = tiling.curlNoiseX(x, y);
+    const float cy = tiling.curlNoiseY(x, y);
+    const float sx = tiling.valueSlope(x, y);
+
+    REQUIRE_EQ(white, replay.whiteNoise(3, 9));
+    CHECK_EQ(value, replay.valueNoise(x, y));
+    CHECK_EQ(perlin, replay.perlinNoise(x, y));
+    CHECK_EQ(simplex, replay.simplexNoise(x, y));
+    CHECK_EQ(worley, replay.worleyNoise(x, y));
+    CHECK_EQ(edge, replay.worleyEdge(x, y));
+    CHECK_EQ(billow, replay.billow(x, y, 3));
+    CHECK_EQ(cloud, replay.perlinWorley(x, y, 3));
+    CHECK_EQ(deep, replay.warpDeep(x, y, 1.5f, 3));
+    CHECK_EQ(rotated, replay.fbmRotated(x, y, 4));
+    CHECK_EQ(fbmS, replay.fbmSimplex(x, y, 3));
+    CHECK_EQ(swiss, replay.swiss(x, y, 3, 2.f, 0.5f, 0.15f));
+    CHECK_EQ(hybrid, replay.hybrid(x, y, 3, 2.f, 0.5f, 0.7f));
+    CHECK_EQ(jordan, replay.jordan(x, y, 3, 2.f, 0.5f, 0.35f));
+    CHECK_EQ(gabor, replay.gabor(x, y));
+    CHECK_EQ(gaborF, replay.gaborFbm(x, y, 3));
+    CHECK_EQ(smoothW, replay.worleySmooth(x, y, 0.3f));
+    CHECK_EQ(hexE, replay.hexEdge(x, y, 0.05f, 0.02f));
+    CHECK_EQ(gyro, replay.gyroid(x, y, 0.5f));
+    CHECK_EQ(gyroF, replay.gyroidFbm(x, y, 0.5f, 3));
+    CHECK_EQ(manh, replay.worleyF1(x, y, 1.f, WorleyMetric::Manhattan));
+    CHECK_EQ(cheb, replay.worleyF1(x, y, 1.f, WorleyMetric::Chebyshev));
+    CHECK_EQ(f2, replay.worleyF2(x, y));
+    CHECK_EQ(comb, replay.worleyCombine(x, y));
+    CHECK_EQ(iso, replay.isoLine(x, y, 8, 0.04f));
+    CHECK_EQ(bands, replay.banding(x, y, 5));
+    CHECK_EQ(col0, replay.fbmColor(x, y, 0, 3));
+
+    auto in01 = [](float v) { return v >= 0.f && v <= 1.f; };
+    CHECK(in01(white));
+    CHECK(in01(value));
+    CHECK(in01(perlin));
+    CHECK(in01(simplex));
+    CHECK(in01(worley));
+    CHECK(edge >= 0.f);
+    CHECK(in01(billow));
+    CHECK(in01(cloud));
+    CHECK(in01(deep));
+    CHECK(in01(rotated));
+    CHECK(in01(fbmS));
+    CHECK(in01(swiss));
+    CHECK(in01(hybrid));
+    CHECK(in01(jordan));
+    CHECK(in01(gabor));
+    CHECK(in01(gaborF));
+    CHECK(in01(smoothW));
+    CHECK(in01(hexE));
+    CHECK(in01(gyro));
+    CHECK(in01(gyroF));
+    CHECK(manh >= 0.f);
+    CHECK(cheb >= 0.f);
+    CHECK(f2 >= 0.f);
+    CHECK(in01(comb));
+    CHECK(in01(iso));
+    CHECK(in01(bands));
+    CHECK(in01(col0));
+    CHECK(in01(col1));
+    CHECK(col0 != col1);
+    CHECK(std::isfinite(cx));
+    CHECK(std::isfinite(cy));
+    CHECK(sx >= 0.f);
+    CHECK(std::isfinite(sx));
+
+    // Seamless lattice wrap: sample at period offset must match for hash-backed fields.
+    CHECK_EQ(tiling.hash01(1, 2), tiling.hash01(17, 18));
+    CHECK_EQ(tiling.whiteNoise(1, 2), tiling.whiteNoise(17, 18));
+    // Continuous samplers with integer period also match at +period.
+    CHECK_EQ(tiling.valueNoise(1.5f, 2.5f), tiling.valueNoise(17.5f, 18.5f));
+    CHECK_EQ(tiling.perlinNoise(1.5f, 2.5f), tiling.perlinNoise(17.5f, 18.5f));
+    // Worley uses sqrt; accept ulp-scale drift across the period shift.
+    CHECK(std::fabs(tiling.worleyF1(1.5f, 2.5f) - tiling.worleyF1(17.5f, 18.5f)) < 1e-5f);
+}
+
+TEST_CASE("procgen.texture.noiseField3_volumeFamily_isBoundedAndDeterministic") {
+    NoiseField3 field{11, 8, 8, 8};
+    NoiseField3 replay{11, 8, 8, 8};
+    const float x = 1.25f, y = 2.5f, z = 3.75f;
+
+    REQUIRE_EQ(field.valueNoise(x, y, z), replay.valueNoise(x, y, z));
+    CHECK_EQ(field.perlinNoise(x, y, z), replay.perlinNoise(x, y, z));
+    CHECK_EQ(field.simplexNoise(x, y, z), replay.simplexNoise(x, y, z));
+    CHECK_EQ(field.worleyNoise(x, y, z), replay.worleyNoise(x, y, z));
+    CHECK_EQ(field.fbm(x, y, z, 3), replay.fbm(x, y, z, 3));
+    CHECK_EQ(field.ridged(x, y, z, 3), replay.ridged(x, y, z, 3));
+    CHECK_EQ(field.billow(x, y, z, 3), replay.billow(x, y, z, 3));
+    CHECK_EQ(field.gyroidFbm(x, y, z, 3), replay.gyroidFbm(x, y, z, 3));
+    CHECK_EQ(field.perlinWorley(x, y, z, 3), replay.perlinWorley(x, y, z, 3));
+    CHECK_EQ(field.hash01(1, 2, 3), field.hash01(9, 10, 11));
+
+    auto in01 = [](float v) { return v >= 0.f && v <= 1.f; };
+    CHECK(in01(field.valueNoise(x, y, z)));
+    CHECK(in01(field.perlinNoise(x, y, z)));
+    CHECK(in01(field.simplexNoise(x, y, z)));
+    CHECK(in01(field.worleyNoise(x, y, z)));
+    CHECK(in01(field.fbm(x, y, z, 3)));
+    CHECK(in01(field.gyroid(x, y, z)));
 }
 
 TEST_CASE("procgen.texture.registryImages_matchDimensionsFormatAndBytesOnReplay") {
@@ -1005,6 +1163,16 @@ TEST_CASE("procgen.hexTerrain.seededMesh_replaysHydrologyAndBiomeCounts") {
     CHECK_EQ(first.positions(), replay.positions());
     CHECK_EQ(first.indices(), replay.indices());
     CHECK(meshIndicesInRange(first));
+    const auto& positions  = first.positions();
+    const auto& indices    = first.indices();
+    const auto  coordinate = [&](std::size_t corner, std::size_t axis) {
+        return positions[std::size_t(indices[corner]) * 3 + axis];
+    };
+    const float ax = coordinate(1, 0) - coordinate(0, 0);
+    const float az = coordinate(1, 2) - coordinate(0, 2);
+    const float bx = coordinate(2, 0) - coordinate(0, 0);
+    const float bz = coordinate(2, 2) - coordinate(0, 2);
+    CHECK(az * bx - ax * bz > 0.0f);
     CHECK_EQ(first.getMeta("algorithm", ""), "mesh.hexterrain");
     CHECK(std::stoi(first.getMeta("cells.ocean", "0")) > 0);
     CHECK(std::stoi(first.getMeta("cells.grassland", "0")) > 0);

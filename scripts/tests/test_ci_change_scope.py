@@ -63,17 +63,23 @@ class CiChangeScopeTests(unittest.TestCase):
         self.assertTrue(all(scopes.values()))
 
     def test_changed_zeroerr_sources_select_their_source_labels(self):
-        mode, label = ci_change_scope.classify_tests(
-            ["test/unit/math/math_tests.cpp", "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp"]
-        )
+        paths = ["test/unit/math/arithmetic.cpp", "test/integration/rendering/draw.cpp"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for relative in paths:
+                source = root / relative
+                source.parent.mkdir(parents=True, exist_ok=True)
+                source.write_text('TEST_CASE("scenario") {}', encoding="utf-8")
+            with mock.patch.object(ci_change_scope, "ROOT", root):
+                mode, label = ci_change_scope.classify_tests(paths)
         self.assertEqual("selected", mode)
-        self.assertEqual(r"^source:(math_tests[.]cpp|render_presentation_graphics_procgen_tests[.]cpp)$", label)
+        self.assertEqual(r"^source:(arithmetic[.]cpp|draw[.]cpp)$", label)
 
-    def test_production_change_runs_full_test_suite(self):
+    def test_module_change_uses_build_derived_impact(self):
         mode, label = ci_change_scope.classify_tests(
             ["src/modules/scene/Scene.cpp"]
         )
-        self.assertEqual("full", mode)
+        self.assertEqual("affected", mode)
         self.assertEqual("", label)
 
     def test_test_infrastructure_change_runs_full_test_suite(self):

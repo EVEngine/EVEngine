@@ -32,7 +32,7 @@ std::optional<T> queryProviders(const std::string& subject, eve::IStateQuery* ex
 
 eve::Result<eve::condition::Condition> conditionError(std::string message, std::string path = {}) {
     return eve::Result<eve::condition::Condition>::failure(
-        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message, path));
+        eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
 }
 
 bool readString(const eve::Value& object, std::string_view key, std::string& out) {
@@ -168,8 +168,8 @@ eve::Result<eve::condition::Condition> compileCondition(const eve::Value& specif
         if (!readOperator(op, parsed)) return conditionError("unknown condition operator: " + op, "op");
         const eve::Value* expected = specification.find("value");
         if (!expected) return conditionError("comparison condition is missing value", "value");
-        return eve::Result<eve::condition::Condition>::success(
-            eve::condition::Condition::compare(key, parsed, *expected));
+        return eve::Result<eve::condition::Condition>::success(eve::condition::Condition::compare(
+            attribute && attribute->isString() ? eve::condition::attrKey(key) : key, parsed, *expected));
     }
 
     if (attribute && attribute->isString())
@@ -222,26 +222,7 @@ eve::Value toCanonicalValue(const eve::StateValue& value) {
     return eve::Value::null();
 }
 
-eve::StateValue toDialogueStateValue(const eve::Value& value) {
-    switch (value.type()) {
-        case eve::Value::Type::Null: return eve::StateValue::null();
-        case eve::Value::Type::Int64: return eve::StateValue::integer(value.asInt());
-        case eve::Value::Type::Double: return eve::StateValue::number(value.asDouble());
-        case eve::Value::Type::Bool: return eve::StateValue::boolean(value.asBool());
-        case eve::Value::Type::String: return eve::StateValue::string(value.asString());
-        case eve::Value::Type::Array: {
-            eve::StateValue result = eve::StateValue::array();
-            for (std::size_t i = 0; i < value.arraySize(); ++i) result.pushBack(toDialogueStateValue(value.at(i)));
-            return result;
-        }
-        case eve::Value::Type::Object: {
-            eve::StateValue result = eve::StateValue::object();
-            for (const auto& key : value.keys()) result.set(key, toDialogueStateValue(*value.find(key)));
-            return result;
-        }
-    }
-    return eve::StateValue::null();
-}
+eve::StateValue toDialogueStateValue(const eve::Value& value) { return eve::toLegacyStateValue(value); }
 
 StateEvaluationContext::StateEvaluationContext(std::string subject, eve::IStateQuery* provider)
     : subject_(std::move(subject)), provider_(provider) {}

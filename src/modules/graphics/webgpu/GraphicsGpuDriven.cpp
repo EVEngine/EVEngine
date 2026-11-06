@@ -1,4 +1,5 @@
 #include "common/Exception.h"
+#include "graphics/ReflectionProbeUpload.h"
 #include "graphics/webgpu/Graphics.h"
 
 #include "graphics/Material.h"

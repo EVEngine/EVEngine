@@ -32,9 +32,9 @@ public:
 
     /**
      * @brief Script facade that projects creation failure to an exception.
-     * @return Owning pointer transferred to the script VM.
-     * @ownership The script VM assumes ownership of the returned Rope3D.
-     * @lifetime Valid until the script wrapper is collected.
+     * @return Owning pointer transferred to the caller; the registered script binding wraps it in a VM owner.
+     * @ownership Native callers delete the result; script callers hold the owning VM wrapper.
+     * @lifetime Until native deletion or collection of the last owning script wrapper reference.
      */
     Rope3D* newRope3DFromJsonScript(const std::string& json);
 };

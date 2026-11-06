@@ -48,7 +48,7 @@ struct TerrainWaterFlowMapSettings {
 /**
  * @brief Generate Pcg HeightMap.FlowMap's normalized four-direction velocity magnitude.
  * @param target Exclusively borrowed matching output; it may alias source.
- * @param source Borrowed finite terrain heights, copied before computation and never retained.
+ * @param source Borrowed finite terrain heights, read before atomic output publication and never retained.
  * @param iterations Nonnegative count of fixed TIME=0.2 flow steps.
  * @return Changed output samples or InvalidArgument; failure preserves target.
  * @throws std::bad_alloc Target remains unchanged.

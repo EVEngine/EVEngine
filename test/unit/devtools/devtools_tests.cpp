@@ -10,6 +10,7 @@
     "debugger.cpp",
     "mcp_architecture_graph.cpp",
     "mcp_whitebox.cpp",
+    "mcp_action_guide.cpp",
     "frame_stats.cpp",
     "language_index.cpp",
     "language_text.cpp",
@@ -127,34 +128,42 @@ TEST_CASE("devtools.CallGraph calls: stack and edges record entry/return in orde
 TEST_CASE("devtools.CallGraph sliceBackward: latest definition reaches selected use") {
     eve::dev::CallGraph graph;
     graph.onCall(location("game.nut", 1, "main"), "main");
-    graph.onDef(location("game.nut", 2, "main"), "health");
-    graph.onDef(location("game.nut", 3, "main"), "health");
-    graph.onUse(location("game.nut", 4, "main"), "health");
+    const auto oldDefinition = graph.onDef(location("game.nut", 2, "main"), "health");
+    const auto newDefinition = graph.onDef(location("game.nut", 3, "main"), "health");
+    const auto use           = graph.onUse(location("game.nut", 4, "main"), "health");
     graph.onLine(location("game.nut", 5, "main"));
     eve::dev::SliceCriterion criterion;
     criterion.loc = location("game.nut", 5, "main");
     criterion.variables.push_back("health");
     auto slice    = graph.sliceBackward(criterion);
     bool latest   = false;
-    bool obsolete = false;
     for (const auto& place : slice.locations) {
         if (place.line == 3) latest = true;
-        if (place.line == 2) obsolete = true;
     }
     REQUIRE(latest);
+    // Control predecessors can retain older locations; reaching-definition
+    // edges must still select only the latest write for this use.
+    bool obsolete   = false;
+    bool reachesUse = false;
+    for (const auto& edge : slice.dataFlow) {
+        if (edge.toEventId != use) continue;
+        if (edge.fromEventId == oldDefinition) obsolete = true;
+        if (edge.fromEventId == newDefinition) reachesUse = true;
+    }
+    CHECK(reachesUse);
     CHECK(!obsolete);
 }
 
 TEST_CASE("devtools.CallGraph event ring: capacity keeps newest IDs without stale lookup") {
     eve::dev::CallGraph graph;
-    graph.setMaxEvents(3);
+    graph.setMaxEvents(16);
     graph.onCall(location("game.nut", 1, "main"), "main");
     const auto old = graph.events().back().id;
-    for (int line = 2; line <= 6; ++line) graph.onLine(location("game.nut", line, "main"));
-    CHECK_EQ(graph.eventCount(), 3u);
+    for (int line = 2; line <= 20; ++line) graph.onLine(location("game.nut", line, "main"));
+    CHECK_EQ(graph.eventCount(), 16u);
     CHECK(graph.event(old) == nullptr);
     REQUIRE(graph.event(graph.events().back().id) != nullptr);
-    CHECK_EQ(graph.event(graph.events().back().id)->loc.line, 6);
+    CHECK_EQ(graph.event(graph.events().back().id)->loc.line, 20);
 }
 }  // namespace test_callgraph_contract
 #endif
@@ -381,7 +390,91 @@ TEST_CASE("devtools.Whitebox playtest: absent live VM returns an error envelope"
     CHECK(payload->has("error"));
 }
 }  // namespace test_whitebox_contract
+#endif
 
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_action_guide)
+#include <Poco/JSON/Array.h>
+#include <Poco/JSON/Object.h>
+#include <Poco/JSON/Parser.h>
+#include "devtools/McpActionGuideTools.hpp"
+#include "devtools/McpToolFilter.hpp"
+namespace test_action_guide_contract {
+Poco::JSON::Object::Ptr guideResult(const std::string& response) {
+    Poco::JSON::Parser parser;
+    auto               envelope = parser.parse(response).extract<Poco::JSON::Object::Ptr>();
+    return parser.parse(envelope->getArray("content")->getObject(0)->getValue<std::string>("text"))
+        .extract<Poco::JSON::Object::Ptr>();
+}
+
+constexpr const char* kPack = R"json({
+  "schema": "eve.action.guide-pack",
+  "schemaVersion": 1,
+  "revision": 2,
+  "subject": {"domain": "animation.preview", "id": 1, "generation": 1},
+  "skeletonRef": "assets/guides/hero.skeleton",
+  "clipRef": "assets/guides/hero_attack.clip",
+  "rootMode": "inPlace",
+  "canvas": {"width": 100, "height": 100, "pixelsPerUnit": 50.0, "backgroundRgba": [0,0,0,0], "transparent": true},
+  "camera": {"projection": "orthographic", "fovYDegrees": 45.0, "orthoSize": 1.0, "nearPlane": 0.1, "farPlane": 50.0,
+             "eye": [0,0,5], "target": [0,0,0], "up": [0,1,0]},
+  "shots": [{"shotId": "s0", "timeSeconds": 0.0, "view": "front", "aovs": ["silhouette", "depth"], "tags": []}],
+  "actionBinding": {"abilityId": "ability:x", "clipName": "attack", "fps": 12.0, "loop": false, "phaseMarks": []},
+  "qc": {"minSilhouetteIoU": 0.8, "maxJointErrorPx": 4.0, "maxRetries": 1}
+})json";
+
+TEST_CASE("devtools.ActionGuide tools: discovery schemas and mutation flags") {
+    REQUIRE(eve::dev::isMcpActionGuideTool("eve_action_guide_pack_validate"));
+    REQUIRE(eve::dev::isMcpActionGuideTool("eve_action_guide_landmarks"));
+    CHECK(eve::dev::mcpToolMutates("eve_action_guide_pack_set"));
+    CHECK(!eve::dev::mcpToolMutates("eve_action_guide_pack_validate"));
+    CHECK(!eve::dev::mcpToolMutates("eve_action_guide_landmarks"));
+    CHECK(std::string(eve::dev::mcpActionGuideToolSchemas()).find("eve_action_guide_pack_validate") !=
+          std::string::npos);
+}
+
+TEST_CASE("devtools.ActionGuide validate set get landmarks and absent capture") {
+    eve::dev::resetMcpActionGuide();
+    Poco::JSON::Parser      parser;
+    auto                    pack         = parser.parse(kPack).extract<Poco::JSON::Object::Ptr>();
+    Poco::JSON::Object::Ptr validateArgs = new Poco::JSON::Object();
+    validateArgs->set("pack", pack);
+    auto validated = guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_pack_validate", validateArgs));
+    CHECK(validated->getValue<bool>("ok"));
+    CHECK_EQ(validated->getValue<Poco::UInt64>("revision"), Poco::UInt64{2});
+
+    Poco::JSON::Object::Ptr setArgs = new Poco::JSON::Object();
+    setArgs->set("pack", pack);
+    auto set = guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_pack_set", setArgs));
+    CHECK(set->getValue<bool>("ok"));
+
+    auto got = guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_pack_get", nullptr));
+    CHECK(got->getValue<bool>("ok"));
+    CHECK_EQ(got->getValue<Poco::UInt64>("revision"), Poco::UInt64{2});
+
+    Poco::JSON::Object::Ptr landmarkArgs = new Poco::JSON::Object();
+    Poco::JSON::Array::Ptr  bones        = new Poco::JSON::Array();
+    Poco::JSON::Object::Ptr bone         = new Poco::JSON::Object();
+    bone->set("boneId", "root");
+    Poco::JSON::Array::Ptr position = new Poco::JSON::Array();
+    position->add(0.0);
+    position->add(0.0);
+    position->add(0.0);
+    bone->set("position", position);
+    bones->add(bone);
+    landmarkArgs->set("bones", bones);
+    auto landmarks = guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_landmarks", landmarkArgs));
+    CHECK(landmarks->getValue<bool>("ok"));
+    CHECK_EQ(landmarks->getArray("landmarks")->size(), 1u);
+
+    auto capture = guideResult(eve::dev::callMcpActionGuideTool("eve_action_guide_capture", nullptr));
+    CHECK(!capture->getValue<bool>("ok"));
+    CHECK_EQ(capture->getValue<std::string>("error"), std::string("ProviderAbsent"));
+    eve::dev::resetMcpActionGuide();
+}
+}  // namespace test_action_guide_contract
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_whitebox)
 // The source catalogue groups recipe/workshop MCP tests with the whitebox origin.
 #include "devtools/McpRecipeTools.hpp"
 #include "devtools/McpTaskProfile.hpp"
@@ -530,6 +623,8 @@ TEST_CASE("devtools.LanguageText incremental edit: range replacement changes onl
     REQUIRE(eve::dev::lsp::applyIncremental(source, &selection, "value"));
     CHECK_EQ(source, std::string("function foo() {\nlocal value = 1\n}\n"));
     CHECK_EQ(eve::dev::lsp::sliceLines(source, 1, 1), std::string("local value = 1\n"));
+    CHECK_EQ(eve::dev::lsp::offsetAt("abc\nnext", {0, 100}), size_t(3));
+    CHECK_EQ(eve::dev::lsp::offsetAt("abc\nnext", {1, 100}), size_t(8));
 }
 TEST_CASE("devtools.LanguageText format and fold: braces and comments define ranges") {
     REQUIRE_EQ(eve::dev::lsp::formatEveScript("{\na\n}\n"), std::string("{\n    a\n}\n"));
@@ -583,7 +678,8 @@ TEST_CASE("devtools.Console cursor: eviction and clear expose lost lines without
     const auto old = console.nextSeq() - 1;
     console.addInfo("middle");
     console.addInfo("new");
-    auto stale = console.read(old, 10, {});
+    CHECK(!console.read(old, 10, {}).truncated);
+    auto stale = console.read(old - 1, 10, {});
     CHECK(stale.truncated);
     REQUIRE_EQ(stale.lines.size(), 2u);
     CHECK_EQ(stale.lines.front().text, std::string("middle"));

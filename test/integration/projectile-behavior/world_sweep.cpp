@@ -54,6 +54,8 @@ void contract(RigidBackend3D backend, zeroerr::TestContext* _ZEROERR_TEST_CONTEX
     REQUIRE(hits.value()[0].nx < -0.9);
     REQUIRE(hits.value()[0].bodyId == wall.body->getId());
     REQUIRE(hits.value()[0].identity.body == wall.body->runtimeHandle().packed());
+    const auto oldContact = hits.value()[0];
+    REQUIRE(!world->applySweepContactImpulse(oldContact, {1, 0, 0}, {2, 0, 0}).ok());
     REQUIRE(bound.value()->query(2, 0, 0, 3, 0, 0).value().empty());
     REQUIRE(world->getQueryCategoryBits() == 2);
     REQUIRE(world->getQueryMaskBits() == 4);
@@ -74,6 +76,7 @@ void contract(RigidBackend3D backend, zeroerr::TestContext* _ZEROERR_TEST_CONTEX
     REQUIRE(!world->restore(invalid, hashProvider()).ok());
     REQUIRE(bound.value()->query(0, 0, 0, 4, 0, 0).ok());
     REQUIRE(world->restore(saved.value(), hashProvider()).ok());
+    REQUIRE(!world->applySweepContactImpulse(oldContact, {1, 0, 0}, {2, 0, 0}).ok());
     REQUIRE(world->queryToken() != token);
     REQUIRE(!bound.value()->query(0, 0, 0, 4, 0, 0).ok());
     REQUIRE(!worldSphereSweepFactory().bind(token, {0.1f}).ok());

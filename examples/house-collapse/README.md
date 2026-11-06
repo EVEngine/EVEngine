@@ -53,5 +53,29 @@ material batch. Geometry is updated once before the forward and shadow passes.
 
 Controls: Space play/pause; R replay; 1 intact, 2 walls, 3 roof, 4 frame, 5 final;
 Left/Right scrub; A/D orbit; S shadows; F AA; V dust. Playback starts paused and holds
-the final frame. Cache files are ignored by Git. EVECOLL1 v2 reads old v1 box clips;
-EVEDUST1 v1 rejects unknown versions/trailing fields and loads transactionally.
+the final frame. Cache files are ignored by Git. EVECOLL1 v3 verifies a noncryptographic checksum over the complete payload and reads old v1/v2 clips (legacy input has no integrity guarantee);
+EVEDUST1 v2 adds a noncryptographic checksum over its header and samples, with bounded,
+transactional loading. Legacy v1 remains readable without an original integrity guarantee;
+resaving migrates it to v2. Unknown versions and trailing fields are rejected.
+
+默认缓存现在采用 EVECOLL1 v4：配方同时记录原生生产代码指纹、Box3D 依赖修订、
+脚本与模型摘要、参数、固定步长和 fracture 随机流种子。相关 C++ 源码的未提交修改也会
+使下一次构建的缓存身份改变。只有缓存不存在才会烘焙；损坏或不可读资产会报告错误。
+`playbackAsset` 显式指定的资产仍允许跨构建播放，不要求匹配当前生产配方。
+
+### Two independent playback instances
+
+Press **M** to enter comparison mode. The left house keeps its current clock and
+moves left; a second renderer shows the same frozen clip on the right, initially
+paused near the final frame with reverse playback selected. No new physics world
+or bake is created. CPU samples are shared; each renderer owns its GPU resources.
+
+The existing Space, 1–5 and arrow controls affect only the left instance. On the
+right, **P** toggles playback, **B** reverses its rate, **9** seeks to the start and
+**0** seeks near the end. The right instance loops independently. Both times are
+shown in the header. Press **M** again to release the second renderer/player and
+return the primary instance to its original placement without resetting its clock.
+
+Comparison mode hides dust because the current dust renderer does not yet support
+instance-space placement. This mode validates shared rigid-fragment playback;
+transformed multi-instance dust remains separate unfinished work.

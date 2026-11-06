@@ -62,6 +62,7 @@ build/ios-debug/EVEngine.xcodeproj:
 		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
 		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
 		-DEVENGINE_IOS_GAME=$(IOS_GAME) \
+		$(DEBUG_LEVEL_FLAG) \
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/ios-debug -S .
 
@@ -87,6 +88,7 @@ build/ios-sim-debug/EVEngine.xcodeproj:
 		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
 		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
 		-DEVENGINE_IOS_GAME=$(IOS_GAME) \
+		$(DEBUG_LEVEL_FLAG) \
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/ios-sim-debug -S .
 
@@ -128,6 +130,7 @@ build/ios-debug-test/EVEngine.xcodeproj:
 		-DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF \
 		-DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
 		-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF \
+		$(DEBUG_LEVEL_FLAG) \
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/ios-debug-test -S .
 
@@ -156,6 +159,7 @@ build/ios-sim-debug-test/EVEngine.xcodeproj:
 		-DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF \
 		-DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
 		-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF \
+		$(DEBUG_LEVEL_FLAG) \
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/ios-sim-debug-test -S .
 

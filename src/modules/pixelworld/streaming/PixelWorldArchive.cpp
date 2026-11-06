@@ -1,5 +1,7 @@
 #include "pixelworld/streaming/PixelWorldStreaming.h"
 
+#include <utility>
+
 #include "asset/EvpackCompression.h"
 
 #include <algorithm>
@@ -132,7 +134,7 @@ eve::Result<int> integer(const eve::Value& value, std::string path) {
     const auto* number = value.getIf<std::int64_t>();
     if (!number || *number < std::numeric_limits<int>::min() || *number > std::numeric_limits<int>::max())
         return eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError,
-                                                                "expected in-range integer", path, {},
+                                                                "expected in-range integer", std::move(path), {},
                                                                 "pixelworld.chunk-archive"));
     return eve::Result<int>::success(int(*number));
 }

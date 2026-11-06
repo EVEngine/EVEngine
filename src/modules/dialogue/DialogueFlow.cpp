@@ -29,15 +29,17 @@ bool buildPoolWorkspace(const std::unordered_map<std::string, DataValue>& source
     for (const auto& [sourceId, sourceRoot] : sources) {
         const DataValue* pools = sourceRoot.find("pools");
         if (!pools || !pools->isObject()) continue;
-        for (const auto& poolId : pools->keys()) {
+        for (const auto& [poolId, pool] : *pools->getIf<DataValue::Object>()) {
             if (combined.contains(poolId)) {
                 error = "pool '" + poolId + "' has multiple source owners (including '" + sourceId + "')";
                 return false;
             }
-            combined.emplace(poolId, *pools->find(poolId));
+            combined.emplace(poolId, pool);
         }
     }
-    root = DataValue::object({{"pools", DataValue::object(std::move(combined))}});
+    DataValue::Object workspace;
+    workspace.emplace("pools", DataValue::object(std::move(combined)));
+    root = DataValue::object(std::move(workspace));
     return true;
 }
 

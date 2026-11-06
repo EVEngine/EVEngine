@@ -6,8 +6,8 @@
   "default": "physics-backend",
   "cases": {
     "script-binding": [
-      "physics.forces.scriptModelsProjectResults",
       "physics.forces.scriptFieldSetsOwnValuesAndBatchRights",
+      "physics.forces.scriptModelsProjectResults",
       "physics.forces.scriptWingAssembliesControlBothDimensions"
     ]
   },

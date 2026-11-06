@@ -119,11 +119,6 @@ python -m unittest discover -s tests -p "test_*.py"
 5. 判定 FAIL → 修复规划模型生成修改计划 → `scene_modify`/`run_script` 应用 → 重检，
    至多 `max_rounds` 轮。
 
-## 与 openCode 集成
-
-仓库提供 `.opencode/agent/scene-qc-brain.md`，把该工具封装为 openCode 子代理；也可直接用
-命令行调用。修改 openCode 配置后需**退出并重启 openCode** 生效。
-
 ## 固定参考图反馈
 
 `PYTHONPATH=tools/scene-qc-agent python -m scene_qc_agent.reference task.json --port 7529 --output build/reference-proof`

@@ -1,8 +1,8 @@
 #pragma once
 #include <array>
 #include <cstdint>
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
+// Incomplete glm types are enough for const-reference parameters.
+#include <glm/fwd.hpp>
 #include "common/Result.h"
 
 namespace eve::graphics {

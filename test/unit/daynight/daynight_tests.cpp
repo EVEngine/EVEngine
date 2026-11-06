@@ -170,10 +170,13 @@ using eve::daynight::DayNight;
 TEST_CASE("daynight.clockLightingAndAtmosphereContract") {
     SUB_CASE("clock setters wrap hours clamp speed and track pause") {
         DayNight clock;
+        CHECK(clock.getSunElevation() > 0.f);
         clock.setTimeOfDay(24.f);
         CHECK_EQ(clock.getTimeOfDay(), 0.f);
         clock.setTimeOfDay(-1.f);
         CHECK_EQ(clock.getTimeOfDay(), 23.f);
+        CHECK(clock.isNight());
+        CHECK_EQ(clock.getSunIntensity(), 0.f);
         clock.setTimeOfDay(6.5f);
         CHECK_EQ(clock.getTimeOfDay(), 6.5f);
         clock.setSpeed(2.f);
@@ -195,6 +198,21 @@ TEST_CASE("daynight.clockLightingAndAtmosphereContract") {
         lighting.setNightLight("unknown", true);
         CHECK(!lighting.isNightLight("unknown"));
         CHECK(lighting.isNightLight("fire"));
+    };
+    SUB_CASE("clock immediately refreshes solar elevation intensity and horizon color") {
+        DayNight lighting;
+        lighting.setTimeOfDay(12.f);
+        CHECK_EQ(lighting.getSunElevation(), 70.f);
+        CHECK(lighting.getSunIntensity() > 0.f);
+        const float noonBlueRatio = lighting.getSunB() / lighting.getSunR();
+        lighting.setTimeOfDay(6.5f);
+        CHECK(lighting.getSunB() / lighting.getSunR() < noonBlueRatio);
+        lighting.setTimeOfDay(0.f);
+        CHECK_EQ(lighting.getSunElevation(), -70.f);
+        CHECK_EQ(lighting.getSunIntensity(), 0.f);
+        CHECK_EQ(lighting.getSunR(), 0.f);
+        CHECK_EQ(lighting.getSunG(), 0.f);
+        CHECK_EQ(lighting.getSunB(), 0.f);
     };
     SUB_CASE("firefly pool is bounded and clear is idempotent") {
         DayNight lighting;
@@ -235,6 +253,15 @@ TEST_CASE("daynight.clockLightingAndAtmosphereContract") {
         CHECK_EQ(current.pitchDegrees, 45.f);
         CHECK_EQ(current.intensity, 3.f);
         CHECK_EQ(current.kelvin, accepted.kelvin);
+        CHECK(std::abs(lighting.getSunElevation() - 45.f) < 0.0001f);
+        CHECK_EQ(lighting.getSunIntensity(), 3.f);
+        lighting.setTimeOfDay(0.f);
+        CHECK(std::abs(lighting.getSunElevation() - 45.f) < 0.0001f);
+        accepted.enabled = false;
+        REQUIRE(lighting.setPcgManualSun(accepted).ok());
+        CHECK_EQ(lighting.getSunElevation(), -70.f);
+        CHECK_EQ(lighting.getSunIntensity(), 0.f);
+        CHECK(lighting.isNight());
     };
 }
 }  // namespace test_daynight

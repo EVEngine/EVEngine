@@ -117,7 +117,10 @@ PixelWorldCatalogPanel::PixelWorldCatalogPanel(PixelWorldCatalogPanel&& other)
       statusText_(std::move(other.statusText_)),
       host_(other.host_) {
     other.host_ = {};
-    if (host_.table) (void)refresh();
+    if (host_.table) {
+        auto refreshed = refresh();
+        if (!refreshed.ok()) statusText_ = refreshed.status().describe();
+    }
 }
 
 PixelWorldCatalogPanel& PixelWorldCatalogPanel::operator=(PixelWorldCatalogPanel&& other) {
@@ -134,7 +137,10 @@ PixelWorldCatalogPanel& PixelWorldCatalogPanel::operator=(PixelWorldCatalogPanel
     statusText_ = std::move(other.statusText_);
     host_ = other.host_;
     other.host_ = {};
-    if (host_.table) (void)refresh();
+    if (host_.table) {
+        auto refreshed = refresh();
+        if (!refreshed.ok()) statusText_ = refreshed.status().describe();
+    }
     return *this;
 }
 
@@ -363,13 +369,19 @@ void PixelWorldCatalogPanel::observe(eve::Result<CatalogDraftReceipt> result) {
     if (result.ok()) statusText_ = "Catalog draft validated at revision " +
                                    std::to_string(result.value().revisionAfter);
     else statusText_ = result.status().describe();
-    if (isOpen()) (void)refresh();
+    if (isOpen()) {
+        auto refreshed = refresh();
+        if (!refreshed.ok()) statusText_ = refreshed.status().describe();
+    }
 }
 
 void PixelWorldCatalogPanel::observe(eve::Result<void> result) {
     if (result.ok()) statusText_ = "Selection updated";
     else statusText_ = result.status().describe();
-    if (isOpen()) (void)refresh();
+    if (isOpen()) {
+        auto refreshed = refresh();
+        if (!refreshed.ok()) statusText_ = refreshed.status().describe();
+    }
 }
 
 eve::ui::WidgetDesc PixelWorldCatalogPanel::buildWidgetTree() {

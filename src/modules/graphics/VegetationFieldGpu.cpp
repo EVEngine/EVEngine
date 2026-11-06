@@ -1,5 +1,7 @@
 #include "graphics/VegetationFieldGpu.h"
 
+#include <utility>
+
 #include <algorithm>
 #include <bit>
 #include <cmath>
@@ -16,7 +18,7 @@ constexpr uint32_t layerCount       = 9;
 constexpr uint64_t uploadByteBudget = 256ull * 1024 * 1024;
 
 Diagnostic invalid(std::string message) {
-    return Diagnostic::error(DiagnosticCode::InvalidArgument, message, {}, {},
+    return Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), {}, {},
                              "graphics.vegetation.extras-atlas");
 }
 

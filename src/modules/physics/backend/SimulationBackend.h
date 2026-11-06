@@ -334,16 +334,6 @@ EVENGINE_API_BACKENDS eve::Result<SimulationObservation> advanceSimulationObserv
 EVENGINE_API_BACKENDS eve::Result<void> validateSimulationObservation(const SimulationObservation& observation,
                                                                       const char*                  path);
 
-/**
- * @brief Creates the built-in Box2D CPU backend adapter.
- * @param world Borrowed Box2D world; it must outlive the returned backend.
- * @return An owning backend adapter.
- * @throws eve::Exception when `world` is null.
- *
- * This composition hook is intentionally independent of Graphics and Gpgpu.
- */
-[[nodiscard("retain the backend until its borrowed world is destroyed")]]
-EVENGINE_API_BACKENDS std::unique_ptr<ISimulationBackend> makeBox2DSimulationBackend(b2World* world);
 
 /**
  * @brief Creates a callback-backed backend for a domain-owned CPU or test solver.

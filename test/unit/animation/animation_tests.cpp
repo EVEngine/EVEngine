@@ -957,7 +957,7 @@ TEST_CASE("animation.clip.semanticNotifyContractReportsMissingEvents") {
     REQUIRE(clip.validateNotifyContract({"contact.left_hand", "land"}).ok());
     auto missing = clip.validateNotifyContract({"contact.left_hand", "contact.right_hand", "land"});
     CHECK(!missing.ok());
-    CHECK(missing.code() == eve::StatusCode::Rejected);
+    CHECK(missing.code() == eve::StatusCode::NotFound);
 }
 }  // namespace test_animation_clip_editing
 #endif
@@ -1246,7 +1246,14 @@ TEST_CASE("animation.motionSchema.invalidNormalizationRangePreservesLastConfigur
     database.bake();
     float sample = 0.f;
     database.getFeature(11, &sample, 1);
-    CHECK(std::abs(sample - 10.f) < 1e-5f);
+    MotionDatabase unchanged(&clips.skeleton);
+    clips.addTo(unchanged);
+    REQUIRE(unchanged.setFeatureLayout(positionLayout()).ok());
+    REQUIRE(unchanged.setFeatureNormalizationRanges(valid).ok());
+    unchanged.bake();
+    float expected = 0.f;
+    unchanged.getFeature(11, &expected, 1);
+    CHECK(std::abs(sample - expected) < 1e-5f);
 }
 
 TEST_CASE("animation.motionSchema.velocityQueryCopiesInputsAndRejectsPartialReplacement") {
@@ -1273,7 +1280,7 @@ TEST_CASE("animation.motionSchema.velocityQueryCopiesInputsAndRejectsPartialRepl
     database.addClip(&forward);
     database.addClip(&backward);
     database.bake();
-    CHECK_EQ(database.getFrameCount(), 42);
+    CHECK_EQ(database.getFrameCount(), 40);  // looping clips omit the duplicated endpoint
     CHECK(!database.setFeatureLayout(layout).ok());
     for (int direction : {-1, 1}) {
         MotionMatcher                          matcher(&skeleton, &database);
@@ -1431,7 +1438,10 @@ TEST_CASE("animation.motionMatcher.costBiasAndReplacementRangeSelectValidEntry")
     candidates = {{0, 0.f, 1.f, -2.f, false, {}, 10.f}, {0, 0.f, 1.f, -1.f, false, {}, -10.f}, {1, 0.f, 1.f, 0.f}};
     REQUIRE(matcher.setCandidateRanges(candidates).ok());
     matcher.search();
-    CHECK_EQ(matcher.getMatchedClipIndex(), 1);
+    // Clip 1 is now continuing. A fresh clip-0 candidate uses the winning
+    // range's -2 entry bias, without that range's continuing-only +10 bias.
+    CHECK_EQ(matcher.getMatchedClipIndex(), 0);
+    CHECK(std::abs(matcher.getLastSearchCost() + 2.f) < 1e-5f);
 }
 }  // namespace test_animation_motion_schema
 #endif
@@ -1780,6 +1790,7 @@ TEST_CASE("animation.motionMatcher.oneShotExhaustionHandsOffToLoop") {
     skeleton.addBone("pelvis", 0);
     AnimClip action("action"), loop("loop");
     action.setDuration(.2f);
+    action.setLoop(false);
     loop.setDuration(.4f);
     loop.setLoop(true);
     MotionDatabase database(&skeleton);
@@ -1974,6 +1985,31 @@ TEST_CASE("animation.rootMotion.translationBakeKeepsBindRootAcrossLoop") {
     CHECK(player.getRootMotionZ() > .3f);
 }
 
+TEST_CASE("animation.rootMotion.selectedChildMatchesFullPoseAcrossMultipleLoopsAndMissingTracks") {
+    auto       source = skeleton();
+    auto       clip   = walk(3.f, 1.f);
+    AnimPlayer player(source.get());
+    player.setRootMotionBone(1);
+    player.play(clip.get());
+    std::uint64_t tick = 0;
+    for (float dt : {.125f, .875f, 2.25f, .125f}) {
+        REQUIRE(player.advance({eve::SimulationTick{++tick}, eve::Duration::fromSeconds(dt).expect("test dt")}).ok());
+        close(player.getRootMotionZ(), 3.f * dt);
+        AnimPose expected;
+        clip->sample(player.getTime(), &expected, source.get());
+        for (int bone = 0; bone < source->getBoneCount(); ++bone) {
+            CHECK_EQ(player.getPose()->getLocalPositionY(bone), expected.getLocalPositionY(bone));
+            CHECK_EQ(player.getPose()->getLocalPositionZ(bone), expected.getLocalPositionZ(bone));
+        }
+    }
+    AnimClip missing("bind-fallback");
+    missing.setDuration(1.f);
+    player.play(&missing);
+    REQUIRE(player.advance({eve::SimulationTick{++tick}, eve::Duration::fromSeconds(2.25).expect("test dt")}).ok());
+    close(player.getRootMotionZ(), 0.f);
+    close(player.getPose()->getLocalPositionY(1), 1.f);
+}
+
 TEST_CASE("animation.rootMotion.rotationBakeRestoresBindRotation") {
     auto     source = skeleton();
     AnimClip spin("spin");
@@ -2014,6 +2050,11 @@ TEST_CASE("animation.rootMotion.crossFadePublishesBlendedDeltaWithoutRootOffset"
     CHECK(player.getRootMotionZ() > .05f);
     CHECK(player.getRootMotionZ() < .2f);
     close(player.getPose()->getLocalPositionZ(0), 0.f);
+    player.play(walking.get());
+    player.update(.95f);
+    player.crossFade(&idle, .2f);
+    player.update(.1f);
+    close(player.getRootMotionZ(), .1f, .02f);
 }
 
 TEST_CASE("animation.rootMotion.parseNamesAndRejectNonfiniteYaw") {
@@ -2045,10 +2086,26 @@ TEST_CASE("animation.rootMotion.parseNamesAndRejectNonfiniteYaw") {
 #include <array>
 #include <cmath>
 
+#include <utility>
+
 namespace test_animation_skinned {
 using namespace eve::animation;
 
 TEST_CASE("animation.skin.identityTrsMatrixPreservesPointCoordinates") {
+    constexpr auto constantMatrix = [] {
+        auto transform = TransformTRS::identity();
+        transform.px   = 3.f;
+        transform.sx   = 2.f;
+        return Mat4::fromTRS(transform);
+    }();
+    static_assert(Mat4::identity().m[15] == 1.f);
+    static_assert(constantMatrix.m[0] == 2.f && constantMatrix.m[12] == 3.f);
+    static_assert(Mat4::mul(constantMatrix, constantMatrix).m[12] == 9.f);
+    static_assert(clampf(3.f, 0.f, 2.f) == 2.f && lerpf(0.f, 4.f, .5f) == 2.f);
+    static_assert(noexcept(Mat4::mul(constantMatrix, constantMatrix)));
+    static_assert(noexcept(std::declval<const AnimPose&>().getBoneCount()));
+    static_assert(!noexcept(std::declval<const AnimPose&>().getLocalPositionX(0)));
+    static_assert(noexcept(std::declval<const eve::graphics::Mesh&>().getSkinPaletteCount()));
     const TransformTRS identity = TransformTRS::identity();
     const Mat4         matrix   = Mat4::fromTRS(identity);
     for (int index : {0, 5, 10, 15}) REQUIRE(std::abs(matrix.m[index] - 1.f) < 1e-5f);
@@ -2467,6 +2524,112 @@ TEST_CASE("animation.spine.skeletonAnimationAndDrawItemsFollowJsonData") {
     player->collectDrawItems(items);
     CHECK_EQ(items.size(), std::size_t{2});
 }
+TEST_CASE("animation.spine.unsupportedFeaturesFailLoading") {
+    SpineSkeletonData data;
+    std::string error;
+    for (const std::string type : {"mesh", "linkedmesh", "weightedmesh", "clipping", "boundingbox", "path"}) {
+        for (bool arraySkin : {false, true}) {
+            const std::string attachments =
+                "{\"body\":{\"bodyMesh\":{\"type\":\"" + type + "\"}}}";
+            const std::string skins = arraySkin
+                ? "[{\"name\":\"default\",\"attachments\":" + attachments + "}]"
+                : "{\"default\":" + attachments + "}";
+            REQUIRE(!data.loadFromJson(
+                "{\"bones\":[{\"name\":\"root\"}],"
+                "\"slots\":[{\"name\":\"body\",\"bone\":\"root\"}],\"skins\":" + skins + "}", &error));
+            REQUIRE(error.find(type) != std::string::npos);
+            REQUIRE(error.find("default") != std::string::npos);
+            REQUIRE(error.find("bodyMesh") != std::string::npos);
+            REQUIRE_EQ(data.getBoneCount(), 0);
+            REQUIRE_EQ(data.getSkinCount(), 0);
+        }
+    }
+    REQUIRE(!data.loadFromJson(R"({"ik":[{"name":"arm"}]})", &error));
+    REQUIRE(error.find("constraint 'ik'") != std::string::npos);
+    REQUIRE(!data.loadFromJson(R"({"animations":{"walk":{"deform":{"default":{}}}}})", &error));
+    REQUIRE(error.find("deform") != std::string::npos);
+    REQUIRE(error.find("walk") != std::string::npos);
+    REQUIRE(data.loadFromJson(R"({"bones":[{"name":"root"}],"ik":[],"animations":{"idle":{"deform":{}}}})", &error));
+    REQUIRE(error.empty());
+    REQUIRE_EQ(data.getBoneCount(), 1);
+    // The script-style path without an error output must reject unsupported data too.
+    REQUIRE(!data.loadFromJson(R"({"path":[{"name":"path"}]})"));
+}
+
+TEST_CASE("animation.spine.rejectsSilentDowngrades") {
+    SpineSkeletonData data;
+    std::string error;
+    const std::pair<const char *, const char *> cases[] = {
+        {R"({"slots":[{"name":"body","bone":"missing"}]})", "missing"},
+        {R"({"slots":[{"name":"body","bone":"root","color":"ffffff00"}]})", "color"},
+        {R"({"slots":[{"name":"body","bone":"root","blend":"additive"}]})", "blend"},
+        {R"({"bones":[{"name":"root","shearX":10}]})", "shear"},
+        {R"({"bones":[{"name":"root","inherit":"onlyTranslation"}]})", "inherit"},
+        {R"({"skins":{"default":{"missing":{"mesh":{"type":"mesh"}}}}})", "missing"},
+        {R"({"animations":{"walk":{"bones":{"missing":{"rotate":[]}}}}})", "missing"},
+        {R"({"animations":{"walk":{"bones":{"root":{"shear":[]}}}}})", "shear"},
+        {R"({"animations":{"walk":{"bones":{"root":{"rotate":[{"curve":[0.2,0,0.8,1]}]}}}}})", "Bezier"},
+        {R"({"slots":[{"name":"body","bone":"root"}],"animations":{"walk":{"slots":{"body":{"rgba":[]}}}}})", "rgba"},
+        {R"({"slots":[{"name":"body","bone":"root"}],"skins":{"default":{"body":{"a":{"color":"ffffff00"}}}}})", "color"},
+        {R"({"slots":[{"name":"body","bone":"root"}],"skins":{"default":{"body":{"a":{"sequence":{}}}}}})", "sequence"},
+    };
+    for (const auto &[json, expected] : cases) {
+        REQUIRE(!data.loadFromJson(json, &error));
+        REQUIRE(error.find(expected) != std::string::npos);
+        REQUIRE_EQ(data.getBoneCount(), 0);
+    }
+    REQUIRE(data.loadFromJson(R"({"bones":[{"name":"root","shearX":0,"inherit":"normal"}],
+        "slots":[{"name":"body","bone":"root","color":"ffffffff","blend":"normal"}],
+        "animations":{"walk":{"bones":{"root":{"rotate":[{"curve":"stepped"},{"time":1,"curve":"linear"}]}}}}})", &error));
+    REQUIRE(error.empty());
+}
+
+TEST_CASE("animation.spine.trimOffsetAndMissingReferences") {
+    SpineSkeletonData data;
+    REQUIRE(data.loadFromJson(R"({"bones":[{"name":"root"}],
+        "slots":[{"name":"body","bone":"root","attachment":"a"}],
+        "skins":{"default":{"body":{"a":{"width":100,"height":80}}}}})"));
+    SpineAtlas atlas;
+    REQUIRE(atlas.loadFromText("hero.png\nsize: 128,128\na\n  xy: 0,0\n  size: 40,30\n  orig: 100,80\n  offset: 10,20\n"));
+    SpineSkeleton skeleton(&data);
+    SpineAnim player(&skeleton);
+    player.setFlipY(false);
+    player.setAtlas(&atlas);
+    std::vector<eve::graphics::DrawItem2D> items;
+    player.collectDrawItems(items);
+    REQUIRE_EQ(items.size(), 1u);
+    REQUIRE(std::fabs(items[0].x - (-40.f)) < 1e-4f);
+    REQUIRE(std::fabs(items[0].y - (-20.f)) < 1e-4f);
+    REQUIRE(std::fabs(items[0].w - 40.f) < 1e-4f);
+    REQUIRE(std::fabs(items[0].h - 30.f) < 1e-4f);
+    player.setFlipY(true);
+    player.setScale(2.f, 2.f);
+    items.clear();
+    player.collectDrawItems(items);
+    REQUIRE_EQ(items.size(), 1u);
+    REQUIRE(std::fabs(items[0].x - (-80.f)) < 1e-4f);
+    REQUIRE(std::fabs(items[0].y - (-20.f)) < 1e-4f);
+    REQUIRE(std::fabs(items[0].w - 80.f) < 1e-4f);
+    REQUIRE(std::fabs(items[0].h - 60.f) < 1e-4f);
+    // apply() restores setup pose each frame, so exercise setup attachment names.
+    SpineSkeletonData missingData;
+    REQUIRE(missingData.loadFromJson(R"({"bones":[{"name":"root"}],
+        "slots":[{"name":"body","bone":"root","attachment":"missing"}]})"));
+    SpineSkeleton missingSkeleton(&missingData);
+    SpineAnim missingPlayer(&missingSkeleton);
+    REQUIRE_THROWS((missingPlayer.collectDrawItems(items), false));
+    SpineSkeletonData hiddenData;
+    REQUIRE(hiddenData.loadFromJson(R"({"slots":[{"name":"body","bone":"root"}]})"));
+    SpineSkeleton hiddenSkeleton(&hiddenData);
+    SpineAnim hiddenPlayer(&hiddenSkeleton);
+    items.clear();
+    hiddenPlayer.collectDrawItems(items);
+    REQUIRE(items.empty());
+    SpineAtlas missing;
+    REQUIRE(missing.loadFromText("hero.png\nsize: 128,128\nother\n  xy: 0,0\n  size: 10,10\n"));
+    REQUIRE_THROWS((player.setAtlas(&missing), player.collectDrawItems(items), false));
+}
+
 }  // namespace test_animation_sprite_spine
 #endif
 
@@ -2736,3 +2899,60 @@ TEST_CASE("animation.rigLimits.codecMigrationAndBakeApplyClampedKeys") {
 }
 }  // namespace test_animation_rig_limits
 #endif
+
+#include <cmath>
+#include "animation/AnimClip.h"
+#include "animation/AnimSkeleton.h"
+#include "animation/tensor/SmrFeatures.h"
+
+namespace test_smr_feature_math_unit {
+using namespace eve::animation;
+namespace {
+
+void buildArmature(AnimSkeleton& skel, float torsoHeight, float upperArm, float lowerArm) {
+    const int root     = skel.addBone("Hips");
+    const int chest    = skel.addBone("Spine", root);
+    const int shoulder = skel.addBone("LeftShoulder", chest);
+    const int elbow    = skel.addBone("LeftElbow", shoulder);
+    const int hand     = skel.addBone("LeftHand", elbow);
+    skel.setBindPosition(chest, 0.f, torsoHeight, 0.f);
+    skel.setBindPosition(shoulder, 0.15f, 0.f, 0.f);
+    skel.setBindPosition(elbow, upperArm, 0.f, 0.f);
+    skel.setBindPosition(hand, lowerArm, 0.f, 0.f);
+}
+
+}  // namespace
+
+
+TEST_CASE("animation.smr.neural.rot6dRoundTrip") {
+    float out[6] = {};
+    quatToRot6d(0.f, 0.f, 0.70710678f, 0.70710678f, out);
+    float qx = 0.f, qy = 0.f, qz = 0.f, qw = 1.f;
+    rot6dToQuat(out, qx, qy, qz, qw);
+    const float dot = std::fabs(qx * 0.f + qy * 0.f + qz * 0.70710678f + qw * 0.70710678f);
+    CHECK(dot > 0.999f);
+}
+
+TEST_CASE("animation.smr.neural.featureBatchShapes") {
+    AnimSkeleton source;
+    AnimSkeleton target;
+    buildArmature(source, 1.0f, 0.28f, 0.28f);
+    buildArmature(target, 1.8f, 0.70f, 0.70f);
+
+    AnimClip clip("reach");
+    clip.setDuration(0.1f);
+    clip.setSampleRate(10.f);
+    clip.addRotationKey(source.findBone("LeftShoulder"), 0.f, 0.f, 0.f, 0.70710678f, 0.70710678f);
+    clip.addRotationKey(source.findBone("LeftElbow"), 0.05f, 0.f, 0.f, 0.70710678f, 0.70710678f);
+
+    const SmrFeatureBatch batch = buildSmrFeatures(clip, &source, &target, nullptr, nullptr, 2, 4);
+    CHECK(batch.frames >= 1);
+    CHECK(batch.joints == target.getBoneCount());
+    CHECK(batch.sensors >= 1);
+    CHECK(static_cast<int>(batch.sourceRot6d.size()) == batch.frames * batch.joints * 6);
+    CHECK(static_cast<int>(batch.sourceGeom.size()) == batch.sensors * 7);
+    CHECK(static_cast<int>(batch.targetGeom.size()) == batch.sensors * 7);
+    CHECK(static_cast<int>(batch.sourceDmi.size()) == batch.frames * std::max(batch.pairs, 1) * 10);
+}
+}  // namespace test_smr_feature_math_unit
+

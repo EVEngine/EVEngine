@@ -2,6 +2,7 @@
 
 #include "common/Export.h"
 
+#include <cstddef>
 #include <string>
 
 namespace eve {
@@ -30,18 +31,30 @@ public:
     /**
      * @brief Last completed frame as compact JSON.
      *
-     * Schema `eve.profiler.frame` version 1:
-     * `{"schema":…,"version":1,"enabled":…,"hasFrame":…,"cpuFrameMs":…,"gpuMs":…,
+     * Schema `eve.profiler.frame` version 2:
+     * `{"schema":…,"version":2,"enabled":…,"hasFrame":…,"cpuFrameMs":…,"gpuMs":…,
      *   "gpuTimingAvailable":…,"zoneCount":…,
-     *   "zones":[{"module":…,"name":…,"thread":…,"selfMs":…,"totalMs":…,"count":…,"depth":…}]}`
+     *   "hotspots":[{"module":…,"name":…,"thread":…,"selfMs":…,"totalMs":…,"count":…,"depth":…}],
+     *   "zones":[… same shape …]}`
      *
-     * `cpuFrameMs` is the sum of top-level zone self times: the profiler core
-     * aggregates zones and does not own the frame loop's wall-clock duration, so
-     * this is the CPU work the zones account for, not the presented frame time.
-     * `hasFrame` is false before the first completed frame, and `zones` is empty
-     * rather than absent.
+     * `hotspots` is the top zones by selfMs (default cap 8) for quick agent triage;
+     * `zones` remains the full sorted list. `cpuFrameMs` is the sum of top-level zone
+     * self times: the profiler core aggregates zones and does not own the frame loop's
+     * wall-clock duration. `hasFrame` is false before the first completed frame, and
+     * both arrays are empty rather than absent.
      */
     [[nodiscard]] virtual std::string frameJson() const = 0;
+
+    /**
+     * @brief Top zones by self time as JSON.
+     *
+     * Schema `eve.profiler.hotspots` version 1:
+     * `{"schema":…,"version":1,"hasFrame":…,"limit":…,"minSelfMs":…,"count":…,
+     *   "zones":[{"module":…,"name":…,"thread":…,"selfMs":…,"totalMs":…,"count":…,"depth":…}]}`
+     *
+     * @cost Linear in last-frame zone count; diagnostic only.
+     */
+    [[nodiscard]] virtual std::string hotspotsJson(std::size_t limit, double minSelfMs) const = 0;
 
     /** @brief Human-readable per-zone report of the last completed frame. */
     [[nodiscard]] virtual std::string textReport() const = 0;

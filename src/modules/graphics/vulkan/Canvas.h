@@ -38,9 +38,9 @@ public:
     image::ImageData *newHDRImageData() override;
 
     /** @brief Draws . */
-    void draw(eve::graphics::Graphics *, const glm::mat4 &) const override {}
+    void draw(eve::graphics::Graphics*, const glm::mat4&) const override {}
     /** @brief Draws . */
-    void draw(Canvas *, const glm::mat4 &) const override {}
+    void draw(Canvas*, const glm::mat4&) const override {}
 
     /** @brief Framebuffer. */
     vk::Framebuffer framebuffer() const { return fb; }
@@ -56,6 +56,8 @@ public:
     bool takePendingClear();
     /** @brief True when hdr. */
     bool isHDR() const { return hdr; }
+    /** @brief Borrow the creating Graphics; valid only while this canvas is alive. */
+    Graphics *owningGraphics() const { return owner; }
 
     /** @brief Ensure a D32 depth attachment + 3D (color+depth) framebuffer exist. */
     void ensure3D();

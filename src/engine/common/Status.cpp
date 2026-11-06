@@ -1,5 +1,11 @@
 #include "common/Status.h"
+
+#include <ostream>
+
 namespace eve {
+
+std::ostream& operator<<(std::ostream& stream, StatusCode code) { return stream << statusCodeName(code); }
+
 
 Status::Status() noexcept                    = default;
 Status::~Status() noexcept                   = default;

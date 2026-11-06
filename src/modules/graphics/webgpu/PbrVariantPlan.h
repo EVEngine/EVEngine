@@ -27,7 +27,7 @@ enum PbrVertexResourceFlag : std::uint32_t {
 
 /** @brief Device resource limits relevant to one extended PBR shader variant. */
 struct PbrVariantLimits {
-    std::uint32_t sampledTexturesPerStage = 17;
+    std::uint32_t sampledTexturesPerStage = 16;
     std::uint32_t samplersPerStage        = 16;
 };
 

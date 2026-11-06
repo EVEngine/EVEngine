@@ -44,7 +44,7 @@ namespace eve::npc_ai {
     const float confidence = 1.f / (1.f + std::exp(fact.score <= 0.f ? -fact.score : fact.score));
     memory.confidence      = confidence > 0.f ? static_cast<double>(confidence) : 0.0;
     std::ostringstream payload;
-    payload << "{\"x\":" << fact.x << ",\"y\":" << fact.y << ",\"distance\":" << fact.distance
+    payload << "{\"x\":" << fact.x << ",\"y\":" << fact.y << ",\"distance\":" << fact.distance << ",\"z\":" << fact.z
             << ",\"score\":" << fact.score << ",\"scoreReason\":\"" << fact.scoreReason << "\"}";
     memory.payloadJson = payload.str();
     return memory;

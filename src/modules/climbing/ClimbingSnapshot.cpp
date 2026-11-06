@@ -632,6 +632,7 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
     previousActionId_ = std::move(candidatePreviousActionId);
     nextExecutionId_ = candidateNextExecutionId;
     definitionGeneration_ = candidateDefinitionGeneration;
+    validatedProfileGeneration_.reset();
     pendingEvents_ = std::move(candidateEvents);
     validatedAnimationActions_.clear();
     lastCandidates_.clear();

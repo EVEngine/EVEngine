@@ -17,6 +17,7 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 
@@ -165,7 +166,7 @@ TileLayer::Tileset::Visual readTileVisual(const Json &o, int fallbackGid) {
     return visual;
 }
 
-TilesetInfo readTilesetObject(const Json &o) {
+TilesetInfo readTilesetObject(const Json &o, std::optional<int> firstGid = std::nullopt) {
     TilesetInfo info;
     if (!o || !o.isObject()) return info;
     if (o.has("image"))
@@ -176,6 +177,7 @@ TilesetInfo readTilesetObject(const Json &o) {
         info.firstGid = o.getInt("firstgid", 1);
     else if (o.has("firstGid"))
         info.firstGid = o.getInt("firstGid", 1);
+    if (firstGid) info.firstGid = *firstGid;
     if (o.has("columns")) info.columns = o.getInt("columns", 1);
     if (o.has("tilewidth"))
         info.tileW = o.getInt("tilewidth", 32);
@@ -837,8 +839,7 @@ std::vector<TilesetInfo> readTilesets(const Json &root, const std::string &mapPa
                 }
                 ownedDocs.push_back(readJsonDocument(fs, source, error));
                 if (!ownedDocs.back().valid()) return {};
-                TilesetInfo info = readTilesetObject(ownedDocs.back().root());
-                info.firstGid    = firstGid;
+                TilesetInfo info = readTilesetObject(ownedDocs.back().root(), firstGid);
                 info.sourcePath  = source;
                 info.image       = resolveAssetPath(source, info.image);
                 result.push_back(std::move(info));

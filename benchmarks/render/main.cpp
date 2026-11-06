@@ -13,6 +13,9 @@
 #include "graphics/Texture.h"
 #include "image/ImageData.h"
 #include "window/Window.h"
+#if defined(EVENGINE_BENCH_GAMEPLAY)
+#include "GameplayBenchmark.h"
+#endif
 
 #if defined(EVENGINE_BENCH_PARTICLES)
 #include "particles/ParticleEmitter.h"
@@ -360,6 +363,9 @@ void usage() {
 #if defined(EVENGINE_BENCH_MULTISCALE)
                  "|multiscale-static|multiscale-rebuild|multiscale-update"
 #endif
+#if defined(EVENGINE_BENCH_GAMEPLAY)
+                 "|3d-gameplay-static|3d-gameplay-dynamic|3d-gameplay-animated|3d-gameplay-mixed"
+#endif
                  "\n"
                  "  EVENGINE_PERF_FRAMES overrides [frames] (default 60).\n"
                  "  Highpoly: EVENGINE_BENCH_SUBDIV=1..512 (default 128), EVENGINE_BENCH_MODEL=path.\n"
@@ -555,7 +561,12 @@ int main(int argc, char **argv) {
                 if (rc != 0) status = rc;
             }
         } else {
-            status = runWorkload(gfx, workload, frames, items);
+#if defined(EVENGINE_BENCH_GAMEPLAY)
+            if (workload.starts_with("3d-gameplay-"))
+                status = runGameplayBenchmark(*gfx, workload, frames, items ? items : 1000);
+            else
+#endif
+                status = runWorkload(gfx, workload, frames, items);
         }
         win->close();
         return status;

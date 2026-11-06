@@ -2,9 +2,11 @@
 #include "procgen/ProcgenLive.h"
 
 #include "procgen/GeneratedArtifact.h"
+#include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainFile.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 
 namespace eve::procgen {
@@ -106,7 +108,7 @@ ssq::Table projectDecodedTerrainResult(HSQUIRRELVM vm, eve::Result<DecodedTerrai
     const std::int64_t height  = terrain.heightmap.getHeight();
     auto*              module  = Procgen::create();
     auto               result  = makeOwnedNativeProxy<Heightmap>(
-        vm, module->adoptHeightmap(std::move(terrain.heightmap)),
+        vm, module->adoptHeightmap(std::make_unique<Heightmap>(std::move(terrain.heightmap))),
         [module](ProcgenHeightmapHandleRef ref) { return module->resolveHeightmap(ref); },
         [module](ProcgenHeightmapHandleRef ref) {
             if (liveProcgen() != module)

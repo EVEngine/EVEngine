@@ -17,6 +17,7 @@
 #include "common/Capability.h"
 #include "common/StateAccess.h"
 
+#include <cmath>
 #include <limits>
 #include <string>
 #include <utility>
@@ -65,9 +66,10 @@ TEST_CASE("attributes.spec.calculation_phases") {
     REQUIRE(set.addModifier(mod("flat", "damage", "weapon", AttributeOperation::Add, 20.0)).ok());
     REQUIRE(set.addModifier(mod("mul-a", "damage", "gear", AttributeOperation::MultiplicativePercent, 0.5)).ok());
     REQUIRE(set.addModifier(mod("pct-a", "damage", "aura", AttributeOperation::AdditivePercent, 0.125)).ok());
-    CHECK_EQ(set.getFinal("damage"), 180.0);  // (100 + 20) * 1.25 * 1.5 * 0.8
+    // Multiplicative percentage aggregation can round at a different step.
+    CHECK_LT(std::abs(set.getFinal("damage") - 180.0), 1e-10);  // (100 + 20) * 1.25 * 1.5 * 0.8
     set.modifyBase("damage", 10.0);
-    CHECK_EQ(set.getFinal("damage"), 195.0);
+    CHECK_LT(std::abs(set.getFinal("damage") - 195.0), 1e-10);
 }
 
 // Ordered phase contract: priority ascends; equal priority follows insertion sequence.
@@ -177,7 +179,7 @@ TEST_CASE("attributes.spec.legacy_factor_conversion") {
     CHECK(!set.addModifier("bad", "x", "legacy", "divide", 2.0));
     REQUIRE(set.addModifier("factor", "x", "legacy", "multiply", 1.5));
     CHECK_EQ(set.getFinal("x"), 150.0);
-    REQUIRE(set.addModifier("upper", "x", "legacy", "min", 120.0));
+    REQUIRE(set.addModifier("upper", "x", "legacy", "max", 120.0));
     CHECK_EQ(set.getFinal("x"), 120.0);
 }
 

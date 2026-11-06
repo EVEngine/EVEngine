@@ -5,11 +5,12 @@
 #include <array>
 #include <cmath>
 #include <map>
+#include <utility>
 
 namespace eve::procgen::road::detail {
 namespace {
 Result<void> invalidPrefab(std::string message) {
-    return bakeFail<void>(DiagnosticCode::InvalidArgument, message, "facility.prefab");
+    return bakeFail<void>(DiagnosticCode::InvalidArgument, std::move(message), "facility.prefab");
 }
 RoadPrefabVertex mix(const RoadPrefabVertex& a, const RoadPrefabVertex& b, float t) {
     return {std::lerp(a.x, b.x, t),   std::lerp(a.y, b.y, t),   std::lerp(a.z, b.z, t), std::lerp(a.nx, b.nx, t),

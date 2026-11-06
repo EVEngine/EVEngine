@@ -51,6 +51,22 @@ class OwnedProviderLease {
 public:
     OwnedProviderLease() = default;
 
+    /** @brief Share the provider and its generation identity with @p other. */
+    OwnedProviderLease(const OwnedProviderLease& other) = default;
+    /** @brief Share @p other, releasing this lease's previous ownership. @return This lease. */
+    OwnedProviderLease& operator=(const OwnedProviderLease& other) = default;
+    /** @brief Transfer ownership and identity, leaving @p other empty with generation zero. */
+    OwnedProviderLease(OwnedProviderLease&& other) noexcept
+        : handle_(std::exchange(other.handle_, OwnedProviderHandle{})), provider_(std::move(other.provider_)) {}
+    /** @brief Transfer @p other and empty it; self-move preserves this lease. @return This lease. */
+    OwnedProviderLease& operator=(OwnedProviderLease&& other) noexcept {
+        if (this != &other) {
+            handle_   = std::exchange(other.handle_, OwnedProviderHandle{});
+            provider_ = std::move(other.provider_);
+        }
+        return *this;
+    }
+
     [[nodiscard]] const OwnedProviderHandle& handle() const noexcept { return handle_; }
     [[nodiscard]] explicit operator bool() const noexcept { return static_cast<bool>(provider_); }
     /** @brief Borrowed interface pointer valid while this lease remains alive. */

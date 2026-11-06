@@ -72,7 +72,6 @@ EXCLUDED_DIRS = frozenset(
         ".git",
         ".codex",
         ".agents",
-        ".opencode",
         "build",
         "docs",
         "external",

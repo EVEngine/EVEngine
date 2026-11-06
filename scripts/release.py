@@ -93,7 +93,7 @@ VERSION_TOUCHPOINTS: tuple[VersionTouchpoint, ...] = (
     VersionTouchpoint("tools/eve-mcp/package.json", "tracked", ((_JSON_VER, "triple"),)),
     VersionTouchpoint("tools/vscode-eve-debug/package.json", "tracked", ((_JSON_VER, "triple"),)),
     VersionTouchpoint(
-        "modelconverter/python/eve_blender_converter/__init__.py", "tracked", ((_PY_VER, "triple"),)
+        "tools/modelconverter/python/eve_blender_converter/__init__.py", "tracked", ((_PY_VER, "triple"),)
     ),
     VersionTouchpoint("tools/asset-pipeline-agent/asset_pipeline_agent/__init__.py", "tracked", ((_PY_VER, "triple"),)),
     VersionTouchpoint("tools/scene-qc-agent/scene_qc_agent/__init__.py", "tracked", ((_PY_VER, "triple"),)),

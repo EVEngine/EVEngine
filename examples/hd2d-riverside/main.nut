@@ -1,9 +1,11 @@
 dofile("map-data.nut");
+dofile("house-settings.nut");
+dofile("house-native.nut");
 
 actors <- [];
 terrain <- [];
 houseParts <- [];
-houseModel <- null;
+
 layers <- [];
 camera <- null;
 sun <- null;
@@ -49,7 +51,9 @@ function blocked(x, z) {
         local ty = floor((z + dz) / 32.0).tointeger();
         if (tx < 0 || ty < 0 || tx >= riversideData.width || ty >= riversideData.height) return true;
         local i = ty * riversideData.width + tx;
-        if (riversideData.layers.raised[i] != 0) return true;
+        local raised=riversideData.layers.raised[i];
+        if (raised != 0 && raised != 10) return true;
+        if (activeNativeHouse>=0 && nativeHouseOccupies(nativeHouses[activeNativeHouse],tx,ty)) return true;
         if (riversideData.blockedGids.find(riversideData.layers.ground[i]) != null) return true;
     }
     return false;
@@ -108,8 +112,7 @@ eve_init = function() {
         layer.setTilesetTileSize(64, 64);
         for (local y=0; y<riversideData.height; ++y) for (local x=0; x<riversideData.width; ++x) {
             local gid = riversideData.layers[name][y*riversideData.width+x];
-            // GID 10 remains the authoritative building footprint for collision;
-            // an imported OBJ provides its visible geometry.
+            // GID 10 marks the reserved lot; HouseLayout owns actual occupancy.
             layer.setTile(x, y, name == "raised" && gid == 10 ? 0 : gid);
         }
         local builder = hd2d.newTileMap3D();
@@ -147,23 +150,8 @@ eve_init = function() {
     sun.setColor(1.0, 0.93, 0.8, 0.8);
     sun.setCastShadow(true);
     sun.setShadowStrength(0.7);
-    local hx0=riversideData.width, hz0=riversideData.height, hx1=-1, hz1=-1;
-    for (local z=0;z<riversideData.height;++z) for (local x=0;x<riversideData.width;++x)
-        if (riversideData.layers.raised[z*riversideData.width+x] == 10) {
-            if (x<hx0) hx0=x; if (x>hx1) hx1=x;
-            if (z<hz0) hz0=z; if (z>hz1) hz1=z;
-        }
-    if (hx1 < hx0) throw "Missing house footprint";
-    houseModel = model3d.newModelDataFromFile("assets/house/cottage.obj");
-    if (houseModel.getMeshCount() == 0) throw "Empty cottage OBJ";
-    for (local mesh=0;mesh<houseModel.getMeshCount();++mesh) {
-        local part = model3d.createRenderable(gfx,houseModel,mesh);
-        part.setPosition((hx0+hx1+1)*16.0,0.0,(hz0+hz1+1)*16.0);
-        part.setRoughness(0.95);
-        part.setCastShadow(true);
-        part.setReceiveShadow(true);
-        houseParts.append(part);
-    }
+    initializeNativeHouses();
+    listenNativeHouseKeys();
     foreach (spawn in riversideData.spawns) {
         local sprite = hd2d.newSprite(gfx);
         sprite.setTexture(gfx.newTextureFromFile("assets/" + spawn.id + "/64/final/walk-sheet-clean.png"));

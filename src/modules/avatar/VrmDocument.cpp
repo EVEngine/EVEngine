@@ -305,6 +305,7 @@ eve::Result<VrmDocument> parseVrm(std::span<const std::byte> bytes) {
         for (size_t i = 0; i < meshes.size(); ++i) {
             std::vector<int> slots;
             auto             ps = meshes.at(i).get("primitives");
+            slots.reserve(ps.size());
             for (size_t k = 0; k < ps.size(); ++k)
                 slots.push_back(ps.at(k).has("material") ? index(ps.at(k).get("material"), d.materials.size()) : -1);
             d.meshMaterials.push_back(std::move(slots));

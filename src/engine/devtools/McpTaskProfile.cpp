@@ -152,6 +152,9 @@ bool mcpProfileAllowsTool(std::string_view profile, std::string_view tool) {
     }
     // Stable facade: never leak into content/verify via shared scene/play tags.
     if (tool == "eve_workshop") return profile == "workshop.rpg";
+    // Recipes carry the discovery tag too; it must not grant mutation to
+    // verification or binding profiles through their shared agent toolset.
+    if (tool == "eve_recipe_apply") return profile == "content.scene" || profile == "workshop.rpg";
 
     const auto                      tagList = mcpProfileToolsetTags(profile);
     std::unordered_set<std::string> tags(tagList.begin(), tagList.end());

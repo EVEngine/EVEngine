@@ -49,7 +49,17 @@ esac
 fail() { echo "ERROR: $*" >&2; exit 1; }
 
 WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
+cleanup() {
+  local result=$?
+  if ! rm -rf "$WORK"; then
+    if [ "$PLAT" = win32 ]; then
+      python3 "$SCRIPTS/report-windows-locks.py" "$WORK" || true
+    fi
+    return 1
+  fi
+  return "$result"
+}
+trap cleanup EXIT
 
 # --- Android: assemble an APK from the SDK packaging template ----------------
 # Hard gate: the template + SDK libs + a minimal game must produce an APK.
@@ -219,7 +229,28 @@ echo "asset-data" > "$GAME/assets/data.txt"
 echo "OK: eve zip -> $(basename "$GAME.eve")"
 
 PKG="$WORK/sample-pkg"
-"$SDK/bin/$RUNTIME" package "$GAME" -o "$PKG" --sdk "$SDK" >/dev/null 2>&1 || fail "eve package failed"
+if ! "$SDK/bin/$RUNTIME" package "$GAME" -o "$PKG" --sdk "$SDK" >"$WORK/package.log" 2>&1; then
+  cat "$WORK/package.log" >&2
+  if [ "$PLAT" = macosx ] && command -v lldb >/dev/null 2>&1; then
+    # Diagnostic only: isolate the Metal encoder used in MoltenVK issue #2373.
+    # The original package failure remains fatal after these probes.
+    # Owner: graphics; remove when MoltenVK #2373 is fixed and Intel SDK tests pass.
+    if xcrun clang++ -std=c++17 -fobjc-arc "$SCRIPTS/probe-metal-argument-encoder.mm" \
+        -framework Foundation -framework Metal -o "$WORK/metal-argument-probe"; then
+      for count in 1 2 8192; do
+        "$WORK/metal-argument-probe" "$count" >&2 || true
+      done
+    fi
+    # Reproduce the startup directly so a child-process abort has a native stack.
+    # This is diagnostic only: the failed package gate remains failed below.
+    EVE_PACKAGE_CHECK=1 EVENGINE_VULKAN_VALIDATION=1 \
+      lldb --batch -o run -k 'thread backtrace all' -- "$SDK/bin/$RUNTIME" run "$GAME" >&2 || true
+    # Compare the documented MoltenVK binding mode with the identical SDK/game.
+    MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS=0 EVE_PACKAGE_CHECK=1 EVENGINE_VULKAN_VALIDATION=1 \
+      lldb --batch -o run -k 'thread backtrace all' -- "$SDK/bin/$RUNTIME" run "$GAME" >&2 || true
+  fi
+  fail "eve package failed"
+fi
 [ -f "$PKG/$RUNTIME" ] || fail "package missing runtime $RUNTIME"
 [ -f "$PKG/game.eve" ] || fail "package missing game.eve"
 if [ "$PLAT" = "win32" ]; then

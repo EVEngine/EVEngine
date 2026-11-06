@@ -8,6 +8,7 @@
 }
 */
 // clang-format on
+
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 

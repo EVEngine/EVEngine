@@ -109,8 +109,7 @@ void SequenceRuntime::restoreExecutionState(ExecutionState state) {
 
 eve::Result<void> SequenceRuntime::fail(eve::DiagnosticCode code, std::string message, std::string path) {
     failureText_ = message;
-    return eve::Result<void>::failure(
-        eve::Diagnostic::error(code, message, path, {}, "dnut.runtime"));
+    return eve::Result<void>::failure(eve::Diagnostic::error(code, message, std::move(path), {}, "dnut.runtime"));
 }
 
 void SequenceRuntime::emit(EventKind kind, const SequenceNode* node, const std::string& detail) const {
@@ -259,7 +258,7 @@ eve::Result<void> SequenceRuntime::runUntilBlockedImpl() {
                 return fail(eve::DiagnosticCode::PreconditionViolation,
                             diagnostic ? diagnostic->message() : "sequence: branch evaluation failed", "branch");
             }
-            const std::string next = target.value();
+            const std::string& next = target.value();
             if (auto entered = enter(next); !entered.ok()) return entered;
             continue;
         }

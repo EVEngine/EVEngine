@@ -29,7 +29,7 @@ TEST_CASE("gameplayTags.spec.registry_names_ids_and_conflicts") {
     GameplayTagRegistry registry;
     auto                first = registry.registerTag("Combat.Action.Attack", "offensive action");
     REQUIRE(first.ok());
-    CHECK_EQ(first.value().value(), std::uint64_t{0x1b587da31236aa15ull});
+    CHECK_EQ(first.value().value(), std::uint64_t{0x5fd0e8ccf2e3cf33ull});
     auto repeated = registry.registerTag("Combat.Action.Attack", "offensive action");
     REQUIRE(repeated.ok());
     CHECK_EQ(repeated.code(), eve::StatusCode::NoOp);

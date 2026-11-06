@@ -1,7 +1,9 @@
 #include "asset/import/GltfDecode.h"
+
 #include <algorithm>
 #include <bit>
 #include <cmath>
+#include <utility>
 #include "asset/import/ImportCommon.h"
 
 namespace eve::asset_import::gltf {
@@ -15,7 +17,7 @@ Result<std::uint64_t> unsignedValue(const Value* value, std::string path, bool r
     if (!value || !value->isInt64() || value->asInt() < 0)
         return Result<std::uint64_t>::failure(Diagnostic::error(DiagnosticCode::ParseError,
                                                                 "glTF field must be a non-negative integer",
-                                                                path, {}, "asset.import"));
+                                                                std::move(path), {}, "asset.import"));
     return Result<std::uint64_t>::success(static_cast<std::uint64_t>(value->asInt()));
 }
 

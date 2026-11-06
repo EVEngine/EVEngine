@@ -2,6 +2,7 @@
 #include <string.h>
 #include <cstdint>
 #include <cstring>
+#include <utility>
 #include "CompressedData.h"
 #include "DataView.h"
 #include "common/Exception.h"
@@ -84,8 +85,8 @@ size_t DataView::getSize() const { return size; }
 namespace eve {
 namespace data {
 
-CompressedData::CompressedData(std::string format, char *cdata, size_t compressedsize, size_t rawsize, bool own)
-    : format(format), data(nullptr), dataSize(compressedsize), originalSize(rawsize) {
+CompressedData::CompressedData(std::string format, char* cdata, size_t compressedsize, size_t rawsize, bool own)
+    : format(std::move(format)), data(nullptr), dataSize(compressedsize), originalSize(rawsize) {
     if (own)
         data = cdata;
     else {

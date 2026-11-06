@@ -5,6 +5,11 @@ if(_render_bench_multiscale)
     target_compile_definitions(render_benchmark PRIVATE EVENGINE_BENCH_MULTISCALE=1)
 endif()
 
+if(TARGET EVAnimation AND TARGET EVScene)
+    target_sources(render_benchmark PRIVATE GameplayBenchmark.cpp)
+    target_compile_definitions(render_benchmark PRIVATE EVENGINE_BENCH_GAMEPLAY=1)
+endif()
+
 eve_append_system_libraries(_render_bench_sys)
 eve_thirdparty_libs(_render_bench_tp ${EVE_THIRDPARTY_GROUPS})
 set(_render_bench_libs EVScripts ${EVE_LINK_TARGETS})

@@ -918,8 +918,7 @@ bool Dialogue::bindAvatar(const std::string &id, avatar::AvatarInstance *av) {
     }
     c->avatar = av;
     if (av) {
-        const std::string key = id;
-        c->avatarHook = av->addDestroyHook([this, key](avatar::AvatarInstance *) {
+        c->avatarHook = av->addDestroyHook([this, key = id](avatar::AvatarInstance*) {
             if (Character *ch = findCharacter(key))
                 ch->avatar = nullptr;
         });

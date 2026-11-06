@@ -1,8 +1,10 @@
 #pragma once
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
+#include <cstdio>
 #include <deque>
 #include <future>
 #include <mutex>
@@ -20,6 +22,19 @@ struct CompiledProgram {
 /** @brief CompilerQueue public API. */
 class CompilerQueue {
     using Job = std::packaged_task<CompiledProgram()>;
+    // Keep the first bounded segment's timestamps in memory. Worker-side I/O
+    // would perturb precisely the overlap that a low-peak failure needs to explain.
+    struct Timing {
+        long long              enqueued = 0;
+        std::atomic<long long> started{0}, finished{0};
+    };
+    std::array<Timing, 48> timings;
+    size_t                 timingCount = 0;
+    static long long       timestamp() noexcept {
+        return std::chrono::duration_cast<std::chrono::microseconds>(
+                   std::chrono::steady_clock::now().time_since_epoch())
+            .count();
+    }
     std::mutex               mutex;
     std::condition_variable  ready;
     std::deque<Job>          jobs;
@@ -79,10 +94,24 @@ public:
     ~CompilerQueue() { stop(); }
     // Called on the device thread. Run bounds each segment to 48 operations;
     // this independent queue bound also protects accidental future callers.
-    /** @brief Enqueue. */
+    /** @brief Enqueue CPU-only shader compilation.
+     * @lifetime Captured timing slots belong to this queue. stop() joins every
+     * worker before their destruction; resetPeak() follows the prior waitIdle().
+     * @thread Called by the owning device thread, like waitIdle() and resetPeak().
+     */
     std::future<CompiledProgram> enqueue(std::string source) {
+        auto* timing = timingCount < timings.size() ? &timings[timingCount] : nullptr;
+        ++timingCount;
+        if (timing) timing->enqueued = timestamp();
         /** @brief Job. */
-        Job  job([source = std::move(source)] {
+        Job  job([timing, source = std::move(source)] {
+            if (timing) timing->started = timestamp();
+            struct Completion {
+                Timing* timing;
+                ~Completion() {
+                    if (timing) timing->finished = timestamp();
+                }
+            } completion{timing};
             const auto start  = std::chrono::steady_clock::now();
             auto       result = gpgpu::compileComputeSpirv(source);
             if (!result.ok()) throw std::runtime_error(result.error()->message() + "\nCompute source:\n" + source);
@@ -108,8 +137,29 @@ public:
         /** @brief Locks lock. */
         std::unique_lock lock(mutex);
         ready.wait(lock, [this] { return jobs.empty() && inFlight == 0; });
+        // Report only after the workers are idle, without changing the peak or
+        // waiting for overlap. This also covers failed/abandoned graph cleanup.
+        if (workers.size() > 1 && timingCount > 1 && peak.load() == 1) {
+            const auto count  = std::min(timingCount, timings.size());
+            const auto origin = timings[0].enqueued;
+            for (size_t i = 0; i < count; ++i) {
+                const auto& t = timings[i];
+                std::fprintf(
+                    stderr,
+                    "ONNX_COMPILER_TIMING job=%zu workers=%zu peak=1 enqueue_us=%lld start_us=%lld end_us=%lld\n", i,
+                    workers.size(), t.enqueued - origin, t.started.load() - origin, t.finished.load() - origin);
+            }
+        }
     }
     /** @brief Resets peak. */
-    void resetPeak() noexcept { peak = 0; }
+    void resetPeak() noexcept {
+        peak        = 0;
+        timingCount = 0;
+        for (auto& timing : timings) {
+            timing.enqueued = 0;
+            timing.started  = 0;
+            timing.finished = 0;
+        }
+    }
 };
 }  // namespace eve::tensor::onnx_detail

@@ -8,7 +8,7 @@
 #include "common/Export.h"
 
 #include <cstdint>
-#include <ostream>
+#include <iosfwd>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -36,7 +36,7 @@ enum class Severity : uint8_t {
 }
 
 /** @brief Writes a severity for diagnostics and test output. */
-inline std::ostream& operator<<(std::ostream& stream, Severity severity) { return stream << severityName(severity); }
+EVENGINE_API_FOUNDATION std::ostream& operator<<(std::ostream& stream, Severity severity);
 
 /**
  * @brief Stable machine-readable diagnostic codes.
@@ -202,10 +202,7 @@ private:
 }
 
 /** @brief Writes the stable diagnostic-code spelling to a stream. */
-inline std::ostream& operator<<(std::ostream& stream, DiagnosticCode code) {
-    /** @brief Diagnostic code name. */
-    return stream << diagnosticCodeName(code);
-}
+EVENGINE_API_FOUNDATION std::ostream& operator<<(std::ostream& stream, DiagnosticCode code);
 
 }  // namespace eve
 

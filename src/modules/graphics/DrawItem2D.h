@@ -1,10 +1,7 @@
 #pragma once
 
-#include "graphics/Canvas.h"
 #include "graphics/BlendMode.h"
-#include "graphics/Quad.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
+#include "graphics/Color.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -13,6 +10,10 @@
 namespace eve::graphics {
 
 class Camera2D;
+class Canvas;
+class Quad;
+class Shader;
+class Texture;
 
 /** @brief Shared 2D draw queue item (sprites + tiles). */
 struct DrawItem2D {

@@ -43,7 +43,7 @@ add_custom_command(
             "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneCameraQueries.cpp"
             "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneNodeRef.h"
             "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneHost.h"
-            "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_scene_tests.cpp" "${CMAKE_SOURCE_DIR}/test/unit/scene/scene_tests.cpp"
+            "${CMAKE_SOURCE_DIR}/test/unit/scene/scene_tests.cpp"
             "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_scene_tests.cpp"
             "${CMAKE_SOURCE_DIR}/src/modules/inventory/binding_architecture.json"
             "${CMAKE_SOURCE_DIR}/src/modules/inventory/Inventory.cpp"
@@ -343,11 +343,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         # The playground shell calls these helpers directly on Module.
         # Emscripten 6 no longer auto-adds _main when EXPORTED_FUNCTIONS is set.
         -sEXPORTED_FUNCTIONS=_main,_malloc,_free
-        -sEXPORTED_RUNTIME_METHODS=lengthBytesUTF8,stringToUTF8,UTF8ToString,HEAPU8
+        -sEXPORTED_RUNTIME_METHODS=ccall,lengthBytesUTF8,stringToUTF8,UTF8ToString,HEAPU8
         # C++ exceptions can be thrown through ASYNCIFY-wrapped frames (e.g. a
         # module expose() failing); keep JS-side catching enabled so the abort
         # helper is compiled instead of asserting on the first __cxa_throw.
-        -sNO_DISABLE_EXCEPTION_CATCHING=1
+        -fexceptions
         # The WebGPU backend spin-waits for requestAdapter/requestDevice with
         # emscripten_sleep(0); on the main thread that requires ASYNCIFY.
         -sASYNCIFY=1

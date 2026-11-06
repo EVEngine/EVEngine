@@ -1,0 +1,1838 @@
+{
+  "schema": "evengine.gameplay-cpu-comparison",
+  "version": 1,
+  "date": "2026-10-31",
+  "base_revision": "8315da221165c0623159353c8672d3c8c25dbf51",
+  "baseline": "Previous root-motion and Crowd optimizations retained in all three variants.",
+  "changes": {
+    "palette": "Mesh palette storage reuses capacity; validates before mutation and handles overlapping source ranges.",
+    "both": "Palette optimization plus one synchronous Transform3D component resolution per scene link update."
+  },
+  "compiler": "GCC 14.2 Release -O3 -DNDEBUG, IPO off",
+  "cpu": "AMD EPYC 9V74 shared VM, 4-CPU quota",
+  "render_device": "llvmpipe software Vulkan",
+  "render_enabled_in_timing_comparison": false,
+  "method": "Three independent runs per variant and scenario; variant order reversed on second repetition. 60 warmup + 1200 measured frames, 320x180 initialization.",
+  "binary_sha256": {
+    "before": "627b1e68f0ca33a27a9ddb610066a217178e95231e9375dac24d690cb50611cf",
+    "palette": "575d5988cf91990af108ad48e4594aeb1879f3129d19b2a0c3c16f4eeef2126a",
+    "both": "f0d3405bfb6f52b84724429d5ff02ad6f1228ae61ed39574d94da407ec91fe34"
+  },
+  "limitations": [
+    "Synthetic general-3D workload; shared-VM timing variability.",
+    "Phase p50 values are not additive; these are CPU updates, not GPU throughput or full-game FPS.",
+    "Palette publication includes matrix calculation and validation; no large total-time benefit attributed to allocation removal alone."
+  ],
+  "summary": [
+    {
+      "scene": "dynamic",
+      "props": 1000,
+      "median_run_p50_ms": {
+        "before": {
+          "frame": 0.124334,
+          "sceneTransforms": 0.122341,
+          "skinPalettePublication": 2e-05
+        },
+        "palette": {
+          "frame": 0.123724,
+          "sceneTransforms": 0.121851,
+          "skinPalettePublication": 2e-05
+        },
+        "both": {
+          "frame": 0.093649,
+          "sceneTransforms": 0.091816,
+          "skinPalettePublication": 2e-05
+        }
+      },
+      "frame_reduction_percent": 24.679492335161747
+    },
+    {
+      "scene": "mixed",
+      "props": 1000,
+      "median_run_p50_ms": {
+        "before": {
+          "frame": 0.31027,
+          "sceneTransforms": 0.138195,
+          "skinPalettePublication": 0.051226
+        },
+        "palette": {
+          "frame": 0.31024,
+          "sceneTransforms": 0.13474,
+          "skinPalettePublication": 0.050055
+        },
+        "both": {
+          "frame": 0.259926,
+          "sceneTransforms": 0.10153,
+          "skinPalettePublication": 0.049834
+        }
+      },
+      "frame_reduction_percent": 16.22586779256776
+    },
+    {
+      "scene": "mixed",
+      "props": 5000,
+      "median_run_p50_ms": {
+        "before": {
+          "frame": 1.11563,
+          "sceneTransforms": 0.779036,
+          "skinPalettePublication": 0.105005
+        },
+        "palette": {
+          "frame": 1.10196,
+          "sceneTransforms": 0.778555,
+          "skinPalettePublication": 0.102001
+        },
+        "both": {
+          "frame": 0.949239,
+          "sceneTransforms": 0.618677,
+          "skinPalettePublication": 0.103193
+        }
+      },
+      "frame_reduction_percent": 14.914532595932329
+    }
+  ],
+  "validation": {
+    "matching_state_hashes_all_27_runs": true,
+    "palette_process_isolated_cases_passed": 3,
+    "palette_assertions_passed": 231,
+    "steady_palette_updates": 1000,
+    "steady_palette_allocations": 0,
+    "injected_growth_allocation_failure_preserves_palette": true,
+    "presented_frame_before_after_byte_identical": true,
+    "presented_frame_sha256": "46b865e35486823bea1ee009fbd9eeeb28de37209935c1227dfa190ac19f6f25",
+    "render_capture_workload": "Mixed 64 props/4 actors, 60 warmup + 20 measured frames, 640x360; engine-owned readback after timing",
+    "runtime_test_scope": "Focused palette tests, allocation/failure probe and native benchmark validation; not the full engine runtime suite",
+    "architecture": "Implementation-only changes; no public API, ECS model, module boundary, persistent format or cross-domain lifecycle changes; no exceptions",
+    "source_quality": "make check CI_BASE=HEAD passed, including architecture and layering checks"
+  },
+  "runs": [
+    {
+      "variant": "before",
+      "scene": "dynamic",
+      "props": 1000,
+      "repeat": 0,
+      "characters": 0,
+      "state_checksum": "9500807816821981242",
+      "phases": {
+        "frame": {
+          "meanMs": 0.141076,
+          "p50Ms": 0.124054,
+          "p95Ms": 0.18234,
+          "p99Ms": 0.282659
+        },
+        "edits": {
+          "meanMs": 0.000759289,
+          "p50Ms": 0.000691,
+          "p95Ms": 0.001022,
+          "p99Ms": 0.001532
+        },
+        "animationAndPalette": {
+          "meanMs": 0.000195211,
+          "p50Ms": 0.00018,
+          "p95Ms": 0.000191,
+          "p99Ms": 0.00023
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 2.3705e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "boneWorldTransforms": {
+          "meanMs": 2.34383e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "skinPalettePublication": {
+          "meanMs": 2.35658e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "sceneTransforms": {
+          "meanMs": 0.138786,
+          "p50Ms": 0.122141,
+          "p95Ms": 0.179035,
+          "p99Ms": 0.276079
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 2.6405e-05,
+          "p50Ms": 2.1e-05,
+          "p95Ms": 4e-05,
+          "p99Ms": 5e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.35958e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "palette",
+      "scene": "dynamic",
+      "props": 1000,
+      "repeat": 0,
+      "characters": 0,
+      "state_checksum": "9500807816821981242",
+      "phases": {
+        "frame": {
+          "meanMs": 0.129082,
+          "p50Ms": 0.123684,
+          "p95Ms": 0.147679,
+          "p99Ms": 0.196792
+        },
+        "edits": {
+          "meanMs": 0.000755983,
+          "p50Ms": 0.000711,
+          "p95Ms": 0.000932,
+          "p99Ms": 0.001332
+        },
+        "animationAndPalette": {
+          "meanMs": 0.000183527,
+          "p50Ms": 0.00018,
+          "p95Ms": 0.000191,
+          "p99Ms": 0.00021
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 2.36425e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "boneWorldTransforms": {
+          "meanMs": 2.38992e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "skinPalettePublication": {
+          "meanMs": 2.38783e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "sceneTransforms": {
+          "meanMs": 0.126978,
+          "p50Ms": 0.121851,
+          "p95Ms": 0.144694,
+          "p99Ms": 0.191955
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 2.53433e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 4e-05,
+          "p99Ms": 4.1e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.37033e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "both",
+      "scene": "dynamic",
+      "props": 1000,
+      "repeat": 0,
+      "characters": 0,
+      "state_checksum": "9500807816821981242",
+      "phases": {
+        "frame": {
+          "meanMs": 0.0971608,
+          "p50Ms": 0.092698,
+          "p95Ms": 0.116353,
+          "p99Ms": 0.167007
+        },
+        "edits": {
+          "meanMs": 0.000719855,
+          "p50Ms": 0.000671,
+          "p95Ms": 0.000892,
+          "p99Ms": 0.001122
+        },
+        "animationAndPalette": {
+          "meanMs": 0.000182632,
+          "p50Ms": 0.00018,
+          "p95Ms": 0.000191,
+          "p99Ms": 0.000191
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 2.35675e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "boneWorldTransforms": {
+          "meanMs": 2.36458e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "skinPalettePublication": {
+          "meanMs": 2.3615e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "sceneTransforms": {
+          "meanMs": 0.0950696,
+          "p50Ms": 0.090855,
+          "p95Ms": 0.112216,
+          "p99Ms": 0.155731
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 2.531e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 4e-05,
+          "p99Ms": 4e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.36083e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "before",
+      "scene": "mixed",
+      "props": 1000,
+      "repeat": 0,
+      "characters": 32,
+      "state_checksum": "6770157144768668329",
+      "phases": {
+        "frame": {
+          "meanMs": 0.330291,
+          "p50Ms": 0.297371,
+          "p95Ms": 0.466602,
+          "p99Ms": 0.548914
+        },
+        "edits": {
+          "meanMs": 0.000956033,
+          "p50Ms": 0.000881,
+          "p95Ms": 0.001362,
+          "p99Ms": 0.001603
+        },
+        "animationAndPalette": {
+          "meanMs": 0.17531,
+          "p50Ms": 0.146487,
+          "p95Ms": 0.285474,
+          "p99Ms": 0.348668
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.0878297,
+          "p50Ms": 0.065908,
+          "p95Ms": 0.18197,
+          "p99Ms": 0.244133
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.03117,
+          "p50Ms": 0.027991,
+          "p95Ms": 0.043765,
+          "p99Ms": 0.085967
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.0561223,
+          "p50Ms": 0.051036,
+          "p95Ms": 0.089933,
+          "p99Ms": 0.140428
+        },
+        "sceneTransforms": {
+          "meanMs": 0.151408,
+          "p50Ms": 0.138195,
+          "p95Ms": 0.214358,
+          "p99Ms": 0.289139
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 3.04742e-05,
+          "p50Ms": 3e-05,
+          "p95Ms": 5e-05,
+          "p99Ms": 5.1e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.37133e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "palette",
+      "scene": "mixed",
+      "props": 1000,
+      "repeat": 0,
+      "characters": 32,
+      "state_checksum": "6770157144768668329",
+      "phases": {
+        "frame": {
+          "meanMs": 0.327441,
+          "p50Ms": 0.289449,
+          "p95Ms": 0.466171,
+          "p99Ms": 0.622073
+        },
+        "edits": {
+          "meanMs": 0.000958547,
+          "p50Ms": 0.000842,
+          "p95Ms": 0.001272,
+          "p99Ms": 0.001853
+        },
+        "animationAndPalette": {
+          "meanMs": 0.176564,
+          "p50Ms": 0.145285,
+          "p95Ms": 0.278653,
+          "p99Ms": 0.426342
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.0890552,
+          "p50Ms": 0.065848,
+          "p95Ms": 0.182711,
+          "p99Ms": 0.266174
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.030524,
+          "p50Ms": 0.028001,
+          "p95Ms": 0.035783,
+          "p99Ms": 0.091035
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.0568474,
+          "p50Ms": 0.050014,
+          "p95Ms": 0.089623,
+          "p99Ms": 0.148971
+        },
+        "sceneTransforms": {
+          "meanMs": 0.147657,
+          "p50Ms": 0.131685,
+          "p95Ms": 0.219105,
+          "p99Ms": 0.32352
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 3.67875e-05,
+          "p50Ms": 3e-05,
+          "p95Ms": 9e-05,
+          "p99Ms": 0.00015
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.423e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 4e-05
+        }
+      }
+    },
+    {
+      "variant": "both",
+      "scene": "mixed",
+      "props": 1000,
+      "repeat": 0,
+      "characters": 32,
+      "state_checksum": "6770157144768668329",
+      "phases": {
+        "frame": {
+          "meanMs": 0.30779,
+          "p50Ms": 0.275498,
+          "p95Ms": 0.489516,
+          "p99Ms": 0.616555
+        },
+        "edits": {
+          "meanMs": 0.00118032,
+          "p50Ms": 0.000891,
+          "p95Ms": 0.001412,
+          "p99Ms": 0.001903
+        },
+        "animationAndPalette": {
+          "meanMs": 0.184333,
+          "p50Ms": 0.147028,
+          "p95Ms": 0.322038,
+          "p99Ms": 0.43127
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.0945119,
+          "p50Ms": 0.066599,
+          "p95Ms": 0.201649,
+          "p99Ms": 0.305573
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0321264,
+          "p50Ms": 0.028001,
+          "p95Ms": 0.056003,
+          "p99Ms": 0.115992
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.0575701,
+          "p50Ms": 0.049924,
+          "p95Ms": 0.099458,
+          "p99Ms": 0.183932
+        },
+        "sceneTransforms": {
+          "meanMs": 0.119346,
+          "p50Ms": 0.101991,
+          "p95Ms": 0.205555,
+          "p99Ms": 0.323751
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 3.28092e-05,
+          "p50Ms": 3e-05,
+          "p95Ms": 5e-05,
+          "p99Ms": 6e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.35708e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "before",
+      "scene": "mixed",
+      "props": 5000,
+      "repeat": 0,
+      "characters": 64,
+      "state_checksum": "2229962235172336909",
+      "phases": {
+        "frame": {
+          "meanMs": 1.10293,
+          "p50Ms": 1.06585,
+          "p95Ms": 1.27568,
+          "p99Ms": 1.36019
+        },
+        "edits": {
+          "meanMs": 0.00310057,
+          "p50Ms": 0.002784,
+          "p95Ms": 0.003265,
+          "p99Ms": 0.003946
+        },
+        "animationAndPalette": {
+          "meanMs": 0.334206,
+          "p50Ms": 0.297521,
+          "p95Ms": 0.504559,
+          "p99Ms": 0.556565
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.167872,
+          "p50Ms": 0.135231,
+          "p95Ms": 0.338332,
+          "p99Ms": 0.374336
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0584491,
+          "p50Ms": 0.056324,
+          "p95Ms": 0.073219,
+          "p99Ms": 0.103664
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.107734,
+          "p50Ms": 0.104345,
+          "p95Ms": 0.123223,
+          "p99Ms": 0.157053
+        },
+        "sceneTransforms": {
+          "meanMs": 0.762071,
+          "p50Ms": 0.752427,
+          "p95Ms": 0.815279,
+          "p99Ms": 0.8965
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 4.24408e-05,
+          "p50Ms": 4e-05,
+          "p95Ms": 5.1e-05,
+          "p99Ms": 6.1e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.37458e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "palette",
+      "scene": "mixed",
+      "props": 5000,
+      "repeat": 0,
+      "characters": 64,
+      "state_checksum": "2229962235172336909",
+      "phases": {
+        "frame": {
+          "meanMs": 1.12471,
+          "p50Ms": 1.06996,
+          "p95Ms": 1.32678,
+          "p99Ms": 1.57888
+        },
+        "edits": {
+          "meanMs": 0.00309631,
+          "p50Ms": 0.002924,
+          "p95Ms": 0.003575,
+          "p99Ms": 0.004948
+        },
+        "animationAndPalette": {
+          "meanMs": 0.337774,
+          "p50Ms": 0.295619,
+          "p95Ms": 0.507012,
+          "p99Ms": 0.588994
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.170617,
+          "p50Ms": 0.134469,
+          "p95Ms": 0.341657,
+          "p99Ms": 0.400965
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0594031,
+          "p50Ms": 0.056414,
+          "p95Ms": 0.075001,
+          "p99Ms": 0.108411
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.107597,
+          "p50Ms": 0.102001,
+          "p95Ms": 0.126017,
+          "p99Ms": 0.178955
+        },
+        "sceneTransforms": {
+          "meanMs": 0.780048,
+          "p50Ms": 0.75494,
+          "p95Ms": 0.89628,
+          "p99Ms": 1.07456
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 5.57758e-05,
+          "p50Ms": 5e-05,
+          "p95Ms": 6.1e-05,
+          "p99Ms": 0.00023
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.37825e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "both",
+      "scene": "mixed",
+      "props": 5000,
+      "repeat": 0,
+      "characters": 64,
+      "state_checksum": "2229962235172336909",
+      "phases": {
+        "frame": {
+          "meanMs": 0.99561,
+          "p50Ms": 0.949239,
+          "p95Ms": 1.19978,
+          "p99Ms": 1.34927
+        },
+        "edits": {
+          "meanMs": 0.00312614,
+          "p50Ms": 0.002954,
+          "p95Ms": 0.003645,
+          "p99Ms": 0.004707
+        },
+        "animationAndPalette": {
+          "meanMs": 0.346151,
+          "p50Ms": 0.301487,
+          "p95Ms": 0.518419,
+          "p99Ms": 0.586149
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.174935,
+          "p50Ms": 0.136393,
+          "p95Ms": 0.347456,
+          "p99Ms": 0.407234
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0608141,
+          "p50Ms": 0.056533,
+          "p95Ms": 0.078707,
+          "p99Ms": 0.150443
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.110219,
+          "p50Ms": 0.103193,
+          "p95Ms": 0.141961,
+          "p99Ms": 0.220087
+        },
+        "sceneTransforms": {
+          "meanMs": 0.642327,
+          "p50Ms": 0.618677,
+          "p95Ms": 0.760067,
+          "p99Ms": 0.86936
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 4.64892e-05,
+          "p50Ms": 4.1e-05,
+          "p95Ms": 6e-05,
+          "p99Ms": 0.00015
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.34975e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "both",
+      "scene": "dynamic",
+      "props": 1000,
+      "repeat": 1,
+      "characters": 0,
+      "state_checksum": "9500807816821981242",
+      "phases": {
+        "frame": {
+          "meanMs": 0.101032,
+          "p50Ms": 0.093649,
+          "p95Ms": 0.13492,
+          "p99Ms": 0.22229
+        },
+        "edits": {
+          "meanMs": 0.000825511,
+          "p50Ms": 0.000701,
+          "p95Ms": 0.000942,
+          "p99Ms": 0.001423
+        },
+        "animationAndPalette": {
+          "meanMs": 0.000185525,
+          "p50Ms": 0.000181,
+          "p95Ms": 0.000191,
+          "p99Ms": 0.000251
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 2.35883e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "boneWorldTransforms": {
+          "meanMs": 2.37083e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "skinPalettePublication": {
+          "meanMs": 2.35467e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "sceneTransforms": {
+          "meanMs": 0.0988219,
+          "p50Ms": 0.091816,
+          "p95Ms": 0.131044,
+          "p99Ms": 0.218344
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 2.475e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 4e-05,
+          "p99Ms": 4.1e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.36933e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "palette",
+      "scene": "dynamic",
+      "props": 1000,
+      "repeat": 1,
+      "characters": 0,
+      "state_checksum": "9500807816821981242",
+      "phases": {
+        "frame": {
+          "meanMs": 0.130053,
+          "p50Ms": 0.123724,
+          "p95Ms": 0.157204,
+          "p99Ms": 0.206677
+        },
+        "edits": {
+          "meanMs": 0.000786337,
+          "p50Ms": 0.000731,
+          "p95Ms": 0.000961,
+          "p99Ms": 0.001402
+        },
+        "animationAndPalette": {
+          "meanMs": 0.000185631,
+          "p50Ms": 0.00018,
+          "p95Ms": 0.000191,
+          "p99Ms": 0.000271
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 2.36083e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "boneWorldTransforms": {
+          "meanMs": 2.37233e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "skinPalettePublication": {
+          "meanMs": 2.3525e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "sceneTransforms": {
+          "meanMs": 0.127882,
+          "p50Ms": 0.121801,
+          "p95Ms": 0.154299,
+          "p99Ms": 0.20235
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 2.55833e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 4e-05,
+          "p99Ms": 5e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.33117e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "before",
+      "scene": "dynamic",
+      "props": 1000,
+      "repeat": 1,
+      "characters": 0,
+      "state_checksum": "9500807816821981242",
+      "phases": {
+        "frame": {
+          "meanMs": 0.139959,
+          "p50Ms": 0.124334,
+          "p95Ms": 0.215239,
+          "p99Ms": 0.325863
+        },
+        "edits": {
+          "meanMs": 0.000837179,
+          "p50Ms": 0.000721,
+          "p95Ms": 0.001082,
+          "p99Ms": 0.001722
+        },
+        "animationAndPalette": {
+          "meanMs": 0.000189544,
+          "p50Ms": 0.00018,
+          "p95Ms": 0.00023,
+          "p99Ms": 0.00033
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 2.39533e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "boneWorldTransforms": {
+          "meanMs": 2.35658e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "skinPalettePublication": {
+          "meanMs": 2.39125e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "sceneTransforms": {
+          "meanMs": 0.137124,
+          "p50Ms": 0.122341,
+          "p95Ms": 0.206486,
+          "p99Ms": 0.320646
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 2.5765e-05,
+          "p50Ms": 2.1e-05,
+          "p95Ms": 3.1e-05,
+          "p99Ms": 5e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 3.52192e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 4e-05
+        }
+      }
+    },
+    {
+      "variant": "both",
+      "scene": "mixed",
+      "props": 1000,
+      "repeat": 1,
+      "characters": 32,
+      "state_checksum": "6770157144768668329",
+      "phases": {
+        "frame": {
+          "meanMs": 0.297427,
+          "p50Ms": 0.250622,
+          "p95Ms": 0.43108,
+          "p99Ms": 0.937
+        },
+        "edits": {
+          "meanMs": 0.00101921,
+          "p50Ms": 0.000851,
+          "p95Ms": 0.001322,
+          "p99Ms": 0.001913
+        },
+        "animationAndPalette": {
+          "meanMs": 0.177657,
+          "p50Ms": 0.144144,
+          "p95Ms": 0.285444,
+          "p99Ms": 0.509246
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.0895409,
+          "p50Ms": 0.065717,
+          "p95Ms": 0.178866,
+          "p99Ms": 0.295378
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0307131,
+          "p50Ms": 0.027901,
+          "p95Ms": 0.040591,
+          "p99Ms": 0.098326
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.0572488,
+          "p50Ms": 0.049774,
+          "p95Ms": 0.080029,
+          "p99Ms": 0.17484
+        },
+        "sceneTransforms": {
+          "meanMs": 0.116542,
+          "p50Ms": 0.099378,
+          "p95Ms": 0.160128,
+          "p99Ms": 0.251604
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 2.91308e-05,
+          "p50Ms": 3e-05,
+          "p95Ms": 5e-05,
+          "p99Ms": 5.1e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.38408e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 4e-05
+        }
+      }
+    },
+    {
+      "variant": "palette",
+      "scene": "mixed",
+      "props": 1000,
+      "repeat": 1,
+      "characters": 32,
+      "state_checksum": "6770157144768668329",
+      "phases": {
+        "frame": {
+          "meanMs": 0.340551,
+          "p50Ms": 0.31024,
+          "p95Ms": 0.508595,
+          "p99Ms": 0.645047
+        },
+        "edits": {
+          "meanMs": 0.00116265,
+          "p50Ms": 0.000891,
+          "p95Ms": 0.001332,
+          "p99Ms": 0.001863
+        },
+        "animationAndPalette": {
+          "meanMs": 0.182086,
+          "p50Ms": 0.146357,
+          "p95Ms": 0.314086,
+          "p99Ms": 0.423919
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.0932081,
+          "p50Ms": 0.066379,
+          "p95Ms": 0.201088,
+          "p99Ms": 0.2761
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0323053,
+          "p50Ms": 0.027961,
+          "p95Ms": 0.051337,
+          "p99Ms": 0.143813
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.0564235,
+          "p50Ms": 0.050055,
+          "p95Ms": 0.095993,
+          "p99Ms": 0.1614
+        },
+        "sceneTransforms": {
+          "meanMs": 0.154663,
+          "p50Ms": 0.13474,
+          "p95Ms": 0.238333,
+          "p99Ms": 0.383238
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 3.66583e-05,
+          "p50Ms": 4e-05,
+          "p95Ms": 5.1e-05,
+          "p99Ms": 7e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.39408e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "before",
+      "scene": "mixed",
+      "props": 1000,
+      "repeat": 1,
+      "characters": 32,
+      "state_checksum": "6770157144768668329",
+      "phases": {
+        "frame": {
+          "meanMs": 0.351793,
+          "p50Ms": 0.31027,
+          "p95Ms": 0.52556,
+          "p99Ms": 0.764163
+        },
+        "edits": {
+          "meanMs": 0.00108036,
+          "p50Ms": 0.000871,
+          "p95Ms": 0.001433,
+          "p99Ms": 0.001853
+        },
+        "animationAndPalette": {
+          "meanMs": 0.192516,
+          "p50Ms": 0.149702,
+          "p95Ms": 0.321247,
+          "p99Ms": 0.479552
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.0951677,
+          "p50Ms": 0.067561,
+          "p95Ms": 0.197703,
+          "p99Ms": 0.297061
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0357812,
+          "p50Ms": 0.028032,
+          "p95Ms": 0.066299,
+          "p99Ms": 0.136472
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.0614084,
+          "p50Ms": 0.051357,
+          "p95Ms": 0.109752,
+          "p99Ms": 0.170603
+        },
+        "sceneTransforms": {
+          "meanMs": 0.155381,
+          "p50Ms": 0.135531,
+          "p95Ms": 0.236771,
+          "p99Ms": 0.372402
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 5.53208e-05,
+          "p50Ms": 4e-05,
+          "p95Ms": 5e-05,
+          "p99Ms": 6e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.42375e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 4e-05
+        }
+      }
+    },
+    {
+      "variant": "both",
+      "scene": "mixed",
+      "props": 5000,
+      "repeat": 1,
+      "characters": 64,
+      "state_checksum": "2229962235172336909",
+      "phases": {
+        "frame": {
+          "meanMs": 1.13357,
+          "p50Ms": 1.06977,
+          "p95Ms": 1.55123,
+          "p99Ms": 2.18149
+        },
+        "edits": {
+          "meanMs": 0.00376768,
+          "p50Ms": 0.003315,
+          "p95Ms": 0.004196,
+          "p99Ms": 0.007061
+        },
+        "animationAndPalette": {
+          "meanMs": 0.389992,
+          "p50Ms": 0.334126,
+          "p95Ms": 0.627311,
+          "p99Ms": 0.975107
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.199321,
+          "p50Ms": 0.140429,
+          "p95Ms": 0.399943,
+          "p99Ms": 0.618989
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0675288,
+          "p50Ms": 0.056634,
+          "p95Ms": 0.133428,
+          "p99Ms": 0.221178
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.122917,
+          "p50Ms": 0.104165,
+          "p95Ms": 0.196281,
+          "p99Ms": 0.324592
+        },
+        "sceneTransforms": {
+          "meanMs": 0.734328,
+          "p50Ms": 0.686499,
+          "p95Ms": 1.00522,
+          "p99Ms": 1.5628
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 4.5215e-05,
+          "p50Ms": 4.1e-05,
+          "p95Ms": 6e-05,
+          "p99Ms": 0.00015
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.40633e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "palette",
+      "scene": "mixed",
+      "props": 5000,
+      "repeat": 1,
+      "characters": 64,
+      "state_checksum": "2229962235172336909",
+      "phases": {
+        "frame": {
+          "meanMs": 1.31272,
+          "p50Ms": 1.25771,
+          "p95Ms": 1.68145,
+          "p99Ms": 2.40769
+        },
+        "edits": {
+          "meanMs": 0.0041369,
+          "p50Ms": 0.003284,
+          "p95Ms": 0.003806,
+          "p99Ms": 0.00654
+        },
+        "animationAndPalette": {
+          "meanMs": 0.410304,
+          "p50Ms": 0.355297,
+          "p95Ms": 0.651947,
+          "p99Ms": 0.892393
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.223961,
+          "p50Ms": 0.157965,
+          "p95Ms": 0.440744,
+          "p99Ms": 0.689202
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0659188,
+          "p50Ms": 0.056664,
+          "p95Ms": 0.112036,
+          "p99Ms": 0.172907
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.120205,
+          "p50Ms": 0.103023,
+          "p95Ms": 0.191985,
+          "p99Ms": 0.298373
+        },
+        "sceneTransforms": {
+          "meanMs": 0.892832,
+          "p50Ms": 0.851243,
+          "p95Ms": 1.12358,
+          "p99Ms": 1.46222
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 5.22908e-05,
+          "p50Ms": 4e-05,
+          "p95Ms": 0.00012,
+          "p99Ms": 0.00018
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 3.96675e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "before",
+      "scene": "mixed",
+      "props": 5000,
+      "repeat": 1,
+      "characters": 64,
+      "state_checksum": "2229962235172336909",
+      "phases": {
+        "frame": {
+          "meanMs": 1.18174,
+          "p50Ms": 1.11563,
+          "p95Ms": 1.43658,
+          "p99Ms": 1.71683
+        },
+        "edits": {
+          "meanMs": 0.00341374,
+          "p50Ms": 0.003105,
+          "p95Ms": 0.003885,
+          "p99Ms": 0.004977
+        },
+        "animationAndPalette": {
+          "meanMs": 0.353814,
+          "p50Ms": 0.308307,
+          "p95Ms": 0.542084,
+          "p99Ms": 0.673119
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.178565,
+          "p50Ms": 0.136863,
+          "p95Ms": 0.361607,
+          "p99Ms": 0.462517
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0611458,
+          "p50Ms": 0.056464,
+          "p95Ms": 0.086028,
+          "p99Ms": 0.150523
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.113844,
+          "p50Ms": 0.105005,
+          "p95Ms": 0.14204,
+          "p99Ms": 0.207357
+        },
+        "sceneTransforms": {
+          "meanMs": 0.820112,
+          "p50Ms": 0.779036,
+          "p95Ms": 0.967455,
+          "p99Ms": 1.12614
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 5.58183e-05,
+          "p50Ms": 4e-05,
+          "p95Ms": 5e-05,
+          "p99Ms": 8e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.36342e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "before",
+      "scene": "dynamic",
+      "props": 1000,
+      "repeat": 2,
+      "characters": 0,
+      "state_checksum": "9500807816821981242",
+      "phases": {
+        "frame": {
+          "meanMs": 0.144647,
+          "p50Ms": 0.125165,
+          "p95Ms": 0.219335,
+          "p99Ms": 0.320406
+        },
+        "edits": {
+          "meanMs": 0.000869467,
+          "p50Ms": 0.000731,
+          "p95Ms": 0.001092,
+          "p99Ms": 0.001592
+        },
+        "animationAndPalette": {
+          "meanMs": 0.000186476,
+          "p50Ms": 0.00018,
+          "p95Ms": 0.00021,
+          "p99Ms": 0.000281
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 2.39425e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3e-05
+        },
+        "boneWorldTransforms": {
+          "meanMs": 2.36433e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "skinPalettePublication": {
+          "meanMs": 2.35533e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "sceneTransforms": {
+          "meanMs": 0.141872,
+          "p50Ms": 0.123222,
+          "p95Ms": 0.214748,
+          "p99Ms": 0.316539
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 2.63942e-05,
+          "p50Ms": 2.1e-05,
+          "p95Ms": 4e-05,
+          "p99Ms": 5e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.42675e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 5e-05
+        }
+      }
+    },
+    {
+      "variant": "palette",
+      "scene": "dynamic",
+      "props": 1000,
+      "repeat": 2,
+      "characters": 0,
+      "state_checksum": "9500807816821981242",
+      "phases": {
+        "frame": {
+          "meanMs": 0.149147,
+          "p50Ms": 0.126578,
+          "p95Ms": 0.240377,
+          "p99Ms": 0.335658
+        },
+        "edits": {
+          "meanMs": 0.000924084,
+          "p50Ms": 0.000751,
+          "p95Ms": 0.001272,
+          "p99Ms": 0.001633
+        },
+        "animationAndPalette": {
+          "meanMs": 0.000199503,
+          "p50Ms": 0.000181,
+          "p95Ms": 0.0002,
+          "p99Ms": 0.0003
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 2.3685e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "boneWorldTransforms": {
+          "meanMs": 2.37408e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "skinPalettePublication": {
+          "meanMs": 2.41325e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "sceneTransforms": {
+          "meanMs": 0.146146,
+          "p50Ms": 0.124445,
+          "p95Ms": 0.233397,
+          "p99Ms": 0.327857
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 3.27392e-05,
+          "p50Ms": 3e-05,
+          "p95Ms": 8e-05,
+          "p99Ms": 0.00011
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.39142e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "both",
+      "scene": "dynamic",
+      "props": 1000,
+      "repeat": 2,
+      "characters": 0,
+      "state_checksum": "9500807816821981242",
+      "phases": {
+        "frame": {
+          "meanMs": 0.113053,
+          "p50Ms": 0.093899,
+          "p95Ms": 0.195329,
+          "p99Ms": 0.320265
+        },
+        "edits": {
+          "meanMs": 0.000875237,
+          "p50Ms": 0.000711,
+          "p95Ms": 0.001181,
+          "p99Ms": 0.001512
+        },
+        "animationAndPalette": {
+          "meanMs": 0.000185677,
+          "p50Ms": 0.000181,
+          "p95Ms": 0.000191,
+          "p99Ms": 0.00027
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 2.33708e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "boneWorldTransforms": {
+          "meanMs": 2.37425e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "skinPalettePublication": {
+          "meanMs": 2.42383e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        },
+        "sceneTransforms": {
+          "meanMs": 0.110424,
+          "p50Ms": 0.091976,
+          "p95Ms": 0.190813,
+          "p99Ms": 0.316189
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 2.67833e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 5e-05,
+          "p99Ms": 5.1e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.3625e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "before",
+      "scene": "mixed",
+      "props": 1000,
+      "repeat": 2,
+      "characters": 32,
+      "state_checksum": "6770157144768668329",
+      "phases": {
+        "frame": {
+          "meanMs": 0.350292,
+          "p50Ms": 0.318142,
+          "p95Ms": 0.522986,
+          "p99Ms": 0.702913
+        },
+        "edits": {
+          "meanMs": 0.000991741,
+          "p50Ms": 0.000871,
+          "p95Ms": 0.001382,
+          "p99Ms": 0.001823
+        },
+        "animationAndPalette": {
+          "meanMs": 0.186629,
+          "p50Ms": 0.149592,
+          "p95Ms": 0.312424,
+          "p99Ms": 0.429327
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.0946993,
+          "p50Ms": 0.067219,
+          "p95Ms": 0.200828,
+          "p99Ms": 0.319264
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0312191,
+          "p50Ms": 0.028252,
+          "p95Ms": 0.048562,
+          "p99Ms": 0.095321
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.0605187,
+          "p50Ms": 0.051226,
+          "p95Ms": 0.118636,
+          "p99Ms": 0.181059
+        },
+        "sceneTransforms": {
+          "meanMs": 0.159614,
+          "p50Ms": 0.138255,
+          "p95Ms": 0.256911,
+          "p99Ms": 0.382057
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 3.28592e-05,
+          "p50Ms": 3e-05,
+          "p95Ms": 5e-05,
+          "p99Ms": 6e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.37333e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "palette",
+      "scene": "mixed",
+      "props": 1000,
+      "repeat": 2,
+      "characters": 32,
+      "state_checksum": "6770157144768668329",
+      "phases": {
+        "frame": {
+          "meanMs": 0.42738,
+          "p50Ms": 0.351301,
+          "p95Ms": 0.774929,
+          "p99Ms": 2.12638
+        },
+        "edits": {
+          "meanMs": 0.00129401,
+          "p50Ms": 0.001002,
+          "p95Ms": 0.001703,
+          "p99Ms": 0.002654
+        },
+        "animationAndPalette": {
+          "meanMs": 0.226658,
+          "p50Ms": 0.166276,
+          "p95Ms": 0.432001,
+          "p99Ms": 1.08954
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.121152,
+          "p50Ms": 0.070134,
+          "p95Ms": 0.274216,
+          "p99Ms": 0.604968
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0379143,
+          "p50Ms": 0.028152,
+          "p95Ms": 0.088381,
+          "p99Ms": 0.24271
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.067429,
+          "p50Ms": 0.050866,
+          "p95Ms": 0.14125,
+          "p99Ms": 0.298102
+        },
+        "sceneTransforms": {
+          "meanMs": 0.195231,
+          "p50Ms": 0.143473,
+          "p95Ms": 0.352272,
+          "p99Ms": 1.06436
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 4.80433e-05,
+          "p50Ms": 4.1e-05,
+          "p95Ms": 0.0001,
+          "p99Ms": 0.00017
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.33075e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3e-05
+        }
+      }
+    },
+    {
+      "variant": "both",
+      "scene": "mixed",
+      "props": 1000,
+      "repeat": 2,
+      "characters": 32,
+      "state_checksum": "6770157144768668329",
+      "phases": {
+        "frame": {
+          "meanMs": 0.293813,
+          "p50Ms": 0.259926,
+          "p95Ms": 0.43122,
+          "p99Ms": 0.532279
+        },
+        "edits": {
+          "meanMs": 0.000879385,
+          "p50Ms": 0.000811,
+          "p95Ms": 0.001272,
+          "p99Ms": 0.001642
+        },
+        "animationAndPalette": {
+          "meanMs": 0.176132,
+          "p50Ms": 0.145526,
+          "p95Ms": 0.283961,
+          "p99Ms": 0.382568
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.0890353,
+          "p50Ms": 0.066479,
+          "p95Ms": 0.182601,
+          "p99Ms": 0.243551
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0312787,
+          "p50Ms": 0.028001,
+          "p95Ms": 0.048502,
+          "p99Ms": 0.101681
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.0556617,
+          "p50Ms": 0.049834,
+          "p95Ms": 0.094991,
+          "p99Ms": 0.145245
+        },
+        "sceneTransforms": {
+          "meanMs": 0.114321,
+          "p50Ms": 0.10153,
+          "p95Ms": 0.177643,
+          "p99Ms": 0.256741
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 3.3505e-05,
+          "p50Ms": 3e-05,
+          "p95Ms": 5.1e-05,
+          "p99Ms": 6.1e-05
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 5.47425e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3.1e-05,
+          "p99Ms": 6e-05
+        }
+      }
+    },
+    {
+      "variant": "before",
+      "scene": "mixed",
+      "props": 5000,
+      "repeat": 2,
+      "characters": 64,
+      "state_checksum": "2229962235172336909",
+      "phases": {
+        "frame": {
+          "meanMs": 1.20549,
+          "p50Ms": 1.15441,
+          "p95Ms": 1.43202,
+          "p99Ms": 1.66268
+        },
+        "edits": {
+          "meanMs": 0.0033404,
+          "p50Ms": 0.003175,
+          "p95Ms": 0.003836,
+          "p99Ms": 0.00653
+        },
+        "animationAndPalette": {
+          "meanMs": 0.351977,
+          "p50Ms": 0.310641,
+          "p95Ms": 0.529736,
+          "p99Ms": 0.616154
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.177503,
+          "p50Ms": 0.138365,
+          "p95Ms": 0.352924,
+          "p99Ms": 0.41822
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0601518,
+          "p50Ms": 0.056634,
+          "p95Ms": 0.078817,
+          "p99Ms": 0.128951
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.114118,
+          "p50Ms": 0.106027,
+          "p95Ms": 0.158605,
+          "p99Ms": 0.223942
+        },
+        "sceneTransforms": {
+          "meanMs": 0.845771,
+          "p50Ms": 0.806497,
+          "p95Ms": 1.01038,
+          "p99Ms": 1.16317
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 4.20092e-05,
+          "p50Ms": 4e-05,
+          "p95Ms": 5.1e-05,
+          "p99Ms": 0.00013
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.3615e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "palette",
+      "scene": "mixed",
+      "props": 5000,
+      "repeat": 2,
+      "characters": 64,
+      "state_checksum": "2229962235172336909",
+      "phases": {
+        "frame": {
+          "meanMs": 1.15999,
+          "p50Ms": 1.10196,
+          "p95Ms": 1.41797,
+          "p99Ms": 1.62878
+        },
+        "edits": {
+          "meanMs": 0.00338826,
+          "p50Ms": 0.002954,
+          "p95Ms": 0.003545,
+          "p99Ms": 0.005658
+        },
+        "animationAndPalette": {
+          "meanMs": 0.344777,
+          "p50Ms": 0.297191,
+          "p95Ms": 0.535273,
+          "p99Ms": 0.649813
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.174457,
+          "p50Ms": 0.135491,
+          "p95Ms": 0.355678,
+          "p99Ms": 0.475725
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0605632,
+          "p50Ms": 0.056294,
+          "p95Ms": 0.084816,
+          "p99Ms": 0.136993
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.109573,
+          "p50Ms": 0.101951,
+          "p95Ms": 0.150453,
+          "p99Ms": 0.22291
+        },
+        "sceneTransforms": {
+          "meanMs": 0.807579,
+          "p50Ms": 0.778555,
+          "p95Ms": 0.953383,
+          "p99Ms": 1.14311
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 4.89067e-05,
+          "p50Ms": 5e-05,
+          "p95Ms": 6e-05,
+          "p99Ms": 0.00018
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 2.38742e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    },
+    {
+      "variant": "both",
+      "scene": "mixed",
+      "props": 5000,
+      "repeat": 2,
+      "characters": 64,
+      "state_checksum": "2229962235172336909",
+      "phases": {
+        "frame": {
+          "meanMs": 1.00934,
+          "p50Ms": 0.943119,
+          "p95Ms": 1.24575,
+          "p99Ms": 1.53836
+        },
+        "edits": {
+          "meanMs": 0.00316319,
+          "p50Ms": 0.002884,
+          "p95Ms": 0.003686,
+          "p99Ms": 0.005619
+        },
+        "animationAndPalette": {
+          "meanMs": 0.344643,
+          "p50Ms": 0.303681,
+          "p95Ms": 0.530838,
+          "p99Ms": 0.617516
+        },
+        "clipSamplingAndBlend": {
+          "meanMs": 0.174471,
+          "p50Ms": 0.135471,
+          "p95Ms": 0.348838,
+          "p99Ms": 0.428145
+        },
+        "boneWorldTransforms": {
+          "meanMs": 0.0605534,
+          "p50Ms": 0.056243,
+          "p95Ms": 0.081842,
+          "p99Ms": 0.125596
+        },
+        "skinPalettePublication": {
+          "meanMs": 0.109449,
+          "p50Ms": 0.102062,
+          "p95Ms": 0.146347,
+          "p99Ms": 0.195731
+        },
+        "sceneTransforms": {
+          "meanMs": 0.657643,
+          "p50Ms": 0.617436,
+          "p95Ms": 0.796561,
+          "p99Ms": 0.985382
+        },
+        "render3dIncludingWaits": {
+          "meanMs": 4.21058e-05,
+          "p50Ms": 4e-05,
+          "p95Ms": 6e-05,
+          "p99Ms": 0.00015
+        },
+        "compositeAndPresentIncludingWaits": {
+          "meanMs": 3.65617e-05,
+          "p50Ms": 2e-05,
+          "p95Ms": 3e-05,
+          "p99Ms": 3.1e-05
+        }
+      }
+    }
+  ]
+}

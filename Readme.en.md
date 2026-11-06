@@ -17,6 +17,32 @@ Evolutionary Vision Engine
 
 [中文版](Readme.md)
 
+## Introduction
+
+**EVEngine (Evolutionary Vision Engine) is an open-source game engine built for fast iteration and collaboration between developers and AI agents. It combines C++20 and Vulkan with EveScript (Squirrel-compatible) gameplay scripting, supporting 2D, third-person 3D, and mixed 2D/3D games.**
+
+Its goal is to shorten the path from an idea to playable mechanics, observation, debugging, and verified changes. Individuals and small teams express gameplay in scripts, use native modules for rendering and simulation, and bring editing tools and AI agents into the actual execution and verification loop, iterating from a prototype toward a distributable game.
+
+### Core features
+
+- **Start making a game by writing scripts.** A direct, LÖVE-style workflow starts with `config.nut` and `main.nut` in an ordinary directory. Download a prebuilt SDK to run it. Add performance-sensitive extensions through C++ shared-library plugins when needed. See the [EveScript guide](docs/en/usr/EVESCRIPT.md) and [native plugin example](examples/native-plugin/).
+- **Edit and debug while the game runs.** Built-in asset management, script and asset hot reload, game-loop pausing, DAP debugging, and development snapshots support repeated iteration on events, logic, and cutscenes. Declarative UI shares the game runtime, allowing scripts to build custom editing tools. Script class scanning and property panels let you inspect and edit instance fields, with panels synchronizing property changes. See [DevLab](examples/devlab/README.en.md) and the [terrain editor](examples/terrain-editor/).
+- **AI can see the game and operate it through explicit interfaces.** Desktop MCP tools cover script API discovery, errors, runtime inspection, debugging, and engine-rendered screenshots. Entity geometry views, frame-buffer inspection, and image contact sheets help agents diagnose actual visual output. Games can expose operations and observations for agent playtesting; a separate `eve mcp` host can create native editor windows. See [AI and MCP](docs/en/usr/AI-MCP.md), [AI Game](examples/ai-game/README.en.md), and [AI Editor](examples/ai-editor/README.en.md).
+- **Bring 2D assets into a real 3D scene.** Alongside conventional 2D and 3D rendering, HD-2D extrudes tilemaps into terrain and places animated, camera-facing sprites in the 3D world with depth and shadows. Layered avatars and sprite stacking offer further ways to combine visual styles. See the [HD-2D riverside scene](examples/hd2d-riverside/) and [render gallery](docs/images/examples/README.en.md).
+- **Build mechanics out of interactive simulations.** PixelWorld provides chunked sand, water, and fire simulation with material reactions, heat transfer, and phase changes, supported by command replay, checkpoint divergence diagnostics, and incremental interest-area transfers. Geometry destruction uses pre-cut geometry, connection graphs, and field-driven bond breaking. Fluids, cloth, and particles provide additional building blocks. See [PixelWorld](examples/pixelworld/), [basic destruction](examples/destruction-basic/), and [cluster destruction](examples/destruction-clusters/).
+- **Reuse animation assets and control motion procedurally.** Skeletal animation includes state machines, blending, root motion, IK, bone-mapped retargeting, and Motion Matching. Control-based procedural animation uses targets, damping, and impulses for dynamic responses. See the [animation guide](docs/usr/modules/animation.md) (Chinese), [retargeting example](examples/ironwarden-retarget/), and [climbing / Motion Matching example](examples/climbing-motion-matching/).
+
+### Built-in systems
+
+Rendering, simulation, gameplay, and tools are organized into modules that can be selected through build configuration. See the [module handbook](docs/en/usr/MODULES.md) for interfaces and integration details.
+
+- **Scenes and presentation:** tilemaps and map editing, 2D/3D cameras, HD-2D, layered avatars, sprite stacking, 3D models and skeletal animation, particles, UI, and audio.
+- **Physics and worlds:** Box2D / Box3D physics, fluids, ropes and cloth, geometry destruction, pixel-material simulation, procedural generation, hex maps, and building placement.
+- **Gameplay and AI:** RPG attributes / effects / abilities, combat, inventory and equipment, dialogue, NPC state trees and sensing, RTS, tactics, weapons, and vehicles.
+- **Data and development:** a virtual filesystem, asset import and cooking, SQLite / JSON and save interfaces, localization, networking, script ECS, hot reload, runtime editing, and AI/MCP tools.
+
+Compose these systems into RPG, action, or strategy mechanics, then keep editing, debugging, and verifying in the same runtime: that is EVEngine's central development approach. Start with the [user guide](docs/en/usr/README.md) and runnable examples, and use the API catalog matching your engine version.
+
 ## Documentation
 
 ### Native Intel macOS x86_64 builds
@@ -41,8 +67,8 @@ other hosts, targets and compilers. Engine builds use
 `make test/macosx-x86_64[-debug]` for host tests. The existing `make debug`
 default stays unchanged.
 
-CI uses native `macos-15-intel` runners and follows `build_type` for Debug,
-Release, or both. Like Windows ARM64, it compiles and links the engine and test
+Release CI uses native `macos-15-intel` runners for both Debug and Release.
+The Intel lane is absent from the daily CI workflow. Like Windows ARM64, it compiles and links the engine and test
 binaries using the matching prebuilt dependencies. These lanes do not run
 graphics tests. SDK release jobs additionally validate native plugins and packaged
 games on runners matching both architectures.
@@ -102,15 +128,15 @@ Linux graphics tests still require a display/Vulkan ICD and audio backend;
 use the aarch64 system's installed Lavapipe ICD rather than an x86_64 ICD path.
 These explicit targets do not change the existing `make debug` default.
 
-CI builds these targets on native GitHub-hosted `windows-11-arm` and
-`ubuntu-24.04-arm` runners. The lanes follow the existing Windows/Linux change
-scopes: normal runs build Debug; `build_type=release` builds Release and
-`build_type=both` builds both configurations. Each lane compiles and links the
+Release CI builds both Debug and Release on native GitHub-hosted
+`windows-11-arm` and `ubuntu-24.04-arm` runners. These lanes are absent
+from the daily CI workflow. Each lane compiles and links the
 engine and test binaries, requiring the matching ARM64 third-party release
 packages (`EVENGINE_THIRD_PARTY_MODE=PREBUILT`). Dependency source fixes and binary
 packaging belong to the third-party repository. Missing packages fail explicitly
-instead of rebuilding dependencies in these CI lanes. These are build checks;
-ARM64 graphics tests and SDK release packaging are not part of these lanes.
+instead of rebuilding dependencies in these CI lanes. ARM64 tests run on the
+native software Vulkan backend. SDK Release then builds and validates the
+matching Windows/Linux ARM64 archives.
 
 English user guides are maintained by hand; Chinese is the authoritative source. Guides not yet translated are marked Chinese in the English handbook.
 
@@ -121,43 +147,6 @@ English user guides are maintained by hand; Chinese is the authoritative source.
 - [Engine developer docs](docs/en/dev/README.md): for engine maintainers and contributors — architecture, module design, testing strategy, and implementation notes.
 
 > **For game developers:** you do **not** need to compile EVEngine. Download the prebuilt SDK for your platform from the [official release page](https://github.com/EVEngine/EVEngine/releases), unzip it, and start creating — no Git, CMake, C++ compiler, or Vulkan SDK required. Only developers who want to modify the engine itself need to read "Building from source" below.
-
-## Introduction
-
-Many game engines are slow to iterate, hard to debug, and awkward for rapid prototyping. EVEngine is designed to be a simple, practical engine focused on 2D, third-person 3D, and mixed 2D/3D gameplay components — not a heavyweight 3D scene-management suite.
-
-Design goals:
-
-> Status legend: ✅ shipped · 🟡 partially shipped · 🛠 roadmap (not implemented yet)
-
-1. ✅ A Love2D-style interpretive engine that loads scripts and data directly
-2. ✅ Many high-performance C++ modules; you can compile your own C++ libraries as shared libs and interact with them directly (see `examples/native-plugin`)
-3. 🟡 A full development stack: your logic can be edited with GUI tools; the editor runtime is the game runtime—only the shipping runtime strips DevTools (or you can keep them for player modding); scripts can build editing GUIs at runtime (see `examples/terrain-editor`)
-4. ✅ Built-in asset management and hot reload—no separate pipeline required
-5. 🛠 Class scanning with auto-generated editing GUIs (property reflection not landed yet; `editor.Inspector` currently registers fields manually—see roadmap)
-6. 🟡 GUIs that create and sync live from scripts (declarative `ui` module + hot reload; reflective two-way binding is on the roadmap)
-7. ✅ Pause the game loop for debugging (`eve run --debug`, F-keys / DAP / snapshots, see [DevLab](examples/devlab/README.en.md))
-8. 🟡 Independent state-machine models (e.g. animation) exist; systematic "edit code → affected state machines hot-update" support is on the roadmap
-9. ✅ Mixed 3D and 2D rendering
-
-> Fastest way to feel goals 3 / 4 / 7: `make devlab` (a developer-experience example that walks you through F4 / F6 / F7 / F9 and hot reload).
-
-Built-in systems:
-
-1. 2D tilemap — with an extensible map editor
-2. 2D camera
-3. Simple database
-4. Box2D / Box3D physics
-5. RPG framework
-6. Extensible combat model components
-7. Dialogs and scripting
-8. Layered avatar rendering
-9. 2D fluid engine (`Physics.newFluid2D`; also interactive cloth via `newCloth`)
-10. Particle system
-11. Sprite-stacking pseudo-3D
-12. Real 3D model rendering
-
-Build an RPG with minimal ceremony, with fast edit/debug for events, logic, and cutscene scripts — for example, hot-patch a function in a script and re-run it to preview the effect.
 
 ## Quick start (game developers: download, no build)
 
@@ -271,8 +260,9 @@ code-model flags. `PREBUILT` requires a supported package. An explicit
 `EVENGINE_THIRD_PARTY_BINARY_DIR` still supports a compatible offline/local prefix.
 Changing the dependency release requires updating both pin values after the upstream
 release assets have been published. Dependency patches are owned and applied by the
-pinned third-party repository; engine-owned `external/ECS.hpp` and `external/zeroerr`
-patches remain here.
+pinned third-party repository. ECS and zeroerr remain independently updated
+engine submodules; their fixes live directly in their own source repositories.
+The engine does not maintain replacement dependency headers or patch files.
 
 These are complete library install trees with headers, static/shared libraries,
 runtime binaries, metadata and license notices. You still need platform build tools,
@@ -526,6 +516,16 @@ See [module trimming](docs/en/usr/TRIMMING.md) for the `minimal`, `2d`, `3d`,
 
 ### Match CI locally
 
+Daily checks live in `.github/workflows/ci.yml`. Release-only platforms and
+checks (Intel macOS, Windows/Linux ARM64, Dawn, examples, profiles and coverage)
+live in `.github/workflows/release-ci.yml`, so they do not appear as skipped
+jobs in daily runs. Daily example changes smoke only the changed examples;
+release validation still smokes every example. The `Release CI` workflow (`release.yml`) runs release validation, then `SDK Release`,
+which builds Windows x64/ARM64, Linux x64/ARM64, macOS ARM64/x86_64, Android and
+iOS SDKs and verifies the complete eight-archive set before publishing.
+Run `Release CI` with a pre-release tag for the complete test and SDK pipeline;
+`release-ci.yml` is the reusable validation stage.
+
 CI's **Source quality** job is `make check` (no compiler, a few minutes). It
 needs `python3`, `ruff`, `pillow`, and clang-format 18 plus `git clang-format`:
 
@@ -534,6 +534,43 @@ python3 -m pip install ruff pillow
 make check                 # vs origin/dev
 make check CI_BASE=<sha>   # vs a specific PR base
 ```
+
+Daily change classification also selects steps within jobs. Documentation-only
+changes skip source gates and native tests. Repository-script changes run Python
+lint and script tests. Example-only changes build the Linux engine without unit
+tests and smoke only changed examples; shared example inputs select all examples.
+Module C++ changes use the existing `test_impact.py` index to select transitive
+consumers on Windows, macOS, Linux and ASan. Shared-library or monolithic target
+closures can still select broad sets. Unknown dependencies and core/build-system
+changes retain full native testing. Compilation remains necessary to obtain a
+trustworthy dependency index; selection does not imply module-only compilation.
+Release validation retains the complete test and example coverage.
+
+Source checks and script test modules share a bounded worker pool. Adjust it
+with `make check SOURCE_QUALITY_JOBS=2`; run only script tests with
+`make check/scripts-test`. The check inventory lives in
+`cmake/tasks/source-quality.mk`; each entry is independently runnable, such as
+`make check/bindings` or `make check/architecture-lint CI_BASE=<sha>`.
+
+Runtime checks consume an existing build and can also run independently:
+
+```sh
+make smoke/examples SMOKE_EXAMPLES="basic tree-generator"
+make test/devlab
+make test/headless-gpu
+make check/resource-fixtures
+make check/resource-results RUNTIME_BUILD_DIR=build/linux-debug
+make check/resource-exports
+make package/smoke-runtime RUNTIME_BUILD_DIR=build/linux SMOKE_RUNTIME_ARCHIVE=build/smoke.tar.gz
+```
+
+The runtime targets live in `cmake/tasks/runtime-checks.mk`. On headless Linux,
+use the software Vulkan/null audio environment described above and wrap windowed
+checks with `xvfb-run -a`. `test/headless-gpu` runs without a display server.
+The Linux smoke archive target bundles the executable and non-system shared
+libraries; its consumer needs matching system packages. Set `EVE` to run example
+smokes with an executable restored from an artifact, or `RUNTIME_EVE` to override
+the executable used by DevLab and runtime packaging.
 
 The Windows/Linux debug compile lane also treats warnings as errors. After
 `make check`:
@@ -627,6 +664,7 @@ Optional CMake variables:
 | Variable | Default | Notes |
 |----------|---------|-------|
 | `CMAKE_BUILD_TYPE` | `Debug` (if unset) | `Debug` or `Release`; affects third-party install path suffixes (e.g. `win32-debug`) |
+| `EVENGINE_DEBUG_LEVEL` | `normal` | Debug only: `normal` (`-g0 -O2` / MSVC `/Od`, no DWARF) or `detail` (`-g2 -O1` / MSVC `/Zi /O1`). Makefile: `DEBUG_LEVEL=` |
 | `BUILD_PLATFORM` | Auto from host | `win32` / `linux` / `macosx`, etc. |
 | `BUILD_TESTING` | `ON` | Build unit tests |
 | `EVENGINE_COMPILER_CACHE` | `AUTO` | `AUTO` uses `sccache` when found; `SCCACHE` requires it; `CCACHE_HARDLINK` opts into Windows/Ninja/MSVC object sharing; `OFF` disables auto-detection |

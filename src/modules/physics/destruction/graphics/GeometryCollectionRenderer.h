@@ -18,6 +18,7 @@ namespace eve::physics {
 
 class GeometryCollectionInstance;
 class CollapseAnimation;
+class CollapsePlayback;
 struct FractureGeometry;
 struct BonePresentation;
 
@@ -133,7 +134,24 @@ public:
     [[nodiscard]] eve::Result<void> submitAnimation(const CollapseAnimation& animation, float seconds, float offsetX,
                                                     float offsetY, float offsetZ);
 
+    /** @brief Prepare meshes for a frozen player without retaining its clock.
+     * @ownership Borrows player during the call; shares its immutable geometry. Graphics outlives renderer.
+     * @thread Render thread only, no callbacks.
+     * @cost GPU allocation proportional to triangles; prepare once per renderer and asset.
+     * @return Same checked preparation status as prepareAnimation.
+     */
+    [[nodiscard]] eve::Result<void> preparePlayback(const CollapsePlayback& player, graphics::Graphics* graphics);
+    /** @brief Submit this player's placed poses to forward, shadow and depth passes.
+     * @ownership Copies samples during call; no player reference survives the call.
+     * @thread Render thread only, no callbacks. Failed submission disables the prior submission.
+     * @cost Linear sampling and vertex upload per frame; prepared resources are reused across passes.
+     * @return Checked status; requires preparePlayback and embedded mesh geometry.
+     */
+    [[nodiscard]] eve::Result<void> submitPlayback(const CollapsePlayback& player);
+
 private:
+    [[nodiscard]] eve::Result<void> beginAnimationSubmission(const CollapseAnimation& animation);
+    [[nodiscard]] eve::Result<void> finishAnimationSubmission();
     struct DepthRegistration;
     std::shared_ptr<DepthRegistration> depthRegistration_;
     [[nodiscard]] eve::Result<void>    registerDepthContribution();

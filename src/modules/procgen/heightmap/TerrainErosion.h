@@ -32,7 +32,8 @@ struct TerrainLegacyHydraulicSettings {
  * @param settings Nonnegative iterations, positive rain frequency and dissolve rate in [0,1].
  * @return Cells where height or sediment changed, or InvalidArgument; failure preserves both outputs.
  * @throws std::bad_alloc Both outputs remain unchanged.
- * @thread Synchronous caller-owned access; inputs are snapshotted and no references, callbacks, RNG or clock remain.
+ * @thread Synchronous caller-owned access; inputs stay unchanged until final output publication.
+ * No references, callbacks, RNG or clock remain after return.
  * Each iteration adds rain when iteration modulo rainFrequency is zero, accumulates four-way flux with TIME=0.2,
  * updates water, moves newly dissolved material to every strictly lower 8-neighbor in proportion to height drop,
  * evaporates 1/rainFrequency, and clears the sediment delta. The unused source water-diff raster is omitted.
@@ -71,7 +72,7 @@ struct TerrainLegacySteepestErosionSettings {
 /**
  * @brief Apply Pcg HeightMap.ErodeThermal's ordered steepest-cardinal transport with hardness.
  * @param heights Exclusively borrowed finite terrain raster.
- * @param hardness Borrowed finite [0,1] raster of any positive size; snapshotted before mutation.
+ * @param hardness Borrowed finite [0,1] raster of any positive size; read before final output publication.
  * @param settings Finite talus bounds in [0,1], minimum not above maximum, and nonnegative iterations.
  * @return Changed samples or InvalidArgument; failure preserves heights.
  * @throws std::bad_alloc Heights remains unchanged.

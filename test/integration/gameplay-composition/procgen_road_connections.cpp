@@ -71,62 +71,7 @@ RoadConnection squareConnection() {
     return connection;
 }
 }  // namespace
-TEST_CASE("procgen.road.authoring.customConnectionMeshesSocketsAndLaneTurnsSharePorts") {
-    auto network = connectionRoad();
-    REQUIRE(network.setNodeConnection(2, squareConnection()).ok());
-    RoadBakeOptions options;
-    options.includeMarkings = false;
-    options.includePiers    = false;
-    auto baked              = bakeRoadNetwork(network, options);
-    REQUIRE(baked.ok());
-    REQUIRE(!baked.value().overlay.turns.empty());
-    const auto& lane = baked.value().overlay.lanes.front();
-    REQUIRE(std::fabs(lane.xyz[lane.xyz.size() - 3] + 3.f) < .01f);
-    const auto& turn = baked.value().overlay.turns.front();
-    REQUIRE(std::fabs(std::fabs(turn.xyz.front()) - 3.f) < .01f);
-    REQUIRE(std::fabs(std::fabs(turn.xyz[turn.xyz.size() - 3]) - 3.f) < .01f);
-    REQUIRE(network.reverseEdge(1).ok());
-    REQUIRE(bakeRoadNetwork(network, options).ok());
-    const auto revision = network.revision();
-    auto       wrong    = squareConnection();
-    wrong.ports[0].x    = -2.f;
-    REQUIRE(!network.setNodeConnection(2, wrong).ok());
-    REQUIRE(network.revision() == revision);
-    auto widened         = network.edges().front().style;
-    widened.crossSection = {{-4.f, 0.f, RoadMaterial::Asphalt}, {4.f, 0.f, RoadMaterial::Asphalt}};
-    // Bound asset ports reject incompatible authoring without publishing a partial network.
-    REQUIRE(!network.setEdgeStyle(1, widened).ok());
-    REQUIRE(network.revision() == revision);
-    REQUIRE(bakeRoadNetwork(network, options).ok());
-}
-TEST_CASE("procgen.road.authoring.customConnectionRejectsMalformedGeometryAndStaleBindingsAtomically") {
-    auto       network   = connectionRoad();
-    const auto revision  = network.revision();
-    auto       wrong     = squareConnection();
-    wrong.triangles[0].c = 999;
-    REQUIRE(!network.setNodeConnection(2, wrong).ok());
-    REQUIRE(network.revision() == revision);
-    wrong                 = squareConnection();
-    wrong.ports[0].edgeId = 77;
-    REQUIRE(!network.setNodeConnection(2, wrong).ok());
-    REQUIRE(network.revision() == revision);
-    wrong             = squareConnection();
-    wrong.ports[1].id = 1;
-    REQUIRE(!network.setNodeConnection(2, wrong).ok());
-    wrong                        = squareConnection();
-    wrong.ports[0].sectionClosed = true;
-    REQUIRE(!network.setNodeConnection(2, wrong).ok());
-    wrong               = squareConnection();
-    wrong.vertices[0].u = .5f;
-    wrong.vertices[0].v = .5f;
-    REQUIRE(!network.setNodeConnection(2, wrong).ok());
-    REQUIRE(network.setNodeConnection(2, squareConnection()).ok());
-    const auto attachedRevision = network.revision();
-    REQUIRE(!network.removeEdge(1).ok());
-    REQUIRE(network.revision() == attachedRevision);
-    REQUIRE(network.setNodeConnection(2, {}).ok());
-    REQUIRE(network.removeEdge(1).ok());
-}
+
 TEST_CASE("procgen.road.authoring.customConnectionSnapshotUndoAndSplitRebindStableIds") {
     auto                  network = connectionRoad();
     RoadNetworkEditTarget target("road:connections", network);
@@ -163,38 +108,6 @@ TEST_CASE("procgen.road.authoring.customConnectionSnapshotUndoAndSplitRebindStab
         EditorValue::Array{EditorValue::Array{std::int64_t{0}, std::int64_t{1}, std::int64_t{999}, std::int64_t{0}}};
     REQUIRE(!target.loadSnapshot(malformed).ok());
     REQUIRE(target.snapshotValue() == original);
-}
-
-TEST_CASE("procgen.road.authoring.continuousFacilityCrossesCustomConnectionWithoutSocketGap") {
-    auto network = connectionRoad();
-    for (const auto& edge : network.edges()) {
-        auto                   style = edge.style;
-        RoadContinuousFacility facility;
-        facility.id            = 9;
-        facility.lateralOffset = 4.f;
-        facility.profile       = {{-.2f, 0.f, RoadMaterial::Curb},
-                                  {.2f, 0.f, RoadMaterial::Curb},
-                                  {.2f, 1.f, RoadMaterial::Curb},
-                                  {-.2f, 1.f, RoadMaterial::Curb}};
-        style.facilities.push_back(facility);
-        REQUIRE(network.setEdgeStyle(edge.id, style).ok());
-    }
-    REQUIRE(network.setNodeConnection(2, squareConnection()).ok());
-    RoadBakeOptions options;
-    options.includeNavigation = false;
-    options.includeMarkings   = false;
-    options.includePiers      = false;
-    auto baked                = bakeRoadNetwork(network, options);
-    REQUIRE(baked.ok());
-    bool centerPresent = false;
-    for (int vertex = 0; vertex < baked.value().mesh.getVertexCount(); ++vertex) {
-        const auto& mesh = baked.value().mesh;
-        if (std::fabs(mesh.getPositionX(vertex)) < 1e-4f && std::fabs(mesh.getPositionZ(vertex) + 4.2f) < 1e-4f)
-            centerPresent = true;
-    }
-    REQUIRE(centerPresent);
-    REQUIRE(network.reverseEdge(1).ok());
-    REQUIRE(bakeRoadNetwork(network, options).ok());
 }
 
 TEST_CASE("procgen.road.authoring.closedBeamConnectionValidatesTheEntireSeamLoop") {

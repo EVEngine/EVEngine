@@ -295,10 +295,20 @@
 - `getBeginContactBodyBId(index: int)` → `int`；[绑定实现 L128](../../../../src/modules/physics/Physics.cpp#L128)。
 - `getBeginContactFixtureATag(index: int)` → `string`；[绑定实现 L129](../../../../src/modules/physics/Physics.cpp#L129)。
 - `getBeginContactFixtureBTag(index: int)` → `string`；[绑定实现 L130](../../../../src/modules/physics/Physics.cpp#L130)。
+- `getBeginTriggerCount()` → `int`；Sensor/Visitor 进入缓冲（与 World3D 同构）。
+- `getBeginTriggerSensorBodyId(index: int)` → `int`。
+- `getBeginTriggerVisitorBodyId(index: int)` → `int`。
+- `getBeginTriggerSensorFixtureTag(index: int)` → `string`。
+- `getBeginTriggerVisitorFixtureTag(index: int)` → `string`。
 - `getEndContactBodyAId(index: int)` → `int`；[绑定实现 L132](../../../../src/modules/physics/Physics.cpp#L132)。
 - `getEndContactBodyBId(index: int)` → `int`；[绑定实现 L133](../../../../src/modules/physics/Physics.cpp#L133)。
 - `getEndContactFixtureATag(index: int)` → `string`；[绑定实现 L134](../../../../src/modules/physics/Physics.cpp#L134)。
 - `getEndContactFixtureBTag(index: int)` → `string`；[绑定实现 L135](../../../../src/modules/physics/Physics.cpp#L135)。
+- `getEndTriggerCount()` → `int`。
+- `getEndTriggerSensorBodyId(index: int)` → `int`。
+- `getEndTriggerVisitorBodyId(index: int)` → `int`。
+- `getEndTriggerSensorFixtureTag(index: int)` → `string`。
+- `getEndTriggerVisitorFixtureTag(index: int)` → `string`。
 - `getGravityX()` → `float`；[绑定实现 L97](../../../../src/modules/physics/Physics.cpp#L97)。
 - `getGravityY()` → `float`；[绑定实现 L98](../../../../src/modules/physics/Physics.cpp#L98)。
 - `getImpactBodyAId(index: int)` → `int`；[绑定实现 L137](../../../../src/modules/physics/Physics.cpp#L137)。
@@ -450,3 +460,11 @@
 
 重建：`python3 scripts/generate_binding_contracts.py --json-output eve-api.json`，
 再运行 `python3 scripts/generate_user_api_reference.py --catalogue eve-api.json`。
+
+### 显式弹射物命中反馈（可选）
+
+`World3D.applySweepContactImpulse(event, ix, iy, iz, px, py, pz)` 返回标准 Result。
+调用者在弹射物帧成功后主动消费物理命中事件，传入 N·s 冲量和米制世界作用点。
+身份、世界恢复代次、有限参数及 dynamic 类型检查失败时不施力；不会自动订阅事件或从伤害推算冲量。
+无默认反馈、无跨域回滚、无自动重复事件去重。详见
+[weapon 可选组合扩展](../weapon.md#可选组合扩展物理命中映射与显式冲量)。

@@ -351,7 +351,12 @@ EquipmentVisualChange AvatarInstance::syncEquipmentAppearance() {
     for (int index = 0; index < equipment_->getSlotCount(); ++index) {
         const std::string slot = equipment_->getSlotName(index);
         const std::string item = equipment_->getSlotItemId(slot);
-        signature += slot + "=" + item + "#" + std::to_string(equipment_->getSlotInstanceId(slot)) + ";";
+        signature.append(slot);
+        signature.push_back('=');
+        signature.append(item);
+        signature.push_back('#');
+        signature.append(std::to_string(equipment_->getSlotInstanceId(slot)));
+        signature.push_back(';');
         if (!item.empty()) equipped.emplace(slot, item);
     }
     if (signature == equipmentSignature_) return EquipmentVisualChange::Unchanged;

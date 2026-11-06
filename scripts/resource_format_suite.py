@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FAMILIES = {
     "image": ["resource_format_image.cpp", "image.cpp", "image_script.cpp", "asset_graphics_loader.cpp"],
     "sound": ["resource_decoder_lifetime.cpp", "resource_format_sound.cpp", "sound.cpp", "audio.cpp", "editor_audio_import_diagnostics.cpp"],
-    "model": ["resource_format_model.cpp", "model3d.cpp", "model3d_normals.cpp", "medialoader_model_link.cpp", "avatar_vrm_vulkan.cpp"],
+    "model": ["resource_format_model.cpp", "model3d.cpp", "model3d_normals.cpp", "avatar_vrm_vulkan.cpp"],
     "font": ["font.cpp", "graphics_font.cpp"],
     "map": ["map.cpp", "resource_format_map.cpp"],
     "asset": [],  # Derived from canonical sources/provenance by inventory().
@@ -167,7 +167,7 @@ def run_cases(build_dir, selected):
                 name = case.attrib["name"]
                 status = "passed"
                 if (case.find("failure") is not None or case.find("error") is not None
-                        or "ERROR Assertion Failed:" in case.findtext("system-out", "")):
+                        or re.search(r"(?:ERROR|WARN) Assertion Failed:", case.findtext("system-out", ""))):
                     status = "failed"
                 elif case.find("skipped") is not None or case.get("status") in ("notrun", "disabled"):
                     status = "skipped"

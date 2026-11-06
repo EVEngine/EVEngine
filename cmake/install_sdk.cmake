@@ -54,8 +54,8 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
         "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.js"
         "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.wasm"
         "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.html"
+        "$<TARGET_FILE_DIR:${EVENGINE_NATIVE_TARGET}>/eve.data"
         DESTINATION bin
-        OPTIONAL
     )
     install(DIRECTORY "${CMAKE_SOURCE_DIR}/platform/webgpu/game-shell"
         DESTINATION bin
@@ -235,11 +235,16 @@ install(FILES
     "${CMAKE_BINARY_DIR}/src/engine/common/eve-api.d.ts"
     DESTINATION share/eve/ai
 )
+# Language skill kept at share/eve/ai/SKILL.md for older SDK entry points.
 install(FILES "${CMAKE_SOURCE_DIR}/.cursor/skills/evescript/SKILL.md"
     DESTINATION share/eve/ai
 )
-install(FILES "${CMAKE_SOURCE_DIR}/.cursor/skills/evescript/SKILL.md"
-    DESTINATION .cursor/skills/evescript
+# Paradigm + language skills for Cursor discovery (SKILL.md + optional README).
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/.cursor/skills/"
+    DESTINATION .cursor/skills
+    FILES_MATCHING
+        PATTERN "SKILL.md"
+        PATTERN "README.md"
 )
 install(FILES "${CMAKE_SOURCE_DIR}/cmake/sdk/llms.txt"
     DESTINATION .
@@ -350,9 +355,9 @@ install(CODE "
 ")
 
 # Plugins use the same member and stateless binding templates as the engine.
-install(DIRECTORY "${CMAKE_BINARY_DIR}/generated/simplesquirrel/simplesquirrel"
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/third-party/simplesquirrel/include/simplesquirrel"
     DESTINATION include)
-install(FILES "${CMAKE_BINARY_DIR}/generated/ecs/ECS.hpp" DESTINATION include OPTIONAL)
+install(FILES "${CMAKE_SOURCE_DIR}/external/ECS.hpp/src/ECS.hpp" DESTINATION include OPTIONAL)
 
 # ---- Marker files ----
 install(CODE "

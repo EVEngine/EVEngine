@@ -230,18 +230,20 @@ void VehicleSystem::processOrders(VehicleEntity& v, float dt) {
             const float dy = o.y - mo->y;
             const float dist = std::sqrt(dx * dx + dy * dy);
             if (dist <= o.arriveRadius) {
-                finishOrder(v);
+                in->brake       = 1.f;
+                const auto* def = v.definition()->def;
+                if (def && std::fabs(mo->speed) <= def->accel * dt) finishOrder(v);
                 return;
             }
             const float desired = std::atan2(dy, dx) * 180.f / kPi;
             in->steer = steerToward(v, desired);
-            // 大角度转向时减速（缩小转弯半径），接近目标时进一步减速，
-            // 否则转弯半径大于 arriveRadius 会导致载具绕着目标永远到不了。
-            float throttle = 1.f - 0.75f * std::fabs(in->steer);
-            if (dist < 2.5f * o.arriveRadius) {
-                throttle *= dist / (2.5f * o.arriveRadius);
+            const auto* def     = v.definition()->def;
+            if (def && def->maxSpeed > 0.f) {
+                // Turn toward the goal before accelerating and leave room to stop.
+                const float alignment     = std::max(0.f, std::cos(angleDelta(mo->heading, desired) * kPi / 180.f));
+                const float stoppingSpeed = std::sqrt(2.f * def->accel * (dist - o.arriveRadius));
+                in->throttle              = alignment * std::min(1.f, stoppingSpeed / def->maxSpeed);
             }
-            in->throttle = std::clamp(throttle, 0.05f, 1.f);
             break;
         }
         case VehicleOrderType::Attack: {

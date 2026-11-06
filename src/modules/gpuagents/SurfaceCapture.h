@@ -4,7 +4,8 @@
 #include "common/Result.h"
 #include "gpuagents/SurfaceField.h"
 
-#include <glm/glm.hpp>
+// std::span<const glm::vec3> needs a complete element type.
+#include <glm/vec3.hpp>
 
 #include <cstdint>
 #include <span>

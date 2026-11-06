@@ -1,0 +1,164 @@
+{
+  "schema": "eve.scad-rig",
+  "schemaVersion": 1,
+  "unknownFields": "reject",
+  "coordinateSystem": "openscad-mm-z-up",
+  "joints": [
+    {
+      "name": "building",
+      "parent": null,
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "race",
+      "parent": "building",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        0,
+        0
+      ]
+    },
+    {
+      "name": "sluice",
+      "parent": "building",
+      "pivot": [
+        0,
+        -2650,
+        3100
+      ],
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "limits": [
+        0,
+        75
+      ]
+    },
+    {
+      "name": "drive",
+      "parent": "building",
+      "pivot": [
+        0,
+        -2500,
+        1800
+      ],
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "limits": [
+        -100000,
+        100000
+      ]
+    },
+    {
+      "name": "main",
+      "parent": "building",
+      "pivot": [
+        0,
+        -900,
+        900
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        -100000,
+        100000
+      ]
+    },
+    {
+      "name": "runner",
+      "parent": "building",
+      "pivot": [
+        1450,
+        -200,
+        2860
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        -100000,
+        100000
+      ]
+    },
+    {
+      "name": "hoist",
+      "parent": "main",
+      "pivot": [
+        0,
+        0,
+        4300
+      ],
+      "axis": [
+        0,
+        0,
+        1
+      ],
+      "limits": [
+        -100000,
+        100000
+      ]
+    }
+  ],
+  "parts": [
+    {
+      "name": "building",
+      "joint": "building"
+    },
+    {
+      "name": "race",
+      "joint": "race"
+    },
+    {
+      "name": "sluice",
+      "joint": "sluice"
+    },
+    {
+      "name": "drive",
+      "joint": "drive"
+    },
+    {
+      "name": "main",
+      "joint": "main"
+    },
+    {
+      "name": "runner",
+      "joint": "runner"
+    },
+    {
+      "name": "hoist",
+      "joint": "hoist"
+    }
+  ]
+}

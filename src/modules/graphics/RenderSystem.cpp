@@ -3,10 +3,14 @@
 #include "common/Exception.h"
 #include "common/Profile.h"
 #include "common/RenderTrace.h"
+#include "common/Status.h"
+#include "graphics/CameraPixel.h"
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Quad.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
 
 #include <algorithm>
 #include <cmath>
@@ -116,6 +120,59 @@ float Camera2D::getY() { return data()->y; }
 void Camera2D::setZoom(float zoom) { data()->zoom = zoom; }
 float Camera2D::getZoom() { return data()->zoom; }
 
+Result<void> Camera2D::setPixelConfig(float pixelsPerUnit, int refWidth, int refHeight) {
+    if (!std::isfinite(pixelsPerUnit) || pixelsPerUnit <= 0.f)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "pixelsPerUnit must be finite and > 0", "camera2d.pixelsPerUnit"));
+    if (refWidth < 0 || refHeight < 0)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "pixel reference size must be >= 0", "camera2d.pixelRef"));
+    if ((refWidth == 0) != (refHeight == 0))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "pixel reference width and height must both be set or both 0",
+                                                       "camera2d.pixelRef"));
+    auto d            = data();
+    d->pixelsPerUnit  = pixelsPerUnit;
+    d->pixelRefWidth  = refWidth;
+    d->pixelRefHeight = refHeight;
+    return Result<void>::success();
+}
+
+void Camera2D::clearPixelConfig() {
+    auto d            = data();
+    d->pixelsPerUnit  = 1.f;
+    d->pixelRefWidth  = 0;
+    d->pixelRefHeight = 0;
+    d->pixelScale     = 1;
+}
+
+void Camera2D::setPixelPerfect(bool enabled) { data()->pixelPerfect = enabled; }
+bool Camera2D::getPixelPerfect() { return data()->pixelPerfect; }
+void Camera2D::setPixelSnap(bool enabled) { data()->pixelSnap = enabled; }
+bool Camera2D::getPixelSnap() { return data()->pixelSnap; }
+
+Result<void> Camera2D::applyPixelPerfect(int viewWidth, int viewHeight) {
+    if (viewWidth <= 0 || viewHeight <= 0)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "viewport size must be > 0", "camera2d.viewport"));
+    auto       d = data();
+    const auto sized =
+        computePixelPerfectScale(d->pixelsPerUnit, d->pixelRefWidth, d->pixelRefHeight, viewWidth, viewHeight);
+    d->pixelPerfect = true;
+    d->pixelScale   = sized.scale;
+    d->zoom         = sized.zoom2D;
+    if (d->pixelSnap) {
+        d->x = snapWorldToPixel(d->x, d->zoom);
+        d->y = snapWorldToPixel(d->y, d->zoom);
+    }
+    return Result<void>::success();
+}
+
+float Camera2D::getPixelsPerUnit() { return data()->pixelsPerUnit; }
+int   Camera2D::getPixelRefWidth() { return data()->pixelRefWidth; }
+int   Camera2D::getPixelRefHeight() { return data()->pixelRefHeight; }
+int   Camera2D::getPixelScale() { return data()->pixelScale; }
+
 float Camera2D::screenToWorldX(float screenX, float /*screenY*/, float viewW, float /*viewH*/) {
     auto d = data();
     float z = d->zoom <= 0.f ? 1e-4f : d->zoom;
@@ -157,7 +214,7 @@ struct ViewCam {
     float ambientR = 0.15f, ambientG = 0.15f, ambientB = 0.18f;
 };
 
-ViewCam fromEntity(Camera2D *ent) {
+ViewCam fromEntity(Camera2D *ent, int viewW = 0, int viewH = 0) {
     ViewCam v;
     if (!ent) return v;
     auto d = ent->data();
@@ -165,6 +222,19 @@ ViewCam fromEntity(Camera2D *ent) {
     v.x = d->x;
     v.y = d->y;
     v.zoom = d->zoom;
+    if (d->pixelPerfect && viewW > 0 && viewH > 0) {
+        const auto sized =
+            computePixelPerfectScale(d->pixelsPerUnit, d->pixelRefWidth, d->pixelRefHeight, viewW, viewH);
+        d->pixelScale = sized.scale;
+        d->zoom       = sized.zoom2D;
+        v.zoom        = sized.zoom2D;
+        if (d->pixelSnap) {
+            d->x = snapWorldToPixel(d->x, d->zoom);
+            d->y = snapWorldToPixel(d->y, d->zoom);
+            v.x  = d->x;
+            v.y  = d->y;
+        }
+    }
     v.clearColor = Color(d->r, d->g, d->b, d->a);
     v.ambientR = d->ambientR;
     v.ambientG = d->ambientG;
@@ -411,8 +481,10 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
             Color clearCol = gfx.getBackgroundColor();
             ViewCam groupCam{};
             auto defIt = defaultCam.find(next);
+            int     viewW = next ? next->getWidth() : gfx.getWidth();
+            int     viewH = next ? next->getHeight() : gfx.getHeight();
             if (defIt != defaultCam.end()) {
-                groupCam = fromEntity(defIt->second);
+                groupCam = fromEntity(defIt->second, viewW, viewH);
                 clearCol = groupCam.clearColor;
             } else if (items[i].camValid) {
                 groupCam.valid = true;
@@ -432,8 +504,6 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
             if (present) gfx.clear(clearCol, std::nullopt, std::nullopt);
             current = next;
 
-            int viewW = next ? next->getWidth() : gfx.getWidth();
-            int viewH = next ? next->getHeight() : gfx.getHeight();
             std::vector<PackedLight> packed;
             collectLights(next, packed);
             currentLights = packLights(packed, groupCam, viewW, viewH);
@@ -441,17 +511,17 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
         }
 
         const auto &it = items[i];
+        int         viewW = it.canvas ? it.canvas->getWidth() : gfx.getWidth();
+        int         viewH = it.canvas ? it.canvas->getHeight() : gfx.getHeight();
         ViewCam cam{};
-        if (it.camValid) {
+        if (it.camera) {
+            cam = fromEntity(it.camera, viewW, viewH);
+        } else if (it.camValid) {
             cam.valid = true;
             cam.x = it.camX;
             cam.y = it.camY;
-            cam.zoom = it.camZoom;
-        } else if (it.camera) {
-            cam = fromEntity(it.camera);
+            cam.zoom  = it.camZoom;
         }
-        int viewW = it.canvas ? it.canvas->getWidth() : gfx.getWidth();
-        int viewH = it.canvas ? it.canvas->getHeight() : gfx.getHeight();
         float sx, sy, sw, sh;
         applyCamera(it.x, it.y, it.w, it.h, cam, viewW, viewH, sx, sy, sw, sh);
 

@@ -47,5 +47,9 @@ function(add_eve_plugin _eve_plugin_name)
     set_target_properties(${_eve_plugin_name} PROPERTIES
         PREFIX ""
         OUTPUT_NAME "${_eve_plugin_name}"
+        # Only eve_plugin_init is public. Isolate C++ symbols and template statics
+        # between resident generations; host API declarations keep their exports.
+        CXX_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN YES
     )
 endfunction()

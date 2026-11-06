@@ -12,6 +12,7 @@ persist roadPrevKeys = {}
 persist roadSceneName = "straight"
 persist roadSceneList = ["straight", "curve", "bridge", "cross", "tee", "y", "fork", "skew", "t-junction",
                          "y-junction", "sloped-t", "curve-uphill", "tight-turn", "roundabout", "interchange"]
+persist roadTypeName = "highway"
 persist roadGalleryMode = false
 persist roadGalleryIndex = 0
 
@@ -28,6 +29,11 @@ function roadPressed(k) {
 }
 
 function roadStyleForGroup(name) {
+    if (roadTypeName == "railway") {
+        if (name == "asphalt") return [0.42, 0.38, 0.32, 0.96, 0.0, true]; // ballast top
+        if (name == "curb") return [0.55, 0.58, 0.62, 0.35, 0.85, true];   // rails
+        if (name == "deck") return [0.35, 0.28, 0.20, 0.92, 0.0, true];    // ballast toe / sleepers
+    }
     if (name == "asphalt") return [0.20, 0.20, 0.22, 0.95, 0.0, true];
     if (name == "curb") return [0.62, 0.62, 0.60, 0.55, 0.02, true];
     if (name == "sidewalk") return [0.90, 0.90, 0.88, 0.72, 0.0, true];
@@ -103,29 +109,32 @@ function roadBuildScene(name) {
     roadSceneName = name;
     roadScreenshotSaved = false;
     roadFrame = 0;
+    roadMaterials = {};
 
+    local railway = roadTypeName == "railway";
     local params = roadRequire(procgen.newParams(), "new params").value;
     roadRequire(params.setSeed(1), "seed");
     params.setString("scene", name);
+    params.setString("roadType", roadTypeName);
     params.setFloat("span", (name == "interchange" || name == "roundabout") ? 48.0 :
                             (name == "cross" || name == "tee" || name == "y" || name == "fork" || name == "skew" ?
                                  28.0 : 32.0));
     params.setFloat("bridgeHeight", name == "interchange" ? 8.0 : 6.0);
-    params.setInt("lanes", name == "tight-turn" ? 1 : 2);
+    params.setInt("lanes", railway ? 1 : (name == "tight-turn" ? 1 : 2));
     local segs = 28;
     if (name == "curve" || name == "bridge" || name == "curve-uphill") segs = 48;
     if (name == "interchange") segs = 20;
     if (name == "roundabout") segs = 32;
     params.setInt("pathSegments", segs);
     params.setBool("piers", true);
-    params.setBool("markings", true);
+    params.setBool("markings", !railway);
     // The tight-turn scene exists specifically to inspect the generated turn ribbon.
     params.setBool("navigation", name == "tight-turn");
     params.setBool("junctions", name != "straight" && name != "curve" && name != "bridge");
 
     local cpu = roadRequire(procgen.buildMesh("mesh.roadNetwork", params), "buildMesh").value;
-    print("PROCEDURAL_ROAD_BAKE_DONE scene=" + name + " verts=" + cpu.getVertexCount() +
-          " groups=" + cpu.getGroupCount() + "\n");
+    print("PROCEDURAL_ROAD_BAKE_DONE scene=" + name + " roadType=" + roadTypeName +
+          " verts=" + cpu.getVertexCount() + " groups=" + cpu.getGroupCount() + "\n");
     local groupSummary = "";
     for (local i = 0; i < cpu.getGroupCount(); ++i) {
         local component = cpu.copyGroup(i);
@@ -135,8 +144,8 @@ function roadBuildScene(name) {
         local gname = cpu.getGroupName(i);
         local style = roadStyleForGroup(gname);
         if (!(gname in roadMaterials)) {
-            local material = gname == "asphalt" ? roadBuildAsphaltMaterial(style) : gfx.newMaterial();
-            if (gname != "asphalt") {
+            local material = (!railway && gname == "asphalt") ? roadBuildAsphaltMaterial(style) : gfx.newMaterial();
+            if (railway || gname != "asphalt") {
                 material.setTint(style[0], style[1], style[2], 1.0);
                 material.setRoughness(style[3]);
                 material.setMetallic(style[4]);
@@ -160,7 +169,8 @@ function roadBuildScene(name) {
     }
 
     roadCameraForScene(name);
-    print("PROCEDURAL_ROAD_SCENE scene=" + name + " verts=" + cpu.getVertexCount() +
+    print("PROCEDURAL_ROAD_SCENE scene=" + name + " roadType=" + roadTypeName +
+          " verts=" + cpu.getVertexCount() +
           " groups=" + cpu.getGroupCount() + " parts=" + roadParts.len() + " [" + groupSummary + "]\n");
     roadReady = true;
 }
@@ -204,13 +214,17 @@ if (!roadReady) {
                     if (ch == "\n" || ch == "\r" || ch == " ") break;
                     s += ch;
                 }
-            foreach (candidate in roadSceneList) {
-                if (s == candidate) boot = s;
-            }
-            if (s == "gallery") {
-                roadGalleryMode = true;
-                roadGalleryIndex = 0;
-                boot = roadSceneList[0];
+            if (s == "railway" || s == "highway") {
+                roadTypeName = s;
+            } else {
+                foreach (candidate in roadSceneList) {
+                    if (s == candidate) boot = s;
+                }
+                if (s == "gallery") {
+                    roadGalleryMode = true;
+                    roadGalleryIndex = 0;
+                    boot = roadSceneList[0];
+                }
             }
             }
         }
@@ -237,9 +251,13 @@ function eve_update(dt) {
     if (roadPressed("y")) roadBuildScene("y");
     if (roadPressed("f")) roadBuildScene("fork");
     if (roadPressed("k")) roadBuildScene("skew");
+    if (roadPressed("g")) {
+        roadTypeName = roadTypeName == "railway" ? "highway" : "railway";
+        roadBuildScene(roadSceneName);
+    }
 
     if (!roadScreenshotSaved && roadFrame > 24) {
-        local file = "procedural-road-" + roadSceneName + ".png";
+        local file = "procedural-road-" + roadTypeName + "-" + roadSceneName + ".png";
         if (gfx.saveFramePng(file)) {
             roadScreenshotSaved = true;
             print("procedural-road: screenshot " + file + "\n");

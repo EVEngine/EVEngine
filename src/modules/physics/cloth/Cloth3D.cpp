@@ -1,4 +1,5 @@
 #include "physics/cloth/Cloth3D.h"
+#include <glm/mat4x4.hpp>
 #include "physics/cloth/ClothModel.h"
 #include "physics/cloth/LayeredCloth3D.h"
 

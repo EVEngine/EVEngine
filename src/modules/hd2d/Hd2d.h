@@ -24,8 +24,6 @@
 
 #include "common/Module.h"
 
-#include <glm/mat4x4.hpp>
-
 #include <cstdint>
 #include <string>
 #include <vector>

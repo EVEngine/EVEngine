@@ -86,8 +86,7 @@ eve::Diagnostic expressionDiagnostic(eve::DiagnosticCode code, std::string messa
     eve::DiagnosticDetails details{{"line", std::to_string(token.line)}, {"column", std::to_string(token.column)}};
     if (!expected.empty()) details.emplace_back("expected", std::move(expected));
     if (!actual.empty()) details.emplace_back("actual", std::move(actual));
-    return eve::Diagnostic::error(code, message, path, details,
-                                  "settlement.condition");
+    return eve::Diagnostic::error(code, std::move(message), std::move(path), details, "settlement.condition");
 }
 
 eve::Result<std::vector<Token>> tokenize(std::string_view source, const std::string& path) {
@@ -516,7 +515,7 @@ struct EvaluatedValue {
 
 eve::Result<EvaluatedValue> evaluationFailure(eve::DiagnosticCode code, std::string message, std::string path) {
     return eve::Result<EvaluatedValue>::failure(
-        eve::Diagnostic::error(code, message, path, {}, "settlement.condition"));
+        eve::Diagnostic::error(code, std::move(message), std::move(path), {}, "settlement.condition"));
 }
 
 const eve::Value* findContextValue(const eve::Value& root, std::string_view path) {

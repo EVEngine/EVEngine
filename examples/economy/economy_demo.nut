@@ -108,6 +108,43 @@ miner.clearAssignment();
 miner = null;
 goldNode = null;
 
+// ---------------------------------------------------------------------------
+// 场景 3：地区市场 + 全国市场配置与报价
+// ---------------------------------------------------------------------------
+print("\n[3] 市场配置：江南地区市场 + 宋朝全国市场\n");
+eco.clearMarkets();
+local markets = eco.registerMarketsFromJson(@"[
+  {
+    ""schemaId"": ""eve.economy.market"",
+    ""schemaVersion"": 1,
+    ""id"": ""mkt.jiangnan"",
+    ""scope"": ""regional"",
+    ""regionId"": ""jiangnan"",
+    ""nationId"": ""song"",
+    ""listings"": [
+      {""resourceType"": ""rice"", ""basePrice"": 100, ""buyPremiumBps"": 1000, ""sellDiscountBps"": 500}
+    ]
+  },
+  {
+    ""schemaId"": ""eve.economy.market"",
+    ""schemaVersion"": 1,
+    ""id"": ""mkt.song"",
+    ""scope"": ""national"",
+    ""nationId"": ""song"",
+    ""listings"": [
+      {""resourceType"": ""rice"", ""basePrice"": 90, ""buyPremiumBps"": 500, ""sellDiscountBps"": 250}
+    ]
+  }
+]");
+if (!markets.ok) throw markets.status.summary;
+print("  已注册市场数: " + eco.marketCount() + "\n");
+print("  江南 -> " + eco.findRegionalMarket("jiangnan") +
+      " / 全国 -> " + eco.findNationalMarket("song") + "\n");
+local buy = eco.quoteBuyPrice("mkt.jiangnan", "rice");
+local sell = eco.quoteSellPrice("mkt.jiangnan", "rice");
+if (!buy.ok || !sell.ok) throw "quote failed";
+print("  江南米价 买=" + buy.value + " 卖=" + sell.value + "\n");
+
 print("\n====================================================================\n");
 print(" 演示结束\n");
 print("====================================================================\n");

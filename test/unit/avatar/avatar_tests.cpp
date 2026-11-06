@@ -152,20 +152,28 @@ TEST_CASE("avatar.live2d.nullAndRegisteredBackendsHaveObservableBehavior") {
 TEST_CASE("avatar.equipment.imageProjectionTracksAuthoritativeSlot") {
     auto*                        avatar = Avatar::create()->newImageAvatar();
     eve::inventory::EquipmentSet equipment;
-    equipment.defineSlot("body");
-    CHECK(avatar->defineEquipmentVisual2D("armor.red", "body", "armor", nullptr, 5) == EquipmentVisualChange::Applied);
+    const std::string            slot = "body_" + std::string(64, 's');
+    const std::string            item = "armor.red_" + std::string(96, 'i');
+    equipment.defineSlot(slot);
+    REQUIRE(avatar->defineEquipmentLayer(slot, 0) == EquipmentVisualChange::Applied);
+    CHECK(avatar->defineEquipmentVisual2D(item, slot, "armor", nullptr, 5) == EquipmentVisualChange::Applied);
     CHECK(avatar->bindEquipment(&equipment) == EquipmentVisualChange::Applied);
-    CHECK_EQ(avatar->getEquipmentVisualItem("body"), std::string{});
-    auto* stack = equipment.stackAt("body");
+    CHECK_EQ(avatar->getEquipmentVisualItem(slot), std::string{});
+    auto* stack = equipment.stackAt(slot);
     REQUIRE(stack != nullptr);
-    stack->itemId   = "armor.red";
+    stack->itemId   = item;
     stack->quantity = 1;
     avatar->sync();
-    CHECK_EQ(avatar->getEquipmentVisualItem("body"), std::string("armor.red"));
+    CHECK_EQ(avatar->getEquipmentVisualItem(slot), item);
     CHECK(avatar->getLayerRenderable("armor")->getVisible());
+    CHECK(avatar->syncEquipmentAppearance() == EquipmentVisualChange::Unchanged);
+    ++stack->instanceId;
+    CHECK(avatar->syncEquipmentAppearance() == EquipmentVisualChange::Applied);
+    CHECK_EQ(avatar->getEquipmentVisualItem(slot), item);
+    CHECK(avatar->syncEquipmentAppearance() == EquipmentVisualChange::Unchanged);
     stack->clear();
     avatar->sync();
-    CHECK_EQ(avatar->getEquipmentVisualItem("body"), std::string{});
+    CHECK_EQ(avatar->getEquipmentVisualItem(slot), std::string{});
     CHECK(!avatar->getLayerRenderable("armor")->getVisible());
     dispose(avatar);
 }

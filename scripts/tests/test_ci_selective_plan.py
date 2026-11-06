@@ -1,0 +1,90 @@
+"""Regression evidence for selective CI scheduling; no native builds required."""
+import json
+import os
+from pathlib import Path
+import sys
+import unittest
+from unittest.mock import patch
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+import ci_change_scope as scope
+import run_ci_tests as runner
+
+
+class SelectivePlanTests(unittest.TestCase):
+    def test_docs_do_not_schedule_native_or_script_tests(self):
+        self.assertEqual(("none", False, []), scope.source_plan(["docs/usr/guide.md"]))
+        self.assertFalse(any(scope.classify(["docs/usr/guide.md"]).values()))
+
+    def test_python_only_runs_script_checks(self):
+        self.assertEqual(("scripts", True, []), scope.source_plan(["scripts/release.py"]))
+        self.assertEqual(("none", ""), scope.classify_tests(["scripts/release.py"]))
+        self.assertFalse(any(scope.classify(["scripts/release.py"]).values()))
+
+    def test_example_only_builds_linux_without_unit_tests(self):
+        paths = ["examples/basic/main.nut"]
+        self.assertEqual(("examples", False, ["basic"]), scope.source_plan(paths))
+        self.assertEqual(["linux"], [name for name, enabled in scope.classify(paths).items() if enabled])
+        self.assertEqual(("none", ""), scope.classify_tests(paths))
+
+    def test_particle_effects_pack_smokes_known_consumers_only(self):
+        # Asset packs have no main.nut; without a consumer map CI used to expand
+        # SMOKE_EXAMPLES to every runnable example and hit the 30m Linux timeout.
+        mode, scripts, examples = scope.source_plan(
+            ["examples/particle-effects/smoke_flipbook.effect.json"]
+        )
+        self.assertEqual("examples", mode)
+        self.assertFalse(scripts)
+        self.assertEqual(["attack-vfx", "unity-vfx-port-lab"], examples)
+
+    def test_non_runnable_example_edits_do_not_expand_smoke_suite(self):
+        # economy is NON_RUNNABLE (eve run -r demo, no main.nut). Editing it must
+        # not fail-closed into every runnable example and blow the 30m smoke step.
+        mode, scripts, examples = scope.source_plan(
+            ["examples/economy/economy_demo.nut", "src/modules/economy/Market.cpp"]
+        )
+        self.assertEqual("full", mode)
+        self.assertFalse(scripts)
+        self.assertEqual([], examples)
+
+    def test_particle_effects_pack_with_lab_edits_stays_bounded(self):
+        mode, _, examples = scope.source_plan(
+            [
+                "examples/particle-effects/fire_flipbook.effect.json",
+                "examples/unity-vfx-port-lab/main.nut",
+                "examples/attack-vfx/main.nut",
+            ]
+        )
+        self.assertEqual("examples", mode)
+        self.assertEqual(["attack-vfx", "unity-vfx-port-lab"], examples)
+
+    def test_module_changes_use_existing_impact_index(self):
+        self.assertEqual(("affected", ""), scope.classify_tests(["src/modules/scene/Scene.cpp"]))
+        self.assertEqual(("full", False, []), scope.source_plan(["src/modules/scene/Scene.cpp"]))
+
+    def test_shared_core_and_build_changes_still_run_full_tests(self):
+        for path in ["src/engine/common/Value.h", "cmake/modules.cmake", "CMakeLists.txt"]:
+            self.assertEqual(("full", ""), scope.classify_tests([path]))
+
+    def test_release_still_runs_full_checks(self):
+        self.assertTrue(all(scope.classify([], force_all=True).values()))
+        self.assertEqual(("full", ""), scope.classify_tests([], force_all=True))
+        self.assertEqual(("full", True, []), scope.source_plan([], force_all=True))
+
+    def test_dispatch_passes_exact_changed_paths_to_impact_tool(self):
+        paths = ["src/modules/scene/Scene.cpp"]
+        with patch.dict(os.environ, {"CI_TEST_MODE": "affected", "CI_NATIVE_PATHS": json.dumps(paths)}), \
+             patch.object(sys, "argv", ["runner", "--platform", "linux-debug"]), \
+             patch.object(runner.subprocess, "run") as execute:
+            execute.return_value.returncode = 0
+            self.assertEqual(runner.main(), 0)
+        command = execute.call_args.args[0]
+        self.assertIn("test_impact.py", command[3])
+        self.assertEqual(command[-2:], ["--changed", paths[0]])
+
+    def test_dispatch_none_never_invokes_native_tests(self):
+        with patch.dict(os.environ, {"CI_TEST_MODE": "none"}), \
+             patch.object(sys, "argv", ["runner", "--platform", "linux-debug"]), \
+             patch.object(runner.subprocess, "run") as execute:
+            self.assertEqual(runner.main(), 0)
+        execute.assert_not_called()

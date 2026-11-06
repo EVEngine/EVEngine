@@ -5,12 +5,12 @@
   "version": 1,
   "cases": {
     "module-composition": [
-      "editor.controlRig.transactionHistoryAndRoundTrip",
       "editor.controlRig.documentRejectsForeignPublication",
-      "editor.controlRig.genericGraphRoundTripAndStaleRevision",
       "editor.controlRig.dragPreviewDoesNotMutateHistory",
+      "editor.controlRig.failedHistoryPreviewRestoresDocument",
+      "editor.controlRig.genericGraphRoundTripAndStaleRevision",
       "editor.controlRig.matchPoseIsOneUndoableEdit",
-      "editor.controlRig.failedHistoryPreviewRestoresDocument"
+      "editor.controlRig.transactionHistoryAndRoundTrip"
     ],
     "script-binding": [
       "editor.controlRig.scriptFacadeProjectsNumericTimeAndOwnedResults"
@@ -20,6 +20,7 @@
 }
 */
 // clang-format on
+
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "animation/AnimClip.h"
 #include "animation/AnimPose.h"

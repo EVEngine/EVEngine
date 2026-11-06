@@ -71,7 +71,7 @@ StateValue toLegacyStateValue(const Value& value) {
         }
         case Value::Type::Object: {
             StateValue object = StateValue::object();
-            for (const auto& key : value.keys()) object.set(key, toLegacyStateValue(*value.find(key)));
+            for (const auto& [key, member] : *value.getIf<Value::Object>()) object.set(key, toLegacyStateValue(member));
             return object;
         }
     }
@@ -234,7 +234,13 @@ bool StateValue::operator==(const StateValue& o) const {
         case Kind::Bool: return b_ == o.b_;
         case Kind::String: return s_ == o.s_;
         case Kind::Array: return arr_ == o.arr_;
-        case Kind::Object: return obj_ == o.obj_;
+        case Kind::Object:
+            if (obj_.size() != o.obj_.size()) return false;
+            for (const auto& [key, value] : obj_) {
+                const auto* other = o.find(key);
+                if (!other || value != *other) return false;
+            }
+            return true;
     }
     return false;
 }

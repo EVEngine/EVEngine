@@ -98,14 +98,14 @@ PropertyReadResult MaterialBatchTarget::read(const SelectionSnapshot& selection,
     if (!indices.ok()) return {PropertyReadState::Error, {}, indices.status().diagnostics()};
     std::optional<EditorValue> common;
     for (const auto index : indices.value()) {
-        const auto value = materials_[index].read(one(materials_[index]), path);
+        auto value = materials_[index].read(one(materials_[index]), path);
         if (value.state != PropertyReadState::Value) return value;
         if (!common)
-            common = value.value;
+            common = std::move(value.value);
         else if (*common != value.value)
             return {PropertyReadState::Mixed, {}, {}};
     }
-    return {PropertyReadState::Value, *common, {}};
+    return {PropertyReadState::Value, std::move(*common), {}};
 }
 
 Result<DomainOperation> MaterialBatchTarget::replacement(std::vector<MaterialDocumentTarget> candidates,

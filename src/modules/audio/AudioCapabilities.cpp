@@ -51,14 +51,15 @@ double selectAudioPitch(const eve::action::ActionAudioBinding& binding, std::uin
     return std::clamp(binding.pitch + (unit * 2.0 - 1.0) * binding.randomPitchOffset, 0.1, 3.0);
 }
 
-void configureAudioSource(Source& source, const eve::action::ActionAudioBinding& binding,
-                          double pitch) {
+Result<void> configureAudioSource(Source& source, const eve::action::ActionAudioBinding& binding, double pitch) {
     source.setVolume(static_cast<float>(binding.volume));
     source.setPitch(static_cast<float>(pitch));
     source.setLooping(binding.looping);
-    source.setRelative(binding.spatialBlend <= 0.01);
+    auto blend = source.setSpatialBlend(static_cast<float>(binding.spatialBlend));
+    if (!blend.ok()) return blend;
     source.setAttenuationDistances(static_cast<float>(binding.minDistance),
                                    static_cast<float>(binding.maxDistance));
+    return Result<void>::success();
 }
 
 class AudioQueryImpl final : public eve::IAudioQuery {
@@ -189,7 +190,7 @@ private:
     static eve::Result<eve::action::ActionAudioWaveform> failure(
         eve::DiagnosticCode code, std::string message, std::string path) {
         return eve::Result<eve::action::ActionAudioWaveform>::failure(
-            eve::Diagnostic::error(code, message, path));
+            eve::Diagnostic::error(code, std::move(message), std::move(path)));
     }
 };
 
@@ -264,12 +265,11 @@ public:
             if (found == active_.end())
                 return eve::Result<void>::success(eve::Status::success(eve::StatusCode::NoOp));
             if (!context.interrupted && found->second.fadeOutOnExit && found->second.fadeOutDuration > 0.0) {
-                auto duration = eve::Duration::fromSeconds(found->second.fadeOutDuration);
-                if (!duration) return eve::Result<void>::failure(duration.status());
-                auto end = context.time.tryAdd(duration.value());
-                if (!end) return eve::Result<void>::failure(end.status());
-                fading_.push_back({context.executionId, context.time, std::move(end).takeValue(),
-                                   found->second.volume, std::move(found->second)});
+                const float now = static_cast<float>(context.time.seconds());
+                auto        fade =
+                    found->second.source->fadeOutAndStop(static_cast<float>(found->second.fadeOutDuration), now);
+                if (!fade.ok()) return eve::Result<void>::failure(fade.status());
+                fading_.push_back({context.executionId, std::move(found->second)});
             } else {
                 found->second.source->stop();
             }
@@ -296,7 +296,9 @@ public:
             eve::ResourcePin        keepAlive = std::move(dataPin).takeValue();
             auto*                   live      = static_cast<eve::sound::SoundData*>(keepAlive.get());
             std::unique_ptr<Source> source(audio->newSource(live));
-            configureAudioSource(*source, binding.value(), selectAudioPitch(binding.value(), seed ^ 0x9e3779b97f4a7c15ULL));
+            auto configured = configureAudioSource(*source, binding.value(),
+                                                   selectAudioPitch(binding.value(), seed ^ 0x9e3779b97f4a7c15ULL));
+            if (!configured.ok()) return eve::Result<void>::failure(configured.status());
             applyPosition(*source, binding.value().spatial, pose.value());
             source->play();
             ActiveSource owned{std::move(keepAlive),           std::move(source),      binding.value().spatial,
@@ -351,18 +353,12 @@ public:
         });
         const auto fadingBefore = fading_.size();
         bool       fadingAdvanced = false;
+        const float now            = static_cast<float>(context.time.seconds());
         std::erase_if(fading_, [&](FadingSource& fading) {
             if (fading.executionId != context.executionId) return false;
             fadingAdvanced = true;
-            if (context.time < fading.startTime || context.time >= fading.endTime) {
-                fading.owned.source->stop();
-                return true;
-            }
-            const auto elapsed = context.time.nanoseconds() - fading.startTime.nanoseconds();
-            const auto duration = fading.endTime.nanoseconds() - fading.startTime.nanoseconds();
-            const double remaining = 1.0 - static_cast<double>(elapsed) / static_cast<double>(duration);
-            fading.owned.source->setVolume(static_cast<float>(fading.startVolume * remaining));
-            return false;
+            if (!fading.owned.source->advanceFade(now).ok()) return true;
+            return !fading.owned.source->isFading();
         });
         return eve::Result<void>::success(eve::Status::success(
             before == transients_.size() && fadingBefore == fading_.size() && !fadingAdvanced
@@ -388,9 +384,6 @@ private:
     };
     struct FadingSource {
         eve::action::ActionExecutionId executionId;
-        eve::Duration startTime;
-        eve::Duration endTime;
-        double startVolume;
         ActiveSource owned;
     };
 
@@ -551,8 +544,9 @@ private:
             auto*                   live      = static_cast<eve::sound::SoundData*>(keepAlive.get());
             std::unique_ptr<Source> source(audio->newSource(live));
             OwnedAudio              owned(std::move(keepAlive), std::move(source));
-            configureAudioSource(*owned.source, binding,
-                                 selectAudioPitch(binding, seed ^ 0x9e3779b97f4a7c15ULL));
+            auto                    configured =
+                configureAudioSource(*owned.source, binding, selectAudioPitch(binding, seed ^ 0x9e3779b97f4a7c15ULL));
+            if (!configured.ok()) return eve::Result<std::optional<OwnedAudio>>::failure(configured.status());
             owned.source->setPosition(static_cast<float>(binding.spatial.positionOffset.x),
                                       static_cast<float>(binding.spatial.positionOffset.y),
                                       static_cast<float>(binding.spatial.positionOffset.z));

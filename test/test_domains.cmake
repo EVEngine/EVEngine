@@ -148,6 +148,7 @@ set(EVE_TEST_MODULE_DOMAIN
     "authority;rpg"
     "emergence;rpg"
     "production;rpg"
+    "growth;rpg"
     "orders;rpg"
     "settlement;rpg"
     "social;rpg"
@@ -176,6 +177,7 @@ set(EVE_TEST_MODULE_DOMAIN
     # through the include rule above rather than through a root of their own.
     "building;building"
     "archspace;building"
+    "logistics;building"
 
     # --- narrative, assets, media, platform, weather
     "dialogue;dialogue"
@@ -231,7 +233,6 @@ set(EVE_TEST_PREFIX_DOMAIN
     "json;core"
     "math_smooth;core"
     "xml;core"
-    "medialoader_model_link;core"
     "=model;core"
     "module_lazy_bind;core"
     "module_manager_registry;core"
@@ -274,6 +275,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "=climbing_contact_presentation;climbing"
     "crowd_script;npc_ai"
     "dialogue_proc_script;dialogue"
+    "card_;card"
     "rts_;tactics_rts"
     "tactics_script;tactics_rts"
 

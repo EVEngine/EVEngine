@@ -6,8 +6,10 @@
 // strict-warning CI builds.
 
 #include "graphics/vulkan/Graphics.h"
-#include "graphics/vulkan/GraphicsInternal.h"
+
+#include <utility>
 #include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/GraphicsInternal.h"
 
 #include "common/Diagnostic.h"
 #include "common/Exception.h"
@@ -19,6 +21,7 @@
 
 #include <algorithm>
 #include <array>
+#include <atomic>
 #include <cstdint>
 #include <cstring>
 #include <limits>
@@ -33,6 +36,36 @@
 
 
 namespace eve::graphics::vulkan {
+
+namespace {
+uint64_t nextTextureContentIdentity() {
+    static std::atomic<uint64_t> next{1};
+    auto                         value = next.load(std::memory_order_relaxed);
+    while (value != UINT64_MAX) {
+        if (next.compare_exchange_weak(value, value + 1, std::memory_order_relaxed)) return value;
+    }
+    // Saturation disables snapshots instead of reusing an old identity.
+    return 0;
+}
+}  // namespace
+
+Result<uint64_t> Graphics::textureContentIdentity(const Texture *texture) const {
+    const auto owned = std::find_if(ownedTextures.begin(), ownedTextures.end(),
+                                    [texture](const auto &candidate) { return candidate.get() == texture; });
+    if (!texture || owned == ownedTextures.end())
+        return Result<uint64_t>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "Texture is not owned by this graphics device",
+                                                           "graphics.texture.content_identity"));
+    auto      *gpu      = static_cast<GpuTexture *>(texture->gpuHandle);
+    const auto resource = std::find_if(ownedGpuTextures.begin(), ownedGpuTextures.end(),
+                                       [gpu](const auto &candidate) { return candidate.get() == gpu; });
+    if (!gpu || resource == ownedGpuTextures.end() || gpu->isCube || gpu->isArray || gpu->isVolume || gpu->isHDR ||
+        gpu->viewOverride || !gpu->contentIdentity)
+        return Result<uint64_t>::failure(Diagnostic::error(DiagnosticCode::Unsupported,
+                                                           "Texture requires a realized owned RGBA8 2D resource",
+                                                           "graphics.texture.content_identity"));
+    return Result<uint64_t>::success(gpu->contentIdentity);
+}
 
 template <class TextureImage>
 void recordTextureCopies(vk::CommandBuffer cb, TextureImage &image, vkb::GenericBuffer &staging, uint32_t width,
@@ -108,6 +141,7 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
     gpu->mipLevels = mipLevels;
     gpu->samplerState = info.sampler;
     gpu->image = vkb::TextureImage2D(device, uint32_t(w), uint32_t(h), mipLevels);
+    gpu->contentIdentity = nextTextureContentIdentity();
 
     std::vector<uint8_t> bytes =
         (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
@@ -142,7 +176,7 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
 Result<Texture *> Graphics::newTextureMipChain(uint32_t width, uint32_t height, uint32_t levels,
                                                std::span<const uint8_t> rgba) {
     auto fail = [](DiagnosticCode code, std::string message) {
-        return Result<Texture *>::failure(Diagnostic::error(code, message, {}, {}, "graphics.texture.mips"));
+        return Result<Texture*>::failure(Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.mips"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto maximum = device.physical_device.properties.limits.maxImageDimension2D;
@@ -172,6 +206,7 @@ Result<Texture *> Graphics::newTextureMipChain(uint32_t width, uint32_t height, 
         gpu->mipLevels    = levels;
         gpu->samplerState = TextureSampler::linearMipmap();
         gpu->image        = vkb::TextureImage2D(device, width, height, levels);
+        gpu->contentIdentity = nextTextureContentIdentity();
         uploadTextureForAllShaderStages(device, uploadPool, device.getQueue(vkb::QueueType::graphics), gpu->image,
                                         width, height, levels, 1, bytes);
         gpu->sampler       = createVkSampler(gpu->samplerState, levels);
@@ -201,8 +236,7 @@ Result<Texture *> Graphics::newTextureMipChain(uint32_t width, uint32_t height, 
 Result<Texture *> Graphics::newTextureArrayRgba16f(uint32_t width, uint32_t height, uint32_t layers,
                                                    std::span<const uint16_t> rgbaHalf) {
     auto fail = [](DiagnosticCode code, std::string message) {
-        return Result<Texture *>::failure(
-            Diagnostic::error(code, message, {}, {}, "graphics.texture.array"));
+        return Result<Texture*>::failure(Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.array"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto    &limits = device.physical_device.properties.limits;
@@ -255,8 +289,8 @@ Result<Texture *> Graphics::newTextureArrayRgba16f(uint32_t width, uint32_t heig
 Result<Texture *> Graphics::newTexture3DRgba8(uint32_t width, uint32_t height, uint32_t depth,
                                               std::span<const uint8_t> rgba) {
     auto fail = [](DiagnosticCode code, std::string message) {
-        return Result<Texture *>::failure(
-            Diagnostic::error(code, message, {}, {}, "graphics.texture.volume"));
+        return Result<Texture*>::failure(
+            Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.volume"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto    &limits = device.physical_device.properties.limits;
@@ -334,8 +368,22 @@ Texture *Graphics::newCubemap(int faceSize, const uint8_t *rgbaFaces,
     gpu->isCube = true;
     gpu->mipLevels = mipLevels;
     gpu->samplerState = info.sampler;
-    gpu->cubeImage = vkb::TextureImageCube(device, device.physical_device.memory_properties,
-                                           uint32_t(faceSize), uint32_t(faceSize), mipLevels);
+    // Optimal-tiled images cannot start in PREINITIALIZED. Uploads transition
+    // every cube face from UNDEFINED before copying the staging buffer.
+    vk::ImageCreateInfo cubeInfo{};
+    cubeInfo.flags       = vk::ImageCreateFlagBits::eCubeCompatible;
+    cubeInfo.imageType   = vk::ImageType::e2D;
+    cubeInfo.format      = vk::Format::eR8G8B8A8Unorm;
+    cubeInfo.extent      = vk::Extent3D{uint32_t(faceSize), uint32_t(faceSize), 1};
+    cubeInfo.mipLevels   = mipLevels;
+    cubeInfo.arrayLayers = 6;
+    cubeInfo.samples     = vk::SampleCountFlagBits::e1;
+    cubeInfo.tiling      = vk::ImageTiling::eOptimal;
+    cubeInfo.usage =
+        vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst;
+    cubeInfo.initialLayout = vk::ImageLayout::eUndefined;
+    gpu->cubeImage =
+        vkb::GenericImage(device, cubeInfo, vk::ImageViewType::eCube, vk::ImageAspectFlagBits::eColor, false);
 
     std::vector<uint8_t> bytes =
         (mipLevels > 1) ? buildMipChainCube(rgbaFaces, uint32_t(faceSize), mipLevels)
@@ -866,6 +914,7 @@ eve::Result<void> Graphics::updateTextureFromResidentRgba8(Texture* tex, const G
                                {}, 0, nullptr, 0, nullptr, 1, &barrier);
             gpu->image.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
         });
+    gpu->contentIdentity = nextTextureContentIdentity();
     return eve::Result<void>::success();
 }
 
@@ -971,6 +1020,7 @@ eve::Result<void> Graphics::updateTextureRegions(
         gpu->image.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
     });
     staging.release();
+    gpu->contentIdentity = nextTextureContentIdentity();
     return eve::Result<void>::success();
 }
 
@@ -991,6 +1041,7 @@ bool Graphics::replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_
     gpu->mipLevels = mipLevels;
     gpu->samplerState = info.sampler;
     gpu->image = vkb::TextureImage2D(device, uint32_t(w), uint32_t(h), mipLevels);
+    gpu->contentIdentity = nextTextureContentIdentity();
     std::vector<uint8_t> bytes =
         (mipLevels > 1) ? buildMipChain2D(rgba, uint32_t(w), uint32_t(h), mipLevels)
                         : std::vector<uint8_t>(rgba, rgba + size_t(w) * size_t(h) * 4);

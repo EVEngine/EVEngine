@@ -1,8 +1,13 @@
 #include "graphics/Waterfall.h"
 
+#include <glm/mat4x4.hpp>
+#include <glm/vec4.hpp>
+#include "common/Exception.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
+#include "graphics/MeshShaderRasterState.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Shader.h"
 #include "graphics/shaders/WaterfallWgsl.h"
 #include "graphics/shaders/waterfall_mesh_frag_spv.inc"
 
@@ -38,6 +43,12 @@ Shader *newWaterfallShader(Graphics *gfx) {
         std::vector<uint32_t> frag(waterfall_mesh_frag_spv,
                                    waterfall_mesh_frag_spv + waterfall_mesh_frag_spv_count);
         sh = gfx->newMeshShaderFromSpv({}, frag);
+        // Vulkan Hybrid already wrote this opaque sheet's depth; replace the
+        // equal-depth surface while retaining the ordinary custom default.
+        MeshShaderRasterState raster;
+        raster.depthCompare = MeshDepthCompare::LessEqual;
+        auto configured     = gfx->configureMeshShaderRaster(*sh, raster);
+        if (!configured) throw eve::Exception("%s", configured.status().describe().c_str());
     }
     for (int i = 0; i < kUniformCount; ++i) {
         if (std::string(kUniformNames[i]) == "waterCol")

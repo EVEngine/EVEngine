@@ -6,16 +6,17 @@
   "default": "physics-backend",
   "cases": {
     "physics-backend": [
-      "physics.collision.ccd.sphereStopsAtThinWall",
       "physics.collision.ccd.dynamicPairMaintainsOrderWithFourSubsteps",
-      "physics.collision.stack.remainsSupportedAfterTenSeconds",
-      "physics.collision.query.primitiveHitsHaveNoSourceTriangle"
+      "physics.collision.ccd.sphereStopsAtThinWall",
+      "physics.collision.query.primitiveHitsHaveNoSourceTriangle",
+      "physics.collision.stack.remainsSupportedAfterTenSeconds"
     ]
   },
   "module": "physics"
 }
 */
 // clang-format on
+
 #include "physics/Body3D.h"
 #include "physics/World3D.h"
 #include "zeroerr/assert.h"

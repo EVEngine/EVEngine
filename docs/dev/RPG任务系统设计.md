@@ -32,10 +32,12 @@ v1 **不**提供 C++ `registerObjectiveType` 回调：匹配规则已是自由�
 |--------|--------|----------|
 | `QuestDefinition`（数据） | C++ 或 JSON | 新条目无需改引擎 |
 | `startPolicy` / `completePolicy` | JSON | 接任务 vs 成就自动听；交任务 vs 成就自动完成 |
+| `objectivePolicy` / `optional` | JSON | `all`/`any`/`ordered`；可选目标不挡完成 |
+| `timeLimitSeconds` / `refreshKey` | JSON | 限时与日刷族键；由 `applyClock` / `refreshByKey` 喂入 |
 | `requires` | JSON | 任务链（本 Tracker 上 AND） |
 | `tags` / `extra` | JSON | `main` / `daily` / `achievement` / `tutorial`；标题、NPC、图标 |
-| `rewards[].type/id` | JSON | `item` / `attribute` / 游戏自定义；引擎**不发奖** |
-| 事件 poll | 脚本或 C++ | UI、发奖、对话衔接 |
+| `rewards[].type/id` | JSON | `item` / `attribute` / 游戏自定义；产品层 `claimQuestRewards` 发奖 |
+| 事件 poll / `dialoguePhase` | 脚本或 C++ | UI、发奖、对话 `dialogueBase.phase` 约定 |
 
 ## 架构
 
@@ -319,16 +321,28 @@ for (local i = 0; i < log.getEventCount(); i++) {
 
 不测：存档、引擎发奖、背包/对话自动挂钩、`rpg.update` 副作用。
 
-## 非目标（v1）
+## 已补齐（相对 v1 非目标）
 
-- 存档序列化（与属性/技能一样留给统一存档）
-- 日历 / 自动刷新（只有手动 `reset`）
-- 引擎代发物品或经验
-- 目标之间的 OR、可选目标、强制顺序步骤
+- 存档：`Tracker.snapshotJson` / `RPGSaveSession`
+- 发奖：`QuestReward::claim` / `claimQuestRewards`
+- 目标关系：`objectivePolicy` = `all`|`any`|`ordered`，目标 `optional`
+- 限时 / 日刷钩子：`timeLimitSeconds` + `applyClock(now)`；`refreshKey` + `refreshByKey(key, stamp)`（仍不接入 `rpg.update(dt)`）
+- 对话相位约定：`dialoguePhase` / `dialogueConversationId`
+
+## 程序化生成（已落地）
+
+`QuestGenerationCatalogue` 持有 archetype（标签过滤、目标/奖励槽位、`idPattern`/`extra` 占位符）。
+`QuestGenerator` 接受 `eve.rpg.quest-generate` 请求（entities + urgency + seed + selection），
+按 `mostUrgent` / `weighted` / `equal` 选出实体并实例化为普通 `QuestDefinition`（自动打 `generated` 标签）。
+`generateAndRegister` 默认可先清掉旧的 `generated` 条目再注册；进度仍走 `Tracker::notify`。
+
+## 仍非目标
+
+- 节点图编辑器 / 完整 GOAP 规划器 / 内置 Journal·HUD 套件
 - 终身计数账本（条目中心：只给当前 `active` 的目标加分）
-- `rpg.update(dt)` 驱动的限时失败
 - C++ 自定义目标类型 / 生命周期 hook
 - 与 `event` 模块打通（独立 poll，与 tick/cast 现状一致）
+- 多人任务复制
 
 ## 实现注意
 

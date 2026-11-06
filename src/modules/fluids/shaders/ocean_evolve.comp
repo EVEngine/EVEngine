@@ -4,7 +4,18 @@ layout(set=0,binding=0,std430) readonly buffer Coefficients { vec4 value[]; } co
 layout(set=0,binding=1,std430) writeonly buffer Output { vec2 value[]; } outputField;
 layout(push_constant) uniform Params { float data[32]; } p;
 vec2 multiply(vec2 a,vec2 b) { return vec2(a.x*b.x-a.y*b.y,a.x*b.y+a.y*b.x); }
-vec2 phase(float a) { return vec2(cos(a),sin(a)); }
+// Keep FFT parity independent of a Vulkan implementation's native sin/cos approximation.
+vec2 phase(float a) {
+    const float pi=3.141592653589793,halfPi=1.5707963267948966,tau=6.283185307179586;
+    float x=a-tau*floor(a/tau+0.5);
+    float cosineSign=1.0;
+    if(x>halfPi) { x=pi-x;cosineSign=-1.0; }
+    else if(x < -halfPi) { x=-pi-x;cosineSign=-1.0; }
+    float x2=x*x;
+    float s=x*(1.0+x2*(-1.0/6.0+x2*(1.0/120.0+x2*(-1.0/5040.0+x2*(1.0/362880.0-x2/39916800.0)))));
+    float c=1.0+x2*(-1.0/2.0+x2*(1.0/24.0+x2*(-1.0/720.0+x2*(1.0/40320.0+x2*(-1.0/3628800.0+x2/479001600.0)))));
+    return vec2(c*cosineSign,s);
+}
 uint reverseIndex(uint value,uint n) {
     uint result=0;
     for(uint bit=1;bit<n;bit<<=1) { result=(result<<1)|(value&1);value>>=1; }

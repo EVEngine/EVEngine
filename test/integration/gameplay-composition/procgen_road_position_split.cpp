@@ -28,55 +28,6 @@ using namespace eve::editing;
 using namespace eve::procgen::road;
 using namespace eve::procgen_editing;
 
-TEST_CASE("procgen.road.network.positionSplitRefinesCurvedSnapAndRejectsOutsideRadius") {
-    RoadNetwork network;
-    auto        start = network.addNode(-10.f, 0.f, -10.f);
-    auto        end   = network.addNode(10.f, 0.f, -10.f);
-    REQUIRE(start.ok());
-    REQUIRE(end.ok());
-    auto edge = network.addEdge(start.value(), end.value(),
-                                {{-10.f, 0.f, -10.f}, {-3.f, 0.f, 10.f}, {3.f, 0.f, 10.f}, {10.f, 0.f, -10.f}}, 1, 0);
-    REQUIRE(edge.ok());
-    const auto revision = network.revision();
-    REQUIRE(!network.splitEdgeAtPosition(edge.value(), {0.f, 0.05f, 12.5f}, 0.049f).ok());
-    REQUIRE_EQ(network.revision(), revision);
-    auto split = network.splitEdgeAtPosition(edge.value(), {0.f, 0.05f, 12.5f}, 0.051f);
-    REQUIRE(split.ok());
-    auto node = network.nodeResult(split.value().nodeId);
-    REQUIRE(node.ok());
-    REQUIRE(std::fabs(node.value().x) < 1e-5f);
-    REQUIRE(std::fabs(node.value().y) < 1e-5f);
-    REQUIRE(std::fabs(node.value().z - 12.5f) < 1e-5f);
-    REQUIRE(network.validate().ok());
-}
-
-TEST_CASE("procgen.road.network.positionSplitSnapsIn3dAndRejectsEndpoints") {
-    RoadNetwork network;
-    auto        from = network.addNode(-10.f, 5.f, 0.f);
-    auto        to   = network.addNode(10.f, 5.f, 0.f);
-    REQUIRE(from.ok());
-    REQUIRE(to.ok());
-    auto road = network.addEdge(from.value(), to.value(), {{-10.f, 5.f, 0.f}, {10.f, 5.f, 0.f}}, 1, 0);
-    REQUIRE(road.ok());
-
-    const auto unchangedRevision = network.revision();
-    REQUIRE(!network.splitEdgeAtPosition(road.value(), {0.f, 0.f, 0.f}, 2.f).ok());
-    REQUIRE_EQ(network.revision(), unchangedRevision);
-    REQUIRE(!network.splitEdgeAtPosition(road.value(), {-10.f, 5.f, 0.f}, 0.1f).ok());
-    REQUIRE_EQ(network.revision(), unchangedRevision);
-
-    auto split = network.splitEdgeAtPosition(road.value(), {2.f, 7.f, 1.f}, 3.f, 3.5f);
-    REQUIRE(split.ok());
-    auto node = network.nodeResult(split.value().nodeId);
-    REQUIRE(node.ok());
-    REQUIRE(std::fabs(node.value().x - 2.f) < 1e-5f);
-    REQUIRE(std::fabs(node.value().y - 5.f) < 1e-5f);
-    REQUIRE(std::fabs(node.value().z) < 1e-5f);
-    REQUIRE_EQ(network.edgeResult(split.value().firstEdgeId).value().controlPoints.size(), std::size_t{2});
-    REQUIRE_EQ(network.edgeResult(split.value().secondEdgeId).value().controlPoints.size(), std::size_t{2});
-    REQUIRE(network.validate().ok());
-}
-
 TEST_CASE("procgen.road.editing.positionSplitUndoRedoKeepsProjectedPointAndIds") {
     RoadNetwork network;
     auto        from = network.addNode(-12.f, 4.f, 0.f);

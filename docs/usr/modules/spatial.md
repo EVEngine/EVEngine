@@ -2,6 +2,14 @@
 
 **脚本入口：** `eve.Spatial()`
 
+## 这篇解决什么
+
+- **问题**：视口/拾取裁剪、按矩形或圆/球做邻近宽相（只要 id + 包围盒，不拥有实体）。
+- **入口**：`eve.Spatial()` 工厂 → `newQuadTree` / `newSpatialHash2D` / `newOctree` / … → `insert`/`update`/`remove` → `queryRect` / `queryCircle` / `querySphere` 等。
+- **成本**：`costClass=scales`，`scalesWith=cellVisits,resultCount`；全表枚举实体是 `scalesWith=worldSize`。
+- **不要**：用全表扫描实体列表代替索引查询；也不要把本模块当成玩法选目标的完整方案——带阵营/标签/排序的候选查询用 [sensing](sensing.md)。
+- **相关**：玩法「附近谁能打」走 sensing；这里只做空间宽相。热点见 [profiler](profiler.md) / `eve_profiler_hotspots`。
+
 提供四叉树、八叉树、空间哈希与空间二分树（及其二维/三维版本），用于快速判断元素是否落在视口、拾取区或邻近范围内。
 
 ## 基本用法

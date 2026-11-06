@@ -19,15 +19,17 @@
 | Y | `y` | 120° 三臂路口 |
 | F | `fork` | 60° 锐角分叉 |
 | K | `skew` | 135° 斜角三臂 |
+| G | `roadType` | 在 `highway` / `railway` 之间切换（铁道：道砟截面 + 钢轨设施 + 轨枕） |
 
 ```sh
 make run GAME=examples/procedural-road
 # headless：用 scene.txt 指定单个场景；写入 gallery 会依次保存全部场景
-echo interchange > examples/procedural-road/scene.txt
+# 写入 railway / highway 可切换道路类型（与场景名互斥时优先作为类型）
+echo railway > examples/procedural-road/scene.txt
 VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.json ALSOFT_DRIVERS=null \
   xvfb-run -a scripts/smoke_examples.sh procedural-road
 ```
 
-配方参数：`scene=straight|curve|bridge|cross|tee|y|fork|skew|t-junction|y-junction|sloped-t|curve-uphill|tight-turn|roundabout|interchange`，另有 `mesh.roadNetwork` / `tex.roadMarkings`。
-沥青使用通用 `pbr.asphalt` 配方生成 albedo/normal/height，并复用 Mesh3D 的纹理去重复与轻量视差；道路拓扑与渲染材质保持解耦。
+配方参数：`scene=straight|curve|bridge|cross|tee|y|fork|skew|t-junction|y-junction|sloped-t|curve-uphill|tight-turn|roundabout|interchange`，`roadType=highway|railway`，另有 `mesh.roadNetwork` / `tex.roadMarkings`。`roadType=railway` 时 `lanes` 表示并行轨道数（1–2）。
+沥青公路使用通用 `pbr.asphalt` 配方生成 albedo/normal/height，并复用 Mesh3D 的纹理去重复与轻量视差；铁道用材质 tint 区分道砟/钢轨/轨枕。道路拓扑与渲染材质保持解耦。
 设计说明见 `docs/dev/程序化道路系统设计.md`。

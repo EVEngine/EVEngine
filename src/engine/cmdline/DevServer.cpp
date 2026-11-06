@@ -270,7 +270,7 @@ std::vector<string> lanIPv4s() {
         const auto list = Poco::Net::NetworkInterface::list();
         for (const auto& ni : list) {
             if (!ni.isUp() || ni.isLoopback()) continue;
-            const auto addrs = ni.addressList();
+            const auto& addrs = ni.addressList();
             for (const auto& a : addrs) {
                 const auto& addr = a.get<0>();
                 if (addr.family() == Poco::Net::IPAddress::IPv4 && !addr.isLoopback())

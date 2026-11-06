@@ -4,7 +4,7 @@ torchvision
 diffusers==0.41.0
 accelerate==1.15.0
 xformers>=0.0.35
-transformers==5.19.0
+transformers==5.20.1
 safetensors
 einops
 numpy==2.5.4

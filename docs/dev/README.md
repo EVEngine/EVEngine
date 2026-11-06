@@ -30,6 +30,7 @@
 - [模块编排与裁剪架构](模块编排与裁剪架构.md)（实测依赖分层、协作接缝、按需裁剪；用户侧用法见[按需裁剪模块](../usr/TRIMMING.md)）
 - [去中心化冲突热点设计](superpowers/specs/2026-10-10-decentralize-conflict-hotspots.md)（按模块拆频繁修改面，保留组合后的单一依赖契约）
 - [模块接口契约与机制选型规范](模块接口契约与机制选型规范.md)（模块对外六个面、ECS/事件/provider/Link 选型判据、API 成本可见性）
+- [API 成本与 Profiler 约定](API成本与Profiler约定.md)（文档导读成本维 + 规模化热点读取；配合 `@cost`）
 - [模块边界审查清单](模块边界审查清单.md)（对单个模块执行上述规范的逐项判据与取证方式）
 - [模块边界审查台账（首轮全量）](2026-09-15-模块边界审查台账.md)（194 个模块的逐条结论与实测数据）
 - [重构代码质量与系统完整性规范](重构代码质量与系统完整性规范.md)
@@ -51,6 +52,7 @@
 - [Semantic World Database 架构设计](SemanticWorldDatabase架构设计.md)（待评审构想：世界事务、跨类型 AI 开发闭环、架构与行为图、具体实施方案及 Schema 来源分工；区分现有基础与拟议能力）
 - [AI 知识补偿](AI知识补偿.md)（推理时知识包、Binding Contract 目录、少写脚本）
 - [AI 场景导演](AI场景导演.md)（剧情 → 自动搭台 → 质检迭代 → 交付）
+- [2D 动作白膜引导 → AI 成图管线](2026-11-03-2d-action-ai-guide-pipeline.md)（Pose / Guide AOV / 入库 / 可玩验证；引擎角色与拟议接口）
 - [游戏开发系统与工具差距分析](游戏开发系统与工具差距分析.md)
 
 ## 功能设计
@@ -117,5 +119,8 @@ TVE / Unity 植被与天空导入的源语义契约仍散落在根目录（`vege
   - Release 等非 Debug 构建默认通过 `ZEROERR_NO_ASSERT` 编译剔除，零运行时开销；
   - 需要手动开启时：`make build/linux CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_ASSERTS=ON`
     （或 CMake 配置时加 `-DEVENGINE_ENABLE_ASSERTS=ON`）。
+  - Debug 编译档位（`EVENGINE_DEBUG_LEVEL` / `make … DEBUG_LEVEL=`）：默认 `normal`
+   （`-g0 -O2`，无 DWARF，避免 sccache/GitHub cache 被 `.o` 撑爆）供日常与 CI；
+   排障用 `detail`（`-g2 -O1`）。断言在两种 Debug 档位下都开启。
 
 如果你是使用 EVEngine 制作游戏，而不是修改引擎，请从[用户指南](../usr/README.md)开始。

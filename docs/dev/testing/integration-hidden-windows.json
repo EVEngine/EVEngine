@@ -1,0 +1,531 @@
+{
+  "platform": "Windows native MSVC Debug SHARED",
+  "implementation": "CreateDesktopW + CreateProcessW.lpDesktop; no SwitchDesktop or SDL_HideWindow",
+  "observed_input_desktop_test_windows": 0,
+  "observed_background_test_windows": 44,
+  "background_shown_windows": 9,
+  "window_enumeration_samples": 204,
+  "window_probe_seconds": 6.3048358000814915,
+  "smoke_cases": [
+    {
+      "name": "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
+      "seconds": 2.51671,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.lighting.frameSlotResourceReuse",
+      "seconds": 1.05629,
+      "status": "passed"
+    },
+    {
+      "name": "window.lifecycle.desktopEventContract",
+      "seconds": 0.919218,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.lifecycle.appBackgroundForegroundResume",
+      "seconds": 0.79015,
+      "status": "passed"
+    }
+  ],
+  "four_contract_files": [
+    {
+      "name": "PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState",
+      "seconds": 1.76,
+      "status": "passed"
+    },
+    {
+      "name": "PhysicsLayeredClothGPU.pinnedPoseAndReset",
+      "seconds": 2.54141,
+      "status": "passed"
+    },
+    {
+      "name": "PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled",
+      "seconds": 1.37848,
+      "status": "passed"
+    },
+    {
+      "name": "PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan",
+      "seconds": 1.61317,
+      "status": "passed"
+    },
+    {
+      "name": "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
+      "seconds": 2.39071,
+      "status": "passed"
+    },
+    {
+      "name": "PhysicsLayeredClothGPU.ccdPointFacePreservesStartingSide",
+      "seconds": 1.45269,
+      "status": "passed"
+    },
+    {
+      "name": "PhysicsLayeredClothGPU.ccdEdgeInteriorsAndDegeneracy",
+      "seconds": 1.65973,
+      "status": "passed"
+    },
+    {
+      "name": "PhysicsLayeredClothGPU.sweptHashAndScanKeepCrossingPointAboveFace",
+      "seconds": 1.52006,
+      "status": "passed"
+    },
+    {
+      "name": "PhysicsLayeredClothGPU.sweptEdgesReactWithBalancedMass",
+      "seconds": 1.50641,
+      "status": "passed"
+    },
+    {
+      "name": "PhysicsLayeredClothGPU.contactFrictionAndSelfFiltering",
+      "seconds": 1.43707,
+      "status": "passed"
+    },
+    {
+      "name": "PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre",
+      "seconds": 1.59829,
+      "status": "passed"
+    },
+    {
+      "name": "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift",
+      "seconds": 1.68865,
+      "status": "passed"
+    },
+    {
+      "name": "xray.shaderAndFlags",
+      "seconds": 0.912392,
+      "status": "passed"
+    },
+    {
+      "name": "xray.occludedSilhouette",
+      "seconds": 1.18019,
+      "status": "passed"
+    },
+    {
+      "name": "animation.spine.windowDemoRealModels",
+      "seconds": 1.31127,
+      "status": "passed"
+    },
+    {
+      "name": "avatar.vrm.importMorphGazeSpringAndRollback",
+      "seconds": 0.891839,
+      "status": "passed"
+    },
+    {
+      "name": "decal.proceduralImportsReferenceSubstanceMaterialPresets",
+      "seconds": 0.183218,
+      "status": "passed"
+    },
+    {
+      "name": "decal.renderImportedPresetContactSheet",
+      "seconds": 1.88604,
+      "status": "passed"
+    },
+    {
+      "name": "decal.renderImportedPresetsOnLitMaterialSpheres",
+      "seconds": 3.34525,
+      "status": "passed"
+    },
+    {
+      "name": "decal.proceduralFacadeUploadsAllRuntimeChannels",
+      "seconds": 0.501364,
+      "status": "passed"
+    },
+    {
+      "name": "decal.gpuProjectBlendsIntoForward",
+      "seconds": 1.10242,
+      "status": "passed"
+    },
+    {
+      "name": "decal.gpuEmissiveAdditiveGlow",
+      "seconds": 0.993123,
+      "status": "passed"
+    },
+    {
+      "name": "decal.gpuHeadlessProjectionReadback",
+      "seconds": 0.755883,
+      "status": "passed"
+    },
+    {
+      "name": "decal.gpuTriplanarCoversGrazingWall",
+      "seconds": 1.18859,
+      "status": "failed"
+    },
+    {
+      "name": "decal.renderGalleryPng",
+      "seconds": 1.21473,
+      "status": "passed"
+    },
+    {
+      "name": "dialogue.stage.avatarTypewriterPreview",
+      "seconds": 1.56397,
+      "status": "passed"
+    },
+    {
+      "name": "GpuDriven.capsAvailable",
+      "seconds": 1.01163,
+      "status": "passed"
+    },
+    {
+      "name": "GpuDriven.bindlessTextureRegistration",
+      "seconds": 0.762026,
+      "status": "passed"
+    },
+    {
+      "name": "GpuDriven.meshTableRegistration",
+      "seconds": 0.868844,
+      "status": "passed"
+    },
+    {
+      "name": "GpuDriven.residentInstanceBufferDirectSubmit",
+      "seconds": 0.822345,
+      "status": "passed"
+    },
+    {
+      "name": "GpuDriven.squirrelResidentInstanceSubmit",
+      "seconds": 0.946067,
+      "status": "passed"
+    },
+    {
+      "name": "GpuDriven.opaqueForwardParity",
+      "seconds": 1.02995,
+      "status": "passed"
+    },
+    {
+      "name": "GpuDriven.opaqueForwardParityMultiTexture",
+      "seconds": 1.29595,
+      "status": "failed"
+    },
+    {
+      "name": "GpuDriven.opaqueForwardCullParity",
+      "seconds": 1.07354,
+      "status": "failed"
+    },
+    {
+      "name": "GpuDriven.visResolveParity",
+      "seconds": 1.47977,
+      "status": "failed"
+    },
+    {
+      "name": "GpuDriven.vgVisResolve",
+      "seconds": 1.22101,
+      "status": "failed"
+    },
+    {
+      "name": "GpuDriven.largeSceneForwardParity",
+      "seconds": 1.25423,
+      "status": "failed"
+    },
+    {
+      "name": "GpuDriven.largeSceneCullParity",
+      "seconds": 1.15749,
+      "status": "failed"
+    },
+    {
+      "name": "GpuDriven.largeSceneVisResolveParity",
+      "seconds": 1.03844,
+      "status": "passed"
+    },
+    {
+      "name": "GpuDrivenParity.rejectsUnrepresentedSurfaceFeatures",
+      "seconds": 0.847743,
+      "status": "passed"
+    },
+    {
+      "name": "GpuDrivenParity.materialRecordsReleaseIdempotentlyAndReuseSlots",
+      "seconds": 0.805149,
+      "status": "passed"
+    },
+    {
+      "name": "GpuDrivenParity.cameraFacingCardTurnsTowardSideCamera",
+      "seconds": 1.20651,
+      "status": "failed"
+    },
+    {
+      "name": "GpuDrivenParity.maskedAlphaCutoff",
+      "seconds": 1.20914,
+      "status": "failed"
+    },
+    {
+      "name": "GpuDrivenParity.opaqueStage1",
+      "seconds": 1.20404,
+      "status": "failed"
+    },
+    {
+      "name": "GpuDrivenParity.virtualGeometry",
+      "seconds": 1.44654,
+      "status": "failed"
+    },
+    {
+      "name": "graphics.lighting.frameSlotResourceReuse",
+      "seconds": 1.44237,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.deferredTargets.lateGbufferAndResize",
+      "seconds": 1.13413,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.hybridLighting.deferredPassAvailable",
+      "seconds": 0.895151,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.lightingPreset.ciKeepsForwardPlus",
+      "seconds": 1.18932,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.font.newFontBuildsAtlasForCharset",
+      "seconds": 0.611502,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.font.newFontDefaultCharsetDoesNotCrash",
+      "seconds": 0.609212,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.drawText.throwsWithNullFont",
+      "seconds": 0.488403,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.drawText.rendersAtRequestedPosition",
+      "seconds": 0.653452,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.drawText.rendersGlyphPixelsOnCanvas",
+      "seconds": 0.798832,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels",
+      "seconds": 0.657426,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.resourceReuse.samplerEditsCoalesceAndReuse",
+      "seconds": 0.786754,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity",
+      "seconds": 0.841875,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.vegetation.render_mesh_update_and_season",
+      "seconds": 1.71794,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.HairShader.createGpuPipeline",
+      "seconds": 0.877036,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.HairCards.uploadMaterialAndLod",
+      "seconds": 0.81836,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.hair.groomInstanceMultiGroupAndMarschner",
+      "seconds": 0.685435,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.hair.groomInstanceCardsLodBakeAndDraw",
+      "seconds": 0.967613,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.hair.groomInstanceGuideSimUpdate",
+      "seconds": 0.90388,
+      "status": "passed"
+    },
+    {
+      "name": "window.setWindowSettingsRoundTrip",
+      "seconds": 0.695667,
+      "status": "passed"
+    },
+    {
+      "name": "window.setSizeGetDimensions",
+      "seconds": 0.891902,
+      "status": "passed"
+    },
+    {
+      "name": "window.setFullscreenDesktopRoundTrip",
+      "seconds": 0.786764,
+      "status": "passed"
+    },
+    {
+      "name": "window.setFullscreenDesktopRoundTripUsesSettings",
+      "seconds": 0.921458,
+      "status": "passed"
+    },
+    {
+      "name": "window.closeClearsHandleAndBlocksFullscreen",
+      "seconds": 0.920022,
+      "status": "passed"
+    },
+    {
+      "name": "window.setWindowSettingsRecreatesAfterClose",
+      "seconds": 0.893571,
+      "status": "passed"
+    },
+    {
+      "name": "window.zeroSizeUsesDesktopDimensions",
+      "seconds": 0.67731,
+      "status": "passed"
+    },
+    {
+      "name": "window.isOpenAfterCreateAndClose",
+      "seconds": 0.645047,
+      "status": "passed"
+    },
+    {
+      "name": "window.titleAndPositionAndVSync",
+      "seconds": 0.879666,
+      "status": "passed"
+    },
+    {
+      "name": "window.titleCachesBeforeOpen",
+      "seconds": 0.092863,
+      "status": "passed"
+    },
+    {
+      "name": "window.displayQueries",
+      "seconds": 0.124482,
+      "status": "passed"
+    },
+    {
+      "name": "window.pixelSizeAndDpiRoundTrip",
+      "seconds": 0.889645,
+      "status": "passed"
+    },
+    {
+      "name": "window.requestAttentionNoCrash",
+      "seconds": 0.872309,
+      "status": "passed"
+    },
+    {
+      "name": "window.setIconRGBA",
+      "seconds": 0.813029,
+      "status": "passed"
+    },
+    {
+      "name": "window.setIconRGBANullFails",
+      "seconds": 0.0931443,
+      "status": "passed"
+    },
+    {
+      "name": "window.showMessageBoxOptional",
+      "seconds": 0.0884168,
+      "status": "passed"
+    },
+    {
+      "name": "window.lifecycle.desktopEventContract",
+      "seconds": 0.877427,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.lifecycle.appBackgroundForegroundResume",
+      "seconds": 0.79575,
+      "status": "passed"
+    },
+    {
+      "name": "window.maximizeRestoreRoundTrip",
+      "seconds": 0.976458,
+      "status": "passed"
+    },
+    {
+      "name": "production.cardFacadeRoutesAttributesEffectsAndPlay",
+      "seconds": 0.0652456,
+      "status": "passed"
+    },
+    {
+      "name": "production.rtsFacadeRoutesCanonicalAttributesEffectsAndBuild",
+      "seconds": 0.0881143,
+      "status": "passed"
+    },
+    {
+      "name": "card.genericBatchComposesWithEconomyWithoutRts",
+      "seconds": 0.173073,
+      "status": "passed"
+    },
+    {
+      "name": "card.genericBatchDetectsLedgerResetAndStaleCard",
+      "seconds": 0.168329,
+      "status": "passed"
+    },
+    {
+      "name": "card.genericBatchRetainsScriptOwnersAndReleasesPendingStagesAtVmShutdown",
+      "seconds": 0.0672724,
+      "status": "passed"
+    },
+    {
+      "name": "card.genericBatchCompensatesAndProtectsMergedCosts",
+      "seconds": 0.0593502,
+      "status": "passed"
+    },
+    {
+      "name": "card.genericBatchRejectsAdvancedRtsContextBeforePayment",
+      "seconds": 0.163086,
+      "status": "passed"
+    },
+    {
+      "name": "card.rtsScriptShortCollectionConstructionAndAtomicPlayContract",
+      "seconds": 0.394446,
+      "status": "passed"
+    },
+    {
+      "name": "card.rtsScriptBindingsRejectNullAndMalformedCostsWithoutMutation",
+      "seconds": 0.0607066,
+      "status": "passed"
+    },
+    {
+      "name": "card.preparedRtsAbilityCompensatesHandChannelCooldownAndCard",
+      "seconds": 0.0683082,
+      "status": "passed"
+    },
+    {
+      "name": "card.rtsScriptGatheringUsesConfiguredResourceAndDropoff",
+      "seconds": 0.0719244,
+      "status": "passed"
+    }
+  ],
+  "opt_in_migrated_benchmarks": [
+    {
+      "name": "graphics.deferredLighting.reusesCompletedFrameResources",
+      "seconds": 14.399,
+      "status": "passed"
+    },
+    {
+      "name": "graphics.clusteredLighting.reusesUnchangedStorageBindings",
+      "seconds": 17.5457,
+      "status": "passed"
+    },
+    {
+      "name": "PhysicsLayeredClothGPU.stabilityAndSynchronousTimingBaseline",
+      "seconds": 15.1887,
+      "status": "passed"
+    },
+    {
+      "name": "PhysicsLayeredClothGPU.fallingSheetsRemainSeparatedForOneSimulatedMinute",
+      "seconds": 29.9163,
+      "status": "passed"
+    },
+    {
+      "name": "card.rtsScriptScenarioCollectsBuildsProducesAndPlaysAtomicSkills",
+      "seconds": 35.6644,
+      "status": "passed"
+    }
+  ],
+  "launcher_regression_tests": 14,
+  "limits": [
+    "Window observations cover four explicit native cases, not every integration case.",
+    "The 11 GPU failures are pre-existing and were not suppressed.",
+    "Hidden mode changes window presentation conditions; runtime comparisons with earlier visible measurements are not controlled A/B measurements."
+  ]
+}

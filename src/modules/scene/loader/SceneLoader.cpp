@@ -1148,11 +1148,11 @@ bool SceneLoader::loadAsync(const std::string &path, const LoadOptions &options,
     if (!pool_) pool_ = std::make_shared<thread::ThreadPool>(2);
 
     auto self = this;
-    pool_->submit([self, key, options, done]() {
+    pool_->submit([self, key, options, done = std::move(done)]() mutable {
         DecodedScene d;
         if (self->decode(key, options, &d)) {
             std::lock_guard<std::mutex> lock(self->pendingMu_);
-            d.done = done;
+            d.done = std::move(done);
             self->pending_.push_back(std::move(d));
         }
         std::lock_guard<std::mutex> lock(self->pendingMu_);

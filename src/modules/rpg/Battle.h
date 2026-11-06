@@ -64,6 +64,11 @@ public:
     /** @brief 加入参战者；side 为任意阵营 id。 */
     void addActor(RPGActor* actor, int side);
     /**
+     * @brief Inject the hit/target random stream before the first round; fold the seed into the engine's 32-bit stream.
+     * @return Conflict after combat starts. Owner thread only, no callbacks or retained references.
+     */
+    [[nodiscard]] eve::Result<void> configureSeed(std::uint64_t seed);
+    /**
      * @brief Replace declarative buff/effect rules used by subsequent battle settlements.
      * @param rules Validated rule set to install.
      * @return Applied, or a structured configuration failure while retaining the previous rules.

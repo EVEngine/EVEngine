@@ -26,6 +26,42 @@ class SceneNodeRef;
 
 namespace eve::camera {
 
+/**
+ * @brief Serializable gameplay camera framing for story push/pop restore.
+ * @remarks Captures mode, active rig, follow/orbit parameters and the live smoothed pose.
+ */
+struct CameraFramingSnapshot {
+    std::string mode = "follow";
+    std::string activeRig;
+    float       targetX = 0.f;
+    float       targetY = 0.f;
+    float       targetZ = 0.f;
+    float       offsetX = 0.f;
+    float       offsetY = 2.f;
+    float       offsetZ = 6.f;
+    float       lookAheadX = 0.f;
+    float       lookAheadY = 0.f;
+    float       lookAheadZ = 0.f;
+    float       radius = 10.f;
+    float       azimuth = 45.f;
+    float       elevation = 30.f;
+    float       yaw = 0.f;
+    float       pitch = 0.f;
+    float       fov = 60.f;
+    float       smooth = 6.f;
+    float       positionSmooth = 6.f;
+    float       targetSmooth = 6.f;
+    float       maxSpeed = 0.f;
+    float       eyeX = 0.f;
+    float       eyeY = 0.f;
+    float       eyeZ = 0.f;
+    float       lookX = 0.f;
+    float       lookY = 0.f;
+    float       lookZ = 0.f;
+    bool        directorEnabled = false;
+    bool        timelinePlaying = false;
+};
+
 /** @brief Complete Pcg photo-mode post-processing state retained across render-pipeline projections. */
 struct PcgPhotoModePostFxState {
     float postFxExposure = 13.5f;
@@ -56,7 +92,8 @@ struct PcgPhotoModePostFxState {
  * 驱动一个 graphics::Camera3D，内置多种方便玩家使用的视角行为：
  *   - follow      自动追踪目标（第三人称跟随，镜头挂在 target + offset）
  *   - orbit       自动盘旋（绕 target 公转，azimuth 按 orbitSpeed 自动旋转）
- *   - topdown     俯视（从 target 正上方往下拍）
+ *   - topdown     俯视（从 target 正上方往下拍，仍用透视）
+ *   - ortho       纯正交俯视（同 topdown 站位，投影切到 Camera3D 正交）
  *   - firstperson 第一人称（eye 位于 target，用 yaw/pitch 控制朝向）
  *   - cinematic   过场/自动切换视角（在一组命名 View 之间平滑插值）
  *   - lockon      锁定：看向 target 与 secondaryTarget 中点，站在玩家身后
@@ -123,9 +160,9 @@ public:
     /** @brief Returns the mode. */
     std::string getMode() const;
 
-    // --- orbit / topdown 参数 ---
+    // --- orbit / topdown / ortho 参数 ---
     /** @brief Sets the radius. */
-    void setRadius(float r);              // orbit 半径 / topdown 高度
+    void                                                 setRadius(float r);  // orbit 半径 / topdown·ortho 高度
     /** @brief Return the current orbit radius. */ float getRadius() const { return radius_; }
     /** @brief Set inclusive orbit zoom limits atomically. */
     [[nodiscard]] Result<void> setRadiusLimits(float minimum, float maximum);
@@ -137,6 +174,13 @@ public:
     void setElevation(float deg);         // orbit 仰角
     /** @brief Sets the orbit speed. */
     void setOrbitSpeed(float degPerSec);  // 自动盘旋转速
+    /**
+     * @brief Vertical world span for mode "ortho" (Camera3D::setOrthographic).
+     * @param height Full orthographic height; must be finite and > 0.
+     */
+    void setOrthoHeight(float height);
+    /** @brief Return the orthographic height used by mode "ortho". */
+    float getOrthoHeight() const { return orthoHeight_; }
 
     // --- firstperson 参数 ---
     /** @brief Sets the yaw. */
@@ -231,6 +275,12 @@ public:
     // --- cinematic / 自动切换视角 ---
     /** @brief Adds view. */
     void addView(const std::string& name, float ex, float ey, float ez, float tx, float ty, float tz);
+    /**
+     * @brief Insert or replace a named cinematic view including FOV.
+     * @cost Constant; amortised over the next blend or story move.
+     */
+    [[nodiscard]] Result<void> setView(const std::string& name, float ex, float ey, float ez, float tx, float ty,
+                                       float tz, float fov);
     /** @brief Switch to. */
     bool switchTo(const std::string& name, float blendTime);
     /** @brief Play sequence. */
@@ -239,6 +289,21 @@ public:
     void stopSequence();
     /** @brief True when playing. */
     bool isPlaying() const;
+
+    /**
+     * @brief Snapshot gameplay framing so a story director can restore it later.
+     * @cost Constant copy of scalar framing state.
+     */
+    [[nodiscard]] CameraFramingSnapshot captureFraming() const;
+    /**
+     * @brief Restore a previously captured framing, optionally blending from the live pose.
+     * @cost One pose evaluation plus an optional blend setup.
+     */
+    [[nodiscard]] Result<void> restoreFraming(const CameraFramingSnapshot& snapshot, float blendTime);
+    /** @brief Pause or resume priority-rig director selection (story cameras need this off). */
+    void setDirectorEnabled(bool enabled);
+    /** @brief Return whether the priority-rig director is selecting rigs. */
+    [[nodiscard]] bool getDirectorEnabled() const noexcept { return directorEnabled_; }
 
     // --- timeline / events ---
     /** @brief Clears timeline. */
@@ -372,6 +437,7 @@ private:
     float radius_        = 10.f;
     float minimumRadius_ = 0.01f;
     float maximumRadius_ = 100000.f;
+    float orthoHeight_   = 20.f;
     float azimuthDeg_    = 45.f;
     float elevationDeg_  = 30.f;
     float orbitSpeedDeg_ = 20.f;

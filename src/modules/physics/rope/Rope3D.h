@@ -196,6 +196,13 @@ public:
     void setTearing(float resistance, int maxTearsPerStep);
     /** @brief Disables automatic tearing. */
     void disableTearing() { tearingEnabled_ = false; }
+    /** @brief Copy currently active segment endpoints into an owning ordered index stream.
+     * @ownership Owns returned indices; no pointers to the simulation are retained.
+     * @thread Simulation owner thread, excluding concurrent mutation; no callbacks.
+     * @return Complete connectivity snapshot for baking, valid after source destruction.
+     * @cost Linear in topology size with one output allocation; capture outside playback.
+     */
+    [[nodiscard]] eve::Result<std::vector<std::uint32_t>> captureSegmentIndices() const;
     /** @brief Monotonic revision incremented by cut, repair, resize, and automatic tears. */
     [[nodiscard]] std::uint64_t getTopologyRevision() const { return topologyRevision_; }
     /** @brief Number of elements automatically torn by the most recent update/step. */

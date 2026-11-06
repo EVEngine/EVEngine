@@ -11,6 +11,7 @@ Result<animation::AnimClip*> AnimationClipRuntimeBuilder::build(
         return eve::editing::failed<animation::AnimClip*>(EditorStatus::Rejected,
             RuleId("editor.animation.skeleton-required"), "Runtime clip building requires a target skeleton");
     std::vector<std::string> bones;
+    bones.reserve(skeleton->getBoneCount() > 0 ? static_cast<std::size_t>(skeleton->getBoneCount()) : 0);
     for (int index = 0; index < skeleton->getBoneCount(); ++index) bones.push_back(skeleton->getBoneName(index));
     const auto diagnostics = document.validate(bones);
     for (const auto& diagnostic : diagnostics)

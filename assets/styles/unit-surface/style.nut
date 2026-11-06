@@ -52,7 +52,10 @@ unitSurfaceChecked <- function(result) {
 };
 // @cost File decoding and GPU pipeline creation, amortized over the scene lifetime.
 unitSurfacePrepareShader <- function(directory,values,layer,blend,depthWrite) {
-    local shader=unitSurfaceChecked(gfx.loadMeshShaderSpv(directory+"/surface.vert.spv",directory+"/surface.frag.spv"));
+    // Preset mode is immutable (validate rejects changing it). Compile that
+    // choice offline while retaining independent mutable parameters per instance.
+    local fragment=directory+"/surface-mode-"+values.mode.tointeger()+".frag.spv";
+    local shader=unitSurfaceChecked(gfx.loadMeshShaderSpv(directory+"/surface.vert.spv",fragment));
     unitSurfaceChecked(gfx.configureMeshShaderSurface(shader,blend,depthWrite,layer>3.5 && (values.mode==5.0 || values.mode==24.0)));
     unitSurfaceChecked(gfx.configureMeshShaderRaster(shader,"lessEqual",depthWrite?0.0:-1.0,depthWrite?0.0:-1.0,15));
     foreach(k in unitSurfaceUniforms) {shader.declareFloat(k);shader.sendFloat(k,k=="layer"?layer:values[k]);}

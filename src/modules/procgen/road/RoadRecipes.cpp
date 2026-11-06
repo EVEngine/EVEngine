@@ -90,9 +90,10 @@ void registerRoadMeshRecipes(MeshRecipeRegistry& registry) {
         ParamDescriptor::choice("scene", "Scene", "straight",
                                 {"straight", "curve", "bridge", "cross", "tee", "y", "fork", "skew", "t-junction",
                                  "y-junction", "sloped-t", "curve-uphill", "tight-turn", "roundabout", "interchange"}));
+    schema.params.push_back(ParamDescriptor::choice("roadType", "Road Type", "highway", {"highway", "railway"}));
     schema.params.push_back(ParamDescriptor::floating("span", "Span", 36.f, 16.f, 256.f, 1.f));
     schema.params.push_back(ParamDescriptor::floating("bridgeHeight", "Bridge Height", 6.f, 1.f, 64.f, 0.5f));
-    schema.params.push_back(ParamDescriptor::integer("lanes", "Lanes", 2, 1, 4));
+    schema.params.push_back(ParamDescriptor::integer("lanes", "Lanes / Tracks", 2, 1, 4));
     schema.params.push_back(ParamDescriptor::integer("pathSegments", "Path Segments", 32, 8, 256));
     schema.params.push_back(ParamDescriptor::boolean("piers", "Piers", true));
     schema.params.push_back(ParamDescriptor::boolean("markings", "Markings", true));

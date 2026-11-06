@@ -2,7 +2,10 @@
 
 #include "common/Exception.h"
 #include "common/Json.h"
+#include "common/SquirrelOwnership.h"
+#include "physics/backend/bake/script/DeformCaptureBinding.h"
 #include "physics/rope/Rope3D.h"
+#include "physics/rope/Rope3DBakeCapture.h"
 #include "schema/SchemaRegistry.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -176,6 +179,10 @@ void Rope::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Rope::create, false);
     expose(cls);
     auto rope = table.addClass<Rope3D>("Rope3D", std::function<Rope3D*()>([]() -> Rope3D* { return nullptr; }), true);
+    rope.addFunc("captureBake",
+                 [vm = table.getHandle()](Rope3D* self, const ssq::Object& recordingObject, float seconds) {
+                     return eve::physics::bake_detail::appendCapturedDeform(vm, *self, recordingObject, seconds);
+                 });
     rope.addFunc("update", &Rope3D::update);
     rope.addFunc("setGravity", &Rope3D::setGravity);
     rope.addFunc("getGravityX", &Rope3D::getGravityX);
@@ -270,8 +277,19 @@ void Rope::expose(ssq::Table& table) {
 
 void Rope::expose(ssq::Class& cls) {
     cls.addFunc("getName", &Rope::getName);
-    cls.addFunc("newRope3D", &Rope::newRope3D);
-    cls.addFunc("newRope3DFromJson", &Rope::newRope3DFromJsonScript);
+    cls.addFunc("newRope3D", [vm = cls.getHandle()](Rope* self, int count, float sx, float sy, float sz, float ex,
+                                                    float ey, float ez) {
+        auto owned = script::makeOwnedSquirrelInstance(
+            vm, std::unique_ptr<Rope3D>(self->newRope3D(count, sx, sy, sz, ex, ey, ez)));
+        if (!owned) throw Exception("Rope.newRope3D: failed to publish owned script instance");
+        return std::move(owned).takeValue();
+    });
+    cls.addFunc("newRope3DFromJson", [vm = cls.getHandle()](Rope* self, const std::string& json) {
+        auto owned =
+            script::makeOwnedSquirrelInstance(vm, std::unique_ptr<Rope3D>(self->newRope3DFromJsonScript(json)));
+        if (!owned) throw Exception("Rope.newRope3DFromJson: failed to publish owned script instance");
+        return std::move(owned).takeValue();
+    });
 }
 
 }  // namespace eve::physics

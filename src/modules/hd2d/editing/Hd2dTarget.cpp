@@ -272,11 +272,11 @@ Result<void> Hd2dDocumentTarget::applyDomainOperation(const DomainOperation& op)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.hd2d.vector"),
                                           "HD2D vector is invalid");
     Hd2dDocumentTarget c(id_);
-    c.value_ = v;
+    c.value_ = std::move(v);
     if (errors(c.validate()))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.hd2d.invalid"),
                                           "HD2D document validation failed");
-    value_ = v;
+    value_ = std::move(c.value_);
     bumpRevision();
     widenDirty(0, 0);
     return eve::editing::applied<void>();

@@ -1,8 +1,8 @@
 # Economy — 采集循环与满仓浪费的 economy 模块演示
 
 `economy_demo.nut` 是一个**无窗口**的脚本演示，用来快速验证 `eve.Economy` 的资源账本、
-`eve.GatherNode` 矿点与 `eve.Collector` 采集者的最小闭环：不做渲染，纯逻辑跑完整条
-「接近 → 采集 → 满载 → 返回 → 卸货入账」链路并打印逐步事件。
+`eve.GatherNode` 矿点与 `eve.Collector` 采集者的最小闭环，以及地区/全国市场配置与报价：
+不做渲染，纯逻辑跑完整条「接近 → 采集 → 满载 → 返回 → 卸货入账」链路并打印逐步事件。
 
 ## 运行
 
@@ -24,6 +24,7 @@ build/linux-debug/src/engine/eve run -r examples/economy/economy_demo.nut
   打印每个 `gather / deposit` 事件、往返次数、累计入账与矿点余量。
 - **场景 2 · 满仓浪费**：玩家持有上限 10、节点储量 25、载荷 5，第三次往返起超出上限的部分
   计入 `waste` 事件，用于展示 `eco.getWasted()` 与 `eco.getCap()` 的语义。
+- **场景 3 · 市场配置**：注册江南地区市场与宋朝全国市场，打印查找结果与米价买卖报价。
 
 ## 输出
 

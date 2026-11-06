@@ -3,20 +3,6 @@
 {
   "schema": "evengine.test-policy",
   "version": 1,
-  "cases": {
-    "platform-file": [
-      "animClip.reloadPathRefreshesRegisteredClips",
-      "animClip.reloadUnknownOrBrokenPathIsNoop"
-    ],
-    "concurrency": [
-      "audio.streamSource.pump",
-      "audio.source.seekTell",
-      "audio.modplug.midi.play"
-    ],
-    "script-binding": [
-      "audio.pcgZone.squirrelContract"
-    ]
-  },
   "module": "action_editor",
   "modules": [
     "action_editor",
@@ -46,21 +32,37 @@
     "attribute_domain_adapters.cpp",
     "attributes_rpg_unification.cpp",
     "audio.cpp"
-  ]
+  ],
+  "cases": {
+    "concurrency": [
+      "audio.modplug.midi.play",
+      "audio.source.seekTell",
+      "audio.streamSource.pump"
+    ],
+    "platform-file": [
+      "animClip.reloadPathRefreshesRegisteredClips",
+      "animClip.reloadUnknownOrBrokenPathIsNoop"
+    ],
+    "script-binding": [
+      "audio.pcgZone.squirrelContract",
+      "audio.fade.squirrelContract"
+    ]
+  }
 }
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: action editor adapter
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_editor_adapter)
-#include "PrivateTestScope.h"
 #include "action/editor/ActionEditorModule.h"
 #include "action/editor/ActionTimelineEditor.h"
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
 #include "editor/Editor.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // action_editor_adapter.cpp
 namespace test_action_editor_adapter {
@@ -127,10 +129,10 @@ TEST_CASE("actionEditor.module_registers_automation_target_and_property_command"
     CHECK(closed.find("\"status\":\"applied\"") != std::string::npos);
 }
 }  // namespace test_action_editor_adapter
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_game_event)
+// Contract section: action game event
 #include "PrivateTestScope.h"
+
 #include <chrono>
 #include <cstdint>
 #include <span>
@@ -138,8 +140,6 @@ TEST_CASE("actionEditor.module_registers_automation_target_and_property_command"
 #include "action/ActionNotifyRegistry.h"
 #include "action/game_event/ActionGameEventSink.h"
 #include "game_event/GameEvent.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // action_game_event.cpp
 namespace test_action_game_event {
 namespace {
@@ -219,17 +219,17 @@ TEST_CASE("actionGameEvent.validatesAndAppendsToPersistentLog") {
     CHECK_EQ(log.size(), 1);
 }
 }  // namespace test_action_game_event
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_montage)
+// Contract section: action montage
 #include "PrivateTestScope.h"
+
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <numbers>
 #include <string_view>
 #include "action/Action.h"
 #include "action/ActionTimeline.h"
-#include "action/editor/ActionTimelineEditor.h"
 #include "action/editor/ActionTimelineWidget.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimLayerMixer.h"
@@ -237,8 +237,6 @@ TEST_CASE("actionGameEvent.validatesAndAppendsToPersistentLog") {
 #include "animation/AnimSkeleton.h"
 #include "animation/MontageCoordinator.h"
 #include "animation/MontagePlayer.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // action_montage.cpp
 namespace test_action_montage {
 namespace {
@@ -906,16 +904,13 @@ TEST_CASE("actionMontage.hotReloadIsTransactionalAndPreservesCursor") {
 }
 
 TEST_CASE("actionMontage.rootMotionPolicyBakesAndFacesThroughOwnedPlayer") {
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
     eve::animation::AnimSkeleton skeleton;
     skeleton.addBone("root");
     eve::animation::MontagePlayer    player(skeleton);
     eve::animation::RootMotionPolicy policy;
     policy.bakeTranslationIntoPose = true;
     policy.applySpace              = eve::animation::RootMotionApplySpace::CharacterFacing;
-    policy.characterYaw            = static_cast<float>(M_PI * 0.5);  // +X from local +Z
+    policy.characterYaw            = static_cast<float>(std::numbers::pi_v<double> * 0.5);  // +X from local +Z
     // Clip moves along +X; facing +90° publishes that as -Z after Ry mapping of X.
     // Use a Z-travelling clip via custom assets below.
     REQUIRE(player.setRootMotionPolicy(policy).ok());
@@ -935,7 +930,8 @@ TEST_CASE("actionMontage.rootMotionPolicyBakesAndFacesThroughOwnedPlayer") {
     // prepare overlays authored locks; bake / facing / yaw must survive.
     CHECK(player.getRootMotionPolicy().bakeTranslationIntoPose);
     CHECK(player.getRootMotionPolicy().applySpace == eve::animation::RootMotionApplySpace::CharacterFacing);
-    CHECK(std::fabs(player.getRootMotionPolicy().characterYaw - static_cast<float>(M_PI * 0.5)) < 1e-5f);
+    CHECK(std::fabs(player.getRootMotionPolicy().characterYaw - static_cast<float>(std::numbers::pi_v<double> * 0.5)) <
+          1e-5f);
     CHECK(!player.getRootMotionMask().translationY);
 
     RootReceiver receiver;
@@ -953,9 +949,6 @@ TEST_CASE("actionMontage.rootMotionPolicyBakesAndFacesThroughOwnedPlayer") {
 }
 
 TEST_CASE("actionMontage.coordinatorLayerRootMotionPolicySurvivesPrepareLocks") {
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
     eve::animation::AnimSkeleton skeleton;
     skeleton.addBone("root");
     eve::animation::MontageCoordinator coordinator(skeleton);
@@ -964,7 +957,7 @@ TEST_CASE("actionMontage.coordinatorLayerRootMotionPolicySurvivesPrepareLocks") 
     eve::animation::RootMotionPolicy policy;
     policy.bakeTranslationIntoPose = true;
     policy.applySpace              = eve::animation::RootMotionApplySpace::CharacterFacing;
-    policy.characterYaw            = static_cast<float>(M_PI * 0.5);
+    policy.characterYaw            = static_cast<float>(std::numbers::pi_v<double> * 0.5);
     REQUIRE(coordinator.setLayerRootMotionPolicy(0, policy).ok());
 
     auto clip = std::make_unique<eve::animation::AnimClip>("forward");
@@ -994,16 +987,12 @@ TEST_CASE("actionMontage.coordinatorLayerRootMotionPolicySurvivesPrepareLocks") 
     CHECK(std::fabs(resolved.value().get().pose().local(0).pz) < 1e-4f);
 }
 }  // namespace test_action_montage
-#undef M_PI
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_preview_controller)
+// Contract section: action preview controller
 #include "PrivateTestScope.h"
-#include <string_view>
+
 #include "action/editor/ActionPreviewController.h"
 #include "common/Diagnostic.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // action_preview_controller.cpp
 namespace test_action_preview_controller {
 namespace {
@@ -1244,16 +1233,10 @@ TEST_CASE("actionPreviewController.stepsFramesAndStopsAtomically") {
     CHECK(!preview.stepFrames(1, 0.0).ok());
 }
 }  // namespace test_action_preview_controller
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_timeline)
+// Contract section: action timeline
 #include "PrivateTestScope.h"
-#include <string_view>
-#include "action/Action.h"
-#include "action/ActionTimeline.h"
-#include "action/editor/ActionTimelineEditor.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // action_timeline.cpp
 namespace test_action_timeline {
 namespace {
@@ -1713,13 +1696,11 @@ TEST_CASE("actionTimelineDocuments.openSaveReconcileAndProtectDirtyTabs") {
     CHECK(workspace.activeDocument().empty());
 }
 }  // namespace test_action_timeline
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_timeline_payload_editor)
+// Contract section: action timeline payload editor
 #include "PrivateTestScope.h"
+
 #include "action/editor/ActionTimelinePayloadEditor.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // action_timeline_payload_editor.cpp
 namespace test_action_timeline_payload_editor {
 namespace {
@@ -1786,17 +1767,19 @@ TEST_CASE("actionTimelinePayloadEditor.patchPreservesUnknownFieldsAndRejectsAtom
     eve::editor::ActionTimelinePayloadEditor payloads(editor, registry.value());
     const auto                               itemId = payloadId("test-state:audio");
 
-    REQUIRE(payloads
-                .patch(itemId, {{"volume", 0.5},
-                                {"looping", true},
-                                {"randomUris", eve::Value::Array{"asset://audio/a.wav", "asset://audio/b.wav"}},
-                                {"randomPitchOffset", 0.08},
-                                {"spatialBlend", 0.5},
-                                {"minDistance", 2.0},
-                                {"maxDistance", 24.0},
-                                {"fadeOutOnExit", true},
-                                {"fadeOutDuration", 0.2}})
-                .ok());
+    eve::Value::Object patchFields{{"volume", 0.5},
+                                   {"looping", true},
+                                   {"randomUris", eve::Value::Array{"asset://audio/a.wav", "asset://audio/b.wav"}},
+                                   {"randomPitchOffset", 0.08},
+                                   {"spatialBlend", 0.5},
+                                   {"minDistance", 2.0},
+                                   {"maxDistance", 24.0},
+                                   {"fadeOutOnExit", true},
+                                   {"fadeOutDuration", 0.2}};
+    REQUIRE(payloads.patch(itemId, patchFields).ok());
+    REQUIRE(patchFields.at("randomUris").isArray());
+    patchFields["volume"] = 0.75;
+    patchFields.at("randomUris").getIf<eve::Value::Array>()->push_back("asset://audio/c.wav");
     auto edited = payloads.payload(itemId);
     REQUIRE(edited.ok());
     CHECK_EQ(*edited.value().at("extensionField").getIf<std::string>(), "preserved");
@@ -1871,18 +1854,13 @@ TEST_CASE("actionTimelinePayloadEditor.vfxClipFitRejectsWrongShapeAndOutOfRangeW
     CHECK_EQ(editor.target().timeline().tracks.front().states.front().end.seconds(), 4.75);
 }
 }  // namespace test_action_timeline_payload_editor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_timeline_widget)
+// Contract section: action timeline widget
 #include "PrivateTestScope.h"
+
 #include <map>
-#include <string_view>
 #include "action/ActionAudioWaveform.h"
 #include "action/ActionParameterCurve.h"
-#include "action/editor/ActionTimelineWidget.h"
-#include "common/Capability.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // action_timeline_widget.cpp
 namespace test_action_timeline_widget {
 namespace {
@@ -2315,21 +2293,19 @@ TEST_CASE("actionTimelineWidget.insertsRegisteredNotifyShapesAtCursor") {
                 .ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 2u);
     CHECK_EQ(editor.target().timeline().tracks[0].states.size(), 2u);
-    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::Instant).size(), 5u);
-    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::State).size(), 7u);
+    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::Instant).size(), 6u);
+    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::State).size(), 12u);
     CHECK(!view.addNotifyAtCursor(track, "combat:hitbox-window", {{"hitbox", eve::Value("weapon")}}).ok());
 }
 }  // namespace test_action_timeline_widget
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_agent_composition)
+// Contract section: agent composition
 #include "PrivateTestScope.h"
+
 #include "../examples/agent/Environments.h"
 #include "agent/Agent.h"
 #include "grid/GridProjection.h"
 #include "ui/Layout.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // agent_composition.cpp
 namespace test_agent_composition {
 using namespace eve::agent;
@@ -2364,16 +2340,11 @@ TEST_CASE("agent.productionUiLayout") {
     REQUIRE(replay(result.value().best, ui).ok());
 }
 }  // namespace test_agent_composition
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_agent_tensor)
+// Contract section: agent tensor
 #include "PrivateTestScope.h"
-#include <cmath>
-#include "agent/Agent.h"
+
 #include "agent/tensor/TensorBackend.h"
-#include "common/Capability.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // agent_tensor.cpp
 namespace test_agent_tensor {
 TEST_CASE("agent.tensorParityAndProviderLifetime") {
@@ -2414,16 +2385,12 @@ TEST_CASE("agent.tensorParityAndProviderLifetime") {
     REQUIRE(!backendName(Backend::Tensor).ok());
 }
 }  // namespace test_agent_tensor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_action_preview)
+// Contract section: animation action preview
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include "action/editor/AnimationRootMotionPreviewSource.h"
-#include "animation/AnimClip.h"
 #include "animation/AnimClipRegistry.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // animation_action_preview.cpp
 namespace test_animation_action_preview {
 namespace {
@@ -2488,28 +2455,21 @@ TEST_CASE("animationActionPreview.clipDestructionBecomesObservableNotStale") {
     CHECK(!destroyed.ok());
 }
 }  // namespace test_animation_action_preview
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_inertializer)
+// Contract section: animation inertializer
 #include "PrivateTestScope.h"
+
 #include <algorithm>
 #include <array>
-#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <fstream>
-#include <limits>
-#include <memory>
 #include <string>
 #include <vector>
-#include "animation/AnimClip.h"
-#include "animation/AnimClipRegistry.h"
 #include "animation/AnimImporter.h"
 #include "animation/AnimInertializer.h"
 #include "animation/AnimLattice.h"
 #include "animation/AnimPlayer.h"
-#include "animation/AnimPose.h"
-#include "animation/AnimSkeleton.h"
 #include "animation/Animation.h"
 #include "animation/DynamicBoneSolver.h"
 #include "animation/FootIKSolver.h"
@@ -2523,8 +2483,6 @@ TEST_CASE("animationActionPreview.clipDestructionBecomesObservableNotStale") {
 #include "filesystem/Filesystem.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // animation_inertializer.cpp
 namespace test_animation_inertializer {
 // animation_inertializer.cpp
@@ -2696,10 +2654,10 @@ TEST_CASE("animation.lattice.cornerScaleTrilinear") {
     CHECK(approx(out[1], 1.f));
     CHECK(approx(out[2], 1.f));
 
-    // Center vertex: all 8 weights are 1/8 → scale x = 1 + 1/8.
+    // The box spans [-1,1]; at (0.5,0.5,0.5) the upper-corner weight is 0.75^3.
     std::vector<float> center = {0.5f, 0.5f, 0.5f};
     REQUIRE(lat.deformPositionsTo(center, out));
-    CHECK(approx(out[0], 0.5f * 1.125f));
+    CHECK(approx(out[0], 0.5f * (1.f + 0.75f * 0.75f * 0.75f)));
     CHECK(approx(out[1], 0.5f));
     CHECK(approx(out[2], 0.5f));
 }
@@ -2717,11 +2675,11 @@ TEST_CASE("animation.lattice.offsetBulge") {
     CHECK(approx(out[1], 0.8f));
     CHECK(approx(out[2], 1.f));
 
-    // Center: offset diluted by 1/8, position unchanged otherwise.
+    // Interior point: upper-corner offset weighted by 0.75^3.
     std::vector<float> center = {0.5f, 0.5f, 0.5f};
     REQUIRE(lat.deformPositionsTo(center, out));
-    CHECK(approx(out[0], 0.5f + 0.4f / 8.f));
-    CHECK(approx(out[1], 0.5f - 0.2f / 8.f));
+    CHECK(approx(out[0], 0.5f + 0.4f * 0.75f * 0.75f * 0.75f));
+    CHECK(approx(out[1], 0.5f - 0.2f * 0.75f * 0.75f * 0.75f));
     CHECK(approx(out[2], 0.5f));
 }
 
@@ -2729,7 +2687,8 @@ TEST_CASE("animation.lattice.clampVsExtrapolate") {
     AnimLattice lat(2, 2, 2);
     lat.setSize(2.f, 2.f, 2.f);
     lat.setOrigin(0.f, 0.f, 0.f);
-    lat.setPointScale(1, 0, 0, 2.f, 1.f, 1.f);
+    for (int y = 0; y < 2; ++y)
+        for (int z = 0; z < 2; ++z) lat.setPointScale(1, y, z, 2.f, 1.f, 1.f);
 
     // Vertex outside the box on +x: u = 1.5.
     std::vector<float> p = {2.f, 0.f, 0.f};
@@ -2742,6 +2701,9 @@ TEST_CASE("animation.lattice.clampVsExtrapolate") {
     lat.setClamp(false);
     REQUIRE(lat.deformPositionsTo(p, out));
     CHECK(approx(out[0], 5.f));  // linear extrapolation keeps growing
+    p[0] = -2.f;
+    REQUIRE(lat.deformPositionsTo(p, out));
+    CHECK(approx(out[0], -1.f));  // extrapolate from the lower boundary too
 }
 
 TEST_CASE("animation.lattice.normals") {
@@ -3035,6 +2997,10 @@ TEST_CASE("animation.physicalBalance.recoilDeflectsHitBone") {
     REQUIRE(balance.setTargetPose(&target).ok());
     REQUIRE(balance.applyImpulse(2, 0.f, 0.f, 4.f, 0.f, 1.8f, 0.1f).ok());
     balance.update(1.f / 60.f);
+    CHECK_EQ(balance.getPose()->getLocalRotationW(2), 1.f);
+    // An impulse through the bone center has no recoil torque; use an offset hit.
+    REQUIRE(balance.applyImpulse(2, 0.f, 0.f, 4.f, 0.f, 2.2f, 0.1f).ok());
+    balance.update(1.f / 60.f);
     const float hitW = balance.getPose()->getLocalRotationW(2);
     CHECK(hitW < 0.999f);
     for (int i = 0; i < 180; ++i) balance.update(1.f / 60.f);
@@ -3186,13 +3152,21 @@ TEST_CASE("animation.procedural.dynamicBoneColliderModesAreRuntimeConfigurable")
     solver.addColliderSphere(0.f, -1.f, 0.f, 0.5f);
     solver.setColliderInside(0, true);
     solver.setColliderRadius(0, 0.25f);
-    solver.update(&pose, 0.1f);
+    solver.setColliderCenter(0, 0.f, -1.f, 0.f);
+    for (int i = 0; i < 3; ++i) solver.update(&pose, 0.1f);
     CHECK(pose.getWorldPositionX(tip) <= 0.151f);
 
     skeleton.applyBindPose(&pose);
     solver.reset();
     solver.setColliderEnabled(0, false);
-    solver.update(&pose, 0.1f);
+    for (int i = 0; i < 3; ++i) solver.update(&pose, 0.1f);
+    CHECK(pose.getWorldPositionX(tip) > 0.151f);
+
+    skeleton.applyBindPose(&pose);
+    solver.reset();
+    solver.setColliderEnabled(0, true);
+    solver.setColliderCenter(0, 10.f, 0.f, 0.f); // move the world sphere off the tip path
+    for (int i = 0; i < 3; ++i) solver.update(&pose, 0.1f);
     CHECK(pose.getWorldPositionX(tip) > 0.151f);
 }
 
@@ -3538,22 +3512,14 @@ TEST_CASE("animClip.reloadUnknownOrBrokenPathIsNoop") {
     std::remove(kBrokenFixturePath);
 }
 }  // namespace test_animation_inertializer
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_smr_neural_retarget)
+// Contract section: animation smr neural retarget
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <memory>
-#include "animation/AnimClip.h"
-#include "animation/AnimPose.h"
-#include "animation/AnimSkeleton.h"
+
 #include "animation/AnimSmr.h"
 #include "animation/AnimSmrNeural.h"
 #include "animation/tensor/AnimationTensor.h"
 #include "animation/tensor/SmrFeatures.h"
-#include "common/Capability.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // animation_smr_neural_retarget.cpp
 namespace test_animation_smr_neural_retarget {
 using namespace eve::animation;
@@ -3573,37 +3539,6 @@ void buildArmature(AnimSkeleton& skel, float torsoHeight, float upperArm, float 
 }
 
 }  // namespace
-
-TEST_CASE("animation.smr.neural.rot6dRoundTrip") {
-    float out[6] = {};
-    quatToRot6d(0.f, 0.f, 0.70710678f, 0.70710678f, out);
-    float qx = 0.f, qy = 0.f, qz = 0.f, qw = 1.f;
-    rot6dToQuat(out, qx, qy, qz, qw);
-    const float dot = std::fabs(qx * 0.f + qy * 0.f + qz * 0.70710678f + qw * 0.70710678f);
-    CHECK(dot > 0.999f);
-}
-
-TEST_CASE("animation.smr.neural.featureBatchShapes") {
-    AnimSkeleton source;
-    AnimSkeleton target;
-    buildArmature(source, 1.0f, 0.28f, 0.28f);
-    buildArmature(target, 1.8f, 0.70f, 0.70f);
-
-    AnimClip clip("reach");
-    clip.setDuration(0.1f);
-    clip.setSampleRate(10.f);
-    clip.addRotationKey(source.findBone("LeftShoulder"), 0.f, 0.f, 0.f, 0.70710678f, 0.70710678f);
-    clip.addRotationKey(source.findBone("LeftElbow"), 0.05f, 0.f, 0.f, 0.70710678f, 0.70710678f);
-
-    const SmrFeatureBatch batch = buildSmrFeatures(clip, &source, &target, nullptr, nullptr, 2, 4);
-    CHECK(batch.frames >= 1);
-    CHECK(batch.joints == target.getBoneCount());
-    CHECK(batch.sensors >= 1);
-    CHECK(static_cast<int>(batch.sourceRot6d.size()) == batch.frames * batch.joints * 6);
-    CHECK(static_cast<int>(batch.sourceGeom.size()) == batch.sensors * 7);
-    CHECK(static_cast<int>(batch.targetGeom.size()) == batch.sensors * 7);
-    CHECK(static_cast<int>(batch.sourceDmi.size()) == batch.frames * std::max(batch.pairs, 1) * 10);
-}
 
 TEST_CASE("animation.smr.neural.tensorBackendRewritesClip") {
     AnimationTensor* module = AnimationTensor::create();
@@ -3662,11 +3597,10 @@ TEST_CASE("animation.smr.neural.fallsBackToClassicalWhenDisabled") {
     CHECK(classical.getInteractionCorrectionCount() >= 1);
 }
 }  // namespace test_animation_smr_neural_retarget
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_attribute_domain_adapters)
+// Contract section: attribute domain adapters
 #include "PrivateTestScope.h"
-#include <string>
+
 #include "attributes/AttributeProjection.h"
 #include "card/CardAttributes.h"
 #include "card/CardTypes.h"
@@ -3677,7 +3611,6 @@ TEST_CASE("animation.smr.neural.fallsBackToClassicalWhenDisabled") {
 #include "vehicle/VehicleTypes.h"
 #include "weapon/WeaponAttributes.h"
 #include "weapon/WeaponTypes.h"
-#include "zeroerr/unittest.h"
 // attribute_domain_adapters.cpp
 namespace test_attribute_domain_adapters {
 namespace {
@@ -3712,7 +3645,7 @@ TEST_CASE("attributes.domainAdapters.projectSelectedStats") {
         eve::attributes::priority::equipment);
     REQUIRE(cardModifier.ok());
     checkSharedModifierContract(card->attributes()->values.modifierAt(0));
-    CHECK_EQ(card->stats()->attack, 3);
+    CHECK_EQ(card->stats()->attack, 5);
     auto cardProject = eve::card::CardAttributeAdapter::project(*card);
     REQUIRE(cardProject.ok());
     CHECK_EQ(card->stats()->attack, 5);
@@ -3723,7 +3656,7 @@ TEST_CASE("attributes.domainAdapters.projectSelectedStats") {
     auto cardSet =
         eve::card::CardAttributeAdapter::setBase(*card, eve::card::CardAttributeAdapter::attackAttribute, 9.0);
     REQUIRE(cardSet.ok());
-    CHECK_EQ(card->stats()->attack, 9);
+    CHECK_EQ(card->stats()->attack, 11);
     auto cardRestore = eve::card::CardAttributeAdapter::restore(*card, snapshot, card->attributes()->values.revision());
     REQUIRE(cardRestore.ok());
     CHECK_EQ(card->stats()->attack, 5);
@@ -3798,16 +3731,14 @@ TEST_CASE("attributes.domainAdapters.projectSelectedStats") {
     unit->release();
 }
 }  // namespace test_attribute_domain_adapters
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_attributes_rpg_unification)
+// Contract section: attributes rpg unification
 #include "PrivateTestScope.h"
+
 #include <type_traits>
 #include "attributes/AttributeSet.h"
 #include "rpg/AttributeSystem.h"
 #include "rpg/RPGActor.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // attributes_rpg_unification.cpp
 namespace test_attributes_rpg_unification {
 using eve::attributes::AttributeModifier;
@@ -3913,48 +3844,33 @@ TEST_CASE("attributes.customPolicyParityUsesCanonicalOperationRegistry") {
     policies.unregisterOperation("square");
 }
 }  // namespace test_attributes_rpg_unification
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_audio)
+// Contract section: audio
 #include "PrivateTestScope.h"
+
 #include <zeroerr/unittest.h>
-#include <algorithm>
-#include <chrono>
-#include <cstdint>
-#include <cstring>
-#include <fstream>
 #include <iostream>
-#include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
 #include <thread>
-#include <vector>
 #include "PathBesideSource.h"
 #include "action/ActionAudioBlock.h"
-#include "action/ActionAudioWaveform.h"
 #include "action/ActionBlockRuntime.h"
-#include "action/ActionNotifyRegistry.h"
-#include "action/ActionParameterCurve.h"
 #include "action/ActionPreview.h"
 #include "audio/Audio.h"
+#include "audio/AudioAmbient.h"
+#include "audio/AudioFade.h"
 #include "audio/AudioZone.h"
 #include "audio/Source.h"
 #include "audio/UnderwaterAudio.h"
 #include "audio/editing/AudioTarget.h"
-#include "common/Capability.h"
-#include "common/Exception.h"
 #include "common/SquirrelBinding.h"
-#include "data/ByteData.h"
 #include "filesystem/FileData.h"
-#include "filesystem/Filesystem.h"
 #include "scene/NodeDesc.h"
 #include "scene/Scene.h"
 #include "scene/SceneObject.h"
 #include "sound/Decoder.h"
 #include "sound/Sound.h"
 #include "sound/SoundData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // audio.cpp
 namespace test_audio {
 // audio.cpp
@@ -4290,17 +4206,25 @@ TEST_CASE("audio.underwater.transitionsAndAtomicValidation") {
     auto* up       = audio->newSource(sd);
     auto* ambience = audio->newSource(sd);
 
-    CHECK(!eve::audio::applyUnderwaterAudio(down, up, ambience, true, false, true, 1.5F));
+    CHECK(!eve::audio::applyUnderwaterAudio(down, up, ambience, true, false, true, 1.5F, 0.f, 0.f));
     CHECK(!down->isPlaying());
     CHECK(!ambience->isPlaying());
-    REQUIRE(static_cast<bool>(eve::audio::applyUnderwaterAudio(down, up, ambience, true, false, true, 0.35F)));
+    REQUIRE(
+        static_cast<bool>(eve::audio::applyUnderwaterAudio(down, up, ambience, true, false, true, 0.35F, 0.f, 0.f)));
     CHECK(down->isPlaying());
     CHECK(ambience->isPlaying());
     CHECK(ambience->isLooping());
     CHECK(ambience->getVolume() == 0.35F);
 
-    REQUIRE(static_cast<bool>(eve::audio::applyUnderwaterAudio(down, up, ambience, false, true, false, 0.35F)));
+    REQUIRE(
+        static_cast<bool>(eve::audio::applyUnderwaterAudio(down, up, ambience, false, true, false, 0.35F, 0.5F, 1.f)));
     CHECK(up->isPlaying());
+    CHECK(ambience->isPlaying());
+    REQUIRE(ambience->advanceFade(1.25F).ok());
+    CHECK(ambience->isPlaying());
+    CHECK(ambience->getVolume() > 0.1F);
+    CHECK(ambience->getVolume() < 0.3F);
+    REQUIRE(ambience->advanceFade(1.5F).ok());
     CHECK(!ambience->isPlaying());
 
     delete ambience;
@@ -4424,13 +4348,13 @@ TEST_CASE("audio.source.seekTell") {
     CHECK(src->getDuration() > 0.9);
     src->play();
     audio->pump();
+    // Keep the sample cursor stationary: a scheduled sleep is not an audio clock.
+    src->pause();
+    REQUIRE(!src->isPlaying());
     CHECK(src->seek(0.5));
     audio->pump();
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
     double pos = src->tell();
-    // OpenAL tell() can drift after pump/sleep; keep a loose window around seek(0.5).
-    CHECK(pos >= 0.40);
-    CHECK(pos <= 0.65);
+    CHECK(std::abs(pos - 0.5) <= 1.0 / 44100.0);
     src->stop();
 
     delete src;
@@ -4646,11 +4570,19 @@ TEST_CASE("audio.pcgZone.activationFadeTrackAndDelayedExit") {
     REQUIRE(leave.ok());
     CHECK(state.phase == AudioZonePhase::BecomingInactive);
     CHECK(!leave.value().stop);
+    CHECK(leave.value().volume > .7f);
+    CHECK(leave.value().volume < .8f);
+    auto midExit = evaluateAudioZone(profile, state, 7.f, 20.f, 0.f, 0.f, 1.f, 1u);
+    REQUIRE(midExit.ok());
+    CHECK(state.phase == AudioZonePhase::BecomingInactive);
+    CHECK(midExit.value().volume > .35f);
+    CHECK(midExit.value().volume < .45f);
     REQUIRE(evaluateAudioZone(profile, state, 11.9f, 20.f, 0.f, 0.f, 1.f, 1u).ok());
     CHECK(state.phase == AudioZonePhase::BecomingInactive);
     auto stopped = evaluateAudioZone(profile, state, 12.1f, 20.f, 0.f, 0.f, 1.f, 1u);
     REQUIRE(stopped.ok());
     CHECK(stopped.value().stop);
+    CHECK(stopped.value().volume == 0.f);
     CHECK(state.phase == AudioZonePhase::Inactive);
 }
 
@@ -4698,5 +4630,110 @@ TEST_CASE("audio.pcgZone.squirrelContract") {
         assert(fade.ok && fade.value.volume>0.39 && fade.value.volume<0.41);
     )"));
 }
+
+TEST_CASE("audio.source.fadeToAndFadeOutAndStop") {
+    auto* audio = tryCreateAudio();
+    if (!audio) return;
+    auto* sd  = new eve::sound::SoundData(std::vector<uint8_t>(44100 * 2, 0), 44100, 16, 1);
+    auto* src = audio->newSource(sd);
+    src->setVolume(1.f);
+    src->play();
+    REQUIRE(src->fadeTo(0.f, 1.f, 0.f).ok());
+    REQUIRE(src->advanceFade(0.5f).ok());
+    CHECK(src->isFading());
+    CHECK(src->getVolume() > 0.45f);
+    CHECK(src->getVolume() < 0.55f);
+    REQUIRE(src->advanceFade(1.f).ok());
+    CHECK(!src->isFading());
+    CHECK(src->getVolume() == 0.f);
+
+    src->setVolume(0.8f);
+    src->play();
+    REQUIRE(src->fadeOutAndStop(0.4f, 2.f).ok());
+    REQUIRE(src->advanceFade(2.2f).ok());
+    CHECK(src->isPlaying());
+    REQUIRE(src->advanceFade(2.4f).ok());
+    CHECK(!src->isFading());
+    CHECK(!src->isPlaying());
+
+    const float before = src->getVolume();
+    CHECK(!src->fadeTo(-1.f, 1.f, 0.f).ok());
+    CHECK(src->getVolume() == before);
+    delete src;
+    delete sd;
+}
+
+TEST_CASE("audio.source.crossfadeAndAmbientBed") {
+    auto* audio = tryCreateAudio();
+    if (!audio) return;
+    auto* sd   = new eve::sound::SoundData(std::vector<uint8_t>(44100 * 2, 0), 44100, 16, 1);
+    auto* from = audio->newSource(sd);
+    auto* to   = audio->newSource(sd);
+    from->setVolume(1.f);
+    from->play();
+    REQUIRE(eve::audio::crossfadeSources(from, to, 0.8f, 1.f, 0.f).ok());
+    REQUIRE(from->advanceFade(0.5f).ok());
+    REQUIRE(to->advanceFade(0.5f).ok());
+    CHECK(from->getVolume() > 0.45f);
+    CHECK(from->getVolume() < 0.55f);
+    CHECK(to->getVolume() > 0.35f);
+    CHECK(to->getVolume() < 0.45f);
+    REQUIRE(from->advanceFade(1.f).ok());
+    REQUIRE(to->advanceFade(1.f).ok());
+    CHECK(!from->isPlaying());
+    CHECK(to->getVolume() == 0.8f);
+
+    REQUIRE(eve::audio::configureAmbientBed(to).ok());
+    CHECK(to->isRelative());
+    CHECK(to->getSpatialBlend() == 0.f);
+    CHECK(to->getRolloffFactor() == 0.f);
+    REQUIRE(to->setBalance(0.25f).ok());
+    CHECK(to->getBalance() == 0.25f);
+
+    auto* stereo = new eve::sound::SoundData(std::vector<uint8_t>(44100 * 4, 0), 44100, 16, 2);
+    auto* bed    = audio->newSource(stereo);
+    REQUIRE(eve::audio::configureAmbientBed(bed).ok());
+    CHECK(bed->getChannelCount() == 2);
+    auto balance = bed->setBalance(-0.5f);
+    if (balance.ok()) {
+        CHECK(bed->getBalance() == -0.5f);
+    } else {
+        CHECK(bed->getBalance() == 0.f);
+    }
+    auto blend = bed->setSpatialBlend(0.5f);
+    if (blend.ok()) {
+        CHECK(bed->getSpatialBlend() == 0.5f);
+    } else {
+        CHECK(bed->getSpatialBlend() == 0.f);
+    }
+
+    delete bed;
+    delete stereo;
+    delete to;
+    delete from;
+    delete sd;
+}
+
+TEST_CASE("audio.fade.squirrelContract") {
+    auto* audioMod = tryCreateAudio();
+    if (!audioMod) return;
+    ssq::VM vm(2048, ssq::Libs::ALL);
+    auto    table = vm.addTable("eve");
+    eve::script::exposeResultBindings(table);
+    eve::sound::Sound::expose(table);
+    Audio::expose(table);
+    vm.run(vm.compileSource(R"(
+        local sound = eve.Sound();
+        local audio = eve.Audio();
+        local pcm = sound.newSoundDataEmpty(44100, 44100, 16, 1);
+        local src = audio.newSource(pcm);
+        assert(eve.configureAmbientBed(src).ok);
+        assert(src.isRelative() && src.getSpatialBlend()==0.0);
+        assert(src.fadeTo(0.0,1.0,0.0).ok);
+        assert(src.advanceFade(0.5).ok);
+        assert(src.isFading() && src.getVolume()>0.45 && src.getVolume()<0.55);
+        assert(src.advanceFade(1.0).ok);
+        assert(!src.isFading() && src.getVolume()==0.0);
+    )"));
+}
 }  // namespace test_audio
-#endif

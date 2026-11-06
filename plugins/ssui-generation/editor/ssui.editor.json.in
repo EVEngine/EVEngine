@@ -1,0 +1,18 @@
+{
+  "id": "ssui", "title": "SSUI Material", "vm": "SSUIMaterialVM",
+  "x": 10, "y": 10, "width": @SSUI_PANEL_WIDTH@, "height": @SSUI_PANEL_HEIGHT@,
+  "children": [
+    {"type":"input","id":"server","label":"Service","bind":"vm.server"},
+    {"type":"button","id":"connect","label":"Connect","command":"vm.connect","bind:enabled":"vm.idle"},
+    {"type":"input","id":"prompt","label":"Description","bind":"vm.prompt"},
+    {"type":"slider","id":"seed","label":"Seed","min":0,"max":1000,"bind":"vm.seed"},
+    {"type":"text","id":"status","bind":"vm.status","bind:label":"vm.status"},
+    {"type":"progress","id":"progress","bind":"vm.progress"},
+    {"type":"button","id":"generate","label":"Generate","command":"vm.generate","bind:enabled":"vm.idle"},
+    {"type":"button","id":"cancel","label":"Cancel generation","command":"vm.cancel"},
+    {"type":"button","id":"preview","label":"Preview candidate","command":"vm.preview","bind:enabled":"vm.hasCandidate"},
+    {"type":"button","id":"restore","label":"Exit preview","command":"vm.restore"},
+    {"type":"button","id":"apply","label":"Apply to material","command":"vm.apply","bind:enabled":"vm.hasCandidate"},
+    {"type":"button","id":"undo","label":"Undo application","command":"vm.undo","bind:enabled":"vm.idle"}
+  ]
+}

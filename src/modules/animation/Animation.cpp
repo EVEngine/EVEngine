@@ -764,7 +764,8 @@ void Animation::expose(ssq::Table &table) {
     auto pose = table.addClass<AnimPose>(
         "AnimPose", std::function<AnimPose *()>([]() -> AnimPose * { return nullptr; }), true);
     pose.addFunc("resize", &AnimPose::resize);
-    pose.addFunc("getBoneCount", &AnimPose::getBoneCount);
+    // Adapt the noexcept native member to the Squirrel binding pointer type.
+    pose.addFunc("getBoneCount", static_cast<int (AnimPose::*)() const>(&AnimPose::getBoneCount));
     pose.addFunc("copyFrom", &AnimPose::copyFrom);
     pose.addFunc("blendFrom", &AnimPose::blendFrom);
     pose.addFunc("setLocalPosition", &AnimPose::setLocalPosition);
@@ -1087,6 +1088,7 @@ void Animation::expose(ssq::Table &table) {
     solver.addFunc("setColliderEnabled", &DynamicBoneSolver::setColliderEnabled);
     solver.addFunc("setColliderInside", &DynamicBoneSolver::setColliderInside);
     solver.addFunc("setColliderRadius", &DynamicBoneSolver::setColliderRadius);
+    solver.addFunc("setColliderCenter", &DynamicBoneSolver::setColliderCenter);
     solver.addFunc("reset", &DynamicBoneSolver::reset);
     solver.addFunc("update", &DynamicBoneSolver::update);
     auto footIK = table.addClass<FootIKSolver>(

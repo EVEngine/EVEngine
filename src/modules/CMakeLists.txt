@@ -270,6 +270,11 @@ else()
   list(APPEND EVENGINE_EXCLUDED_BACKEND_SUBDIRS jolt)
 endif()
 
+# Native-only baked playback deliberately omits VM projections.
+if(EVENGINE_PROFILE STREQUAL "physics-bake-only")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES PhysicsBake.cpp)
+endif()
+
 # --- create every enabled module -------------------------------------------
 
 foreach(_mod IN LISTS EVE_ENABLED_MODULES)
@@ -350,6 +355,17 @@ endif()
 
 if(TARGET EVAsset_graphics)
   eve_configure_shader_asset_validation(EVAsset_graphics)
+  # GCC aarch64 -O2 miscompiles prefab AABB Z translation in this TU (Linux
+  # ARM64 CI: localBounds zmax loses root tz while worldT.z stays correct).
+  # Force -O1 for the file so the last -O on the command line wins.
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" _eve_prefab_arch)
+    if(_eve_prefab_arch MATCHES "^(aarch64|arm64)$")
+      set_source_files_properties(
+        "${CMAKE_CURRENT_SOURCE_DIR}/asset/graphics/EvpackStaticPrefab.cpp"
+        PROPERTIES COMPILE_OPTIONS "-O1")
+    endif()
+  endif()
 endif()
 if(TARGET EVGraphics)
   eve_configure_shader_asset_validation(EVGraphics)
@@ -477,4 +493,15 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/ui/BuildSettings.cmake")
 # WebP headers remain private to the image codec implementation.
 if(TARGET EVImage)
   target_link_libraries(EVImage PRIVATE webpdemux)
+endif()
+
+if(TARGET EVPhysicsDestruction OR TARGET EVPhysics_backend)
+  include("${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/bake/BakeBuildIdentity.cmake")
+  set(_eve_bake_identity_dir "${CMAKE_CURRENT_BINARY_DIR}/generated/physics_bake")
+  eve_configure_collapse_bake_identity("${_eve_bake_identity_dir}")
+  foreach(_eve_bake_identity_target EVPhysicsDestruction EVPhysics_backend)
+    if(TARGET ${_eve_bake_identity_target})
+      target_include_directories(${_eve_bake_identity_target} PRIVATE "${_eve_bake_identity_dir}")
+    endif()
+  endforeach()
 endif()

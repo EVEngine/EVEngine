@@ -1,0 +1,14 @@
+{
+  "schema": "eve.scad-rig",
+  "schemaVersion": 1,
+  "unknownFields": "reject",
+  "coordinateSystem": "openscad-mm-z-up",
+  "joints": [
+    {"name": "base", "parent": null, "pivot": [0, 0, 0], "axis": [0, 0, 1], "limits": [0, 0]},
+    {"name": "arm", "parent": "base", "pivot": [0, 0, 4], "axis": [1, 0, 0], "limits": [-90, 90]}
+  ],
+  "parts": [
+    {"name": "base", "joint": "base"},
+    {"name": "arm", "joint": "arm"}
+  ]
+}

@@ -25,7 +25,9 @@ Result<int> applyTerrainLegacyHydraulic(Heightmap& heights, Heightmap& sediment,
     const int width = heights.getWidth(), depth = heights.getHeight();
     const size_t count = heights.data().size();
     auto terrain = heights.data(), sedimentResult = sediment.data();
-    const auto hardnessInput = hardness.data(), rainInput = rain.data();
+    // Inputs remain unchanged until both candidate outputs are published below, including aliases.
+    const auto&                        hardnessInput = hardness.data();
+    const auto&                        rainInput     = rain.data();
     std::vector<double> water(count, 0), sedimentDiff(count, 0);
     std::vector<std::array<double, 4>> outflow(count);
     const auto index = [width](int x, int z) { return size_t(z) * size_t(width) + size_t(x); };

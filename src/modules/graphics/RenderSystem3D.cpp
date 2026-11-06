@@ -8,8 +8,10 @@
 #include "common/Status.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
+#include "graphics/CameraPixel.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/ClusteredLight.h"
+#include "graphics/ContactShadow.h"
 #include "graphics/DepthPyramid.h"
 #include "graphics/DiffuseLightProbeRegistry.h"
 #include "graphics/GlobalIllumination.h"
@@ -19,7 +21,9 @@
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
+#include "graphics/PathSceneCapture.h"
 #include "graphics/PrimitiveScene.h"
+#include "graphics/ReflectionProbeUpload.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderTransformProjection.h"
 #include "graphics/RenderableInstances.h"
@@ -32,8 +36,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <glm/geometric.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/vec3.hpp>
 #include <vector>
 
 namespace eve::graphics {
@@ -229,6 +235,119 @@ void Camera3D::setOrthographic(float height) {
 }
 
 void Camera3D::setPerspective() { data()->orthographic = false; }
+
+bool Camera3D::isOrthographic() { return data()->orthographic; }
+
+float Camera3D::getOrthoHeight() { return data()->orthoHeight; }
+
+Result<void> Camera3D::setPixelConfig(float pixelsPerUnit, int refWidth, int refHeight) {
+    if (!std::isfinite(pixelsPerUnit) || pixelsPerUnit <= 0.f)
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "pixelsPerUnit must be finite and > 0", "camera3d.pixelsPerUnit"));
+    if (refWidth < 0 || refHeight < 0)
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "pixel reference size must be >= 0", "camera3d.pixelRef"));
+    if ((refWidth == 0) != (refHeight == 0))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "pixel reference width and height must both be set or both 0",
+                                                       "camera3d.pixelRef"));
+    auto d            = data();
+    d->pixelsPerUnit  = pixelsPerUnit;
+    d->pixelRefWidth  = refWidth;
+    d->pixelRefHeight = refHeight;
+    return Result<void>::success();
+}
+
+void Camera3D::clearPixelConfig() {
+    auto d            = data();
+    d->pixelsPerUnit  = 0.f;
+    d->pixelRefWidth  = 0;
+    d->pixelRefHeight = 0;
+    d->pixelScale     = 1;
+}
+
+bool Camera3D::hasPixelConfig() { return data()->pixelsPerUnit > 0.f; }
+
+void Camera3D::setPixelSnap(bool enabled) { data()->pixelSnap = enabled; }
+
+bool Camera3D::getPixelSnap() { return data()->pixelSnap; }
+
+float Camera3D::getPixelsPerUnit() { return data()->pixelsPerUnit; }
+
+int Camera3D::getPixelRefWidth() { return data()->pixelRefWidth; }
+
+int Camera3D::getPixelRefHeight() { return data()->pixelRefHeight; }
+
+int Camera3D::getPixelScale() { return data()->pixelScale; }
+
+Result<void> Camera3D::applyPixelPerfect(int viewWidth, int viewHeight) {
+    if (viewWidth <= 0 || viewHeight <= 0)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "viewport size must be > 0", "camera3d.viewport"));
+    auto d = data();
+    if (!(d->pixelsPerUnit > 0.f))
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "pixel config requires pixelsPerUnit > 0", "camera3d.pixelsPerUnit"));
+    const auto sized =
+        computePixelPerfectScale(d->pixelsPerUnit, d->pixelRefWidth, d->pixelRefHeight, viewWidth, viewHeight);
+    d->pixelScale   = sized.scale;
+    d->orthographic = true;
+    d->orthoHeight  = sized.orthoHeight;
+    if (d->pixelSnap) snapToPixelGrid(viewWidth, viewHeight);
+    return Result<void>::success();
+}
+
+Result<void> Camera3D::setPixelOrthographic(float pixelsPerUnit, int viewWidth, int viewHeight, int refWidth,
+                                            int refHeight) {
+    auto configured = setPixelConfig(pixelsPerUnit, refWidth, refHeight);
+    if (!configured.ok()) return configured;
+    return applyPixelPerfect(viewWidth, viewHeight);
+}
+
+void Camera3D::snapToPixelGrid(int viewWidth, int viewHeight) {
+    auto  d             = data();
+    float worldPerPixel = 0.f;
+    if (d->pixelsPerUnit > 0.f) {
+        const auto sized =
+            computePixelPerfectScale(d->pixelsPerUnit, d->pixelRefWidth, d->pixelRefHeight, viewWidth, viewHeight);
+        worldPerPixel = sized.worldPerPixel;
+    } else if (d->orthographic && viewHeight > 0) {
+        worldPerPixel = d->orthoHeight / float(viewHeight);
+    }
+    if (!(worldPerPixel > 0.f) || !std::isfinite(worldPerPixel)) return;
+
+    const glm::vec3 eye(d->eyeX, d->eyeY, d->eyeZ);
+    const glm::vec3 target(d->targetX, d->targetY, d->targetZ);
+    glm::vec3       forward = target - eye;
+    const float     flen    = glm::length(forward);
+    if (flen < 1e-6f) return;
+    forward /= flen;
+    glm::vec3 up(d->upX, d->upY, d->upZ);
+    if (glm::length(up) < 1e-6f)
+        up = glm::vec3(0.f, 1.f, 0.f);
+    else
+        up = glm::normalize(up);
+    glm::vec3 right = glm::cross(forward, up);
+    if (glm::length(right) < 1e-6f)
+        right = glm::vec3(1.f, 0.f, 0.f);
+    else
+        right = glm::normalize(right);
+    up = glm::normalize(glm::cross(right, forward));
+
+    const float     alongRight = glm::dot(eye, right);
+    const float     alongUp    = glm::dot(eye, up);
+    const float     alongFwd   = glm::dot(eye, forward);
+    const float     snappedR   = std::round(alongRight / worldPerPixel) * worldPerPixel;
+    const float     snappedU   = std::round(alongUp / worldPerPixel) * worldPerPixel;
+    const glm::vec3 snappedEye = right * snappedR + up * snappedU + forward * alongFwd;
+    const glm::vec3 delta      = snappedEye - eye;
+    d->eyeX                    = snappedEye.x;
+    d->eyeY                    = snappedEye.y;
+    d->eyeZ                    = snappedEye.z;
+    d->targetX += delta.x;
+    d->targetY += delta.y;
+    d->targetZ += delta.z;
+}
 
 void Camera3D::setClipPlanes(float nearZ, float farZ) {
     data()->nearZ = std::max(0.001f, nearZ);
@@ -714,6 +833,63 @@ void RenderSystem3D::render(Graphics& gfx) {
 
     RenderControl* rc = gfx.getRenderControl();
     rc->ensureCompiled();
+    rc->pathTracingState_ = PathTracingFrameState::Disabled;
+    rc->pathTracingDiagnostic_.clear();
+    if (rc->isPathTracingRequested()) {
+        auto* provider = rc->pathProvider_;
+        if (!provider || !provider->isAvailable()) {
+            rc->pathTracingState_      = PathTracingFrameState::Unavailable;
+            rc->pathTracingDiagnostic_ = "Hardware path tracing is unavailable; rendering raster frame";
+        } else {
+            rc->pathTracingState_ = PathTracingFrameState::SceneRejected;
+            const auto primitives = gfx.getPrimitiveScene();
+            if (!defaultCam || defaultCam->data()->orthographic || defaultCam->data()->envMap ||
+                defaultCam->data()->dofMaxBlurPx > 0.f || !g_forwardDrawers.empty() || !g_gpuOpaqueCollectors.empty() ||
+                !g_gbufferDrawers.empty() || !g_decalDrawers.empty() || (primitives && primitives->size())) {
+                rc->pathTracingDiagnostic_ = "Path scene requires a perspective camera and supported contributors";
+            } else {
+                auto scene = preparePathWorld(*ecs::current(), gfx, *provider);
+                if (!scene.ok()) {
+                    rc->pathTracingDiagnostic_ = scene.status().describe();
+                } else {
+                    const auto width  = uint32_t(std::max(1, gfx.getPixelWidth()));
+                    const auto height = uint32_t(std::max(1, gfx.getPixelHeight()));
+                    auto       output = provider->preparePathFrame(scene.value(), width, height);
+                    if (!output.ok()) {
+                        rc->pathTracingDiagnostic_ = output.status().describe();
+                    } else {
+                        const auto    camera = defaultCam->data();
+                        PathTraceView view;
+                        view.eye              = {camera->eyeX, camera->eyeY, camera->eyeZ};
+                        const auto projection = cameraProjectionVulkanRH_ZO(
+                            false, camera->fovYDeg * 0.017453292519943295f, camera->orthoHeight,
+                            float(width) / float(height), camera->nearZ, camera->farZ);
+                        view.invViewProj = glm::inverse(
+                            projection * glm::lookAtRH(view.eye,
+                                                       glm::vec3(camera->targetX, camera->targetY, camera->targetZ),
+                                                       glm::vec3(camera->upX, camera->upY, camera->upZ)));
+                        view.environment          = {camera->ambientR, camera->ambientG, camera->ambientB};
+                        view.samples              = rc->pathSamples_;
+                        view.firstSample          = rc->pathSampleIndex_;
+                        view.resetTemporalHistory = view.firstSample == 0;
+                        rc->pathSampleIndex_      = (rc->pathSampleIndex_ + view.samples) % (1u << 24);
+                        view.denoise = rc->pathTemporalRequested_ ? PathDenoise::Temporal : PathDenoise::Spatial;
+                        gfx.gpuDrivenSetEnabled(false);
+                        gfx.setSceneExposure(std::exp2(camera->exposureEV));
+                        gfx.setSceneAutoExposure(camera->autoExposure, camera->autoExposureMinEV,
+                                                 camera->autoExposureMaxEV);
+                        gfx.setSceneBloom(camera->bloomIntensity, camera->bloomThreshold);
+                        gfx.setSceneDepthOfField(0.f, 0.f, 1.f, camera->nearZ, camera->farZ);
+                        gfx.begin3DFrame();
+                        auto recorded = provider->recordPathFrame(scene.value(), output.value(), view);
+                        if (!recorded.ok()) throw eve::Exception("%s", recorded.status().describe().c_str());
+                        rc->pathTracingState_ = PathTracingFrameState::Active;
+                        return;
+                    }
+                }
+            }
+        }
+    }
     const bool doShadow           = rc->hasPass("shadow");
     const bool doGBuffer          = rc->hasPass("gbuffer");
     const bool doDecal            = rc->hasPass("decal");
@@ -801,7 +977,9 @@ void RenderSystem3D::render(Graphics& gfx) {
     std::vector<ClusteredLightGpu> clusteredDirs;
     if (useClustered) {
         splitLights(packed, clusteredPoints, clusteredDirs);
-        if (clusteredDirs.empty()) {
+        // Match packLights3D: the default sun belongs only to a lightless scene.
+        // Point-only scenes must not gain a directional light when using Hybrid.
+        if (packed.empty()) {
             ClusteredLightGpu d{};
             d.posRadius = glm::vec4(gLightDir, 0.f);
             d.color     = glm::vec4(gLightColor, 1.f);
@@ -1209,22 +1387,33 @@ void RenderSystem3D::render(Graphics& gfx) {
     // light probes, and x-ray stay on the forward path.
     auto isDeferredCoreOpaque = [&](const CulledItem& item) -> bool {
         if (!doDeferredLighting) return false;
+        // The core deferred shader has no environment/decal samplers or
+        // per-renderable shadow-receive policy. Keep those surfaces on the
+        // existing opaque ForwardPlus overwrite path, alongside custom PBR.
+        if (doDecal && !g_decalDrawers.empty()) return false;
+        const auto* camera = cams[size_t(item.camIdx)].data;
+        if (camera->envMap && camera->envIntensity > 0.f) return false;
+        if (!item.receiveShadow) return false;
         if (item.surfaceMode == SurfaceMode::Transparent) return false;
         if (item.hair || item.xray || item.speedTreeFade) return false;
         if (item.mr->instances || item.lightProbeUsage != 0) return false;
         if (item.shader) return false;
         Material* mat = item.material;
         if (mat) {
+            if (!mat->getReceiveShadow()) return false;
+            if (mat->getTexCellBombStrength() > 0.f) return false;
+            if (mat->getHeightTexture() && mat->getParallaxScale() > 0.f) return false;
             if (mat->effectiveShader()) return false;
             if (mat->isTransparentHair()) return false;
             const std::string model = mat->getShadingModel();
             if (model != "pbr") return false;
             if (!mat->getReceiveLight()) return false;
-            if (mat->hasPbrSurface()) {
-                const PbrSurface s = mat->pbrSurface();
-                if (s.clearcoatFactor > 1e-4f || s.anisotropyStrength > 1e-4f) return false;
-            }
+            // The core G-buffer does not carry the dedicated PBR surface's
+            // texture bindings, authored normal mode or vegetation factors.
+            if (mat->hasPbrSurface()) return false;
         } else {
+            if (item.mr->texBombStrength > 0.f) return false;
+            if (item.mr->heightTexture && item.mr->parallaxScale > 0.f) return false;
             if (item.mr->shader) return false;
             if (!item.mr->receiveLight) return false;
         }
@@ -1533,13 +1722,14 @@ void RenderSystem3D::render(Graphics& gfx) {
 
     drawPersistentPrimitives();
 
-    const bool doAO      = rc->isEnabled("ao");
-    const bool doRTGI    = rc->isEnabled("rtgi") || rc->isEnabled("reflectionChain");
-    const bool doSSR     = rc->isEnabled("ssr") || rc->isEnabled("reflectionChain");
-    const bool doRTX     = rc->isEnabled("rtx");
+    const bool doAO            = rc->isEnabled("ao");
+    const bool doContactShadow = rc->isEnabled("contactShadow");
+    const bool doRTGI          = rc->isEnabled("rtgi") || rc->isEnabled("reflectionChain");
+    const bool doSSR           = rc->isEnabled("ssr") || rc->isEnabled("reflectionChain");
+    const bool doRTX           = rc->isEnabled("rtx");
     bool       aoApplied = false;
-    auto       applyAO   = [&]() {
-        if (!doAO || !gfx.supportsGBufferPost() || !defaultCam || !gfx.had3DThisFrame()) return;
+    auto       applyAO         = [&]() {
+        if ((!doAO && !doContactShadow) || !gfx.supportsGBufferPost() || !defaultCam || !gfx.had3DThisFrame()) return;
         GBuffer* gb = rc->getGBuffer();
         if (gb && gb->isValid()) {
             auto        cd         = defaultCam->data();
@@ -1548,17 +1738,39 @@ void RenderSystem3D::render(Graphics& gfx) {
                 fx->setCamera(cd->eyeX, cd->eyeY, cd->eyeZ, cd->targetX, cd->targetY, cd->targetZ, cd->upX, cd->upY,
                               cd->upZ, cd->fovYDeg, aspectSafe, cd->nearZ, cd->farZ);
             };
-            AmbientOcclusion* ao = gfx.pipelineAmbientOcclusion();
-            ao->setQuality("medium");
-            ao->setIntensity(0.16f);
-            ao->setPower(1.1f);
-            ao->setRadius(std::clamp(cd->farZ * 0.006f, 0.18f, 0.35f));
-            bindCam(ao);
             // WebGPU cannot bind a depth-aspect texture to the generic 2D
             // post-process layout. Its G-buffer already carries equivalent
             // linear depth in a filterable RGBA target.
             Texture* depth = gfx.getBackendName() == "webgpu" ? gb->getDepthTexture() : gb->getHwDepthTexture();
-            if (depth) ao->applyFromGBuffer(&gfx, depth, gb->getNormalTexture());
+            if (doAO) {
+                AmbientOcclusion* ao = gfx.pipelineAmbientOcclusion();
+                ao->setQuality("medium");
+                ao->setIntensity(0.16f);
+                ao->setPower(1.1f);
+                ao->setRadius(std::clamp(cd->farZ * 0.006f, 0.18f, 0.35f));
+                bindCam(ao);
+                if (depth) ao->applyFromGBuffer(&gfx, depth, gb->getNormalTexture());
+            }
+            if (doContactShadow && depth) {
+                ContactShadow* cs = gfx.pipelineContactShadow();
+                // High: dual-ray soft (center + tangent) + binary refine;
+                // kills zebra banding under spheres / box feet without a blur pass.
+                cs->setQuality(rc->getPostProcessQuality() == "low" ? "medium" : "high");
+                glm::vec3 lightDir = gLightDir;
+                if (shadowCaster) {
+                    lightDir = glm::vec3(shadowCaster->dx, shadowCaster->dy, shadowCaster->dz);
+                } else if (!packed.empty() && packed[0].data && !packed[0].isPoint) {
+                    lightDir = glm::vec3(packed[0].data->dx, packed[0].data->dy, packed[0].data->dz);
+                }
+                if (glm::length(lightDir) < 1e-6f)
+                    lightDir = glm::vec3(0.f, 1.f, 0.f);
+                else
+                    lightDir = glm::normalize(lightDir);
+                cs->setLightDirection(lightDir.x, lightDir.y, lightDir.z);
+                bindCam(cs);
+                if (!cams.empty()) cs->setInvViewProj(glm::inverse(cams.front().viewProj));
+                cs->applyFromGBuffer(&gfx, depth, gb->getNormalTexture());
+            }
             // Fullscreen SSGI from lit scene color reprints nearby props
             // (curtains, planters) onto the floor as multiple swimming ghosts.
             // Mesh shaders still add hemispheric sky/ground + wrap fill.
@@ -1921,12 +2133,6 @@ void RenderSystem3D::renderToCanvasImpl(Graphics& gfx, Canvas* target, Camera3D*
             std::vector<ClusteredLightGpu> clusteredPoints;
             std::vector<ClusteredLightGpu> clusteredDirections;
             splitLights(packed, clusteredPoints, clusteredDirections);
-            if (clusteredDirections.empty()) {
-                ClusteredLightGpu direction{};
-                direction.posRadius = glm::vec4(gLightDir, 0.f);
-                direction.color     = glm::vec4(gLightColor, 1.f);
-                clusteredDirections.push_back(direction);
-            }
             ClusteredLightingUpload clustered =
                 buildClusteredLighting(clusteredPoints, clusteredDirections, viewM, cd->nearZ, cd->farZ,
                                        target->getWidth(), target->getHeight(), cd->fovYDeg * 0.017453292519943295f,

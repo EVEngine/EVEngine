@@ -177,7 +177,7 @@ eve::Result<eve::Value> GeometryCollectionInstanceSnapshot::toValue() const {
         object["halfExtentX"]   = static_cast<double>(bone.halfExtentX);
         object["halfExtentY"]   = static_cast<double>(bone.halfExtentY);
         object["halfExtentZ"]   = static_cast<double>(bone.halfExtentZ);
-        boneValues.push_back(eve::Value(std::move(object)));
+        boneValues.emplace_back(std::move(object));
     }
     eve::Value::Array edgeValues;
     edgeValues.reserve(edges.size());
@@ -188,7 +188,7 @@ eve::Result<eve::Value> GeometryCollectionInstanceSnapshot::toValue() const {
         object["strainThreshold"]   = static_cast<double>(edge.strainThreshold);
         object["accumulatedStrain"] = static_cast<double>(edge.accumulatedStrain);
         object["broken"]            = edge.broken;
-        edgeValues.push_back(eve::Value(std::move(object)));
+        edgeValues.emplace_back(std::move(object));
     }
     eve::Value::Object object;
     object["schema"]             = std::string(SchemaId);

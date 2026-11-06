@@ -1,6 +1,24 @@
+#include "procgen/Biome.h"
+#include "procgen/GridGraph.h"
+#include "procgen/MeshGraph.h"
+#include "procgen/OutputSpec.h"
+#include "procgen/PointDelta.h"
+#include "procgen/PointGraph.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenArtifacts.h"
 #include "procgen/ProcgenLive.h"
+#include "procgen/ProcgenRecipes.h"
 #include "procgen/ProcgenScriptSupport.h"
+#include "procgen/RuntimeGeneration.h"
+#include "procgen/ShapeGrammar.h"
+#include "procgen/SpatialData.h"
+#include "procgen/algorithms/LSystem.h"
+#include "procgen/heightmap/Heightmap.h"
+#include "procgen/heightmap/TerrainSampler.h"
+#include "procgen/mesh/MeshModifierGraph.h"
+#include "procgen/spline/SplinePath.h"
+#include "procgen/texture/CloudField.h"
+#include "procgen/texture/CloudShadow.h"
 
 #include "common/Capability.h"
 #include "common/SquirrelBinding.h"
@@ -1227,7 +1245,7 @@ void Procgen::expose(ssq::Class& cls) {
                                                "algorithm schema requires a Procgen module", "procgen", {},
                                                "procgen.squirrel"))
                         .status());
-        return projectRecipeDescriptorResult(vm, value->getAlgorithmSchema(algorithm));
+        return projectRecipeDescriptorResult(vm, ProcgenRecipeOps::getAlgorithmSchema(*value, algorithm));
     });
     cls.addFunc("getAlgorithmDisplayName", &Procgen::getAlgorithmDisplayName);
     cls.addFunc("getAlgorithmCategory", &Procgen::getAlgorithmCategory);
@@ -1298,7 +1316,7 @@ void Procgen::expose(ssq::Class& cls) {
                                                "texture schema requires a Procgen module", "procgen", {},
                                                "procgen.squirrel"))
                         .status());
-        return projectRecipeDescriptorResult(vm, value->getTextureRecipeSchema(recipe));
+        return projectRecipeDescriptorResult(vm, ProcgenRecipeOps::getTextureRecipeSchema(*value, recipe));
     });
     cls.addFunc("applyTextureRecipeDefaults",
                 [vm = cls.getHandle()](Procgen* value, const std::string& recipe, ScriptProcgenParams* params) {
@@ -1320,7 +1338,7 @@ void Procgen::expose(ssq::Class& cls) {
                                                                               "PBR schema requires a Procgen module",
                                                                               "procgen", {}, "procgen.squirrel"))
                     .status());
-        return projectRecipeDescriptorResult(vm, value->getPbrRecipeSchema(recipe));
+        return projectRecipeDescriptorResult(vm, ProcgenRecipeOps::getPbrRecipeSchema(*value, recipe));
     });
     cls.addFunc("applyPbrRecipeDefaults",
                 [vm = cls.getHandle()](Procgen* value, const std::string& recipe, ScriptProcgenParams* params) {
@@ -1357,7 +1375,7 @@ void Procgen::expose(ssq::Class& cls) {
                         "procgen.squirrel")),
                     [](GeneratedArtifact&& artifact) { return artifactProjection(std::move(artifact)); });
             return eve::script::projectResult(
-                vm, value->buildArtifact(recipeId, params->reference, *parsed),
+                vm, ProcgenArtifactOps::buildArtifact(*value, recipeId, params->reference, *parsed),
                 [](GeneratedArtifact&& artifact) { return artifactProjection(std::move(artifact)); });
         });
     cls.addFunc(
@@ -1392,7 +1410,7 @@ void Procgen::expose(ssq::Class& cls) {
                         "procgen.squirrel")),
                     [](ArtifactPublishReceipt&& receipt) { return publishReceiptProjection(std::move(receipt)); });
             return eve::script::projectResult(
-                vm, value->publishArtifact(recipeId, params->reference, *parsed, options),
+                vm, ProcgenArtifactOps::publishArtifact(*value, recipeId, params->reference, *parsed, options),
                 [](ArtifactPublishReceipt&& receipt) { return publishReceiptProjection(std::move(receipt)); });
         });
     cls.addFunc("getMeshRecipeCount", &Procgen::getMeshRecipeCount);
@@ -1428,7 +1446,7 @@ void Procgen::expose(ssq::Class& cls) {
                                                                               "mesh schema requires a Procgen module",
                                                                               "procgen", {}, "procgen.squirrel"))
                     .status());
-        return projectRecipeDescriptorResult(vm, value->getMeshRecipeSchema(recipe));
+        return projectRecipeDescriptorResult(vm, ProcgenRecipeOps::getMeshRecipeSchema(*value, recipe));
     });
     cls.addFunc("applyMeshRecipeDefaults",
                 [vm = cls.getHandle()](Procgen* value, const std::string& recipe, ScriptProcgenParams* params) {

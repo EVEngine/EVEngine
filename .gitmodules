@@ -7,6 +7,3 @@
 [submodule "external/ik.hpp"]
 	path = external/ik.hpp
 	url = https://github.com/sunxfancy/ik.hpp.git
-[submodule "external/VKBuilder"]
-	path = external/VKBuilder
-	url = https://github.com/sunxfancy/VKBuilder

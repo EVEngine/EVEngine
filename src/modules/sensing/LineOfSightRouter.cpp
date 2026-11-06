@@ -16,7 +16,7 @@ namespace {
 
 template <typename T>
 Result<T> failure(DiagnosticCode code, std::string message, std::string path) {
-    return Result<T>::failure(Diagnostic::error(code, message, path));
+    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
 }
 
 /** @brief Stable path name for a rejected location, so diagnostics point at the right argument. */
@@ -33,7 +33,7 @@ LineOfSightRouter& routerHolder() {
 Result<LineOfSightRouter*> ensureLineOfSightRouter() {
     LineOfSightRouter& router = routerHolder();
     ILineOfSightQuery* registered = cap::query<ILineOfSightQuery>();
-    if (registered == &router) return Result<LineOfSightRouter*>::success(&router);
+    if (registered == &router) return Result<LineOfSightRouter*>::success(&router, Status::success(StatusCode::NoOp));
     if (registered != nullptr)
         // Respect an existing registration instead of replacing it, so a project that owns its
         // own implementation is never silently overridden by a backend claiming a space.

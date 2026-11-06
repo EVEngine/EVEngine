@@ -282,12 +282,12 @@ struct AssetArgs final : Handler {
         asset_import::AssetImportLimits limits;
         if (from == "scad") {
             prepared.ignore();
-            const auto sourceUtf8   = std::filesystem::path(input).u8string();
-            const auto compilerUtf8 = std::filesystem::path(openscad).u8string();
-            prepared                = asset_import::prepareScadFileImport(
-                {identity.value(), std::string(reinterpret_cast<const char*>(sourceUtf8.data()), sourceUtf8.size()),
-                                std::string(reinterpret_cast<const char*>(compilerUtf8.data()), compilerUtf8.size()), scadTimeout,
-                                limits});
+            auto asUtf8 = [](const std::string& value) {
+                const auto encoded = std::filesystem::path(value).u8string();
+                return std::string(reinterpret_cast<const char*>(encoded.data()), encoded.size());
+            };
+            prepared = asset_import::prepareScadFileImport(
+                {identity.value(), asUtf8(input), asUtf8(openscad), scadTimeout, limits});
         } else if (from == "ldraw") {
             const auto sourcePath = std::filesystem::path(input);
             const auto parent =

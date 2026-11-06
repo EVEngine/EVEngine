@@ -693,7 +693,7 @@ Value::Object encodePhase(const AttackVfxPhase& phase) {
     object.emplace("durationSeconds", Value(phase.durationSeconds));
     Value::Array layers;
     layers.reserve(phase.layers.size());
-    for (const auto& layer : phase.layers) layers.emplace_back(Value(encodeLayer(layer)));
+    for (const auto& layer : phase.layers) layers.emplace_back(encodeLayer(layer));
     object.emplace("layers", Value(std::move(layers)));
     return object;
 }
@@ -735,7 +735,7 @@ Result<std::string> AttackVfxRecipe::toJson() const {
     object.emplace("id", id.format());
     Value::Array phasesJson;
     phasesJson.reserve(phases.size());
-    for (const auto& phase : phases) phasesJson.emplace_back(Value(encodePhase(phase)));
+    for (const auto& phase : phases) phasesJson.emplace_back(encodePhase(phase));
     object.emplace("phases", std::move(phasesJson));
     if (skinId) object.emplace("skinId", skinId->format());
     if (skin) object.emplace("skin", encodeSkinBody(*skin, false));

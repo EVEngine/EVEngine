@@ -97,7 +97,7 @@ void exposeAnimClipBindings(ssq::Table& table) {
             if (!self || !skeleton) throw std::runtime_error("missing clip or skeleton");
             auto* fs = eve::ModuleManager::getInstance<eve::filesystem::Filesystem>("Filesystem");
             if (!fs) throw std::runtime_error("filesystem unavailable");
-            auto* raw = fs->read(path);
+            auto* raw = fs->read(std::move(path));
             if (!raw) throw std::runtime_error("animation track file unavailable");
             Owned<eve::filesystem::FileData> data(raw);
             return script::projectResult(

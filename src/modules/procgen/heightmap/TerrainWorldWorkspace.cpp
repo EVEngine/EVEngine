@@ -97,6 +97,7 @@ Result<TerrainMultiTileReport> applySpawnRule(TerrainWorldWorkspace::Impl& world
             if (!rule.enabled) return Result<TerrainMultiTileReport>::success({});
             if constexpr (std::is_same_v<Rule, TerrainSplatSpawnRule>) {
                 std::vector<TerrainSplatTile> tiles;
+                tiles.reserve(world.tiles.size());
                 for (auto& tile : world.tiles)
                     tiles.push_back({tile.name, &tile.splat, tile.originX, tile.originZ,
                                      world.settings.tileSize, world.settings.tileSize, world.settings.worldMap});
@@ -106,6 +107,7 @@ Result<TerrainMultiTileReport> applySpawnRule(TerrainWorldWorkspace::Impl& world
                 auto settings = rule.settings;
                 settings.mode = rule.mode;
                 std::vector<TerrainDetailTile> tiles;
+                tiles.reserve(world.tiles.size());
                 for (auto& tile : world.tiles)
                     tiles.push_back({tile.name, &tile.detail, tile.originX, tile.originZ,
                                      world.settings.tileSize, world.settings.tileSize, world.settings.worldMap});
@@ -113,6 +115,7 @@ Result<TerrainMultiTileReport> applySpawnRule(TerrainWorldWorkspace::Impl& world
                                                    world.settings.worldMap);
             } else if constexpr (std::is_same_v<Rule, TerrainTreeSpawnRule>) {
                 std::vector<TerrainTreeTile> tiles;
+                tiles.reserve(world.tiles.size());
                 for (auto& tile : world.tiles)
                     tiles.push_back({tile.name, &tile.trees, &tile.heights, tile.originX, tile.originZ,
                                      world.settings.tileSize, world.settings.tileSize, world.settings.treeResolution,
@@ -121,6 +124,7 @@ Result<TerrainMultiTileReport> applySpawnRule(TerrainWorldWorkspace::Impl& world
                                                   world.settings.worldMap);
             } else if constexpr (std::is_same_v<Rule, TerrainObjectSpawnRule>) {
                 std::vector<TerrainObjectTile> tiles;
+                tiles.reserve(world.tiles.size());
                 for (auto& tile : world.tiles)
                     tiles.push_back({tile.name, &tile.objects, &tile.heights, tile.originX, tile.originZ,
                                      world.settings.tileSize, world.settings.tileSize, world.settings.objectResolution,
@@ -129,6 +133,7 @@ Result<TerrainMultiTileReport> applySpawnRule(TerrainWorldWorkspace::Impl& world
                                                     world.settings.worldMap);
             } else if constexpr (std::is_same_v<Rule, TerrainProbeSpawnRule>) {
                 std::vector<TerrainProbeTile> tiles;
+                tiles.reserve(world.tiles.size());
                 for (auto& tile : world.tiles)
                     tiles.push_back({tile.name, &tile.probes, &tile.heights, tile.originX, tile.originZ,
                                      world.settings.tileSize, world.settings.tileSize, world.settings.objectResolution,
@@ -137,6 +142,7 @@ Result<TerrainMultiTileReport> applySpawnRule(TerrainWorldWorkspace::Impl& world
                                                    world.settings.worldMap);
             } else {
                 std::vector<TerrainHeightTile> tiles;
+                tiles.reserve(world.tiles.size());
                 for (auto& tile : world.tiles)
                     tiles.push_back({tile.name, &tile.heights, tile.originX, tile.originZ,
                                      world.settings.tileSize, world.settings.tileSize, world.settings.worldMap});
@@ -152,6 +158,7 @@ Result<int> TerrainWorldWorkspace::stamp(const Heightmap& stampMap, const Terrai
                                           const Heightmap& local, const Heightmap& global) {
     return mutateWorld(impl_, [&](Impl& world) {
         std::vector<TerrainHeightTile> tiles;
+        tiles.reserve(world.tiles.size());
         for (auto& tile : world.tiles) tiles.push_back({tile.name, &tile.heights, tile.originX, tile.originZ,
                                                         world.settings.tileSize, world.settings.tileSize,
                                                         world.settings.worldMap});
@@ -162,6 +169,7 @@ Result<int> TerrainWorldWorkspace::paintSplat(const Heightmap& paint, int layer,
                                                const TerrainStampSettings& operation) {
     return mutateWorld(impl_, [&](Impl& world) {
         std::vector<TerrainSplatTile> tiles;
+        tiles.reserve(world.tiles.size());
         for (auto& tile : world.tiles) tiles.push_back({tile.name, &tile.splat, tile.originX, tile.originZ,
                                                         world.settings.tileSize, world.settings.tileSize,
                                                         world.settings.worldMap});
@@ -174,6 +182,7 @@ Result<int> TerrainWorldWorkspace::applyDetail(const Heightmap& fitness, const T
     auto configured = settings; configured.mode = mode;
     return mutateWorld(impl_, [&](Impl& world) {
         std::vector<TerrainDetailTile> tiles;
+        tiles.reserve(world.tiles.size());
         for (auto& tile : world.tiles) tiles.push_back({tile.name, &tile.detail, tile.originX, tile.originZ,
                                                         world.settings.tileSize, world.settings.tileSize,
                                                         world.settings.worldMap});
@@ -184,6 +193,7 @@ Result<int> TerrainWorldWorkspace::applyTrees(const Heightmap& fitness, const Te
                                               const TerrainStampSettings& operation, TerrainTreeOperationMode mode) {
     return mutateWorld(impl_, [&](Impl& world) {
         std::vector<TerrainTreeTile> tiles;
+        tiles.reserve(world.tiles.size());
         for (auto& tile : world.tiles)
             tiles.push_back({tile.name, &tile.trees, &tile.heights, tile.originX, tile.originZ, world.settings.tileSize,
                              world.settings.tileSize, world.settings.treeResolution, world.settings.treeResolution,
@@ -197,6 +207,7 @@ Result<int> TerrainWorldWorkspace::applyObjects(const Heightmap&                
                                                 TerrainObjectOperationMode            mode) {
     return mutateWorld(impl_, [&](Impl& world) {
         std::vector<TerrainObjectTile> tiles;
+        tiles.reserve(world.tiles.size());
         for (auto& tile : world.tiles)
             tiles.push_back({tile.name, &tile.objects, &tile.heights, tile.originX, tile.originZ,
                              world.settings.tileSize, world.settings.tileSize, world.settings.objectResolution,
@@ -211,6 +222,7 @@ Result<int> TerrainWorldWorkspace::applyProbes(const Heightmap& fitness,
                                                 TerrainProbeOperationMode mode) {
     return mutateWorld(impl_, [&](Impl& world) {
         std::vector<TerrainProbeTile> tiles;
+        tiles.reserve(world.tiles.size());
         for (auto& tile : world.tiles)
             tiles.push_back({tile.name, &tile.probes, &tile.heights, tile.originX, tile.originZ,
                              world.settings.tileSize, world.settings.tileSize, world.settings.objectResolution,

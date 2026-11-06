@@ -742,7 +742,7 @@ WidgetDesc tabContainer(std::vector<WidgetDesc> pages, std::string activePageId,
     d.type          = NodeType::TabContainer;
     d.id            = std::move(id);
     d.key           = d.id;
-    d.valueText     = activePageId;
+    d.valueText     = std::move(activePageId);
     d.flexDirection = FlexDirection::Column;
     d.flexGrow      = 1.f;
     d.onTextChange  = std::move(onSelect);

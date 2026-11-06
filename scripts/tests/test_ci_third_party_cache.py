@@ -24,10 +24,11 @@ class ThirdPartyCacheTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.bash = "bash"
         if os.name == "nt":
+            # PATH may resolve to the WSL launcher, which cannot use native cwd/env paths.
             git = shutil.which("git")
             if git is None:
-                raise RuntimeError("Git for Windows is required for the CI Bash contract")
-            candidates = [parent / "bin/bash.exe" for parent in Path(git).resolve().parents]
+                raise RuntimeError("Git for Windows is required to run the CI Bash contract")
+            candidates = [parent / "bin" / "bash.exe" for parent in Path(git).resolve().parents]
             self.bash = str(next(path for path in candidates if path.is_file()))
 
     def identity(self, **overrides):

@@ -11,6 +11,7 @@
 #include "common/SquirrelOwnership.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/Graphics.h"
+#include "graphics/GraphicsVisibility.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
 
@@ -58,7 +59,7 @@ glm::vec3 vec(const Value& v) {
 Result<Value> fail(DiagnosticCode code, const char* message) {
     return Result<Value>::failure(Diagnostic::error(code, message));
 }
-bool validPixels(const Graphics::VisibilityPixels& pixels, int width, int height) {
+bool validPixels(const VisibilityPixels& pixels, int width, int height) {
     const auto count = size_t(width) * size_t(height);
     return pixels.width == width && pixels.height == height && pixels.ids.size() == count &&
            pixels.depth.size() == count && std::all_of(pixels.depth.begin(), pixels.depth.end(), [](float depth) {
@@ -167,7 +168,7 @@ Result<Value> SceneVisibilityQuery::measure(Graphics& graphics) {
         glm::lookAtRH(vec(*field(camera, "eye")), vec(*field(camera, "target")), vec(*field(camera, "up")));
     const auto projection =
         perspectiveVulkanRH_ZO(float(fov * 3.141592653589793 / 180), float(width) / height, float(nearZ), float(farZ));
-    std::vector<Graphics::EntityIdDraw>  draws;
+    std::vector<EntityIdDraw>            draws;
     std::map<std::string, std::uint32_t> mapping;
     for (const auto& input : *field(request_, "draws")->getIf<Value::Array>()) {
         number(field(input, "entityId"), n);
@@ -190,7 +191,7 @@ Result<Value> SceneVisibilityQuery::measure(Graphics& graphics) {
                         "Visibility currently requires untextured opaque static single-part meshes");
         auto [it, inserted] = mapping.emplace(*object, std::uint32_t(mapping.size() + 1));
         (void)inserted;
-        Graphics::EntityIdDraw draw;
+        EntityIdDraw draw;
         draw.mesh          = renderer->mesh;
         const auto& values = *field(input, "model")->getIf<Value::Array>();
         for (int i = 0; i < 16; ++i) {
@@ -204,7 +205,9 @@ Result<Value> SceneVisibilityQuery::measure(Graphics& graphics) {
             glm::vec4((packed & 255) / 255.f, ((packed >> 8) & 255) / 255.f, ((packed >> 16) & 255) / 255.f, 1.f);
         draws.push_back(draw);
     }
-    auto scene = graphics.captureVisibilityPixels(draws, projection * view, width, height);
+    auto* capture = graphics.visibilityCapture();
+    if (!capture) return fail(DiagnosticCode::Unsupported, "Backend has no isolated visibility capture");
+    auto scene = capture->captureVisibilityPixels(draws, projection * view, width, height);
     if (!scene.ok()) return Result<Value>::failure(scene.status());
     if (!validPixels(scene.value(), width, height))
         return fail(DiagnosticCode::InvariantViolation, "Invalid scene raster evidence");
@@ -212,12 +215,12 @@ Result<Value> SceneVisibilityQuery::measure(Graphics& graphics) {
     Value::Object objectMap;
     for (const auto& [object, id] : mapping) objectMap[object] = int(id);
     constexpr float                                   depthEpsilon = 1e-6f;
-    std::map<std::string, Graphics::VisibilityPixels> fullCache;
+    std::map<std::string, VisibilityPixels>           fullCache;
     std::vector<std::vector<std::uint8_t>>            targetMasks;
     for (const auto& target : *field(request_, "targets")->getIf<Value::Array>()) {
         const auto& name = target.getIf<std::string>() ? *target.getIf<std::string>() : *text(target, "object");
         auto        id   = mapping.at(name);
-        std::vector<Graphics::EntityIdDraw> isolated;
+        std::vector<EntityIdDraw> isolated;
         for (const auto& draw : draws)
             if (std::uint32_t(std::lround(draw.idColor.r * 255)) +
                     (std::uint32_t(std::lround(draw.idColor.g * 255)) << 8) +
@@ -225,7 +228,7 @@ Result<Value> SceneVisibilityQuery::measure(Graphics& graphics) {
                 id)
                 isolated.push_back(draw);
         if (!fullCache.contains(name)) {
-            auto full = graphics.captureVisibilityPixels(isolated, projection * view, width, height);
+            auto full = capture->captureVisibilityPixels(isolated, projection * view, width, height);
             if (!full.ok()) return Result<Value>::failure(full.status());
             if (!validPixels(full.value(), width, height))
                 return fail(DiagnosticCode::InvariantViolation, "Invalid target raster evidence");

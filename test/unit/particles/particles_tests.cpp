@@ -102,8 +102,8 @@ TEST_CASE("particles.ParticleEffect naturalDuration: bounded emitters include ta
     auto finite = eve::particles::ParticleEffect::tryFromText(R"({
         "type":"eve.particle-effect", "version":1,
         "emitters":[
-            {"name":"short","emitter":{"emitterLife":0.3,"particleLifetime":[0.2,1.2]}},
-            {"name":"long","emitter":{"emitterLife":0.8,"particleLifetime":[0.2,0.9]}}
+            {"name":"short","emitter":{"emitterLife":0.3,"particleLife":[0.2,1.2]}},
+            {"name":"long","emitter":{"emitterLife":0.8,"particleLife":[0.2,0.9]}}
         ]
     })");
     REQUIRE(finite.ok());
@@ -116,6 +116,37 @@ TEST_CASE("particles.ParticleEffect naturalDuration: bounded emitters include ta
     REQUIRE(loop.ok());
     std::unique_ptr<eve::particles::ParticleEffect> looping(loop.value());
     CHECK(!looping->naturalDuration().ok());
+}
+
+TEST_CASE("particles.ParticleEffect parse: fireworks-style death routes compile to named layers") {
+    // Inline fixture mirrors examples/particle-effects/fireworks.effect.json intent
+    // (file IO belongs to render-presentation / smoke, not unit catalogue).
+    auto parsed = eve::particles::ParticleEffect::tryFromText(R"({
+        "type":"eve.particle-effect","version":2,
+        "parameters":{"intensity":1.0},
+        "eventRoutes":[
+            {"from":"shell","on":"death","to":"stars","inheritVelocity":0.2},
+            {"from":"shell","on":"death","to":"smoke","inheritVelocity":0.05}
+        ],
+        "timeline":{"duration":1.0,"looping":false,"cues":[
+            {"time":0.0,"action":"emit","emitter":"shell","count":1}
+        ]},
+        "emitters":[
+            {"name":"shell","emitter":{"buffer":8,"emissionRate":0,"particleLife":[0.2,0.2]}},
+            {"name":"stars","emitter":{"buffer":64,"emissionRate":0}},
+            {"name":"smoke","emitter":{"buffer":32,"emissionRate":0}}
+        ]
+    })");
+    REQUIRE(parsed.ok());
+    std::unique_ptr<eve::particles::ParticleEffect> effect(parsed.value());
+    REQUIRE_EQ(effect->getEmitterCount(), 3);
+    REQUIRE(effect->getEmitterByName("shell") != nullptr);
+    REQUIRE(effect->getEmitterByName("stars") != nullptr);
+    REQUIRE(effect->getEmitterByName("smoke") != nullptr);
+    REQUIRE_EQ(effect->eventRoutes().size(), 2u);
+    CHECK_EQ(effect->eventRoutes()[0].from, std::string("shell"));
+    CHECK_EQ(effect->eventRoutes()[0].to, std::string("stars"));
+    CHECK_EQ(effect->eventRoutes()[0].on, std::string("death"));
 }
 }  // namespace test_particle_effect_asset_contract
 #endif
@@ -463,6 +494,7 @@ TEST_CASE("particles.shiftWorldSpaceParticles: world coordinates move while play
     emitter->setAutoRandomSeed(false);
     emitter->setRandomSeed(7);
     emitter->setPosition(1200.0f, 45.0f);
+    emitter->start();
     emitter->emit(1);
     emitter->pause();
     const auto before = emitter->sim()->particles[0];

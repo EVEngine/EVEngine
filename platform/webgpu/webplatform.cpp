@@ -6,6 +6,8 @@
 
 #if defined(__EMSCRIPTEN__)
 #include <emscripten/emscripten.h>
+#else
+#include <filesystem>
 #endif
 
 namespace eve {
@@ -31,7 +33,7 @@ std::string getAppdataDirectory() {
     return "/persist";
 #else
     const char *base = envOr("EVENGINE_WEBGPU_APPDATA", "appdata");
-    return std::string(base);
+    return std::filesystem::absolute(base).generic_string();
 #endif
 }
 
@@ -39,7 +41,7 @@ std::string getHomeDirectory() {
 #if defined(__EMSCRIPTEN__)
     return "/";
 #else
-    return ".";
+    return std::filesystem::current_path().generic_string();
 #endif
 }
 

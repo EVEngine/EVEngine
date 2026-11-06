@@ -12,7 +12,7 @@ struct TransformTRS {
     float sx = 1.f, sy = 1.f, sz = 1.f;
 
     /** @brief Identity. */
-    static TransformTRS identity() { return {}; }
+    static constexpr TransformTRS identity() noexcept { return {}; }
 
     /** @brief Normalize rotation. */
     void normalizeRotation() {
@@ -31,13 +31,13 @@ struct TransformTRS {
 };
 
 /** @brief Clampf. */
-inline float clampf(float v, float lo, float hi) {
+constexpr float clampf(float v, float lo, float hi) noexcept {
     /** @brief Max. */
     return std::max(lo, std::min(hi, v));
 }
 
 /** @brief Lerpf. */
-inline float lerpf(float a, float b, float t) { return a + (b - a) * t; }
+constexpr float lerpf(float a, float b, float t) noexcept { return a + (b - a) * t; }
 
 /** @brief Slerp quat. */
 inline void slerpQuat(float ax, float ay, float az, float aw, float bx, float by, float bz, float bw,
@@ -157,10 +157,10 @@ struct Mat4 {
     float m[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 
     /** @brief Identity. */
-    static Mat4 identity() { return {}; }
+    static constexpr Mat4 identity() noexcept { return {}; }
 
     /** @brief From trs. */
-    static Mat4 fromTRS(const TransformTRS &t) {
+    static constexpr Mat4 fromTRS(const TransformTRS &t) noexcept {
         Mat4 out;
         const float x = t.qx, y = t.qy, z = t.qz, w = t.qw;
         const float x2 = x + x, y2 = y + y, z2 = z + z;
@@ -188,7 +188,7 @@ struct Mat4 {
     }
 
     /** @brief Mul. */
-    static Mat4 mul(const Mat4 &a, const Mat4 &b) {
+    static constexpr Mat4 mul(const Mat4 &a, const Mat4 &b) noexcept {
         Mat4 out;
         for (int col = 0; col < 4; ++col) {
             for (int row = 0; row < 4; ++row) {

@@ -123,7 +123,8 @@ Result<std::string> FrameCaptureStore::request(FrameCaptureRequest request) {
             if (e.snapshot.phase != FrameCapturePhase::Ready) return failure<std::string>("CaptureBusy");
         }
     }
-    if (live >= 2 || impl_->used() >= impl_->caps.maxBytes) return failure<std::string>("BudgetExceeded");
+    // Retain a bounded sequence for inspection sheets; GPU acquisition remains single-flight.
+    if (live >= 16 || impl_->used() >= impl_->caps.maxBytes) return failure<std::string>("BudgetExceeded");
     Impl::Entry e;
     e.request             = std::move(request);
     e.snapshot.token      = std::to_string(impl_->caps.generation) + ":" + std::to_string(impl_->nextToken++);

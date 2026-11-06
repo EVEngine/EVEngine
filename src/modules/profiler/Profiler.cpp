@@ -8,6 +8,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <vector>
 
 namespace eve::profiler {
 
@@ -144,10 +145,11 @@ std::string Profiler::textReport() const {
     return report;
 }
 
-ssq::Object Profiler::capture() {
-    ssq::Array out(vm_);
-    for (const auto& s : eve::prof::Profiler::lastFrame()) {
-        ssq::Table t(vm_);
+namespace {
+ssq::Object zoneRows(HSQUIRRELVM vm, const std::vector<eve::prof::ZoneSample>& samples) {
+    ssq::Array out(vm);
+    for (const auto& s : samples) {
+        ssq::Table t(vm);
         t.set("module", s.module);
         t.set("name", s.name);
         t.set("thread", s.thread);
@@ -157,6 +159,14 @@ ssq::Object Profiler::capture() {
         out.push(t);
     }
     return out;
+}
+}  // namespace
+
+ssq::Object Profiler::capture() { return zoneRows(vm_, eve::prof::Profiler::lastFrame()); }
+
+ssq::Object Profiler::hotspots(int limit, float minSelfMs) {
+    const std::size_t capped = limit <= 0 ? 0 : static_cast<std::size_t>(limit);
+    return zoneRows(vm_, eve::prof::Profiler::hotspots(capped, static_cast<double>(minSelfMs)));
 }
 
 void Profiler::expose(ssq::Table& table) {
@@ -186,6 +196,7 @@ void Profiler::expose(ssq::Class& cls) {
     cls.addFunc("gpuFrameMs", &Profiler::gpuFrameMs);
     cls.addFunc("textReport", &Profiler::textReport);
     cls.addFunc("capture", &Profiler::capture);
+    cls.addFunc("hotspots", &Profiler::hotspots);
 }
 
 }  // namespace eve::profiler

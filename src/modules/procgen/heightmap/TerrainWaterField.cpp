@@ -82,7 +82,7 @@ Result<int> generateTerrainVelocityFlowMap(Heightmap& target, const Heightmap& s
     constexpr float time = 0.2F;
     constexpr int left = 0, right = 1, bottom = 2, top = 3;
     const int width = source.getWidth(), height = source.getHeight();
-    const auto terrain = source.data();
+    const auto&                       terrain = source.data();
     std::vector<float> water(terrain.size(), 0.0001F);
     std::vector<std::array<float, 4>> flow(terrain.size());
     auto index = [width](int x, int y) { return size_t(y) * width + x; };

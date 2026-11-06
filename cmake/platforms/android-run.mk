@@ -69,6 +69,7 @@ build/android-debug-test/build.ninja:
 		-DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF \
 		-DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
 		-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF \
+		$(DEBUG_LEVEL_FLAG) \
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/android-debug-test -S .
 

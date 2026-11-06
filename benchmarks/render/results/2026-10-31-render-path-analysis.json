@@ -1,0 +1,2900 @@
+{
+  "schema": "evengine.render-path-analysis",
+  "version": 1,
+  "date": "2026-10-31",
+  "source_revision": "8315da221165c0623159353c8672d3c8c25dbf51",
+  "engine_source_modified": false,
+  "environment": "GCC 14.2 Release -O3; shared AMD EPYC 9V74 VM, four-CPU quota; llvmpipe software Vulkan; no physical GPU",
+  "scope": "Native synthetic general-3D benchmarks; 60 warmup +90 measured frames, 320x180, VSync off. Diagnostic wrappers use existing render-control and shadow-settings APIs; engine implementation objects are unchanged.",
+  "experiments": {
+    "recording": {
+      "auto": {
+        "run_mean_ms": [
+          102.337,
+          101.48
+        ],
+        "mean_of_run_means_ms": 101.9085,
+        "run_p95_ms": [
+          116.726,
+          109.412
+        ]
+      },
+      "serial": {
+        "run_mean_ms": [
+          107.628,
+          99.963
+        ],
+        "mean_of_run_means_ms": 103.7955,
+        "run_p95_ms": [
+          122.615,
+          108.553
+        ]
+      },
+      "parallel": {
+        "run_mean_ms": [
+          102.034,
+          104.562
+        ],
+        "mean_of_run_means_ms": 103.298,
+        "run_p95_ms": [
+          111.195,
+          116.205
+        ]
+      }
+    },
+    "unused_shadow_atlas": [
+      {
+        "scene": "static",
+        "atlas": 2048,
+        "run_frame_means_ms": [
+          27.235,
+          27.6186,
+          25.153
+        ],
+        "median_run_frame_mean_ms": 27.235
+      },
+      {
+        "scene": "static",
+        "atlas": 512,
+        "run_frame_means_ms": [
+          24.7984,
+          28.8554,
+          25.0416
+        ],
+        "median_run_frame_mean_ms": 25.0416
+      },
+      {
+        "scene": "mixed",
+        "atlas": 2048,
+        "run_frame_means_ms": [
+          107.416,
+          104.459,
+          106.976
+        ],
+        "median_run_frame_mean_ms": 106.976
+      },
+      {
+        "scene": "mixed",
+        "atlas": 512,
+        "run_frame_means_ms": [
+          101.134,
+          124.07,
+          100.215
+        ],
+        "median_run_frame_mean_ms": 101.134
+      }
+    ],
+    "lighting_mode": {
+      "forward": {
+        "median_run_frame_mean_ms": 103.101,
+        "median_run_frame_p50_ms": 101.503,
+        "run_frame_means_ms": [
+          103.101,
+          114.117,
+          102.27
+        ],
+        "run_frame_p95_ms": [
+          115.621,
+          133.817,
+          115.599
+        ],
+        "mesh_requests_per_frame_no_capture": {
+          "gbufferRequests": 1004.2333333333333,
+          "forwardRequests": 1004.2333333333333,
+          "shadowRequests": 0.0
+        }
+      },
+      "hybrid": {
+        "median_run_frame_mean_ms": 47.7731,
+        "median_run_frame_p50_ms": 46.8174,
+        "run_frame_means_ms": [
+          46.2559,
+          49.179,
+          47.7731
+        ],
+        "run_frame_p95_ms": [
+          49.4584,
+          60.0045,
+          55.0589
+        ],
+        "mesh_requests_per_frame_no_capture": {
+          "gbufferRequests": 1004.2333333333333,
+          "forwardRequests": 0.0,
+          "shadowRequests": 0.0
+        }
+      }
+    }
+  },
+  "findings": [
+    {
+      "priority": 1,
+      "topic": "Opaque pipeline selection and lighting parity",
+      "evidence": "Default ForwardPlus submits visible opaque meshes to both G-buffer and forward shading. Hybrid omits the second mesh shading submission for supported core opaque materials; observed requests fall from about 2008 to 1004 per frame, excluding fullscreen passes.",
+      "measured_frame_reduction_percent": 53.663785996256095,
+      "confound": "Lighting modes are not visually equivalent: Forward+ hemisphere GI and wrap fill in mesh3d.frag differ from flat ambient in deferred_lighting.frag; other shading/AA differences were not isolated. The measured gain cannot be attributed solely to removing duplicate geometry, nor claimed as a behavior-preserving optimization.",
+      "next": "Define shared core-lighting behavior and image tolerance, then A/B ForwardPlus and Hybrid on hardware GPU with per-pass timing and mesh/triangle/skin counters. Preserve forward fallback for unsupported material features."
+    },
+    {
+      "priority": 2,
+      "topic": "Unused shadow passes",
+      "evidence": "Frame graph builds seven shadow clear attachments plus G-buffer even when no shadow caster submits geometry. Prior profiler has exactly eight pass recordings per parallel frame. Default logical extent is seven 2048x2048 D32 layers.",
+      "experiment": "Changing only unused atlas size to 512 through existing settings preserves captures and state hashes. Timing results include reversals and a large outlier; no stable general-frame gain established.",
+      "next": "Measure empty-pass cost directly before redesigning active-layer scheduling. Any change must preserve initialization, image layouts, in-flight slot fences, cached local layers and shadow-on/off transitions.",
+      "caveat": "Logical attachment extent is not measured memory traffic; hardware can implement fast clears."
+    },
+    {
+      "priority": 3,
+      "topic": "Serial versus parallel recording",
+      "evidence": "Two unprofiled runs per mode show roughly 102-104 ms means with no stable benefit. Serial diagnostic record scope is 1.426 ms; earlier auto scope was about 1.656 ms in a different run.",
+      "next": "Do not prioritize changing the scheduler based on current evidence. Existing adaptive policy compares serial cost with 500 microseconds, not measured parallel speedup; periodic sampling improvements remain a candidate requiring CPU-bound hardware evidence."
+    }
+  ],
+  "image_comparison": {
+    "dimensions": [
+      320,
+      180
+    ],
+    "byte_identical": false,
+    "rgb_mean_absolute_error": [
+      17.974444444444444,
+      17.608315972222222,
+      15.997517361111111
+    ],
+    "changed_pixels": 16119,
+    "total_pixels": 57600
+  },
+  "validation": {
+    "completed_runs": 25,
+    "all_benchmark_state_validation_passed": true,
+    "recording_state_hashes_match": true,
+    "lighting_state_hashes_match": true,
+    "atlas_captures_byte_identical": true,
+    "lighting_captures_byte_identical": false
+  },
+  "limitations": [
+    "All time measurements are software-Vulkan results; they do not predict hardware-GPU performance.",
+    "RenderTrace counts high-level mesh submission requests, not independently measured vkCmdDraw invocations or vertex shader executions. Fullscreen lighting/postprocess draws are excluded.",
+    "First diagnostic runs include three untimed capture frames in trace totals; timed phase metrics still cover only 90 measured frames. Counter summaries use runs without captures.",
+    "Shadow atlas resizing is a diagnostic control, not a proposed quality reduction for enabled shadows.",
+    "No production implementation or rendering defaults were changed."
+  ],
+  "provenance": {
+    "recording_binary_sha256": "3a68759bffbb2c489b946183e72c64804fd5fe88b3df90436ba1357b6be767fd",
+    "atlas_probe_binary_sha256": "259de55ab64d968ff1a8446a7a5b19d473a527ee8eae678e43402f657a75c120",
+    "atlas_probe_source_sha256": "ad49175d40f1560f427869b7537396770855117fc64933407c9c834a696a6fc6",
+    "lighting_probe_binary_sha256": "f18a387c581f1d95996fbbe3c11bf9f08dd8ad4919fad0bb99cb5393867e6aaa",
+    "lighting_probe_source_sha256": "9d40d11316d675d5aabf5551d7b3f710b6dd37854e06b8101f88404f424d66e2"
+  },
+  "raw": {
+    "recording": [
+      {
+        "mode": "auto",
+        "repeat": 0,
+        "profile": false,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 17.5613,
+          "ecsTeardownMs": 0.661751,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 102.337,
+              "p50Ms": 101.233,
+              "p95Ms": 116.726,
+              "p99Ms": 141.602
+            },
+            "edits": {
+              "meanMs": 0.0142518,
+              "p50Ms": 0.012198,
+              "p95Ms": 0.014962,
+              "p99Ms": 0.095371
+            },
+            "animationAndPalette": {
+              "meanMs": 0.328824,
+              "p50Ms": 0.295859,
+              "p95Ms": 0.483978,
+              "p99Ms": 0.84318
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.221664,
+              "p50Ms": 0.184243,
+              "p95Ms": 0.345352,
+              "p99Ms": 0.718225
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0304824,
+              "p50Ms": 0.028803,
+              "p95Ms": 0.032789,
+              "p99Ms": 0.117213
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0764115,
+              "p50Ms": 0.066338,
+              "p95Ms": 0.122261,
+              "p99Ms": 0.320345
+            },
+            "sceneTransforms": {
+              "meanMs": 0.28607,
+              "p50Ms": 0.267667,
+              "p95Ms": 0.372933,
+              "p99Ms": 0.544277
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 4.84565,
+              "p50Ms": 4.68227,
+              "p95Ms": 6.14155,
+              "p99Ms": 7.82651
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 96.7657,
+              "p50Ms": 95.6063,
+              "p95Ms": 110.891,
+              "p99Ms": 136.183
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 95.2996,
+              "p50Ms": 93.8916,
+              "p95Ms": 109.625,
+              "p99Ms": 134.798
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        }
+      },
+      {
+        "mode": "serial",
+        "repeat": 0,
+        "profile": false,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 15.8921,
+          "ecsTeardownMs": 0.61429,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 107.628,
+              "p50Ms": 104.502,
+              "p95Ms": 122.615,
+              "p99Ms": 142.82
+            },
+            "edits": {
+              "meanMs": 0.0132957,
+              "p50Ms": 0.012529,
+              "p95Ms": 0.016855,
+              "p99Ms": 0.032338
+            },
+            "animationAndPalette": {
+              "meanMs": 0.345347,
+              "p50Ms": 0.305402,
+              "p95Ms": 0.507753,
+              "p99Ms": 0.880766
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.234929,
+              "p50Ms": 0.196672,
+              "p95Ms": 0.376759,
+              "p99Ms": 0.781479
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0313784,
+              "p50Ms": 0.028682,
+              "p95Ms": 0.043184,
+              "p99Ms": 0.1011
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0787468,
+              "p50Ms": 0.066489,
+              "p95Ms": 0.134339,
+              "p99Ms": 0.296179
+            },
+            "sceneTransforms": {
+              "meanMs": 0.306028,
+              "p50Ms": 0.275639,
+              "p95Ms": 0.445851,
+              "p99Ms": 0.500852
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 4.74133,
+              "p50Ms": 4.38769,
+              "p95Ms": 6.92434,
+              "p99Ms": 11.7467
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 102.147,
+              "p50Ms": 99.5994,
+              "p95Ms": 117.62,
+              "p99Ms": 130.432
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 101.045,
+              "p50Ms": 98.0176,
+              "p95Ms": 116.41,
+              "p99Ms": 136.582
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        }
+      },
+      {
+        "mode": "parallel",
+        "repeat": 0,
+        "profile": false,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 17.3622,
+          "ecsTeardownMs": 0.765505,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 102.034,
+              "p50Ms": 101.79,
+              "p95Ms": 111.195,
+              "p99Ms": 117.111
+            },
+            "edits": {
+              "meanMs": 0.0129702,
+              "p50Ms": 0.012278,
+              "p95Ms": 0.014481,
+              "p99Ms": 0.036274
+            },
+            "animationAndPalette": {
+              "meanMs": 0.318353,
+              "p50Ms": 0.281077,
+              "p95Ms": 0.48541,
+              "p99Ms": 0.578648
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.213357,
+              "p50Ms": 0.178084,
+              "p95Ms": 0.350649,
+              "p99Ms": 0.463638
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0312598,
+              "p50Ms": 0.028843,
+              "p95Ms": 0.042183,
+              "p99Ms": 0.151895
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0710911,
+              "p50Ms": 0.066388,
+              "p95Ms": 0.098817,
+              "p99Ms": 0.162421
+            },
+            "sceneTransforms": {
+              "meanMs": 0.31264,
+              "p50Ms": 0.28989,
+              "p95Ms": 0.407093,
+              "p99Ms": 1.05836
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 4.85137,
+              "p50Ms": 4.71356,
+              "p95Ms": 6.81476,
+              "p99Ms": 7.47304
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 96.4615,
+              "p50Ms": 96.5013,
+              "p95Ms": 105.33,
+              "p99Ms": 110.339
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 95.0499,
+              "p50Ms": 95.0391,
+              "p95Ms": 102.433,
+              "p99Ms": 108.884
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        }
+      },
+      {
+        "mode": "parallel",
+        "repeat": 1,
+        "profile": false,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 14.7998,
+          "ecsTeardownMs": 0.655732,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 104.562,
+              "p50Ms": 103.033,
+              "p95Ms": 116.205,
+              "p99Ms": 124.627
+            },
+            "edits": {
+              "meanMs": 0.0141762,
+              "p50Ms": 0.012669,
+              "p95Ms": 0.023385,
+              "p99Ms": 0.056965
+            },
+            "animationAndPalette": {
+              "meanMs": 0.334634,
+              "p50Ms": 0.292213,
+              "p95Ms": 0.477919,
+              "p99Ms": 1.00666
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.230865,
+              "p50Ms": 0.192946,
+              "p95Ms": 0.381706,
+              "p99Ms": 0.765866
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0302237,
+              "p50Ms": 0.028703,
+              "p95Ms": 0.041832,
+              "p99Ms": 0.073569
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0732425,
+              "p50Ms": 0.066379,
+              "p95Ms": 0.109051,
+              "p99Ms": 0.209961
+            },
+            "sceneTransforms": {
+              "meanMs": 0.298146,
+              "p50Ms": 0.274617,
+              "p95Ms": 0.373083,
+              "p99Ms": 0.471338
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 4.93627,
+              "p50Ms": 4.64821,
+              "p95Ms": 7.19797,
+              "p99Ms": 10.1015
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 98.89,
+              "p50Ms": 97.5676,
+              "p95Ms": 109.495,
+              "p99Ms": 119.251
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 97.6721,
+              "p50Ms": 96.2975,
+              "p95Ms": 109.468,
+              "p99Ms": 117.496
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        }
+      },
+      {
+        "mode": "serial",
+        "repeat": 1,
+        "profile": false,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 14.2958,
+          "ecsTeardownMs": 0.811924,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 99.963,
+              "p50Ms": 99.2358,
+              "p95Ms": 108.553,
+              "p99Ms": 114.199
+            },
+            "edits": {
+              "meanMs": 0.0128391,
+              "p50Ms": 0.012308,
+              "p95Ms": 0.014361,
+              "p99Ms": 0.032588
+            },
+            "animationAndPalette": {
+              "meanMs": 0.319466,
+              "p50Ms": 0.280706,
+              "p95Ms": 0.474273,
+              "p99Ms": 0.579559
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.214893,
+              "p50Ms": 0.18259,
+              "p95Ms": 0.341216,
+              "p99Ms": 0.434004
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0337935,
+              "p50Ms": 0.028682,
+              "p95Ms": 0.063835,
+              "p99Ms": 0.223021
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0705163,
+              "p50Ms": 0.066338,
+              "p95Ms": 0.113418,
+              "p99Ms": 0.118756
+            },
+            "sceneTransforms": {
+              "meanMs": 0.281153,
+              "p50Ms": 0.252715,
+              "p95Ms": 0.372373,
+              "p99Ms": 0.577947
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 4.43499,
+              "p50Ms": 4.03936,
+              "p95Ms": 7.0582,
+              "p99Ms": 8.98743
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 94.8701,
+              "p50Ms": 94.0966,
+              "p95Ms": 103.956,
+              "p99Ms": 109.909
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 93.9276,
+              "p50Ms": 92.8381,
+              "p95Ms": 102.612,
+              "p99Ms": 107.828
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        }
+      },
+      {
+        "mode": "auto",
+        "repeat": 1,
+        "profile": false,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 15.7461,
+          "ecsTeardownMs": 0.612718,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 101.48,
+              "p50Ms": 100.946,
+              "p95Ms": 109.412,
+              "p99Ms": 123.11
+            },
+            "edits": {
+              "meanMs": 0.0165456,
+              "p50Ms": 0.012499,
+              "p95Ms": 0.024536,
+              "p99Ms": 0.274887
+            },
+            "animationAndPalette": {
+              "meanMs": 0.346707,
+              "p50Ms": 0.2967,
+              "p95Ms": 0.601852,
+              "p99Ms": 0.896469
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.235776,
+              "p50Ms": 0.186567,
+              "p95Ms": 0.480612,
+              "p99Ms": 0.795289
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.032146,
+              "p50Ms": 0.028692,
+              "p95Ms": 0.05411,
+              "p99Ms": 0.131384
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0784817,
+              "p50Ms": 0.066849,
+              "p95Ms": 0.122121,
+              "p99Ms": 0.392462
+            },
+            "sceneTransforms": {
+              "meanMs": 0.290245,
+              "p50Ms": 0.271713,
+              "p95Ms": 0.401756,
+              "p99Ms": 0.516496
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 5.14976,
+              "p50Ms": 4.97273,
+              "p95Ms": 6.86915,
+              "p99Ms": 7.67295
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 95.6124,
+              "p50Ms": 95.0759,
+              "p95Ms": 104.189,
+              "p99Ms": 116.311
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 94.4851,
+              "p50Ms": 93.6553,
+              "p95Ms": 102.864,
+              "p99Ms": 114.053
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        }
+      },
+      {
+        "mode": "serial",
+        "repeat": 2,
+        "profile": true,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 16.4052,
+          "ecsTeardownMs": 0.757232,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 103.951,
+              "p50Ms": 101.698,
+              "p95Ms": 121.608,
+              "p99Ms": 128.716
+            },
+            "edits": {
+              "meanMs": 0.014095,
+              "p50Ms": 0.011507,
+              "p95Ms": 0.012689,
+              "p99Ms": 0.217923
+            },
+            "animationAndPalette": {
+              "meanMs": 0.327527,
+              "p50Ms": 0.297801,
+              "p95Ms": 0.466542,
+              "p99Ms": 0.706076
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.221503,
+              "p50Ms": 0.191984,
+              "p95Ms": 0.35715,
+              "p99Ms": 0.606869
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0333315,
+              "p50Ms": 0.028522,
+              "p95Ms": 0.054341,
+              "p99Ms": 0.208749
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0701385,
+              "p50Ms": 0.066519,
+              "p95Ms": 0.096392,
+              "p99Ms": 0.172245
+            },
+            "sceneTransforms": {
+              "meanMs": 0.289112,
+              "p50Ms": 0.268588,
+              "p95Ms": 0.376768,
+              "p99Ms": 0.51918
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 4.66609,
+              "p50Ms": 4.345,
+              "p95Ms": 6.41286,
+              "p99Ms": 9.5379
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 98.5921,
+              "p50Ms": 95.5199,
+              "p95Ms": 115.695,
+              "p99Ms": 123.942
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 97.0837,
+              "p50Ms": 94.8861,
+              "p95Ms": 113.364,
+              "p99Ms": 121.578
+            }
+          },
+          "profilerAggregationMeanMs": 0.0611911,
+          "cpuZones": [
+            {
+              "name": "Benchmark::sampleAndPublish",
+              "module": "animation",
+              "thread": "main",
+              "selfMeanMs": 0.325755,
+              "totalMeanMs": 0.325755,
+              "calls": 90
+            },
+            {
+              "name": "DeferredGraph.Compile",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.250781,
+              "totalMeanMs": 0.250781,
+              "calls": 90
+            },
+            {
+              "name": "DeferredGraph.RecordAndJoin",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.000288189,
+              "totalMeanMs": 1.42643,
+              "calls": 90
+            },
+            {
+              "name": "DeferredGraph.SerialRecord",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 1.42614,
+              "totalMeanMs": 1.42614,
+              "calls": 90
+            },
+            {
+              "name": "DeferredGraph.Submit",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.00103572,
+              "totalMeanMs": 0.0288572,
+              "calls": 90
+            },
+            {
+              "name": "Frame.Acquire",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.658997,
+              "totalMeanMs": 0.658997,
+              "calls": 90
+            },
+            {
+              "name": "Frame.SubmitPresent",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 98.5076,
+              "totalMeanMs": 98.5076,
+              "calls": 90
+            },
+            {
+              "name": "GpuTiming.Readback",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.0509357,
+              "totalMeanMs": 0.0509357,
+              "calls": 90
+            },
+            {
+              "name": "GpuTiming.SubmitPrefix",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.0278215,
+              "totalMeanMs": 0.0278215,
+              "calls": 90
+            },
+            {
+              "name": "Offscreen.FrameLocalRecord",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.0129906,
+              "totalMeanMs": 0.0129906,
+              "calls": 180
+            },
+            {
+              "name": "Offscreen.Record",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.000861289,
+              "totalMeanMs": 0.0138519,
+              "calls": 180
+            },
+            {
+              "name": "PostProcess.Antialiasing",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.00473208,
+              "totalMeanMs": 0.013323,
+              "calls": 90
+            },
+            {
+              "name": "PostProcess.Bloom",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.000367867,
+              "totalMeanMs": 0.000367867,
+              "calls": 90
+            },
+            {
+              "name": "PostProcess.Exposure",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.0168555,
+              "totalMeanMs": 0.0221165,
+              "calls": 90
+            },
+            {
+              "name": "PostProcess.Prepare",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.00568989,
+              "totalMeanMs": 0.0414972,
+              "calls": 90
+            },
+            {
+              "name": "Present.DrawTextured",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.00321187,
+              "totalMeanMs": 0.00321187,
+              "calls": 180
+            },
+            {
+              "name": "Present.Flush",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.0218656,
+              "totalMeanMs": 98.5761,
+              "calls": 90
+            },
+            {
+              "name": "Present.SceneResolve",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.00190512,
+              "totalMeanMs": 0.0434023,
+              "calls": 90
+            },
+            {
+              "name": "Render2D",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 0.0146001,
+              "totalMeanMs": 98.5907,
+              "calls": 90
+            },
+            {
+              "name": "Render3D",
+              "module": "graphics",
+              "thread": "main",
+              "selfMeanMs": 2.24888,
+              "totalMeanMs": 4.66488,
+              "calls": 90
+            }
+          ]
+        }
+      }
+    ],
+    "atlas": [
+      {
+        "scene": "static",
+        "props": 256,
+        "actors": 0,
+        "atlas": 2048,
+        "repeat": 0,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-static",
+          "props": 256,
+          "nodes": 273,
+          "characters": 0,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 1.65763,
+          "ecsTeardownMs": 0.160648,
+          "stateChecksum": "13186067741053510437",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 27.235,
+              "p50Ms": 25.3585,
+              "p95Ms": 37.1739,
+              "p99Ms": 45.624
+            },
+            "edits": {
+              "meanMs": 0.00620974,
+              "p50Ms": 0.006019,
+              "p95Ms": 0.00679,
+              "p99Ms": 0.022433
+            },
+            "animationAndPalette": {
+              "meanMs": 0.000355011,
+              "p50Ms": 0.000341,
+              "p95Ms": 0.000451,
+              "p99Ms": 0.000601
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 2.69222e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 3.1e-05,
+              "p99Ms": 4e-05
+            },
+            "boneWorldTransforms": {
+              "meanMs": 2.65556e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 3e-05,
+              "p99Ms": 4e-05
+            },
+            "skinPalettePublication": {
+              "meanMs": 2.93e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 4e-05,
+              "p99Ms": 9e-05
+            },
+            "sceneTransforms": {
+              "meanMs": 0.0646472,
+              "p50Ms": 0.056524,
+              "p95Ms": 0.087219,
+              "p99Ms": 0.268076
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 2.26268,
+              "p50Ms": 2.13149,
+              "p95Ms": 3.56078,
+              "p99Ms": 4.27678
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 24.7963,
+              "p50Ms": 22.9919,
+              "p95Ms": 34.1568,
+              "p99Ms": 43.6298
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 24.9834,
+              "p50Ms": 23.1288,
+              "p95Ms": 33.5516,
+              "p99Ms": 43.4919
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 93,
+          "shadowRequests": 0,
+          "gbufferRequests": 23494,
+          "forwardRequests": 23494,
+          "shadowPasses": 0,
+          "gbufferPasses": 93
+        }
+      },
+      {
+        "scene": "static",
+        "props": 256,
+        "actors": 0,
+        "atlas": 512,
+        "repeat": 0,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-static",
+          "props": 256,
+          "nodes": 273,
+          "characters": 0,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 1.31972,
+          "ecsTeardownMs": 0.189861,
+          "stateChecksum": "13186067741053510437",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 24.7984,
+              "p50Ms": 24.3013,
+              "p95Ms": 27.6841,
+              "p99Ms": 36.4368
+            },
+            "edits": {
+              "meanMs": 0.00696712,
+              "p50Ms": 0.005498,
+              "p95Ms": 0.00639,
+              "p99Ms": 0.102933
+            },
+            "animationAndPalette": {
+              "meanMs": 0.000338511,
+              "p50Ms": 0.00032,
+              "p95Ms": 0.00047,
+              "p99Ms": 0.000921
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 2.51778e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 3e-05,
+              "p99Ms": 3.1e-05
+            },
+            "boneWorldTransforms": {
+              "meanMs": 2.66e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 3e-05,
+              "p99Ms": 4.1e-05
+            },
+            "skinPalettePublication": {
+              "meanMs": 2.66778e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 3e-05,
+              "p99Ms": 6e-05
+            },
+            "sceneTransforms": {
+              "meanMs": 0.0654,
+              "p50Ms": 0.055292,
+              "p95Ms": 0.132196,
+              "p99Ms": 0.149382
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 2.16184,
+              "p50Ms": 2.08155,
+              "p95Ms": 2.82412,
+              "p99Ms": 4.56264
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 22.4816,
+              "p50Ms": 21.9154,
+              "p95Ms": 25.5298,
+              "p99Ms": 34.2832
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 22.3524,
+              "p50Ms": 21.8687,
+              "p95Ms": 25.4205,
+              "p99Ms": 27.8839
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 93,
+          "shadowRequests": 0,
+          "gbufferRequests": 23494,
+          "forwardRequests": 23494,
+          "shadowPasses": 0,
+          "gbufferPasses": 93
+        }
+      },
+      {
+        "scene": "mixed",
+        "props": 1000,
+        "actors": 32,
+        "atlas": 2048,
+        "repeat": 0,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 14.2553,
+          "ecsTeardownMs": 0.68108,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 107.416,
+              "p50Ms": 105.874,
+              "p95Ms": 119.979,
+              "p99Ms": 131.808
+            },
+            "edits": {
+              "meanMs": 0.0132768,
+              "p50Ms": 0.011077,
+              "p95Ms": 0.027651,
+              "p99Ms": 0.069483
+            },
+            "animationAndPalette": {
+              "meanMs": 0.326129,
+              "p50Ms": 0.304031,
+              "p95Ms": 0.463807,
+              "p99Ms": 0.511999
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.218318,
+              "p50Ms": 0.191855,
+              "p95Ms": 0.341346,
+              "p99Ms": 0.372362
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0329915,
+              "p50Ms": 0.028653,
+              "p95Ms": 0.056253,
+              "p99Ms": 0.185665
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0745541,
+              "p50Ms": 0.06754,
+              "p95Ms": 0.128691,
+              "p99Ms": 0.176662
+            },
+            "sceneTransforms": {
+              "meanMs": 0.295674,
+              "p50Ms": 0.26968,
+              "p95Ms": 0.401485,
+              "p99Ms": 0.624396
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 5.1502,
+              "p50Ms": 4.93705,
+              "p95Ms": 6.79015,
+              "p99Ms": 14.0456
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 101.534,
+              "p50Ms": 100.393,
+              "p95Ms": 113.886,
+              "p99Ms": 124.256
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 100.665,
+              "p50Ms": 99.6434,
+              "p95Ms": 112.964,
+              "p99Ms": 123.694
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 93,
+          "shadowRequests": 0,
+          "gbufferRequests": 93390,
+          "forwardRequests": 93390,
+          "shadowPasses": 0,
+          "gbufferPasses": 93
+        }
+      },
+      {
+        "scene": "mixed",
+        "props": 1000,
+        "actors": 32,
+        "atlas": 512,
+        "repeat": 0,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 15.2284,
+          "ecsTeardownMs": 0.658616,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 101.134,
+              "p50Ms": 100.361,
+              "p95Ms": 113.905,
+              "p99Ms": 118.323
+            },
+            "edits": {
+              "meanMs": 0.012421,
+              "p50Ms": 0.012008,
+              "p95Ms": 0.014231,
+              "p99Ms": 0.034792
+            },
+            "animationAndPalette": {
+              "meanMs": 0.324185,
+              "p50Ms": 0.284802,
+              "p95Ms": 0.482715,
+              "p99Ms": 0.5604
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.217984,
+              "p50Ms": 0.181439,
+              "p95Ms": 0.369047,
+              "p99Ms": 0.393894
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0323628,
+              "p50Ms": 0.028663,
+              "p95Ms": 0.055893,
+              "p99Ms": 0.097264
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0735534,
+              "p50Ms": 0.066899,
+              "p95Ms": 0.118275,
+              "p99Ms": 0.135671
+            },
+            "sceneTransforms": {
+              "meanMs": 0.275887,
+              "p50Ms": 0.25625,
+              "p95Ms": 0.359313,
+              "p99Ms": 0.60393
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 5.01151,
+              "p50Ms": 4.83398,
+              "p95Ms": 6.15492,
+              "p99Ms": 10.8745
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 95.4318,
+              "p50Ms": 94.8652,
+              "p95Ms": 107.987,
+              "p99Ms": 113.627
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 94.5103,
+              "p50Ms": 93.8785,
+              "p95Ms": 106.744,
+              "p99Ms": 114.036
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 93,
+          "shadowRequests": 0,
+          "gbufferRequests": 93390,
+          "forwardRequests": 93390,
+          "shadowPasses": 0,
+          "gbufferPasses": 93
+        }
+      },
+      {
+        "scene": "static",
+        "props": 256,
+        "actors": 0,
+        "atlas": 512,
+        "repeat": 1,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-static",
+          "props": 256,
+          "nodes": 273,
+          "characters": 0,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 1.27177,
+          "ecsTeardownMs": 0.236441,
+          "stateChecksum": "13186067741053510437",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 28.8554,
+              "p50Ms": 27.6696,
+              "p95Ms": 38.2199,
+              "p99Ms": 40.5715
+            },
+            "edits": {
+              "meanMs": 0.0134582,
+              "p50Ms": 0.005769,
+              "p95Ms": 0.0064,
+              "p99Ms": 0.64772
+            },
+            "animationAndPalette": {
+              "meanMs": 0.000357311,
+              "p50Ms": 0.00033,
+              "p95Ms": 0.00051,
+              "p99Ms": 0.000611
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 2.76333e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 3.1e-05,
+              "p99Ms": 8.1e-05
+            },
+            "boneWorldTransforms": {
+              "meanMs": 2.63556e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 3.1e-05,
+              "p99Ms": 4e-05
+            },
+            "skinPalettePublication": {
+              "meanMs": 3.19222e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 4e-05,
+              "p99Ms": 0.00021
+            },
+            "sceneTransforms": {
+              "meanMs": 0.0678703,
+              "p50Ms": 0.054631,
+              "p95Ms": 0.120679,
+              "p99Ms": 0.266215
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 2.32756,
+              "p50Ms": 2.20232,
+              "p95Ms": 3.36551,
+              "p99Ms": 4.81076
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 26.328,
+              "p50Ms": 25.0382,
+              "p95Ms": 35.8474,
+              "p99Ms": 38.2606
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 26.0596,
+              "p50Ms": 24.8638,
+              "p95Ms": 35.5033,
+              "p99Ms": 38.0663
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 90,
+          "shadowRequests": 0,
+          "gbufferRequests": 22738,
+          "forwardRequests": 22738,
+          "shadowPasses": 0,
+          "gbufferPasses": 90
+        }
+      },
+      {
+        "scene": "static",
+        "props": 256,
+        "actors": 0,
+        "atlas": 2048,
+        "repeat": 1,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-static",
+          "props": 256,
+          "nodes": 273,
+          "characters": 0,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 1.73615,
+          "ecsTeardownMs": 0.180948,
+          "stateChecksum": "13186067741053510437",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 27.6186,
+              "p50Ms": 27.1603,
+              "p95Ms": 33.0083,
+              "p99Ms": 41.5233
+            },
+            "edits": {
+              "meanMs": 0.00796253,
+              "p50Ms": 0.005688,
+              "p95Ms": 0.01982,
+              "p99Ms": 0.082302
+            },
+            "animationAndPalette": {
+              "meanMs": 0.000694889,
+              "p50Ms": 0.00037,
+              "p95Ms": 0.000621,
+              "p99Ms": 0.014101
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.0002124,
+              "p50Ms": 3e-05,
+              "p95Ms": 0.000151,
+              "p99Ms": 0.01372
+            },
+            "boneWorldTransforms": {
+              "meanMs": 2.68e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 3e-05,
+              "p99Ms": 4e-05
+            },
+            "skinPalettePublication": {
+              "meanMs": 2.68111e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 3.1e-05,
+              "p99Ms": 4e-05
+            },
+            "sceneTransforms": {
+              "meanMs": 0.0628575,
+              "p50Ms": 0.052307,
+              "p95Ms": 0.109572,
+              "p99Ms": 0.244743
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 2.33339,
+              "p50Ms": 2.17119,
+              "p95Ms": 3.45155,
+              "p99Ms": 4.24861
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 25.1033,
+              "p50Ms": 24.7294,
+              "p95Ms": 29.1421,
+              "p99Ms": 37.9206
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 25.171,
+              "p50Ms": 24.5593,
+              "p95Ms": 30.713,
+              "p99Ms": 38.3308
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 90,
+          "shadowRequests": 0,
+          "gbufferRequests": 22738,
+          "forwardRequests": 22738,
+          "shadowPasses": 0,
+          "gbufferPasses": 90
+        }
+      },
+      {
+        "scene": "mixed",
+        "props": 1000,
+        "actors": 32,
+        "atlas": 512,
+        "repeat": 1,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 17.4535,
+          "ecsTeardownMs": 1.029,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 124.07,
+              "p50Ms": 122.284,
+              "p95Ms": 145.44,
+              "p99Ms": 190.127
+            },
+            "edits": {
+              "meanMs": 0.0142152,
+              "p50Ms": 0.011928,
+              "p95Ms": 0.024456,
+              "p99Ms": 0.109852
+            },
+            "animationAndPalette": {
+              "meanMs": 0.388608,
+              "p50Ms": 0.313936,
+              "p95Ms": 0.503046,
+              "p99Ms": 2.84577
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.279614,
+              "p50Ms": 0.204964,
+              "p95Ms": 0.389928,
+              "p99Ms": 2.74911
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0381753,
+              "p50Ms": 0.028843,
+              "p95Ms": 0.093289,
+              "p99Ms": 0.423718
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0704624,
+              "p50Ms": 0.065346,
+              "p95Ms": 0.096873,
+              "p99Ms": 0.12158
+            },
+            "sceneTransforms": {
+              "meanMs": 0.289573,
+              "p50Ms": 0.268097,
+              "p95Ms": 0.385672,
+              "p99Ms": 0.532489
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 5.25054,
+              "p50Ms": 4.95928,
+              "p95Ms": 7.14454,
+              "p99Ms": 12.018
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 118.047,
+              "p50Ms": 116.184,
+              "p95Ms": 140.442,
+              "p99Ms": 185.125
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 116.423,
+              "p50Ms": 114.351,
+              "p95Ms": 138.817,
+              "p99Ms": 180.468
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 90,
+          "shadowRequests": 0,
+          "gbufferRequests": 90381,
+          "forwardRequests": 90381,
+          "shadowPasses": 0,
+          "gbufferPasses": 90
+        }
+      },
+      {
+        "scene": "mixed",
+        "props": 1000,
+        "actors": 32,
+        "atlas": 2048,
+        "repeat": 1,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 14.548,
+          "ecsTeardownMs": 0.749041,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 104.459,
+              "p50Ms": 102.598,
+              "p95Ms": 121.04,
+              "p99Ms": 129.383
+            },
+            "edits": {
+              "meanMs": 0.0135687,
+              "p50Ms": 0.011417,
+              "p95Ms": 0.015202,
+              "p99Ms": 0.129852
+            },
+            "animationAndPalette": {
+              "meanMs": 0.321305,
+              "p50Ms": 0.29688,
+              "p95Ms": 0.453252,
+              "p99Ms": 0.533231
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.218853,
+              "p50Ms": 0.192245,
+              "p95Ms": 0.355747,
+              "p99Ms": 0.436027
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0312186,
+              "p50Ms": 0.028873,
+              "p95Ms": 0.052618,
+              "p99Ms": 0.072237
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0709249,
+              "p50Ms": 0.06704,
+              "p95Ms": 0.097074,
+              "p99Ms": 0.122923
+            },
+            "sceneTransforms": {
+              "meanMs": 0.294842,
+              "p50Ms": 0.25696,
+              "p95Ms": 0.547632,
+              "p99Ms": 0.689372
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 5.01831,
+              "p50Ms": 4.97928,
+              "p95Ms": 6.23928,
+              "p99Ms": 10.5399
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 98.7281,
+              "p50Ms": 96.6806,
+              "p95Ms": 115.734,
+              "p99Ms": 124.646
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 97.2166,
+              "p50Ms": 95.2124,
+              "p95Ms": 114.116,
+              "p99Ms": 122.777
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 90,
+          "shadowRequests": 0,
+          "gbufferRequests": 90381,
+          "forwardRequests": 90381,
+          "shadowPasses": 0,
+          "gbufferPasses": 90
+        }
+      },
+      {
+        "scene": "static",
+        "props": 256,
+        "actors": 0,
+        "atlas": 2048,
+        "repeat": 2,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-static",
+          "props": 256,
+          "nodes": 273,
+          "characters": 0,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 1.20763,
+          "ecsTeardownMs": 0.180988,
+          "stateChecksum": "13186067741053510437",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 25.153,
+              "p50Ms": 24.1296,
+              "p95Ms": 31.6784,
+              "p99Ms": 34.5783
+            },
+            "edits": {
+              "meanMs": 0.00665346,
+              "p50Ms": 0.005649,
+              "p95Ms": 0.00661,
+              "p99Ms": 0.0743
+            },
+            "animationAndPalette": {
+              "meanMs": 0.0003689,
+              "p50Ms": 0.000321,
+              "p95Ms": 0.000531,
+              "p99Ms": 0.000701
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 4.03111e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 0.00014,
+              "p99Ms": 0.00017
+            },
+            "boneWorldTransforms": {
+              "meanMs": 4.10667e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 0.000101,
+              "p99Ms": 0.000261
+            },
+            "skinPalettePublication": {
+              "meanMs": 3.09444e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 5e-05,
+              "p99Ms": 0.00013
+            },
+            "sceneTransforms": {
+              "meanMs": 0.0611797,
+              "p50Ms": 0.055753,
+              "p95Ms": 0.075422,
+              "p99Ms": 0.145086
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 2.27597,
+              "p50Ms": 2.13796,
+              "p95Ms": 3.10127,
+              "p99Ms": 3.48178
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 22.759,
+              "p50Ms": 21.8528,
+              "p95Ms": 29.1364,
+              "p99Ms": 31.4967
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 22.88,
+              "p50Ms": 21.9557,
+              "p95Ms": 29.2516,
+              "p99Ms": 32.2802
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 90,
+          "shadowRequests": 0,
+          "gbufferRequests": 22738,
+          "forwardRequests": 22738,
+          "shadowPasses": 0,
+          "gbufferPasses": 90
+        }
+      },
+      {
+        "scene": "static",
+        "props": 256,
+        "actors": 0,
+        "atlas": 512,
+        "repeat": 2,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-static",
+          "props": 256,
+          "nodes": 273,
+          "characters": 0,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 1.25815,
+          "ecsTeardownMs": 0.188669,
+          "stateChecksum": "13186067741053510437",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 25.0416,
+              "p50Ms": 24.6255,
+              "p95Ms": 28.4951,
+              "p99Ms": 31.2382
+            },
+            "edits": {
+              "meanMs": 0.00636552,
+              "p50Ms": 0.005688,
+              "p95Ms": 0.00676,
+              "p99Ms": 0.052968
+            },
+            "animationAndPalette": {
+              "meanMs": 0.000495522,
+              "p50Ms": 0.000331,
+              "p95Ms": 0.000521,
+              "p99Ms": 0.011767
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 2.67e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 4e-05,
+              "p99Ms": 4.1e-05
+            },
+            "boneWorldTransforms": {
+              "meanMs": 2.70333e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 4e-05,
+              "p99Ms": 5e-05
+            },
+            "skinPalettePublication": {
+              "meanMs": 3.18111e-05,
+              "p50Ms": 3e-05,
+              "p95Ms": 4e-05,
+              "p99Ms": 0.00019
+            },
+            "sceneTransforms": {
+              "meanMs": 0.0630963,
+              "p50Ms": 0.05375,
+              "p95Ms": 0.092377,
+              "p99Ms": 0.260356
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 2.1166,
+              "p50Ms": 2.07472,
+              "p95Ms": 2.53722,
+              "p99Ms": 3.75647
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 22.7605,
+              "p50Ms": 22.349,
+              "p95Ms": 26.2112,
+              "p99Ms": 28.7652
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 22.6991,
+              "p50Ms": 22.3173,
+              "p95Ms": 26.0864,
+              "p99Ms": 28.4508
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 90,
+          "shadowRequests": 0,
+          "gbufferRequests": 22738,
+          "forwardRequests": 22738,
+          "shadowPasses": 0,
+          "gbufferPasses": 90
+        }
+      },
+      {
+        "scene": "mixed",
+        "props": 1000,
+        "actors": 32,
+        "atlas": 2048,
+        "repeat": 2,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 15.0667,
+          "ecsTeardownMs": 0.665216,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 106.976,
+              "p50Ms": 104.831,
+              "p95Ms": 123.789,
+              "p99Ms": 135.709
+            },
+            "edits": {
+              "meanMs": 0.0135519,
+              "p50Ms": 0.011857,
+              "p95Ms": 0.014101,
+              "p99Ms": 0.111586
+            },
+            "animationAndPalette": {
+              "meanMs": 0.34633,
+              "p50Ms": 0.307125,
+              "p95Ms": 0.542254,
+              "p99Ms": 0.753658
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.238119,
+              "p50Ms": 0.200828,
+              "p95Ms": 0.410719,
+              "p99Ms": 0.656262
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.033235,
+              "p50Ms": 0.028662,
+              "p95Ms": 0.065097,
+              "p99Ms": 0.103824
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0746753,
+              "p50Ms": 0.066128,
+              "p95Ms": 0.120629,
+              "p99Ms": 0.260036
+            },
+            "sceneTransforms": {
+              "meanMs": 0.307047,
+              "p50Ms": 0.279074,
+              "p95Ms": 0.44522,
+              "p99Ms": 0.707199
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 5.39668,
+              "p50Ms": 5.31818,
+              "p95Ms": 7.14732,
+              "p99Ms": 10.8926
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 100.844,
+              "p50Ms": 98.365,
+              "p95Ms": 118.081,
+              "p99Ms": 128.063
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 99.291,
+              "p50Ms": 96.9437,
+              "p95Ms": 116.845,
+              "p99Ms": 128.113
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 90,
+          "shadowRequests": 0,
+          "gbufferRequests": 90381,
+          "forwardRequests": 90381,
+          "shadowPasses": 0,
+          "gbufferPasses": 90
+        }
+      },
+      {
+        "scene": "mixed",
+        "props": 1000,
+        "actors": 32,
+        "atlas": 512,
+        "repeat": 2,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 14.8006,
+          "ecsTeardownMs": 0.621662,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 100.215,
+              "p50Ms": 98.5267,
+              "p95Ms": 112.564,
+              "p99Ms": 130.228
+            },
+            "edits": {
+              "meanMs": 0.013219,
+              "p50Ms": 0.011888,
+              "p95Ms": 0.015443,
+              "p99Ms": 0.058567
+            },
+            "animationAndPalette": {
+              "meanMs": 0.321654,
+              "p50Ms": 0.289119,
+              "p95Ms": 0.476116,
+              "p99Ms": 0.547421
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.217647,
+              "p50Ms": 0.184103,
+              "p95Ms": 0.347095,
+              "p99Ms": 0.419001
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0308295,
+              "p50Ms": 0.028723,
+              "p95Ms": 0.036214,
+              "p99Ms": 0.126297
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0729157,
+              "p50Ms": 0.06735,
+              "p95Ms": 0.1007,
+              "p99Ms": 0.303731
+            },
+            "sceneTransforms": {
+              "meanMs": 0.275254,
+              "p50Ms": 0.253065,
+              "p95Ms": 0.335818,
+              "p99Ms": 0.635622
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 5.12364,
+              "p50Ms": 4.86289,
+              "p95Ms": 7.09478,
+              "p99Ms": 12.761
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 94.4219,
+              "p50Ms": 92.673,
+              "p95Ms": 105.643,
+              "p99Ms": 123.839
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 93.3445,
+              "p50Ms": 91.4001,
+              "p95Ms": 104.179,
+              "p99Ms": 122.964
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 90,
+          "shadowRequests": 0,
+          "gbufferRequests": 90381,
+          "forwardRequests": 90381,
+          "shadowPasses": 0,
+          "gbufferPasses": 90
+        }
+      }
+    ],
+    "lighting": [
+      {
+        "mode": "forward",
+        "repeat": 0,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 14.1213,
+          "ecsTeardownMs": 0.774508,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 103.101,
+              "p50Ms": 101.503,
+              "p95Ms": 115.621,
+              "p99Ms": 126.619
+            },
+            "edits": {
+              "meanMs": 0.0117264,
+              "p50Ms": 0.011617,
+              "p95Ms": 0.012749,
+              "p99Ms": 0.015113
+            },
+            "animationAndPalette": {
+              "meanMs": 0.332304,
+              "p50Ms": 0.288738,
+              "p95Ms": 0.498539,
+              "p99Ms": 0.948446
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.22316,
+              "p50Ms": 0.179606,
+              "p95Ms": 0.402317,
+              "p99Ms": 0.522635
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0328318,
+              "p50Ms": 0.028643,
+              "p95Ms": 0.051066,
+              "p99Ms": 0.253065
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0760305,
+              "p50Ms": 0.066679,
+              "p95Ms": 0.144073,
+              "p99Ms": 0.267587
+            },
+            "sceneTransforms": {
+              "meanMs": 0.28212,
+              "p50Ms": 0.255339,
+              "p95Ms": 0.39122,
+              "p99Ms": 0.549856
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 5.04572,
+              "p50Ms": 4.87903,
+              "p95Ms": 7.06464,
+              "p99Ms": 10.4325
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 97.3539,
+              "p50Ms": 95.594,
+              "p95Ms": 109.005,
+              "p99Ms": 119.343
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 95.9765,
+              "p50Ms": 94.8451,
+              "p95Ms": 109.232,
+              "p99Ms": 117.943
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 93,
+          "hybrid": false,
+          "shadowRequests": 0,
+          "gbufferRequests": 93390,
+          "forwardRequests": 93390,
+          "shadowPasses": 0,
+          "gbufferPasses": 93
+        }
+      },
+      {
+        "mode": "hybrid",
+        "repeat": 0,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 14.5974,
+          "ecsTeardownMs": 0.734309,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 46.2559,
+              "p50Ms": 46.1348,
+              "p95Ms": 49.4584,
+              "p99Ms": 50.212
+            },
+            "edits": {
+              "meanMs": 0.012635,
+              "p50Ms": 0.011447,
+              "p95Ms": 0.01382,
+              "p99Ms": 0.059768
+            },
+            "animationAndPalette": {
+              "meanMs": 0.311265,
+              "p50Ms": 0.286074,
+              "p95Ms": 0.435595,
+              "p99Ms": 0.507473
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.209299,
+              "p50Ms": 0.18241,
+              "p95Ms": 0.334416,
+              "p99Ms": 0.395296
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0298242,
+              "p50Ms": 0.028683,
+              "p95Ms": 0.030005,
+              "p99Ms": 0.074791
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0718669,
+              "p50Ms": 0.066208,
+              "p95Ms": 0.104215,
+              "p99Ms": 0.191754
+            },
+            "sceneTransforms": {
+              "meanMs": 0.265811,
+              "p50Ms": 0.252815,
+              "p95Ms": 0.321146,
+              "p99Ms": 0.350339
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 3.85091,
+              "p50Ms": 3.81935,
+              "p95Ms": 4.6215,
+              "p99Ms": 5.06941
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 41.6865,
+              "p50Ms": 41.4492,
+              "p95Ms": 44.6912,
+              "p99Ms": 45.8271
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 41.7168,
+              "p50Ms": 41.4344,
+              "p95Ms": 44.43,
+              "p99Ms": 45.8296
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 93,
+          "hybrid": true,
+          "shadowRequests": 0,
+          "gbufferRequests": 93390,
+          "forwardRequests": 0,
+          "shadowPasses": 0,
+          "gbufferPasses": 93
+        }
+      },
+      {
+        "mode": "hybrid",
+        "repeat": 1,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 13.9499,
+          "ecsTeardownMs": 0.658516,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 49.179,
+              "p50Ms": 46.8174,
+              "p95Ms": 60.0045,
+              "p99Ms": 91.4005
+            },
+            "edits": {
+              "meanMs": 0.0162452,
+              "p50Ms": 0.011226,
+              "p95Ms": 0.032138,
+              "p99Ms": 0.065036
+            },
+            "animationAndPalette": {
+              "meanMs": 0.332815,
+              "p50Ms": 0.317021,
+              "p95Ms": 0.438821,
+              "p99Ms": 0.570606
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.221857,
+              "p50Ms": 0.196912,
+              "p95Ms": 0.330701,
+              "p99Ms": 0.473783
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0331395,
+              "p50Ms": 0.028643,
+              "p95Ms": 0.06039,
+              "p99Ms": 0.167158
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0775726,
+              "p50Ms": 0.06716,
+              "p95Ms": 0.123583,
+              "p99Ms": 0.261688
+            },
+            "sceneTransforms": {
+              "meanMs": 0.273939,
+              "p50Ms": 0.248698,
+              "p95Ms": 0.366493,
+              "p99Ms": 0.654651
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 3.94671,
+              "p50Ms": 3.89501,
+              "p95Ms": 4.99596,
+              "p99Ms": 5.56901
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 44.4875,
+              "p50Ms": 42.2527,
+              "p95Ms": 54.9875,
+              "p99Ms": 86.4587
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 44.4899,
+              "p50Ms": 42.3408,
+              "p95Ms": 54.9981,
+              "p99Ms": 86.4821
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 90,
+          "hybrid": true,
+          "shadowRequests": 0,
+          "gbufferRequests": 90381,
+          "forwardRequests": 0,
+          "shadowPasses": 0,
+          "gbufferPasses": 90
+        }
+      },
+      {
+        "mode": "forward",
+        "repeat": 1,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 14.1549,
+          "ecsTeardownMs": 0.611236,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 114.117,
+              "p50Ms": 111.714,
+              "p95Ms": 133.817,
+              "p99Ms": 141.567
+            },
+            "edits": {
+              "meanMs": 0.0134759,
+              "p50Ms": 0.011867,
+              "p95Ms": 0.014061,
+              "p99Ms": 0.072448
+            },
+            "animationAndPalette": {
+              "meanMs": 0.337221,
+              "p50Ms": 0.290341,
+              "p95Ms": 0.510908,
+              "p99Ms": 0.975967
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.227515,
+              "p50Ms": 0.187639,
+              "p95Ms": 0.413403,
+              "p99Ms": 0.469396
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0356119,
+              "p50Ms": 0.028743,
+              "p95Ms": 0.044896,
+              "p99Ms": 0.422176
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0738599,
+              "p50Ms": 0.066939,
+              "p95Ms": 0.118245,
+              "p99Ms": 0.150123
+            },
+            "sceneTransforms": {
+              "meanMs": 0.299168,
+              "p50Ms": 0.268419,
+              "p95Ms": 0.492251,
+              "p99Ms": 0.629803
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 5.24811,
+              "p50Ms": 5.10369,
+              "p95Ms": 7.28075,
+              "p99Ms": 9.7972
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 108.144,
+              "p50Ms": 106.198,
+              "p95Ms": 128.198,
+              "p99Ms": 135.623
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 106.971,
+              "p50Ms": 105.141,
+              "p95Ms": 126.381,
+              "p99Ms": 133.941
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 90,
+          "hybrid": false,
+          "shadowRequests": 0,
+          "gbufferRequests": 90381,
+          "forwardRequests": 90381,
+          "shadowPasses": 0,
+          "gbufferPasses": 90
+        }
+      },
+      {
+        "mode": "forward",
+        "repeat": 2,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 14.0427,
+          "ecsTeardownMs": 0.637936,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 102.27,
+              "p50Ms": 101.207,
+              "p95Ms": 115.599,
+              "p99Ms": 120.666
+            },
+            "edits": {
+              "meanMs": 0.012154,
+              "p50Ms": 0.011357,
+              "p95Ms": 0.014481,
+              "p99Ms": 0.04745
+            },
+            "animationAndPalette": {
+              "meanMs": 0.346582,
+              "p50Ms": 0.2968,
+              "p95Ms": 0.515214,
+              "p99Ms": 1.09978
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.244006,
+              "p50Ms": 0.19536,
+              "p95Ms": 0.41842,
+              "p99Ms": 1.00123
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0315088,
+              "p50Ms": 0.028652,
+              "p95Ms": 0.050795,
+              "p99Ms": 0.106658
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.070791,
+              "p50Ms": 0.065677,
+              "p95Ms": 0.10134,
+              "p99Ms": 0.144755
+            },
+            "sceneTransforms": {
+              "meanMs": 0.299625,
+              "p50Ms": 0.275098,
+              "p95Ms": 0.439732,
+              "p99Ms": 0.527683
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 4.67221,
+              "p50Ms": 4.63278,
+              "p95Ms": 5.62982,
+              "p99Ms": 6.17046
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 96.8734,
+              "p50Ms": 95.6246,
+              "p95Ms": 109.697,
+              "p99Ms": 114.997
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 95.4062,
+              "p50Ms": 94.2456,
+              "p95Ms": 108.686,
+              "p99Ms": 113.845
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 90,
+          "hybrid": false,
+          "shadowRequests": 0,
+          "gbufferRequests": 90381,
+          "forwardRequests": 90381,
+          "shadowPasses": 0,
+          "gbufferPasses": 90
+        }
+      },
+      {
+        "mode": "hybrid",
+        "repeat": 2,
+        "result": {
+          "schema": "evengine.gameplay-benchmark",
+          "version": 1,
+          "workload": "3d-gameplay-mixed",
+          "props": 1000,
+          "nodes": 1096,
+          "characters": 32,
+          "bonesPerCharacter": 64,
+          "verticesPerCharacter": 2048,
+          "rotationKeysPerChannel": 61,
+          "translationKeysPerChannel": "1-or-3",
+          "scaleKeysPerChannel": 1,
+          "frames": 90,
+          "warmup": 60,
+          "renderEnabled": true,
+          "shadows": false,
+          "vsync": false,
+          "width": 320,
+          "height": 180,
+          "backend": "vulkan",
+          "activeGpu": "llvmpipe (LLVM 19.1.7, 256 bits)",
+          "setupMs": 14.8185,
+          "ecsTeardownMs": 0.733367,
+          "stateChecksum": "10584084577765511975",
+          "validation": "passed",
+          "phases": {
+            "frame": {
+              "meanMs": 47.7731,
+              "p50Ms": 46.9684,
+              "p95Ms": 55.0589,
+              "p99Ms": 63.1842
+            },
+            "edits": {
+              "meanMs": 0.0126619,
+              "p50Ms": 0.011637,
+              "p95Ms": 0.016485,
+              "p99Ms": 0.046929
+            },
+            "animationAndPalette": {
+              "meanMs": 0.340758,
+              "p50Ms": 0.30342,
+              "p95Ms": 0.540581,
+              "p99Ms": 0.768059
+            },
+            "clipSamplingAndBlend": {
+              "meanMs": 0.235259,
+              "p50Ms": 0.189311,
+              "p95Ms": 0.444639,
+              "p99Ms": 0.673679
+            },
+            "boneWorldTransforms": {
+              "meanMs": 0.0310982,
+              "p50Ms": 0.028622,
+              "p95Ms": 0.058777,
+              "p99Ms": 0.069524
+            },
+            "skinPalettePublication": {
+              "meanMs": 0.0741397,
+              "p50Ms": 0.065227,
+              "p95Ms": 0.119356,
+              "p99Ms": 0.200728
+            },
+            "sceneTransforms": {
+              "meanMs": 0.332497,
+              "p50Ms": 0.253296,
+              "p95Ms": 0.394435,
+              "p99Ms": 3.12796
+            },
+            "render3dIncludingWaits": {
+              "meanMs": 3.88038,
+              "p50Ms": 3.81738,
+              "p95Ms": 4.87657,
+              "p99Ms": 5.5373
+            },
+            "compositeAndPresentIncludingWaits": {
+              "meanMs": 43.0685,
+              "p50Ms": 42.1451,
+              "p95Ms": 50.4577,
+              "p99Ms": 58.8762
+            },
+            "delayedGpuQueueSpan": {
+              "meanMs": 43.3562,
+              "p50Ms": 42.1968,
+              "p95Ms": 52.4103,
+              "p99Ms": 59.129
+            }
+          },
+          "profilerAggregationMeanMs": 0,
+          "cpuZones": []
+        },
+        "trace": {
+          "frames": 90,
+          "hybrid": true,
+          "shadowRequests": 0,
+          "gbufferRequests": 90381,
+          "forwardRequests": 0,
+          "shadowPasses": 0,
+          "gbufferPasses": 90
+        }
+      }
+    ]
+  }
+}

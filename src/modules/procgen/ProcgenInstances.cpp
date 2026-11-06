@@ -1,4 +1,5 @@
 #include <algorithm>
+#include "procgen/PointDelta.h"
 #include "procgen/Procgen.h"
 #include "procgen/ProcgenLive.h"
 #include "procgen/ProcgenScriptSupport.h"

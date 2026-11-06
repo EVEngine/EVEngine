@@ -137,6 +137,10 @@ eve_declare_module(NAME policyregistry LAYER 0 SCRIPT PolicyRegistryModule SLOT 
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME production LAYER 0 SCRIPT Production SLOT production
                    GROUP minimal 2d 3d web)
+# 2D factory logistics (belts / discrete items / machine buffers). Layer count is
+# reserved for multi-floor; only layer 0 is stepped in the vertical slice.
+eve_declare_module(NAME logistics LAYER 0 SCRIPT Logistics SLOT logistics
+                   GROUP minimal 2d 3d web)
 # L1 -- sensing/action protocol
 eve_declare_module(NAME sensing LAYER 1 SCRIPT Sensing SLOT sensing
                    DEPS spatial
@@ -174,7 +178,6 @@ eve_declare_module(NAME combat LIB EVCombat LAYER 2 SCRIPT Combat SLOT combat
 # Shared fixed-step/backend contract extracted from the physics host so
 # independently switchable simulation satellites do not depend back upward.
 eve_declare_module(NAME physics_backend DIR physics/backend LAYER 2
-                   THIRDPARTY box2d
                    GROUP 2d 3d web)
 # L3 -- independently switchable physics simulation satellites
 # Volumetric soft-body domain core. Rendering and authoring are separate

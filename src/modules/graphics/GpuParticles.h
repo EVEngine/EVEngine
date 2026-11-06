@@ -120,4 +120,48 @@ struct GpuParticleStats {
     std::uint64_t submittedFrames = 0;
 };
 
+/**
+ * @brief Resident GPU particle surface kept off the high-fanout Graphics facade.
+ *
+ * Backends that implement compute + indirect particle draws expose this through
+ * `Graphics::gpuParticles()`. Handle-only Graphics includers never see spawn /
+ * draw layout records.
+ */
+class IGpuParticles {
+public:
+    /** @brief Releases IGpuParticles resources. */
+    virtual ~IGpuParticles() = default;
+
+    /** @brief True when this backend supports resident compute + indirect particle draws. */
+    [[nodiscard]] virtual bool supportsGpuParticles() const = 0;
+
+    /** @brief True when the current frame topology can accept a GPU particle compute section. */
+    [[nodiscard]] virtual bool canSubmitGpuParticles() const = 0;
+
+    /** @brief Allocate backend-owned resident state for one particle emitter. */
+    [[nodiscard]] virtual GpuParticleHandle createGpuParticleEmitter(std::uint32_t capacity) = 0;
+
+    /** @brief Release a GPU particle emitter. Explicit release may wait for in-flight frames. */
+    virtual void releaseGpuParticleEmitter(GpuParticleHandle handle) = 0;
+
+    /** @brief Clear resident state before the next submitted frame. */
+    virtual void resetGpuParticleEmitter(GpuParticleHandle handle) = 0;
+
+    /**
+     * @brief Upload one simulation step and optional spawn commands.
+     * @compatibility Preserves the established GPU-particle boolean submission contract.
+     */
+    [[nodiscard]] virtual bool updateGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleUpdate& update,
+                                                        const GpuParticleSpawn* spawns, std::uint32_t spawnCount) = 0;
+
+    /**
+     * @brief Queue an indirect draw at the current 2D overlay position.
+     * @compatibility Preserves the established GPU-particle boolean submission contract.
+     */
+    [[nodiscard]] virtual bool drawGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleDraw& draw) = 0;
+
+    /** @brief Return the latest fence-complete counters without waiting on the GPU. */
+    [[nodiscard]] virtual GpuParticleStats getGpuParticleStats(GpuParticleHandle handle) const = 0;
+};
+
 }  // namespace eve::graphics

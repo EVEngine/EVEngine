@@ -58,8 +58,13 @@ public:
     /**
      * @brief Blocking device request (plus queue + capability capture).
      * Throws eve::graphics::Exception on failure.
+     * @param prev Adapter stage consumed by the request.
+     * @param colorAttachmentByteBudget Maximum requested attachment bytes per sample;
+     *        32 exercises the WebGPU baseline, while 40 enables the five-target GBuffer.
+     * @cost Blocking adapter device creation; perform once per Graphics initialization.
+     * @thread Call on the graphics initialization thread; callback work is driven here.
      */
-    static DeviceDone requestDevice(AdapterDone &&prev);
+    static DeviceDone requestDevice(AdapterDone&& prev, uint32_t colorAttachmentByteBudget = 40);
 };
 
 }  // namespace eve::graphics::webgpu

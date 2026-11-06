@@ -177,7 +177,7 @@ std::vector<std::int32_t> signedIndices(const std::vector<std::uint32_t>& indice
 eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>> prepareFailure(eve::DiagnosticCode code,
                                                                                 std::string         message) {
     return eve::Result<std::unique_ptr<eve::artifact::PreparedPublication>>::failure(
-        eve::Diagnostic::error(code, message));
+        eve::Diagnostic::error(code, std::move(message)));
 }
 
 }  // namespace

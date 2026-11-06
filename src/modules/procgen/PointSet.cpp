@@ -468,13 +468,16 @@ uint32_t deriveSeed(uint32_t parent, const std::string& scope) {
 }
 
 std::uint64_t derivePointId(std::uint64_t namespaceId, std::uint64_t ordinal) {
-    std::uint64_t value = namespaceId ^ (ordinal + 0x9e3779b97f4a7c15ull + (namespaceId << 6u) +
-                                         (namespaceId >> 2u));
-    value ^= value >> 30u;
-    value *= 0xbf58476d1ce4e5b9ull;
-    value ^= value >> 27u;
-    value *= 0x94d049bb133111ebull;
-    value ^= value >> 31u;
+    const auto mix = [](std::uint64_t value) {
+        value ^= value >> 30u;
+        value *= 0xbf58476d1ce4e5b9ull;
+        value ^= value >> 27u;
+        value *= 0x94d049bb133111ebull;
+        return value ^ (value >> 31u);
+    };
+    // Avalanche the namespace before combining it with a sequential ordinal.
+    // Combining raw adjacent namespaces first aliases whole ordinal ranges.
+    const auto value = mix(mix(namespaceId + 0x9e3779b97f4a7c15ull) ^ ordinal);
     return value == 0 ? 1 : value;
 }
 

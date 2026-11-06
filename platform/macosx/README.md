@@ -19,6 +19,13 @@ loader at the bundled files (`eve::macosx::bootstrapBundledVulkan` in
 `platform/macosx/macosx.mm`). The player machine only needs a Metal-capable
 macOS (the published SDKs require macOS 13.3+).
 
+Apple's paravirtual Metal device cannot create argument encoders even for a
+single resource. The runtime identifies `AppleParavirtDevice` before loading
+MoltenVK and selects its supported discrete resource binding mode. This applies
+to both SDK and packaged games; physical GPU defaults stay unchanged. An explicit
+`MVK_CONFIG_USE_METAL_ARGUMENT_BUFFERS` setting takes precedence. The SDK's real
+30-frame package acceptance remains mandatory in either mode.
+
 For an `.app` bundle, copy the same three Vulkan files into
 `Contents/Frameworks/` (the bootstrap also checks `../Frameworks` next to the
 executable) and set `Contents/MacOS/eve`'s rpath to

@@ -44,7 +44,7 @@ eve::Result<EffectDefinition> effectDefinitionFromBinding(const std::string& typ
     return eve::Result<EffectDefinition>::success(std::move(definition));
 }
 
-eve::Value effectUpdateProjection(EffectUpdateSummary summary) {
+eve::Value effectUpdateProjection(const EffectUpdateSummary& summary) {
     return eve::Value(eve::Value::Object{
         {"expired", eve::Value(static_cast<std::int64_t>(summary.expired))},
         {"elapsedSeconds", eve::Value(summary.elapsedSeconds)},
@@ -241,9 +241,10 @@ void Effects::expose(ssq::Table& table) {
                 eve::Result<EffectUpdateSummary>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                                  "effect container must not be null",
                                                                                  "container", {}, "effects.squirrel")),
-                [](EffectUpdateSummary summary) { return effectUpdateProjection(summary); });
-        return eve::script::projectResult(vm, value->update(dtSeconds),
-                                          [](EffectUpdateSummary summary) { return effectUpdateProjection(summary); });
+                [](const EffectUpdateSummary& summary) { return effectUpdateProjection(summary); });
+        return eve::script::projectResult(vm, value->update(dtSeconds), [](const EffectUpdateSummary& summary) {
+            return effectUpdateProjection(summary);
+        });
     });
     container.addFunc("clear", &EffectContainer::clear);
     container.addFunc("find", [](EffectContainer* value, const std::string& id) -> Effect* {
@@ -329,7 +330,7 @@ void Effects::expose(ssq::Table& table) {
                 eve::Result<EffectUpdateSummary>::failure(eve::Diagnostic::error(
                     eve::DiagnosticCode::InvalidArgument, "owned effect container proxy must not be null", "container",
                     {}, "effects.squirrel")),
-                [](EffectUpdateSummary summary) { return effectUpdateProjection(summary); });
+                [](const EffectUpdateSummary& summary) { return effectUpdateProjection(summary); });
         auto containerView = Effects::resolve(value->reference);
         if (!containerView.isBound())
             return eve::script::projectResult(
@@ -337,9 +338,10 @@ void Effects::expose(ssq::Table& table) {
                 eve::Result<EffectUpdateSummary>::failure(
                     eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "owned effect container handle is stale",
                                            "container", {}, "effects.squirrel")),
-                [](EffectUpdateSummary summary) { return effectUpdateProjection(summary); });
-        return eve::script::projectResult(vm, containerView->update(dt),
-                                          [](EffectUpdateSummary summary) { return effectUpdateProjection(summary); });
+                [](const EffectUpdateSummary& summary) { return effectUpdateProjection(summary); });
+        return eve::script::projectResult(vm, containerView->update(dt), [](const EffectUpdateSummary& summary) {
+            return effectUpdateProjection(summary);
+        });
     });
     ownedContainer.addFunc("clear", [](ScriptEffectContainer* value) {
         if (!value) return;

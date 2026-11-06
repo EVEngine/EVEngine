@@ -248,3 +248,50 @@ TEST_CASE("effects.dispel_filters_category_strength_and_lock_in_priority_order")
     CHECK(!stale.ok());
     CHECK_EQ(stale.status().primaryDiagnostic()->code(), eve::DiagnosticCode::StaleHandle);
 }
+
+#include <chrono>
+#include <cstdint>
+#include <memory>
+#include <span>
+#include "common/UuidV7.h"
+#include "effects/EffectContainer.h"
+
+namespace test_identity_effects_audit_unit {
+namespace {
+eve::UuidEntropySource deterministicEntropy() {
+    auto cursor = std::make_shared<std::uint8_t>(1);
+    return [cursor](std::span<std::uint8_t> bytes) {
+        for (auto& byte : bytes) byte = (*cursor)++;
+        return true;
+    };
+}
+}  // namespace
+
+
+TEST_CASE("identity.audit.canonicalEffectUsesUuidAndLegacyFacadeProjectsLocally") {
+    using namespace std::chrono_literals;
+    const auto clock = [] { return std::chrono::system_clock::time_point{std::chrono::milliseconds{0x010203040506}}; };
+    eve::effects::EffectDefinition definition;
+    definition.id               = "combat:burn";
+    definition.policy.stackMode = eve::effects::StackMode::NewInstance;
+
+    eve::effects::EffectContainer canonical(deterministicEntropy(), clock);
+    auto                          applied = canonical.applyCanonical(definition, "actor:1", "spell:1");
+    REQUIRE(applied.ok());
+    const auto effectId = std::move(applied).takeValue();
+    CHECK(!effectId.isNil());
+    const auto* effect = canonical.find(effectId);
+    REQUIRE(effect != nullptr);
+    CHECK_EQ(effect->identity, effectId);
+    REQUIRE(canonical.eventAt(0) != nullptr);
+    CHECK_EQ(canonical.eventAt(0)->effectIdentity, effectId);
+    CHECK(canonical.remove(effectId).ok());
+
+    eve::effects::EffectContainer legacy;
+    auto                          legacyResult = legacy.apply(definition, "actor:2", "spell:1");
+    REQUIRE(legacyResult.ok());
+    CHECK(legacyResult.value().starts_with("effect-"));
+    REQUIRE(legacy.find(legacyResult.value()) != nullptr);
+    CHECK(legacy.find(legacyResult.value())->identity.isNil());
+}
+}  // namespace test_identity_effects_audit_unit

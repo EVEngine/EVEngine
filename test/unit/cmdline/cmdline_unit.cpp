@@ -16,8 +16,10 @@
 #include "common/Module.h"
 
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -48,6 +50,25 @@ int invoke(std::vector<std::string> words) {
 }
 
 }  // namespace
+
+TEST_CASE("cmdline.Register moves an owned factory into the registry without copying its target") {
+    struct NoOpHandler : eve::cmd::Handler {
+        void setup(CLI::App&, std::shared_ptr<CLI::Formatter>) override {}
+        int  parse(CLI::App&, eve::cmd::Cmdline&) override { return -1; }
+    };
+    struct Factory {
+        std::shared_ptr<int> copies;
+        explicit Factory(std::shared_ptr<int> count) : copies(std::move(count)) {}
+        Factory(const Factory& other) : copies(other.copies) { ++*copies; }
+        Factory(Factory&&) = default;
+        eve::cmd::Handler* operator()() const { return new NoOpHandler; }
+    };
+    auto                                copies  = std::make_shared<int>(0);
+    std::function<eve::cmd::Handler*()> factory = Factory(copies);
+    eve::cmd::Register                  registration(std::move(factory));
+    REQUIRE_EQ(*copies, 0);
+    CHECK_EQ(invoke({"eve", "--version"}), 0);
+}
 
 TEST_CASE("cmdline.runArgs: informational flags return success and print their documented output") {
     SUB_CASE("--help lists the registered commands") {

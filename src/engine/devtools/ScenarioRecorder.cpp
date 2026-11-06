@@ -142,6 +142,7 @@ bool ScenarioRecorder::stageFrame() {
     const ScenarioFrame& frame = frames_[replayIndex_++];
     for (const auto& ev : frame.events) {
         std::vector<eve::platform_event::Variant> args;
+        args.reserve(ev.args.size());
         for (const auto& a : ev.args) args.push_back(eve::platform_event::Variant::makeString(a));
         eventModule_->push(new eve::platform_event::Message(ev.name, args));
     }

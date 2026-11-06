@@ -1,5 +1,7 @@
 #include "pixelworld/PixelWorldGenerationCodec.h"
 
+#include <utility>
+
 #if defined(__EMSCRIPTEN__)
 
 namespace eve::pixelworld {
@@ -46,9 +48,9 @@ using Array = Poco::JSON::Array;
 
 eve::Result<PixelWorldGenerationRequest> malformed(std::string message,
                                                    std::string path = "document") {
-    return eve::Result<PixelWorldGenerationRequest>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::SerializationError, message, path, {},
-        "pixelworld.generation-codec"));
+    return eve::Result<PixelWorldGenerationRequest>::failure(
+        eve::Diagnostic::error(eve::DiagnosticCode::SerializationError, std::move(message), std::move(path), {},
+                               "pixelworld.generation-codec"));
 }
 
 bool exactFields(const Object& object, std::initializer_list<std::string_view> allowed) {

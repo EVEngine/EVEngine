@@ -6,14 +6,15 @@
 #include <string>
 #include <vector>
 #include "common/ECS.h"
+#include "common/Result.h"
 #include "graphics/DrawItem2D.h"
-#include "graphics/Quad.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
 
 namespace eve::graphics {
 
 class Canvas;
+class Quad;
+class Shader;
+class Texture;
 
 /** @brief Declarative 2D camera (viewport center + zoom). */
 class EVENGINE_API_BACKENDS Camera2D : public ecs::Entity {
@@ -31,6 +32,18 @@ public:
         float zoom = 1.f;
         float r = 0.1f, g = 0.1f, b = 0.12f, a = 1.f;
         float ambientR = 0.15f, ambientG = 0.15f, ambientB = 0.18f;
+        /** @brief Screen pixels per world unit at scale 1; used by perfect-pixel sizing. */
+        float pixelsPerUnit = 1.f;
+        /** @brief Virtual reference width in pixels; 0 disables integer fitting. */
+        int pixelRefWidth = 0;
+        /** @brief Virtual reference height in pixels; 0 disables integer fitting. */
+        int pixelRefHeight = 0;
+        /** @brief Last integer upscale chosen by applyPixelPerfect. */
+        int pixelScale = 1;
+        /** @brief When true, applyPixelPerfect / draw resolve integer zoom + optional snap. */
+        bool pixelPerfect = false;
+        /** @brief Snap camera center onto the pixel grid when resolving perfect-pixel zoom. */
+        bool      pixelSnap = true;
         bool active = false; // true only after createCamera() / explicit enable
         Canvas *canvas = nullptr;
         Camera2D *entity = nullptr;  // self; set by createCamera()
@@ -56,6 +69,41 @@ public:
     float getY();
     void  setZoom(float zoom);
     float getZoom();
+
+    /**
+     * @brief Store perfect-pixel sizing (pixels-per-unit and optional reference resolution).
+     * @param pixelsPerUnit Screen pixels per world unit at scale 1; must be finite and > 0.
+     * @param refWidth Virtual width in pixels; 0 skips integer fitting.
+     * @param refHeight Virtual height in pixels; 0 skips integer fitting.
+     * @return InvalidArgument when pixelsPerUnit or a positive reference size is invalid.
+     */
+    [[nodiscard]] Result<void> setPixelConfig(float pixelsPerUnit, int refWidth = 0, int refHeight = 0);
+    /** @brief Clear reference resolution and restore default pixels-per-unit of 1. */
+    void clearPixelConfig();
+    /** @brief Enable or disable automatic perfect-pixel zoom resolution. */
+    void setPixelPerfect(bool enabled);
+    /** @brief Return whether perfect-pixel resolution is enabled. */
+    bool getPixelPerfect();
+    /** @brief Enable or disable snapping the camera center onto the pixel grid. */
+    void setPixelSnap(bool enabled);
+    /** @brief Return whether pixel-grid snapping is enabled. */
+    bool getPixelSnap();
+    /**
+     * @brief Resolve integer zoom (and optional position snap) from the live viewport.
+     * @param viewWidth Drawable width in pixels; must be > 0.
+     * @param viewHeight Drawable height in pixels; must be > 0.
+     * @return InvalidArgument for a non-positive viewport.
+     * @cost O(1).
+     */
+    [[nodiscard]] Result<void> applyPixelPerfect(int viewWidth, int viewHeight);
+    /** @brief Return configured pixels per world unit. */
+    float getPixelsPerUnit();
+    /** @brief Return reference width, or 0 when unset. */
+    int getPixelRefWidth();
+    /** @brief Return reference height, or 0 when unset. */
+    int getPixelRefHeight();
+    /** @brief Return the last integer upscale from applyPixelPerfect. */
+    int getPixelScale();
 
     /**
      * @brief Convert screen pixel (origin top-left of viewport) to world coordinates.

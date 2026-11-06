@@ -17,8 +17,11 @@ namespace eve::animation {
  * - skins: region attachments (x/y/rotation/width/height/path)
  * - animations: bone translate/rotate/scale + slot attachment timelines
  *
- * Mesh / IK / path / clipping / deform are ignored (use official spine-cpp
- * plugin for full runtime). Script type: `SpineSkeletonData`.
+ * Non-region attachments and IK / transform / path / physics constraints, deform
+ * and draw-order timelines fail loading with a diagnostic (use official spine-cpp
+ * for the full runtime). Non-default colors/blending, shear/inheritance modes,
+ * Bezier curves, sequences and unsupported bone/slot timelines also fail explicitly.
+ * Script type: `SpineSkeletonData`.
  */
 class EVENGINE_API_WORLD SpineSkeletonData {
 public:
@@ -191,3 +194,4 @@ private:
 };
 
 }  // namespace eve::animation
+

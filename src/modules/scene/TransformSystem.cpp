@@ -131,13 +131,17 @@ void TransformSystem::updateHost(SceneHost *host) {
 
     // Legacy coarse path: tree-level transformDirty or direct localDirty writes
     // without subtree marking → full recompute + full link sync.
+    // Gather both flags after pull callbacks, preserving their ordering and
+    // detecting legacy edits even after a marked subtree has been found.
     bool legacy = t->transformDirty;
+    bool anySubtree = false;
     if (!legacy) {
         for (const auto &n : t->nodes) {
             if (n.localDirty && !n.subtreeDirty) {
                 legacy = true;
                 break;
             }
+            anySubtree = anySubtree || n.subtreeDirty;
         }
     }
     if (legacy) {
@@ -153,13 +157,6 @@ void TransformSystem::updateHost(SceneHost *host) {
     }
 
     // Incremental: only dirty subtrees recomputed, only their links synced.
-    bool anySubtree = false;
-    for (const auto &n : t->nodes) {
-        if (n.subtreeDirty) {
-            anySubtree = true;
-            break;
-        }
-    }
     if (!anySubtree) {
         t->transformDirty = false;
         return;  // fully clean tree: zero work
