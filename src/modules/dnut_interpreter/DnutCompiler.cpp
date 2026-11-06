@@ -3,8 +3,8 @@
 #include "dnut_interpreter/DnutLexer.h"
 
 #include <cstdlib>
+#include <map>
 #include <string>
-#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -711,8 +711,11 @@ private:
     bool                     invalidStep_ = false;
     std::unordered_set<std::string> publishedIds_;
     std::vector<LoopEmitFrame>      loopStack_;
-    std::unordered_map<std::string, std::string> labels_;
-    std::vector<PendingJump>                     pendingJumps_;
+    // Prefer std::map over unordered_map<string,string>: that specialization is
+    // exported from EVFoundation on Windows SHARED and collides (LNK2005/LNK1169)
+    // when instantiated again in the Platform group (see windows-ccache-hardlinks.md).
+    std::map<std::string, std::string> labels_;
+    std::vector<PendingJump>           pendingJumps_;
 };
 
 }  // namespace
