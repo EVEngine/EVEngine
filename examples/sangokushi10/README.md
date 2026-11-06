@@ -1,11 +1,14 @@
-# Sangokushi 10 Slice
+# 三国志·群雄割据
 
 回合制《三国志 10》风格竖切：用引擎中性积木**自行定义**国家、战区、城池、武将、军团、
-内政任务与人物关系，而不是依赖现成战略模块。
+内政任务与人物关系，而不是依赖现成战略模块。界面与武将城池名均为中文。
 
 概念注册走 `Schema.registerFromClass`（见 `concepts.nut`），内容进 `Definitions`，
 运行时归属/任命/邻接/驻军用 `Social`，五维与城池开发度用 `Attributes`，内政队列用
 `Production`，武将排行与快照同步用 `eve.Database()` 的事务 + `upsertJson`。
+
+地图 HUD 使用 `assets/fonts/SangokushiUI.ttf`（文泉驿微米黑按本示例字表裁剪，含拉丁数字）；
+右侧 ImGui 面板由引擎自动合并系统 CJK 字体。
 
 ## 运行
 

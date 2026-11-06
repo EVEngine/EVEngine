@@ -1,8 +1,8 @@
 config = {
     width = 1280
     height = 720
-    title = "Sangokushi 10 Slice"
-    debug = true
+    title = "三国志·群雄割据"
+    debug = false
     hotReload = true
     modules = [
         "keyboard",

@@ -123,7 +123,7 @@ function refreshCatalog(w) {
         if (!w.db.commit()) w.db.rollback();
     } catch (err) {
         w.db.rollback();
-        w.message = "catalog sync failed: " + err;
+        w.message = "目录同步失败：" + err;
     }
 }
 
@@ -230,59 +230,59 @@ function seedContent(w) {
     local definitions = w.definitions;
 
     validateAndInsert(schemas, definitions, "sk10.nation", "nation", "nation.wei",
-        { id="nation.wei", name="Wei", color="blue", capitalCityId="city.luoyang" });
+        { id="nation.wei", name="魏", color="blue", capitalCityId="city.luoyang" });
     validateAndInsert(schemas, definitions, "sk10.nation", "nation", "nation.shu",
-        { id="nation.shu", name="Shu", color="green", capitalCityId="city.chengdu" });
+        { id="nation.shu", name="蜀", color="green", capitalCityId="city.chengdu" });
     validateAndInsert(schemas, definitions, "sk10.nation", "nation", "nation.wu",
-        { id="nation.wu", name="Wu", color="red", capitalCityId="city.jianye" });
+        { id="nation.wu", name="吴", color="red", capitalCityId="city.jianye" });
 
     validateAndInsert(schemas, definitions, "sk10.region", "region", "region.central",
-        { id="region.central", name="Central Plains", theater="north" });
+        { id="region.central", name="中原", theater="north" });
     validateAndInsert(schemas, definitions, "sk10.region", "region", "region.west",
-        { id="region.west", name="Bashu", theater="west" });
+        { id="region.west", name="巴蜀", theater="west" });
     validateAndInsert(schemas, definitions, "sk10.region", "region", "region.south",
-        { id="region.south", name="Jiangdong", theater="south" });
+        { id="region.south", name="江东", theater="south" });
 
     local citySeeds = [
-        { id="city.luoyang", name="Luoyang", regionId="region.central", mapX=430.0, mapY=210.0, agriculture=70, commerce=80, defense=75, population=42000, nation="nation.wei" },
-        { id="city.xuchang", name="Xuchang", regionId="region.central", mapX=520.0, mapY=260.0, agriculture=65, commerce=70, defense=60, population=28000, nation="nation.wei" },
-        { id="city.changan", name="Chang'an", regionId="region.central", mapX=300.0, mapY=230.0, agriculture=60, commerce=75, defense=80, population=36000, nation="nation.wei" },
-        { id="city.chenliu", name="Chenliu", regionId="region.central", mapX=600.0, mapY=200.0, agriculture=55, commerce=55, defense=45, population=18000, nation="nation.wei" },
-        { id="city.chengdu", name="Chengdu", regionId="region.west", mapX=210.0, mapY=430.0, agriculture=85, commerce=65, defense=70, population=38000, nation="nation.shu" },
-        { id="city.hanzhong", name="Hanzhong", regionId="region.west", mapX=280.0, mapY=340.0, agriculture=60, commerce=45, defense=85, population=20000, nation="nation.shu" },
-        { id="city.jianye", name="Jianye", regionId="region.south", mapX=720.0, mapY=430.0, agriculture=70, commerce=85, defense=65, population=40000, nation="nation.wu" },
-        { id="city.chaisang", name="Chaisang", regionId="region.south", mapX=640.0, mapY=360.0, agriculture=60, commerce=70, defense=55, population=22000, nation="nation.wu" }
+        { id="city.luoyang", name="洛阳", regionId="region.central", mapX=430.0, mapY=210.0, agriculture=70, commerce=80, defense=75, population=42000, nation="nation.wei" },
+        { id="city.xuchang", name="许昌", regionId="region.central", mapX=520.0, mapY=260.0, agriculture=65, commerce=70, defense=60, population=28000, nation="nation.wei" },
+        { id="city.changan", name="长安", regionId="region.central", mapX=300.0, mapY=230.0, agriculture=60, commerce=75, defense=80, population=36000, nation="nation.wei" },
+        { id="city.chenliu", name="陈留", regionId="region.central", mapX=600.0, mapY=200.0, agriculture=55, commerce=55, defense=45, population=18000, nation="nation.wei" },
+        { id="city.chengdu", name="成都", regionId="region.west", mapX=210.0, mapY=430.0, agriculture=85, commerce=65, defense=70, population=38000, nation="nation.shu" },
+        { id="city.hanzhong", name="汉中", regionId="region.west", mapX=280.0, mapY=340.0, agriculture=60, commerce=45, defense=85, population=20000, nation="nation.shu" },
+        { id="city.jianye", name="建业", regionId="region.south", mapX=720.0, mapY=430.0, agriculture=70, commerce=85, defense=65, population=40000, nation="nation.wu" },
+        { id="city.chaisang", name="柴桑", regionId="region.south", mapX=640.0, mapY=360.0, agriculture=60, commerce=70, defense=55, population=22000, nation="nation.wu" }
     ];
 
     local officerSeeds = [
-        { id="officer.caocao", name="Cao Cao", leadership=96, war=72, intellect=91, politics=94, charm=88, loyalty=100, age=42, nation="nation.wei", city="city.luoyang", job=JOB_GOVERNOR },
-        { id="officer.xiahoudun", name="Xiahou Dun", leadership=86, war=90, intellect=60, politics=55, charm=70, loyalty=95, age=38, nation="nation.wei", city="city.luoyang", job=JOB_COMMANDER },
-        { id="officer.xunyu", name="Xun Yu", leadership=70, war=30, intellect=96, politics=92, charm=80, loyalty=90, age=36, nation="nation.wei", city="city.xuchang", job=JOB_COMMERCE },
-        { id="officer.zhangliao", name="Zhang Liao", leadership=88, war=92, intellect=72, politics=50, charm=75, loyalty=85, age=34, nation="nation.wei", city="city.changan", job=JOB_COMMANDER },
-        { id="officer.guojia", name="Guo Jia", leadership=62, war=28, intellect=97, politics=78, charm=70, loyalty=88, age=29, nation="nation.wei", city="city.chenliu", job=JOB_FARM },
-        { id="officer.liubei", name="Liu Bei", leadership=80, war=70, intellect=75, politics=82, charm=98, loyalty=100, age=41, nation="nation.shu", city="city.chengdu", job=JOB_GOVERNOR },
-        { id="officer.zhugeliang", name="Zhuge Liang", leadership=92, war=38, intellect=100, politics=95, charm=85, loyalty=100, age=28, nation="nation.shu", city="city.chengdu", job=JOB_COMMERCE },
-        { id="officer.guanyu", name="Guan Yu", leadership=90, war=97, intellect=75, politics=60, charm=88, loyalty=100, age=45, nation="nation.shu", city="city.hanzhong", job=JOB_COMMANDER },
-        { id="officer.zhangfei", name="Zhang Fei", leadership=78, war=96, intellect=40, politics=30, charm=55, loyalty=95, age=40, nation="nation.shu", city="city.hanzhong", job=JOB_RECRUIT },
-        { id="officer.sunquan", name="Sun Quan", leadership=84, war=60, intellect=80, politics=88, charm=86, loyalty=100, age=26, nation="nation.wu", city="city.jianye", job=JOB_GOVERNOR },
-        { id="officer.zhouyu", name="Zhou Yu", leadership=94, war=80, intellect=96, politics=78, charm=90, loyalty=95, age=32, nation="nation.wu", city="city.jianye", job=JOB_COMMANDER },
-        { id="officer.lusu", name="Lu Su", leadership=75, war=45, intellect=90, politics=88, charm=82, loyalty=90, age=34, nation="nation.wu", city="city.chaisang", job=JOB_COMMERCE }
+        { id="officer.caocao", name="曹操", leadership=96, war=72, intellect=91, politics=94, charm=88, loyalty=100, age=42, nation="nation.wei", city="city.luoyang", job=JOB_GOVERNOR },
+        { id="officer.xiahoudun", name="夏侯惇", leadership=86, war=90, intellect=60, politics=55, charm=70, loyalty=95, age=38, nation="nation.wei", city="city.luoyang", job=JOB_COMMANDER },
+        { id="officer.xunyu", name="荀彧", leadership=70, war=30, intellect=96, politics=92, charm=80, loyalty=90, age=36, nation="nation.wei", city="city.xuchang", job=JOB_COMMERCE },
+        { id="officer.zhangliao", name="张辽", leadership=88, war=92, intellect=72, politics=50, charm=75, loyalty=85, age=34, nation="nation.wei", city="city.changan", job=JOB_COMMANDER },
+        { id="officer.guojia", name="郭嘉", leadership=62, war=28, intellect=97, politics=78, charm=70, loyalty=88, age=29, nation="nation.wei", city="city.chenliu", job=JOB_FARM },
+        { id="officer.liubei", name="刘备", leadership=80, war=70, intellect=75, politics=82, charm=98, loyalty=100, age=41, nation="nation.shu", city="city.chengdu", job=JOB_GOVERNOR },
+        { id="officer.zhugeliang", name="诸葛亮", leadership=92, war=38, intellect=100, politics=95, charm=85, loyalty=100, age=28, nation="nation.shu", city="city.chengdu", job=JOB_COMMERCE },
+        { id="officer.guanyu", name="关羽", leadership=90, war=97, intellect=75, politics=60, charm=88, loyalty=100, age=45, nation="nation.shu", city="city.hanzhong", job=JOB_COMMANDER },
+        { id="officer.zhangfei", name="张飞", leadership=78, war=96, intellect=40, politics=30, charm=55, loyalty=95, age=40, nation="nation.shu", city="city.hanzhong", job=JOB_RECRUIT },
+        { id="officer.sunquan", name="孙权", leadership=84, war=60, intellect=80, politics=88, charm=86, loyalty=100, age=26, nation="nation.wu", city="city.jianye", job=JOB_GOVERNOR },
+        { id="officer.zhouyu", name="周瑜", leadership=94, war=80, intellect=96, politics=78, charm=90, loyalty=95, age=32, nation="nation.wu", city="city.jianye", job=JOB_COMMANDER },
+        { id="officer.lusu", name="鲁肃", leadership=75, war=45, intellect=90, politics=88, charm=82, loyalty=90, age=34, nation="nation.wu", city="city.chaisang", job=JOB_COMMERCE }
     ];
 
     local armySeeds = [
-        { id="army.wei.north", name="Wei Northern Legion", troops=12000, city="city.luoyang", nation="nation.wei", commander="officer.xiahoudun" },
-        { id="army.wei.west", name="Wei Western Legion", troops=9000, city="city.changan", nation="nation.wei", commander="officer.zhangliao" },
-        { id="army.shu.guard", name="Shu Capital Guard", troops=10000, city="city.chengdu", nation="nation.shu", commander="officer.liubei" },
-        { id="army.shu.pass", name="Hanzhong Garrison", troops=11000, city="city.hanzhong", nation="nation.shu", commander="officer.guanyu" },
-        { id="army.wu.fleet", name="Wu River Fleet", troops=13000, city="city.jianye", nation="nation.wu", commander="officer.zhouyu" },
-        { id="army.wu.border", name="Chaisang Corps", troops=8000, city="city.chaisang", nation="nation.wu", commander="officer.lusu" }
+        { id="army.wei.north", name="魏·北方军团", troops=12000, city="city.luoyang", nation="nation.wei", commander="officer.xiahoudun" },
+        { id="army.wei.west", name="魏·西方军团", troops=9000, city="city.changan", nation="nation.wei", commander="officer.zhangliao" },
+        { id="army.shu.guard", name="蜀·都城禁卫", troops=10000, city="city.chengdu", nation="nation.shu", commander="officer.liubei" },
+        { id="army.shu.pass", name="蜀·汉中守军", troops=11000, city="city.hanzhong", nation="nation.shu", commander="officer.guanyu" },
+        { id="army.wu.fleet", name="吴·江东水军", troops=13000, city="city.jianye", nation="nation.wu", commander="officer.zhouyu" },
+        { id="army.wu.border", name="吴·柴桑防军", troops=8000, city="city.chaisang", nation="nation.wu", commander="officer.lusu" }
     ];
 
     local taskSeeds = [
-        { id="task.farm", name="Land Development", kind="farm", months=1 },
-        { id="task.commerce", name="Market Expansion", kind="commerce", months=1 },
-        { id="task.recruit", name="Conscription", kind="recruit", months=1 },
-        { id="task.fortify", name="Wall Repair", kind="fortify", months=1 }
+        { id="task.farm", name="屯田开垦", kind="farm", months=1 },
+        { id="task.commerce", name="通商开市", kind="commerce", months=1 },
+        { id="task.recruit", name="征兵募卒", kind="recruit", months=1 },
+        { id="task.fortify", name="修缮城防", kind="fortify", months=1 }
     ];
 
     foreach (task in taskSeeds)
@@ -448,9 +448,9 @@ function createWorld() {
         events = eve.GameEvent().newLog()
         db = openCatalogDb()
         nations = {
-            ["nation.wei"] = { id="nation.wei", name="Wei", cities=[] },
-            ["nation.shu"] = { id="nation.shu", name="Shu", cities=[] },
-            ["nation.wu"] = { id="nation.wu", name="Wu", cities=[] }
+            ["nation.wei"] = { id="nation.wei", name="魏", cities=[] },
+            ["nation.shu"] = { id="nation.shu", name="蜀", cities=[] },
+            ["nation.wu"] = { id="nation.wu", name="吴", cities=[] }
         }
         cities = []
         officers = {}
@@ -461,7 +461,7 @@ function createWorld() {
         year = 190
         selectedCityId = "city.luoyang"
         selectedOfficerId = "officer.caocao"
-        message = "Wei turn. Appoint jobs, develop cities, then End Month."
+        message = "魏军回合：任命职务、发展城池，然后结束本月。"
         outcome = ""
         tick = 0
         eventSerial = 0
@@ -487,6 +487,16 @@ function cityOwnerName(w, city) {
     return owner;
 }
 
+function jobLabel(job) {
+    if (job == JOB_GOVERNOR) return "太守";
+    if (job == JOB_FARM) return "屯田";
+    if (job == JOB_COMMERCE) return "经商";
+    if (job == JOB_RECRUIT) return "征兵";
+    if (job == JOB_COMMANDER) return "统帅";
+    if (job == null || job == "") return "无职";
+    return job;
+}
+
 function isPlayerCity(w, city) {
     return w.social.ownerOf(city.id) == PLAYER_NATION;
 }
@@ -507,12 +517,12 @@ function assignJob(w, officerId, job, cityId) {
     if (!(officerId in w.officers)) return false;
     local officer = w.officers[officerId];
     if (officerNation(w, officerId) != PLAYER_NATION) {
-        setMessage(w, "Can only assign Wei officers.");
+        setMessage(w, "只能任命魏属武将。");
         return false;
     }
     local city = cityById(w, cityId);
     if (city == null || !isPlayerCity(w, city)) {
-        setMessage(w, "Target city must be Wei-owned.");
+        setMessage(w, "目标城池须为魏属。");
         return false;
     }
     if (officer.job != "")
@@ -530,7 +540,7 @@ function assignJob(w, officerId, job, cityId) {
     w.social.assign(officerId, job, cityId);
     if (job == JOB_GOVERNOR)
         w.authority.grant(officerId, cityId, "govern_city", "rank.governor", 10, 0.0);
-    setMessage(w, officer.name + " assigned as " + job + " in " + city.name);
+    setMessage(w, officer.name + " 已任命为" + city.name + "的" + jobLabel(job));
     refreshCatalog(w);
     return true;
 }
@@ -538,16 +548,16 @@ function assignJob(w, officerId, job, cityId) {
 function startDomesticTask(w, kind) {
     local city = selectedCity(w);
     if (city == null || !isPlayerCity(w, city)) {
-        setMessage(w, "Select a Wei city first.");
+        setMessage(w, "请先选择一座魏城。");
         return false;
     }
     if (city.task != null) {
-        setMessage(w, city.name + " already has a task in progress.");
+        setMessage(w, city.name + " 已有内政任务进行中。");
         return false;
     }
     local taskId = "task." + kind;
     if (!(taskId in w.tasks)) {
-        setMessage(w, "Unknown task kind.");
+        setMessage(w, "未知的内政种类。");
         return false;
     }
     local worker = null;
@@ -559,7 +569,7 @@ function startDomesticTask(w, kind) {
         }
     }
     if (worker == null) {
-        setMessage(w, "No officer with job '" + kind + "' in " + city.name);
+        setMessage(w, city.name + " 没有担任「" + taskLabelKind(kind) + "」的武将。");
         return false;
     }
     local duration = 1.0;
@@ -568,11 +578,11 @@ function startDomesticTask(w, kind) {
     local context = "{\"officer\":\"" + worker.id + "\"}";
     local enqueue = w.production.enqueue(city.id, kind, taskId, context, duration, politics.tointeger());
     if (!enqueue.ok) {
-        setMessage(w, "Could not enqueue task: " + enqueue.status.summary);
+        setMessage(w, "无法开始内政：" + enqueue.status.summary);
         return false;
     }
     city.task = { id = enqueue.value, kind = kind, workerId = worker.id, monthsLeft = 1 };
-    setMessage(w, city.name + " started " + w.tasks[taskId].name + " (" + worker.name + ")");
+    setMessage(w, city.name + " 开始" + w.tasks[taskId].name + "（" + worker.name + "）");
     return true;
 }
 
@@ -641,7 +651,7 @@ function updateLoyalty(w) {
                 local newNation = w.social.ownerOf(dest.id);
                 w.social.setOwner(officer.id, newNation);
                 assignJobForce(w, officer.id, JOB_FARM, dest.id);
-                setMessage(w, officer.name + " defected to " + w.nations[newNation].name + "!");
+                setMessage(w, officer.name + " 叛逃至" + w.nations[newNation].name + "！");
                 appendEvent(w, "defection", officer.id, dest.id, "politics",
                     "{\"loyalty\":" + officer.loyalty + "}");
             }
@@ -680,17 +690,17 @@ function attackSelected(w) {
     if (w.outcome != "") return;
     local city = selectedCity(w);
     if (city == null || !isPlayerCity(w, city)) {
-        setMessage(w, "Select a Wei city that holds an army.");
+        setMessage(w, "请选择有军团驻扎的魏城。");
         return;
     }
     local army = armyById(w, city.armyId);
     if (army == null || army.troops < 1000) {
-        setMessage(w, "Need a stationed legion with at least 1000 troops.");
+        setMessage(w, "需要驻军且兵力不少于 1000。");
         return;
     }
     local enemies = adjacentEnemyCities(w, city);
     if (enemies.len() == 0) {
-        setMessage(w, "No adjacent enemy city.");
+        setMessage(w, "没有邻接的敌城。");
         return;
     }
     local target = enemies[0];
@@ -732,7 +742,7 @@ function attackSelected(w) {
                 officer.stats.setBase("loyalty", 55.0);
             }
         }
-        setMessage(w, "Captured " + target.name + " from " + w.nations[oldOwner].name + "!");
+        setMessage(w, "攻占" + target.name + "！原属" + w.nations[oldOwner].name + "。");
         appendEvent(w, "capture", city.id, target.id, "war",
             "{\"atk\":" + atk + ",\"def\":" + def + "}");
         w.selectedCityId = target.id;
@@ -740,7 +750,7 @@ function attackSelected(w) {
     } else {
         army.troops = (army.troops * 0.7).tointeger();
         if (defenders != null) defenders.troops = (defenders.troops * 0.9).tointeger();
-        setMessage(w, "Assault on " + target.name + " failed. Legion weakened.");
+        setMessage(w, "进攻" + target.name + "失败，军团受损。");
         appendEvent(w, "assault_failed", city.id, target.id, "war",
             "{\"atk\":" + atk + ",\"def\":" + def + "}");
     }
@@ -756,14 +766,14 @@ function countCities(w, nationId) {
 function checkVictory(w) {
     if (countCities(w, PLAYER_NATION) >= 6) {
         w.outcome = "victory";
-        setMessage(w, "Victory! Wei controls most of the realm.");
+        setMessage(w, "大捷！魏已掌控大半江山。");
         return;
     }
     // lose capitals of player?
     local capital = cityById(w, "city.luoyang");
     if (capital != null && w.social.ownerOf(capital.id) != PLAYER_NATION) {
         w.outcome = "defeat";
-        setMessage(w, "Defeat — Luoyang has fallen.");
+        setMessage(w, "败北——洛阳失守。");
     }
 }
 
@@ -805,7 +815,7 @@ function aiAttack(w, nationId) {
             army.cityId = target.id;
             target.armyId = army.id;
             army.troops = (army.troops * 0.85).tointeger();
-            setMessage(w, w.nations[nationId].name + " seized " + target.name + "!");
+            setMessage(w, w.nations[nationId].name + " 攻占了" + target.name + "！");
             checkVictory(w);
             return;
         }
@@ -837,7 +847,19 @@ function endMonth(w) {
     }
     refreshCatalog(w);
     if (w.outcome == "")
-        setMessage(w, "Month " + w.month + ", Year " + w.year + " — develop or march.");
+        setMessage(w, worldYearMonthText(w) + "——请发展城池或出征。");
+}
+
+function worldYearMonthText(w) {
+    return w.year + "年" + w.month + "月";
+}
+
+function taskLabelKind(kind) {
+    if (kind == "farm") return "屯田";
+    if (kind == "commerce") return "经商";
+    if (kind == "recruit") return "征兵";
+    if (kind == "fortify") return "修城";
+    return kind;
 }
 
 function selectCityAt(w, x, y) {
@@ -855,7 +877,7 @@ function selectCityAt(w, x, y) {
     if (best != null) {
         w.selectedCityId = best.id;
         if (best.officers.len() > 0) w.selectedOfficerId = best.officers[0];
-        setMessage(w, best.name + " (" + cityOwnerName(w, best) + ")");
+        setMessage(w, best.name + "（" + cityOwnerName(w, best) + "）");
     }
 }
 
