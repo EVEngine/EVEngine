@@ -110,6 +110,8 @@ if (restartOrLoad) duel.close();   // 放弃瞬时遭遇；读档后重新 bind
 - 原生：`test/integration/rpg-action/`（扣血、击杀奖励、遭遇冲突、失败矩阵）
 - 双推进：`action.ability.rejectsDuplicateStepOnSameTick`、`combatLoop.rejectsDuplicateAdvanceOnSameTick`
 - 示例：`MIN_RUN_SECONDS=2 bash scripts/smoke_examples.sh arpg-loop`
-- Agent（先起 MCP 示例）：`python3 examples/arpg-loop/agent_check.py <port> <evidence-dir>`（禁止 `eve_eval` 改 HP）
+- 一键 Agent：`make check/arpg-loop`（或 `bash scripts/verify_arpg_loop.sh`；无显示时用 `xvfb-run -a`）
+- 手动 Agent（先起 MCP 示例）：`python3 examples/arpg-loop/agent_check.py <port> <evidence-dir>`（禁止 `eve_eval` 改 HP）
+- 竖切覆盖：camp/arena 切换、scout 支线 claim、商店失败/成功、三杀成长、营地存档去重
 
-发版 checklist 建议勾选：上述原生用例绿 + `arpg-loop` smoke PASS +（可选）agent 三杀闭环。
+发版 checklist 建议勾选：上述原生用例绿 + `arpg-loop` smoke PASS + `make check/arpg-loop`。
