@@ -131,17 +131,25 @@ function drinkPotion() {
     hero.setCurrent("hp",minv(maxHp,hero.getCurrent("hp")+40.0));
     message="Drank potion. HP "+hero.getCurrent("hp").tointeger()+"/"+maxHp.tointeger()+".";
 }
+// Host safe-point gate (engine still allows snapshot at hp=0; product must refuse).
+function canCheckpoint() {
+    if(zone!="camp") return false;
+    if(enemy!=null && enemy.getCurrent("hp")>0.0) return false;
+    if(duel!=null && duel.hasPendingReward()) return false;
+    if(hero.getCurrent("hp")<=0.0) return false;
+    return true;
+}
 function checkpoint() {
     if(zone!="camp") { message="Save only at camp (G to return after a kill)."; return; }
-    if(enemy!=null && enemy.getCurrent("hp")>0.0 || duel!=null && duel.hasPendingReward() || hero.getCurrent("hp")<=0.0) {
-        message="Save after clearing the arena and returning to camp."; return;
-    }
+    if(!canCheckpoint()) { message="Save after clearing the arena and returning to camp."; return; }
     local data=save.snapshotJson();
-    message=data!="" && saveFs.writeTextAtomic("checkpoint.json",data)!=0?"Checkpoint saved at camp, including unclaimed caches.":"Save failed.";
+    if(data=="" || save.validateSnapshotJson(data)==0) { message="Save failed validation; current run preserved."; return; }
+    message=saveFs.writeTextAtomic("checkpoint.json",data)!=0?"Checkpoint saved at camp, including unclaimed caches.":"Save failed.";
 }
 function loadCheckpoint() {
     local data=saveFs.readText("checkpoint.json");
-    if(data=="" || save.restoreSnapshotJson(data)!=1) { message="No valid checkpoint; current run preserved."; return; }
+    if(data=="" || save.validateSnapshotJson(data)==0) { message="No valid checkpoint; current run preserved."; return; }
+    if(save.restoreSnapshotJson(data)!=1) { message="Restore rejected; current run preserved."; return; }
     clearEnemy(); rpg.syncEquipModifiers(hero,gear); resetTransient(); placeCamp();
     message="Checkpoint restored at camp. Rewards stay deduplicated. T continues the hunt.";
 }

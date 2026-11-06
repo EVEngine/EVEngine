@@ -271,6 +271,72 @@ TEST_CASE("Action kill reward without quest prerequisite still notifies active q
     CHECK_EQ(f.tracker.getState("observer"), "completed");
 }
 
+TEST_CASE("Action arpg safe-point host gate refuses death while engine still snapshots") {
+    // Product hosts (examples/arpg-loop) must gate camp/death/pending/living-enemy before
+    // calling snapshotJson. The session itself still allows a dead actor checkpoint.
+    Fixture f(false);
+    f.hero->setCurrent("hp", 0.0);
+    inventory::Bag bag(2);
+    bag.setId("arpg.bag");
+    inventory::EquipmentSet equipment;
+    equipment.setId("arpg.gear");
+    equipment.defineSlot("weapon");
+    RPGSaveSession save;
+    save.bind(f.state, f.tracker, *f.hero, bag, equipment);
+    REQUIRE(save.setContentVersion("arpg-loop-v1").ok());
+    auto snap = save.snapshotJson();
+    REQUIRE(snap.ok());
+    auto hostAllows = [](bool atCamp, bool livingEnemy, bool pendingReward, double hp) {
+        return atCamp && !livingEnemy && !pendingReward && hp > 0.0;
+    };
+    CHECK(!hostAllows(true, false, false, 0.0));
+    CHECK(!hostAllows(false, false, false, 100.0));
+    CHECK(!hostAllows(true, true, false, 100.0));
+    CHECK(!hostAllows(true, false, true, 100.0));
+    CHECK(hostAllows(true, false, false, 100.0));
+}
+
+TEST_CASE("Action full-bag unclaimed world loot survives save session restore") {
+    Fixture    f(false);
+    const auto death = f.kill();
+    REQUIRE(ActionKillReward::settle(f.recipient(), f.state, f.tracker, death, "wolf").ok());
+    inventory::ItemDefinition blade;
+    blade.id        = "sentinel_blade";
+    blade.maxStack  = 1;
+    blade.equipSlot = "weapon";
+    inventory::ItemRegistry::registerItem(blade);
+    inventory::Bag bag(1);
+    bag.setId("arpg.bag");
+    REQUIRE_EQ(bag.addItem(blade.id, 1), 1);
+    inventory::EquipmentSet equipment;
+    equipment.setId("arpg.gear");
+    equipment.defineSlot("weapon");
+    WorldLootRequest loot;
+    loot.mapId        = "arpg.loot";
+    loot.objectId     = f.enemyId.format();
+    loot.itemId       = blade.id;
+    loot.itemQuantity = 1;
+    CHECK(!WorldInteraction::collectLoot(f.state, f.tracker, bag, loot).ok());
+    WorldState world(f.state);
+    CHECK(!world.isObjectConsumed(loot.mapId, loot.objectId));
+    RPGSaveSession save;
+    save.bind(f.state, f.tracker, *f.hero, bag, equipment);
+    REQUIRE(save.setContentVersion("arpg-loop-v1").ok());
+    auto snapshot = save.snapshotJson();
+    REQUIRE(snapshot.ok());
+    f.state.setVariable("gold", 0.0);
+    REQUIRE(world.resetObject(loot.mapId, loot.objectId).ok());
+    REQUIRE(save.restoreSnapshotJson(snapshot.value()).ok());
+    CHECK_EQ(f.state.getVariable("gold"), 10.0);
+    CHECK(!world.isObjectConsumed(loot.mapId, loot.objectId));
+    CHECK_EQ(bag.countItem(blade.id), 1);
+    CHECK(!WorldInteraction::collectLoot(f.state, f.tracker, bag, loot).ok());
+    REQUIRE(equipment.equipFromBag("weapon", &bag, 0));
+    REQUIRE(WorldInteraction::collectLoot(f.state, f.tracker, bag, loot).ok());
+    CHECK(world.isObjectConsumed(loot.mapId, loot.objectId));
+    inventory::ItemRegistry::clear();
+}
+
 TEST_CASE("Action encounter closes damage rewards full-bag pickup equipment and save restore") {
     Fixture         f(false);
     ActionEncounter encounter;

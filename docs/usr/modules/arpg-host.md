@@ -21,6 +21,8 @@
 7. 掉落缓存与击杀奖励分事务；满包不吞缓存。
 8. 换装后 `syncEquipModifiers`；生命上限下降有明确夹取规则。
 9. 存档前：无敌人、无 `hasPendingReward`、玩家存活；读档后重建映射并清理瞬时战斗态。
+   写档顺序：`snapshotJson` → `validateSnapshotJson` → `writeTextAtomic`；读档先 validate 再 restore。
+   `contentVersion` 固定为 `arpg-loop-v1`（未来版本默认拒绝，见 [SAVE](../SAVE.md)）。
 10. 观察面只读；Agent 验证不走 `eve_eval` 改权威状态。
 
 ## `eve.RPGActionEncounter` 用法
@@ -107,7 +109,9 @@ if (restartOrLoad) duel.close();   // 放弃瞬时遭遇；读档后重新 bind
 
 ## 验证
 
-- 原生：`test/integration/rpg-action/`（扣血、击杀奖励、遭遇冲突、失败矩阵）
+- 原生：`test/integration/rpg-action/`（扣血、击杀奖励、遭遇冲突、失败矩阵、满包未领缓存存档、死亡宿主门闩）
+- 存档失败注入：`rpg.saveSession.roundTripAndCrossParticipantRollback`（损坏档）、
+  `rpg.saveSession.arpgLoopContentVersionRejectsFutureAndMigratesCompatible`（版本过新 / 兼容迁移）
 - 双推进：`action.ability.rejectsDuplicateStepOnSameTick`、`combatLoop.rejectsDuplicateAdvanceOnSameTick`
 - 示例：`MIN_RUN_SECONDS=2 bash scripts/smoke_examples.sh arpg-loop`
 - 一键 Agent：`make check/arpg-loop`（或 `bash scripts/verify_arpg_loop.sh`；无显示时用 `xvfb-run -a`）
