@@ -1,0 +1,28 @@
+#version 450
+layout(local_size_x = 256) in;
+layout(set = 0, binding = 0, std430) readonly buffer Sources { vec4 rows[]; } sources;
+layout(set = 0, binding = 1, std430) writeonly buffer Partials { vec4 rows[]; } partials;
+layout(set = 0, binding = 6, std430) writeonly buffer CandidateSources { vec4 rows[]; } candidateSources;
+layout(push_constant) uniform Parameters { float values[32]; } parameters;
+shared vec4 moments[256];
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    uint lane = gl_LocalInvocationID.x;
+    uint sourceCount = uint(parameters.values[0]);
+    vec4 source = id < sourceCount ? sources.rows[id] : vec4(0.0);
+    source.x += (id & 1u) == 0u ? parameters.values[5] : -parameters.values[5];
+    if (id < sourceCount) candidateSources.rows[id] = source;
+    uint bucket = uint(source.x >= 0.0) | (uint(source.y >= 0.0) << 1) |
+                  (uint(source.z >= 0.0) << 2);
+    for (uint cell = 0; cell < 8; ++cell) {
+        moments[lane] = id < sourceCount && bucket == cell
+                            ? vec4(source.xyz * source.w, source.w) : vec4(0.0);
+        barrier();
+        for (uint stride = 128; stride != 0; stride >>= 1) {
+            if (lane < stride) moments[lane] += moments[lane + stride];
+            barrier();
+        }
+        if (lane == 0) partials.rows[gl_WorkGroupID.x * 8 + cell] = moments[0];
+        barrier();
+    }
+}

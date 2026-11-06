@@ -1,4 +1,9 @@
 add_executable(render_benchmark main.cpp)
+eve_module_enabled(graphics_multiscale _render_bench_multiscale)
+if(_render_bench_multiscale)
+    target_sources(render_benchmark PRIVATE multiscale.cpp)
+    target_compile_definitions(render_benchmark PRIVATE EVENGINE_BENCH_MULTISCALE=1)
+endif()
 
 eve_append_system_libraries(_render_bench_sys)
 eve_thirdparty_libs(_render_bench_tp ${EVE_THIRDPARTY_GROUPS})

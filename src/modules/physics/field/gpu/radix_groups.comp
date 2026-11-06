@@ -1,0 +1,23 @@
+#version 450
+layout(local_size_x = 256) in;
+layout(set = 0, binding = 0, std430) readonly buffer GroupZeroCount { uint rows[]; } groupZeroCount;
+layout(set = 0, binding = 1, std430) writeonly buffer GroupZeroBefore { uint rows[]; } groupZeroBefore;
+layout(set = 0, binding = 2, std430) writeonly buffer ChunkZeroCount { uint rows[]; } chunkZeroCount;
+layout(push_constant) uniform Parameters { float values[32]; } parameters;
+shared uint prefix[256];
+
+void main() {
+    uint group = gl_GlobalInvocationID.x;
+    uint lane = gl_LocalInvocationID.x;
+    uint value = group < uint(parameters.values[1]) ? groupZeroCount.rows[group] : 0u;
+    prefix[lane] = value;
+    barrier();
+    for (uint stride = 1u; stride < 256u; stride <<= 1u) {
+        uint lower = lane >= stride ? prefix[lane - stride] : 0u;
+        barrier();
+        prefix[lane] += lower;
+        barrier();
+    }
+    if (group < uint(parameters.values[1])) groupZeroBefore.rows[group] = prefix[lane] - value;
+    if (lane == 255u) chunkZeroCount.rows[gl_WorkGroupID.x] = prefix[lane];
+}

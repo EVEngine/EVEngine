@@ -41,6 +41,11 @@
 #include <string_view>
 #include <vector>
 
+#if defined(EVENGINE_BENCH_MULTISCALE)
+int runMultiscaleBenchmark(eve::graphics::Graphics& graphics, int frames, std::size_t count, int width, int height,
+                           std::string_view mode);
+#endif
+
 namespace {
 
 using eve::graphics::Camera2D;
@@ -352,6 +357,9 @@ void usage() {
 #if defined(EVENGINE_BENCH_PARTICLES)
                  "|gpu-particles"
 #endif
+#if defined(EVENGINE_BENCH_MULTISCALE)
+                 "|multiscale-static|multiscale-rebuild|multiscale-update"
+#endif
                  "\n"
                  "  EVENGINE_PERF_FRAMES overrides [frames] (default 60).\n"
                  "  Highpoly: EVENGINE_BENCH_SUBDIV=1..512 (default 128), EVENGINE_BENCH_MODEL=path.\n"
@@ -529,7 +537,13 @@ int main(int argc, char **argv) {
         gfx->setVSync(false);
 
         int status = 0;
-        if (workload == "all") {
+        if (workload == "multiscale-static" || workload == "multiscale-rebuild" || workload == "multiscale-update") {
+#if defined(EVENGINE_BENCH_MULTISCALE)
+            status = runMultiscaleBenchmark(*gfx, frames, items, width, height, std::string_view(workload).substr(11));
+#else
+            throw std::runtime_error("multiscale benchmark requires graphics_multiscale");
+#endif
+        } else if (workload == "all") {
             const char *names[] = {"clear",       "2d-rects", "2d-textured", "2d-sprites",
                                    "3d-cubes",    "3d-lit",   "3d-shadows",
 #if defined(EVENGINE_BENCH_PARTICLES)

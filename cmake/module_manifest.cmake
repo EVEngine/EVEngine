@@ -43,6 +43,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/module_manifest/rendering_hub.cmake)
 # Host-owned declaration fragments (ordered by first appearance in the former
 # rendering_simulation.cmake + orchestration.cmake). Do not GLOB.
 include(${CMAKE_CURRENT_LIST_DIR}/module_manifest/modules/physics.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/module_manifest/modules/spatial.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/module_manifest/modules/graphics.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/module_manifest/modules/asset.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/module_manifest/modules/pixelworld.cmake)

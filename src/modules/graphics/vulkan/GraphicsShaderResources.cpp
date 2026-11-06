@@ -1,3 +1,4 @@
+// eve-hot-path
 #include <algorithm>
 #include <cstring>
 #include <set>
@@ -71,6 +72,151 @@ Result<void> validateMeshResourceShaderReload(const GpuShader& shader, std::span
 
 std::uint32_t meshResourceInstanceCount(const GpuShader& shader) {
     return shader.resources ? static_cast<std::uint32_t>(shader.resources->instanceBytes.size() / 64) : 0;
+}
+
+Result<void> updateMeshResourceImage(Graphics& graphics, Shader& shader, const ShaderImageInput& input,
+                                     std::span<const ShaderImageRegion> regions) {
+    auto fail = [](DiagnosticCode code, const char* text) {
+        return Result<void>::failure(Diagnostic::error(code, text, "shader.imageUpdate"));
+    };
+    auto found = std::find_if(graphics.ownedGpuShaders.begin(), graphics.ownedGpuShaders.end(),
+                              [&](const auto& gpu) { return gpu->owner == &shader; });
+    if (!graphics.initialized || found == graphics.ownedGpuShaders.end() || !(*found)->resources ||
+        graphics.swapchainPassOpen || graphics.offscreen3DPassOpen)
+        return fail(DiagnosticCode::InvalidArgument, "Expected an owned resource shader outside submission");
+    auto& resources = *(*found)->resources;
+    auto  slot      = std::find_if(resources.shapes.begin(), resources.shapes.end(),
+                                   [&](const auto& shape) { return shape.binding == input.binding; });
+    if (slot == resources.shapes.end()) return fail(DiagnosticCode::InvalidArgument, "Unknown image binding");
+    const auto  index = static_cast<std::size_t>(slot - resources.shapes.begin());
+    const auto& image = resources.images[index];
+    if (image.use_count() != 1 || !image->contentOwner.expired())
+        return fail(DiagnosticCode::Conflict, "Shared or deduplicated image cannot be mutated");
+    const auto& a = slot->sampler;
+    const auto& b = input.sampler;
+    if (slot->format != input.format || slot->dimension != input.dimension || slot->width != input.width ||
+        slot->height != input.height || slot->depth != input.depth || slot->layers != input.layers ||
+        slot->mipLevels != input.mipLevels || a.min != b.min || a.mag != b.mag || a.mipmap != b.mipmap ||
+        a.repeatU != b.repeatU || a.repeatV != b.repeatV || a.repeatW != b.repeatW ||
+        a.maxAnisotropy != b.maxAnisotropy || a.lodBias != b.lodBias || a.minLod != b.minLod || a.maxLod != b.maxLod)
+        return fail(DiagnosticCode::InvalidArgument, "Image update must preserve the complete resource shape");
+    try {
+        std::size_t                      bytes = 0;
+        std::vector<vk::BufferImageCopy> copies;
+        for (const auto& region : regions) {
+            const auto offset = (bytes + 15) & ~std::size_t(15);
+            bytes             = offset + region.size;
+            copies.emplace_back(
+                offset, 0, 0, vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, region.mip, region.layer, 1},
+                vk::Offset3D{}, vk::Extent3D{region.width, region.height, region.depth});
+        }
+        vkb::GenericBuffer staging(
+            graphics.device, vk::BufferUsageFlagBits::eTransferSrc, bytes,
+            vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+        auto* mapped = static_cast<std::byte*>(staging.map());
+        for (std::size_t i = 0; i < regions.size(); ++i)
+            std::memcpy(mapped + copies[i].bufferOffset, input.bytes.data() + regions[i].offset, regions[i].size);
+        staging.unmap();
+        // Old submitted draws must finish before this uniquely owned image changes.
+        // The staging allocation is private and fully prepared before any wait/write.
+        graphics.waitForSharedGpuResources();
+        vkb::executeImmediately(
+            graphics.device.instance, graphics.uploadPool, graphics.device.getQueue(vkb::QueueType::graphics),
+            [&](vk::CommandBuffer command) {
+                vk::ImageMemoryBarrier barrier{
+                    vk::AccessFlagBits::eShaderRead,
+                    vk::AccessFlagBits::eTransferWrite,
+                    vk::ImageLayout::eShaderReadOnlyOptimal,
+                    vk::ImageLayout::eTransferDstOptimal,
+                    VK_QUEUE_FAMILY_IGNORED,
+                    VK_QUEUE_FAMILY_IGNORED,
+                    *image->image,
+                    vk::ImageSubresourceRange{vk::ImageAspectFlagBits::eColor, 0, input.mipLevels, 0, input.layers}};
+                command.pipelineBarrier(
+                    vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
+                    vk::PipelineStageFlagBits::eTransfer, {}, {}, {}, barrier);
+                command.copyBufferToImage(staging.buffer, *image->image, vk::ImageLayout::eTransferDstOptimal, copies);
+                barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+                barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+                barrier.oldLayout     = vk::ImageLayout::eTransferDstOptimal;
+                barrier.newLayout     = vk::ImageLayout::eShaderReadOnlyOptimal;
+                command.pipelineBarrier(
+                    vk::PipelineStageFlagBits::eTransfer,
+                    vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader, {}, {}, {},
+                    barrier);
+            });
+        return Result<void>::success();
+    } catch (const std::exception& error) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, error.what(), "shader.imageUpdate"));
+    }
+}
+
+Result<void> updateMeshResourceImageFromResident(Graphics& graphics, Shader& shader, std::uint32_t binding,
+                                                 std::uint32_t width, std::uint32_t height,
+                                                 const GpuResidentBufferView& source) {
+    auto fail = [](DiagnosticCode code, const char* text) {
+        return Result<void>::failure(Diagnostic::error(code, text, "shader.residentImageUpdate"));
+    };
+    const auto found = std::find_if(graphics.ownedGpuShaders.begin(), graphics.ownedGpuShaders.end(),
+                                    [&](const auto& gpu) { return gpu->owner == &shader; });
+    if (!graphics.initialized || found == graphics.ownedGpuShaders.end() || !(*found)->resources ||
+        graphics.swapchainPassOpen || graphics.offscreen3DPassOpen)
+        return fail(DiagnosticCode::InvalidArgument, "Expected owned resource shader outside submission");
+    auto&      resources = *(*found)->resources;
+    const auto slot      = std::find_if(resources.shapes.begin(), resources.shapes.end(),
+                                        [&](const auto& shape) { return shape.binding == binding; });
+    if (slot == resources.shapes.end() || slot->format != ShaderImageFormat::RGBA32Float ||
+        slot->dimension != ShaderImageDimension::Image2D || slot->width != width || slot->height != height ||
+        slot->depth != 1 || slot->layers != 1 || slot->mipLevels != 1)
+        return fail(DiagnosticCode::InvalidArgument, "Resident image shape does not match RGBA32F resource");
+    const auto& image = resources.images[static_cast<std::size_t>(slot - resources.shapes.begin())];
+    if (image.use_count() != 1 || !image->contentOwner.expired())
+        return fail(DiagnosticCode::Conflict, "Shared or deduplicated image cannot be mutated");
+    const auto bytes = std::uint64_t(width) * height * 16;
+    if (source.backend != GpuResidentBackend::Vulkan || source.nativeHandle == 0 || (source.offsetBytes & 15u) != 0 ||
+        source.offsetBytes > source.sizeBytes || bytes > source.sizeBytes - source.offsetBytes)
+        return fail(source.backend == GpuResidentBackend::Vulkan ? DiagnosticCode::InvalidArgument
+                                                                 : DiagnosticCode::Unsupported,
+                    "Resident buffer does not cover the RGBA32F image");
+    VkBuffer rawBuffer = VK_NULL_HANDLE;
+    static_assert(sizeof(rawBuffer) <= sizeof(source.nativeHandle));
+    std::memcpy(&rawBuffer, &source.nativeHandle, sizeof(rawBuffer));
+    const vk::Buffer buffer(rawBuffer);
+    try {
+        graphics.waitForSharedGpuResources();
+        vkb::executeImmediately(
+            graphics.device.instance, graphics.uploadPool, graphics.device.getQueue(vkb::QueueType::graphics),
+            [&](vk::CommandBuffer command) {
+                vk::ImageMemoryBarrier barrier{vk::AccessFlagBits::eShaderRead,
+                                               vk::AccessFlagBits::eTransferWrite,
+                                               vk::ImageLayout::eShaderReadOnlyOptimal,
+                                               vk::ImageLayout::eTransferDstOptimal,
+                                               VK_QUEUE_FAMILY_IGNORED,
+                                               VK_QUEUE_FAMILY_IGNORED,
+                                               *image->image,
+                                               vk::ImageSubresourceRange{vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1}};
+                command.pipelineBarrier(
+                    vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader,
+                    vk::PipelineStageFlagBits::eTransfer, {}, {}, {}, barrier);
+                vk::BufferImageCopy copy{};
+                copy.bufferOffset     = source.offsetBytes;
+                copy.imageSubresource = {vk::ImageAspectFlagBits::eColor, 0, 0, 1};
+                copy.imageExtent      = vk::Extent3D{width, height, 1};
+                command.copyBufferToImage(buffer, *image->image, vk::ImageLayout::eTransferDstOptimal, copy);
+                barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+                barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+                barrier.oldLayout     = vk::ImageLayout::eTransferDstOptimal;
+                barrier.newLayout     = vk::ImageLayout::eShaderReadOnlyOptimal;
+                command.pipelineBarrier(
+                    vk::PipelineStageFlagBits::eTransfer,
+                    vk::PipelineStageFlagBits::eVertexShader | vk::PipelineStageFlagBits::eFragmentShader, {}, {}, {},
+                    barrier);
+            });
+        return Result<void>::success();
+    } catch (const std::exception& error) {
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, error.what(), "shader.residentImageUpdate"));
+    }
 }
 
 Result<void> Graphics::replaceMeshShaderResources(Shader& shader, const std::vector<uint32_t>& vertSpv,

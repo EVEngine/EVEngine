@@ -1,0 +1,35 @@
+#version 450
+layout(local_size_x = 256) in;
+layout(set = 0, binding = 0, std430) readonly buffer Sources { vec4 rows[]; } sources;
+layout(set = 0, binding = 1, std430) writeonly buffer Keys { uvec2 rows[]; } keys;
+layout(set = 0, binding = 2, std430) buffer Admission { uint rejected; } admission;
+layout(push_constant) uniform Parameters { float values[32]; } parameters;
+
+uint spread3(uint value) {
+    value &= 1023u;
+    value = (value | (value << 16)) & 0x030000ffu;
+    value = (value | (value << 8)) & 0x0300f00fu;
+    value = (value | (value << 4)) & 0x030c30c3u;
+    return (value | (value << 2)) & 0x09249249u;
+}
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= uint(parameters.values[0])) return;
+    vec3 position = sources.rows[id].xyz;
+    vec3 lower = vec3(parameters.values[1], parameters.values[2], parameters.values[3]);
+    vec3 upper = vec3(parameters.values[4], parameters.values[5], parameters.values[6]);
+    if (any(isnan(position)) || any(isinf(position)) || any(lessThan(position, lower)) ||
+        any(greaterThan(position, upper))) {
+        atomicOr(admission.rejected, 1u);
+        return;
+    }
+    vec3 normalized = (position - lower) /
+                      vec3(parameters.values[7], parameters.values[8], parameters.values[9]);
+    if (any(isnan(normalized)) || any(isinf(normalized))) {
+        atomicOr(admission.rejected, 2u);
+        return;
+    }
+    uvec3 cell = uvec3(clamp(floor(normalized * 1024.0), vec3(0.0), vec3(1023.0)));
+    keys.rows[id] = uvec2(spread3(cell.x) | (spread3(cell.y) << 1) | (spread3(cell.z) << 2), id);
+}

@@ -125,3 +125,45 @@ All new native tests are process-isolated and discovered from their paths/source
 module evidence comes from `scripts/test_module_coverage.py`. Resource ownership/lifetime, costs,
 resize and teardown are documented; no module boundary, persistent format or ECS lifecycle changes
 or architecture-rule exceptions are introduced.
+
+## Multiscale sphere stage benchmark
+
+With `EVENGINE_BUILD_RENDER_BENCHMARK=ON` and `graphics_multiscale` enabled, three
+additional workloads are available (they are not added to the existing `all` workload):
+
+```
+render_benchmark multiscale-static 60 1000000 1920 1080
+render_benchmark multiscale-rebuild 8 1000000 1920 1080
+render_benchmark multiscale-update 16 1000000 1920 1080
+```
+
+All retain one independent sphere record per item, arranged on a deterministic
+grid entirely in view. The static workload reuses one uploaded batch. The rebuild
+workload moves every record, builds a CPU snapshot, uploads a new GPU batch and
+retires the previous batch each measured frame. Four static draws warm up the
+presentation path before measurement; cold preparation is reported separately.
+Set `EVENGINE_BENCH_HIDDEN=1` to use the existing hidden-window presentation path.
+
+The update workload also moves and prepares every record each frame, but uses the initial batch's
+capacity and `update(frame)`. Its upload stage includes packing, owning-image preparation, GPU
+synchronization and upload; it does not reconstruct the pipeline or immutable matrix buffer.
+Large `SphereFrame::build` calls use a bounded number of internal CPU workers; `cpuPrepareMs`
+measures their elapsed wall time including launch, join, and ordered compaction. It does not sum
+worker CPU time.
+When the record count admits an exact image shape, the batch reads the frame's contiguous records
+directly into the owning-image preparation step. Counts requiring a padded final row use a temporary
+packing buffer; the reported upload cost includes either path.
+The `uploadAndRetireMs` field retains its schema name; in update mode it measures that update stage.
+
+The `MULTISCALE_BENCH` JSON line reports cold preparation/upload, CPU loop wall
+time and delayed graphics-queue timing (with its actual sample count), plus
+P50/P95/P99/max for measured stages. CPU loop timings do not identify the GPU
+completion time of the same frame. GPU timestamps are delayed by frames in flight
+and exclude CPU preparation. A zero GPU sample count means unavailable timing.
+The 128 bytes/item field counts record and matrix payload only, not peak memory.
+
+This is a renderer cost probe, **not** the million-state 16.67 ms whole-world
+acceptance: there is no field solve, integration, generation, collision or input
+workflow. Tiny spheres may cover no pixel; this is geometry rasterization, not a
+subpixel stellar-flux test. Do not present static-batch timing as per-frame rebuild
+cost or as proof that all required simulation work fits within one frame.

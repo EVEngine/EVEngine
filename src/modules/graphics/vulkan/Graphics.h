@@ -35,6 +35,10 @@
 #include "vkbuilder.hpp"
 #include "vkbuilder/framegraph.hpp"
 
+namespace eve::graphics {
+struct ShaderImageInput;
+struct ShaderImageRegion;
+}  // namespace eve::graphics
 namespace eve::graphics::vulkan {
 
 class OffscreenCanvas;
@@ -1095,7 +1099,12 @@ public:
     };
 
 private:
-    void drawMeshShaderRange(Mesh *mesh, const glm::mat4 &model, Texture *texture, const Color &tint, Shader *shader,
+    friend Result<void> updateMeshResourceImage(Graphics& graphics, Shader& shader, const ShaderImageInput& input,
+                                                std::span<const ShaderImageRegion> regions);
+    friend Result<void> updateMeshResourceImageFromResident(Graphics& graphics, Shader& shader, std::uint32_t binding,
+                                                            std::uint32_t width, std::uint32_t height,
+                                                            const GpuResidentBufferView& source);
+    void drawMeshShaderRange(Mesh* mesh, const glm::mat4& model, Texture* texture, const Color& tint, Shader* shader,
                              std::uint32_t first, std::uint32_t count);
     struct GpuParticleDrawRequest;
     struct GpuParticleResource;

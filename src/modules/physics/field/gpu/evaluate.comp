@@ -1,0 +1,43 @@
+#version 450
+layout(local_size_x = 256) in;
+layout(set = 0, binding = 2, std430) readonly buffer Summaries { vec4 rows[]; } summaries;
+layout(set = 0, binding = 3, std430) readonly buffer Targets { vec4 rows[]; } targets;
+layout(set = 0, binding = 4, std430) writeonly buffer CandidateTargets { vec4 rows[]; } candidateTargets;
+layout(set = 0, binding = 5, std430) buffer Admission { uint rejected; } admission;
+layout(push_constant) uniform Parameters { float values[32]; } parameters;
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= uint(parameters.values[3])) return;
+    vec3 position = targets.rows[id * 2].xyz;
+    vec3 acceleration = vec3(0.0);
+    float bound = 0.0;
+    float radius = parameters.values[6];
+    for (uint cell = 0; cell < 8; ++cell) {
+        vec4 summary = summaries.rows[cell];
+        if (summary.w <= 0.0) continue;
+        vec3 delta = summary.xyz / summary.w - position;
+        float distance = length(delta);
+        if (distance <= radius || isnan(distance) || isinf(distance)) {
+            atomicOr(admission.rejected, 1u);
+            return;
+        }
+        float inverse = 1.0 / distance;
+        acceleration += summary.w * delta * (inverse * inverse * inverse);
+        float closest = distance - radius;
+        bound += 2.0 * summary.w * radius / (closest * closest * closest);
+    }
+    if (isnan(bound) || isinf(bound) || bound > parameters.values[4]) {
+        atomicOr(admission.rejected, 1u);
+        return;
+    }
+    vec3 velocity = targets.rows[id * 2 + 1].xyz + acceleration * parameters.values[2];
+    vec3 nextPosition = position + velocity * parameters.values[2];
+    if (any(isnan(acceleration)) || any(isinf(acceleration)) ||
+        any(isnan(velocity)) || any(isinf(velocity)) ||
+        any(isnan(nextPosition)) || any(isinf(nextPosition))) {
+        atomicOr(admission.rejected, 2u);
+        return;
+    }
+    candidateTargets.rows[id * 2] = vec4(nextPosition, 0.0);
+    candidateTargets.rows[id * 2 + 1] = vec4(velocity, 0.0);
+}
