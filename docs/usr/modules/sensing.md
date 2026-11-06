@@ -44,7 +44,8 @@ local m = world.executePreset("sensing.builtin.coneSelect", 0.0, 0.0, 1.0, 0.0).
 | `includeFactions` / `excludeFactions` | 阵营字符串过滤 |
 | `visibleTo` | 观察者键（事实可见性，不是几何 LOS） |
 | `minCount` / `maxCount` + `countPolicy` | `TruncateToMax` 或 `FailIfOutOfRange` |
-| `sortKey` | `None` 或 `DistanceAscending`（分数为 `-distance`） |
+| `sortKey` | `None` / `DistanceAscending`(closest) / `DistanceDescending`(furthest) / `PathProgressDescending`(first) / `PathProgressAscending`(last) / `StrengthDescending`(strongest) / `StrengthAscending`(weakest) |
+| 指标 | `setMetrics(id, pathProgress, strength)` 供 first/last/strongest/weakest；`circleSorted(..., sortPolicy)` 为脚本糖 |
 
 `QueryCone`：顶点 `(x,y)`，朝向 `(dirX,dirY)`，`halfAngle` 为弧度 `[0, π]`，`range` 为非负距离。
 
