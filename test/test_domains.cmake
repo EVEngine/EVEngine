@@ -128,6 +128,7 @@ set(EVE_TEST_MODULE_DOMAIN
     # --- physics and vehicles
     "physics;physics"
     "vehicle;physics"
+    "warship;physics"
 
     # --- simulation-heavy domains
     "fluids;fluids"
