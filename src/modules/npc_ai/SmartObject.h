@@ -72,6 +72,15 @@ struct SmartObjectExpirationReport {
     std::uint32_t claimsExpired = 0;
 };
 
+/** @brief One freed smart-object seat after release, expiry, cancel, or agent cleanup. */
+struct SmartObjectVacancy {
+    std::string   logicalId;
+    std::string   slotId;
+    AgentHandle   agent;
+    std::uint64_t tick = 0;
+    std::string   reason;  ///< "release" | "expire" | "cancel" | "agent"
+};
+
 /**
  * @brief Authoritative registry and lease manager for reservable world interactions.
  * @remarks All handles are process-local and generation checked. The registry owns
@@ -104,6 +113,12 @@ public:
     [[nodiscard]] Result<SmartObjectExpirationReport> expire(std::uint64_t currentTick);
     /** @brief Returns an owning claim snapshot, or StaleHandle. */
     [[nodiscard]] Result<SmartObjectClaimSnapshot> snapshot(SmartObjectClaimHandle claim) const;
+    /** @brief Queued vacancy count after releases / expiry / cancel / agent cleanup. */
+    [[nodiscard]] int vacancyCount() const noexcept;
+    /** @brief Vacancy at a stable index, or InvalidArgument when out of range. */
+    [[nodiscard]] Result<SmartObjectVacancy> vacancyAt(int index) const;
+    /** @brief Clears the vacancy queue without changing live claims. */
+    void clearVacancies() noexcept;
 
 private:
     struct Object {
@@ -129,13 +144,14 @@ private:
     [[nodiscard]] Result<std::reference_wrapper<const Object>> resolveObject(SmartObjectHandle handle) const;
     [[nodiscard]] Result<std::reference_wrapper<Claim>>        resolveClaim(SmartObjectClaimHandle handle);
     [[nodiscard]] Result<std::reference_wrapper<const Claim>>  resolveClaim(SmartObjectClaimHandle handle) const;
-    void releaseClaimUnchecked(SmartObjectClaimHandle handle) noexcept;
+    void releaseClaimUnchecked(SmartObjectClaimHandle handle, std::string_view reason, std::uint64_t tick) noexcept;
 
     std::vector<ObjectSlot>                  objects_;
     std::vector<std::uint32_t>               freeObjects_;
     std::vector<ClaimSlot>                   claims_;
     std::vector<std::uint32_t>               freeClaims_;
     std::map<std::string, SmartObjectHandle> objectsByLogicalId_;
+    std::vector<SmartObjectVacancy>          vacancies_;
 };
 
 }  // namespace eve::npc_ai

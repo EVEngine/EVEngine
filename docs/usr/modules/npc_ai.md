@@ -74,7 +74,11 @@ stable ordering. A successful claim returns a generation-qualified lease handle.
 
 Call `releaseAgentClaims` before destroying an NPC. When an object is removed first,
 choose `RejectClaimed` to preserve claims or `CancelClaims` to invalidate them
-explicitly. `expire` provides bounded cleanup for abandoned leases.
+explicitly. `expire` provides bounded cleanup for abandoned leases. Each freed seat
+also appends a `SmartObjectVacancy` (`reason` = `release` / `expire` / `cancel` /
+`agent`) readable via `vacancyCount` / `vacancyAt` / `clearVacancies`. Geometric
+vacancies are not auto-refill policy — compose with [roster](roster.md) for
+squad/post reinforce spawn requests.
 
 ## Navigation and ECS
 

@@ -171,6 +171,7 @@ set(EVE_TEST_MODULE_DOMAIN
     "npc_ai;npc_ai"
     "crowd;npc_ai"
     "sensing;npc_ai"
+    "roster;npc_ai"
 
     # --- construction
     # house generation lives under the procgen package (src/modules/procgen/house)

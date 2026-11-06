@@ -72,6 +72,7 @@ Use `has_module("slot")` for optional features. Project module selection and sou
 - [State patches — Chinese](../../usr/modules/statepatch.md): atomic JSON updates with conflict checks.
 - [Orders — Chinese](../../usr/modules/orders.md): priority queues, preemption, timeouts and snapshots.
 - [Social graph — Chinese](../../usr/modules/social.md): ownership, control, roles and directed relations.
+- [Roster — Chinese](../../usr/modules/roster.md) / [English](modules/roster.md): squad membership, post seats, vacancies and delayed spawn requests.
 - [Production — Chinese](../../usr/modules/production.md): parallel slots and resumable production tasks.
 - [Authority — Chinese](../../usr/modules/authority.md): prioritized allow/deny rules.
 - [Sensing — Chinese](../../usr/modules/sensing.md): candidate queries and selection.

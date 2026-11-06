@@ -190,6 +190,10 @@ eve_declare_module(NAME schema LAYER 0 SCRIPT Schema SLOT schema
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME social LAYER 0 SCRIPT Social SLOT social
                    GROUP minimal 2d 3d web)
+# Squad membership, post occupancy and reinforce spawn-request policy. Owns only
+# roster facts; navigation / production / NPC behavior stay in their modules.
+eve_declare_module(NAME roster LAYER 0 SCRIPT Roster SLOT roster
+                   GROUP minimal 2d 3d web)
 eve_declare_module(NAME statepatch LAYER 0 SCRIPT StatePatch SLOT statepatch
                    DEPS transaction
                    GROUP minimal 2d 3d web)
