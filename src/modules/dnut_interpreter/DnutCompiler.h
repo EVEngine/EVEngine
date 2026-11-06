@@ -37,7 +37,9 @@ struct EVENGINE_API_PLATFORM DnutCompileOutput {
  * this compiler rejecting the file. Step payloads are validated against
  * `registry`, which is the single source of truth for the step vocabulary: the
  * compiler knows only the control-flow keywords `if` / `choice` / `call` /
- * `wait` / `end`.
+ * `common` / `wait` / `end` / `loop` / `break` / `continue` / `label` /
+ * `jump` / `parallel`. Top-level `common` blocks are compiled like `story`
+ * (CallCommonEvent targets).
  *
  * @param source Full UTF-8 document text; it is not retained.
  * @param path Source identity reported in every diagnostic.
@@ -47,7 +49,7 @@ struct EVENGINE_API_PLATFORM DnutCompileOutput {
  * @thread Reentrant and side-effect free; the caller owns the result.
  * @reentrancy Invokes no callbacks.
  * @cost Linear in the document size; allocates one token buffer and one asset
- *       per `story` block.
+ *       per `story` / `common` block.
  */
 [[nodiscard]] EVENGINE_API_PLATFORM DnutCompileOutput compileDnut(std::string_view source, const std::string& path,
                                                                   const StepKindRegistry& registry);

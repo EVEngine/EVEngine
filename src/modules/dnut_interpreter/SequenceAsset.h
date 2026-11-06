@@ -59,9 +59,10 @@ struct SequenceRoute {
  *
  * `type` is a plain string so the vocabulary is owned by a `StepKindRegistry`
  * rather than by a closed enum in the compiler. Core control-flow types
- * (`branch` / `choice` / `call` / `wait` / `end`) are interpreted by the
- * runtime; every other type is dispatched to its registered handler and its
- * `payload` schema is validated by that registration.
+ * (`branch` / `choice` / `call` / `wait` / `end` / `label` / `jump` / `loop` /
+ * `break` / `continue` / `parallel` / `join`) are interpreted by the runtime;
+ * every other type is dispatched to its registered handler and its `payload`
+ * schema is validated by that registration.
  */
 struct SequenceNode {
     std::string                id;
@@ -107,7 +108,7 @@ struct EVENGINE_API_PLATFORM SequenceAsset {
 /**
  * @brief Return whether `type` is a control-flow type interpreted by the runtime.
  * @param type Step type name as written in the compiled asset.
- * @return True for `branch`, `choice`, `call`, `command`, `wait` and `end`.
+ * @return True for core control-flow types owned by `SequenceRuntime`.
  * @thread Reentrant and side-effect free.
  */
 [[nodiscard]] bool isCoreSequenceNodeType(const std::string& type) noexcept;

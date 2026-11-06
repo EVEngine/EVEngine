@@ -18,6 +18,7 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <utility>
@@ -270,6 +271,7 @@ TEST_CASE("dnut.runtime.captureRestoreAndVersionMismatchAreTransactional") {
     REQUIRE(source.start(asset).ok());
     eve::Value snapshot;
     REQUIRE(source.captureState(snapshot).ok());
+    CHECK_EQ(snapshot.find("schemaVersion")->asInt(), SequenceRuntime::SaveVersion);
     SequenceRuntime restored;
     restored.setStepRegistry(&registry);
     restored.setAssetResolver(
@@ -288,4 +290,195 @@ TEST_CASE("dnut.runtime.captureRestoreAndVersionMismatchAreTransactional") {
         [&](const std::string& id) -> const SequenceAsset* { return id == changed.id ? &changed : nullptr; });
     CHECK(!rejected.restoreState(snapshot).ok());
     CHECK(!rejected.isActive());
+}
+
+TEST_CASE("dnut.compiler.andRuntime.supportLoopBreakContinueLabelJump") {
+    std::vector<std::string> marks;
+    auto                     registry = vocabulary(&marks);
+    auto                     output   = compileDnut(R"(
+story control {
+    mark id=start
+    loop times=2 {
+        mark id=tick
+    }
+    label retry
+    mark id=ask
+    choice {
+        option "Again" { jump retry }
+        option "Done" { mark id=done }
+    }
+    loop {
+        mark id=spin
+        break
+        mark id=unreachable
+    }
+    mark id=after
+}
+)",
+                                "control.dnut", registry);
+    REQUIRE(!output.hasErrors());
+    REQUIRE_EQ(output.assets.size(), std::size_t{1});
+    const auto& asset = output.assets.front();
+    REQUIRE(asset.validate().ok());
+
+    SequenceRuntime runtime;
+    runtime.setStepRegistry(&registry);
+    runtime.setConditionEvaluator([](const eve::Value&) { return SequenceConditionOutcome{true, {}}; });
+    REQUIRE(runtime.start(&asset).ok());
+    REQUIRE_EQ(marks.size(), std::size_t{4});  // start + tick + tick + ask
+    CHECK_EQ(marks[0], std::string("start"));
+    CHECK_EQ(marks[1], std::string("tick"));
+    CHECK_EQ(marks[2], std::string("tick"));
+    CHECK_EQ(marks[3], std::string("ask"));
+    CHECK(runtime.isBlocked());
+    CHECK_EQ(runtime.currentNode()->type, std::string("choice"));
+    REQUIRE(runtime.select("Again").ok());
+    REQUIRE_EQ(marks.size(), std::size_t{5});  // jump retry lands on ask again
+    CHECK_EQ(marks[4], std::string("ask"));
+    CHECK_EQ(runtime.currentNode()->type, std::string("choice"));
+    REQUIRE(runtime.select("Done").ok());
+    REQUIRE_EQ(marks.size(), std::size_t{8});  // done + spin + after
+    CHECK_EQ(marks[5], std::string("done"));
+    CHECK_EQ(marks[6], std::string("spin"));
+    CHECK_EQ(marks[7], std::string("after"));
+    CHECK(!runtime.isActive());
+}
+
+TEST_CASE("dnut.runtime.loopWhileStopsWhenConditionFails") {
+    std::vector<std::string> marks;
+    auto                     registry = vocabulary(&marks);
+    int                      gold     = 0;
+    auto                     output   = compileDnut(R"(
+story while.loop {
+    loop while variable.gold < 2 {
+        mark id=body
+    }
+    mark id=done
+}
+)",
+                                "while.dnut", registry);
+    REQUIRE(!output.hasErrors());
+    SequenceRuntime runtime;
+    runtime.setStepRegistry(&registry);
+    runtime.setConditionEvaluator([&](const eve::Value& condition) {
+        (void)condition;
+        SequenceConditionOutcome outcome{gold < 2, {}};
+        if (outcome.passed) gold += 1;  // trip after two successful entries
+        return outcome;
+    });
+    REQUIRE(runtime.start(&output.assets.front()).ok());
+    REQUIRE_EQ(marks.size(), std::size_t{3});
+    CHECK_EQ(marks[0], std::string("body"));
+    CHECK_EQ(marks[1], std::string("body"));
+    CHECK_EQ(marks[2], std::string("done"));
+    CHECK(!runtime.isActive());
+}
+
+TEST_CASE("dnut.runtime.loopContinueSkipsRemainderAndRechecks") {
+    std::vector<std::string> marks;
+    auto                     registry = vocabulary(&marks);
+    int                      trips    = 0;
+    auto                     output   = compileDnut(R"(
+story while.continue {
+    loop while variable.trips < 2 {
+        mark id=before
+        continue
+        mark id=skip
+    }
+    mark id=done
+}
+)",
+                                "while-continue.dnut", registry);
+    REQUIRE(!output.hasErrors());
+    SequenceRuntime runtime;
+    runtime.setStepRegistry(&registry);
+    runtime.setConditionEvaluator([&](const eve::Value&) {
+        SequenceConditionOutcome outcome{trips < 2, {}};
+        if (outcome.passed) trips += 1;
+        return outcome;
+    });
+    REQUIRE(runtime.start(&output.assets.front()).ok());
+    REQUIRE_EQ(marks.size(), std::size_t{3});
+    CHECK_EQ(marks[0], std::string("before"));
+    CHECK_EQ(marks[1], std::string("before"));
+    CHECK_EQ(marks[2], std::string("done"));
+    CHECK(std::find(marks.begin(), marks.end(), "skip") == marks.end());
+    CHECK(!runtime.isActive());
+}
+
+TEST_CASE("dnut.runtime.parallelJoinsInstantLanesAndHostWaits") {
+    std::vector<std::string> marks;
+    auto                     registry = vocabulary(&marks);
+    auto                     output   = compileDnut(R"(
+story sides {
+    parallel {
+        lane {
+            mark id=left
+            wait 0.1
+            mark id=left.done
+        }
+        lane {
+            mark id=right
+        }
+    }
+    mark id=joined
+}
+)",
+                                "parallel.dnut", registry);
+    REQUIRE(!output.hasErrors());
+    SequenceRuntime runtime;
+    runtime.setStepRegistry(&registry);
+    REQUIRE(runtime.start(&output.assets.front()).ok());
+    REQUIRE(runtime.isBlocked());
+    CHECK_EQ(runtime.currentNode()->type, std::string("wait"));
+    CHECK(std::find(marks.begin(), marks.end(), "left") != marks.end());
+    CHECK(std::find(marks.begin(), marks.end(), "right") != marks.end());
+    REQUIRE(runtime.advance().ok());
+    REQUIRE_EQ(marks.back(), std::string("joined"));
+    CHECK(std::find(marks.begin(), marks.end(), "left.done") != marks.end());
+    CHECK(!runtime.isActive());
+}
+
+TEST_CASE("dnut.compiler.commonBlocksAreCallableLikeStories") {
+    std::vector<std::string> marks;
+    auto                     registry = vocabulary(&marks);
+    auto                     output   = compileDnut(R"(
+common shared.heal {
+    mark id=heal
+}
+story caster {
+    mark id=before
+    common shared.heal
+    mark id=after
+}
+)",
+                                "common.dnut", registry);
+    REQUIRE(!output.hasErrors());
+    REQUIRE_EQ(output.assets.size(), std::size_t{2});
+    std::map<std::string, const SequenceAsset*> byId;
+    for (const auto& asset : output.assets) byId.emplace(asset.id, &asset);
+    CHECK(byId.at("shared.heal")->repeatable);
+    SequenceRuntime runtime;
+    runtime.setStepRegistry(&registry);
+    runtime.setAssetResolver([&](const std::string& id) -> const SequenceAsset* {
+        auto it = byId.find(id);
+        return it == byId.end() ? nullptr : it->second;
+    });
+    REQUIRE(runtime.start(byId.at("caster")).ok());
+    REQUIRE_EQ(marks.size(), std::size_t{3});
+    CHECK_EQ(marks[0], std::string("before"));
+    CHECK_EQ(marks[1], std::string("heal"));
+    CHECK_EQ(marks[2], std::string("after"));
+    CHECK(!runtime.isActive());
+}
+
+TEST_CASE("dnut.compiler.rejectsBreakOutsideLoopAndUnknownJump") {
+    auto registry = vocabulary();
+    auto brokenBreak = compileDnut("story bad {\n break\n}\n", "bad-break.dnut", registry);
+    REQUIRE(brokenBreak.hasErrors());
+    auto brokenJump = compileDnut("story bad {\n jump missing\n}\n", "bad-jump.dnut", registry);
+    REQUIRE(brokenJump.hasErrors());
+    auto brokenParallel = compileDnut("story bad {\n parallel {\n lane { mark id=a }\n }\n}\n", "bad-parallel.dnut",
+                                      registry);
+    REQUIRE(brokenParallel.hasErrors());
 }
