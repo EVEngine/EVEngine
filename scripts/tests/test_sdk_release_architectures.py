@@ -133,7 +133,8 @@ set(EVENGINE_PATCH_VERSION 3)
 set(EVE_ENABLED_MODULES "")
 include("{(ROOT / 'cmake/install_sdk.cmake').as_posix()}")
 """, encoding="utf-8")
-        dependency = self.root / "resolved x86_64 dependency prefix"
+        dependency = self.root / ("resolved x86_64 dependency prefix" if os.name == "nt"
+                                  else "resolved x86_64 dependency:prefix")
         (dependency / "lib").mkdir(parents=True)
         (dependency / "include").mkdir()
         (dependency / "lib/libfixture.dylib").write_text("x86_64", encoding="utf-8")

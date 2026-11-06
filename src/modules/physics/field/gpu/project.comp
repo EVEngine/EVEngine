@@ -1,0 +1,48 @@
+#version 450
+layout(local_size_x = 256) in;
+layout(set = 0, binding = 0, std430) readonly buffer Targets { vec4 rows[]; } targets;
+layout(set = 0, binding = 1, std430) writeonly buffer Packets { vec4 rows[]; } packets;
+layout(set = 0, binding = 2, std430) buffer Admission { uint rejected; } admission;
+layout(set = 0, binding = 3, std430) readonly buffer Appearances { vec4 rows[]; } appearances;
+layout(push_constant) uniform Parameters { float values[32]; } parameters;
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= uint(parameters.values[0])) return;
+    vec3 delta = targets.rows[id * 2].xyz - vec3(parameters.values[1], parameters.values[2], parameters.values[3]);
+    vec3 center = vec3(dot(delta, vec3(parameters.values[4], parameters.values[5], parameters.values[6])),
+                       dot(delta, vec3(parameters.values[7], parameters.values[8], parameters.values[9])),
+                       dot(delta, vec3(parameters.values[10], parameters.values[11], parameters.values[12])));
+    bool individual = parameters.values[20] != 0.0;
+    float radius = individual ? appearances.rows[id * 2].x : parameters.values[15];
+    float depthExponent = individual ? appearances.rows[id * 2].y : parameters.values[16];
+    vec3 color = individual ? appearances.rows[id * 2 + 1].xyz :
+        vec3(parameters.values[17], parameters.values[18], parameters.values[19]);
+    float guard = 128.0 * 1.1920929e-7 * (length(center) + radius);
+    float nearZ = center.z - radius - guard;
+    float farZ = center.z + radius + guard;
+    if (any(isnan(center)) || any(isinf(center)) || isnan(guard) || isinf(guard) ||
+        nearZ <= 0.0 || isinf(farZ)) {
+        atomicOr(admission.rejected, 1u);
+        return;
+    }
+    float left = center.x - radius - guard;
+    float right = center.x + radius + guard;
+    float bottom = -center.y - radius - guard;
+    float top = -center.y + radius + guard;
+    vec4 x = vec4(left / nearZ, left / farZ, right / nearZ, right / farZ) / parameters.values[13];
+    vec4 y = vec4(bottom / nearZ, bottom / farZ, top / nearZ, top / farZ) / parameters.values[14];
+    vec2 low = vec2(min(min(x.x, x.y), min(x.z, x.w)), min(min(y.x, y.y), min(y.z, y.w)));
+    vec2 high = vec2(max(max(x.x, x.y), max(x.z, x.w)), max(max(y.x, y.y), max(y.z, y.w)));
+    if (any(isnan(low)) || any(isinf(low)) || any(isnan(high)) || any(isinf(high))) {
+        atomicOr(admission.rejected, 2u);
+        return;
+    }
+    vec2 margin = vec2(16.0 * 1.1920929e-7);
+    low = clamp(low - margin, vec2(-1.0), vec2(1.0));
+    high = clamp(high + margin, vec2(-1.0), vec2(1.0));
+    packets.rows[id * 4] = vec4(center, radius);
+    packets.rows[id * 4 + 1] = vec4(parameters.values[13], parameters.values[14], depthExponent, 0.0);
+    packets.rows[id * 4 + 2] = vec4(color, 0.0);
+    packets.rows[id * 4 + 3] = vec4(low, high);
+}

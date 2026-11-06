@@ -1,0 +1,21 @@
+#version 450
+layout(local_size_x = 256) in;
+layout(set = 0, binding = 0, std430) readonly buffer InputKeys { uvec2 rows[]; } inputKeys;
+layout(set = 0, binding = 1, std430) readonly buffer LocalZeroBefore { uint rows[]; } localZeroBefore;
+layout(set = 0, binding = 2, std430) readonly buffer GroupZeroBefore { uint rows[]; } groupZeroBefore;
+layout(set = 0, binding = 3, std430) readonly buffer ChunkZeroBefore { uint rows[]; } chunkZeroBefore;
+layout(set = 0, binding = 4, std430) readonly buffer TotalZeros { uint value; } totalZeros;
+layout(set = 0, binding = 5, std430) writeonly buffer OutputKeys { uvec2 rows[]; } outputKeys;
+layout(push_constant) uniform Parameters { float values[32]; } parameters;
+
+void main() {
+    uint id = gl_GlobalInvocationID.x;
+    if (id >= uint(parameters.values[0])) return;
+    uvec2 item = inputKeys.rows[id];
+    uint group = id / 256u;
+    uint chunk = group / 256u;
+    uint zeroBefore = localZeroBefore.rows[id] + groupZeroBefore.rows[group] + chunkZeroBefore.rows[chunk];
+    uint bit = (item.x >> uint(parameters.values[3])) & 1u;
+    uint destination = bit == 0u ? zeroBefore : totalZeros.value + id - zeroBefore;
+    outputKeys.rows[destination] = item;
+}

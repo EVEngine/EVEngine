@@ -9,7 +9,12 @@ set(EVENGINE_SDK_VERSION
     "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}")
 
 # load_third_party resolves both downloaded and source-built install trees.
-file(TO_CMAKE_PATH "${EVENGINE_TP_INSTALL_PREFIX}" _eve_sdk_tp_prefix)
+set(_eve_sdk_tp_prefix "${EVENGINE_TP_INSTALL_PREFIX}")
+# Generated install(CODE) must not reinterpret Windows separators as escapes.
+# Do not convert POSIX paths as search-path lists: ':' can be part of a filename.
+if(CMAKE_HOST_WIN32)
+    string(REPLACE "\\" "/" _eve_sdk_tp_prefix "${_eve_sdk_tp_prefix}")
+endif()
 if(NOT _eve_sdk_tp_prefix)
     message(FATAL_ERROR "SDK install requires a resolved EVENGINE_TP_INSTALL_PREFIX")
 endif()

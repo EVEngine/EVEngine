@@ -220,7 +220,12 @@ def _changed_lines(base: str | None) -> list[SourceLine]:
 
     diff_args = ["diff", "--no-color", "--unified=0"]
     if base:
-        diff_args.append(base)
+        # Match the formatting gate: upstream-only changes are not branch changes.
+        # Diff the merge base against the worktree to retain staged/unstaged edits.
+        merge_base = _git(["merge-base", base, "HEAD"]).strip()
+        if not merge_base:
+            raise RuntimeError(f"Cannot resolve architecture comparison base: {base}")
+        diff_args.append(merge_base)
     diff_args.extend(["--", "src/**/*.h", "src/**/*.hpp", "src/**/*.cpp"])
     diff = _git(diff_args)
     lines: list[SourceLine] = []

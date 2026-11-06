@@ -1,0 +1,21 @@
+#version 450
+layout(local_size_x = 256) in;
+layout(set = 0, binding = 1, std430) readonly buffer Partials { vec4 rows[]; } partials;
+layout(set = 0, binding = 2, std430) writeonly buffer Summaries { vec4 rows[]; } summaries;
+layout(push_constant) uniform Parameters { float values[32]; } parameters;
+shared vec4 moments[256];
+void main() {
+    uint lane = gl_LocalInvocationID.x;
+    uint cell = gl_WorkGroupID.x;
+    uint partialCount = uint(parameters.values[1]);
+    vec4 sum = vec4(0.0);
+    for (uint i = lane; i < partialCount; i += 256)
+        sum += partials.rows[i * 8 + cell];
+    moments[lane] = sum;
+    barrier();
+    for (uint stride = 128; stride != 0; stride >>= 1) {
+        if (lane < stride) moments[lane] += moments[lane + stride];
+        barrier();
+    }
+    if (lane == 0) summaries.rows[cell] = moments[0];
+}

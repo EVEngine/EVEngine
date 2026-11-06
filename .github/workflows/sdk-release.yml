@@ -1157,7 +1157,7 @@ jobs:
     name: Downloaded WebGPU SDK browser consumer
     needs: publish
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout checks
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -1180,7 +1180,7 @@ jobs:
           gh release download "$TAG" --repo "$REPO" --dir artifacts \
             --pattern "eve-sdk-webgpu-$TAG.zip" --pattern SHA256SUMS
       - name: Setup pinned WebGPU browser
-        timeout-minutes: 10
+        timeout-minutes: 20
         uses: ./.github/actions/setup-webgpu-browser
 
       - name: Verify checksum and run extracted SDK

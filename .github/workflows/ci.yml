@@ -830,7 +830,32 @@ jobs:
           make build/linux-debug JOBS="$(nproc)" \
             CMAKE_EXTRA_ARGS="-DBUILD_TESTING=${{ needs.change-scope.outputs.test_mode == 'none' && 'OFF' || 'ON' }} \
               -DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
+              -DEVENGINE_MODULE_SPATIAL_MULTISCALE=ON \
+              -DEVENGINE_MODULE_PHYSICS_FIELD=ON \
+              -DEVENGINE_MODULE_PHYSICS_FIELD_COUPLING=ON \
+              -DEVENGINE_MODULE_PROCGEN_RECURSIVE=ON \
+              -DEVENGINE_MODULE_PROCGEN_RECURSIVE_GRAPHICS=ON \
+              -DEVENGINE_MODULE_GRAPHICS_MULTISCALE=ON \
               -DEVENGINE_COMPILER_CACHE=SCCACHE ${{ steps.third-party-cache.outputs.cmake-args }}"
+
+      - name: Verify opt-in multiscale composition
+        if: needs.change-scope.outputs.test_mode != 'none'
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_VULKAN_VALIDATION: "1"
+          EVENGINE_VIEW_SECONDS: "0.3"
+          EVENGINE_PERF_FRAMES: "30"
+        run: |
+          # These modules stay OFF by default. This lane enables their real
+          # composition before the all-examples smoke; every family must exist.
+          # Do not inherit change-scope label filters or accept an empty test set.
+          for family in 'spatial[.](cellPosition|frameGraph)' 'physics[.]field' \
+                        'physics[.]fieldCoupling' 'procgen[.]recursive' \
+                        'procgen[.]recursiveGraphics' 'graphics[.]multiscale'; do
+            xvfb-run -a ctest --test-dir build/linux-debug --output-on-failure \
+              --no-tests=error -j 1 -R "^${family}[.]"
+          done
 
       - name: Verify built third-party cache
         timeout-minutes: 5
