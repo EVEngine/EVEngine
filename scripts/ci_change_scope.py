@@ -10,6 +10,8 @@ import subprocess
 from pathlib import Path
 import utf8_stdio
 
+from check_examples import NON_RUNNABLE_EXAMPLES
+
 ROOT = Path(__file__).resolve().parent.parent
 BUILD_SCOPES = ("windows", "android", "macos", "ios", "linux", "asan", "fuzz", "webgpu", "dawn")
 SCOPES = (*BUILD_SCOPES, "tools")
@@ -20,6 +22,8 @@ TEST_CASE_RE = re.compile(r"\bTEST_CASE(?:_FIXTURE)?\s*\(")
 # without main.nut must not expand SMOKE_EXAMPLES to every runnable example
 # (that exceeds the Linux "Smoke changed examples" timeout). Unknown / deleted
 # example roots still fail closed and smoke the full runnable set.
+# Exempt dirs already listed in NON_RUNNABLE_EXAMPLES (e.g. economy -r demos)
+# contribute no smoke targets unless mapped here.
 EXAMPLE_ASSET_SMOKE_CONSUMERS: dict[str, tuple[str, ...]] = {
     "particle-effects": ("unity-vfx-port-lab", "attack-vfx"),
 }
@@ -141,6 +145,10 @@ def source_plan(paths: list[str], force_all: bool = False) -> tuple[str, bool, l
                         f"{consumer!r} is missing examples/{consumer}/main.nut"
                     )
                 examples.add(consumer)
+        elif name in NON_RUNNABLE_EXAMPLES:
+            # Exempt -r / asset / native-only packs are not `eve run` projects;
+            # do not fail-closed into the full 200+ example smoke suite.
+            continue
         else:
             # Shared/deleted/unknown example inputs can affect every runnable example.
             for candidate in (ROOT / "examples").iterdir():

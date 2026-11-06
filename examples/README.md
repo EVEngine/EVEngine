@@ -92,6 +92,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | 示例 | 演示能力 |
 |---|---|
 | [environment-query](environment-query/README.md) | 环境查询：圆环位置候选、评分诊断、消费者显式选点与移动。 |
+| [enemy-vision](enemy-vision/README.md) | 每敌人锥形视野：`SensingWorld` QueryCone + `NpcAi` `remember(vision)` 与追击状态 |
 | [rpg](rpg/README.md) | RPG 五系统：属性 / 效果 / 状态 / 技能 / 结算（最小可玩动作 RPG） |
 | [rpg-classic](rpg-classic/README.md) | 经典回合制 RPG 纵向切片：`eve.RPG()` + `eve.Inventory()` + `map` 的数据驱动界面 |
 | [inventory](inventory/README.md) | 背包：物品定义、主背包 / 任务栏 / 仓库、装备穿脱、跨包转移 |
@@ -117,6 +118,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [sprite-animation-vfx](sprite-animation-vfx/README.md) | 2D 精灵动画与 VFX API 的端到端脚本验证 |
 | [vehicle](vehicle/README.md) | 通用载具系统：`eve.Vehicle()` + `eve.Weapon()` 的 2D 顶视完整链路 |
 | [neon-racing](neon-racing/README.md) | NEON R 参数化跑车、程序化环形公路、vehicle 轮式控制与碰撞、跟车镜头、检查点和圈速 |
+| [flight-vehicle-controllers](flight-vehicle-controllers/README.md) | 可复用 `FlyingController`（天空）与 `VehicleController`（汽车），Tab 切换演示 |
 | [crowd](crowd/README.md) | 群体行为：2000 个单位在带障碍流场中行军与平滑转向（Boids） |
 | [crowd-battle](crowd-battle/README.md) | Native two-army battle: AttackMove formations, narrow passage, real damage and melee admission |
 | [gpu-agents](gpu-agents/README.md) | GPU Agents：鱼群 / 生命网格 / 花瓣共享 World、SDF 与固定步长 |
@@ -127,6 +129,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | 示例 | 演示能力 |
 |---|---|
 | [camera-controllers](camera-controllers/README.md) | 第三人称相机：follow / orbit / topdown / firstperson / cinematic |
+| [fps-arena](fps-arena/README.md) | 第一人称射击 Phase A：镜头 + 胶囊移动 + weapon 事件 → rayCast → combat 伤害 |
 | [character-motion-lab](character-motion-lab/README.md) | 三个人物、八种免费动作、跨骨架重定向、同步播放与逐帧观察 |
 | [control-rig-editor](control-rig-editor/README.md) | 原生 Control Rig 制作：控制器拖动、FK/Aim/IK 求解图、关键帧、事务撤销与 AnimClip 烘焙 |
 | [layered-animation](layered-animation/README.md) | 真实 CC0 KayKit 动作叠加：三段动作单独播放 + `AnimLayerMixer`（走路基底 + 脊柱遮罩攻击覆盖 + 受击叠加） |
@@ -272,6 +275,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [combat-action-editor](combat-action-editor/README.md) | 战斗动作编辑示例：用 UI 无关编辑器 SDK 组装项目专属工作区 |
 | [combat-arena](combat-arena/README.md) | 动作战斗竖切：移动/闪避/伤害/锁定与敌人近距攻击的组合烟测 |
 | [companion-tactics](companion-tactics/README.md) | 队友协作战术沙场：原生 AI 状态机、能力评分、治疗预约、保护吸伤、动态站位与玩家指挥 |
+| [post-patrol-reinforce](post-patrol-reinforce/README.md) | 岗哨编制 / 小队巡逻意图 / 阵亡后延迟补员请求（`eve.Roster`） |
 | [squad-boss-3d](squad-boss-3d/README.md) | 3D 四人打 BOSS：EQS 站位/躲避、GAS 玩家技能、多队友协同（治疗预约/指挥/原生 AI） |
 | [procgen-script-editor](procgen-script-editor/README.md) | 宿主封装 Squirrel generator（`generators/forest.nut`）的程序化生成编辑器 |
 | [ui-theme-editor](ui-theme-editor/README.md) | UI 主题编辑示例：组装命名 Theme 工作区 + 实时预览 |

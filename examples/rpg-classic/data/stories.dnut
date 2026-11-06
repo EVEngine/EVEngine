@@ -1,5 +1,11 @@
+// Fog-forest arrival: host-presented camera / move / animation, then wait + flag + message.
+// Instant `flag` runs between wait and message, so resume-from-wait still lands on message.
 story forest.arrival {
     dialogue id=story.forest.arrival
+    camera x=10 y=5 duration=0.45
+    move actor=hero x=5 y=5 duration=0.7
+    animation target=hero clip=emote.ready hold=true
     wait 0.35
+    flag name=forest.arrival.seen state=true
     message text=gameplayLog.story.recorded
 }

@@ -20,6 +20,7 @@
 #include "rpg/Party.h"
 #include "rpg/ProductControl.h"
 #include "rpg/Quest.h"
+#include "rpg/QuestGeneration.h"
 #include "rpg/QuestReward.h"
 #include "rpg/RPGSaveSession.h"
 #include "rpg/RpgDialect.h"
@@ -83,6 +84,22 @@ void RPG::clearQuestDefinitions() { QuestRegistry::clear(); }
 int RPG::getQuestDefinitionCount() { return QuestRegistry::count(); }
 
 bool RPG::hasQuestDefinition(const std::string &id) const { return QuestRegistry::contains(id); }
+
+eve::Result<int> RPG::replaceQuestGenerationArchetypesFromJson(const std::string &json) {
+    return QuestGenerationCatalogue::replaceFromJsonStrict(json);
+}
+
+void RPG::clearQuestGenerationArchetypes() { QuestGenerationCatalogue::clear(); }
+
+int RPG::getQuestGenerationArchetypeCount() const { return QuestGenerationCatalogue::count(); }
+
+eve::Result<std::string> RPG::generateQuestsJson(const std::string &requestJson) {
+    return QuestGenerator::generateJson(requestJson);
+}
+
+eve::Result<int> RPG::generateQuestsAndRegister(const std::string &requestJson) {
+    return QuestGenerator::generateAndRegister(requestJson);
+}
 
 eve::Result<int> RPG::claimQuestRewards(Tracker *tracker, GameState *gameState,
                                         inventory::Bag *bag, const std::string &questId) {
@@ -864,6 +881,9 @@ void RPG::expose(ssq::Table &table) {
     tracker.addFunc("reset", &Tracker::reset);
     tracker.addFunc("abandon", &Tracker::abandon);
     tracker.addFunc("fail", &Tracker::fail);
+    tracker.addFunc("applyClock",
+                    [](Tracker *t, float nowSeconds) -> int { return t ? t->applyClock(double(nowSeconds)) : 0; });
+    tracker.addFunc("refreshByKey", &Tracker::refreshByKey);
     tracker.addFunc("pollEvents", &Tracker::pollEvents);
     tracker.addFunc("snapshotJson", [](Tracker *t) -> std::string {
         if (!t) return {};
@@ -884,6 +904,14 @@ void RPG::expose(ssq::Table &table) {
     tracker.addFunc("getObjectiveCurrent", &Tracker::getObjectiveCurrent);
     tracker.addFunc("getObjectiveCountRequired", &Tracker::getObjectiveCountRequired);
     tracker.addFunc("isObjectiveDone", &Tracker::isObjectiveDone);
+    tracker.addFunc("isObjectiveOptional", &Tracker::isObjectiveOptional);
+    tracker.addFunc("getObjectivePolicy", &Tracker::getObjectivePolicy);
+    tracker.addFunc("isObjectivesSatisfied", &Tracker::isObjectivesSatisfied);
+    tracker.addFunc("dialoguePhase", &Tracker::dialoguePhase);
+    tracker.addFunc("dialogueConversationId", &Tracker::dialogueConversationId);
+    tracker.addFunc("getDeadlineAt",
+                    [](Tracker *t, const std::string &id) -> float { return t ? float(t->getDeadlineAt(id)) : 0.f; });
+    tracker.addFunc("getRefreshStamp", &Tracker::getRefreshStamp);
     tracker.addFunc("getRewardCount", &Tracker::getRewardCount);
     tracker.addFunc("getRewardType", &Tracker::getRewardType);
     tracker.addFunc("getRewardId", &Tracker::getRewardId);
@@ -1383,6 +1411,38 @@ void RPG::expose(ssq::Class &cls) {
                         "rpg.squirrel")),
                 [](int count) { return eve::Value(count); });
         return eve::script::projectResult(vm, rpg->replaceQuestsFromJson(json),
+                                          [](int count) { return eve::Value(count); });
+    });
+    cls.addFunc("replaceQuestGenerationArchetypesFromJson", [vm](RPG *rpg, const std::string &json) {
+        if (!rpg)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "RPG receiver must not be null", "rpg", {}, "rpg.squirrel")),
+                [](int count) { return eve::Value(count); });
+        return eve::script::projectResult(vm, rpg->replaceQuestGenerationArchetypesFromJson(json),
+                                          [](int count) { return eve::Value(count); });
+    });
+    cls.addFunc("clearQuestGenerationArchetypes", &RPG::clearQuestGenerationArchetypes);
+    cls.addFunc("getQuestGenerationArchetypeCount", &RPG::getQuestGenerationArchetypeCount);
+    cls.addFunc("generateQuestsJson", [vm](RPG *rpg, const std::string &json) {
+        if (!rpg)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<std::string>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "RPG receiver must not be null", "rpg", {}, "rpg.squirrel")),
+                [](std::string value) { return eve::Value(std::move(value)); });
+        return eve::script::projectResult(vm, rpg->generateQuestsJson(json),
+                                          [](std::string value) { return eve::Value(std::move(value)); });
+    });
+    cls.addFunc("generateQuestsAndRegister", [vm](RPG *rpg, const std::string &json) {
+        if (!rpg)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<int>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "RPG receiver must not be null", "rpg", {}, "rpg.squirrel")),
+                [](int count) { return eve::Value(count); });
+        return eve::script::projectResult(vm, rpg->generateQuestsAndRegister(json),
                                           [](int count) { return eve::Value(count); });
     });
     cls.addFunc("claimQuestRewards",

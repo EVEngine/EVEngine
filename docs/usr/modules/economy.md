@@ -28,7 +28,54 @@ assert(wallet.get(1, "tutorial_gold") == 50);
 业务域的事务入口；“先扣钱，再 try 加物品”不自动原子，见[事务](transaction.md)及
 [商店集成测试](../../../test/integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp)。
 
-## 任务二：处理满仓与采集
+## 任务二：配置地区市场与全国市场
+
+市场配置是静态挂牌表，不结算成交、不改玩家账本。`scope` 只能是 `regional`
+（必须有 `regionId`，可挂靠 `nationId`）或 `national`（必须有 `nationId`，且不得设
+`regionId`）。JSON schema 为 `eve.economy.market` v1；买入价 =
+`basePrice * (10000 + buyPremiumBps) / 10000`（至少 1），卖出价 =
+`basePrice * (10000 - sellDiscountBps) / 10000`。
+
+```squirrel
+local wallet = eve.Economy();
+local loaded = wallet.registerMarketsFromJson(@"[
+  {
+    ""schemaId"": ""eve.economy.market"",
+    ""schemaVersion"": 1,
+    ""id"": ""mkt.jiangnan"",
+    ""scope"": ""regional"",
+    ""regionId"": ""jiangnan"",
+    ""nationId"": ""song"",
+    ""tariffBps"": 250,
+    ""listings"": [
+      {""resourceType"": ""rice"", ""basePrice"": 100, ""buyPremiumBps"": 1000, ""sellDiscountBps"": 500}
+    ]
+  },
+  {
+    ""schemaId"": ""eve.economy.market"",
+    ""schemaVersion"": 1,
+    ""id"": ""mkt.song"",
+    ""scope"": ""national"",
+    ""nationId"": ""song"",
+    ""listings"": [
+      {""resourceType"": ""rice"", ""basePrice"": 90, ""buyPremiumBps"": 500, ""sellDiscountBps"": 250}
+    ]
+  }
+]");
+assert(loaded.ok);
+assert(loaded.value == 2);
+assert(wallet.findRegionalMarket("jiangnan") == "mkt.jiangnan");
+assert(wallet.findNationalMarket("song") == "mkt.song");
+local buy = wallet.quoteBuyPrice("mkt.jiangnan", "rice");
+assert(buy.ok && buy.value == 110);
+local sell = wallet.quoteSellPrice("mkt.jiangnan", "rice");
+assert(sell.ok && sell.value == 95);
+```
+
+`tariffBps` 只保存跨市场关税配置，本模块不自动把关税打进报价；成交、库存与跨市场
+物流留给游戏脚本或后续贸易系统。
+
+## 任务三：处理满仓与采集
 
 ```squirrel
 local accepted = wallet.credit(1, "tutorial_gold", 80);
@@ -57,10 +104,11 @@ RTS 的阵营与资源命令走 RTS 域接口，不直接把其 UUID 当 Economy
 
 ## 检查与证据
 
-测试余额不足不扣款、满仓浪费、多个采集者、定义缺失、事件顺序与停止后的对象寿命。
+测试余额不足不扣款、满仓浪费、多个采集者、定义缺失、事件顺序与停止后的对象寿命，
+以及地区/全国市场 JSON 校验与买卖报价。
 源码：[Economy.cpp](../../../src/modules/economy/Economy.cpp)、
-[Economy.h](../../../src/modules/economy/Economy.h)；玩法协议测试：
-[economy_gameplay_control.cpp](../../../test/economy_gameplay_control.cpp)。
+[Market.cpp](../../../src/modules/economy/Market.cpp)；单元测试：
+[economy_unit.cpp](../../../test/unit/economy/economy_unit.cpp)。
 按类参数参考见本章末尾，不从 C++ 默认实参推断脚本参数可省略。
 
 ## 补充绑定参考

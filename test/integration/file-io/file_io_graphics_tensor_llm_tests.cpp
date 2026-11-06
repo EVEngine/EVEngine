@@ -1218,7 +1218,11 @@ TEST_CASE("rpg.classic.mainScriptCompilesThroughEveScriptFrontend") {
     CHECK(script.find("function confirmDeleteSaveSlot()") != std::string::npos);
     CHECK(script.find("function confirmReturnToTitle()") != std::string::npos);
     CHECK(script.find("saveFs.writeTextAtomic(SETTINGS_PATH") != std::string::npos);
-    CHECK(script.find("const SAVE_CONTENT_VERSION = \"rpg-classic.content.v10\"") != std::string::npos);
+    CHECK(script.find("const SAVE_CONTENT_VERSION = \"rpg-classic.content.v11\"") != std::string::npos);
+    CHECK(script.find("function updateStoryPresentation(dt)") != std::string::npos);
+    CHECK(script.find("function beginStoryCamera()") != std::string::npos);
+    CHECK(script.find("function beginStoryMove()") != std::string::npos);
+    CHECK(script.find("function beginStoryAnimation()") != std::string::npos);
     CHECK(script.find("function loadWorldMap(mapId, x, y, fx, fy)") != std::string::npos);
     CHECK(script.find("function transitionThroughPortal(index)") != std::string::npos);
     CHECK(script.find("function beginQuestNpcDialogue(index)") != std::string::npos);
@@ -1518,7 +1522,12 @@ TEST_CASE("rpg.classic.mapsQuestsAndDialogueComposeWithoutDanglingReferences") {
     REQUIRE(quests.ok());
     auto encounters = eve::rpg::EncounterCatalogue::replaceFromJsonStrict(readFile(root / "encounters.json"));
     REQUIRE(encounters.ok());
-    auto stories = eve::rpg::RpgStoryCatalogue::replaceFromDnutStrict(readFile(root / "stories.dnut"), "stories.dnut");
+    const std::string storySource = readFile(root / "stories.dnut");
+    CHECK(storySource.find("camera ") != std::string::npos);
+    CHECK(storySource.find("move ") != std::string::npos);
+    CHECK(storySource.find("animation ") != std::string::npos);
+    CHECK(storySource.find("flag ") != std::string::npos);
+    auto stories = eve::rpg::RpgStoryCatalogue::replaceFromDnutStrict(storySource, "stories.dnut");
     REQUIRE(stories.ok());
     CHECK(eve::rpg::RpgStoryCatalogue::contains("forest.arrival"));
 
@@ -1787,11 +1796,17 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
     CHECK_EQ(arrival.getStepPayload().find("id")->asString(), std::string("story.forest.arrival"));
     REQUIRE(findConversation(conversations, "story.forest.arrival") != nullptr);
     REQUIRE(arrival.advance().ok());
+    REQUIRE_EQ(arrival.getStepKind(), std::string("camera"));
+    REQUIRE(arrival.advance().ok());
+    REQUIRE_EQ(arrival.getStepKind(), std::string("move"));
+    REQUIRE(arrival.advance().ok());
+    REQUIRE_EQ(arrival.getStepKind(), std::string("animation"));
+    REQUIRE(arrival.advance().ok());
     REQUIRE_EQ(arrival.getStepKind(), std::string("wait"));
     CHECK(gameState.hasSelfString("story.forest.arrival", "cursor"));
     eve::rpg::RPGSaveSession eventSave;
     eventSave.bindParty(gameState, tracker, party, bag, equipment);
-    REQUIRE(eventSave.setContentVersion("rpg-classic.content.v10").ok());
+    REQUIRE(eventSave.setContentVersion("rpg-classic.content.v11").ok());
     auto eventCheckpoint = eventSave.snapshotJson();
     REQUIRE(eventCheckpoint.ok());
     REQUIRE(arrival.advance().ok());
@@ -1800,8 +1815,10 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
     REQUIRE(resumedArrival.begin("forest.arrival", &gameState, &party, &bag, &equipment).ok());
     CHECK_EQ(resumedArrival.getStepKind(), std::string("wait"));
     REQUIRE(resumedArrival.advance().ok());
+    // Instant `flag` completes inside advance; the next host-presented step is message.
     CHECK_EQ(resumedArrival.getStepKind(), std::string("message"));
     CHECK_EQ(resumedArrival.getStepPayload().find("text")->asString(), std::string("gameplayLog.story.recorded"));
+    CHECK(gameState.isSwitchOn("forest.arrival.seen"));
     REQUIRE(resumedArrival.advance().ok());
     CHECK(!resumedArrival.isActive());
     CHECK(gameState.hasSelfVariable("story.forest.arrival", "completed"));
@@ -1848,7 +1865,7 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
 
     eve::rpg::RPGSaveSession save;
     save.bindParty(gameState, tracker, party, bag, equipment);
-    REQUIRE(save.setContentVersion("rpg-classic.content.v10").ok());
+    REQUIRE(save.setContentVersion("rpg-classic.content.v11").ok());
     auto checkpoint = save.snapshotJson();
     REQUIRE(checkpoint.ok());
 

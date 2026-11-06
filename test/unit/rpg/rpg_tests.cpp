@@ -686,6 +686,7 @@ TEST_CASE("Vitals clamp writes damage and healing and revival restores capacity"
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_quest)
 #include "PrivateTestScope.h"
 #include "rpg/Quest.h"
+#include "rpg/QuestGeneration.h"
 #include "rpg/Tracker.h"
 namespace test_rpg_quest_contract {
 using namespace eve::rpg;
@@ -752,6 +753,187 @@ TEST_CASE("Quest prerequisite unlocks only after claim and failed quests require
     CHECK(!tracker.activate("rewrite.rpg.quest.next"));
     REQUIRE(tracker.reset("rewrite.rpg.quest.next"));
     CHECK_EQ(tracker.getState("rewrite.rpg.quest.next"), std::string("active"));
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest objectivePolicy any completes on first required objective") {
+    QuestRegistry::clear();
+    REQUIRE_EQ(QuestRegistry::loadFromJson(R"([{
+      "id":"rewrite.rpg.quest.any",
+      "startPolicy":"manual",
+      "completePolicy":"claim",
+      "objectivePolicy":"any",
+      "objectives":[
+        {"id":"kill","topic":"kill","target":"slime","count":1},
+        {"id":"talk","topic":"talk","target":"npc","count":1}
+      ]
+    }])"),
+               1);
+    Tracker tracker;
+    REQUIRE(tracker.activate("rewrite.rpg.quest.any"));
+    CHECK_EQ(tracker.getObjectivePolicy("rewrite.rpg.quest.any"), std::string("any"));
+    tracker.notify("kill", "slime", 1);
+    CHECK(tracker.isObjectivesSatisfied("rewrite.rpg.quest.any"));
+    CHECK_EQ(tracker.getState("rewrite.rpg.quest.any"), std::string("ready"));
+    CHECK(!tracker.isObjectiveDone("rewrite.rpg.quest.any", 1));
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest ordered policy gates later required objectives while optional still listens") {
+    QuestRegistry::clear();
+    REQUIRE_EQ(QuestRegistry::loadFromJson(R"([{
+      "id":"rewrite.rpg.quest.ordered",
+      "startPolicy":"manual",
+      "completePolicy":"auto",
+      "objectivePolicy":"ordered",
+      "objectives":[
+        {"id":"first","topic":"kill","target":"a","count":1},
+        {"id":"bonus","topic":"loot","target":"chest","count":1,"optional":true},
+        {"id":"second","topic":"kill","target":"b","count":1}
+      ]
+    }])"),
+               1);
+    Tracker tracker;
+    REQUIRE(tracker.activate("rewrite.rpg.quest.ordered"));
+    CHECK(tracker.isObjectiveOptional("rewrite.rpg.quest.ordered", 1));
+    tracker.notify("kill", "b", 1);
+    CHECK_EQ(tracker.getObjectiveCurrent("rewrite.rpg.quest.ordered", 2), 0);
+    tracker.notify("loot", "chest", 1);
+    CHECK(tracker.isObjectiveDone("rewrite.rpg.quest.ordered", 1));
+    CHECK_EQ(tracker.getState("rewrite.rpg.quest.ordered"), std::string("active"));
+    tracker.notify("kill", "a", 1);
+    tracker.notify("kill", "b", 1);
+    CHECK_EQ(tracker.getState("rewrite.rpg.quest.ordered"), std::string("completed"));
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest dialogue phase maps tracker state and clock refresh hooks work") {
+    QuestRegistry::clear();
+    REQUIRE_EQ(QuestRegistry::loadFromJson(R"([{
+      "id":"rewrite.rpg.quest.timed",
+      "startPolicy":"manual",
+      "completePolicy":"claim",
+      "timeLimitSeconds":10,
+      "refreshKey":"daily",
+      "objectives":[{"id":"x","topic":"kill","count":1}]
+    }])"),
+               1);
+    Tracker tracker;
+    CHECK_EQ(tracker.dialoguePhase("rewrite.rpg.quest.timed"), std::string("offer"));
+    CHECK_EQ(tracker.dialogueConversationId("rewrite.rpg.quest.timed", "npc.giver"), std::string("npc.giver.offer"));
+    REQUIRE(tracker.activate("rewrite.rpg.quest.timed"));
+    CHECK_EQ(tracker.dialoguePhase("rewrite.rpg.quest.timed"), std::string("active"));
+    CHECK_EQ(tracker.applyClock(100.0), 0);
+    CHECK_EQ(tracker.getDeadlineAt("rewrite.rpg.quest.timed"), 110.0);
+    CHECK_EQ(tracker.applyClock(110.0), 1);
+    CHECK_EQ(tracker.getState("rewrite.rpg.quest.timed"), std::string("failed"));
+    CHECK_EQ(tracker.dialoguePhase("rewrite.rpg.quest.timed"), std::string("failed"));
+    REQUIRE_EQ(tracker.refreshByKey("daily", "2026-11-06"), 1);
+    CHECK_EQ(tracker.getRefreshStamp("rewrite.rpg.quest.timed"), std::string("2026-11-06"));
+    CHECK_EQ(tracker.getState("rewrite.rpg.quest.timed"), std::string("inactive"));
+    CHECK_EQ(tracker.refreshByKey("daily", "2026-11-06"), 0);
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest replaceFromJsonStrict rejects unknown objectivePolicy") {
+    QuestRegistry::clear();
+    auto rejected = QuestRegistry::replaceFromJsonStrict(
+        R"([{"id":"rewrite.rpg.quest.bad.policy","objectivePolicy":"xor","objectives":[{"id":"a","topic":"kill","count":1}]}])");
+    CHECK(!rejected.ok());
+    CHECK_EQ(QuestRegistry::count(), 0);
+    auto accepted = QuestRegistry::replaceFromJsonStrict(
+        R"([{"id":"rewrite.rpg.quest.ok","objectivePolicy":"all","objectives":[{"id":"a","topic":"kill","count":1,"optional":true}]}])");
+    REQUIRE(accepted.ok());
+    CHECK_EQ(accepted.value(), 1);
+    const auto* def = QuestRegistry::find("rewrite.rpg.quest.ok");
+    REQUIRE(def != nullptr);
+    CHECK(def->objectives.front().optional);
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest generator selects urgent entity and registers a playable definition") {
+    QuestRegistry::clear();
+    QuestGenerationCatalogue::clear();
+    auto archetypes = QuestGenerationCatalogue::replaceFromJsonStrict(R"([{
+      "id":"archetype.slay",
+      "weight":1.0,
+      "requiresEntityTags":["enemy"],
+      "completePolicy":"claim",
+      "idPattern":"gen.slay.{entity}",
+      "objectives":[{"id":"kill","topic":"kill","targetSlot":"entity","countVar":"count"}],
+      "rewards":[{"type":"attribute","id":"gold","amountVar":"gold"}],
+      "extra":{"title":"Hunt {entity}","giver":"{giver}"}
+    }])");
+    REQUIRE(archetypes.ok());
+    CHECK_EQ(archetypes.value(), 1);
+
+    auto registered = QuestGenerator::generateAndRegister(R"({
+      "schema":"eve.rpg.quest-generate",
+      "version":1,
+      "seed":7,
+      "maxQuests":1,
+      "selection":"mostUrgent",
+      "giverId":"npc.elder",
+      "entities":[
+        {"id":"slime","tags":["enemy"],"urgency":10,"vars":{"count":2,"gold":20}},
+        {"id":"wolf","tags":["enemy"],"urgency":90,"vars":{"count":3,"gold":55}}
+      ]
+    })");
+    REQUIRE(registered.ok());
+    CHECK_EQ(registered.value(), 1);
+    const auto* quest = QuestRegistry::find("gen.slay.wolf");
+    REQUIRE(quest != nullptr);
+    CHECK(quest->hasTag("generated"));
+    REQUIRE_EQ(quest->objectives.size(), 1u);
+    CHECK_EQ(quest->objectives.front().target, std::string("wolf"));
+    CHECK_EQ(quest->objectives.front().count, 3);
+    REQUIRE_EQ(quest->rewards.size(), 1u);
+    CHECK_EQ(quest->rewards.front().amount, 55.0);
+    CHECK_EQ(quest->getExtra("title"), std::string("Hunt wolf"));
+    CHECK_EQ(quest->getExtra("giver"), std::string("npc.elder"));
+
+    Tracker tracker;
+    REQUIRE(tracker.activate("gen.slay.wolf"));
+    tracker.notify("kill", "wolf", 3);
+    CHECK_EQ(tracker.getState("gen.slay.wolf"), std::string("ready"));
+
+    auto again = QuestGenerator::generateAndRegister(R"({
+      "schema":"eve.rpg.quest-generate","version":1,"seed":7,"maxQuests":1,"selection":"mostUrgent",
+      "giverId":"npc.elder",
+      "entities":[{"id":"wolf","tags":["enemy"],"urgency":90,"vars":{"count":1,"gold":10}}]
+    })");
+    REQUIRE(again.ok());
+    CHECK_EQ(again.value(), 1);
+    CHECK(QuestRegistry::find("gen.slay.wolf") != nullptr);
+
+    QuestGenerationCatalogue::clear();
+    QuestRegistry::clear();
+}
+
+TEST_CASE("Quest generator preview json is deterministic for a fixed seed") {
+    QuestRegistry::clear();
+    QuestGenerationCatalogue::clear();
+    REQUIRE(QuestGenerationCatalogue::replaceFromJsonStrict(R"([{
+      "id":"archetype.fetch",
+      "requiresEntityTags":["item"],
+      "objectives":[{"id":"get","topic":"loot","targetSlot":"entity","count":1}],
+      "rewards":[{"type":"attribute","id":"xp","amount":5}]
+    }])")
+                .ok());
+    const char* request = R"({
+      "schema":"eve.rpg.quest-generate","version":1,"seed":99,"maxQuests":1,"selection":"weighted",
+      "entities":[
+        {"id":"herb","tags":["item"],"urgency":40},
+        {"id":"ore","tags":["item"],"urgency":40}
+      ]
+    })";
+    auto        first   = QuestGenerator::generateJson(request);
+    auto        second  = QuestGenerator::generateJson(request);
+    REQUIRE(first.ok());
+    REQUIRE(second.ok());
+    CHECK_EQ(first.value(), second.value());
+    CHECK(first.value().find("\"schema\":\"eve.rpg.quest-generate-result\"") != std::string::npos);
+    QuestGenerationCatalogue::clear();
     QuestRegistry::clear();
 }
 }  // namespace test_rpg_quest_contract

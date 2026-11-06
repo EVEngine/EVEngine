@@ -18,6 +18,7 @@
 #include "economy/Economy.h"
 #include "economy/EconomySystem.h"
 #include "economy/GatherNode.h"
+#include "economy/Market.h"
 #include "economy/ResourceType.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -32,10 +33,12 @@ namespace {
 struct CleanEconomy {
     CleanEconomy() {
         ResourceTypeRegistry::clear();
+        MarketRegistry::clear();
         EconomySystem::clear();
     }
     ~CleanEconomy() {
         ResourceTypeRegistry::clear();
+        MarketRegistry::clear();
         EconomySystem::clear();
     }
 };
@@ -420,4 +423,92 @@ TEST_CASE("economy.gameplay.jsonFacadeRoutesObserveSubmitAndEvents") {
     REQUIRE(events.ok());
     CHECK(events.value().find("economy.credited") != std::string::npos);
     CHECK(events.value().find("economy.debited") != std::string::npos);
+}
+
+TEST_CASE("economy.market.regionalAndNationalConfigRegisterAndQuote") {
+    CleanEconomy clean;
+
+    MarketConfig regional;
+    regional.id           = "mkt.jiangnan";
+    regional.scope        = MarketScope::Regional;
+    regional.regionId     = "jiangnan";
+    regional.nationId     = "song";
+    regional.currencyType = "gold";
+    regional.tariffBps    = 250;
+    regional.listings.push_back(MarketListing{"rice", 100, 1000, 500, 5000});
+    regional.listings.push_back(MarketListing{"silk", 40, 0, 0, 0});
+    REQUIRE(MarketRegistry::registerMarket(regional).ok());
+
+    MarketConfig national;
+    national.id        = "mkt.song";
+    national.scope     = MarketScope::National;
+    national.nationId  = "song";
+    national.tariffBps = 1000;
+    national.listings.push_back(MarketListing{"rice", 90, 500, 250, 0});
+    REQUIRE(MarketRegistry::registerMarket(national).ok());
+
+    CHECK_EQ(MarketRegistry::count(), 2);
+    REQUIRE(MarketRegistry::has("mkt.jiangnan"));
+    REQUIRE(MarketRegistry::findRegional("jiangnan") != nullptr);
+    CHECK_EQ(MarketRegistry::findRegional("jiangnan")->id, std::string("mkt.jiangnan"));
+    REQUIRE(MarketRegistry::findNational("song") != nullptr);
+    CHECK_EQ(MarketRegistry::findNational("song")->id, std::string("mkt.song"));
+    CHECK_EQ(Economy::findRegionalMarket("jiangnan"), std::string("mkt.jiangnan"));
+    CHECK_EQ(Economy::findNationalMarket("song"), std::string("mkt.song"));
+    CHECK_EQ(Economy::getMarketScope("mkt.jiangnan"), std::string("regional"));
+    CHECK_EQ(Economy::getMarketScope("mkt.song"), std::string("national"));
+    CHECK_EQ(Economy::getMarketTariffBps("mkt.jiangnan"), 250);
+    CHECK_EQ(Economy::getMarketListingCount("mkt.jiangnan"), 2);
+
+    auto buy = MarketRegistry::quoteBuyPrice("mkt.jiangnan", "rice");
+    REQUIRE(buy.ok());
+    CHECK_EQ(buy.value(), 110);  // 100 * 11000 / 10000
+    auto sell = MarketRegistry::quoteSellPrice("mkt.jiangnan", "rice");
+    REQUIRE(sell.ok());
+    CHECK_EQ(sell.value(), 95);  // 100 * 9500 / 10000
+}
+
+TEST_CASE("economy.market.jsonLoadRejectsInvalidScopeBindings") {
+    CleanEconomy clean;
+
+    auto loaded = MarketRegistry::loadFromJson(R"([
+      {
+        "schemaId":"eve.economy.market","schemaVersion":1,
+        "id":"mkt.north","scope":"regional","regionId":"hebei","nationId":"jin",
+        "listings":[{"resourceType":"iron","basePrice":20}]
+      },
+      {
+        "schemaId":"eve.economy.market","schemaVersion":1,
+        "id":"mkt.jin","scope":"national","nationId":"jin",
+        "currencyType":"coin","tariffBps":750,
+        "listings":[{"resourceType":"iron","basePrice":18,"buyPremiumBps":500,"sellDiscountBps":250}]
+      }
+    ])");
+    REQUIRE(loaded.ok());
+    CHECK_EQ(loaded.value(), 2);
+    CHECK_EQ(Economy::getMarketCurrencyType("mkt.jin"), std::string("coin"));
+    CHECK_EQ(Economy::getMarketListingBasePrice("mkt.north", 0), 20);
+
+    auto missingRegion = MarketRegistry::loadFromJson(
+        R"({"id":"bad.regional","scope":"regional","listings":[{"resourceType":"iron","basePrice":1}]})");
+    CHECK(!missingRegion.ok());
+
+    auto nationalWithRegion = MarketRegistry::loadFromJson(
+        R"({"id":"bad.national","scope":"national","nationId":"jin","regionId":"hebei",
+            "listings":[{"resourceType":"iron","basePrice":1}]})");
+    CHECK(!nationalWithRegion.ok());
+
+    auto duplicateListing = MarketRegistry::registerMarket([&] {
+        MarketConfig config;
+        config.id       = "dup";
+        config.scope    = MarketScope::Regional;
+        config.regionId = "a";
+        config.listings.push_back(MarketListing{"wood", 5, 0, 0, 0});
+        config.listings.push_back(MarketListing{"wood", 6, 0, 0, 0});
+        return config;
+    }());
+    CHECK(!duplicateListing.ok());
+
+    auto missingQuote = MarketRegistry::quoteBuyPrice("mkt.north", "silk");
+    CHECK(!missingQuote.ok());
 }

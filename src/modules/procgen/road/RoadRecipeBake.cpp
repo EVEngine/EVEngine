@@ -6,6 +6,7 @@ namespace eve::procgen::road {
 namespace {
 
 RoadBakeOptions bakeOptionsFromParams(const Params& params) {
+    const bool      railway = params.getString("roadType", "highway") == "railway";
     RoadBakeOptions options;
     options.maximumPlacementQueries = params.has("placementQueryBudget")
                                           ? static_cast<std::size_t>(params.getInt("placementQueryBudget", 0))
@@ -23,10 +24,10 @@ RoadBakeOptions bakeOptionsFromParams(const Params& params) {
     options.pathSegmentsPerEdge = std::max(4, params.getInt("pathSegments", 48));
     options.turnSamples         = std::max(4, params.getInt("turnSamples", 12));
     options.includePiers        = params.getBool("piers", true);
-    options.includeMarkings     = params.getBool("markings", true);
+    options.includeMarkings     = params.getBool("markings", !railway);
     options.includeNavigation   = params.getBool("navigation", true);
     options.includeJunctions    = params.getBool("junctions", true);
-    options.includePlacements   = params.getBool("placements", true);
+    options.includePlacements   = params.getBool("placements", !railway);
     options.junctionChordError  = params.getFloat("junctionChordError", 0.10f);
     options.sideObjectSpacing   = params.getFloat("sideObjectSpacing", 8.f);
     options.sideObjectOffset    = params.getFloat("sideObjectOffset", 0.5f);

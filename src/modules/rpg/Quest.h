@@ -28,12 +28,26 @@ struct EVENGINE_API_PLATFORM QuestDefinition {
     std::string startPolicy = "manual";
     /** @brief "auto" | "claim"，缺省 "auto"。 */
     std::string completePolicy = "auto";
+    /**
+     * @brief 目标完成关系："all"（缺省，非 optional 全部 AND）| "any"（非 optional 任一）|
+     * "ordered"（非 optional 按数组顺序解锁听 notify，完成判定同 all）。
+     */
+    std::string objectivePolicy = "all";
     /** @brief 本 Tracker 上须已 completed 的条目 id，全部 AND。 */
     std::vector<std::string> requiresIds;
     std::vector<QuestObjective> objectives;
     std::vector<RewardSpec> rewards;
     std::vector<std::string> tags;
     std::unordered_map<std::string, std::string> extra;
+    /**
+     * @brief 限时秒数；<=0 表示无限时。进入 active 后由 Tracker::applyClock(now) 武装 deadlineAt。
+     */
+    double timeLimitSeconds = 0.0;
+    /**
+     * @brief 刷新族键（如 "daily"）；空表示不参与 refreshByKey。
+     * @remarks 游戏传入 stamp（如日历日）与本字段匹配且 stamp 变化时 reset。
+     */
+    std::string refreshKey;
 
     /** @brief True when tag. */
     bool hasTag(const std::string &tag) const;

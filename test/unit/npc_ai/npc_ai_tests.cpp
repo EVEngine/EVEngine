@@ -408,16 +408,27 @@ TEST_CASE("npc_ai.smartObject.spec.queryLeaseExpiryAndCleanup") {
     REQUIRE(expired.ok());
     REQUIRE(expired.value().claimsExpired == 1);
     REQUIRE(!world.snapshot(lease.value()).ok());
+    REQUIRE_EQ(world.vacancyCount(), 1);
+    auto expiredVacancy = world.vacancyAt(0);
+    REQUIRE(expiredVacancy.ok());
+    CHECK_EQ(expiredVacancy.value().logicalId, "cover-a");
+    CHECK_EQ(expiredVacancy.value().reason, "expire");
+    world.clearVacancies();
     auto next = world.claim(agent, near.value(), "left", 23, 100);
     REQUIRE(next.ok());
     REQUIRE(!world.removeObject(near.value(), SmartObjectRemoval::RejectClaimed).ok());
     REQUIRE(world.removeObject(near.value(), SmartObjectRemoval::CancelClaims).ok());
     REQUIRE(!world.snapshot(next.value()).ok());
+    REQUIRE_EQ(world.vacancyCount(), 1);
+    CHECK_EQ(world.vacancyAt(0).value().reason, "cancel");
+    world.clearVacancies();
     auto other = world.claim(agent, far.value(), "left", 24, 100);
     REQUIRE(other.ok());
     auto removed = world.releaseAgentClaims(agent);
     REQUIRE(removed.ok());
     REQUIRE(removed.value() == 1);
+    REQUIRE_EQ(world.vacancyCount(), 1);
+    CHECK_EQ(world.vacancyAt(0).value().reason, "agent");
     REQUIRE(world.removeObject(far.value(), SmartObjectRemoval::RejectClaimed).ok());
 }
 }  // namespace test_npc_ai_smart_object

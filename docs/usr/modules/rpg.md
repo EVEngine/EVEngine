@@ -67,6 +67,20 @@ log.activate("quest.hunt");
 log.notify("kill", "slime", 1);
 ach.notify("kill", "slime", 1);   // 两份 Tracker 互不影响
 log.pollEvents();                 // 处理完 notify 后必须 poll 才能读 getEvent*
+
+// 目标关系：objectivePolicy = all|any|ordered；目标可 optional:true
+// 对话约定：conversationId = dialogueBase + "." + dialoguePhase(questId)
+local conversation = log.dialogueConversationId("quest.hunt", "village.elder");
+// 限时 / 日刷：定义 timeLimitSeconds / refreshKey，由游戏喂时钟与日历 stamp
+log.applyClock(nowSeconds);
+log.refreshByKey("daily", calendarDayStamp);
+
+// 程序化任务：先发布 archetype 目录，再喂世界实体快照（urgency + tags + vars）
+local archetypes = rpg.replaceQuestGenerationArchetypesFromJson(archetypeJson);
+if (!archetypes.ok) throw archetypes.status.summary;
+local generated = rpg.generateQuestsAndRegister(generateRequestJson);
+if (!generated.ok) throw generated.status.summary;
+log.syncAuto();  // 新定义进入已有 Tracker
 ```
 
 ### 成长与战斗落账
@@ -373,7 +387,9 @@ while (session.isActive()) {
 ### 产品示例
 
 `examples/rpg-classic` 已用 `data/stories.dnut` + `RpgStorySession` 驱动雾林抵达剧情，
-宿主循环见 `presentStoryStep()`（dialogue / wait / message / move / camera）。
+宿主循环见 `presentStoryStep()` / `updateStoryPresentation()`：对话后真实播放
+`camera`（层原点平移 + 焦点高亮）、`move`（Pathfinder 逐格行走）、`animation`（头顶动作气泡），
+再进入可存档的 `wait`，并以 Instant `flag` + `message` 收尾。
 JSON `StoryEvent` API 仍保留为兼容面，新产品应优先写 `.dnut` story。
 
 ## 常见问题
@@ -430,7 +446,7 @@ JSON `StoryEvent` API 仍保留为兼容面，新产品应优先写 `.dnut` stor
 投影，脚本不能另传奖励金额；多成员全部被击败后仍只结算一次，从而避免地图、战斗表现和结算三份事实漂移。`RPGActor` 仍由 RPG ECS 世界拥有，
 `GameState`、`Tracker` 和角色成长各自保持唯一权威所有者。
 
-**Tracker 方法：** `activate()`、`abandon()`、`canActivate()`、`canActivateReason()`、`claim()`、`fail()`、`getCount()`、`getEventAction()`、`getEventAmount()`、`getEventCount()`、`getEventEntryId()`、`getEventObjectiveId()`、`getEventReason()`、`getEventTarget()`、`getEventTopic()`、`getExtra()`、`getId()`、`getObjectiveCount()`、`getObjectiveCountRequired()`、`getObjectiveCurrent()`、`getObjectiveId()`、`getRewardAmount()`、`getRewardCount()`、`getRewardId()`、`getRewardType()`、`getState()`、`hasTag()`、`isObjectiveDone()`、`notify()`、`pollEvents()`、`reset()`、`syncAuto()`
+**Tracker 方法：** `activate()`、`abandon()`、`applyClock()`、`canActivate()`、`canActivateReason()`、`claim()`、`dialogueConversationId()`、`dialoguePhase()`、`fail()`、`getCount()`、`getDeadlineAt()`、`getEventAction()`、`getEventAmount()`、`getEventCount()`、`getEventEntryId()`、`getEventObjectiveId()`、`getEventReason()`、`getEventTarget()`、`getEventTopic()`、`getExtra()`、`getId()`、`getObjectiveCount()`、`getObjectiveCountRequired()`、`getObjectiveCurrent()`、`getObjectiveId()`、`getObjectivePolicy()`、`getRefreshStamp()`、`getRewardAmount()`、`getRewardCount()`、`getRewardId()`、`getRewardType()`、`getState()`、`hasTag()`、`isObjectiveDone()`、`isObjectiveOptional()`、`notify()`、`isObjectivesSatisfied()`、`pollEvents()`、`refreshByKey()`、`reset()`、`syncAuto()`
 
 **特征（RPGActor）：** `applyTrait()`、`removeTrait()`、`removeTraitsBySource()`、`removeTraitsByTrait()`、`hasTrait()`、`getTraitCount()`、`getTraitIdAt()`、`getTraitInstanceIdAt()`、`getTraitSourceAt()`、`getParamRate()`、`getElementRate()`、`getStateRate()`、`isStateResist()`、`getExParam()`、`getAttackSpeed()`、`getAttackTimesAdd()`
 

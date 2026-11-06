@@ -11,18 +11,20 @@
 
 ## For coding agents
 
-- [.cursor/skills/evescript/SKILL.md](.cursor/skills/evescript/SKILL.md): short EveScript + conventions + concept map
+- [.cursor/skills/README.md](.cursor/skills/README.md): skill index (language + mature game paradigms)
+- [.cursor/skills/evescript/SKILL.md](.cursor/skills/evescript/SKILL.md): EveScript + conventions + concept map
+- Paradigm skills (load by task): `eve-agent-loop`, `eve-game-loop`, `eve-arpg`, `eve-rpg`, `eve-rts`, `eve-action-guide`
 - [docs/dev/AI知识补偿.md](docs/dev/AI知识补偿.md): why pretrained knowledge is missing and how to compensate
 - [docs/usr/EVESCRIPT.md](docs/usr/EVESCRIPT.md): full language tutorial (humans)
 - [docs/dev/API-CONVENTIONS.md](docs/dev/API-CONVENTIONS.md): `eve.X()`, errors, ownership
 - Module guides with problem headers: e.g. [sensing](docs/usr/modules/sensing.md), [spatial](docs/usr/modules/spatial.md)
 - Binding catalog: `python3 scripts/generate_binding_contracts.py --json-output eve-api.json`
-- SDK zip (no git tree): `share/eve/ai/eve-api.json` + `share/eve/ai/SKILL.md` + root `llms.txt`
+- SDK zip (no git tree): `share/eve/ai/eve-api.json` + `share/eve/ai/SKILL.md` + `.cursor/skills/*/SKILL.md` + root `llms.txt`
 
 ## For runtime agents
 
 - [docs/dev/AI与MCP支持.md](docs/dev/AI与MCP支持.md)
-- [docs/dev/Agent游戏开发范式.md](docs/dev/Agent游戏开发范式.md)
+- [docs/dev/Agent游戏开发范式.md](docs/dev/Agent游戏开发范式.md) (skill: `eve-agent-loop`)
 - MCP: `eve_api_search` / `eve_api_get` (lookup), `eve_play` (observe/act), `eve_screenshot` (engine PNG), `eve_profiler_frame` / `eve_profiler_report` (hotspots)
 - Do not use `eve_eval` as the official gameplay path
 
