@@ -134,7 +134,7 @@ std::vector<Value> parseScalarArray(const std::string& json) {
     std::vector<Value> values;
     values.reserve(array->size());
     for (std::size_t i = 0; i < array->size(); ++i) {
-        auto value = array->get(i);
+        auto value = array->get(static_cast<unsigned>(i));
         if (!value.isEmpty() && !value.isBoolean() && !value.isNumeric() && !value.isString())
             throw std::invalid_argument("IN list entries must be JSON scalars");
         values.push_back(fromDynamic(value));
@@ -358,7 +358,7 @@ Query* Query::selectJson(const std::string& columnsJson) {
     auto array = Poco::JSON::Parser().parse(columnsJson).extract<Poco::JSON::Array::Ptr>();
     if (!array || array->empty()) throw std::invalid_argument("selectJson requires a non-empty JSON array");
     for (std::size_t i = 0; i < array->size(); ++i) {
-        auto entry = array->get(i);
+        auto entry = array->get(static_cast<unsigned>(i));
         if (entry.isString()) {
             select(entry.convert<std::string>());
             continue;
@@ -495,7 +495,7 @@ Query* Query::groupByJson(const std::string& columnsJson) {
     auto array = Poco::JSON::Parser().parse(columnsJson).extract<Poco::JSON::Array::Ptr>();
     if (!array || array->empty()) throw std::invalid_argument("groupByJson requires a non-empty JSON array");
     for (std::size_t i = 0; i < array->size(); ++i) {
-        auto entry = array->get(i);
+        auto entry = array->get(static_cast<unsigned>(i));
         if (!entry.isString()) throw std::invalid_argument("groupByJson entries must be strings");
         groupBy(entry.convert<std::string>());
     }
