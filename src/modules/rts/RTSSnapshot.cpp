@@ -330,10 +330,11 @@ Result<RTSStateSnapshot> RTS::snapshotState() const {
         if (match == nullptr) continue;
         RTSMatchSnapshot value;
         value.subject = match->identity()->subject;
-        value.rules   = *match->rules();
-        value.state   = *match->state();
-        value.scores  = *match->scores();
-        value.events  = *match->events();
+        value.rules       = *match->rules();
+        value.state       = *match->state();
+        value.scores      = *match->scores();
+        value.objectives  = *match->objectives();
+        value.events      = *match->events();
         for (const auto& participant : match->participants()->entries)
             value.participants.push_back({subjectOf(participant.faction.resolve()), participant.team,
                                           participant.eliminated, participant.surrendered, participant.reason});
@@ -803,8 +804,29 @@ Result<std::string> RTS::canonicalStateJson() const {
         Value::Array scores;
         for (const auto& entry : value.scores.entries)
             scores.emplace_back(Value::Object{{"team", entry.team}, {"value", entry.value}});
+        Value::Array objectives;
+        for (const auto& objective : value.objectives.values) {
+            Value::Array subjects;
+            for (const auto& subject : objective.spec.requiredSubjects) subjects.emplace_back(subject.format());
+            objectives.emplace_back(Value::Object{
+                {"archetype", objective.spec.archetype},
+                {"beneficiaryTeam", objective.spec.beneficiaryTeam},
+                {"completedSequence", static_cast<std::int64_t>(objective.completedSequence)},
+                {"endsMatch", objective.spec.endsMatch},
+                {"failsMatch", objective.spec.failsMatch},
+                {"id", objective.spec.id},
+                {"kind", static_cast<std::int64_t>(objective.spec.kind)},
+                {"requiredDurationNs", objective.spec.requiredDuration.nanoseconds()},
+                {"requiredSubjects", Value(std::move(subjects))},
+                {"resourceType", objective.spec.resourceType},
+                {"status", static_cast<std::int64_t>(objective.status)},
+                {"targetFaction", objective.spec.targetFaction.format()},
+                {"targetSubject", objective.spec.targetSubject.format()},
+                {"targetValue", objective.spec.targetValue}});
+        }
         matches.emplace_back(Value::Object{{"elapsedNs", value.state.elapsed.nanoseconds()},
                                            {"events", Value(std::move(events))},
+                                           {"objectives", Value(std::move(objectives))},
                                            {"participants", Value(std::move(participants))},
                                            {"phase", static_cast<std::int64_t>(value.state.phase)},
                                            {"rule", static_cast<std::int64_t>(value.rules.rule)},
@@ -1208,10 +1230,11 @@ Result<void> RTS::restoreState(const RTSStateSnapshot& snapshot) {
     }
     for (const auto& value : snapshot.matches) {
         auto* match      = findMatch(value.subject);
-        *match->rules()  = value.rules;
-        *match->state()  = value.state;
-        *match->scores() = value.scores;
-        *match->events() = value.events;
+        *match->rules()       = value.rules;
+        *match->state()       = value.state;
+        *match->scores()      = value.scores;
+        *match->objectives()  = value.objectives;
+        *match->events()      = value.events;
         match->participants()->entries.clear();
         for (const auto& participant : value.participants) {
             Match::Participants::Entry entry;

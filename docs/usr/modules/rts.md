@@ -9,8 +9,8 @@
 
 ## 比赛胜利与计时
 
-`newMatch` / `configureMatch` / `configureMatchTiming` / `startMatch` / `inspectMatch`
-走 `MatchSystem`。脚本胜利字符串：
+`newMatch` / `configureMatch` / `configureMatchTiming` / `addMatchObjectiveJson` /
+`startMatch` / `inspectMatch` 走 `MatchSystem`。脚本胜利字符串：
 
 | `configureMatch` rule | 含义 |
 | --- | --- |
@@ -18,12 +18,34 @@
 | `headquarters` | 摧毁 `archetype` 总部建筑 |
 | `resource` | 指定资源余额 ≥ `targetValue` |
 | `score` | 阵营队伍分 ≥ `targetValue` |
+| `mission` | 战役：由 `Match::Objectives` 完成/失败结算 |
 
 `configureMatchTiming(match, seconds, suddenDeath)` 可选。`seconds > 0` 时：
 `score` / `resource` 在超时后按最高分/资源结算（平局 `winningTeam=-1`）；
-`annihilation` / `headquarters` 默认超时平局，`suddenDeath=true` 则进入加时歼灭。
+`annihilation` / `headquarters` 默认超时平局，`suddenDeath=true` 则进入加时歼灭；
+`mission` 超时且无终局 objective 时以 `winningTeam=-1` 失败（不支持 sudden death）。
 占点建筑在 content 里设 `controlPointScorePerSecond`，或调用 `creditMatchScore`
-写入 `Match::Scores`。战役 objective、局中外交、MOBA/塔防仍由游戏脚本组合，不进 Match。
+写入 `Match::Scores`。
+
+战役在 `configureMatch(..., "mission")` 后、`startMatch` 前用
+`addMatchObjectiveJson` 注册 objective（也可在非 mission 规则上挂 objective，
+完成/失败仍可终局）。`kind`：
+
+| kind | 完成条件 | 失败条件 |
+| --- | --- | --- |
+| `eliminate` | `targetFaction` 无存活单位/建筑 | — |
+| `destroy_building` | `targetSubject` 或目标阵营 `archetype` 建筑被毁 | — |
+| `survive` | 受益队伍在场并撑满 `requiredDuration` | 队伍被消灭 |
+| `protect` | `requiredSubjects` 存活至 `requiredDuration`（可为 0 仅防护） | 任一主体死亡 |
+| `occupy` | 受益队伍控制指定建筑或 `archetype` 占点 | — |
+| `reach_score` | 受益队伍 Match 分数 ≥ `targetValue` | 超时（若 `failsMatch`） |
+| `reach_resource` | 受益队伍资源余额 ≥ `targetValue` | 超时（若 `failsMatch`） |
+
+字段：`id`、`kind`、`beneficiaryTeam`、`endsMatch`/`failsMatch`（默认 true），
+以及 kind 相关的 `targetFaction` / `targetSubject` / `archetype` /
+`requiredDuration` / `requiredSubjects` / `resourceType` / `targetValue`。
+`inspectMatch` 投影 `objectives[]` 的 `status`（`pending`/`completed`/`failed`）。
+局中外交、MOBA/塔防仍由游戏脚本组合，不进 Match。
 
 ## 任务一：建立最小阵营世界
 

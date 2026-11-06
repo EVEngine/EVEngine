@@ -3761,6 +3761,87 @@ TEST_CASE("rts.matchHeadquartersResourceVictoryAndTeamSurrender") {
     CHECK_EQ(static_cast<int>(sudden->state()->phase), static_cast<int>(eve::rts::MatchPhase::Finished));
     CHECK_EQ(sudden->state()->winningTeam, 1);
 
+    Match* mission = Match::createMatch(subject("00000000-0000-7000-8000-00000000020b"));
+    mission->rules()->rule = eve::rts::VictoryRule::Mission;
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*mission, *alpha, 1).ok());
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*mission, *beta, 2).ok());
+    Unit* escort = Unit::createUnit(subject("00000000-0000-7000-8000-00000000020c"));
+    Unit* enemy  = Unit::createUnit(subject("00000000-0000-7000-8000-00000000020d"));
+    auto escortOwner = eve::rts::FactionLink::bind(ecs::handle_of(alpha));
+    auto enemyOwner  = eve::rts::FactionLink::bind(ecs::handle_of(beta));
+    REQUIRE(escortOwner.ok());
+    REQUIRE(enemyOwner.ok());
+    escort->faction()->link = std::move(escortOwner).takeValue();
+    enemy->faction()->link  = std::move(enemyOwner).takeValue();
+    escort->durability()->alive = true;
+    escort->durability()->state.health = 10.0;
+    enemy->durability()->alive = true;
+    enemy->durability()->state.health = 10.0;
+    eve::rts::MissionObjectiveSpec survive;
+    survive.id = "hold_the_line";
+    survive.kind = eve::rts::MissionObjectiveKind::SurviveDuration;
+    survive.beneficiaryTeam = 1;
+    survive.requiredDuration = eve::Duration::fromSeconds(2.0).value();
+    survive.endsMatch = true;
+    survive.failsMatch = true;
+    REQUIRE(eve::rts::MatchSystem::addObjective(*mission, survive).ok());
+    eve::rts::MissionObjectiveSpec wipe;
+    wipe.id = "wipe_beta";
+    wipe.kind = eve::rts::MissionObjectiveKind::EliminateFaction;
+    wipe.beneficiaryTeam = 1;
+    wipe.targetFaction = beta->identity()->subject;
+    wipe.endsMatch = true;
+    wipe.failsMatch = false;
+    REQUIRE(eve::rts::MatchSystem::addObjective(*mission, wipe).ok());
+    REQUIRE(eve::rts::MatchSystem::start(*mission).ok());
+    auto missionTick = eve::rts::MatchSystem::step(
+        *mission, eve::SimulationStep{eve::SimulationTick{1}, eve::Duration::fromSeconds(1.0).value()});
+    REQUIRE(missionTick.ok());
+    CHECK_EQ(static_cast<int>(mission->state()->phase), static_cast<int>(eve::rts::MatchPhase::Running));
+    enemy->durability()->alive = false;
+    enemy->durability()->state.health = 0.0;
+    auto missionWin = eve::rts::MatchSystem::step(*mission);
+    REQUIRE(missionWin.ok());
+    CHECK_EQ(static_cast<int>(mission->state()->phase), static_cast<int>(eve::rts::MatchPhase::Finished));
+    CHECK_EQ(mission->state()->winningTeam, 1);
+    CHECK_EQ(static_cast<int>(mission->objectives()->values[1].status),
+             static_cast<int>(eve::rts::MissionObjectiveStatus::Completed));
+
+    Match* protect = Match::createMatch(subject("00000000-0000-7000-8000-00000000020e"));
+    protect->rules()->rule = eve::rts::VictoryRule::Mission;
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*protect, *alpha, 1).ok());
+    REQUIRE(eve::rts::MatchSystem::addParticipant(*protect, *beta, 2).ok());
+    Unit* vip = Unit::createUnit(subject("00000000-0000-7000-8000-00000000020f"));
+    auto vipOwner = eve::rts::FactionLink::bind(ecs::handle_of(alpha));
+    REQUIRE(vipOwner.ok());
+    vip->faction()->link = std::move(vipOwner).takeValue();
+    vip->durability()->alive = true;
+    vip->durability()->state.health = 10.0;
+    eve::rts::MissionObjectiveSpec escortVip;
+    escortVip.id = "guard_vip";
+    escortVip.kind = eve::rts::MissionObjectiveKind::ProtectSubjects;
+    escortVip.beneficiaryTeam = 1;
+    escortVip.requiredSubjects = {vip->identity()->subject};
+    escortVip.requiredDuration = eve::Duration::fromSeconds(3.0).value();
+    escortVip.endsMatch = true;
+    escortVip.failsMatch = true;
+    REQUIRE(eve::rts::MatchSystem::addObjective(*protect, escortVip).ok());
+    REQUIRE(eve::rts::MatchSystem::start(*protect).ok());
+    vip->durability()->alive = false;
+    vip->durability()->state.health = 0.0;
+    auto protectFailed = eve::rts::MatchSystem::step(
+        *protect, eve::SimulationStep{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.5).value()});
+    REQUIRE(protectFailed.ok());
+    CHECK_EQ(static_cast<int>(protect->state()->phase), static_cast<int>(eve::rts::MatchPhase::Finished));
+    CHECK_EQ(protect->state()->winningTeam, -1);
+    CHECK_EQ(static_cast<int>(protect->objectives()->values[0].status),
+             static_cast<int>(eve::rts::MissionObjectiveStatus::Failed));
+
+    protect->release();
+    vip->release();
+    mission->release();
+    enemy->release();
+    escort->release();
     sudden->release();
     timed->release();
     scored->release();

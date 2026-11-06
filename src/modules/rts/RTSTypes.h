@@ -1309,9 +1309,49 @@ enum class VictoryRule : std::uint8_t {
     DestroyHeadquarters,
     ResourceTarget,
     ScoreTarget,
+    /** @brief Campaign/mission mode: Match::Objectives own completion and failure settlement. */
+    Mission,
 };
 /** @brief Lifecycle of one independent RTS match root. */
 enum class MatchPhase : std::uint8_t { Setup, Running, Finished };
+
+/** @brief Deterministic campaign objective kinds owned by a Match. */
+enum class MissionObjectiveKind : std::uint8_t {
+    EliminateFaction,
+    DestroyBuilding,
+    SurviveDuration,
+    ProtectSubjects,
+    OccupyBuildings,
+    ReachScore,
+    ReachResource,
+};
+/** @brief Objective lifecycle projection. */
+enum class MissionObjectiveStatus : std::uint8_t { Pending, Completed, Failed };
+
+/** @brief Persistent mission objective definition using stable subjects and team ids. */
+struct MissionObjectiveSpec {
+    std::string id;
+    MissionObjectiveKind kind = MissionObjectiveKind::EliminateFaction;
+    int beneficiaryTeam = 0;
+    SubjectRef targetFaction;
+    SubjectRef targetSubject;
+    std::string archetype;
+    std::string resourceType;
+    Duration requiredDuration{};
+    double targetValue = 0.0;
+    std::vector<SubjectRef> requiredSubjects;
+    /** @brief Completing this objective finishes the match for the beneficiary team. */
+    bool endsMatch = true;
+    /** @brief Failing this objective finishes the match as a mission failure (winningTeam = -1). */
+    bool failsMatch = true;
+};
+
+/** @brief Mutable objective status retained with the match. */
+struct MissionObjectiveState {
+    MissionObjectiveSpec spec;
+    MissionObjectiveStatus status = MissionObjectiveStatus::Pending;
+    std::uint64_t completedSequence = 0;
+};
 
 /** @brief Independent match composition root; factions may participate in different matches. */
 class EVENGINE_API_DOMAINS Match : public ecs::Entity {
@@ -1369,6 +1409,10 @@ public:
         /** @brief Sorted by ascending team id for deterministic projection. */
         std::vector<Entry> entries;
     };
+    /** @brief Campaign objectives evaluated each match step. */
+    struct Objectives {
+        std::vector<MissionObjectiveState> values;
+    };
     /** @brief Deterministic retained lifecycle events. */
     struct Events {
         /** @brief Event public API. */
@@ -1387,6 +1431,7 @@ public:
     COMPONENT(Participants, participants)
     COMPONENT(State, state)
     COMPONENT(Scores, scores)
+    COMPONENT(Objectives, objectives)
     COMPONENT(Events, events)
 
     /**

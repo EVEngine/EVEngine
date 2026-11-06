@@ -20,7 +20,12 @@ class EVENGINE_API_DOMAINS MatchSystem {
 public:
     /** @brief Add one live faction before match start. */
     [[nodiscard]] static Result<void> addParticipant(Match& match, Faction& faction, int team);
-    /** @brief Validate rules/participants and transition Setup to Running. */
+    /**
+     * @brief Register one campaign objective while the match is in setup.
+     * @cost Linear in existing objectives for duplicate-id checks.
+     */
+    [[nodiscard]] static Result<void> addObjective(Match& match, MissionObjectiveSpec objective);
+    /** @brief Validate rules/participants/objectives and transition Setup to Running. */
     [[nodiscard]] static Result<void> start(Match& match);
     /** @brief Eliminate a participant and all of its live RTS entities. */
     [[nodiscard]] static Result<void> surrender(Match& match, Faction& faction);
@@ -32,10 +37,10 @@ public:
     /** @brief Read one team's match-owned score; missing teams return 0. */
     [[nodiscard]] static Result<double> teamScore(Match& match, int team) noexcept;
     /**
-     * @brief Advance the match clock, evaluate victory, and settle a winner or draw.
+     * @brief Advance the match clock, evaluate objectives/victory, and settle a winner or draw.
      * @param step Fixed simulation tick/delta used for elapsed time and control-point accrual.
-     * @param resources Required for ResourceTarget races and timed resource settlement.
-     * @cost Linear in participants plus held control-point buildings when score accrual is enabled.
+     * @param resources Required for ResourceTarget races, timed resource settlement, and ReachResource objectives.
+     * @cost Linear in participants, objectives, and held control-point buildings when score accrual is enabled.
      */
     [[nodiscard]] static Result<std::size_t> step(Match& match, const SimulationStep& step = {},
                                                   const MatchResourceQuery& resources = {});

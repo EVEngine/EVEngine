@@ -149,6 +149,7 @@ struct RTSMatchSnapshot {
     std::vector<RTSMatchParticipantSnapshot> participants;
     Match::State state;
     Match::Scores scores;
+    Match::Objectives objectives;
     Match::Events events;
 };
 

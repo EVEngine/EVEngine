@@ -183,6 +183,8 @@ public:
     [[nodiscard]] Result<void> configureMatchTiming(Match& match, Duration timeLimit, bool suddenDeath = false) const;
     /** @brief Add one owned faction to one owned setup-phase match. */
     [[nodiscard]] Result<void> addMatchParticipant(Match& match, Faction& faction, int team) const;
+    /** @brief Register one campaign objective on an owned setup-phase match. */
+    [[nodiscard]] Result<void> addMatchObjective(Match& match, MissionObjectiveSpec objective) const;
     /** @brief Start one owned match after participant/rule validation. */
     [[nodiscard]] Result<void> startMatch(Match& match) const;
     /** @brief Surrender one owned faction from one owned running match. */
