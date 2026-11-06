@@ -1,6 +1,7 @@
 #include "procgen/road/RoadBake.h"
 #include "procgen/road/RoadGeometrySources.h"
 #include "procgen/road/RoadNetworkCodec.h"
+#include "procgen/road/RoadRailway.h"
 #include "procgen/road/RoadRecipes.h"
 #include "procgen/spline/SplinePath.h"
 #include "zeroerr/assert.h"
@@ -775,6 +776,84 @@ TEST_CASE("procgen.road.authoring.recipeSnapshotRejectsInvalidWithoutSceneFallba
     REQUIRE(tooManyMarkers.setEdgeControlPoints(1, std::move(many)).ok());
     REQUIRE(!setRoadRecipeNetwork(params, tooManyMarkers).ok());
     REQUIRE(params.canonicalString() == before);
+}
+
+TEST_CASE("procgen.road.railway.recipeProjectsBallastRailsAndSleepers") {
+    auto groupTriangles = [](const MeshBuild& mesh, const std::string& group) {
+        int result = 0;
+        for (int i = 0; i < mesh.getIndexCount() / 3; ++i)
+            if (mesh.getGroupName(mesh.getTriangleGroup(i)) == group) ++result;
+        return result;
+    };
+    Params params;
+    params.setString("scene", "straight");
+    params.setString("roadType", "railway");
+    params.setInt("lanes", 1);
+    params.setInt("pathSegments", 24);
+    params.setBool("navigation", true);
+    params.setBool("junctions", false);
+    auto baked = bakeRoadNetworkRecipe(params);
+    REQUIRE(baked.ok());
+    REQUIRE(groupTriangles(baked.value().mesh, "asphalt") > 0);
+    REQUIRE(groupTriangles(baked.value().mesh, "curb") > 0);  // rails
+    REQUIRE(groupTriangles(baked.value().mesh, "deck") > 0);  // ballast toes + sleepers
+    REQUIRE(groupTriangles(baked.value().mesh, "marking") == 0);
+    REQUIRE(baked.value().overlay.lanes.size() == 1u);
+    auto network = resolveRoadRecipeNetwork(params);
+    REQUIRE(network.ok());
+    REQUIRE(network.value().edges().size() == 1u);
+    REQUIRE(network.value().edges().front().lanesForward == 1);
+    REQUIRE(network.value().edges().front().lanesBackward == 0);
+    REQUIRE(network.value().edges().front().style.facilities.size() == 3u);
+
+    Params dual = params;
+    dual.setInt("lanes", 2);
+    auto dualBake = bakeRoadNetworkRecipe(dual);
+    REQUIRE(dualBake.ok());
+    auto dualNet = resolveRoadRecipeNetwork(dual);
+    REQUIRE(dualNet.ok());
+    REQUIRE(dualNet.value().edges().front().style.facilities.size() == 6u);
+
+    Params bad = params;
+    bad.setString("roadType", "monorail");
+    REQUIRE(!resolveRoadRecipeNetwork(bad).ok());
+
+    // Snapshot author styles are preserved; roadType does not rewrite them.
+    auto highway = RoadNetwork::makeStraight(36.f, 2);
+    REQUIRE(highway.ok());
+    Params snap;
+    snap.setString("roadType", "railway");
+    REQUIRE(setRoadRecipeNetwork(snap, highway.value()).ok());
+    auto resolved = resolveRoadRecipeNetwork(snap);
+    REQUIRE(resolved.ok());
+    REQUIRE(resolved.value().edges().front().style.facilities.empty());
+    REQUIRE(std::fabs(resolved.value().edges().front().style.laneWidth -
+                      highway.value().edges().front().style.laneWidth) < 1e-6f);
+}
+
+TEST_CASE("procgen.road.railway.styleRejectsInvalidTrackCount") {
+    REQUIRE(!makeRailwayStyle(0).ok());
+    REQUIRE(!makeRailwayStyle(3).ok());
+    auto style = makeRailwayStyle(1);
+    REQUIRE(style.ok());
+    RoadNetwork network;
+    auto        a = network.addNode(-16.f, 0.f, 0.f), b = network.addNode(16.f, 0.f, 0.f);
+    REQUIRE(a.ok());
+    REQUIRE(b.ok());
+    REQUIRE(
+        network
+            .addEdge(a.value(), b.value(), {{-16.f, 0.f, 0.f}, {0.f, 0.f, 0.f}, {16.f, 0.f, 0.f}}, 1, 0, style.value())
+            .ok());
+    RoadBakeOptions options;
+    options.pathSegmentsPerEdge = 20;
+    options.includeMarkings     = false;
+    options.includePlacements   = false;
+    auto baked                  = bakeRoadNetwork(network, options);
+    REQUIRE(baked.ok());
+    int curbTriangles = 0;
+    for (int i = 0; i < baked.value().mesh.getIndexCount() / 3; ++i)
+        if (baked.value().mesh.getGroupName(baked.value().mesh.getTriangleGroup(i)) == "curb") ++curbTriangles;
+    REQUIRE(curbTriangles > 0);
 }
 }  // namespace test_procgen_road_recipe_snapshot_unit
 

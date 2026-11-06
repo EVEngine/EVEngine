@@ -23,6 +23,8 @@ namespace eve::procgen::road {
 [[nodiscard]] EVENGINE_API_DOMAINS Result<void> setRoadRecipeNetwork(Params& params, const RoadNetwork& network);
 /** @brief Resolve the recipe's author snapshot, or its procedural scene when no snapshot was supplied.
  * @return An owning validated network. Invalid supplied snapshots fail instead of selecting a scene.
+ * When `roadType=railway` and no `networkSnapshot` is present, demo-scene edges are rewritten to a
+ * railway style (ballast / rails / sleepers) with `lanes` clamped to 1–2 parallel tracks.
  * @thread Caller thread; no callbacks.
  * @cost Linear in author data and seam validation, or procedural scene construction; reused by recipe projections.
  */
