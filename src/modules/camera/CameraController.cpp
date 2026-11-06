@@ -206,12 +206,19 @@ float CameraController::getSecondaryTargetY() const { return secondaryTarget_.y;
 float CameraController::getSecondaryTargetZ() const { return secondaryTarget_.z; }
 
 bool CameraController::validMode(const std::string& mode) {
-    return mode == "follow" || mode == "orbit" || mode == "topdown" || mode == "firstperson" || mode == "cinematic" ||
-           mode == "lockon";
+    return mode == "follow" || mode == "orbit" || mode == "topdown" || mode == "ortho" || mode == "firstperson" ||
+           mode == "cinematic" || mode == "lockon";
 }
 
 void CameraController::setMode(const std::string& mode) {
-    if (validMode(mode)) mode_ = mode;
+    if (!validMode(mode)) return;
+    if (mode_ == "ortho" && mode != "ortho" && cam_) cam_->setPerspective();
+    mode_ = mode;
+}
+
+void CameraController::setOrthoHeight(float height) {
+    if (!std::isfinite(height) || height <= 0.f) return;
+    orthoHeight_ = height;
 }
 
 std::string CameraController::getMode() const { return mode_; }
@@ -938,7 +945,7 @@ CameraController::View CameraController::desired() const {
         glm::vec3   dir(std::cos(el) * std::sin(az), std::sin(el), std::cos(el) * std::cos(az));
         v.eye    = target_ + dir * radius_;
         v.target = target_;
-    } else if (mode_ == "topdown") {
+    } else if (mode_ == "topdown" || mode_ == "ortho") {
         v.eye    = target_ + glm::vec3(0.f, radius_, 0.f);
         v.target = target_;
     } else if (mode_ == "firstperson") {
@@ -1003,7 +1010,10 @@ void CameraController::applyView(const View& v) {
     const float roll=glm::radians(cameraRollDeg_);
     up=up*std::cos(roll)+right*std::sin(roll);
     cam_->setUp(up.x, up.y, up.z);
-    cam_->setFov(v.fov);
+    if (mode_ == "ortho")
+        cam_->setOrthographic(orthoHeight_);
+    else
+        cam_->setFov(v.fov);
 }
 
 void CameraController::easeToward(const View& v, float dt) {
@@ -1117,6 +1127,8 @@ void Camera::expose(ssq::Table& table) {
     cc.addFunc("setAzimuth", &CameraController::setAzimuth);
     cc.addFunc("setElevation", &CameraController::setElevation);
     cc.addFunc("setOrbitSpeed", &CameraController::setOrbitSpeed);
+    cc.addFunc("setOrthoHeight", &CameraController::setOrthoHeight);
+    cc.addFunc("getOrthoHeight", &CameraController::getOrthoHeight);
 
     cc.addFunc("setYaw", &CameraController::setYaw);
     cc.addFunc("setPitch", &CameraController::setPitch);

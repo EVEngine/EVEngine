@@ -393,6 +393,22 @@ void Graphics::expose(ssq::Table& table) {
     cam2d.addFunc("getY", &Camera2D::getY);
     cam2d.addFunc("setZoom", &Camera2D::setZoom);
     cam2d.addFunc("getZoom", &Camera2D::getZoom);
+    cam2d.addFunc("setPixelConfig",
+                  [vm = table.getHandle()](Camera2D* self, float pixelsPerUnit, int refWidth, int refHeight) {
+                      return eve::script::projectResult(vm, self->setPixelConfig(pixelsPerUnit, refWidth, refHeight));
+                  });
+    cam2d.addFunc("clearPixelConfig", &Camera2D::clearPixelConfig);
+    cam2d.addFunc("setPixelPerfect", &Camera2D::setPixelPerfect);
+    cam2d.addFunc("getPixelPerfect", &Camera2D::getPixelPerfect);
+    cam2d.addFunc("setPixelSnap", &Camera2D::setPixelSnap);
+    cam2d.addFunc("getPixelSnap", &Camera2D::getPixelSnap);
+    cam2d.addFunc("applyPixelPerfect", [vm = table.getHandle()](Camera2D* self, int viewWidth, int viewHeight) {
+        return eve::script::projectResult(vm, self->applyPixelPerfect(viewWidth, viewHeight));
+    });
+    cam2d.addFunc("getPixelsPerUnit", &Camera2D::getPixelsPerUnit);
+    cam2d.addFunc("getPixelRefWidth", &Camera2D::getPixelRefWidth);
+    cam2d.addFunc("getPixelRefHeight", &Camera2D::getPixelRefHeight);
+    cam2d.addFunc("getPixelScale", &Camera2D::getPixelScale);
     cam2d.addFunc("screenToWorldX", &Camera2D::screenToWorldX);
     cam2d.addFunc("screenToWorldY", &Camera2D::screenToWorldY);
     cam2d.addFunc("worldToScreenX", &Camera2D::worldToScreenX);
@@ -445,6 +461,29 @@ void Graphics::expose(ssq::Table& table) {
     cam.addFunc("getFov", &Camera3D::getFov);
     cam.addFunc("setOrthographic", &Camera3D::setOrthographic);
     cam.addFunc("setPerspective", &Camera3D::setPerspective);
+    cam.addFunc("isOrthographic", &Camera3D::isOrthographic);
+    cam.addFunc("getOrthoHeight", &Camera3D::getOrthoHeight);
+    cam.addFunc("setPixelConfig",
+                [vm = table.getHandle()](Camera3D* self, float pixelsPerUnit, int refWidth, int refHeight) {
+                    return eve::script::projectResult(vm, self->setPixelConfig(pixelsPerUnit, refWidth, refHeight));
+                });
+    cam.addFunc("clearPixelConfig", &Camera3D::clearPixelConfig);
+    cam.addFunc("hasPixelConfig", &Camera3D::hasPixelConfig);
+    cam.addFunc("setPixelSnap", &Camera3D::setPixelSnap);
+    cam.addFunc("getPixelSnap", &Camera3D::getPixelSnap);
+    cam.addFunc("getPixelsPerUnit", &Camera3D::getPixelsPerUnit);
+    cam.addFunc("getPixelRefWidth", &Camera3D::getPixelRefWidth);
+    cam.addFunc("getPixelRefHeight", &Camera3D::getPixelRefHeight);
+    cam.addFunc("getPixelScale", &Camera3D::getPixelScale);
+    cam.addFunc("applyPixelPerfect", [vm = table.getHandle()](Camera3D* self, int viewWidth, int viewHeight) {
+        return eve::script::projectResult(vm, self->applyPixelPerfect(viewWidth, viewHeight));
+    });
+    cam.addFunc("setPixelOrthographic", [vm = table.getHandle()](Camera3D* self, float pixelsPerUnit, int viewWidth,
+                                                                 int viewHeight, int refWidth, int refHeight) {
+        return eve::script::projectResult(
+            vm, self->setPixelOrthographic(pixelsPerUnit, viewWidth, viewHeight, refWidth, refHeight));
+    });
+    cam.addFunc("snapToPixelGrid", &Camera3D::snapToPixelGrid);
     cam.addFunc("setClipPlanes", &Camera3D::setClipPlanes);
     cam.addFunc("getNearClip", &Camera3D::getNearClip);
     cam.addFunc("getFarClip", &Camera3D::getFarClip);

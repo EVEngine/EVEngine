@@ -67,7 +67,7 @@ TEST_CASE("camera.spec.modeAndPose") {
     SUB_CASE("mode parser accepts supported modes and preserves last valid mode on unknown input") {
         CameraController controller;
         REQUIRE(controller.getMode() == "follow");
-        for (const char* mode : {"orbit", "topdown", "firstperson", "cinematic", "lockon"}) {
+        for (const char* mode : {"orbit", "topdown", "ortho", "firstperson", "cinematic", "lockon"}) {
             controller.setMode(mode);
             REQUIRE(controller.getMode() == mode);
         }
@@ -99,6 +99,16 @@ TEST_CASE("camera.spec.modeAndPose") {
         rig.controller.snap();
         REQUIRE(near(rig.camera->data()->eyeX, 4.f));
         REQUIRE(near(rig.camera->data()->eyeY, 11.f));
+        REQUIRE(!rig.camera->isOrthographic());
+        rig.controller.setOrthoHeight(24.f);
+        rig.controller.setMode("ortho");
+        rig.controller.snap();
+        REQUIRE(near(rig.camera->data()->eyeX, 4.f));
+        REQUIRE(near(rig.camera->data()->eyeY, 11.f));
+        REQUIRE(rig.camera->isOrthographic());
+        REQUIRE(near(rig.camera->getOrthoHeight(), 24.f));
+        rig.controller.setMode("follow");
+        REQUIRE(!rig.camera->isOrthographic());
         REQUIRE(near(rig.camera->data()->eyeZ, -2.f));
         REQUIRE(near(rig.camera->data()->upZ, -1.f));
     };

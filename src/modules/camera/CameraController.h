@@ -92,7 +92,8 @@ struct PcgPhotoModePostFxState {
  * 驱动一个 graphics::Camera3D，内置多种方便玩家使用的视角行为：
  *   - follow      自动追踪目标（第三人称跟随，镜头挂在 target + offset）
  *   - orbit       自动盘旋（绕 target 公转，azimuth 按 orbitSpeed 自动旋转）
- *   - topdown     俯视（从 target 正上方往下拍）
+ *   - topdown     俯视（从 target 正上方往下拍，仍用透视）
+ *   - ortho       纯正交俯视（同 topdown 站位，投影切到 Camera3D 正交）
  *   - firstperson 第一人称（eye 位于 target，用 yaw/pitch 控制朝向）
  *   - cinematic   过场/自动切换视角（在一组命名 View 之间平滑插值）
  *   - lockon      锁定：看向 target 与 secondaryTarget 中点，站在玩家身后
@@ -159,9 +160,9 @@ public:
     /** @brief Returns the mode. */
     std::string getMode() const;
 
-    // --- orbit / topdown 参数 ---
+    // --- orbit / topdown / ortho 参数 ---
     /** @brief Sets the radius. */
-    void setRadius(float r);              // orbit 半径 / topdown 高度
+    void                                                 setRadius(float r);  // orbit 半径 / topdown·ortho 高度
     /** @brief Return the current orbit radius. */ float getRadius() const { return radius_; }
     /** @brief Set inclusive orbit zoom limits atomically. */
     [[nodiscard]] Result<void> setRadiusLimits(float minimum, float maximum);
@@ -173,6 +174,13 @@ public:
     void setElevation(float deg);         // orbit 仰角
     /** @brief Sets the orbit speed. */
     void setOrbitSpeed(float degPerSec);  // 自动盘旋转速
+    /**
+     * @brief Vertical world span for mode "ortho" (Camera3D::setOrthographic).
+     * @param height Full orthographic height; must be finite and > 0.
+     */
+    void setOrthoHeight(float height);
+    /** @brief Return the orthographic height used by mode "ortho". */
+    float getOrthoHeight() const { return orthoHeight_; }
 
     // --- firstperson 参数 ---
     /** @brief Sets the yaw. */
@@ -429,6 +437,7 @@ private:
     float radius_        = 10.f;
     float minimumRadius_ = 0.01f;
     float maximumRadius_ = 100000.f;
+    float orthoHeight_   = 20.f;
     float azimuthDeg_    = 45.f;
     float elevationDeg_  = 30.f;
     float orbitSpeedDeg_ = 20.f;

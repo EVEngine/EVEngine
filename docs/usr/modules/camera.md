@@ -199,7 +199,10 @@ function eve_update(dt) {
 - Action Cue：`setActionCuesEnabled(enabled)` / `getActionCuesEnabled()`。
 - 跟随目标：`setTarget(x,y,z)` / `setTargetNode(nodeRef)` / `getTargetX()` /
   `getTargetY()` / `getTargetZ()`、`setOffset(x,y,z)`、`setLookAhead(x,y,z)`。
-- 模式：`setMode("follow"|"orbit"|"topdown"|"firstperson"|"cinematic")` / `getMode()`。
+- 模式：`setMode("follow"|"orbit"|"topdown"|"ortho"|"firstperson"|"cinematic"|"lockon")` / `getMode()`。
+  `ortho` 与 `topdown` 同站位（正上方俯视），但投影切到 `Camera3D.setOrthographic`；离开
+  `ortho` 时自动恢复透视。用 `setOrthoHeight(height)` / `getOrthoHeight()` 控制正交高度；
+  像素对齐仍在 `Camera3D.setPixelConfig` / `setPixelOrthographic` 上配置。
 - 环绕：`setRadius`、`setAzimuth`、`setElevation`、`setOrbitSpeed`、`setYaw`、`setPitch`。
 - 平滑：`setSmooth(k)` 同时设置两路阻尼；也可用 `setPositionSmooth(k)` /
   `setTargetSmooth(k)` 独立控制机位与朝向跟随，再配合 `setMaxSpeed(v)`、`snap()`。
