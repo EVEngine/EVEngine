@@ -106,6 +106,7 @@
 - [原子状态补丁](modules/statepatch.md)：用带冲突检查的批次原子修改 JSON 状态，并支持脏键、事件和快照。
 - [通用命令队列](modules/orders.md)：确定性优先级命令、抢占、超时、载荷、生命周期事件和快照。
 - [社会关系图](modules/social.md)：所有权、控制权、角色指派和带权有向关系。
+- [编制与补员](modules/roster.md)：小队成员、岗哨占用、空缺事件与延迟 spawn 请求（不拥有生成/导航/行为树）。
 - [生产队列](modules/production.md)：按 owner 分配并行槽位，确定性推进可暂停、恢复的生产任务。
 - [工厂物流](modules/logistics.md)：2D 传送带 / 离散物品 SoA / 机器缓冲与合成；GPU 只做可视化位置解算。
 - [权限规则](modules/authority.md)：按 actor、scope 和 capability 仲裁有优先级、可过期的允许/拒绝规则。
