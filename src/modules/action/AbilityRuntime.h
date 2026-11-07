@@ -9,6 +9,7 @@
 #include "tags/GameplayTag.h"
 
 #include <map>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -147,6 +148,8 @@ public:
      * @param tick Injected deterministic tick passed to ActionRuntime::advance.
      * @param delta Injected deterministic duration for phase advance and cooldowns.
      * @return Owning step report; if any advance fails, still synchronizes then returns that failure.
+     * @remarks Each SimulationTick may be stepped at most once. A second step at the same tick
+     * returns Conflict without mutating activations or cooldowns; ticks must not move backwards.
      * @cost Relative to active activation count; amortize per simulation step, not per grant.
      */
     [[nodiscard]] Result<AbilityStepReport> step(SimulationTick tick, Duration delta);
@@ -178,6 +181,7 @@ private:
     AbilityGrantId                                   nextGrant_{1};
     AbilityActivationId                              nextActivation_{1};
     AbilityInstanceId                                nextInstance_{1};
+    std::optional<SimulationTick>                    lastStepTick_;
 };
 
 }  // namespace eve::action

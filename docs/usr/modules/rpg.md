@@ -94,6 +94,33 @@ if (actor.isDead("hp")) actor.revive("hp");// 复活回满
 // 伤害数值可先走结算流水线：SettlementContext.set("amount", dmg) 后调用 takeDamage 落账
 ```
 
+### 动作遭遇（Action → Vitals）
+
+实时动作切片用 `eve.RPGActionEncounter()` 把双参与者接到 action 的 `combat:damage`
+与 RPG Vitals，而不是在脚本里直接 `takeDamage` 作为权威路径。完整宿主清单、失败矩阵与
+存档边界见 [动作 RPG 宿主接线](arpg-host.md)；可玩示例见 `examples/arpg-loop`。
+
+```squirrel
+local duel = eve.RPGActionEncounter();
+checked(duel.bind(hero, enemy, heroLifeUuid, enemyLifeUuid));
+local hit = duel.hit(true, 40.0, tick);
+if (hit.ok && duel.hasPendingReward())
+    checked(duel.claim(gameState, tracker, "encounter.wolf"));
+if (duel.isClosed()) { /* close() 之后必须重新 bind */ }
+local last = duel.lastTick();
+```
+
+| 方法 | 说明 |
+| --- | --- |
+| `bind` | 绑定两个 actor 与每生命 UUID（Result） |
+| `hit` | 注入 tick 的命中；返回实际伤害（Result） |
+| `claim` | 投递 pending 击杀奖励（Result；失败保留 pending） |
+| `close` | 撤销 provider，丢弃瞬时遭遇 |
+| `hasPendingReward` | 是否有待发奖 |
+| `isClosed` | 是否已 close |
+| `isBound` | 是否已成功 bind 且未 close |
+| `lastTick` | 最近一次成功 `hit` 的 tick；未命中为 `-1` |
+
 ### 装备加成与掉落
 
 ```squirrel
@@ -117,6 +144,17 @@ local drops = rpg.rollLoot("goblin", bag, 42);
 `rollLoot` 是兼容计数入口：返回成功入包的掉落表项数，`0` 可能表示未命中或失败。
 同次抽取整批入包；容量不足或命中未知物品时不留下部分奖励、不发库存事件。
 C++ `LootSystem::roll` 使用调用方随机流，失败不推进随机流，成功未命中仍推进。
+结构化入口 `LootSystem::rollDetailed(tableId, bag, rng, {luck})` 返回 `Result`：可诊断
+`NotFound` / `InvalidArgument`，`luck` 只放大 Independent 表的 `chance`
+（`clamp(chance * (1 + luck), 0, 1)`，要求 `luck >= -1`）。
+
+表级 `selectMode`：
+
+| 模式 | 行为 |
+| --- | --- |
+| `independent`（默认） | 每条 `chance` 独立 Bernoulli；可选 `unique` 在背包已有或本批已授予同 `itemId` 时跳过 |
+| `weighted` | 按 `weight>0` 相对权重恰好抽一条；`luck` 忽略；`unique` 仍可跳过 |
+
 库存变更钩子只在整批物品与随机流提交后运行。抽取不负责记录击杀身份或防止重复发奖。
 
 ### 特征 / 职业 / 回合制战斗 / 全局状态

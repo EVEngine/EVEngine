@@ -2358,6 +2358,24 @@ TEST_CASE("combatLoop.requiresCharacterAndMelee") {
     CHECK(!missing.ok());
 }
 
+TEST_CASE("combatLoop.rejectsDuplicateAdvanceOnSameTick") {
+    const auto                          player = subject("11121314-1516-1718-991a-1b1c1d1e1f20");
+    eve::combat::CombatCharacterRuntime characters;
+    REQUIRE(characters.registerSubject({player, "fighter:player", {0.0, 0.0, 0.0}}).ok());
+    eve::combat::MeleeHitRuntime   melee;
+    eve::combat::CombatLoopRuntime loop;
+    loop.setCharacters(characters);
+    loop.setMelee(melee);
+    const auto step = eve::SimulationStep{eve::SimulationTick(1), eve::Duration::fromNanoseconds(16000000)};
+    REQUIRE(loop.advance(step).ok());
+    const double x         = characters.state(player).value().position.x;
+    auto         duplicate = loop.advance(step);
+    REQUIRE(!duplicate.ok());
+    CHECK_EQ(duplicate.status().code(), eve::StatusCode::Conflict);
+    CHECK_EQ(characters.state(player).value().position.x, x);
+    REQUIRE(loop.advance({eve::SimulationTick(2), eve::Duration::fromNanoseconds(16000000)}).ok());
+}
+
 TEST_CASE("combatLoop.warpsAttackerTowardLockAndFramesCamera") {
     const auto player = subject("11121314-1516-1718-991a-1b1c1d1e1f20");
     const auto enemy  = subject("01020304-0506-0708-890a-0b0c0d0e0f10");
