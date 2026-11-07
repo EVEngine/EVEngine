@@ -270,7 +270,10 @@ jobs:
         run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
 
       - name: Build macosx SDK
-        timeout-minutes: 90
+        # macos-15-intel cold builds have crossed 90m while still finishing the
+        # last few of ~1850 ninja targets (job wall is 180m). arm64 stays well
+        # under 90m; give x86_64 headroom without starving test/package steps.
+        timeout-minutes: ${{ matrix.architecture == 'x86_64' && 150 || 90 }}
         run: make "sdk/$SDK_TARGET" CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS=4
 
       - name: Test macosx SDK usability
