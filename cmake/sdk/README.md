@@ -54,6 +54,12 @@ cmake --install build/android-debug --prefix dist/eve-sdk/android-debug
 
 For Android: `make sdk/android-debug`.
 
+Android Release SDK installs strip unneeded symbols from the installed `.so`
+files with the configured NDK tool. Build outputs retain their symbols for
+crash diagnosis; keep those outputs from the matching release build. Debug SDKs
+retain symbols. Published Android ZIPs keep runtime libraries in `lib/` only;
+APK packaging stages them into the template's `jniLibs/` when needed.
+
 Do **not** install multiple platforms into the same prefix.
 
 ## Native plugin

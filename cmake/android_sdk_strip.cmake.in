@@ -1,0 +1,16 @@
+# Runs after all SDK libraries have been installed. Debug SDKs retain symbols.
+if(NOT CMAKE_INSTALL_CONFIG_NAME STREQUAL "Release")
+    return()
+endif()
+set(_eve_strip "@CMAKE_STRIP@")
+if(NOT _eve_strip)
+    message(FATAL_ERROR "Android Release SDK requires the NDK strip tool")
+endif()
+file(GLOB _eve_sdk_libraries "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/*.so")
+foreach(_eve_library IN LISTS _eve_sdk_libraries)
+    execute_process(COMMAND ${_eve_strip} --strip-unneeded "${_eve_library}"
+        RESULT_VARIABLE _eve_strip_result ERROR_VARIABLE _eve_strip_error)
+    if(NOT _eve_strip_result STREQUAL "0")
+        message(FATAL_ERROR "Android SDK strip failed for ${_eve_library}: ${_eve_strip_error}")
+    endif()
+endforeach()

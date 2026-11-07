@@ -389,3 +389,11 @@ install(FILES "${CMAKE_SOURCE_DIR}/cmake/sdk/README.md"
 include(${CMAKE_SOURCE_DIR}/cmake/timidity_share.cmake)
 eve_install_timidity_share()
 
+# Strip only installed Android Release copies, including copied SDL/NDK libs.
+# Keep the original build outputs intact for crash symbolization.
+if(BUILD_PLATFORM STREQUAL "android")
+    configure_file("${CMAKE_SOURCE_DIR}/cmake/android_sdk_strip.cmake.in"
+        "${CMAKE_BINARY_DIR}/android_sdk_strip.cmake" @ONLY)
+    install(SCRIPT "${CMAKE_BINARY_DIR}/android_sdk_strip.cmake")
+endif()
+
