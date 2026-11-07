@@ -1,0 +1,268 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/growth/GrowthSystem.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5610d19d1867b6661e93707e44355b86.html">growth</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GrowthSystem.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GrowthSystem_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Time_8h.html">common/Time.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="GrowthCalendar_8h.html">growth/GrowthCalendar.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &quot;<a class="code" href="GrowthEvents_8h.html">growth/GrowthEvents.h</a>&quot;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="Organism_8h.html">growth/Organism.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1growth.html">eve::growth</a> {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html">   19</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1growth_1_1GrowthWorld.html">GrowthWorld</a> {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#ab5e6c49e7ea83227ff35f37d09edf2c0">   21</a></span>    <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#ab5e6c49e7ea83227ff35f37d09edf2c0">GrowthWorld</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setSecondsPerSimDay(<span class="keywordtype">double</span> seconds) <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#a951324d88db20ed580a5d22afa746258">   25</a></span>    [[nodiscard]] <span class="keywordtype">double</span>       <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#a951324d88db20ed580a5d22afa746258">secondsPerSimDay</a>() const noexcept { <span class="keywordflow">return</span> secondsPerSimDay_; }</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#ac8621e9110d83f78e2c04a7e624e1240">   28</a></span>    <span class="keywordtype">void</span>                        <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#ac8621e9110d83f78e2c04a7e624e1240">setRngSeed</a>(std::uint64_t <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>) <span class="keyword">noexcept</span> { rngSeed_ = <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>; }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#a39603f3dda8c6be789f1ff2df03a8c7a">   29</a></span>    [[nodiscard]] std::uint64_t <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#a39603f3dda8c6be789f1ff2df03a8c7a">rngSeed</a>() const noexcept { <span class="keywordflow">return</span> rngSeed_; }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#aed3db412f3fd07a2be57cd8c8acb8e06">   31</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1growth_1_1GrowthCalendar.html">GrowthCalendar</a>&amp;       <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#aed3db412f3fd07a2be57cd8c8acb8e06">calendar</a>() noexcept { <span class="keywordflow">return</span> calendar_; }</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#a9757ab02b8868a5aa743d15fa6529300">   32</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1growth_1_1GrowthCalendar.html">GrowthCalendar</a>&amp; <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#a9757ab02b8868a5aa743d15fa6529300">calendar</a>() const noexcept { <span class="keywordflow">return</span> calendar_; }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#a1ce5af9c2037691d8c73147b396ea768">   33</a></span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1growth_1_1GrowthEventLog.html">GrowthEventLog</a>&amp;       <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#a1ce5af9c2037691d8c73147b396ea768">events</a>() noexcept { <span class="keywordflow">return</span> events_; }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#a394e483d8826fe043b6152fac2ea1010">   34</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1growth_1_1GrowthEventLog.html">GrowthEventLog</a>&amp; <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#a394e483d8826fe043b6152fac2ea1010">events</a>() const noexcept { <span class="keywordflow">return</span> events_; }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> advanceDays(<span class="keywordtype">double</span> days);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> tryBreed(<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; carrier, <a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; partner);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> tryReproduce(<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; organism);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keywordtype">void</span> resetForTests();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    [[nodiscard]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1growth_1_1GrowthWorld.html">GrowthWorld</a>&amp; instance();</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">static</span> <span class="keywordtype">void</span> resetInstance();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#ad9bf847964019af8b96d9bd848944893">   70</a></span>    <span class="keyword">friend</span> <span class="keyword">class </span><a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">void</span>                 applyDaySlice(<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; organism, <span class="keywordtype">double</span> days, std::int64_t dayIndexForHash);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordtype">void</span>                 drainNeeds(<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; organism, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1SpeciesDef.html">SpeciesDef</a>&amp; species, <span class="keywordtype">double</span> days);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    [[nodiscard]] <span class="keywordtype">double</span> growthMultiplier(<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; organism, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1SpeciesDef.html">SpeciesDef</a>&amp; species);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">void</span>                 advanceGrowth(<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; organism, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1SpeciesDef.html">SpeciesDef</a>&amp; species, <span class="keywordtype">double</span> days);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span> advanceDisease(<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; organism, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1SpeciesDef.html">SpeciesDef</a>&amp; species, <span class="keywordtype">double</span> days, std::int64_t dayIndexForHash);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordtype">void</span> advanceProduce(<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; organism, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1SpeciesDef.html">SpeciesDef</a>&amp; species, <span class="keywordtype">double</span> days);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordtype">void</span> advanceReproduction(<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; organism, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1SpeciesDef.html">SpeciesDef</a>&amp; species, <span class="keywordtype">double</span> days);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> spawnOffspring(<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; <a class="code hl_variable" href="LDrawImporter_8cpp.html#aa77d8b2654f3ab520ecdff679da7f8c4">parent</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1SpeciesDef.html">SpeciesDef</a>&amp; species, <span class="keywordtype">int</span> <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a>);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">void</span>                       emit(<a class="code hl_enumeration" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7">GrowthEventKind</a> <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>, <a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; organism, std::string <a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <a class="code hl_class" href="classeve_1_1growth_1_1GrowthCalendar.html">GrowthCalendar</a> calendar_;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <a class="code hl_class" href="classeve_1_1growth_1_1GrowthEventLog.html">GrowthEventLog</a> events_;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordtype">double</span>         secondsPerSimDay_ = 60.0;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keywordtype">double</span>         dayFraction_      = 0.0;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    std::uint64_t  rngSeed_          = 1;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>};</div>
+</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}  <span class="comment">// namespace eve::growth</span></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a704bb99555d8684cacf66248b5c3d70c"><div class="ttname"><a href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a></div><div class="ttdeci">#define EVENGINE_API_FOUNDATION</div><div class="ttdoc">每个链接组（link group）各自的导出宏。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00106">Export.h:106</a></div></div>
+<div class="ttc" id="aGrowthCalendar_8h_html"><div class="ttname"><a href="GrowthCalendar_8h.html">GrowthCalendar.h</a></div></div>
+<div class="ttc" id="aGrowthEvents_8h_html"><div class="ttname"><a href="GrowthEvents_8h.html">GrowthEvents.h</a></div></div>
+<div class="ttc" id="aLDrawImporter_8cpp_html_aa77d8b2654f3ab520ecdff679da7f8c4"><div class="ttname"><a href="LDrawImporter_8cpp.html#aa77d8b2654f3ab520ecdff679da7f8c4">parent</a></div><div class="ttdeci">const ColourScope * parent</div><div class="ttdef"><b>Definition</b> <a href="LDrawImporter_8cpp_source.html#l00073">LDrawImporter.cpp:73</a></div></div>
+<div class="ttc" id="aOrganism_8h_html"><div class="ttname"><a href="Organism_8h.html">Organism.h</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00811">PointSet.cpp:811</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_ac58d00c955de8df4981a75b37f466578"><div class="ttname"><a href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a></div><div class="ttdeci">int detail</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00111">PrototypeKit.cpp:111</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aca87c2bbc26e697653e2d8461c76a361"><div class="ttname"><a href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00011">ScriptStructure.cpp:11</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_ad43c3812e6d13e0518d9f8b8f463ffcf"><div class="ttname"><a href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a></div><div class="ttdeci">int count</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00033">SquirrelBinding.cpp:33</a></div></div>
+<div class="ttc" id="aTime_8h_html"><div class="ttname"><a href="Time_8h.html">Time.h</a></div><div class="ttdoc">Common time values and an injectable deterministic simulation clock.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00314">TreeMesh.cpp:314</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00176">Result.h:176</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html">eve::growth::GrowthCalendar</a></div><div class="ttdoc">Injected simulation calendar owned by GrowthWorld.</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8h_source.html#l00030">GrowthCalendar.h:30</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthEventLog_html"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthEventLog.html">eve::growth::GrowthEventLog</a></div><div class="ttdoc">Append-only event log cleared explicitly (economy-style).</div><div class="ttdef"><b>Definition</b> <a href="GrowthEvents_8h_source.html#l00035">GrowthEvents.h:35</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html">eve::growth::GrowthWorld</a></div><div class="ttdoc">Owner of calendar, RNG seed, and the sole simulation advance path.</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8h_source.html#l00019">GrowthSystem.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_a1ce5af9c2037691d8c73147b396ea768"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#a1ce5af9c2037691d8c73147b396ea768">eve::growth::GrowthWorld::events</a></div><div class="ttdeci">GrowthEventLog &amp; events() noexcept</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8h_source.html#l00033">GrowthSystem.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_a394e483d8826fe043b6152fac2ea1010"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#a394e483d8826fe043b6152fac2ea1010">eve::growth::GrowthWorld::events</a></div><div class="ttdeci">const GrowthEventLog &amp; events() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8h_source.html#l00034">GrowthSystem.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_a39603f3dda8c6be789f1ff2df03a8c7a"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#a39603f3dda8c6be789f1ff2df03a8c7a">eve::growth::GrowthWorld::rngSeed</a></div><div class="ttdeci">std::uint64_t rngSeed() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8h_source.html#l00029">GrowthSystem.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_a951324d88db20ed580a5d22afa746258"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#a951324d88db20ed580a5d22afa746258">eve::growth::GrowthWorld::secondsPerSimDay</a></div><div class="ttdeci">double secondsPerSimDay() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8h_source.html#l00025">GrowthSystem.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_a9757ab02b8868a5aa743d15fa6529300"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#a9757ab02b8868a5aa743d15fa6529300">eve::growth::GrowthWorld::calendar</a></div><div class="ttdeci">const GrowthCalendar &amp; calendar() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8h_source.html#l00032">GrowthSystem.h:32</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_ab5e6c49e7ea83227ff35f37d09edf2c0"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#ab5e6c49e7ea83227ff35f37d09edf2c0">eve::growth::GrowthWorld::GrowthWorld</a></div><div class="ttdeci">GrowthWorld()=default</div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_ac8621e9110d83f78e2c04a7e624e1240"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#ac8621e9110d83f78e2c04a7e624e1240">eve::growth::GrowthWorld::setRngSeed</a></div><div class="ttdeci">void setRngSeed(std::uint64_t seed) noexcept</div><div class="ttdoc">Deterministic seed for disease / yield hash streams.</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8h_source.html#l00028">GrowthSystem.h:28</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_aed3db412f3fd07a2be57cd8c8acb8e06"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#aed3db412f3fd07a2be57cd8c8acb8e06">eve::growth::GrowthWorld::calendar</a></div><div class="ttdeci">GrowthCalendar &amp; calendar() noexcept</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8h_source.html#l00031">GrowthSystem.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1Organism_html"><div class="ttname"><a href="classeve_1_1growth_1_1Organism.html">eve::growth::Organism</a></div><div class="ttdoc">Growth short-root entity for any configured lifeform.</div><div class="ttdef"><b>Definition</b> <a href="Organism_8h_source.html#l00029">Organism.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html"><div class="ttname"><a href="namespaceeve_1_1growth.html">eve::growth</a></div><div class="ttdef"><b>Definition</b> <a href="Growth_8cpp_source.html#l00011">Growth.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_aaf57392c19dfe5ef25a50eb87aeacad7"><div class="ttname"><a href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7">eve::growth::GrowthEventKind</a></div><div class="ttdeci">GrowthEventKind</div><div class="ttdoc">Kind of a deterministic growth lifecycle event.</div><div class="ttdef"><b>Definition</b> <a href="GrowthEvents_8h_source.html#l00011">GrowthEvents.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00158">Time.h:158</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1SpeciesDef_html"><div class="ttname"><a href="structeve_1_1growth_1_1SpeciesDef.html">eve::growth::SpeciesDef</a></div><div class="ttdoc">Static species definition — fully data-driven life cycle.</div><div class="ttdef"><b>Definition</b> <a href="Species_8h_source.html#l00081">Species.h:81</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,912 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::growth::Growth类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1growth.html">growth</a></li><li class="navelem"><a class="el" href="classeve_1_1growth_1_1Growth.html">Growth</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1growth_1_1Growth-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::growth::Growth类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Farm growth module facade (<code>eve.Growth</code>): species registry + world step.  
+ <a href="classeve_1_1growth_1_1Growth.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Growth_8h_source.html">Growth.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::growth::Growth 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1growth_1_1Growth.png" usemap="#eve::growth::Growth_map" alt=""/>
+  <map id="eve::growth::Growth_map" name="eve::growth::Growth_map">
+<area href="classeve_1_1Module.html" title="EVENGINE_API_FOUNDATION public API." alt="eve::Module" shape="rect" coords="0,0,123,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a9628e4e0cf3ac4f51768f67b66c4115c" id="r_a9628e4e0cf3ac4f51768f67b66c4115c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a9628e4e0cf3ac4f51768f67b66c4115c">Module_REG</a> (<a class="el" href="classeve_1_1growth_1_1Growth.html">Growth</a>)</td></tr>
+<tr class="separator:a9628e4e0cf3ac4f51768f67b66c4115c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98896e7959b21b093423b366648d4b4e" id="r_a98896e7959b21b093423b366648d4b4e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a98896e7959b21b093423b366648d4b4e">Growth</a> ()=default</td></tr>
+<tr class="separator:a98896e7959b21b093423b366648d4b4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c9de943c060bd08fbe434ccf1fe2cfa" id="r_a2c9de943c060bd08fbe434ccf1fe2cfa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a2c9de943c060bd08fbe434ccf1fe2cfa">~Growth</a> () override=default</td></tr>
+<tr class="separator:a2c9de943c060bd08fbe434ccf1fe2cfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d472c607feea8b05514c53dd242c8e6" id="r_a4d472c607feea8b05514c53dd242c8e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a4d472c607feea8b05514c53dd242c8e6">registerSpeciesFromJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a4d472c607feea8b05514c53dd242c8e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers species from a JSON object or array.  <br /></td></tr>
+<tr class="separator:a4d472c607feea8b05514c53dd242c8e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54f4e0ed319362530a7763f01ce0512a" id="r_a54f4e0ed319362530a7763f01ce0512a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a54f4e0ed319362530a7763f01ce0512a">clearSpecies</a> ()</td></tr>
+<tr class="memdesc:a54f4e0ed319362530a7763f01ce0512a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears species (tests / demos).  <br /></td></tr>
+<tr class="separator:a54f4e0ed319362530a7763f01ce0512a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88b5214ef9a6deb38f33070b61cfc386" id="r_a88b5214ef9a6deb38f33070b61cfc386"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a88b5214ef9a6deb38f33070b61cfc386">hasSpecies</a> (const std::string &amp;<a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="separator:a88b5214ef9a6deb38f33070b61cfc386"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa44e2309ecb6523c9be0445532d74050" id="r_aa44e2309ecb6523c9be0445532d74050"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#aa44e2309ecb6523c9be0445532d74050">speciesCount</a> () const</td></tr>
+<tr class="separator:aa44e2309ecb6523c9be0445532d74050"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa240a8d997249196e71c694c7cff973c" id="r_aa240a8d997249196e71c694c7cff973c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#aa240a8d997249196e71c694c7cff973c">setDaysPerSeason</a> (int days)</td></tr>
+<tr class="separator:aa240a8d997249196e71c694c7cff973c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a822131e043881a0ceedb76807bdadc8d" id="r_a822131e043881a0ceedb76807bdadc8d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a822131e043881a0ceedb76807bdadc8d">setSeasonLayoutFromJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a822131e043881a0ceedb76807bdadc8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures a custom season layout from JSON (alien year cycles). @cost Cheap: parses a small season table.  <br /></td></tr>
+<tr class="separator:a822131e043881a0ceedb76807bdadc8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29085da46fdc84f7b16096482b28b3d2" id="r_a29085da46fdc84f7b16096482b28b3d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a29085da46fdc84f7b16096482b28b3d2">setSecondsPerSimDay</a> (double seconds)</td></tr>
+<tr class="separator:a29085da46fdc84f7b16096482b28b3d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2978fe2bc01b5524fe3cf08bbf839fd8" id="r_a2978fe2bc01b5524fe3cf08bbf839fd8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a2978fe2bc01b5524fe3cf08bbf839fd8">setRngSeed</a> (std::uint64_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>)</td></tr>
+<tr class="separator:a2978fe2bc01b5524fe3cf08bbf839fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3376a87f36342327e7304b23c3d855b9" id="r_a3376a87f36342327e7304b23c3d855b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a3376a87f36342327e7304b23c3d855b9">advanceDays</a> (double days)</td></tr>
+<tr class="separator:a3376a87f36342327e7304b23c3d855b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b4cbae0298d52a3b0a071b6ce422de4" id="r_a8b4cbae0298d52a3b0a071b6ce422de4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a8b4cbae0298d52a3b0a071b6ce422de4">stepSeconds</a> (double seconds)</td></tr>
+<tr class="separator:a8b4cbae0298d52a3b0a071b6ce422de4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac95cce94abdc9607183e495adb24481c" id="r_ac95cce94abdc9607183e495adb24481c"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#ac95cce94abdc9607183e495adb24481c">dayIndex</a> () const</td></tr>
+<tr class="separator:ac95cce94abdc9607183e495adb24481c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50af2408c4fb05508557cdfe53f193de" id="r_a50af2408c4fb05508557cdfe53f193de"><td class="memItemLeft" align="right" valign="top">std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a50af2408c4fb05508557cdfe53f193de">year</a> () const</td></tr>
+<tr class="separator:a50af2408c4fb05508557cdfe53f193de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd700521205f87c06586592128fd3fe9" id="r_acd700521205f87c06586592128fd3fe9"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#acd700521205f87c06586592128fd3fe9">seasonName</a> () const</td></tr>
+<tr class="separator:acd700521205f87c06586592128fd3fe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20cd4967dee4455cbd616c5bedbaae5e" id="r_a20cd4967dee4455cbd616c5bedbaae5e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a20cd4967dee4455cbd616c5bedbaae5e">spawn</a> (const std::string &amp;speciesId)</td></tr>
+<tr class="memdesc:a20cd4967dee4455cbd616c5bedbaae5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawns any registered species (plant, animal, or custom lifeform).  <br /></td></tr>
+<tr class="separator:a20cd4967dee4455cbd616c5bedbaae5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b99ffd5a2e797bbd0d678863852fbe1" id="r_a6b99ffd5a2e797bbd0d678863852fbe1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a6b99ffd5a2e797bbd0d678863852fbe1">plant</a> (const std::string &amp;speciesId)</td></tr>
+<tr class="memdesc:a6b99ffd5a2e797bbd0d678863852fbe1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience: spawn when species.kindId == "plant".  <br /></td></tr>
+<tr class="separator:a6b99ffd5a2e797bbd0d678863852fbe1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75d683e845d18aef4e5436622563849c" id="r_a75d683e845d18aef4e5436622563849c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a75d683e845d18aef4e5436622563849c">spawnAnimal</a> (const std::string &amp;speciesId)</td></tr>
+<tr class="memdesc:a75d683e845d18aef4e5436622563849c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience: spawn when species.kindId == "animal".  <br /></td></tr>
+<tr class="separator:a75d683e845d18aef4e5436622563849c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0f06e15976406914ff7029a480ec076" id="r_ad0f06e15976406914ff7029a480ec076"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#ad0f06e15976406914ff7029a480ec076">tryBreed</a> (<a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> *carrier, <a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> *partner)</td></tr>
+<tr class="separator:ad0f06e15976406914ff7029a480ec076"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e6ebf03916ed4098fa52366ff98c3b5" id="r_a6e6ebf03916ed4098fa52366ff98c3b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a6e6ebf03916ed4098fa52366ff98c3b5">tryReproduce</a> (<a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> *organism)</td></tr>
+<tr class="memdesc:a6e6ebf03916ed4098fa52366ff98c3b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solo reproduction for self_bud / fission / spore_burst species.  <br /></td></tr>
+<tr class="separator:a6e6ebf03916ed4098fa52366ff98c3b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd8224eeb63371ffbfad77cb69c839b3" id="r_acd8224eeb63371ffbfad77cb69c839b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#acd8224eeb63371ffbfad77cb69c839b3">clearEvents</a> ()</td></tr>
+<tr class="separator:acd8224eeb63371ffbfad77cb69c839b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cc6c35a59cfd662c272e05a5dd221f9" id="r_a4cc6c35a59cfd662c272e05a5dd221f9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a4cc6c35a59cfd662c272e05a5dd221f9">eventCount</a> () const</td></tr>
+<tr class="separator:a4cc6c35a59cfd662c272e05a5dd221f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f23df2a1a6089b070722748a8696a66" id="r_a8f23df2a1a6089b070722748a8696a66"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a8f23df2a1a6089b070722748a8696a66">eventKind</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a8f23df2a1a6089b070722748a8696a66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88007795f88168969e2fc74659232708" id="r_a88007795f88168969e2fc74659232708"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a88007795f88168969e2fc74659232708">eventOrganismId</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a88007795f88168969e2fc74659232708"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d8de3430dc2da33c9f55659a30497e0" id="r_a4d8de3430dc2da33c9f55659a30497e0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a4d8de3430dc2da33c9f55659a30497e0">eventSpeciesId</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a4d8de3430dc2da33c9f55659a30497e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f4c58bd3ae526167a193a6c4ddcb243" id="r_a3f4c58bd3ae526167a193a6c4ddcb243"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a3f4c58bd3ae526167a193a6c4ddcb243">eventDetail</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a3f4c58bd3ae526167a193a6c4ddcb243"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45c82431be9f5306d522d795fa2896fa" id="r_a45c82431be9f5306d522d795fa2896fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1Growth.html#a45c82431be9f5306d522d795fa2896fa">resetWorld</a> ()</td></tr>
+<tr class="memdesc:a45c82431be9f5306d522d795fa2896fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets calendar, events, and species for demos/tests.  <br /></td></tr>
+<tr class="separator:a45c82431be9f5306d522d795fa2896fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="memdesc:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Module.html" title="EVENGINE_API_FOUNDATION public API.">Module</a>.  <br /></td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="memdesc:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name.  <br /></td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Farm growth module facade (<code>eve.Growth</code>): species registry + world step. </p>
+
+<p class="definition">在文件 <a class="el" href="Growth_8h_source.html">Growth.h</a> 第 <a class="el" href="Growth_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a98896e7959b21b093423b366648d4b4e" name="a98896e7959b21b093423b366648d4b4e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98896e7959b21b093423b366648d4b4e">&#9670;&#160;</a></span>Growth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::growth::Growth::Growth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2c9de943c060bd08fbe434ccf1fe2cfa" name="a2c9de943c060bd08fbe434ccf1fe2cfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c9de943c060bd08fbe434ccf1fe2cfa">&#9670;&#160;</a></span>~Growth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::growth::Growth::~Growth </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a3376a87f36342327e7304b23c3d855b9" name="a3376a87f36342327e7304b23c3d855b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3376a87f36342327e7304b23c3d855b9">&#9670;&#160;</a></span>advanceDays()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::growth::Growth::advanceDays </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>days</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthSystem_8cpp_source.html#l00104">eve::growth::GrowthWorld::advanceDays()</a> , 以及 <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a>.</p>
+
+</div>
+</div>
+<a id="acd8224eeb63371ffbfad77cb69c839b3" name="acd8224eeb63371ffbfad77cb69c839b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd8224eeb63371ffbfad77cb69c839b3">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::growth::Growth::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00098">98</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthEvents_8cpp_source.html#l00007">eve::growth::GrowthEventLog::clear()</a>, <a class="el" href="GrowthSystem_8h_source.html#l00033">eve::growth::GrowthWorld::events()</a> , 以及 <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a>.</p>
+
+</div>
+</div>
+<a id="a54f4e0ed319362530a7763f01ce0512a" name="a54f4e0ed319362530a7763f01ce0512a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54f4e0ed319362530a7763f01ce0512a">&#9670;&#160;</a></span>clearSpecies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::growth::Growth::clearSpecies </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears species (tests / demos). </p>
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Species_8cpp_source.html#l00550">eve::growth::SpeciesRegistry::clear()</a>.</p>
+
+</div>
+</div>
+<a id="ac95cce94abdc9607183e495adb24481c" name="ac95cce94abdc9607183e495adb24481c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac95cce94abdc9607183e495adb24481c">&#9670;&#160;</a></span>dayIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::growth::Growth::dayIndex </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthSystem_8h_source.html#l00031">eve::growth::GrowthWorld::calendar()</a>, <a class="el" href="GrowthCalendar_8h_source.html#l00056">eve::growth::GrowthCalendar::dayIndex()</a> , 以及 <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a>.</p>
+
+</div>
+</div>
+<a id="a4cc6c35a59cfd662c272e05a5dd221f9" name="a4cc6c35a59cfd662c272e05a5dd221f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cc6c35a59cfd662c272e05a5dd221f9">&#9670;&#160;</a></span>eventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::growth::Growth::eventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthEvents_8cpp_source.html#l00009">eve::growth::GrowthEventLog::count()</a>, <a class="el" href="GrowthSystem_8h_source.html#l00033">eve::growth::GrowthWorld::events()</a> , 以及 <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a>.</p>
+
+</div>
+</div>
+<a id="a3f4c58bd3ae526167a193a6c4ddcb243" name="a3f4c58bd3ae526167a193a6c4ddcb243"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f4c58bd3ae526167a193a6c4ddcb243">&#9670;&#160;</a></span>eventDetail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::growth::Growth::eventDetail </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00118">118</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthEvents_8cpp_source.html#l00011">eve::growth::GrowthEventLog::at()</a>, <a class="el" href="GrowthEvents_8h_source.html#l00031">eve::growth::GrowthEvent::detail</a>, <a class="el" href="GrowthSystem_8h_source.html#l00033">eve::growth::GrowthWorld::events()</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a> , 以及 <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a>.</p>
+
+</div>
+</div>
+<a id="a8f23df2a1a6089b070722748a8696a66" name="a8f23df2a1a6089b070722748a8696a66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f23df2a1a6089b070722748a8696a66">&#9670;&#160;</a></span>eventKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::growth::Growth::eventKind </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthEvents_8cpp_source.html#l00011">eve::growth::GrowthEventLog::at()</a>, <a class="el" href="GrowthSystem_8h_source.html#l00033">eve::growth::GrowthWorld::events()</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a> , 以及 <a class="el" href="GrowthEvents_8cpp_source.html#l00016">eve::growth::GrowthEventLog::kindName()</a>.</p>
+
+</div>
+</div>
+<a id="a88007795f88168969e2fc74659232708" name="a88007795f88168969e2fc74659232708"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88007795f88168969e2fc74659232708">&#9670;&#160;</a></span>eventOrganismId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::growth::Growth::eventOrganismId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthEvents_8cpp_source.html#l00011">eve::growth::GrowthEventLog::at()</a>, <a class="el" href="GrowthSystem_8h_source.html#l00033">eve::growth::GrowthWorld::events()</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a> , 以及 <a class="el" href="GrowthEvents_8h_source.html#l00029">eve::growth::GrowthEvent::organismId</a>.</p>
+
+</div>
+</div>
+<a id="a4d8de3430dc2da33c9f55659a30497e0" name="a4d8de3430dc2da33c9f55659a30497e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d8de3430dc2da33c9f55659a30497e0">&#9670;&#160;</a></span>eventSpeciesId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::growth::Growth::eventSpeciesId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00113">113</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthEvents_8cpp_source.html#l00011">eve::growth::GrowthEventLog::at()</a>, <a class="el" href="GrowthSystem_8h_source.html#l00033">eve::growth::GrowthWorld::events()</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a> , 以及 <a class="el" href="GrowthEvents_8h_source.html#l00030">eve::growth::GrowthEvent::speciesId</a>.</p>
+
+</div>
+</div>
+<a id="a88b5214ef9a6deb38f33070b61cfc386" name="a88b5214ef9a6deb38f33070b61cfc386"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88b5214ef9a6deb38f33070b61cfc386">&#9670;&#160;</a></span>hasSpecies()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::growth::Growth::hasSpecies </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00019">19</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Species_8cpp_source.html#l00548">eve::growth::SpeciesRegistry::has()</a>.</p>
+
+</div>
+</div>
+<a id="a9628e4e0cf3ac4f51768f67b66c4115c" name="a9628e4e0cf3ac4f51768f67b66c4115c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9628e4e0cf3ac4f51768f67b66c4115c">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::growth::Growth::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1growth_1_1Growth.html">Growth</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6b99ffd5a2e797bbd0d678863852fbe1" name="a6b99ffd5a2e797bbd0d678863852fbe1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b99ffd5a2e797bbd0d678863852fbe1">&#9670;&#160;</a></span>plant()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> * &gt; eve::growth::Growth::plant </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>speciesId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience: spawn when species.kindId == "plant". </p>
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00058">58</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00669">created</a>, <a class="el" href="Organism_8cpp_source.html#l00025">eve::growth::Organism::createOrganism()</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Organism_8h_source.html#l00033">eve::growth::Organism::release()</a>.</p>
+
+</div>
+</div>
+<a id="a4d472c607feea8b05514c53dd242c8e6" name="a4d472c607feea8b05514c53dd242c8e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d472c607feea8b05514c53dd242c8e6">&#9670;&#160;</a></span>registerSpeciesFromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::growth::Growth::registerSpeciesFromJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers species from a JSON object or array. </p>
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Species_8cpp_source.html#l00508">eve::growth::SpeciesRegistry::loadFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="a45c82431be9f5306d522d795fa2896fa" name="a45c82431be9f5306d522d795fa2896fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45c82431be9f5306d522d795fa2896fa">&#9670;&#160;</a></span>resetWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::growth::Growth::resetWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resets calendar, events, and species for demos/tests. </p>
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Species_8cpp_source.html#l00550">eve::growth::SpeciesRegistry::clear()</a> , 以及 <a class="el" href="GrowthSystem_8cpp_source.html#l00062">eve::growth::GrowthWorld::resetInstance()</a>.</p>
+
+</div>
+</div>
+<a id="acd700521205f87c06586592128fd3fe9" name="acd700521205f87c06586592128fd3fe9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd700521205f87c06586592128fd3fe9">&#9670;&#160;</a></span>seasonName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::growth::Growth::seasonName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthSystem_8h_source.html#l00031">eve::growth::GrowthWorld::calendar()</a>, <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a> , 以及 <a class="el" href="GrowthCalendar_8cpp_source.html#l00117">eve::growth::GrowthCalendar::seasonId()</a>.</p>
+
+</div>
+</div>
+<a id="aa240a8d997249196e71c694c7cff973c" name="aa240a8d997249196e71c694c7cff973c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa240a8d997249196e71c694c7cff973c">&#9670;&#160;</a></span>setDaysPerSeason()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::growth::Growth::setDaysPerSeason </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>days</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthSystem_8h_source.html#l00031">eve::growth::GrowthWorld::calendar()</a>, <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a> , 以及 <a class="el" href="GrowthCalendar_8cpp_source.html#l00081">eve::growth::GrowthCalendar::setDaysPerSeason()</a>.</p>
+
+</div>
+</div>
+<a id="a2978fe2bc01b5524fe3cf08bbf839fd8" name="a2978fe2bc01b5524fe3cf08bbf839fd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2978fe2bc01b5524fe3cf08bbf839fd8">&#9670;&#160;</a></span>setRngSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::growth::Growth::setRngSeed </td>
+          <td>(</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>seed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a>, <a class="el" href="PointSet_8cpp_source.html#l00811">seed</a> , 以及 <a class="el" href="GrowthSystem_8h_source.html#l00028">eve::growth::GrowthWorld::setRngSeed()</a>.</p>
+
+</div>
+</div>
+<a id="a822131e043881a0ceedb76807bdadc8d" name="a822131e043881a0ceedb76807bdadc8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a822131e043881a0ceedb76807bdadc8d">&#9670;&#160;</a></span>setSeasonLayoutFromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::growth::Growth::setSeasonLayoutFromJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures a custom season layout from JSON (alien year cycles). @cost Cheap: parses a small season table. </p>
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthSystem_8h_source.html#l00031">eve::growth::GrowthWorld::calendar()</a>, <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a> , 以及 <a class="el" href="GrowthCalendar_8cpp_source.html#l00039">eve::growth::GrowthCalendar::setSeasonLayoutFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="a29085da46fdc84f7b16096482b28b3d2" name="a29085da46fdc84f7b16096482b28b3d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29085da46fdc84f7b16096482b28b3d2">&#9670;&#160;</a></span>setSecondsPerSimDay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::growth::Growth::setSecondsPerSimDay </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a> , 以及 <a class="el" href="GrowthSystem_8cpp_source.html#l00070">eve::growth::GrowthWorld::setSecondsPerSimDay()</a>.</p>
+
+</div>
+</div>
+<a id="a20cd4967dee4455cbd616c5bedbaae5e" name="a20cd4967dee4455cbd616c5bedbaae5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20cd4967dee4455cbd616c5bedbaae5e">&#9670;&#160;</a></span>spawn()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> * &gt; eve::growth::Growth::spawn </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>speciesId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spawns any registered species (plant, animal, or custom lifeform). </p>
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Organism_8cpp_source.html#l00025">eve::growth::Organism::createOrganism()</a>.</p>
+
+</div>
+</div>
+<a id="a75d683e845d18aef4e5436622563849c" name="a75d683e845d18aef4e5436622563849c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75d683e845d18aef4e5436622563849c">&#9670;&#160;</a></span>spawnAnimal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> * &gt; eve::growth::Growth::spawnAnimal </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>speciesId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience: spawn when species.kindId == "animal". </p>
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SceneCapabilities_8cpp_source.html#l00669">created</a>, <a class="el" href="Organism_8cpp_source.html#l00025">eve::growth::Organism::createOrganism()</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Organism_8h_source.html#l00033">eve::growth::Organism::release()</a>.</p>
+
+</div>
+</div>
+<a id="aa44e2309ecb6523c9be0445532d74050" name="aa44e2309ecb6523c9be0445532d74050"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa44e2309ecb6523c9be0445532d74050">&#9670;&#160;</a></span>speciesCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::growth::Growth::speciesCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Species_8cpp_source.html#l00546">eve::growth::SpeciesRegistry::count()</a>.</p>
+
+</div>
+</div>
+<a id="a8b4cbae0298d52a3b0a071b6ce422de4" name="a8b4cbae0298d52a3b0a071b6ce422de4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b4cbae0298d52a3b0a071b6ce422de4">&#9670;&#160;</a></span>stepSeconds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::growth::Growth::stepSeconds </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Time_8h_source.html#l00162">eve::SimulationStep::delta</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8cpp_source.html#l00017">eve::Duration::fromSeconds()</a>, <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="GrowthSystem_8cpp_source.html#l00095">eve::growth::GrowthWorld::step()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00024">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero()</a>.</p>
+
+</div>
+</div>
+<a id="ad0f06e15976406914ff7029a480ec076" name="ad0f06e15976406914ff7029a480ec076"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0f06e15976406914ff7029a480ec076">&#9670;&#160;</a></span>tryBreed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::growth::Growth::tryBreed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> *&#160;</td>
+          <td class="paramname"><em>carrier</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> *&#160;</td>
+          <td class="paramname"><em>partner</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00082">82</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="GrowthSystem_8cpp_source.html#l00318">eve::growth::GrowthWorld::tryBreed()</a>.</p>
+
+</div>
+</div>
+<a id="a6e6ebf03916ed4098fa52366ff98c3b5" name="a6e6ebf03916ed4098fa52366ff98c3b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e6ebf03916ed4098fa52366ff98c3b5">&#9670;&#160;</a></span>tryReproduce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::growth::Growth::tryReproduce </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> *&#160;</td>
+          <td class="paramname"><em>organism</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Solo reproduction for self_bud / fission / spore_burst species. </p>
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00090">90</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="GrowthSystem_8cpp_source.html#l00363">eve::growth::GrowthWorld::tryReproduce()</a>.</p>
+
+</div>
+</div>
+<a id="a50af2408c4fb05508557cdfe53f193de" name="a50af2408c4fb05508557cdfe53f193de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50af2408c4fb05508557cdfe53f193de">&#9670;&#160;</a></span>year()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::int64_t eve::growth::Growth::year </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Growth_8cpp_source.html">Growth.cpp</a> 第 <a class="el" href="Growth_8cpp_source.html#l00052">52</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthSystem_8h_source.html#l00031">eve::growth::GrowthWorld::calendar()</a>, <a class="el" href="GrowthSystem_8cpp_source.html#l00060">eve::growth::GrowthWorld::instance()</a> , 以及 <a class="el" href="GrowthCalendar_8cpp_source.html#l00105">eve::growth::GrowthCalendar::year()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/growth/<a class="el" href="Growth_8h_source.html">Growth.h</a></li>
+<li>src/modules/growth/<a class="el" href="Growth_8cpp_source.html">Growth.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

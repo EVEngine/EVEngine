@@ -1,0 +1,653 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/growth/GrowthSystem.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5610d19d1867b6661e93707e44355b86.html">growth</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GrowthSystem.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GrowthSystem_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="GrowthSystem_8h.html">growth/GrowthSystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Diagnostic_8h.html">common/Diagnostic.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1growth.html">eve::growth</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keywordtype">double</span> clampPermille(<span class="keywordtype">double</span> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    <span class="keywordflow">if</span> (!std::isfinite(<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)) <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">return</span> std::clamp(<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>, 0.0, 1000.0);</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>}</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>std::uint64_t splitmix64(std::uint64_t <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> += 0x9e3779b97f4a7c15ULL;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> = (<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> ^ (<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> &gt;&gt; 30)) * 0xbf58476d1ce4e5b9ULL;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> = (<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> ^ (<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> &gt;&gt; 27)) * 0x94d049bb133111ebULL;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> ^ (<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> &gt;&gt; 31);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>}</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keywordtype">double</span> unitHash(std::uint64_t <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, std::uint64_t stream, std::uint64_t <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keyword">const</span> std::uint64_t mixed = splitmix64(<a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a> ^ (stream + 0x9e3779b97f4a7c15ULL) ^ <a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(mixed &gt;&gt; 11) * (1.0 / 9007199254740992.0);  <span class="comment">// [0,1)</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keywordtype">double</span> meterValue(<span class="keyword">const</span> Organism::VitalNeeds&amp; needs, <span class="keyword">const</span> std::string&amp; <span class="keywordtype">id</span>) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">auto</span> it = needs.meters.find(<span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (it == needs.meters.end()) <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">return</span> it-&gt;second;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keywordtype">bool</span> anyLethalEmpty(<span class="keyword">const</span> Organism::VitalNeeds&amp; needs, <span class="keyword">const</span> SpeciesDef&amp; species) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">bool</span> sawLethal = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordtype">bool</span> allLethalEmpty = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> NeedMeterDef&amp; need : species.needs) {</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keywordflow">if</span> (!need.lethalWhenEmpty) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        sawLethal = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">if</span> (meterValue(needs, need.id) &gt; 0.0) allLethalEmpty = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">return</span> sawLethal &amp;&amp; allLethalEmpty;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keywordtype">bool</span> isStressed(<span class="keyword">const</span> Organism::VitalNeeds&amp; needs, <span class="keyword">const</span> SpeciesDef&amp; species) {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> NeedMeterDef&amp; need : species.needs) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">if</span> (meterValue(needs, need.id) &lt; need.minPermille) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>}</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>std::unique_ptr&lt;GrowthWorld&gt;&amp; worldHolder() {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keyword">static</span> std::unique_ptr&lt;GrowthWorld&gt; world = std::make_unique&lt;GrowthWorld&gt;();</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">return</span> world;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#a12beda480a1dd6309027be17867e297d">   60</a></span><a class="code hl_class" href="classeve_1_1growth_1_1GrowthWorld.html">GrowthWorld</a>&amp; <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#a12beda480a1dd6309027be17867e297d">GrowthWorld::instance</a>() { <span class="keywordflow">return</span> *worldHolder(); }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#ab994fd243502721306bda9b79264fb0e">   62</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#ab994fd243502721306bda9b79264fb0e">GrowthWorld::resetInstance</a>() {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    std::vector&lt;Organism*&gt; batch = <a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#a322bc9943e12875651cae841ee92269e">Organism::liveOrganisms</a>();</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    <span class="keywordflow">for</span> (<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>* organism : batch) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">if</span> (organism) organism-&gt;release();</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    worldHolder() = std::make_unique&lt;GrowthWorld&gt;();</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
+</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
+<div class="foldopen" id="foldopen00070" data-start="{" data-end="}">
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#a3cef0d1064e91014f2ffb68cc2369e35">   70</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#a3cef0d1064e91014f2ffb68cc2369e35">GrowthWorld::setSecondsPerSimDay</a>(<span class="keywordtype">double</span> seconds) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">if</span> (!(seconds &gt; 0.0) || !std::isfinite(seconds)) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                                                       <span class="stringliteral">&quot;secondsPerSimDay must be finite and &gt; 0&quot;</span>,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                                                       <span class="stringliteral">&quot;growth.world.secondsPerSimDay&quot;</span>));</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    secondsPerSimDay_ = seconds;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}</div>
+</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="keywordtype">void</span> GrowthWorld::emit(<a class="code hl_enumeration" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7">GrowthEventKind</a> <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>, <a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; organism, std::string detail) {</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_struct" href="structeve_1_1growth_1_1GrowthEvent.html">GrowthEvent</a> event;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">event</span>.<a class="code hl_variable" href="structeve_1_1growth_1_1GrowthEvent.html#a6d505aed0ff3722a925037119e4be5d6">kind</a>       = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keyword">event</span>.organismId = organism.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#ad44c18cc12ae6f1a3fab592f70df2b82">stableId</a>();</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">event</span>.speciesId  = organism.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#adbdfd2f2f43562b3d61c91697b43bed4">speciesId</a>();</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    <span class="keyword">event</span>.detail     = std::move(detail);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    events_.<a class="code hl_function" href="classeve_1_1growth_1_1GrowthEventLog.html#a32facf026c1f411037ce847c4953b7f7">push</a>(std::move(event));</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>}</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="foldopen" id="foldopen00089" data-start="{" data-end="}">
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#a8ef4bd7d424516a92ae19d299dfaf05e">   89</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#a8ef4bd7d424516a92ae19d299dfaf05e">GrowthWorld::resetForTests</a>() {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    calendar_.<a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a32fa0a7956f4ec5dee3fcc704c989edb">reset</a>();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    events_.<a class="code hl_function" href="classeve_1_1growth_1_1GrowthEventLog.html#a454a402e38dfffe118d6857752bbeb48">clear</a>();</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    dayFraction_ = 0.0;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>}</div>
+</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="foldopen" id="foldopen00095" data-start="{" data-end="}">
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#af6893b87f497531f8818d63ebdbf91bd">   95</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#af6893b87f497531f8818d63ebdbf91bd">GrowthWorld::step</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1SimulationStep.html">SimulationStep</a>&amp; <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>.delta.nanoseconds() &lt; 0) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;SimulationStep.delta must be non-negative&quot;</span>, <span class="stringliteral">&quot;growth.world.step&quot;</span>));</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> days = <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>.delta.seconds() / secondsPerSimDay_;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#a0e651c6509442ec7b91b4eb5073f7f3c">advanceDays</a>(days);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>}</div>
+</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="foldopen" id="foldopen00104" data-start="{" data-end="}">
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#a0e651c6509442ec7b91b4eb5073f7f3c">  104</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#a0e651c6509442ec7b91b4eb5073f7f3c">GrowthWorld::advanceDays</a>(<span class="keywordtype">double</span> days) {</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">if</span> (!std::isfinite(days) || days &lt; 0.0) {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;days must be finite and &gt;= 0&quot;</span>,</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                                                       <span class="stringliteral">&quot;growth.world.advanceDays&quot;</span>));</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordflow">if</span> (days == 0.0) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">double</span> remaining = days;</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">while</span> (remaining &gt; 0.0) {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keyword">const</span> <span class="keywordtype">double</span>       toEdge     = 1.0 - dayFraction_;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="keyword">const</span> <span class="keywordtype">double</span>       slice      = remaining &lt; toEdge ? remaining : toEdge;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keyword">const</span> std::int64_t dayForHash = calendar_.<a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#ad3faf6e9698d81daca3609da7dbe2706">dayIndex</a>();</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        std::vector&lt;Organism*&gt; batch = <a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#a322bc9943e12875651cae841ee92269e">Organism::liveOrganisms</a>();</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <span class="keywordflow">for</span> (<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>* organism : batch) {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="keywordflow">if</span> (!organism || organism-&gt;<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#ae4c18fb56b68d8a389866f68eee962a9">isDead</a>()) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            applyDaySlice(*organism, slice, dayForHash);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        dayFraction_ += slice;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        remaining -= slice;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keywordflow">if</span> (dayFraction_ + 1e-12 &gt;= 1.0) {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            dayFraction_ = 0.0;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            calendar_.<a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#af7615cd8573e57dafeb9cd069edda940">advanceWholeDays</a>(1);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        }</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>}</div>
+</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span><span class="keywordtype">void</span> GrowthWorld::drainNeeds(<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; organism, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1SpeciesDef.html">SpeciesDef</a>&amp; species, <span class="keywordtype">double</span> days) {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keyword">auto</span>&amp; needs = *organism.vitalNeeds();</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1NeedMeterDef.html">NeedMeterDef</a>&amp; need : species.needs) {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a> = meterValue(needs, need.id);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        needs.meters[need.id] = clampPermille(<a class="code hl_variable" href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a> - need.drainPerDay * days);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordflow">if</span> (anyLethalEmpty(needs, species)) {</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        organism.growth()-&gt;dead = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        emit(<a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7ab4ee54591aaa4862bf37f75f6839b514">GrowthEventKind::Died</a>, organism, <span class="stringliteral">&quot;neglect&quot;</span>);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    }</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>}</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span><span class="keywordtype">double</span> GrowthWorld::growthMultiplier(Organism&amp; organism, <span class="keyword">const</span> SpeciesDef&amp; species) {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordflow">if</span> (organism.isDead()) <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; needs = *organism.vitalNeeds();</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> NeedMeterDef&amp; need : species.needs) {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <span class="keywordflow">if</span> (need.requiredForGrowth &amp;&amp; meterValue(needs, need.id) &lt; need.minPermille) <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    }</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1cave__detail.html#aebb57488e5b060184871330320bbab44">mul</a> = 1.0;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keyword">const</span> std::string seasonId = calendar_.<a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a12440239f61978865f21e7c29ec0f14b">seasonId</a>();</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordflow">if</span> (!species.seasonMulById.empty()) {</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keyword">auto</span> it = species.seasonMulById.find(seasonId);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordflow">if</span> (it != species.seasonMulById.end()) <a class="code hl_function" href="namespaceeve_1_1procgen_1_1cave__detail.html#aebb57488e5b060184871330320bbab44">mul</a> = it-&gt;second;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!species.seasonMul.empty()) {</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> = calendar_.<a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a5dae04adaa432aa415b80d72d568b344">seasonIndex</a>();</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> &lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(species.seasonMul.size())) {</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>            <a class="code hl_function" href="namespaceeve_1_1procgen_1_1cave__detail.html#aebb57488e5b060184871330320bbab44">mul</a> = species.seasonMul[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>)];</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            <a class="code hl_function" href="namespaceeve_1_1procgen_1_1cave__detail.html#aebb57488e5b060184871330320bbab44">mul</a> = species.seasonMul.back();</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        }</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    }</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keywordflow">if</span> (organism.isDiseased()) mul *= organism.health()-&gt;diseaseGrowthMul;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">if</span> (!(mul &gt; 0.0) || !std::isfinite(mul)) <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1cave__detail.html#aebb57488e5b060184871330320bbab44">mul</a>;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>}</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span><span class="keywordtype">void</span> GrowthWorld::advanceGrowth(Organism&amp; organism, <span class="keyword">const</span> SpeciesDef&amp; species, <span class="keywordtype">double</span> days) {</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    <span class="keyword">auto</span>&amp; growth = *organism.growth();</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    <span class="keywordflow">if</span> (growth.dead || growth.mature || growth.harvested) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="keywordflow">if</span> (growth.stageIndex &lt; 0 || growth.stageIndex &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(species.stages.size())) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1cave__detail.html#aebb57488e5b060184871330320bbab44">mul</a> = growthMultiplier(organism, species);</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordflow">if</span> (mul &lt;= 0.0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    <span class="keywordtype">double</span> remaining = days * <a class="code hl_function" href="namespaceeve_1_1procgen_1_1cave__detail.html#aebb57488e5b060184871330320bbab44">mul</a>;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    <span class="keywordflow">while</span> (remaining &gt; 0.0 &amp;&amp; !growth.mature &amp;&amp; !growth.dead) {</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keyword">const</span> GrowthStageDef&amp; stage = species.stages[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(growth.stageIndex)];</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keyword">const</span> <span class="keywordtype">double</span>          need  = stage.durationDays - growth.stageProgressDays;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <span class="keywordflow">if</span> (remaining + 1e-12 &lt; need) {</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            growth.stageProgressDays += remaining;</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            remaining = 0.0;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>        }</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        remaining -= need;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        growth.stageProgressDays = 0.0;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <span class="keywordflow">if</span> (growth.stageIndex + 1 &gt;= <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(species.stages.size())) {</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>            growth.mature = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>            emit(<a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7acddd8b8c35283f03dc0ed6702029247d">GrowthEventKind::Matured</a>, organism, stage.id);</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        }</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        ++growth.stageIndex;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        emit(<a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a24fd5e4313114b91d28efc2e88b76d08">GrowthEventKind::StageChanged</a>, organism, species.stages[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(growth.stageIndex)].id);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    }</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>}</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="keywordtype">void</span> GrowthWorld::advanceDisease(Organism&amp; organism, <span class="keyword">const</span> SpeciesDef&amp; species, <span class="keywordtype">double</span> days,</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>                                 std::int64_t dayIndexForHash) {</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keyword">auto</span>&amp; health = *organism.health();</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordflow">if</span> (!health.activeDiseaseId.empty()) {</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        health.diseaseDaysLeft -= days;</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keywordflow">if</span> (health.diseaseDaysLeft &lt;= 0.0) {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            health.activeDiseaseId.clear();</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>            health.diseaseDaysLeft  = 0.0;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>            health.diseaseGrowthMul = 1.0;</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>            emit(<a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a31ee96e0e0e974c26afdbdd96395adb5">GrowthEventKind::Cured</a>, organism, {});</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        }</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    }</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    <span class="keywordflow">if</span> (species.diseases.empty() || days &lt;= 0.0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>    <span class="keywordflow">if</span> (!isStressed(*organism.vitalNeeds(), species)) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span> </div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> resist = std::clamp(species.baseDiseaseResist, 0.0, 1.0);</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; species.diseases.size(); ++i) {</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="keyword">const</span> DiseaseSusceptibility&amp; disease = species.diseases[i];</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="keyword">const</span> <span class="keywordtype">double</span>                 chance  = std::clamp(disease.chancePerDay * days * (1.0 - resist), 0.0, 1.0);</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keyword">const</span> <span class="keywordtype">double</span>                 <a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#a26fd84d522945b6038221d9e38c7cc39">roll</a>    = unitHash(</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            rngSeed_, 0xD15EA5EULL,</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            organism.stableId() ^ (<span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>(dayIndexForHash) &lt;&lt; 8) ^ <span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>(i));</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="PrefabActionCapabilities_8cpp.html#a26fd84d522945b6038221d9e38c7cc39">roll</a> &lt; chance) {</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>            health.activeDiseaseId  = disease.diseaseId;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>            health.diseaseDaysLeft  = disease.durationDays;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            health.diseaseGrowthMul = disease.growthMul;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>            emit(<a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a880953315d18f41398f9c04ba69d3f5b">GrowthEventKind::Diseased</a>, organism, disease.diseaseId);</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>            <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        }</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    }</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>}</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span><span class="keywordtype">void</span> GrowthWorld::advanceProduce(Organism&amp; organism, <span class="keyword">const</span> SpeciesDef&amp; species, <span class="keywordtype">double</span> days) {</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keywordflow">if</span> (!organism.isMature() || organism.isDead()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    <span class="keywordflow">if</span> (species.produceIntervalDays &lt;= 0.0 || species.produceYield.empty()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keyword">auto</span>&amp; produce = *organism.produce();</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    produce.daysSinceProduce += days;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="keywordflow">while</span> (produce.daysSinceProduce + 1e-12 &gt;= species.produceIntervalDays) {</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        produce.daysSinceProduce -= species.produceIntervalDays;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        emit(<a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a163d385d2d18ef413556447bda67818e">GrowthEventKind::Produced</a>, organism, species.produceYield.front().itemId);</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    }</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>}</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>Result&lt;void&gt; GrowthWorld::spawnOffspring(Organism&amp; <a class="code hl_variable" href="LDrawImporter_8cpp.html#aa77d8b2654f3ab520ecdff679da7f8c4">parent</a>, <span class="keyword">const</span> SpeciesDef&amp; species, <span class="keywordtype">int</span> <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a>) {</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> &lt;= 0) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    <span class="keyword">const</span> std::string offspringId = species.reproduction.offspringSpeciesId.empty()</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>                                        ? species.id</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>                                        : species.reproduction.offspringSpeciesId;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a>; ++i) {</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">child</a> = <a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#a7e1fd21d9d7f38ac20fedb19b102c74f">Organism::createOrganism</a>(offspringId);</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        <span class="keywordflow">if</span> (!child) {</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>            emit(<a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7ab4ee54591aaa4862bf37f75f6839b514">GrowthEventKind::Died</a>, <a class="code hl_variable" href="LDrawImporter_8cpp.html#aa77d8b2654f3ab520ecdff679da7f8c4">parent</a>, <span class="stringliteral">&quot;offspring_failed&quot;</span>);</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">child</a>.status());</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        }</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        emit(<a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a90f689bd6e08d968e76604b0ad384c73">GrowthEventKind::Offspring</a>, *<a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">child</a>.value(), offspringId);</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    }</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span> </div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <span class="keyword">auto</span>&amp; growth = *<a class="code hl_variable" href="LDrawImporter_8cpp.html#aa77d8b2654f3ab520ecdff679da7f8c4">parent</a>.growth();</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    <span class="keywordflow">if</span> (species.reproduction.parentDiesOnBirth) {</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        growth.dead = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        emit(<a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7ab4ee54591aaa4862bf37f75f6839b514">GrowthEventKind::Died</a>, <a class="code hl_variable" href="LDrawImporter_8cpp.html#aa77d8b2654f3ab520ecdff679da7f8c4">parent</a>, <span class="stringliteral">&quot;fission&quot;</span>);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (species.reproduction.parentResetsStagesOnBirth) {</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        growth.stageIndex        = 0;</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        growth.stageProgressDays = 0.0;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        growth.mature            = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        growth.harvested         = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        emit(<a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a24fd5e4313114b91d28efc2e88b76d08">GrowthEventKind::StageChanged</a>, <a class="code hl_variable" href="LDrawImporter_8cpp.html#aa77d8b2654f3ab520ecdff679da7f8c4">parent</a>, species.stages.front().id);</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    }</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>}</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span><span class="keywordtype">void</span> GrowthWorld::advanceReproduction(Organism&amp; organism, <span class="keyword">const</span> SpeciesDef&amp; species, <span class="keywordtype">double</span> days) {</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    <span class="keyword">auto</span>&amp; repro = *organism.reproduction();</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="keyword">const</span> ReproductionDef&amp; def = species.reproduction;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span> </div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    <span class="keywordflow">if</span> (def.mode == <a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18a35aace7e5c74d9c18da72cde07542df7">ReproductionMode::PairGestation</a>) {</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>        <span class="keywordflow">if</span> (!repro.pregnant) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        repro.gestationProgressDays += days;</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>        <span class="keywordflow">if</span> (repro.gestationProgressDays + 1e-12 &lt; def.gestationDays) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>        repro.pregnant              = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>        repro.gestationProgressDays = 0.0;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> =</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>            def.offspringCountMin + (def.offspringCountMax - def.offspringCountMin) / 2;</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        spawnOffspring(organism, species, std::max(1, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a>))</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            .<a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">ignore</a>(<span class="stringliteral">&quot;gestation completion already emitted offspring_failed on error&quot;</span>);</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    }</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span> </div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>    <span class="keywordflow">if</span> (def.mode != <a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18ad6ce1e683512b6f02d4b73deca9e191e">ReproductionMode::SelfBud</a> &amp;&amp; def.mode != <a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18a8ad61c516d68a74deb9d3c753e98a82b">ReproductionMode::Fission</a> &amp;&amp;</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>        def.mode != <a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18ac170f2cf13e012b368982e9f48b8b6ae">ReproductionMode::SporeBurst</a>)</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    <span class="keywordflow">if</span> (!organism.isMature() || organism.isDead()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    <span class="keywordflow">if</span> (!(def.intervalDays &gt; 0.0)) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    repro.daysSinceReproduce += days;</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    <span class="keywordflow">while</span> (repro.daysSinceReproduce + 1e-12 &gt;= def.intervalDays &amp;&amp; !organism.isDead()) {</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>        repro.daysSinceReproduce -= def.intervalDays;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> =</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>            def.offspringCountMin + (def.offspringCountMax - def.offspringCountMin) / 2;</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>        emit(<a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a9cdf4bce4cb098c44c699ecf43c2990b">GrowthEventKind::Bred</a>, organism, <span class="stringliteral">&quot;auto:&quot;</span> + species.kindId);</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>        spawnOffspring(organism, species, std::max(1, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a>))</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>            .<a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">ignore</a>(<span class="stringliteral">&quot;interval reproduction already emitted offspring_failed on error&quot;</span>);</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>        <span class="keywordflow">if</span> (organism.isDead() || def.parentResetsStagesOnBirth) <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    }</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>}</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span> </div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span><span class="keywordtype">void</span> GrowthWorld::applyDaySlice(Organism&amp; organism, <span class="keywordtype">double</span> days, std::int64_t dayIndexForHash) {</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <span class="keyword">const</span> SpeciesDef* species = <a class="code hl_function" href="classeve_1_1growth_1_1SpeciesRegistry.html#a4709bdb04e8b5595faee6c8283c91eb9">SpeciesRegistry::find</a>(organism.speciesId());</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    <span class="keywordflow">if</span> (!species || organism.isDead()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    drainNeeds(organism, *species, days);</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    <span class="keywordflow">if</span> (organism.isDead()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    advanceDisease(organism, *species, days, dayIndexForHash);</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <span class="keywordflow">if</span> (organism.isDead()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    advanceGrowth(organism, *species, days);</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    advanceProduce(organism, *species, days);</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    advanceReproduction(organism, *species, days);</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>}</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span> </div>
+<div class="foldopen" id="foldopen00318" data-start="{" data-end="}">
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#a90b34f7ebf20e54716b940e03753d819">  318</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#a90b34f7ebf20e54716b940e03753d819">GrowthWorld::tryBreed</a>(<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; carrier, <a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; partner) {</div>
+<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>    <span class="keywordflow">if</span> (&amp;carrier == &amp;partner) {</div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;cannot breed an organism with itself&quot;</span>, <span class="stringliteral">&quot;growth.world.tryBreed&quot;</span>));</div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    }</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    <span class="keywordflow">if</span> (carrier.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#ae4c18fb56b68d8a389866f68eee962a9">isDead</a>() || partner.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#ae4c18fb56b68d8a389866f68eee962a9">isDead</a>()) {</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>                                                       <span class="stringliteral">&quot;dead organisms cannot breed&quot;</span>, <span class="stringliteral">&quot;growth.world.tryBreed&quot;</span>));</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    }</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>    <span class="keywordflow">if</span> (!carrier.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#a3e66804ad5e12675af26859efa30365a">isMature</a>() || !partner.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#a3e66804ad5e12675af26859efa30365a">isMature</a>()) {</div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>                                                       <span class="stringliteral">&quot;both organisms must be mature&quot;</span>, <span class="stringliteral">&quot;growth.world.tryBreed&quot;</span>));</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>    }</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1SpeciesDef.html">SpeciesDef</a>* species = <a class="code hl_function" href="classeve_1_1growth_1_1SpeciesRegistry.html#a4709bdb04e8b5595faee6c8283c91eb9">SpeciesRegistry::find</a>(carrier.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#adbdfd2f2f43562b3d61c91697b43bed4">speciesId</a>());</div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>    <span class="keywordflow">if</span> (!species) {</div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">DiagnosticCode::NotFound</a>, <span class="stringliteral">&quot;unknown species&quot;</span>, <span class="stringliteral">&quot;growth.world.tryBreed&quot;</span>));</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>    }</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1ReproductionDef.html">ReproductionDef</a>&amp; def = species-&gt;<a class="code hl_variable" href="structeve_1_1growth_1_1SpeciesDef.html#a411516bdac2628bc23edaaf7a259f5c8">reproduction</a>;</div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    <span class="keywordflow">if</span> (def.<a class="code hl_variable" href="structeve_1_1growth_1_1ReproductionDef.html#a67f0d98fdea36b0de61f83542b2f5816">mode</a> != <a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18a35aace7e5c74d9c18da72cde07542df7">ReproductionMode::PairGestation</a> || !def.<a class="code hl_variable" href="structeve_1_1growth_1_1ReproductionDef.html#a6444f6c71868db8662b502c5962502e0">requiresPartner</a>) {</div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>                                                       <span class="stringliteral">&quot;species reproduction.mode is not pair_gestation&quot;</span>,</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>                                                       <span class="stringliteral">&quot;growth.world.tryBreed&quot;</span>));</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>    }</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>    <span class="keywordflow">if</span> (def.<a class="code hl_variable" href="structeve_1_1growth_1_1ReproductionDef.html#a8c1532cd62e173ec1fc074e7229fb8cd">partnerMustSameSpecies</a> &amp;&amp; carrier.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#adbdfd2f2f43562b3d61c91697b43bed4">speciesId</a>() != partner.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#adbdfd2f2f43562b3d61c91697b43bed4">speciesId</a>()) {</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;partners must share a species&quot;</span>,</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>                                                       <span class="stringliteral">&quot;growth.world.tryBreed&quot;</span>));</div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>    }</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>    <span class="keywordflow">if</span> (!(def.<a class="code hl_variable" href="structeve_1_1growth_1_1ReproductionDef.html#a525950c531d229250d20ca8571e6580b">gestationDays</a> &gt; 0.0)) {</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;species cannot breed&quot;</span>, <span class="stringliteral">&quot;growth.world.tryBreed&quot;</span>));</div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    }</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    <span class="keywordflow">if</span> (carrier.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#ad2bb04adb65b1345baffac6d81d38d71">isPregnant</a>() || partner.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#ad2bb04adb65b1345baffac6d81d38d71">isPregnant</a>()) {</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>                                                       <span class="stringliteral">&quot;a partner is already pregnant&quot;</span>, <span class="stringliteral">&quot;growth.world.tryBreed&quot;</span>));</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>    }</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span> </div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>    <span class="keyword">auto</span>&amp; repro                 = *carrier.reproduction();</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    repro.pregnant              = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>    repro.gestationProgressDays = 0.0;</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>    repro.partnerStableId       = partner.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#ad44c18cc12ae6f1a3fab592f70df2b82">stableId</a>();</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>    emit(<a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a9cdf4bce4cb098c44c699ecf43c2990b">GrowthEventKind::Bred</a>, carrier, partner.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#adbdfd2f2f43562b3d61c91697b43bed4">speciesId</a>());</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>}</div>
+</div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span> </div>
+<div class="foldopen" id="foldopen00363" data-start="{" data-end="}">
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthWorld.html#a97ccb15f2999688542d6d65aa33d5b46">  363</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthWorld.html#a97ccb15f2999688542d6d65aa33d5b46">GrowthWorld::tryReproduce</a>(<a class="code hl_class" href="classeve_1_1growth_1_1Organism.html">Organism</a>&amp; organism) {</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>    <span class="keywordflow">if</span> (organism.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#ae4c18fb56b68d8a389866f68eee962a9">isDead</a>()) {</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>                                                       <span class="stringliteral">&quot;dead organisms cannot reproduce&quot;</span>, <span class="stringliteral">&quot;growth.world.tryReproduce&quot;</span>));</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>    }</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    <span class="keywordflow">if</span> (!organism.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#a3e66804ad5e12675af26859efa30365a">isMature</a>()) {</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>                                                       <span class="stringliteral">&quot;organism must be mature&quot;</span>, <span class="stringliteral">&quot;growth.world.tryReproduce&quot;</span>));</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>    }</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1SpeciesDef.html">SpeciesDef</a>* species = <a class="code hl_function" href="classeve_1_1growth_1_1SpeciesRegistry.html#a4709bdb04e8b5595faee6c8283c91eb9">SpeciesRegistry::find</a>(organism.<a class="code hl_function" href="classeve_1_1growth_1_1Organism.html#adbdfd2f2f43562b3d61c91697b43bed4">speciesId</a>());</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>    <span class="keywordflow">if</span> (!species) {</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">DiagnosticCode::NotFound</a>, <span class="stringliteral">&quot;unknown species&quot;</span>, <span class="stringliteral">&quot;growth.world.tryReproduce&quot;</span>));</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    }</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1ReproductionDef.html">ReproductionDef</a>&amp; def = species-&gt;<a class="code hl_variable" href="structeve_1_1growth_1_1SpeciesDef.html#a411516bdac2628bc23edaaf7a259f5c8">reproduction</a>;</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>    <span class="keywordflow">if</span> (def.<a class="code hl_variable" href="structeve_1_1growth_1_1ReproductionDef.html#a67f0d98fdea36b0de61f83542b2f5816">mode</a> != <a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18ad6ce1e683512b6f02d4b73deca9e191e">ReproductionMode::SelfBud</a> &amp;&amp; def.<a class="code hl_variable" href="structeve_1_1growth_1_1ReproductionDef.html#a67f0d98fdea36b0de61f83542b2f5816">mode</a> != <a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18a8ad61c516d68a74deb9d3c753e98a82b">ReproductionMode::Fission</a> &amp;&amp;</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>        def.<a class="code hl_variable" href="structeve_1_1growth_1_1ReproductionDef.html#a67f0d98fdea36b0de61f83542b2f5816">mode</a> != <a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18ac170f2cf13e012b368982e9f48b8b6ae">ReproductionMode::SporeBurst</a>) {</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>                                                       <span class="stringliteral">&quot;species reproduction.mode is not a solo mode&quot;</span>,</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>                                                       <span class="stringliteral">&quot;growth.world.tryReproduce&quot;</span>));</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>    }</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>    organism.reproduction()-&gt;daysSinceReproduce = 0.0;</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>    emit(<a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a9cdf4bce4cb098c44c699ecf43c2990b">GrowthEventKind::Bred</a>, organism, <span class="stringliteral">&quot;forced:&quot;</span> + species-&gt;<a class="code hl_variable" href="structeve_1_1growth_1_1SpeciesDef.html#a6f10abd54b546efae3a53af9f6dabc57">kindId</a>);</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a> = def.<a class="code hl_variable" href="structeve_1_1growth_1_1ReproductionDef.html#a99c38ed8b5ff19c87430ab831781aeed">offspringCountMin</a> + (def.<a class="code hl_variable" href="structeve_1_1growth_1_1ReproductionDef.html#aeb08f5c65c68cf88880afa3b0cb85638">offspringCountMax</a> - def.<a class="code hl_variable" href="structeve_1_1growth_1_1ReproductionDef.html#a99c38ed8b5ff19c87430ab831781aeed">offspringCountMin</a>) / 2;</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>    <span class="keywordflow">return</span> spawnOffspring(organism, *species, std::max(1, <a class="code hl_variable" href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a>));</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>}</div>
+</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span> </div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>}  <span class="comment">// namespace eve::growth</span></div>
+<div class="ttc" id="aDiagnostic_8h_html"><div class="ttname"><a href="Diagnostic_8h.html">Diagnostic.h</a></div><div class="ttdoc">Stable, structured diagnostics shared by engine modules.</div></div>
+<div class="ttc" id="aECS_8cpp_html_a1f53a56adfc8a8f39c5e553c97a7b2ff"><div class="ttname"><a href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a></div><div class="ttdeci">SQObjectPtr key</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00155">ECS.cpp:155</a></div></div>
+<div class="ttc" id="aGrowthSystem_8h_html"><div class="ttname"><a href="GrowthSystem_8h.html">GrowthSystem.h</a></div></div>
+<div class="ttc" id="aLDrawImporter_8cpp_html_aa77d8b2654f3ab520ecdff679da7f8c4"><div class="ttname"><a href="LDrawImporter_8cpp.html#aa77d8b2654f3ab520ecdff679da7f8c4">parent</a></div><div class="ttdeci">const ColourScope * parent</div><div class="ttdef"><b>Definition</b> <a href="LDrawImporter_8cpp_source.html#l00073">LDrawImporter.cpp:73</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00811">PointSet.cpp:811</a></div></div>
+<div class="ttc" id="aPrefabActionCapabilities_8cpp_html_a26fd84d522945b6038221d9e38c7cc39"><div class="ttname"><a href="PrefabActionCapabilities_8cpp.html#a26fd84d522945b6038221d9e38c7cc39">roll</a></div><div class="ttdeci">float roll</div><div class="ttdef"><b>Definition</b> <a href="PrefabActionCapabilities_8cpp_source.html#l00038">PrefabActionCapabilities.cpp:38</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aca87c2bbc26e697653e2d8461c76a361"><div class="ttname"><a href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00011">ScriptStructure.cpp:11</a></div></div>
+<div class="ttc" id="aSettlementModule_8cpp_html_ae36027a2ebe1db7af7b94bb1f5ebb1fc"><div class="ttname"><a href="SettlementModule_8cpp.html#ae36027a2ebe1db7af7b94bb1f5ebb1fc">current</a></div><div class="ttdeci">double current</div><div class="ttdef"><b>Definition</b> <a href="SettlementModule_8cpp_source.html#l00035">SettlementModule.cpp:35</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8cpp_html_ad43c3812e6d13e0518d9f8b8f463ffcf"><div class="ttname"><a href="SquirrelBinding_8cpp.html#ad43c3812e6d13e0518d9f8b8f463ffcf">count</a></div><div class="ttdeci">int count</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00033">SquirrelBinding.cpp:33</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00314">TreeMesh.cpp:314</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00021">Diagnostic.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_aa25a474a0e9b02d286999f1e9a50e10a"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">eve::Result&lt; void &gt;::ignore</a></div><div class="ttdeci">void ignore(std::string_view reason={}) const noexcept</div><div class="ttdoc">Explicitly discard this result after documenting the reason.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00571">Result.h:571</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00176">Result.h:176</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00185">Result.h:185</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00196">Result.h:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_a12440239f61978865f21e7c29ec0f14b"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#a12440239f61978865f21e7c29ec0f14b">eve::growth::GrowthCalendar::seasonId</a></div><div class="ttdeci">std::string seasonId() const</div><div class="ttdoc">Current season id string (never empty when layout is valid).</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00117">GrowthCalendar.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_a32fa0a7956f4ec5dee3fcc704c989edb"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#a32fa0a7956f4ec5dee3fcc704c989edb">eve::growth::GrowthCalendar::reset</a></div><div class="ttdeci">void reset() noexcept</div><div class="ttdoc">Resets to day 0 (tests).</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00141">GrowthCalendar.cpp:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_a5dae04adaa432aa415b80d72d568b344"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#a5dae04adaa432aa415b80d72d568b344">eve::growth::GrowthCalendar::seasonIndex</a></div><div class="ttdeci">int seasonIndex() const noexcept</div><div class="ttdoc">Index into seasonLayout() for the current day.</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00107">GrowthCalendar.cpp:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_ad3faf6e9698d81daca3609da7dbe2706"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#ad3faf6e9698d81daca3609da7dbe2706">eve::growth::GrowthCalendar::dayIndex</a></div><div class="ttdeci">std::int64_t dayIndex() const noexcept</div><div class="ttdoc">Absolute simulation day index (0-based).</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8h_source.html#l00056">GrowthCalendar.h:56</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_af7615cd8573e57dafeb9cd069edda940"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#af7615cd8573e57dafeb9cd069edda940">eve::growth::GrowthCalendar::advanceWholeDays</a></div><div class="ttdeci">void advanceWholeDays(std::int64_t days) noexcept</div><div class="ttdoc">Advances the calendar by whole simulation days (truncated toward zero).</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00136">GrowthCalendar.cpp:136</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthEventLog_html_a32facf026c1f411037ce847c4953b7f7"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthEventLog.html#a32facf026c1f411037ce847c4953b7f7">eve::growth::GrowthEventLog::push</a></div><div class="ttdeci">void push(GrowthEvent event)</div><div class="ttdef"><b>Definition</b> <a href="GrowthEvents_8cpp_source.html#l00005">GrowthEvents.cpp:5</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthEventLog_html_a454a402e38dfffe118d6857752bbeb48"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthEventLog.html#a454a402e38dfffe118d6857752bbeb48">eve::growth::GrowthEventLog::clear</a></div><div class="ttdeci">void clear()</div><div class="ttdef"><b>Definition</b> <a href="GrowthEvents_8cpp_source.html#l00007">GrowthEvents.cpp:7</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html">eve::growth::GrowthWorld</a></div><div class="ttdoc">Owner of calendar, RNG seed, and the sole simulation advance path.</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8h_source.html#l00019">GrowthSystem.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_a0e651c6509442ec7b91b4eb5073f7f3c"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#a0e651c6509442ec7b91b4eb5073f7f3c">eve::growth::GrowthWorld::advanceDays</a></div><div class="ttdeci">Result&lt; void &gt; advanceDays(double days)</div><div class="ttdoc">Advances every live organism by simulation days (may be fractional). @cost Linear in organism count ×...</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8cpp_source.html#l00104">GrowthSystem.cpp:104</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_a12beda480a1dd6309027be17867e297d"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#a12beda480a1dd6309027be17867e297d">eve::growth::GrowthWorld::instance</a></div><div class="ttdeci">static GrowthWorld &amp; instance()</div><div class="ttdoc">Process-wide world used by Organism helpers and the Growth module.</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8cpp_source.html#l00060">GrowthSystem.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_a3cef0d1064e91014f2ffb68cc2369e35"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#a3cef0d1064e91014f2ffb68cc2369e35">eve::growth::GrowthWorld::setSecondsPerSimDay</a></div><div class="ttdeci">Result&lt; void &gt; setSecondsPerSimDay(double seconds) noexcept</div><div class="ttdoc">Seconds of SimulationStep.delta that equal one simulation day.</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8cpp_source.html#l00070">GrowthSystem.cpp:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_a8ef4bd7d424516a92ae19d299dfaf05e"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#a8ef4bd7d424516a92ae19d299dfaf05e">eve::growth::GrowthWorld::resetForTests</a></div><div class="ttdeci">void resetForTests()</div><div class="ttdoc">Clears organisms' world-facing bookkeeping used by tests (events + calendar).</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8cpp_source.html#l00089">GrowthSystem.cpp:89</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_a90b34f7ebf20e54716b940e03753d819"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#a90b34f7ebf20e54716b940e03753d819">eve::growth::GrowthWorld::tryBreed</a></div><div class="ttdeci">Result&lt; void &gt; tryBreed(Organism &amp;carrier, Organism &amp;partner)</div><div class="ttdoc">Starts pair_gestation on carrier when both partners satisfy the species rules. @cost Cheap validation...</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8cpp_source.html#l00318">GrowthSystem.cpp:318</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_a97ccb15f2999688542d6d65aa33d5b46"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#a97ccb15f2999688542d6d65aa33d5b46">eve::growth::GrowthWorld::tryReproduce</a></div><div class="ttdeci">Result&lt; void &gt; tryReproduce(Organism &amp;organism)</div><div class="ttdoc">Triggers a solo reproduction pulse for self_bud / fission / spore_burst.</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8cpp_source.html#l00363">GrowthSystem.cpp:363</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_ab994fd243502721306bda9b79264fb0e"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#ab994fd243502721306bda9b79264fb0e">eve::growth::GrowthWorld::resetInstance</a></div><div class="ttdeci">static void resetInstance()</div><div class="ttdoc">Replaces process instance with a fresh world (tests).</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8cpp_source.html#l00062">GrowthSystem.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthWorld_html_af6893b87f497531f8818d63ebdbf91bd"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthWorld.html#af6893b87f497531f8818d63ebdbf91bd">eve::growth::GrowthWorld::step</a></div><div class="ttdeci">Result&lt; void &gt; step(const SimulationStep &amp;step)</div><div class="ttdoc">Converts a fixed SimulationStep into fractional sim days and advances. @cost Linear in live organism ...</div><div class="ttdef"><b>Definition</b> <a href="GrowthSystem_8cpp_source.html#l00095">GrowthSystem.cpp:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1Organism_html"><div class="ttname"><a href="classeve_1_1growth_1_1Organism.html">eve::growth::Organism</a></div><div class="ttdoc">Growth short-root entity for any configured lifeform.</div><div class="ttdef"><b>Definition</b> <a href="Organism_8h_source.html#l00029">Organism.h:29</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1Organism_html_a322bc9943e12875651cae841ee92269e"><div class="ttname"><a href="classeve_1_1growth_1_1Organism.html#a322bc9943e12875651cae841ee92269e">eve::growth::Organism::liveOrganisms</a></div><div class="ttdeci">static const std::vector&lt; Organism * &gt; &amp; liveOrganisms()</div><div class="ttdoc">Live organisms currently visible to Growth views.</div><div class="ttdef"><b>Definition</b> <a href="Organism_8cpp_source.html#l00052">Organism.cpp:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1Organism_html_a3e66804ad5e12675af26859efa30365a"><div class="ttname"><a href="classeve_1_1growth_1_1Organism.html#a3e66804ad5e12675af26859efa30365a">eve::growth::Organism::isMature</a></div><div class="ttdeci">bool isMature()</div><div class="ttdef"><b>Definition</b> <a href="Organism_8cpp_source.html#l00078">Organism.cpp:78</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1Organism_html_a7e1fd21d9d7f38ac20fedb19b102c74f"><div class="ttname"><a href="classeve_1_1growth_1_1Organism.html#a7e1fd21d9d7f38ac20fedb19b102c74f">eve::growth::Organism::createOrganism</a></div><div class="ttdeci">static Result&lt; Organism * &gt; createOrganism(const std::string &amp;speciesId)</div><div class="ttdoc">Creates an organism bound to a registered species.</div><div class="ttdef"><b>Definition</b> <a href="Organism_8cpp_source.html#l00025">Organism.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1Organism_html_ad2bb04adb65b1345baffac6d81d38d71"><div class="ttname"><a href="classeve_1_1growth_1_1Organism.html#ad2bb04adb65b1345baffac6d81d38d71">eve::growth::Organism::isPregnant</a></div><div class="ttdeci">bool isPregnant()</div><div class="ttdef"><b>Definition</b> <a href="Organism_8cpp_source.html#l00086">Organism.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1Organism_html_ad44c18cc12ae6f1a3fab592f70df2b82"><div class="ttname"><a href="classeve_1_1growth_1_1Organism.html#ad44c18cc12ae6f1a3fab592f70df2b82">eve::growth::Organism::stableId</a></div><div class="ttdeci">std::uint64_t stableId() const noexcept</div><div class="ttdoc">Stable ECS id for event correlation.</div><div class="ttdef"><b>Definition</b> <a href="Organism_8cpp_source.html#l00171">Organism.cpp:171</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1Organism_html_adbdfd2f2f43562b3d61c91697b43bed4"><div class="ttname"><a href="classeve_1_1growth_1_1Organism.html#adbdfd2f2f43562b3d61c91697b43bed4">eve::growth::Organism::speciesId</a></div><div class="ttdeci">const std::string &amp; speciesId()</div><div class="ttdef"><b>Definition</b> <a href="Organism_8cpp_source.html#l00060">Organism.cpp:60</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1Organism_html_ae4c18fb56b68d8a389866f68eee962a9"><div class="ttname"><a href="classeve_1_1growth_1_1Organism.html#ae4c18fb56b68d8a389866f68eee962a9">eve::growth::Organism::isDead</a></div><div class="ttdeci">bool isDead()</div><div class="ttdef"><b>Definition</b> <a href="Organism_8cpp_source.html#l00080">Organism.cpp:80</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1SpeciesRegistry_html_a4709bdb04e8b5595faee6c8283c91eb9"><div class="ttname"><a href="classeve_1_1growth_1_1SpeciesRegistry.html#a4709bdb04e8b5595faee6c8283c91eb9">eve::growth::SpeciesRegistry::find</a></div><div class="ttdeci">static const SpeciesDef * find(const std::string &amp;id)</div><div class="ttdoc">Looks up a species; nullptr when missing. @ownership Borrowed from the process-wide registry; caller ...</div><div class="ttdef"><b>Definition</b> <a href="Species_8cpp_source.html#l00540">Species.cpp:540</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html"><div class="ttname"><a href="namespaceeve_1_1growth.html">eve::growth</a></div><div class="ttdef"><b>Definition</b> <a href="Growth_8cpp_source.html#l00011">Growth.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_a606eeafe9e1dabdf6e6138983e7d9f18a35aace7e5c74d9c18da72cde07542df7"><div class="ttname"><a href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18a35aace7e5c74d9c18da72cde07542df7">eve::growth::ReproductionMode::PairGestation</a></div><div class="ttdeci">@ PairGestation</div><div class="ttdoc">Two parents; carrier gestates then spawns offspring.</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_a606eeafe9e1dabdf6e6138983e7d9f18a8ad61c516d68a74deb9d3c753e98a82b"><div class="ttname"><a href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18a8ad61c516d68a74deb9d3c753e98a82b">eve::growth::ReproductionMode::Fission</a></div><div class="ttdeci">@ Fission</div><div class="ttdoc">Single parent splits; optional parent death or stage reset.</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_a606eeafe9e1dabdf6e6138983e7d9f18ac170f2cf13e012b368982e9f48b8b6ae"><div class="ttname"><a href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18ac170f2cf13e012b368982e9f48b8b6ae">eve::growth::ReproductionMode::SporeBurst</a></div><div class="ttdeci">@ SporeBurst</div><div class="ttdoc">Periodic offspring bursts without a partner.</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_a606eeafe9e1dabdf6e6138983e7d9f18ad6ce1e683512b6f02d4b73deca9e191e"><div class="ttname"><a href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18ad6ce1e683512b6f02d4b73deca9e191e">eve::growth::ReproductionMode::SelfBud</a></div><div class="ttdeci">@ SelfBud</div><div class="ttdoc">Single mature parent; interval then spawn (alien budding).</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_aaf57392c19dfe5ef25a50eb87aeacad7"><div class="ttname"><a href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7">eve::growth::GrowthEventKind</a></div><div class="ttdeci">GrowthEventKind</div><div class="ttdoc">Kind of a deterministic growth lifecycle event.</div><div class="ttdef"><b>Definition</b> <a href="GrowthEvents_8h_source.html#l00011">GrowthEvents.h:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_aaf57392c19dfe5ef25a50eb87aeacad7a163d385d2d18ef413556447bda67818e"><div class="ttname"><a href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a163d385d2d18ef413556447bda67818e">eve::growth::GrowthEventKind::Produced</a></div><div class="ttdeci">@ Produced</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_aaf57392c19dfe5ef25a50eb87aeacad7a24fd5e4313114b91d28efc2e88b76d08"><div class="ttname"><a href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a24fd5e4313114b91d28efc2e88b76d08">eve::growth::GrowthEventKind::StageChanged</a></div><div class="ttdeci">@ StageChanged</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_aaf57392c19dfe5ef25a50eb87aeacad7a31ee96e0e0e974c26afdbdd96395adb5"><div class="ttname"><a href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a31ee96e0e0e974c26afdbdd96395adb5">eve::growth::GrowthEventKind::Cured</a></div><div class="ttdeci">@ Cured</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_aaf57392c19dfe5ef25a50eb87aeacad7a880953315d18f41398f9c04ba69d3f5b"><div class="ttname"><a href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a880953315d18f41398f9c04ba69d3f5b">eve::growth::GrowthEventKind::Diseased</a></div><div class="ttdeci">@ Diseased</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_aaf57392c19dfe5ef25a50eb87aeacad7a90f689bd6e08d968e76604b0ad384c73"><div class="ttname"><a href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a90f689bd6e08d968e76604b0ad384c73">eve::growth::GrowthEventKind::Offspring</a></div><div class="ttdeci">@ Offspring</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_aaf57392c19dfe5ef25a50eb87aeacad7a9cdf4bce4cb098c44c699ecf43c2990b"><div class="ttname"><a href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a9cdf4bce4cb098c44c699ecf43c2990b">eve::growth::GrowthEventKind::Bred</a></div><div class="ttdeci">@ Bred</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_aaf57392c19dfe5ef25a50eb87aeacad7ab4ee54591aaa4862bf37f75f6839b514"><div class="ttname"><a href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7ab4ee54591aaa4862bf37f75f6839b514">eve::growth::GrowthEventKind::Died</a></div><div class="ttdeci">@ Died</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_aaf57392c19dfe5ef25a50eb87aeacad7acddd8b8c35283f03dc0ed6702029247d"><div class="ttname"><a href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7acddd8b8c35283f03dc0ed6702029247d">eve::growth::GrowthEventKind::Matured</a></div><div class="ttdeci">@ Matured</div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1jolt_html_a835b0fb30d3f5282c71137e4b7c55586"><div class="ttname"><a href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">eve::physics::jolt::child</a></div><div class="ttdeci">ShapeState * child(const JPH::Body &amp;body, const JPH::SubShapeID &amp;id)</div><div class="ttdoc">Resolves a native child record for a synchronous callback or query. @ownership Borrowed from the worl...</div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00138">JoltInternal.h:138</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1cave__detail_html_aebb57488e5b060184871330320bbab44"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1cave__detail.html#aebb57488e5b060184871330320bbab44">eve::procgen::cave_detail::mul</a></div><div class="ttdeci">Vec3 mul(Vec3 a, float scale)</div><div class="ttdef"><b>Definition</b> <a href="CaveGeometry_8cpp_source.html#l00008">CaveGeometry.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::DiagnosticCode::NotFound</a></div><div class="ttdeci">@ NotFound</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="astructeve_1_1SimulationStep_html"><div class="ttname"><a href="structeve_1_1SimulationStep.html">eve::SimulationStep</a></div><div class="ttdoc">One deterministic fixed-step emitted by SimulationClock.</div><div class="ttdef"><b>Definition</b> <a href="Time_8h_source.html#l00158">Time.h:158</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1GrowthEvent_html"><div class="ttname"><a href="structeve_1_1growth_1_1GrowthEvent.html">eve::growth::GrowthEvent</a></div><div class="ttdoc">One queued lifecycle observation.</div><div class="ttdef"><b>Definition</b> <a href="GrowthEvents_8h_source.html#l00027">GrowthEvents.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1GrowthEvent_html_a6d505aed0ff3722a925037119e4be5d6"><div class="ttname"><a href="structeve_1_1growth_1_1GrowthEvent.html#a6d505aed0ff3722a925037119e4be5d6">eve::growth::GrowthEvent::kind</a></div><div class="ttdeci">GrowthEventKind kind</div><div class="ttdef"><b>Definition</b> <a href="GrowthEvents_8h_source.html#l00028">GrowthEvents.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1NeedMeterDef_html"><div class="ttname"><a href="structeve_1_1growth_1_1NeedMeterDef.html">eve::growth::NeedMeterDef</a></div><div class="ttdoc">Named vital meter (water, radiation, ether, …) — not fixed to Earth biology.</div><div class="ttdef"><b>Definition</b> <a href="Species_8h_source.html#l00035">Species.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1ReproductionDef_html"><div class="ttname"><a href="structeve_1_1growth_1_1ReproductionDef.html">eve::growth::ReproductionDef</a></div><div class="ttdoc">Species reproduction parameters selected by ReproductionMode.</div><div class="ttdef"><b>Definition</b> <a href="Species_8h_source.html#l00053">Species.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1ReproductionDef_html_a525950c531d229250d20ca8571e6580b"><div class="ttname"><a href="structeve_1_1growth_1_1ReproductionDef.html#a525950c531d229250d20ca8571e6580b">eve::growth::ReproductionDef::gestationDays</a></div><div class="ttdeci">double gestationDays</div><div class="ttdoc">PairGestation only.</div><div class="ttdef"><b>Definition</b> <a href="Species_8h_source.html#l00055">Species.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1ReproductionDef_html_a6444f6c71868db8662b502c5962502e0"><div class="ttname"><a href="structeve_1_1growth_1_1ReproductionDef.html#a6444f6c71868db8662b502c5962502e0">eve::growth::ReproductionDef::requiresPartner</a></div><div class="ttdeci">bool requiresPartner</div><div class="ttdef"><b>Definition</b> <a href="Species_8h_source.html#l00060">Species.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1ReproductionDef_html_a67f0d98fdea36b0de61f83542b2f5816"><div class="ttname"><a href="structeve_1_1growth_1_1ReproductionDef.html#a67f0d98fdea36b0de61f83542b2f5816">eve::growth::ReproductionDef::mode</a></div><div class="ttdeci">ReproductionMode mode</div><div class="ttdef"><b>Definition</b> <a href="Species_8h_source.html#l00054">Species.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1ReproductionDef_html_a8c1532cd62e173ec1fc074e7229fb8cd"><div class="ttname"><a href="structeve_1_1growth_1_1ReproductionDef.html#a8c1532cd62e173ec1fc074e7229fb8cd">eve::growth::ReproductionDef::partnerMustSameSpecies</a></div><div class="ttdeci">bool partnerMustSameSpecies</div><div class="ttdef"><b>Definition</b> <a href="Species_8h_source.html#l00061">Species.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1ReproductionDef_html_a99c38ed8b5ff19c87430ab831781aeed"><div class="ttname"><a href="structeve_1_1growth_1_1ReproductionDef.html#a99c38ed8b5ff19c87430ab831781aeed">eve::growth::ReproductionDef::offspringCountMin</a></div><div class="ttdeci">int offspringCountMin</div><div class="ttdef"><b>Definition</b> <a href="Species_8h_source.html#l00057">Species.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1ReproductionDef_html_aeb08f5c65c68cf88880afa3b0cb85638"><div class="ttname"><a href="structeve_1_1growth_1_1ReproductionDef.html#aeb08f5c65c68cf88880afa3b0cb85638">eve::growth::ReproductionDef::offspringCountMax</a></div><div class="ttdeci">int offspringCountMax</div><div class="ttdef"><b>Definition</b> <a href="Species_8h_source.html#l00058">Species.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1SpeciesDef_html"><div class="ttname"><a href="structeve_1_1growth_1_1SpeciesDef.html">eve::growth::SpeciesDef</a></div><div class="ttdoc">Static species definition — fully data-driven life cycle.</div><div class="ttdef"><b>Definition</b> <a href="Species_8h_source.html#l00081">Species.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1SpeciesDef_html_a411516bdac2628bc23edaaf7a259f5c8"><div class="ttname"><a href="structeve_1_1growth_1_1SpeciesDef.html#a411516bdac2628bc23edaaf7a259f5c8">eve::growth::SpeciesDef::reproduction</a></div><div class="ttdeci">ReproductionDef reproduction</div><div class="ttdef"><b>Definition</b> <a href="Species_8h_source.html#l00103">Species.h:103</a></div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1SpeciesDef_html_a6f10abd54b546efae3a53af9f6dabc57"><div class="ttname"><a href="structeve_1_1growth_1_1SpeciesDef.html#a6f10abd54b546efae3a53af9f6dabc57">eve::growth::SpeciesDef::kindId</a></div><div class="ttdeci">std::string kindId</div><div class="ttdoc">Free-form lifeform tag (plant, animal, xeno.crystal, …).</div><div class="ttdef"><b>Definition</b> <a href="Species_8h_source.html#l00085">Species.h:85</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

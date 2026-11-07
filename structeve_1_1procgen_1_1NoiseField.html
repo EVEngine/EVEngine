@@ -1,0 +1,2273 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::NoiseField结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html">NoiseField</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1NoiseField-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::NoiseField结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic 2D noise helpers for pixel textures and masks.  
+ <a href="structeve_1_1procgen_1_1NoiseField.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="NoiseField_8h_source.html">NoiseField.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ac1872402ab15039a260485df04603dea" id="r_ac1872402ab15039a260485df04603dea"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#ac1872402ab15039a260485df04603dea">hash01</a> (int ix, int iy) const</td></tr>
+<tr class="memdesc:ac1872402ab15039a260485df04603dea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Lattice hash mapped to [0, 1].  <br /></td></tr>
+<tr class="separator:ac1872402ab15039a260485df04603dea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85445d718a8c2993c9021cc29eb0a7c2" id="r_a85445d718a8c2993c9021cc29eb0a7c2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a85445d718a8c2993c9021cc29eb0a7c2">whiteNoise</a> (int ix, int iy) const</td></tr>
+<tr class="memdesc:a85445d718a8c2993c9021cc29eb0a7c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">White noise at integer lattice point (alias of hash01).  <br /></td></tr>
+<tr class="separator:a85445d718a8c2993c9021cc29eb0a7c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af820ea5bb40a091482379e24190892f1" id="r_af820ea5bb40a091482379e24190892f1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#af820ea5bb40a091482379e24190892f1">valueNoise</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>) const</td></tr>
+<tr class="memdesc:af820ea5bb40a091482379e24190892f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smooth value noise.  <br /></td></tr>
+<tr class="separator:af820ea5bb40a091482379e24190892f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac2ad108db44191aa04d49798058602e4" id="r_ac2ad108db44191aa04d49798058602e4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#ac2ad108db44191aa04d49798058602e4">perlinNoise</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>) const</td></tr>
+<tr class="memdesc:ac2ad108db44191aa04d49798058602e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Classic 2D Perlin gradient noise, remapped to [0, 1].  <br /></td></tr>
+<tr class="separator:ac2ad108db44191aa04d49798058602e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a47f27b16825631dda15de7b029f4c8" id="r_a5a47f27b16825631dda15de7b029f4c8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a5a47f27b16825631dda15de7b029f4c8">simplexNoise</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>) const</td></tr>
+<tr class="memdesc:a5a47f27b16825631dda15de7b029f4c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">2D Simplex noise remapped to [0, 1]. Same family as noisecreater SampleNoiseA (Ashima-style corners + radial falloff).  <br /></td></tr>
+<tr class="separator:a5a47f27b16825631dda15de7b029f4c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1f7178ccd2427ebd186dd7a23c9c789" id="r_ae1f7178ccd2427ebd186dd7a23c9c789"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#ae1f7178ccd2427ebd186dd7a23c9c789">worleyF1</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float jitter=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, <a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8">WorleyMetric</a> metric=<a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8a3e43207685247008d9e1ae53ecf8cab3">WorleyMetric::Euclidean</a>) const</td></tr>
+<tr class="memdesc:ae1f7178ccd2427ebd186dd7a23c9c789"><td class="mdescLeft">&#160;</td><td class="mdescRight">Worley / cellular F1 distance (cell size 1).  <br /></td></tr>
+<tr class="separator:ae1f7178ccd2427ebd186dd7a23c9c789"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ad817b0b15d77e4f0fa1daaf572aab3" id="r_a6ad817b0b15d77e4f0fa1daaf572aab3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a6ad817b0b15d77e4f0fa1daaf572aab3">worleyF2</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float jitter=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, <a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8">WorleyMetric</a> metric=<a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8a3e43207685247008d9e1ae53ecf8cab3">WorleyMetric::Euclidean</a>) const</td></tr>
+<tr class="memdesc:a6ad817b0b15d77e4f0fa1daaf572aab3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Worley F2 (second-nearest) distance.  <br /></td></tr>
+<tr class="separator:a6ad817b0b15d77e4f0fa1daaf572aab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f692ec6ea25048021d292a10af9be59" id="r_a3f692ec6ea25048021d292a10af9be59"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a3f692ec6ea25048021d292a10af9be59">worleyNoise</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float jitter=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, <a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8">WorleyMetric</a> metric=<a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8a3e43207685247008d9e1ae53ecf8cab3">WorleyMetric::Euclidean</a>) const</td></tr>
+<tr class="memdesc:a3f692ec6ea25048021d292a10af9be59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Texture-friendly Worley: clamp(1 - F1, 0, 1). Matches NoiseCreator's <code>1 - minDist</code> cellular look.  <br /></td></tr>
+<tr class="separator:a3f692ec6ea25048021d292a10af9be59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a940dac0b04af0de770f43daeb9a7900e" id="r_a940dac0b04af0de770f43daeb9a7900e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a940dac0b04af0de770f43daeb9a7900e">worleyEdge</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float jitter=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, <a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8">WorleyMetric</a> metric=<a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8a3e43207685247008d9e1ae53ecf8cab3">WorleyMetric::Euclidean</a>) const</td></tr>
+<tr class="memdesc:a940dac0b04af0de770f43daeb9a7900e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Worley F2 - F1 edge distance (cell borders).  <br /></td></tr>
+<tr class="separator:a940dac0b04af0de770f43daeb9a7900e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31dca4a01e92e5b79a2994829f60a6d3" id="r_a31dca4a01e92e5b79a2994829f60a6d3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a31dca4a01e92e5b79a2994829f60a6d3">worleyCombine</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float jitter=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, <a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8">WorleyMetric</a> metric=<a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8a3e43207685247008d9e1ae53ecf8cab3">WorleyMetric::Euclidean</a>) const</td></tr>
+<tr class="memdesc:a31dca4a01e92e5b79a2994829f60a6d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">(F1 + F2) * 0.5 remapped via clamp(1 - d, 0, 1).  <br /></td></tr>
+<tr class="separator:a31dca4a01e92e5b79a2994829f60a6d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a170e9679c85c86551daf18509655f0ba" id="r_a170e9679c85c86551daf18509655f0ba"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a170e9679c85c86551daf18509655f0ba">worleySmooth</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float smoothness=0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float jitter=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a170e9679c85c86551daf18509655f0ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smooth-min Worley (metaball / soft cellular).  <br /></td></tr>
+<tr class="separator:a170e9679c85c86551daf18509655f0ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16e3c7326f8d36eeea9ec89e06bb1a59" id="r_a16e3c7326f8d36eeea9ec89e06bb1a59"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a16e3c7326f8d36eeea9ec89e06bb1a59">fbm</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int octaves=4, float lacunarity=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="VehicleTires3D_8cpp.html#ac7b389a0254ed87600f959a5f6d58ab0">gain</a>=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a16e3c7326f8d36eeea9ec89e06bb1a59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Value-noise fBm.  <br /></td></tr>
+<tr class="separator:a16e3c7326f8d36eeea9ec89e06bb1a59"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d1705a87b336685fb5a06c80feeba8c" id="r_a8d1705a87b336685fb5a06c80feeba8c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a8d1705a87b336685fb5a06c80feeba8c">fbmPerlin</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int octaves=4, float lacunarity=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="VehicleTires3D_8cpp.html#ac7b389a0254ed87600f959a5f6d58ab0">gain</a>=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a8d1705a87b336685fb5a06c80feeba8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perlin fBm with uncorrelated octave offsets.  <br /></td></tr>
+<tr class="separator:a8d1705a87b336685fb5a06c80feeba8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64235623fc7ababe7e430e3a669a5be5" id="r_a64235623fc7ababe7e430e3a669a5be5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a64235623fc7ababe7e430e3a669a5be5">fbmSimplex</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int octaves=4, float lacunarity=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="VehicleTires3D_8cpp.html#ac7b389a0254ed87600f959a5f6d58ab0">gain</a>=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a64235623fc7ababe7e430e3a669a5be5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Simplex fBm with uncorrelated octave offsets.  <br /></td></tr>
+<tr class="separator:a64235623fc7ababe7e430e3a669a5be5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5c52fe244f53db162ec8164c77368df" id="r_ae5c52fe244f53db162ec8164c77368df"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#ae5c52fe244f53db162ec8164c77368df">fbmRotated</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int octaves=4, float lacunarity=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="VehicleTires3D_8cpp.html#ac7b389a0254ed87600f959a5f6d58ab0">gain</a>=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:ae5c52fe244f53db162ec8164c77368df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotated value-noise fBm (axial-bias reduction). Each octave applies a fixed 2D rotation like noisecreater smoke / domain-warp fBm.  <br /></td></tr>
+<tr class="separator:ae5c52fe244f53db162ec8164c77368df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a786058feb1a1a4a31183b00e6777c177" id="r_a786058feb1a1a4a31183b00e6777c177"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a786058feb1a1a4a31183b00e6777c177">ridged</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int octaves=4, float lacunarity=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="VehicleTires3D_8cpp.html#ac7b389a0254ed87600f959a5f6d58ab0">gain</a>=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a786058feb1a1a4a31183b00e6777c177"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ridged multifractal on value noise.  <br /></td></tr>
+<tr class="separator:a786058feb1a1a4a31183b00e6777c177"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf29556cc873ef9f675a34110c1e3f49" id="r_adf29556cc873ef9f675a34110c1e3f49"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#adf29556cc873ef9f675a34110c1e3f49">ridgedPerlin</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int octaves=4, float lacunarity=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="VehicleTires3D_8cpp.html#ac7b389a0254ed87600f959a5f6d58ab0">gain</a>=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:adf29556cc873ef9f675a34110c1e3f49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ridged multifractal on Perlin.  <br /></td></tr>
+<tr class="separator:adf29556cc873ef9f675a34110c1e3f49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48b3bc49ae933fec762e879bf32141f0" id="r_a48b3bc49ae933fec762e879bf32141f0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a48b3bc49ae933fec762e879bf32141f0">billow</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int octaves=4, float lacunarity=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="VehicleTires3D_8cpp.html#ac7b389a0254ed87600f959a5f6d58ab0">gain</a>=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a48b3bc49ae933fec762e879bf32141f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Billow / turbulence (absolute value-noise fBm), remapped to [0, 1]. Matches noisecreater SampleNoiseB <code>noise_sum_abs</code> shape.  <br /></td></tr>
+<tr class="separator:a48b3bc49ae933fec762e879bf32141f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab15dba43a4246cad36da4c797b89eca2" id="r_ab15dba43a4246cad36da4c797b89eca2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#ab15dba43a4246cad36da4c797b89eca2">billowPerlin</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int octaves=4, float lacunarity=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="VehicleTires3D_8cpp.html#ac7b389a0254ed87600f959a5f6d58ab0">gain</a>=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:ab15dba43a4246cad36da4c797b89eca2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Billow built from Perlin octaves.  <br /></td></tr>
+<tr class="separator:ab15dba43a4246cad36da4c797b89eca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade3a22d37a6c7ed216b1ffc9b6fab1e4" id="r_ade3a22d37a6c7ed216b1ffc9b6fab1e4"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#ade3a22d37a6c7ed216b1ffc9b6fab1e4">swiss</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int octaves=4, float lacunarity=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="VehicleTires3D_8cpp.html#ac7b389a0254ed87600f959a5f6d58ab0">gain</a>=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float warpStrength=0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:ade3a22d37a6c7ed216b1ffc9b6fab1e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Musgrave Swiss turbulence: each octave warps by the running sum. Good for eroded / alpine terrain. <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> remapped to [0, 1].  <br /></td></tr>
+<tr class="separator:ade3a22d37a6c7ed216b1ffc9b6fab1e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6d6bdbebfa86c63625f773f5fce7c4a" id="r_aa6d6bdbebfa86c63625f773f5fce7c4a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#aa6d6bdbebfa86c63625f773f5fce7c4a">hybrid</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int octaves=4, float lacunarity=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="VehicleTires3D_8cpp.html#ac7b389a0254ed87600f959a5f6d58ab0">gain</a>=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="LanguageIndex_8cpp.html#aadb6d6eb83e646653a1402032e45dcab">offset</a>=0.7<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:aa6d6bdbebfa86c63625f773f5fce7c4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Musgrave hybrid multifractal.  <br /></td></tr>
+<tr class="separator:aa6d6bdbebfa86c63625f773f5fce7c4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8162eeb1a9bb51ae5091f4f58675bbf2" id="r_a8162eeb1a9bb51ae5091f4f58675bbf2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a8162eeb1a9bb51ae5091f4f58675bbf2">jordan</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int octaves=4, float lacunarity=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="VehicleTires3D_8cpp.html#ac7b389a0254ed87600f959a5f6d58ab0">gain</a>=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float warpStrength=0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a8162eeb1a9bb51ae5091f4f58675bbf2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Musgrave Jordan turbulence: warp by value-noise derivatives. Completes the Swiss / Hybrid / Jordan Musgrave trio. <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> in [0, 1].  <br /></td></tr>
+<tr class="separator:a8162eeb1a9bb51ae5091f4f58675bbf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d82b7c20b48295251d0c3591657e484" id="r_a6d82b7c20b48295251d0c3591657e484"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a6d82b7c20b48295251d0c3591657e484">gabor</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float dirX=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float dirY=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float frequency=6.2831853<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a6d82b7c20b48295251d0c3591657e484"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gabor / Voronoi-mix wavelet (noisecreater gavoronoi 3×3), remapped to [0, 1].  <br /></td></tr>
+<tr class="separator:a6d82b7c20b48295251d0c3591657e484"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84c06a56f392c50a09ea802d22f911bf" id="r_a84c06a56f392c50a09ea802d22f911bf"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a84c06a56f392c50a09ea802d22f911bf">gaborFbm</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int octaves=4, float dirX=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float dirY=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a84c06a56f392c50a09ea802d22f911bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absolute-Gabor fBm remapped to [0, 1] (noisecreater Gabor swirl layers).  <br /></td></tr>
+<tr class="separator:a84c06a56f392c50a09ea802d22f911bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9118c1ac0892459ae8bf99307086f764" id="r_a9118c1ac0892459ae8bf99307086f764"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a9118c1ac0892459ae8bf99307086f764">perlinWorley</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int octaves=3, float jitter=1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a9118c1ac0892459ae8bf99307086f764"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perlin–Worley hybrid for cloud / soft cellular shapes. <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> is worleyNoise * fbmPerlin (NoiseCreator Cloud / Perlin-Worley).  <br /></td></tr>
+<tr class="separator:a9118c1ac0892459ae8bf99307086f764"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a766d62beec826eef58d373d97721a79f" id="r_a766d62beec826eef58d373d97721a79f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a766d62beec826eef58d373d97721a79f">valueDx</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float eps=1e-3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a766d62beec826eef58d373d97721a79f"><td class="mdescLeft">&#160;</td><td class="mdescRight">∂/∂x of value noise via central differences (slope / erosion helper). Not remapped to [0, 1]; magnitude depends on <code>eps</code>.  <br /></td></tr>
+<tr class="separator:a766d62beec826eef58d373d97721a79f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a516f649ff2f126b0854423769200ee9f" id="r_a516f649ff2f126b0854423769200ee9f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a516f649ff2f126b0854423769200ee9f">valueDy</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float eps=1e-3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a516f649ff2f126b0854423769200ee9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">∂/∂y of value noise via central differences.  <br /></td></tr>
+<tr class="separator:a516f649ff2f126b0854423769200ee9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54e3d479113d0f0fcb00ad0e4cd9309d" id="r_a54e3d479113d0f0fcb00ad0e4cd9309d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a54e3d479113d0f0fcb00ad0e4cd9309d">valueSlope</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float eps=1e-3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a54e3d479113d0f0fcb00ad0e4cd9309d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gradient magnitude of value noise.  <br /></td></tr>
+<tr class="separator:a54e3d479113d0f0fcb00ad0e4cd9309d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5395a243457ac70cac6867bbe1097690" id="r_a5395a243457ac70cac6867bbe1097690"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a5395a243457ac70cac6867bbe1097690">isoLine</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int levels=8, float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>=0.04<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a5395a243457ac70cac6867bbe1097690"><td class="mdescLeft">&#160;</td><td class="mdescRight">Contour / isoline mask of value noise in [0, 1] (1 on lines).  <br /></td></tr>
+<tr class="separator:a5395a243457ac70cac6867bbe1097690"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8561a7d00ebbb34330cfa91c3a85b0f8" id="r_a8561a7d00ebbb34330cfa91c3a85b0f8"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a8561a7d00ebbb34330cfa91c3a85b0f8">banding</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int bands=5) const</td></tr>
+<tr class="memdesc:a8561a7d00ebbb34330cfa91c3a85b0f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quantized banding of value noise in [0, 1].  <br /></td></tr>
+<tr class="separator:a8561a7d00ebbb34330cfa91c3a85b0f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a676ad42ab5c2d834d5172fb6645c172f" id="r_a676ad42ab5c2d834d5172fb6645c172f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a676ad42ab5c2d834d5172fb6645c172f">fbmColor</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, int channel, int octaves=4, float lacunarity=2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="VehicleTires3D_8cpp.html#ac7b389a0254ed87600f959a5f6d58ab0">gain</a>=0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a676ad42ab5c2d834d5172fb6645c172f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decorrelated fBm channel for RGB-style color noise (channel 0/1/2). Same shape as fbm with fixed per-channel lattice offsets.  <br /></td></tr>
+<tr class="separator:a676ad42ab5c2d834d5172fb6645c172f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8db97bd6b4ece91a2f70a99461a65a30" id="r_a8db97bd6b4ece91a2f70a99461a65a30"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a8db97bd6b4ece91a2f70a99461a65a30">warp</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float amp, int octaves=3) const</td></tr>
+<tr class="memdesc:a8db97bd6b4ece91a2f70a99461a65a30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Single-pass domain warp of value fBm.  <br /></td></tr>
+<tr class="separator:a8db97bd6b4ece91a2f70a99461a65a30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab86d846340fb975236c6c360dcc51fce" id="r_ab86d846340fb975236c6c360dcc51fce"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#ab86d846340fb975236c6c360dcc51fce">warpDeep</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float amp, int octaves=3) const</td></tr>
+<tr class="memdesc:ab86d846340fb975236c6c360dcc51fce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Two-pass iq-style domain warp (q then r), then sample fBm. Matches noisecreater DomainWarp / Smoke nested fBm pattern.  <br /></td></tr>
+<tr class="separator:ab86d846340fb975236c6c360dcc51fce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae286f3101bae8ad6821ee22c03caf165" id="r_ae286f3101bae8ad6821ee22c03caf165"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#ae286f3101bae8ad6821ee22c03caf165">curlNoiseX</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float eps=1e-3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:ae286f3101bae8ad6821ee22c03caf165"><td class="mdescLeft">&#160;</td><td class="mdescRight">Divergence-free curl X of value-noise potential (finite differences). Pair with curlNoiseY for particle / fluid advection.  <br /></td></tr>
+<tr class="separator:ae286f3101bae8ad6821ee22c03caf165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66c250cd5697eb03668d1bc4d7b02950" id="r_a66c250cd5697eb03668d1bc4d7b02950"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a66c250cd5697eb03668d1bc4d7b02950">curlNoiseY</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float eps=1e-3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a66c250cd5697eb03668d1bc4d7b02950"><td class="mdescLeft">&#160;</td><td class="mdescRight">Divergence-free curl Y of value-noise potential (finite differences).  <br /></td></tr>
+<tr class="separator:a66c250cd5697eb03668d1bc4d7b02950"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaab0de068a24da972878de6b9525bcf0" id="r_aaab0de068a24da972878de6b9525bcf0"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#aaab0de068a24da972878de6b9525bcf0">hexDistance</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>) const</td></tr>
+<tr class="memdesc:aaab0de068a24da972878de6b9525bcf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distance to nearest hex edge (noisecreater hexDist field), typically [0, ~1]. Pointy-top lattice; scale inputs to control cell size.  <br /></td></tr>
+<tr class="separator:aaab0de068a24da972878de6b9525bcf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0912344053cb673721199ea045a2a734" id="r_a0912344053cb673721199ea045a2a734"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a0912344053cb673721199ea045a2a734">hexValue</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>) const</td></tr>
+<tr class="memdesc:a0912344053cb673721199ea045a2a734"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash of the nearest hex cell, in [0, 1].  <br /></td></tr>
+<tr class="separator:a0912344053cb673721199ea045a2a734"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e816b86710a530567261a39e7b5cf79" id="r_a8e816b86710a530567261a39e7b5cf79"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a8e816b86710a530567261a39e7b5cf79">hexEdge</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>=0.05<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, float <a class="el" href="GraphicsParticles_8cpp.html#a8f63e3232eec872d005d98b65ce18c3f">soft</a>=0.02<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>) const</td></tr>
+<tr class="memdesc:a8e816b86710a530567261a39e7b5cf79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hex edge line mask in [0, 1] (1 on edge). Matches noisecreater hexNoise edge band.  <br /></td></tr>
+<tr class="separator:a8e816b86710a530567261a39e7b5cf79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3295f47f58130f7afc70312e36747393" id="r_a3295f47f58130f7afc70312e36747393"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a3295f47f58130f7afc70312e36747393">gyroid</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab3e6ed577a7c669c19de1f9c1b46c872">z</a>) const</td></tr>
+<tr class="memdesc:a3295f47f58130f7afc70312e36747393"><td class="mdescLeft">&#160;</td><td class="mdescRight">Minimal gyroid field at (x, y, z): dot(sin(p), cos(p.yzx)), remapped to [0, 1].  <br /></td></tr>
+<tr class="separator:a3295f47f58130f7afc70312e36747393"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dc788145edaaef5b26cce6eb9e1ece3" id="r_a2dc788145edaaef5b26cce6eb9e1ece3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a2dc788145edaaef5b26cce6eb9e1ece3">gyroidFbm</a> (float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab3e6ed577a7c669c19de1f9c1b46c872">z</a>, int octaves=4) const</td></tr>
+<tr class="memdesc:a2dc788145edaaef5b26cce6eb9e1ece3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Absolute-gyroid fBm (noisecreater gyroid fbm), remapped to [0, 1].  <br /></td></tr>
+<tr class="separator:a2dc788145edaaef5b26cce6eb9e1ece3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a31ee4c06c94c8aba8244fa9cb5dac344" id="r_a31ee4c06c94c8aba8244fa9cb5dac344"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a31ee4c06c94c8aba8244fa9cb5dac344">seed</a> = 1</td></tr>
+<tr class="separator:a31ee4c06c94c8aba8244fa9cb5dac344"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a7ead01c7926781bf5ae3d186287514" id="r_a3a7ead01c7926781bf5ae3d186287514"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#a3a7ead01c7926781bf5ae3d186287514">periodX</a> = 0</td></tr>
+<tr class="separator:a3a7ead01c7926781bf5ae3d186287514"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaad58c68beaac37285f7bb480acbc875" id="r_aaad58c68beaac37285f7bb480acbc875"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1NoiseField.html#aaad58c68beaac37285f7bb480acbc875">periodY</a> = 0</td></tr>
+<tr class="separator:aaad58c68beaac37285f7bb480acbc875"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic 2D noise helpers for pixel textures and masks. </p>
+<p>Covers the common NoiseCreator / noisecreater.com / Musgrave set: white, value, Perlin, Simplex, Worley (F1/F2/edge/smooth + metrics), fBm / ridged / billow / swiss / hybrid / jordan, Gabor, Perlin–Worley, hex, gyroid, curl, value derivatives / isoline / banding, color-channel fBm, and single- or multi-pass domain warp.</p>
+<p>When periodX/periodY &gt; 0, lattice indices wrap for seamless tiling. Continuous samplers return values in [0, 1] unless noted. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8h_source.html">NoiseField.h</a> 第 <a class="el" href="NoiseField_8h_source.html#l00024">24</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a8561a7d00ebbb34330cfa91c3a85b0f8" name="a8561a7d00ebbb34330cfa91c3a85b0f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8561a7d00ebbb34330cfa91c3a85b0f8">&#9670;&#160;</a></span>banding()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::banding </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>bands</em> = <code>5</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Quantized banding of value noise in [0, 1]. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bands</td><td>Number of discrete steps (≥ 1). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00577">577</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a48b3bc49ae933fec762e879bf32141f0" name="a48b3bc49ae933fec762e879bf32141f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48b3bc49ae933fec762e879bf32141f0">&#9670;&#160;</a></span>billow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::billow </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lacunarity</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gain</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Billow / turbulence (absolute value-noise fBm), remapped to [0, 1]. Matches noisecreater SampleNoiseB <code>noise_sum_abs</code> shape. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00344">344</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTires3D_8cpp_source.html#l00106">gain</a>, <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="ab15dba43a4246cad36da4c797b89eca2" name="ab15dba43a4246cad36da4c797b89eca2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab15dba43a4246cad36da4c797b89eca2">&#9670;&#160;</a></span>billowPerlin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::billowPerlin </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lacunarity</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gain</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Billow built from Perlin octaves. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00356">356</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTires3D_8cpp_source.html#l00106">gain</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="NoiseField_8cpp_source.html#l00137">perlinNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="ae286f3101bae8ad6821ee22c03caf165" name="ae286f3101bae8ad6821ee22c03caf165"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae286f3101bae8ad6821ee22c03caf165">&#9670;&#160;</a></span>curlNoiseX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::curlNoiseX </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eps</em> = <code>1e-3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Divergence-free curl X of value-noise potential (finite differences). Pair with curlNoiseY for particle / fluid advection. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00426">426</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a66c250cd5697eb03668d1bc4d7b02950" name="a66c250cd5697eb03668d1bc4d7b02950"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66c250cd5697eb03668d1bc4d7b02950">&#9670;&#160;</a></span>curlNoiseY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::curlNoiseY </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eps</em> = <code>1e-3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Divergence-free curl Y of value-noise potential (finite differences). </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00432">432</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a16e3c7326f8d36eeea9ec89e06bb1a59" name="a16e3c7326f8d36eeea9ec89e06bb1a59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a16e3c7326f8d36eeea9ec89e06bb1a59">&#9670;&#160;</a></span>fbm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::fbm </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lacunarity</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gain</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Value-noise fBm. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00257">257</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTires3D_8cpp_source.html#l00106">gain</a>, <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00039">eve::procgen::CloudField::coverageAt()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00584">fbmColor()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00412">warp()</a> , 以及 <a class="el" href="NoiseField_8cpp_source.html#l00418">warpDeep()</a>.</p>
+
+</div>
+</div>
+<a id="a676ad42ab5c2d834d5172fb6645c172f" name="a676ad42ab5c2d834d5172fb6645c172f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a676ad42ab5c2d834d5172fb6645c172f">&#9670;&#160;</a></span>fbmColor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::fbmColor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lacunarity</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gain</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decorrelated fBm channel for RGB-style color noise (channel 0/1/2). Same shape as fbm with fixed per-channel lattice offsets. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00584">584</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NoiseField_8cpp_source.html#l00257">fbm()</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00106">gain</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a8d1705a87b336685fb5a06c80feeba8c" name="a8d1705a87b336685fb5a06c80feeba8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d1705a87b336685fb5a06c80feeba8c">&#9670;&#160;</a></span>fbmPerlin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::fbmPerlin </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lacunarity</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gain</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perlin fBm with uncorrelated octave offsets. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00269">269</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTires3D_8cpp_source.html#l00106">gain</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="NoiseField_8cpp_source.html#l00137">perlinNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NoiseField_8cpp_source.html#l00406">perlinWorley()</a> , 以及 <a class="el" href="TerrainSampler_8cpp_source.html#l00065">eve::procgen::TerrainSampler::sample()</a>.</p>
+
+</div>
+</div>
+<a id="ae5c52fe244f53db162ec8164c77368df" name="ae5c52fe244f53db162ec8164c77368df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5c52fe244f53db162ec8164c77368df">&#9670;&#160;</a></span>fbmRotated()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::fbmRotated </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lacunarity</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gain</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Rotated value-noise fBm (axial-bias reduction). Each octave applies a fixed 2D rotation like noisecreater smoke / domain-warp fBm. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00297">297</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTires3D_8cpp_source.html#l00106">gain</a>, <a class="el" href="ImageData_8cpp_source.html#l00691">px</a>, <a class="el" href="CaveSurfaceReactivity_8cpp_source.html#l00150">py</a>, <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00039">eve::procgen::CloudField::coverageAt()</a>.</p>
+
+</div>
+</div>
+<a id="a64235623fc7ababe7e430e3a669a5be5" name="a64235623fc7ababe7e430e3a669a5be5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64235623fc7ababe7e430e3a669a5be5">&#9670;&#160;</a></span>fbmSimplex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::fbmSimplex </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lacunarity</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gain</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Simplex fBm with uncorrelated octave offsets. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00283">283</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTires3D_8cpp_source.html#l00106">gain</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="NoiseField_8cpp_source.html#l00162">simplexNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a6d82b7c20b48295251d0c3591657e484" name="a6d82b7c20b48295251d0c3591657e484"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d82b7c20b48295251d0c3591657e484">&#9670;&#160;</a></span>gabor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::gabor </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dirX</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dirY</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>frequency</em> = <code>6.2831853<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gabor / Voronoi-mix wavelet (noisecreater gavoronoi 3×3), remapped to [0, 1]. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dirX</td><td>/ dirY Preferred wave direction bias. </td></tr>
+    <tr><td class="paramname">frequency</td><td>Carrier frequency (typical ~2π). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00503">503</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00037">cy</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00025">dx</a>, <a class="el" href="Shadow_8cpp_source.html#l00151">dy</a>, <a class="el" href="NoiseField_8cpp_source.html#l00110">hash01()</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">w</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NoiseField_8cpp_source.html#l00534">gaborFbm()</a>.</p>
+
+</div>
+</div>
+<a id="a84c06a56f392c50a09ea802d22f911bf" name="a84c06a56f392c50a09ea802d22f911bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84c06a56f392c50a09ea802d22f911bf">&#9670;&#160;</a></span>gaborFbm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::gaborFbm </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dirX</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dirY</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Absolute-Gabor fBm remapped to [0, 1] (noisecreater Gabor swirl layers). </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00534">534</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NoiseField_8cpp_source.html#l00503">gabor()</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="ImageData_8cpp_source.html#l00691">px</a>, <a class="el" href="CaveSurfaceReactivity_8cpp_source.html#l00150">py</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a3295f47f58130f7afc70312e36747393" name="a3295f47f58130f7afc70312e36747393"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3295f47f58130f7afc70312e36747393">&#9670;&#160;</a></span>gyroid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::gyroid </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Minimal gyroid field at (x, y, z): dot(sin(p), cos(p.yzx)), remapped to [0, 1]. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00460">460</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="NoiseField_8h_source.html#l00025">seed</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">z</a>.</p>
+
+</div>
+</div>
+<a id="a2dc788145edaaef5b26cce6eb9e1ece3" name="a2dc788145edaaef5b26cce6eb9e1ece3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2dc788145edaaef5b26cce6eb9e1ece3">&#9670;&#160;</a></span>gyroidFbm()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::gyroidFbm </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Absolute-gyroid fBm (noisecreater gyroid fbm), remapped to [0, 1]. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00466">466</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="NoiseField_8h_source.html#l00025">seed</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">z</a>.</p>
+
+</div>
+</div>
+<a id="ac1872402ab15039a260485df04603dea" name="ac1872402ab15039a260485df04603dea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1872402ab15039a260485df04603dea">&#9670;&#160;</a></span>hash01()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::hash01 </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Lattice hash mapped to [0, 1]. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="NoiseField_8h_source.html#l00026">periodX</a>, <a class="el" href="NoiseField_8h_source.html#l00027">periodY</a> , 以及 <a class="el" href="NoiseField_8h_source.html#l00025">seed</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NoiseField_8cpp_source.html#l00503">gabor()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00446">hexValue()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00137">perlinNoise()</a>, <a class="el" href="EverydayPatterns_8cpp_source.html#l00046">eve::procgen::detail::sampleEveryday()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00162">simplexNoise()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00121">whiteNoise()</a> , 以及 <a class="el" href="NoiseField_8cpp_source.html#l00235">worleySmooth()</a>.</p>
+
+</div>
+</div>
+<a id="aaab0de068a24da972878de6b9525bcf0" name="aaab0de068a24da972878de6b9525bcf0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaab0de068a24da972878de6b9525bcf0">&#9670;&#160;</a></span>hexDistance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::hexDistance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Distance to nearest hex edge (noisecreater hexDist field), typically [0, ~1]. Pointy-top lattice; scale inputs to control cell size. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00438">438</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00037">cy</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NoiseField_8cpp_source.html#l00452">hexEdge()</a>.</p>
+
+</div>
+</div>
+<a id="a8e816b86710a530567261a39e7b5cf79" name="a8e816b86710a530567261a39e7b5cf79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e816b86710a530567261a39e7b5cf79">&#9670;&#160;</a></span>hexEdge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::hexEdge </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em> = <code>0.05<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>soft</em> = <code>0.02<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hex edge line mask in [0, 1] (1 on edge). Matches noisecreater hexNoise edge band. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00452">452</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="NoiseField_8cpp_source.html#l00438">hexDistance()</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00050">soft</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a0912344053cb673721199ea045a2a734" name="a0912344053cb673721199ea045a2a734"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0912344053cb673721199ea045a2a734">&#9670;&#160;</a></span>hexValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::hexValue </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hash of the nearest hex cell, in [0, 1]. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00446">446</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00037">cy</a>, <a class="el" href="NoiseField_8cpp_source.html#l00110">hash01()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="aa6d6bdbebfa86c63625f773f5fce7c4a" name="aa6d6bdbebfa86c63625f773f5fce7c4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6d6bdbebfa86c63625f773f5fce7c4a">&#9670;&#160;</a></span>hybrid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::hybrid </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lacunarity</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gain</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>offset</em> = <code>0.7<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Musgrave hybrid multifractal. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">offset</td><td>Signal bias before weighting (typical ~0.7). <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> in [0, 1]. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00387">387</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTires3D_8cpp_source.html#l00106">gain</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00053">result</a>, <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00934">weight</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a5395a243457ac70cac6867bbe1097690" name="a5395a243457ac70cac6867bbe1097690"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5395a243457ac70cac6867bbe1097690">&#9670;&#160;</a></span>isoLine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::isoLine </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>levels</em> = <code>8</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>width</em> = <code>0.04<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Contour / isoline mask of value noise in [0, 1] (1 on lines). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">levels</td><td>Contour count across [0, 1]. </td></tr>
+    <tr><td class="paramname">width</td><td>Half-width of each line in normalized level space. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00566">566</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a8162eeb1a9bb51ae5091f4f58675bbf2" name="a8162eeb1a9bb51ae5091f4f58675bbf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8162eeb1a9bb51ae5091f4f58675bbf2">&#9670;&#160;</a></span>jordan()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::jordan </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lacunarity</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gain</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>warpStrength</em> = <code>0.35<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Musgrave Jordan turbulence: warp by value-noise derivatives. Completes the Swiss / Hybrid / Jordan Musgrave trio. <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> in [0, 1]. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00482">482</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00025">dx</a>, <a class="el" href="Shadow_8cpp_source.html#l00151">dy</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00106">gain</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="ImageData_8cpp_source.html#l00691">px</a>, <a class="el" href="CaveSurfaceReactivity_8cpp_source.html#l00150">py</a>, <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="ac2ad108db44191aa04d49798058602e4" name="ac2ad108db44191aa04d49798058602e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac2ad108db44191aa04d49798058602e4">&#9670;&#160;</a></span>perlinNoise()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::perlinNoise </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Classic 2D Perlin gradient noise, remapped to [0, 1]. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00025">dx</a>, <a class="el" href="Shadow_8cpp_source.html#l00151">dy</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="NoiseField_8cpp_source.html#l00110">hash01()</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="ImageData_8cpp_source.html#l00691">px</a>, <a class="el" href="CaveSurfaceReactivity_8cpp_source.html#l00150">py</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NoiseField_8cpp_source.html#l00356">billowPerlin()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00269">fbmPerlin()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00328">ridgedPerlin()</a> , 以及 <a class="el" href="TerrainSampler_8cpp_source.html#l00065">eve::procgen::TerrainSampler::sample()</a>.</p>
+
+</div>
+</div>
+<a id="a9118c1ac0892459ae8bf99307086f764" name="a9118c1ac0892459ae8bf99307086f764"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9118c1ac0892459ae8bf99307086f764">&#9670;&#160;</a></span>perlinWorley()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::perlinWorley </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>3</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>jitter</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Perlin–Worley hybrid for cloud / soft cellular shapes. <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> is worleyNoise * fbmPerlin (NoiseCreator Cloud / Perlin-Worley). </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00406">406</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NoiseField_8cpp_source.html#l00269">fbmPerlin()</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">w</a>, <a class="el" href="NoiseField_8cpp_source.html#l00219">worleyNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00039">eve::procgen::CloudField::coverageAt()</a>.</p>
+
+</div>
+</div>
+<a id="a786058feb1a1a4a31183b00e6777c177" name="a786058feb1a1a4a31183b00e6777c177"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a786058feb1a1a4a31183b00e6777c177">&#9670;&#160;</a></span>ridged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::ridged </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lacunarity</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gain</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ridged multifractal on value noise. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00314">314</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTires3D_8cpp_source.html#l00106">gain</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="adf29556cc873ef9f675a34110c1e3f49" name="adf29556cc873ef9f675a34110c1e3f49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf29556cc873ef9f675a34110c1e3f49">&#9670;&#160;</a></span>ridgedPerlin()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::ridgedPerlin </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lacunarity</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gain</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Ridged multifractal on Perlin. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00328">328</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTires3D_8cpp_source.html#l00106">gain</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00021">ox</a>, <a class="el" href="UrbanCrossField_8cpp_source.html#l00022">oy</a>, <a class="el" href="NoiseField_8cpp_source.html#l00137">perlinNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="TerrainSampler_8cpp_source.html#l00065">eve::procgen::TerrainSampler::sample()</a>.</p>
+
+</div>
+</div>
+<a id="a5a47f27b16825631dda15de7b029f4c8" name="a5a47f27b16825631dda15de7b029f4c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a47f27b16825631dda15de7b029f4c8">&#9670;&#160;</a></span>simplexNoise()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::simplexNoise </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>2D Simplex noise remapped to [0, 1]. Same family as noisecreater SampleNoiseA (Ashima-style corners + radial falloff). </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00162">162</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="NoiseField_8cpp_source.html#l00110">hash01()</a>, <a class="el" href="Grass_8cpp_source.html#l00061">i1</a>, <a class="el" href="ImageData_8cpp_source.html#l00691">px</a>, <a class="el" href="CaveSurfaceReactivity_8cpp_source.html#l00150">py</a>, <a class="el" href="BattleControl_8cpp_source.html#l00325">s</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NoiseField_8cpp_source.html#l00283">fbmSimplex()</a>.</p>
+
+</div>
+</div>
+<a id="ade3a22d37a6c7ed216b1ffc9b6fab1e4" name="ade3a22d37a6c7ed216b1ffc9b6fab1e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade3a22d37a6c7ed216b1ffc9b6fab1e4">&#9670;&#160;</a></span>swiss()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::swiss </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>4</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lacunarity</em> = <code>2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>gain</em> = <code>0.5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>warpStrength</em> = <code>0.15<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Musgrave Swiss turbulence: each octave warps by the running sum. Good for eroded / alpine terrain. <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> remapped to [0, 1]. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00370">370</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTires3D_8cpp_source.html#l00106">gain</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="ImageData_8cpp_source.html#l00691">px</a>, <a class="el" href="CaveSurfaceReactivity_8cpp_source.html#l00150">py</a>, <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a766d62beec826eef58d373d97721a79f" name="a766d62beec826eef58d373d97721a79f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a766d62beec826eef58d373d97721a79f">&#9670;&#160;</a></span>valueDx()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::valueDx </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eps</em> = <code>1e-3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>∂/∂x of value noise via central differences (slope / erosion helper). Not remapped to [0, 1]; magnitude depends on <code>eps</code>. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00550">550</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NoiseField_8cpp_source.html#l00560">valueSlope()</a>.</p>
+
+</div>
+</div>
+<a id="a516f649ff2f126b0854423769200ee9f" name="a516f649ff2f126b0854423769200ee9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a516f649ff2f126b0854423769200ee9f">&#9670;&#160;</a></span>valueDy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::valueDy </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eps</em> = <code>1e-3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>∂/∂y of value noise via central differences. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00555">555</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NoiseField_8cpp_source.html#l00123">valueNoise()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NoiseField_8cpp_source.html#l00560">valueSlope()</a>.</p>
+
+</div>
+</div>
+<a id="af820ea5bb40a091482379e24190892f1" name="af820ea5bb40a091482379e24190892f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af820ea5bb40a091482379e24190892f1">&#9670;&#160;</a></span>valueNoise()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::valueNoise </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Smooth value noise. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NoiseField_8cpp_source.html#l00110">hash01()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NoiseField_8cpp_source.html#l00577">banding()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00344">billow()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00426">curlNoiseX()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00432">curlNoiseY()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00257">fbm()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00297">fbmRotated()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00387">hybrid()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00566">isoLine()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00482">jordan()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00314">ridged()</a>, <a class="el" href="EverydayPatterns_8cpp_source.html#l00046">eve::procgen::detail::sampleEveryday()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00370">swiss()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00550">valueDx()</a> , 以及 <a class="el" href="NoiseField_8cpp_source.html#l00555">valueDy()</a>.</p>
+
+</div>
+</div>
+<a id="a54e3d479113d0f0fcb00ad0e4cd9309d" name="a54e3d479113d0f0fcb00ad0e4cd9309d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54e3d479113d0f0fcb00ad0e4cd9309d">&#9670;&#160;</a></span>valueSlope()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::valueSlope </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>eps</em> = <code>1e-3<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gradient magnitude of value noise. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00560">560</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00025">dx</a>, <a class="el" href="Shadow_8cpp_source.html#l00151">dy</a>, <a class="el" href="NoiseField_8cpp_source.html#l00550">valueDx()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00555">valueDy()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a8db97bd6b4ece91a2f70a99461a65a30" name="a8db97bd6b4ece91a2f70a99461a65a30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8db97bd6b4ece91a2f70a99461a65a30">&#9670;&#160;</a></span>warp()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::warp </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>amp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>3</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Single-pass domain warp of value fBm. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00412">412</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NoiseField_8cpp_source.html#l00257">fbm()</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00178">wx</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00178">wy</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="ab86d846340fb975236c6c360dcc51fce" name="ab86d846340fb975236c6c360dcc51fce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab86d846340fb975236c6c360dcc51fce">&#9670;&#160;</a></span>warpDeep()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::warpDeep </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>amp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>octaves</em> = <code>3</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Two-pass iq-style domain warp (q then r), then sample fBm. Matches noisecreater DomainWarp / Smoke nested fBm pattern. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00418">418</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NoiseField_8cpp_source.html#l00257">fbm()</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00176">qx</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00176">qy</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a85445d718a8c2993c9021cc29eb0a7c2" name="a85445d718a8c2993c9021cc29eb0a7c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a85445d718a8c2993c9021cc29eb0a7c2">&#9670;&#160;</a></span>whiteNoise()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::whiteNoise </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>ix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>iy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>White noise at integer lattice point (alias of hash01). </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00121">121</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NoiseField_8cpp_source.html#l00110">hash01()</a>.</p>
+
+</div>
+</div>
+<a id="a31dca4a01e92e5b79a2994829f60a6d3" name="a31dca4a01e92e5b79a2994829f60a6d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31dca4a01e92e5b79a2994829f60a6d3">&#9670;&#160;</a></span>worleyCombine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::worleyCombine </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>jitter</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8">WorleyMetric</a>&#160;</td>
+          <td class="paramname"><em>metric</em> = <code><a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8a3e43207685247008d9e1ae53ecf8cab3">WorleyMetric::Euclidean</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>(F1 + F2) * 0.5 remapped via clamp(1 - d, 0, 1). </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a940dac0b04af0de770f43daeb9a7900e" name="a940dac0b04af0de770f43daeb9a7900e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a940dac0b04af0de770f43daeb9a7900e">&#9670;&#160;</a></span>worleyEdge()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::worleyEdge </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>jitter</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8">WorleyMetric</a>&#160;</td>
+          <td class="paramname"><em>metric</em> = <code><a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8a3e43207685247008d9e1ae53ecf8cab3">WorleyMetric::Euclidean</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Worley F2 - F1 edge distance (cell borders). </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="ae1f7178ccd2427ebd186dd7a23c9c789" name="ae1f7178ccd2427ebd186dd7a23c9c789"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1f7178ccd2427ebd186dd7a23c9c789">&#9670;&#160;</a></span>worleyF1()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::worleyF1 </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>jitter</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8">WorleyMetric</a>&#160;</td>
+          <td class="paramname"><em>metric</em> = <code><a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8a3e43207685247008d9e1ae53ecf8cab3">WorleyMetric::Euclidean</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Worley / cellular F1 distance (cell size 1). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">jitter</td><td>Feature-point jitter in [0, 1]; 1 = full cell, 0 = cell centers. </td></tr>
+    <tr><td class="paramname">metric</td><td>Euclidean (default), Manhattan, or Chebyshev. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NoiseField_8cpp_source.html#l00219">worleyNoise()</a>.</p>
+
+</div>
+</div>
+<a id="a6ad817b0b15d77e4f0fa1daaf572aab3" name="a6ad817b0b15d77e4f0fa1daaf572aab3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6ad817b0b15d77e4f0fa1daaf572aab3">&#9670;&#160;</a></span>worleyF2()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::worleyF2 </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>jitter</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8">WorleyMetric</a>&#160;</td>
+          <td class="paramname"><em>metric</em> = <code><a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8a3e43207685247008d9e1ae53ecf8cab3">WorleyMetric::Euclidean</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Worley F2 (second-nearest) distance. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00213">213</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a3f692ec6ea25048021d292a10af9be59" name="a3f692ec6ea25048021d292a10af9be59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f692ec6ea25048021d292a10af9be59">&#9670;&#160;</a></span>worleyNoise()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::worleyNoise </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>jitter</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8">WorleyMetric</a>&#160;</td>
+          <td class="paramname"><em>metric</em> = <code><a class="el" href="namespaceeve_1_1procgen.html#a3e054ee2f4a2b15dc33cefb45cada4b8a3e43207685247008d9e1ae53ecf8cab3">WorleyMetric::Euclidean</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Texture-friendly Worley: clamp(1 - F1, 0, 1). Matches NoiseCreator's <code>1 - minDist</code> cellular look. </p>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00219">219</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="NoiseField_8cpp_source.html#l00207">worleyF1()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="NoiseField_8cpp_source.html#l00406">perlinWorley()</a>.</p>
+
+</div>
+</div>
+<a id="a170e9679c85c86551daf18509655f0ba" name="a170e9679c85c86551daf18509655f0ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a170e9679c85c86551daf18509655f0ba">&#9670;&#160;</a></span>worleySmooth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::NoiseField::worleySmooth </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>smoothness</em> = <code>0.25<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>jitter</em> = <code>1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Smooth-min Worley (metaball / soft cellular). </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">smoothness</td><td>Blend width; larger → softer lobes. <a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> in [0, 1]. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a> 第 <a class="el" href="NoiseField_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00037">cy</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00025">dx</a>, <a class="el" href="Shadow_8cpp_source.html#l00151">dy</a>, <a class="el" href="NoiseField_8cpp_source.html#l00110">hash01()</a>, <a class="el" href="ImageData_8cpp_source.html#l00691">px</a>, <a class="el" href="CaveSurfaceReactivity_8cpp_source.html#l00150">py</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">类成员变量说明</h2>
+<a id="a3a7ead01c7926781bf5ae3d186287514" name="a3a7ead01c7926781bf5ae3d186287514"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a7ead01c7926781bf5ae3d186287514">&#9670;&#160;</a></span>periodX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::NoiseField::periodX = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8h_source.html">NoiseField.h</a> 第 <a class="el" href="NoiseField_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00039">eve::procgen::CloudField::coverageAt()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00110">hash01()</a> , 以及 <a class="el" href="EverydayPatterns_8cpp_source.html#l00046">eve::procgen::detail::sampleEveryday()</a>.</p>
+
+</div>
+</div>
+<a id="aaad58c68beaac37285f7bb480acbc875" name="aaad58c68beaac37285f7bb480acbc875"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaad58c68beaac37285f7bb480acbc875">&#9670;&#160;</a></span>periodY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::NoiseField::periodY = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8h_source.html">NoiseField.h</a> 第 <a class="el" href="NoiseField_8h_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00039">eve::procgen::CloudField::coverageAt()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00110">hash01()</a> , 以及 <a class="el" href="EverydayPatterns_8cpp_source.html#l00046">eve::procgen::detail::sampleEveryday()</a>.</p>
+
+</div>
+</div>
+<a id="a31ee4c06c94c8aba8244fa9cb5dac344" name="a31ee4c06c94c8aba8244fa9cb5dac344"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31ee4c06c94c8aba8244fa9cb5dac344">&#9670;&#160;</a></span>seed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t eve::procgen::NoiseField::seed = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="NoiseField_8h_source.html">NoiseField.h</a> 第 <a class="el" href="NoiseField_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CloudField_8cpp_source.html#l00039">eve::procgen::CloudField::coverageAt()</a>, <a class="el" href="TextureRecipe_8cpp_source.html#l00108">eve::procgen::fillHeightField()</a>, <a class="el" href="TerrainSampler_8cpp_source.html#l00011">eve::procgen::TerrainSampler::getSeed()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00460">gyroid()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00466">gyroidFbm()</a>, <a class="el" href="NoiseField_8cpp_source.html#l00110">hash01()</a>, <a class="el" href="EverydayPatterns_8cpp_source.html#l00046">eve::procgen::detail::sampleEveryday()</a> , 以及 <a class="el" href="TerrainSampler_8cpp_source.html#l00010">eve::procgen::TerrainSampler::setSeed()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/texture/<a class="el" href="NoiseField_8h_source.html">NoiseField.h</a></li>
+<li>src/modules/procgen/texture/<a class="el" href="NoiseField_8cpp_source.html">NoiseField.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

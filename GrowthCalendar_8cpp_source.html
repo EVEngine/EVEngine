@@ -1,0 +1,387 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/growth/GrowthCalendar.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_5610d19d1867b6661e93707e44355b86.html">growth</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GrowthCalendar.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GrowthCalendar_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="GrowthCalendar_8h.html">growth/GrowthCalendar.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Assert_8h.html">common/Assert.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Diagnostic_8h.html">common/Diagnostic.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Value_8h.html">common/Value.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1growth.html">eve::growth</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>std::vector&lt;SeasonSlotDef&gt; defaultEarthSeasons(<span class="keywordtype">int</span> days) {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keywordflow">return</span> {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        SeasonSlotDef{<span class="stringliteral">&quot;spring&quot;</span>, days},</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        SeasonSlotDef{<span class="stringliteral">&quot;summer&quot;</span>, days},</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        SeasonSlotDef{<span class="stringliteral">&quot;autumn&quot;</span>, days},</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        SeasonSlotDef{<span class="stringliteral">&quot;winter&quot;</span>, days},</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    };</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>}</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#a5a9f09fe1231ced0f1c2b26c4af860f4">   21</a></span><a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a5a9f09fe1231ced0f1c2b26c4af860f4">GrowthCalendar::GrowthCalendar</a>() : seasons_(defaultEarthSeasons(28)) {}</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="}">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#a1ec0d37dc23278467983f1caea96a7aa">   23</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a1ec0d37dc23278467983f1caea96a7aa">GrowthCalendar::setSeasonLayout</a>(std::vector&lt;SeasonSlotDef&gt; seasons) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <span class="keywordflow">if</span> (seasons.empty()) {</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                                                       <span class="stringliteral">&quot;season layout must be non-empty&quot;</span>, <span class="stringliteral">&quot;growth.calendar.layout&quot;</span>));</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1SeasonSlotDef.html">SeasonSlotDef</a>&amp; <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a> : seasons) {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>.id.empty() || <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>.days &lt;= 0) {</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                                                           <span class="stringliteral">&quot;each season needs a non-empty id and days &gt; 0&quot;</span>,</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                                                           <span class="stringliteral">&quot;growth.calendar.layout&quot;</span>));</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    seasons_ = std::move(seasons);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>}</div>
+</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="}">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#a0c72e916352d04dbac831749c7501736">   39</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a0c72e916352d04dbac831749c7501736">GrowthCalendar::setSeasonLayoutFromJson</a>(std::string_view json) {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">auto</span> parsed = <a class="code hl_function" href="classeve_1_1Value.html#a28cbd61fec3de5a669f0cd8b96db34ed">Value::fromJson</a>(json);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">if</span> (!parsed) <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(parsed.status());</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <a class="code hl_class" href="classeve_1_1Value.html">Value</a> <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a> = std::move(parsed).takeValue();</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">const</span> <span class="keyword">auto</span>* array = <a class="code hl_variable" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>.<a class="code hl_function" href="classeve_1_1Value.html#ad40218aab1f03170b5739b0bc7b1bd3a">getIf</a>&lt;<a class="code hl_typedef" href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">Value::Array</a>&gt;();</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (!array || array-&gt;empty()) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                                       <span class="stringliteral">&quot;season layout JSON must be a non-empty array&quot;</span>,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                                                       <span class="stringliteral">&quot;growth.calendar.layout&quot;</span>));</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    std::vector&lt;SeasonSlotDef&gt; seasons;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    seasons.reserve(array-&gt;size());</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1Value.html">Value</a>&amp; entry : *array) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keyword">const</span> <span class="keyword">auto</span>* <span class="keywordtype">object</span> = entry.getIf&lt;<a class="code hl_typedef" href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">Value::Object</a>&gt;();</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">if</span> (!<span class="keywordtype">object</span>) {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;season entry must be an object&quot;</span>, <span class="stringliteral">&quot;growth.calendar.layout&quot;</span>));</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <a class="code hl_struct" href="structeve_1_1growth_1_1SeasonSlotDef.html">SeasonSlotDef</a> <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keyword">auto</span>          idIt = <span class="keywordtype">object</span>-&gt;find(<span class="stringliteral">&quot;id&quot;</span>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordflow">if</span> (idIt == <a class="code hl_variable" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>-&gt;end() || !idIt-&gt;second.getIf&lt;std::string&gt;()) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                                                           <span class="stringliteral">&quot;season.id must be a string&quot;</span>, <span class="stringliteral">&quot;growth.calendar.layout&quot;</span>));</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>.id = *idIt-&gt;second.getIf&lt;std::string&gt;();</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>.days = 28;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keyword">auto</span> daysIt = <span class="keywordtype">object</span>-&gt;find(<span class="stringliteral">&quot;days&quot;</span>);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">if</span> (daysIt != <a class="code hl_variable" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>-&gt;end()) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span>* integer = daysIt-&gt;second.getIf&lt;std::int64_t&gt;()) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>.days = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(*integer);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span>* <a class="code hl_variable" href="RpgDialect_8cpp.html#a01b4671c6b7cc8f831c951c000a37735">number</a> = daysIt-&gt;second.getIf&lt;<span class="keywordtype">double</span>&gt;()) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>.days = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(*number);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;season.days must be an integer&quot;</span>, <span class="stringliteral">&quot;growth.calendar.layout&quot;</span>));</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        }</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        seasons.push_back(std::move(<a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>));</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a1ec0d37dc23278467983f1caea96a7aa">setSeasonLayout</a>(std::move(seasons));</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
+</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="foldopen" id="foldopen00081" data-start="{" data-end="}">
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#aa902eaaa9851524e30e45831ca241ee4">   81</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#aa902eaaa9851524e30e45831ca241ee4">GrowthCalendar::setDaysPerSeason</a>(<span class="keywordtype">int</span> days) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (days &lt;= 0) {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;daysPerSeason must be positive&quot;</span>, <span class="stringliteral">&quot;growth.calendar.daysPerSeason&quot;</span>));</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (seasons_.empty()) seasons_ = defaultEarthSeasons(days);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">for</span> (<a class="code hl_struct" href="structeve_1_1growth_1_1SeasonSlotDef.html">SeasonSlotDef</a>&amp; <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a> : seasons_) <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>.days = days;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#a007fa925c4ccf94c18cfe72fb6a9a883">   91</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a007fa925c4ccf94c18cfe72fb6a9a883">GrowthCalendar::daysPerSeason</a>() const noexcept {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordflow">if</span> (seasons_.empty()) <span class="keywordflow">return</span> 28;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">return</span> seasons_.front().days;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#aacac2867fa81e95e9c70c7b1f65f6e6f">   96</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#aacac2867fa81e95e9c70c7b1f65f6e6f">GrowthCalendar::seasonCount</a>() const noexcept { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(seasons_.size()); }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>std::int64_t GrowthCalendar::yearLength() const noexcept {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    std::int64_t total = 0;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1SeasonSlotDef.html">SeasonSlotDef</a>&amp; <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a> : seasons_) total += <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>.days;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <a class="code hl_define" href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a>(total &gt; 0, <span class="stringliteral">&quot;season layout must stay positive&quot;</span>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <span class="keywordflow">return</span> total;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#a33a1c867b9251af2d4362d3c90eef32e">  105</a></span>std::int64_t <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a33a1c867b9251af2d4362d3c90eef32e">GrowthCalendar::year</a>() const noexcept { <span class="keywordflow">return</span> dayIndex_ / yearLength(); }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="foldopen" id="foldopen00107" data-start="{" data-end="}">
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#a5dae04adaa432aa415b80d72d568b344">  107</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a5dae04adaa432aa415b80d72d568b344">GrowthCalendar::seasonIndex</a>() const noexcept {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <span class="keywordflow">if</span> (seasons_.empty()) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    std::int64_t dayInYear = dayIndex_ % yearLength();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; seasons_.size(); ++i) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordflow">if</span> (dayInYear &lt; seasons_[i].days) <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(i);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        dayInYear -= seasons_[i].days;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(seasons_.size() - 1);</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>}</div>
+</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span> </div>
+<div class="foldopen" id="foldopen00117" data-start="{" data-end="}">
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#a12440239f61978865f21e7c29ec0f14b">  117</a></span>std::string <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a12440239f61978865f21e7c29ec0f14b">GrowthCalendar::seasonId</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">if</span> (seasons_.empty()) <span class="keywordflow">return</span> <span class="stringliteral">&quot;spring&quot;</span>;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordflow">return</span> seasons_[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a5dae04adaa432aa415b80d72d568b344">seasonIndex</a>())].<span class="keywordtype">id</span>;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>}</div>
+</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="foldopen" id="foldopen00122" data-start="{" data-end="}">
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#a5140582572d034d1176607ebf090aab2">  122</a></span><a class="code hl_enumeration" href="namespaceeve_1_1growth.html#acc78adf8d262926633623bb69412bd8e">Season</a> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a5140582572d034d1176607ebf090aab2">GrowthCalendar::season</a>() const noexcept {</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><a class="code hl_enumeration" href="namespaceeve_1_1growth.html#acc78adf8d262926633623bb69412bd8e">Season</a><span class="keyword">&gt;</span>(<a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a5dae04adaa432aa415b80d72d568b344">seasonIndex</a>() % 4);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}</div>
+</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="foldopen" id="foldopen00126" data-start="{" data-end="}">
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#aede2c1d4135a6243ae58bd194ad7f910">  126</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#aede2c1d4135a6243ae58bd194ad7f910">GrowthCalendar::dayOfSeason</a>() const noexcept {</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordflow">if</span> (seasons_.empty()) <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    std::int64_t dayInYear = dayIndex_ % yearLength();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1growth_1_1SeasonSlotDef.html">SeasonSlotDef</a>&amp; <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a> : seasons_) {</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        <span class="keywordflow">if</span> (dayInYear &lt; <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>.days) <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(dayInYear);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        dayInYear -= <a class="code hl_variable" href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a>.days;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    }</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>}</div>
+</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="foldopen" id="foldopen00136" data-start="{" data-end="}">
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#af7615cd8573e57dafeb9cd069edda940">  136</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#af7615cd8573e57dafeb9cd069edda940">GrowthCalendar::advanceWholeDays</a>(std::int64_t days) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <span class="keywordflow">if</span> (days &lt;= 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    dayIndex_ += days;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>}</div>
+</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#a32fa0a7956f4ec5dee3fcc704c989edb">  141</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#a32fa0a7956f4ec5dee3fcc704c989edb">GrowthCalendar::reset</a>() noexcept { dayIndex_ = 0; }</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="foldopen" id="foldopen00143" data-start="{" data-end="}">
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="classeve_1_1growth_1_1GrowthCalendar.html#aaeda37c2101b559b3784e1d7c460326e">  143</a></span><span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_function" href="classeve_1_1growth_1_1GrowthCalendar.html#aaeda37c2101b559b3784e1d7c460326e">GrowthCalendar::seasonName</a>(<a class="code hl_enumeration" href="namespaceeve_1_1growth.html#acc78adf8d262926633623bb69412bd8e">Season</a> season) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordflow">switch</span> (season) {</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#acc78adf8d262926633623bb69412bd8ea38008dd81c2f4d7985ecf6e0ce8af1d1">Season::Spring</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;spring&quot;</span>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#acc78adf8d262926633623bb69412bd8ea95884b5232ea01d055768613fc84f242">Season::Summer</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;summer&quot;</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#acc78adf8d262926633623bb69412bd8ea1e3576c804bb2b1cbf66a87b70b53ba8">Season::Autumn</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;autumn&quot;</span>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve_1_1growth.html#acc78adf8d262926633623bb69412bd8eab18e66b41efd9a3df1a7bc8758da1883">Season::Winter</a>: <span class="keywordflow">return</span> <span class="stringliteral">&quot;winter&quot;</span>;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    }</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;spring&quot;</span>;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>}</div>
+</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>}  <span class="comment">// namespace eve::growth</span></div>
+<div class="ttc" id="aAnimSmr_8cpp_html_a3b62f50202abd219e165f5a333d5c156"><div class="ttname"><a href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a></div><div class="ttdeci">int root</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8cpp_source.html#l00119">AnimSmr.cpp:119</a></div></div>
+<div class="ttc" id="aAssert_8h_html"><div class="ttname"><a href="Assert_8h.html">Assert.h</a></div><div class="ttdoc">EVEngine assertion entry point, backed by zeroerr.</div></div>
+<div class="ttc" id="aAssert_8h_html_a0ad3d396c22796bba9b1656ce191b860"><div class="ttname"><a href="Assert_8h.html#a0ad3d396c22796bba9b1656ce191b860">EV_ASSERT</a></div><div class="ttdeci">#define EV_ASSERT(cond,...)</div><div class="ttdoc">Assert an internal engine invariant (state that must always hold).</div><div class="ttdef"><b>Definition</b> <a href="Assert_8h_source.html#l00037">Assert.h:37</a></div></div>
+<div class="ttc" id="aDiagnostic_8h_html"><div class="ttname"><a href="Diagnostic_8h.html">Diagnostic.h</a></div><div class="ttdoc">Stable, structured diagnostics shared by engine modules.</div></div>
+<div class="ttc" id="aGrowthCalendar_8h_html"><div class="ttname"><a href="GrowthCalendar_8h.html">GrowthCalendar.h</a></div></div>
+<div class="ttc" id="aRPGBalance_8cpp_html_a32501e390712e71b63f6dbb1ef7ed23e"><div class="ttname"><a href="RPGBalance_8cpp.html#a32501e390712e71b63f6dbb1ef7ed23e">slot</a></div><div class="ttdeci">std::string slot</div><div class="ttdef"><b>Definition</b> <a href="RPGBalance_8cpp_source.html#l00100">RPGBalance.cpp:100</a></div></div>
+<div class="ttc" id="aRpgDialect_8cpp_html_a01b4671c6b7cc8f831c951c000a37735"><div class="ttname"><a href="RpgDialect_8cpp.html#a01b4671c6b7cc8f831c951c000a37735">number</a></div><div class="ttdeci">double number</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00332">RpgDialect.cpp:332</a></div></div>
+<div class="ttc" id="aTileConfig_8cpp_html_aafc558973cd5f224af88e41f9a5f34d0"><div class="ttname"><a href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a></div><div class="ttdeci">Json object</div><div class="ttdef"><b>Definition</b> <a href="TileConfig_8cpp_source.html#l00784">TileConfig.cpp:784</a></div></div>
+<div class="ttc" id="aValue_8h_html"><div class="ttname"><a href="Value_8h.html">Value.h</a></div><div class="ttdoc">Owning, renderer-independent dynamic values.</div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00021">Diagnostic.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00176">Result.h:176</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00185">Result.h:185</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00196">Result.h:196</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html"><div class="ttname"><a href="classeve_1_1Value.html">eve::Value</a></div><div class="ttdoc">The canonical owning dynamic value used by data-facing protocols.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00031">Value.h:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a28cbd61fec3de5a669f0cd8b96db34ed"><div class="ttname"><a href="classeve_1_1Value.html#a28cbd61fec3de5a669f0cd8b96db34ed">eve::Value::fromJson</a></div><div class="ttdeci">static Result&lt; Value &gt; fromJson(std::string_view json)</div><div class="ttdoc">Parse one strict JSON value into an owning Value.</div><div class="ttdef"><b>Definition</b> <a href="Value_8cpp_source.html#l00177">Value.cpp:177</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a2d59a6ba7d844c2561c606a8973be87d"><div class="ttname"><a href="classeve_1_1Value.html#a2d59a6ba7d844c2561c606a8973be87d">eve::Value::Object</a></div><div class="ttdeci">std::map&lt; std::string, Value &gt; Object</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00034">Value.h:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_ab1d85b7f682f864577d9030a3e7ea6c5"><div class="ttname"><a href="classeve_1_1Value.html#ab1d85b7f682f864577d9030a3e7ea6c5">eve::Value::Array</a></div><div class="ttdeci">std::vector&lt; Value &gt; Array</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00033">Value.h:33</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_ad40218aab1f03170b5739b0bc7b1bd3a"><div class="ttname"><a href="classeve_1_1Value.html#ad40218aab1f03170b5739b0bc7b1bd3a">eve::Value::getIf</a></div><div class="ttdeci">const T * getIf() const noexcept</div><div class="ttdoc">Return a typed pointer, or nullptr when the kind differs.</div><div class="ttdef"><b>Definition</b> <a href="Value_8h_source.html#l00209">Value.h:209</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_a007fa925c4ccf94c18cfe72fb6a9a883"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#a007fa925c4ccf94c18cfe72fb6a9a883">eve::growth::GrowthCalendar::daysPerSeason</a></div><div class="ttdeci">int daysPerSeason() const noexcept</div><div class="ttdoc">Days of the first season slot (legacy helper).</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00091">GrowthCalendar.cpp:91</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_a0c72e916352d04dbac831749c7501736"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#a0c72e916352d04dbac831749c7501736">eve::growth::GrowthCalendar::setSeasonLayoutFromJson</a></div><div class="ttdeci">Result&lt; void &gt; setSeasonLayoutFromJson(std::string_view json)</div><div class="ttdoc">Parses [{&quot;id&quot;:&quot;bloom&quot;,&quot;days&quot;:40},…] and applies setSeasonLayout. @cost Cheap JSON parse of a small ar...</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00039">GrowthCalendar.cpp:39</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_a12440239f61978865f21e7c29ec0f14b"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#a12440239f61978865f21e7c29ec0f14b">eve::growth::GrowthCalendar::seasonId</a></div><div class="ttdeci">std::string seasonId() const</div><div class="ttdoc">Current season id string (never empty when layout is valid).</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00117">GrowthCalendar.cpp:117</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_a1ec0d37dc23278467983f1caea96a7aa"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#a1ec0d37dc23278467983f1caea96a7aa">eve::growth::GrowthCalendar::setSeasonLayout</a></div><div class="ttdeci">Result&lt; void &gt; setSeasonLayout(std::vector&lt; SeasonSlotDef &gt; seasons) noexcept</div><div class="ttdoc">Replaces the season layout (must be non-empty; each slot days &gt; 0). @cost Cheap: copies a small seaso...</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00023">GrowthCalendar.cpp:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_a32fa0a7956f4ec5dee3fcc704c989edb"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#a32fa0a7956f4ec5dee3fcc704c989edb">eve::growth::GrowthCalendar::reset</a></div><div class="ttdeci">void reset() noexcept</div><div class="ttdoc">Resets to day 0 (tests).</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00141">GrowthCalendar.cpp:141</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_a33a1c867b9251af2d4362d3c90eef32e"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#a33a1c867b9251af2d4362d3c90eef32e">eve::growth::GrowthCalendar::year</a></div><div class="ttdeci">std::int64_t year() const noexcept</div><div class="ttdoc">0-based year from dayIndex / yearLength.</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00105">GrowthCalendar.cpp:105</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_a5140582572d034d1176607ebf090aab2"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#a5140582572d034d1176607ebf090aab2">eve::growth::GrowthCalendar::season</a></div><div class="ttdeci">Season season() const noexcept</div><div class="ttdoc">Legacy Season enum when layout is the default 4 Earth seasons; else maps by index%4.</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00122">GrowthCalendar.cpp:122</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_a5a9f09fe1231ced0f1c2b26c4af860f4"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#a5a9f09fe1231ced0f1c2b26c4af860f4">eve::growth::GrowthCalendar::GrowthCalendar</a></div><div class="ttdeci">GrowthCalendar()</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00021">GrowthCalendar.cpp:21</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_a5dae04adaa432aa415b80d72d568b344"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#a5dae04adaa432aa415b80d72d568b344">eve::growth::GrowthCalendar::seasonIndex</a></div><div class="ttdeci">int seasonIndex() const noexcept</div><div class="ttdoc">Index into seasonLayout() for the current day.</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00107">GrowthCalendar.cpp:107</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_aa902eaaa9851524e30e45831ca241ee4"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#aa902eaaa9851524e30e45831ca241ee4">eve::growth::GrowthCalendar::setDaysPerSeason</a></div><div class="ttdeci">Result&lt; void &gt; setDaysPerSeason(int days) noexcept</div><div class="ttdoc">Sets every slot's day count (keeps current ids). Positive only.</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00081">GrowthCalendar.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_aacac2867fa81e95e9c70c7b1f65f6e6f"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#aacac2867fa81e95e9c70c7b1f65f6e6f">eve::growth::GrowthCalendar::seasonCount</a></div><div class="ttdeci">int seasonCount() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00096">GrowthCalendar.cpp:96</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_aaeda37c2101b559b3784e1d7c460326e"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#aaeda37c2101b559b3784e1d7c460326e">eve::growth::GrowthCalendar::seasonName</a></div><div class="ttdeci">static const char * seasonName(Season season) noexcept</div><div class="ttdoc">Stable English season name for the default Earth layout.</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00143">GrowthCalendar.cpp:143</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_aede2c1d4135a6243ae58bd194ad7f910"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#aede2c1d4135a6243ae58bd194ad7f910">eve::growth::GrowthCalendar::dayOfSeason</a></div><div class="ttdeci">int dayOfSeason() const noexcept</div><div class="ttdoc">Day within the current season [0, slot.days).</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00126">GrowthCalendar.cpp:126</a></div></div>
+<div class="ttc" id="aclasseve_1_1growth_1_1GrowthCalendar_html_af7615cd8573e57dafeb9cd069edda940"><div class="ttname"><a href="classeve_1_1growth_1_1GrowthCalendar.html#af7615cd8573e57dafeb9cd069edda940">eve::growth::GrowthCalendar::advanceWholeDays</a></div><div class="ttdeci">void advanceWholeDays(std::int64_t days) noexcept</div><div class="ttdoc">Advances the calendar by whole simulation days (truncated toward zero).</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8cpp_source.html#l00136">GrowthCalendar.cpp:136</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html"><div class="ttname"><a href="namespaceeve_1_1growth.html">eve::growth</a></div><div class="ttdef"><b>Definition</b> <a href="Growth_8cpp_source.html#l00011">Growth.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_acc78adf8d262926633623bb69412bd8e"><div class="ttname"><a href="namespaceeve_1_1growth.html#acc78adf8d262926633623bb69412bd8e">eve::growth::Season</a></div><div class="ttdeci">Season</div><div class="ttdoc">Legacy four-season index kept for Earth-farm defaults and older tests.</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8h_source.html#l00023">GrowthCalendar.h:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_acc78adf8d262926633623bb69412bd8ea1e3576c804bb2b1cbf66a87b70b53ba8"><div class="ttname"><a href="namespaceeve_1_1growth.html#acc78adf8d262926633623bb69412bd8ea1e3576c804bb2b1cbf66a87b70b53ba8">eve::growth::Season::Autumn</a></div><div class="ttdeci">@ Autumn</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_acc78adf8d262926633623bb69412bd8ea38008dd81c2f4d7985ecf6e0ce8af1d1"><div class="ttname"><a href="namespaceeve_1_1growth.html#acc78adf8d262926633623bb69412bd8ea38008dd81c2f4d7985ecf6e0ce8af1d1">eve::growth::Season::Spring</a></div><div class="ttdeci">@ Spring</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_acc78adf8d262926633623bb69412bd8ea95884b5232ea01d055768613fc84f242"><div class="ttname"><a href="namespaceeve_1_1growth.html#acc78adf8d262926633623bb69412bd8ea95884b5232ea01d055768613fc84f242">eve::growth::Season::Summer</a></div><div class="ttdeci">@ Summer</div></div>
+<div class="ttc" id="anamespaceeve_1_1growth_html_acc78adf8d262926633623bb69412bd8eab18e66b41efd9a3df1a7bc8758da1883"><div class="ttname"><a href="namespaceeve_1_1growth.html#acc78adf8d262926633623bb69412bd8eab18e66b41efd9a3df1a7bc8758da1883">eve::growth::Season::Winter</a></div><div class="ttdeci">@ Winter</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="astructeve_1_1growth_1_1SeasonSlotDef_html"><div class="ttname"><a href="structeve_1_1growth_1_1SeasonSlotDef.html">eve::growth::SeasonSlotDef</a></div><div class="ttdoc">One named season slot in a configurable calendar layout.</div><div class="ttdef"><b>Definition</b> <a href="GrowthCalendar_8h_source.html#l00014">GrowthCalendar.h:14</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

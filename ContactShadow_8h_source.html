@@ -1,0 +1,271 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/ContactShadow.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ContactShadow.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ContactShadow_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;glm/mat4x4.hpp&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;glm/vec3.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics.html">eve::graphics</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">Graphics</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">Shader</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ab58f96281585822e94cace95ce53fcecaa3e8ae43188ae76d38f414b2bdb0077b">Texture</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="foldopen" id="foldopen00023" data-start="{" data-end="};">
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ContactShadow.html">   23</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a> <a class="code hl_class" href="classeve_1_1graphics_1_1ContactShadow.html">ContactShadow</a> {</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1graphics_1_1ContactShadow.html">ContactShadow</a>(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>* gfx);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ContactShadow.html#ac0a88e76738e118928face9506b5ed97">   28</a></span>    <a class="code hl_function" href="classeve_1_1graphics_1_1ContactShadow.html#ac0a88e76738e118928face9506b5ed97">~ContactShadow</a>();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ContactShadow.html#a76a7501089d0fd3a8e87965b201eb1f2">   30</a></span>    <a class="code hl_function" href="classeve_1_1graphics_1_1ContactShadow.html#a76a7501089d0fd3a8e87965b201eb1f2">ContactShadow</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1ContactShadow.html">ContactShadow</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ContactShadow.html#a766fee9b9686b8e83b7b1c70fb24ea9e">   31</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1ContactShadow.html">ContactShadow</a>&amp; <a class="code hl_function" href="classeve_1_1graphics_1_1ContactShadow.html#a766fee9b9686b8e83b7b1c70fb24ea9e">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1graphics_1_1ContactShadow.html">ContactShadow</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordtype">void</span> setQuality(<span class="keyword">const</span> std::string&amp; quality);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ContactShadow.html#aee0bde09c1a631bc3ed1f4b45ab504d9">   36</a></span>    std::string <a class="code hl_function" href="classeve_1_1graphics_1_1ContactShadow.html#aee0bde09c1a631bc3ed1f4b45ab504d9">getQuality</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> quality_; }</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordtype">void</span> setCamera(<span class="keywordtype">float</span> eyeX, <span class="keywordtype">float</span> eyeY, <span class="keywordtype">float</span> eyeZ, <span class="keywordtype">float</span> <a class="code hl_variable" href="StylizeAttackVfx_8cpp.html#a5516cb7e2fddc92ffa1e3668e4250079">targetX</a>, <span class="keywordtype">float</span> targetY, <span class="keywordtype">float</span> targetZ, <span class="keywordtype">float</span> upX,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                   <span class="keywordtype">float</span> upY, <span class="keywordtype">float</span> upZ, <span class="keywordtype">float</span> fovYDeg, <span class="keywordtype">float</span> aspect, <span class="keywordtype">float</span> nearZ, <span class="keywordtype">float</span> farZ);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span> setInvViewProj(<span class="keyword">const</span> glm::mat4&amp; <a class="code hl_variable" href="webgpu_2GraphicsDeferredLighting_8cpp.html#a65c12adbe52a130da7fb7f9e3afd126f">invViewProj</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordtype">void</span> setLightDirection(<span class="keywordtype">float</span> <a class="code hl_variable" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="ActionGuidePack_8cpp.html#ab3e6ed577a7c669c19de1f9c1b46c872">z</a>);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordtype">void</span> setLength(<span class="keywordtype">float</span> <a class="code hl_variable" href="Joint2DBindings_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">void</span> setThickness(<span class="keywordtype">float</span> <a class="code hl_variable" href="LinearStructure_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness</a>);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordtype">void</span> setIntensity(<span class="keywordtype">float</span> intensity);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keywordtype">void</span> setStartBias(<span class="keywordtype">float</span> <a class="code hl_variable" href="Shadow_8cpp.html#ab881305da614121cd59b58172248c151">bias</a>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ContactShadow.html#a4e7469dab1e1ec08bbc0840dd5742992">   64</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ContactShadow.html#a4e7469dab1e1ec08bbc0840dd5742992">getLength</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> length_; }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ContactShadow.html#aec8769c76cb087077ab2736a0de7bada">   66</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ContactShadow.html#aec8769c76cb087077ab2736a0de7bada">getThickness</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> thickness_; }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ContactShadow.html#ac043801ef3c760833ce9cc2d83154fed">   68</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ContactShadow.html#ac043801ef3c760833ce9cc2d83154fed">getIntensity</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> intensity_; }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ContactShadow.html#ab56266d29a79d3ceb7bc26fdc6035191">   70</a></span>    <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ContactShadow.html#ab56266d29a79d3ceb7bc26fdc6035191">getStartBias</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> startBias_; }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ContactShadow.html#aadb7c30fd78d895766a1eddc68092b5c">   72</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1graphics_1_1ContactShadow.html#aadb7c30fd78d895766a1eddc68092b5c">getStepCount</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> stepCount_; }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">void</span> applyFromGBuffer(<a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>* gfx, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a>* hwDepth, <a class="code hl_class" href="classeve_1_1graphics_1_1Texture.html">Texture</a>* worldNormal);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="classeve_1_1graphics_1_1ContactShadow.html#a7c396fb667b35f1b2385f7a7ee730142">   83</a></span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a>* <a class="code hl_function" href="classeve_1_1graphics_1_1ContactShadow.html#a7c396fb667b35f1b2385f7a7ee730142">getShader</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> shader_; }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordtype">void</span> applyQualityDefaults();</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordtype">void</span> uploadCommon(<span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Graphics.html">Graphics</a>*   gfx_    = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <a class="code hl_class" href="classeve_1_1graphics_1_1Shader.html">Shader</a>*     shader_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    glm::mat4   invViewProj_{1.f};</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    glm::vec3   lightDir_{0.48f, 0.86f, 0.28f};</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::string quality_   = <span class="stringliteral">&quot;medium&quot;</span>;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordtype">float</span>       nearZ_     = 0.1f;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">float</span>       farZ_      = 100.f;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keywordtype">float</span>       length_    = 0.35f;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">float</span>       thickness_ = 0.12f;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordtype">float</span>       intensity_ = 0.65f;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">float</span>       startBias_ = 0.01f;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordtype">int</span>         stepCount_ = 12;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>};</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>}  <span class="comment">// namespace eve::graphics</span></div>
+<div class="ttc" id="aActionGuidePack_8cpp_html_ab3e6ed577a7c669c19de1f9c1b46c872"><div class="ttname"><a href="ActionGuidePack_8cpp.html#ab3e6ed577a7c669c19de1f9c1b46c872">z</a></div><div class="ttdeci">double z</div><div class="ttdef"><b>Definition</b> <a href="ActionGuidePack_8cpp_source.html#l00377">ActionGuidePack.cpp:377</a></div></div>
+<div class="ttc" id="aActionGuidePack_8cpp_html_ab927965981178aa1fba979a37168db2a"><div class="ttname"><a href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a></div><div class="ttdeci">double y</div><div class="ttdef"><b>Definition</b> <a href="ActionGuidePack_8cpp_source.html#l00377">ActionGuidePack.cpp:377</a></div></div>
+<div class="ttc" id="aActionGuidePack_8cpp_html_af88b946fb90d5f08b5fb740c70e98c10"><div class="ttname"><a href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a></div><div class="ttdeci">double x</div><div class="ttdef"><b>Definition</b> <a href="ActionGuidePack_8cpp_source.html#l00377">ActionGuidePack.cpp:377</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a74b09fdcf18b26aea79409bf319c562c"><div class="ttname"><a href="Export_8h.html#a74b09fdcf18b26aea79409bf319c562c">EVENGINE_API_BACKENDS</a></div><div class="ttdeci">#define EVENGINE_API_BACKENDS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00108">Export.h:108</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_adfe1b51744835d88ff3bcd45411d2c53"><div class="ttname"><a href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a></div><div class="ttdeci">std::uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00014">ImageImporter.cpp:14</a></div></div>
+<div class="ttc" id="aImageImporter_8cpp_html_ae951d664b90216c2e6e17442f85ba01c"><div class="ttname"><a href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a></div><div class="ttdeci">std::uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="ImageImporter_8cpp_source.html#l00013">ImageImporter.cpp:13</a></div></div>
+<div class="ttc" id="aJoint2DBindings_8cpp_html_a6150639f5295064e97e299a9206d16b1"><div class="ttname"><a href="Joint2DBindings_8cpp.html#a6150639f5295064e97e299a9206d16b1">length</a></div><div class="ttdeci">float length</div><div class="ttdef"><b>Definition</b> <a href="Joint2DBindings_8cpp_source.html#l00017">Joint2DBindings.cpp:17</a></div></div>
+<div class="ttc" id="aLinearStructure_8cpp_html_a9bddad7a0f5d61aefe107acf47f09549"><div class="ttname"><a href="LinearStructure_8cpp.html#a9bddad7a0f5d61aefe107acf47f09549">thickness</a></div><div class="ttdeci">float thickness</div><div class="ttdef"><b>Definition</b> <a href="LinearStructure_8cpp_source.html#l00032">LinearStructure.cpp:32</a></div></div>
+<div class="ttc" id="aShadow_8cpp_html_ab881305da614121cd59b58172248c151"><div class="ttname"><a href="Shadow_8cpp.html#ab881305da614121cd59b58172248c151">bias</a></div><div class="ttdeci">float bias</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8cpp_source.html#l00149">Shadow.cpp:149</a></div></div>
+<div class="ttc" id="aStylizeAttackVfx_8cpp_html_a5516cb7e2fddc92ffa1e3668e4250079"><div class="ttname"><a href="StylizeAttackVfx_8cpp.html#a5516cb7e2fddc92ffa1e3668e4250079">targetX</a></div><div class="ttdeci">float targetX</div><div class="ttdef"><b>Definition</b> <a href="StylizeAttackVfx_8cpp_source.html#l00246">StylizeAttackVfx.cpp:246</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ContactShadow_html"><div class="ttname"><a href="classeve_1_1graphics_1_1ContactShadow.html">eve::graphics::ContactShadow</a></div><div class="ttdoc">Screen-space contact shadows for the primary directional light.</div><div class="ttdef"><b>Definition</b> <a href="ContactShadow_8h_source.html#l00023">ContactShadow.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ContactShadow_html_a4e7469dab1e1ec08bbc0840dd5742992"><div class="ttname"><a href="classeve_1_1graphics_1_1ContactShadow.html#a4e7469dab1e1ec08bbc0840dd5742992">eve::graphics::ContactShadow::getLength</a></div><div class="ttdeci">float getLength() const</div><div class="ttdoc">Returns the ray length.</div><div class="ttdef"><b>Definition</b> <a href="ContactShadow_8h_source.html#l00064">ContactShadow.h:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ContactShadow_html_a766fee9b9686b8e83b7b1c70fb24ea9e"><div class="ttname"><a href="classeve_1_1graphics_1_1ContactShadow.html#a766fee9b9686b8e83b7b1c70fb24ea9e">eve::graphics::ContactShadow::operator=</a></div><div class="ttdeci">ContactShadow &amp; operator=(const ContactShadow &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ContactShadow_html_a76a7501089d0fd3a8e87965b201eb1f2"><div class="ttname"><a href="classeve_1_1graphics_1_1ContactShadow.html#a76a7501089d0fd3a8e87965b201eb1f2">eve::graphics::ContactShadow::ContactShadow</a></div><div class="ttdeci">ContactShadow(const ContactShadow &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ContactShadow_html_a7c396fb667b35f1b2385f7a7ee730142"><div class="ttname"><a href="classeve_1_1graphics_1_1ContactShadow.html#a7c396fb667b35f1b2385f7a7ee730142">eve::graphics::ContactShadow::getShader</a></div><div class="ttdeci">Shader * getShader() const</div><div class="ttdoc">Returns the owned contact-shadow shader. @lifetime Returned shader is borrowed and owned by Graphics.</div><div class="ttdef"><b>Definition</b> <a href="ContactShadow_8h_source.html#l00083">ContactShadow.h:83</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ContactShadow_html_aadb7c30fd78d895766a1eddc68092b5c"><div class="ttname"><a href="classeve_1_1graphics_1_1ContactShadow.html#aadb7c30fd78d895766a1eddc68092b5c">eve::graphics::ContactShadow::getStepCount</a></div><div class="ttdeci">int getStepCount() const</div><div class="ttdoc">Returns the step count for the active quality.</div><div class="ttdef"><b>Definition</b> <a href="ContactShadow_8h_source.html#l00072">ContactShadow.h:72</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ContactShadow_html_ab56266d29a79d3ceb7bc26fdc6035191"><div class="ttname"><a href="classeve_1_1graphics_1_1ContactShadow.html#ab56266d29a79d3ceb7bc26fdc6035191">eve::graphics::ContactShadow::getStartBias</a></div><div class="ttdeci">float getStartBias() const</div><div class="ttdoc">Returns the start bias.</div><div class="ttdef"><b>Definition</b> <a href="ContactShadow_8h_source.html#l00070">ContactShadow.h:70</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ContactShadow_html_ac043801ef3c760833ce9cc2d83154fed"><div class="ttname"><a href="classeve_1_1graphics_1_1ContactShadow.html#ac043801ef3c760833ce9cc2d83154fed">eve::graphics::ContactShadow::getIntensity</a></div><div class="ttdeci">float getIntensity() const</div><div class="ttdoc">Returns the intensity.</div><div class="ttdef"><b>Definition</b> <a href="ContactShadow_8h_source.html#l00068">ContactShadow.h:68</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ContactShadow_html_ac0a88e76738e118928face9506b5ed97"><div class="ttname"><a href="classeve_1_1graphics_1_1ContactShadow.html#ac0a88e76738e118928face9506b5ed97">eve::graphics::ContactShadow::~ContactShadow</a></div><div class="ttdeci">~ContactShadow()</div><div class="ttdoc">Releases owned shaders.</div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ContactShadow_html_aec8769c76cb087077ab2736a0de7bada"><div class="ttname"><a href="classeve_1_1graphics_1_1ContactShadow.html#aec8769c76cb087077ab2736a0de7bada">eve::graphics::ContactShadow::getThickness</a></div><div class="ttdeci">float getThickness() const</div><div class="ttdoc">Returns the thickness.</div><div class="ttdef"><b>Definition</b> <a href="ContactShadow_8h_source.html#l00066">ContactShadow.h:66</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1ContactShadow_html_aee0bde09c1a631bc3ed1f4b45ab504d9"><div class="ttname"><a href="classeve_1_1graphics_1_1ContactShadow.html#aee0bde09c1a631bc3ed1f4b45ab504d9">eve::graphics::ContactShadow::getQuality</a></div><div class="ttdeci">std::string getQuality() const</div><div class="ttdoc">Returns the quality.</div><div class="ttdef"><b>Definition</b> <a href="ContactShadow_8h_source.html#l00036">ContactShadow.h:36</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html">eve::graphics::Graphics</a></div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l00121">Graphics.h:131</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Shader_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Shader.html">eve::graphics::Shader</a></div><div class="ttdoc">Custom GPU program.</div><div class="ttdef"><b>Definition</b> <a href="Shader_8h_source.html#l00041">Shader.h:41</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Texture_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Texture.html">eve::graphics::Texture</a></div><div class="ttdoc">GPU texture created via Graphics::newTexture. Owns GPU resources through an opaque backend handle.</div><div class="ttdef"><b>Definition</b> <a href="Texture_8h_source.html#l00015">Texture.h:15</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1asset_html_afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660"><div class="ttname"><a href="namespaceeve_1_1asset.html#afe152c3f2e5d653a27c0ae4b3ee5d1b5aa88a92f4a0e793589f2341851a15c660">eve::asset::EvpackChunkKind::Shader</a></div><div class="ttdeci">@ Shader</div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_html"><div class="ttname"><a href="namespaceeve_1_1graphics.html">eve::graphics</a></div><div class="ttdoc">卡牌游戏 UI 工具模块：工厂 + 脚本绑定入口。 功能参考 ycarowr/UiCard：扇形手牌布局、抽牌/洗牌、悬浮放大、拖拽到落牌区、 敌方手牌（背面/偷看）、费用不足置灰，以及可实时调节的布局...</div><div class="ttdef"><b>Definition</b> <a href="Animation_8h_source.html#l00025">Animation.h:25</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ab58f96281585822e94cace95ce53fcecaa3e8ae43188ae76d38f414b2bdb0077b"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ab58f96281585822e94cace95ce53fcecaa3e8ae43188ae76d38f414b2bdb0077b">eve::procgen::TerrainOperationDomain::Texture</a></div><div class="ttdeci">@ Texture</div></div>
+<div class="ttc" id="anamespaceeve_html_ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494"><div class="ttname"><a href="namespaceeve.html#ae5defde2d23d6c815e440eabbed4eb61ad334dfcea59127bedfcdbe0a3ee7f494">eve::PhotoModeDomain::Graphics</a></div><div class="ttdeci">@ Graphics</div></div>
+<div class="ttc" id="awebgpu_2GraphicsDeferredLighting_8cpp_html_a65c12adbe52a130da7fb7f9e3afd126f"><div class="ttname"><a href="webgpu_2GraphicsDeferredLighting_8cpp.html#a65c12adbe52a130da7fb7f9e3afd126f">invViewProj</a></div><div class="ttdeci">glm::mat4 invViewProj</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsDeferredLighting_8cpp_source.html#l00017">GraphicsDeferredLighting.cpp:17</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

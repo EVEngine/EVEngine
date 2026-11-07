@@ -1,0 +1,1747 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::warship::Warship类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1warship.html">warship</a></li><li class="navelem"><a class="el" href="classeve_1_1warship_1_1Warship.html">Warship</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1warship_1_1Warship-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::warship::Warship类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><a class="el" href="classeve_1_1warship_1_1Warship.html" title="Warship module (eve.Warship).">Warship</a> module (<code>eve.Warship</code>).  
+ <a href="classeve_1_1warship_1_1Warship.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Warship_8h_source.html">Warship.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::warship::Warship 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1warship_1_1Warship.png" usemap="#eve::warship::Warship_map" alt=""/>
+  <map id="eve::warship::Warship_map" name="eve::warship::Warship_map">
+<area href="classeve_1_1Module.html" title="EVENGINE_API_FOUNDATION public API." alt="eve::Module" shape="rect" coords="0,0,135,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:adfa4323432b79f1cfe7a5bc076b4f1ef" id="r_adfa4323432b79f1cfe7a5bc076b4f1ef"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#adfa4323432b79f1cfe7a5bc076b4f1ef">Module_REG</a> (<a class="el" href="classeve_1_1warship_1_1Warship.html">Warship</a>)</td></tr>
+<tr class="separator:adfa4323432b79f1cfe7a5bc076b4f1ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87e8458cd319211fb03003c885480f78" id="r_a87e8458cd319211fb03003c885480f78"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a87e8458cd319211fb03003c885480f78">Warship</a> ()=default</td></tr>
+<tr class="separator:a87e8458cd319211fb03003c885480f78"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af189c8938f3ca1b4a6a75efc0577598f" id="r_af189c8938f3ca1b4a6a75efc0577598f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#af189c8938f3ca1b4a6a75efc0577598f">~Warship</a> () override=default</td></tr>
+<tr class="separator:af189c8938f3ca1b4a6a75efc0577598f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfdc82d2e3c03af0b9334393fd4e0ccc" id="r_acfdc82d2e3c03af0b9334393fd4e0ccc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#acfdc82d2e3c03af0b9334393fd4e0ccc">registerHullsFromJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:acfdc82d2e3c03af0b9334393fd4e0ccc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register hull templates from a JSON object or array.  <br /></td></tr>
+<tr class="separator:acfdc82d2e3c03af0b9334393fd4e0ccc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c3c340509822c0173114138ff5c0b58" id="r_a3c3c340509822c0173114138ff5c0b58"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a3c3c340509822c0173114138ff5c0b58">registerFunctionsFromJson</a> (const std::string &amp;json)</td></tr>
+<tr class="memdesc:a3c3c340509822c0173114138ff5c0b58"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register compartment function catalogue entries from JSON.  <br /></td></tr>
+<tr class="separator:a3c3c340509822c0173114138ff5c0b58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24b794b4e60a9bb0d7e7784d2cffb4a5" id="r_a24b794b4e60a9bb0d7e7784d2cffb4a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a24b794b4e60a9bb0d7e7784d2cffb4a5">clearHullDefinitions</a> ()</td></tr>
+<tr class="separator:a24b794b4e60a9bb0d7e7784d2cffb4a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a120826962dd55edd7326e4f0be813185" id="r_a120826962dd55edd7326e4f0be813185"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a120826962dd55edd7326e4f0be813185">clearFunctionDefinitions</a> ()</td></tr>
+<tr class="separator:a120826962dd55edd7326e4f0be813185"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1db352bb8f3d9b60e3ea8a9097ae3293" id="r_a1db352bb8f3d9b60e3ea8a9097ae3293"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a1db352bb8f3d9b60e3ea8a9097ae3293">hasHullDefinition</a> (const std::string &amp;<a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="separator:a1db352bb8f3d9b60e3ea8a9097ae3293"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af425cf858c9a4382e8736f18803d4c8a" id="r_af425cf858c9a4382e8736f18803d4c8a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#af425cf858c9a4382e8736f18803d4c8a">hasFunctionDefinition</a> (const std::string &amp;<a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="separator:af425cf858c9a4382e8736f18803d4c8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc91f39e7a127332c4f423ea246802d6" id="r_adc91f39e7a127332c4f423ea246802d6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#adc91f39e7a127332c4f423ea246802d6">getHullDefinitionCount</a> () const</td></tr>
+<tr class="separator:adc91f39e7a127332c4f423ea246802d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a576363aeefbad32fbf3137fa0a1a3d00" id="r_a576363aeefbad32fbf3137fa0a1a3d00"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a576363aeefbad32fbf3137fa0a1a3d00">getFunctionDefinitionCount</a> () const</td></tr>
+<tr class="separator:a576363aeefbad32fbf3137fa0a1a3d00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac201f708fac169c704eb1bc0de97451d" id="r_ac201f708fac169c704eb1bc0de97451d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#ac201f708fac169c704eb1bc0de97451d">getHullDefinitionCategory</a> (const std::string &amp;<a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="separator:ac201f708fac169c704eb1bc0de97451d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a701e07f4faf0925e7f3ae7d9e6f173b6" id="r_a701e07f4faf0925e7f3ae7d9e6f173b6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a701e07f4faf0925e7f3ae7d9e6f173b6">getHullDefinitionMobility</a> (const std::string &amp;<a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>) const</td></tr>
+<tr class="separator:a701e07f4faf0925e7f3ae7d9e6f173b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bfd2d7cd8871ee31c184a0ccb509394" id="r_a7bfd2d7cd8871ee31c184a0ccb509394"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a7bfd2d7cd8871ee31c184a0ccb509394">newWarship</a> (const std::string &amp;defId, float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>, float <a class="el" href="TreeMesh_8cpp.html#a959b42a817333546414a646493f19c16">heading</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>, const std::string &amp;faction=&quot;&quot;)</td></tr>
+<tr class="memdesc:a7bfd2d7cd8871ee31c184a0ccb509394"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawn a hull from a registered definition. @ownership ECS owns the entity; callers must not delete it. @lifetime Until ECS destroy / world teardown. @thread Owner ECS thread. @cost Allocates entity + grid cells; amortize across spawn actions.  <br /></td></tr>
+<tr class="separator:a7bfd2d7cd8871ee31c184a0ccb509394"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a294d83344cf59e01c563cb87701a06db" id="r_a294d83344cf59e01c563cb87701a06db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a294d83344cf59e01c563cb87701a06db">placeCompartment</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship, int deck, int row, int col, const std::string &amp;functionId)</td></tr>
+<tr class="separator:a294d83344cf59e01c563cb87701a06db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ada5e6805de34d0887e7574bff923ebc5" id="r_ada5e6805de34d0887e7574bff923ebc5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#ada5e6805de34d0887e7574bff923ebc5">clearCompartment</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship, int deck, int row, int col)</td></tr>
+<tr class="separator:ada5e6805de34d0887e7574bff923ebc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec632aca7aa7c2c56a66485fa5edc2a2" id="r_aec632aca7aa7c2c56a66485fa5edc2a2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#aec632aca7aa7c2c56a66485fa5edc2a2">swapCompartments</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship, int deckA, int rowA, int colA, int deckB, int rowB, int colB)</td></tr>
+<tr class="separator:aec632aca7aa7c2c56a66485fa5edc2a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae733ca3a33bf2f8220f0976f4e815251" id="r_ae733ca3a33bf2f8220f0976f4e815251"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#ae733ca3a33bf2f8220f0976f4e815251">rearrangeFromJson</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship, const std::string &amp;json)</td></tr>
+<tr class="separator:ae733ca3a33bf2f8220f0976f4e815251"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1050260a2480557be8cf7920a8a48157" id="r_a1050260a2480557be8cf7920a8a48157"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a1050260a2480557be8cf7920a8a48157">getCompartmentCount</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a1050260a2480557be8cf7920a8a48157"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf7aa67554b2cc72b64b69f29afe5cac" id="r_aaf7aa67554b2cc72b64b69f29afe5cac"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#aaf7aa67554b2cc72b64b69f29afe5cac">getGridCols</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:aaf7aa67554b2cc72b64b69f29afe5cac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e209e39ce884dee1aacad6d5d191ac9" id="r_a1e209e39ce884dee1aacad6d5d191ac9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a1e209e39ce884dee1aacad6d5d191ac9">getGridRows</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a1e209e39ce884dee1aacad6d5d191ac9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2d16ac1114c21124ef2f61b311f8792" id="r_ab2d16ac1114c21124ef2f61b311f8792"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#ab2d16ac1114c21124ef2f61b311f8792">getGridDecks</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:ab2d16ac1114c21124ef2f61b311f8792"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f0e3343befff28582145968d2d9362e" id="r_a0f0e3343befff28582145968d2d9362e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a0f0e3343befff28582145968d2d9362e">getCompartmentFunction</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship, int deck, int row, int col) const</td></tr>
+<tr class="separator:a0f0e3343befff28582145968d2d9362e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5410b74004a8d19cd20250b264d616b3" id="r_a5410b74004a8d19cd20250b264d616b3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a5410b74004a8d19cd20250b264d616b3">getPowerNet</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a5410b74004a8d19cd20250b264d616b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba8c43c0f0656de9cb17a9675b491f0d" id="r_aba8c43c0f0656de9cb17a9675b491f0d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#aba8c43c0f0656de9cb17a9675b491f0d">getThrustMul</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:aba8c43c0f0656de9cb17a9675b491f0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91ce95dc198602277eaaca2247f45bbb" id="r_a91ce95dc198602277eaaca2247f45bbb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a91ce95dc198602277eaaca2247f45bbb">getHangarCapacity</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a91ce95dc198602277eaaca2247f45bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2755ab2b67242b5a694c9730283b76a" id="r_ae2755ab2b67242b5a694c9730283b76a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#ae2755ab2b67242b5a694c9730283b76a">getWeaponBayCount</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:ae2755ab2b67242b5a694c9730283b76a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bb53996eaa49384483517e4ab3de08a" id="r_a7bb53996eaa49384483517e4ab3de08a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a7bb53996eaa49384483517e4ab3de08a">getCrewCapacity</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a7bb53996eaa49384483517e4ab3de08a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66b9dab86a2683cbe016b8a96fa3d876" id="r_a66b9dab86a2683cbe016b8a96fa3d876"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a66b9dab86a2683cbe016b8a96fa3d876">getSailPower</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a66b9dab86a2683cbe016b8a96fa3d876"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acecb5992323048d664056005391549ab" id="r_acecb5992323048d664056005391549ab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#acecb5992323048d664056005391549ab">isUnderpowered</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:acecb5992323048d664056005391549ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba3d32a6a2a414f6a9f1bb6b6aa4f89d" id="r_aba3d32a6a2a414f6a9f1bb6b6aa4f89d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#aba3d32a6a2a414f6a9f1bb6b6aa4f89d">moveTo</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship, float <a class="el" href="ActionGuidePack_8cpp.html#af88b946fb90d5f08b5fb740c70e98c10">x</a>, float <a class="el" href="ActionGuidePack_8cpp.html#ab927965981178aa1fba979a37168db2a">y</a>)</td></tr>
+<tr class="separator:aba3d32a6a2a414f6a9f1bb6b6aa4f89d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41b9e75d419de93815ff5a99b8ef0e7f" id="r_a41b9e75d419de93815ff5a99b8ef0e7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a41b9e75d419de93815ff5a99b8ef0e7f">stop</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship)</td></tr>
+<tr class="separator:a41b9e75d419de93815ff5a99b8ef0e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a130ddd4bd64dd4f77cd2d79c11ed5cdd" id="r_a130ddd4bd64dd4f77cd2d79c11ed5cdd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a130ddd4bd64dd4f77cd2d79c11ed5cdd">setInput</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship, float throttle, float steer)</td></tr>
+<tr class="separator:a130ddd4bd64dd4f77cd2d79c11ed5cdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a259f46ca84bbb9226c180ee46a0b393e" id="r_a259f46ca84bbb9226c180ee46a0b393e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a259f46ca84bbb9226c180ee46a0b393e">update</a> (float <a class="el" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>)</td></tr>
+<tr class="separator:a259f46ca84bbb9226c180ee46a0b393e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62f4b5b193d6c7f9594780fb40ff673f" id="r_a62f4b5b193d6c7f9594780fb40ff673f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a62f4b5b193d6c7f9594780fb40ff673f">getX</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a62f4b5b193d6c7f9594780fb40ff673f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24e943b6f7548f922cd303cba545bc64" id="r_a24e943b6f7548f922cd303cba545bc64"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a24e943b6f7548f922cd303cba545bc64">getY</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a24e943b6f7548f922cd303cba545bc64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a050d61e97b0e8ec317482294cccf6a5c" id="r_a050d61e97b0e8ec317482294cccf6a5c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a050d61e97b0e8ec317482294cccf6a5c">getHeading</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a050d61e97b0e8ec317482294cccf6a5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68e17ea9b1c07467774ba953e0c2a0fb" id="r_a68e17ea9b1c07467774ba953e0c2a0fb"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a68e17ea9b1c07467774ba953e0c2a0fb">getSpeed</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a68e17ea9b1c07467774ba953e0c2a0fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72d8b4da9a38e9e576a6093da9da42d3" id="r_a72d8b4da9a38e9e576a6093da9da42d3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a72d8b4da9a38e9e576a6093da9da42d3">getLength</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a72d8b4da9a38e9e576a6093da9da42d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a664eabdd43579be5f93f0e42413ea22e" id="r_a664eabdd43579be5f93f0e42413ea22e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a664eabdd43579be5f93f0e42413ea22e">getBeam</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a664eabdd43579be5f93f0e42413ea22e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5789b257b7fc056dd07d74ec4122a159" id="r_a5789b257b7fc056dd07d74ec4122a159"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a5789b257b7fc056dd07d74ec4122a159">getId</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a5789b257b7fc056dd07d74ec4122a159"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2828277ef17db5b98b766d9eb66d85c6" id="r_a2828277ef17db5b98b766d9eb66d85c6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a2828277ef17db5b98b766d9eb66d85c6">getDefId</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a2828277ef17db5b98b766d9eb66d85c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cba8a4d3d2f58794e1f2046793c9bc2" id="r_a3cba8a4d3d2f58794e1f2046793c9bc2"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a3cba8a4d3d2f58794e1f2046793c9bc2">getCategory</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a3cba8a4d3d2f58794e1f2046793c9bc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9b5536e0fbb9656db0fbd617d828d00" id="r_ae9b5536e0fbb9656db0fbd617d828d00"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#ae9b5536e0fbb9656db0fbd617d828d00">getFaction</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:ae9b5536e0fbb9656db0fbd617d828d00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70085ac68d929a23947db027fba4273a" id="r_a70085ac68d929a23947db027fba4273a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a70085ac68d929a23947db027fba4273a">getHealth</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a70085ac68d929a23947db027fba4273a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a179b143f9859547f3d779c4af95576de" id="r_a179b143f9859547f3d779c4af95576de"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a179b143f9859547f3d779c4af95576de">getMaxHealth</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a179b143f9859547f3d779c4af95576de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c03b02b73c96b2a7d0fc14a038dc4a0" id="r_a0c03b02b73c96b2a7d0fc14a038dc4a0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a0c03b02b73c96b2a7d0fc14a038dc4a0">isArrived</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a0c03b02b73c96b2a7d0fc14a038dc4a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11e0f059cda57d20e5757847c812421b" id="r_a11e0f059cda57d20e5757847c812421b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a11e0f059cda57d20e5757847c812421b">isDestroyed</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship) const</td></tr>
+<tr class="separator:a11e0f059cda57d20e5757847c812421b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad12d20d7e94bdccc49f0d665a4322f5e" id="r_ad12d20d7e94bdccc49f0d665a4322f5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#ad12d20d7e94bdccc49f0d665a4322f5e">applyDamage</a> (<a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *ship, float amount)</td></tr>
+<tr class="separator:ad12d20d7e94bdccc49f0d665a4322f5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a18b5088b4c11399d630d239d7afde523" id="r_a18b5088b4c11399d630d239d7afde523"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a18b5088b4c11399d630d239d7afde523">clearEvents</a> ()</td></tr>
+<tr class="separator:a18b5088b4c11399d630d239d7afde523"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6e3b81b16ac5bf2c1625f1a19f383035" id="r_a6e3b81b16ac5bf2c1625f1a19f383035"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a6e3b81b16ac5bf2c1625f1a19f383035">getEventCount</a> () const</td></tr>
+<tr class="separator:a6e3b81b16ac5bf2c1625f1a19f383035"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a286a9ea7ff19381eec8c2d4020636259" id="r_a286a9ea7ff19381eec8c2d4020636259"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a286a9ea7ff19381eec8c2d4020636259">getEventType</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a286a9ea7ff19381eec8c2d4020636259"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a788de2dc4e34073890c29229746d564d" id="r_a788de2dc4e34073890c29229746d564d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a788de2dc4e34073890c29229746d564d">getEventWarshipId</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a788de2dc4e34073890c29229746d564d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0745e59ac906f701c1bd98cbac5b755" id="r_ad0745e59ac906f701c1bd98cbac5b755"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#ad0745e59ac906f701c1bd98cbac5b755">getEventDefId</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:ad0745e59ac906f701c1bd98cbac5b755"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e164e9e554a91d6a0eedc44888dda73" id="r_a8e164e9e554a91d6a0eedc44888dda73"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a8e164e9e554a91d6a0eedc44888dda73">getEventDetail</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="separator:a8e164e9e554a91d6a0eedc44888dda73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="memdesc:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Module.html" title="EVENGINE_API_FOUNDATION public API.">Module</a>.  <br /></td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="memdesc:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name.  <br /></td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a89f44d5d083fb43672a837ddc20e825e" id="r_a89f44d5d083fb43672a837ddc20e825e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a89f44d5d083fb43672a837ddc20e825e">registerMobility</a> (<a class="el" href="classeve_1_1warship_1_1IWarshipMobility.html">IWarshipMobility</a> *mobility)</td></tr>
+<tr class="memdesc:a89f44d5d083fb43672a837ddc20e825e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a custom mobility plugin (ownership transferred).  <br /></td></tr>
+<tr class="separator:a89f44d5d083fb43672a837ddc20e825e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e7fb43d14db5aba717d3095af4420c5" id="r_a0e7fb43d14db5aba717d3095af4420c5"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1warship_1_1Warship.html#a0e7fb43d14db5aba717d3095af4420c5">getMobilityCount</a> ()</td></tr>
+<tr class="separator:a0e7fb43d14db5aba717d3095af4420c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p><a class="el" href="classeve_1_1warship_1_1Warship.html" title="Warship module (eve.Warship).">Warship</a> module (<code>eve.Warship</code>). </p>
+
+<p class="definition">在文件 <a class="el" href="Warship_8h_source.html">Warship.h</a> 第 <a class="el" href="Warship_8h_source.html#l00020">20</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a87e8458cd319211fb03003c885480f78" name="a87e8458cd319211fb03003c885480f78"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87e8458cd319211fb03003c885480f78">&#9670;&#160;</a></span>Warship()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::warship::Warship::Warship </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af189c8938f3ca1b4a6a75efc0577598f" name="af189c8938f3ca1b4a6a75efc0577598f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af189c8938f3ca1b4a6a75efc0577598f">&#9670;&#160;</a></span>~Warship()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::warship::Warship::~Warship </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="ad12d20d7e94bdccc49f0d665a4322f5e" name="ad12d20d7e94bdccc49f0d665a4322f5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad12d20d7e94bdccc49f0d665a4322f5e">&#9670;&#160;</a></span>applyDamage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::warship::Warship::applyDamage </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>amount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00255">255</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipSystem_8cpp_source.html#l00341">eve::warship::WarshipSystem::applyDamage()</a>.</p>
+
+</div>
+</div>
+<a id="ada5e6805de34d0887e7574bff923ebc5" name="ada5e6805de34d0887e7574bff923ebc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ada5e6805de34d0887e7574bff923ebc5">&#9670;&#160;</a></span>clearCompartment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::warship::Warship::clearCompartment </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>deck</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>col</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipSystem_8cpp_source.html#l00227">eve::warship::WarshipSystem::clearCompartment()</a> , 以及 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a>.</p>
+
+</div>
+</div>
+<a id="a18b5088b4c11399d630d239d7afde523" name="a18b5088b4c11399d630d239d7afde523"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a18b5088b4c11399d630d239d7afde523">&#9670;&#160;</a></span>clearEvents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::warship::Warship::clearEvents </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00260">260</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipSystem_8cpp_source.html#l00402">eve::warship::WarshipSystem::clearEvents()</a>.</p>
+
+</div>
+</div>
+<a id="a120826962dd55edd7326e4f0be813185" name="a120826962dd55edd7326e4f0be813185"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a120826962dd55edd7326e4f0be813185">&#9670;&#160;</a></span>clearFunctionDefinitions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::warship::Warship::clearFunctionDefinitions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipRegistry_8cpp_source.html#l00321">eve::warship::WarshipRegistry::clearFunctions()</a>.</p>
+
+</div>
+</div>
+<a id="a24b794b4e60a9bb0d7e7784d2cffb4a5" name="a24b794b4e60a9bb0d7e7784d2cffb4a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24b794b4e60a9bb0d7e7784d2cffb4a5">&#9670;&#160;</a></span>clearHullDefinitions()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::warship::Warship::clearHullDefinitions </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00071">71</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipRegistry_8cpp_source.html#l00319">eve::warship::WarshipRegistry::clearHulls()</a>.</p>
+
+</div>
+</div>
+<a id="a664eabdd43579be5f93f0e42413ea22e" name="a664eabdd43579be5f93f0e42413ea22e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a664eabdd43579be5f93f0e42413ea22e">&#9670;&#160;</a></span>getBeam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::warship::Warship::getBeam </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00231">231</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3cba8a4d3d2f58794e1f2046793c9bc2" name="a3cba8a4d3d2f58794e1f2046793c9bc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cba8a4d3d2f58794e1f2046793c9bc2">&#9670;&#160;</a></span>getCategory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::warship::Warship::getCategory </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00239">239</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1050260a2480557be8cf7920a8a48157" name="a1050260a2480557be8cf7920a8a48157"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1050260a2480557be8cf7920a8a48157">&#9670;&#160;</a></span>getCompartmentCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::warship::Warship::getCompartmentCount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00157">157</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0f0e3343befff28582145968d2d9362e" name="a0f0e3343befff28582145968d2d9362e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f0e3343befff28582145968d2d9362e">&#9670;&#160;</a></span>getCompartmentFunction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::warship::Warship::getCompartmentFunction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>deck</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>col</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00167">167</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>.</p>
+
+</div>
+</div>
+<a id="a7bb53996eaa49384483517e4ab3de08a" name="a7bb53996eaa49384483517e4ab3de08a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bb53996eaa49384483517e4ab3de08a">&#9670;&#160;</a></span>getCrewCapacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::warship::Warship::getCrewCapacity </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00190">190</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2828277ef17db5b98b766d9eb66d85c6" name="a2828277ef17db5b98b766d9eb66d85c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2828277ef17db5b98b766d9eb66d85c6">&#9670;&#160;</a></span>getDefId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::warship::Warship::getDefId </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6e3b81b16ac5bf2c1625f1a19f383035" name="a6e3b81b16ac5bf2c1625f1a19f383035"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6e3b81b16ac5bf2c1625f1a19f383035">&#9670;&#160;</a></span>getEventCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::warship::Warship::getEventCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00262">262</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipSystem_8cpp_source.html#l00404">eve::warship::WarshipSystem::eventCount()</a>.</p>
+
+</div>
+</div>
+<a id="ad0745e59ac906f701c1bd98cbac5b755" name="ad0745e59ac906f701c1bd98cbac5b755"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0745e59ac906f701c1bd98cbac5b755">&#9670;&#160;</a></span>getEventDefId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::warship::Warship::getEventDefId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00274">274</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipSystem_8cpp_source.html#l00406">eve::warship::WarshipSystem::eventAt()</a> , 以及 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>.</p>
+
+</div>
+</div>
+<a id="a8e164e9e554a91d6a0eedc44888dda73" name="a8e164e9e554a91d6a0eedc44888dda73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e164e9e554a91d6a0eedc44888dda73">&#9670;&#160;</a></span>getEventDetail()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::warship::Warship::getEventDetail </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00279">279</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipSystem_8cpp_source.html#l00406">eve::warship::WarshipSystem::eventAt()</a> , 以及 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>.</p>
+
+</div>
+</div>
+<a id="a286a9ea7ff19381eec8c2d4020636259" name="a286a9ea7ff19381eec8c2d4020636259"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a286a9ea7ff19381eec8c2d4020636259">&#9670;&#160;</a></span>getEventType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::warship::Warship::getEventType </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00264">264</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipSystem_8cpp_source.html#l00406">eve::warship::WarshipSystem::eventAt()</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a> , 以及 <a class="el" href="WarshipSystem_8cpp_source.html#l00131">eve::warship::warshipEventTypeName()</a>.</p>
+
+</div>
+</div>
+<a id="a788de2dc4e34073890c29229746d564d" name="a788de2dc4e34073890c29229746d564d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a788de2dc4e34073890c29229746d564d">&#9670;&#160;</a></span>getEventWarshipId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::warship::Warship::getEventWarshipId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00269">269</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipSystem_8cpp_source.html#l00406">eve::warship::WarshipSystem::eventAt()</a> , 以及 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>.</p>
+
+</div>
+</div>
+<a id="ae9b5536e0fbb9656db0fbd617d828d00" name="ae9b5536e0fbb9656db0fbd617d828d00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9b5536e0fbb9656db0fbd617d828d00">&#9670;&#160;</a></span>getFaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::warship::Warship::getFaction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00243">243</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a576363aeefbad32fbf3137fa0a1a3d00" name="a576363aeefbad32fbf3137fa0a1a3d00"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a576363aeefbad32fbf3137fa0a1a3d00">&#9670;&#160;</a></span>getFunctionDefinitionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::warship::Warship::getFunctionDefinitionCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipRegistry_8cpp_source.html#l00329">eve::warship::WarshipRegistry::functionCount()</a>.</p>
+
+</div>
+</div>
+<a id="aaf7aa67554b2cc72b64b69f29afe5cac" name="aaf7aa67554b2cc72b64b69f29afe5cac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf7aa67554b2cc72b64b69f29afe5cac">&#9670;&#160;</a></span>getGridCols()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::warship::Warship::getGridCols </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00161">161</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab2d16ac1114c21124ef2f61b311f8792" name="ab2d16ac1114c21124ef2f61b311f8792"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2d16ac1114c21124ef2f61b311f8792">&#9670;&#160;</a></span>getGridDecks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::warship::Warship::getGridDecks </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00165">165</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1e209e39ce884dee1aacad6d5d191ac9" name="a1e209e39ce884dee1aacad6d5d191ac9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e209e39ce884dee1aacad6d5d191ac9">&#9670;&#160;</a></span>getGridRows()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::warship::Warship::getGridRows </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00163">163</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a91ce95dc198602277eaaca2247f45bbb" name="a91ce95dc198602277eaaca2247f45bbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91ce95dc198602277eaaca2247f45bbb">&#9670;&#160;</a></span>getHangarCapacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::warship::Warship::getHangarCapacity </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00182">182</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a050d61e97b0e8ec317482294cccf6a5c" name="a050d61e97b0e8ec317482294cccf6a5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a050d61e97b0e8ec317482294cccf6a5c">&#9670;&#160;</a></span>getHeading()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::warship::Warship::getHeading </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00225">225</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a70085ac68d929a23947db027fba4273a" name="a70085ac68d929a23947db027fba4273a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70085ac68d929a23947db027fba4273a">&#9670;&#160;</a></span>getHealth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::warship::Warship::getHealth </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00247">247</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac201f708fac169c704eb1bc0de97451d" name="ac201f708fac169c704eb1bc0de97451d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac201f708fac169c704eb1bc0de97451d">&#9670;&#160;</a></span>getHullDefinitionCategory()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::warship::Warship::getHullDefinitionCategory </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipTypes_8h_source.html#l00098">eve::warship::WarshipDefinition::category</a> , 以及 <a class="el" href="WarshipRegistry_8cpp_source.html#l00331">eve::warship::WarshipRegistry::findHull()</a>.</p>
+
+</div>
+</div>
+<a id="adc91f39e7a127332c4f423ea246802d6" name="adc91f39e7a127332c4f423ea246802d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc91f39e7a127332c4f423ea246802d6">&#9670;&#160;</a></span>getHullDefinitionCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::warship::Warship::getHullDefinitionCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipRegistry_8cpp_source.html#l00327">eve::warship::WarshipRegistry::hullCount()</a>.</p>
+
+</div>
+</div>
+<a id="a701e07f4faf0925e7f3ae7d9e6f173b6" name="a701e07f4faf0925e7f3ae7d9e6f173b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a701e07f4faf0925e7f3ae7d9e6f173b6">&#9670;&#160;</a></span>getHullDefinitionMobility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::warship::Warship::getHullDefinitionMobility </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipRegistry_8cpp_source.html#l00331">eve::warship::WarshipRegistry::findHull()</a> , 以及 <a class="el" href="WarshipTypes_8h_source.html#l00100">eve::warship::WarshipDefinition::mobility</a>.</p>
+
+</div>
+</div>
+<a id="a5789b257b7fc056dd07d74ec4122a159" name="a5789b257b7fc056dd07d74ec4122a159"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5789b257b7fc056dd07d74ec4122a159">&#9670;&#160;</a></span>getId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::warship::Warship::getId </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00233">233</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a72d8b4da9a38e9e576a6093da9da42d3" name="a72d8b4da9a38e9e576a6093da9da42d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72d8b4da9a38e9e576a6093da9da42d3">&#9670;&#160;</a></span>getLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::warship::Warship::getLength </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00229">229</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a179b143f9859547f3d779c4af95576de" name="a179b143f9859547f3d779c4af95576de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a179b143f9859547f3d779c4af95576de">&#9670;&#160;</a></span>getMaxHealth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::warship::Warship::getMaxHealth </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00249">249</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0e7fb43d14db5aba717d3095af4420c5" name="a0e7fb43d14db5aba717d3095af4420c5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e7fb43d14db5aba717d3095af4420c5">&#9670;&#160;</a></span>getMobilityCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::warship::Warship::getMobilityCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipSystem_8cpp_source.html#l00161">eve::warship::WarshipSystem::mobilityCount()</a>.</p>
+
+</div>
+</div>
+<a id="a5410b74004a8d19cd20250b264d616b3" name="a5410b74004a8d19cd20250b264d616b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5410b74004a8d19cd20250b264d616b3">&#9670;&#160;</a></span>getPowerNet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::warship::Warship::getPowerNet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00174">174</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a66b9dab86a2683cbe016b8a96fa3d876" name="a66b9dab86a2683cbe016b8a96fa3d876"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66b9dab86a2683cbe016b8a96fa3d876">&#9670;&#160;</a></span>getSailPower()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::warship::Warship::getSailPower </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00194">194</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a68e17ea9b1c07467774ba953e0c2a0fb" name="a68e17ea9b1c07467774ba953e0c2a0fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68e17ea9b1c07467774ba953e0c2a0fb">&#9670;&#160;</a></span>getSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::warship::Warship::getSpeed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00227">227</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aba8c43c0f0656de9cb17a9675b491f0d" name="aba8c43c0f0656de9cb17a9675b491f0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba8c43c0f0656de9cb17a9675b491f0d">&#9670;&#160;</a></span>getThrustMul()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::warship::Warship::getThrustMul </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00178">178</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae2755ab2b67242b5a694c9730283b76a" name="ae2755ab2b67242b5a694c9730283b76a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2755ab2b67242b5a694c9730283b76a">&#9670;&#160;</a></span>getWeaponBayCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::warship::Warship::getWeaponBayCount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00186">186</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a62f4b5b193d6c7f9594780fb40ff673f" name="a62f4b5b193d6c7f9594780fb40ff673f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62f4b5b193d6c7f9594780fb40ff673f">&#9670;&#160;</a></span>getX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::warship::Warship::getX </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00221">221</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a24e943b6f7548f922cd303cba545bc64" name="a24e943b6f7548f922cd303cba545bc64"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24e943b6f7548f922cd303cba545bc64">&#9670;&#160;</a></span>getY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::warship::Warship::getY </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00223">223</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af425cf858c9a4382e8736f18803d4c8a" name="af425cf858c9a4382e8736f18803d4c8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af425cf858c9a4382e8736f18803d4c8a">&#9670;&#160;</a></span>hasFunctionDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::warship::Warship::hasFunctionDefinition </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipRegistry_8cpp_source.html#l00325">eve::warship::WarshipRegistry::hasFunction()</a>.</p>
+
+</div>
+</div>
+<a id="a1db352bb8f3d9b60e3ea8a9097ae3293" name="a1db352bb8f3d9b60e3ea8a9097ae3293"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1db352bb8f3d9b60e3ea8a9097ae3293">&#9670;&#160;</a></span>hasHullDefinition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::warship::Warship::hasHullDefinition </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00075">75</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipRegistry_8cpp_source.html#l00323">eve::warship::WarshipRegistry::hasHull()</a>.</p>
+
+</div>
+</div>
+<a id="a0c03b02b73c96b2a7d0fc14a038dc4a0" name="a0c03b02b73c96b2a7d0fc14a038dc4a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c03b02b73c96b2a7d0fc14a038dc4a0">&#9670;&#160;</a></span>isArrived()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::warship::Warship::isArrived </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00251">251</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a11e0f059cda57d20e5757847c812421b" name="a11e0f059cda57d20e5757847c812421b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a11e0f059cda57d20e5757847c812421b">&#9670;&#160;</a></span>isDestroyed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::warship::Warship::isDestroyed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00253">253</a> 行定义.</p>
+
+</div>
+</div>
+<a id="acecb5992323048d664056005391549ab" name="acecb5992323048d664056005391549ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acecb5992323048d664056005391549ab">&#9670;&#160;</a></span>isUnderpowered()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::warship::Warship::isUnderpowered </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00198">198</a> 行定义.</p>
+
+</div>
+</div>
+<a id="adfa4323432b79f1cfe7a5bc076b4f1ef" name="adfa4323432b79f1cfe7a5bc076b4f1ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfa4323432b79f1cfe7a5bc076b4f1ef">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::warship::Warship::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1Warship.html">Warship</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aba3d32a6a2a414f6a9f1bb6b6aa4f89d" name="aba3d32a6a2a414f6a9f1bb6b6aa4f89d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba3d32a6a2a414f6a9f1bb6b6aa4f89d">&#9670;&#160;</a></span>moveTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::warship::Warship::moveTo </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00202">202</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipSystem_8cpp_source.html#l00322">eve::warship::WarshipSystem::moveTo()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a7bfd2d7cd8871ee31c184a0ccb509394" name="a7bfd2d7cd8871ee31c184a0ccb509394"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bfd2d7cd8871ee31c184a0ccb509394">&#9670;&#160;</a></span>newWarship()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> * &gt; eve::warship::Warship::newWarship </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>defId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>heading</em> = <code>0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>faction</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spawn a hull from a registered definition. @ownership ECS owns the entity; callers must not delete it. @lifetime Until ECS destroy / world teardown. @thread Owner ECS thread. @cost Allocates entity + grid cells; amortize across spawn actions. </p>
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipTypes_8h_source.html#l00104">eve::warship::WarshipDefinition::beam</a>, <a class="el" href="WarshipTypes_8h_source.html#l00098">eve::warship::WarshipDefinition::category</a>, <a class="el" href="WarshipTypes_8h_source.html#l00048">eve::warship::CompartmentGrid::cellCount()</a>, <a class="el" href="WarshipSystem_8cpp_source.html#l00142">eve::warship::WarshipEntity::createWarship()</a>, <a class="el" href="WarshipTypes_8h_source.html#l00045">eve::warship::CompartmentGrid::decks</a>, <a class="el" href="WarshipTypes_8h_source.html#l00110">eve::warship::WarshipDefinition::defaultLayout</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="WarshipRegistry_8cpp_source.html#l00331">eve::warship::WarshipRegistry::findHull()</a>, <a class="el" href="WarshipTypes_8h_source.html#l00109">eve::warship::WarshipDefinition::grid</a>, <a class="el" href="WarshipRegistry_8cpp_source.html#l00325">eve::warship::WarshipRegistry::hasFunction()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00292">heading</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="WarshipTypes_8h_source.html#l00102">eve::warship::WarshipDefinition::length</a>, <a class="el" href="WarshipTypes_8h_source.html#l00108">eve::warship::WarshipDefinition::maxHealth</a>, <a class="el" href="WarshipSystem_8cpp_source.html#l00174">eve::warship::WarshipSystem::recomputeCapabilities()</a>, <a class="el" href="PointSet_8cpp_source.html#l00811">seed</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a294d83344cf59e01c563cb87701a06db" name="a294d83344cf59e01c563cb87701a06db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a294d83344cf59e01c563cb87701a06db">&#9670;&#160;</a></span>placeCompartment()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::warship::Warship::placeCompartment </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>deck</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>row</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>col</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>functionId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00136">136</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a> , 以及 <a class="el" href="WarshipSystem_8cpp_source.html#l00208">eve::warship::WarshipSystem::placeCompartment()</a>.</p>
+
+</div>
+</div>
+<a id="ae733ca3a33bf2f8220f0976f4e815251" name="ae733ca3a33bf2f8220f0976f4e815251"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae733ca3a33bf2f8220f0976f4e815251">&#9670;&#160;</a></span>rearrangeFromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::warship::Warship::rearrangeFromJson </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00152">152</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a> , 以及 <a class="el" href="WarshipSystem_8cpp_source.html#l00259">eve::warship::WarshipSystem::rearrangeFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="a3c3c340509822c0173114138ff5c0b58" name="a3c3c340509822c0173114138ff5c0b58"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c3c340509822c0173114138ff5c0b58">&#9670;&#160;</a></span>registerFunctionsFromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::warship::Warship::registerFunctionsFromJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register compartment function catalogue entries from JSON. </p>
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipRegistry_8cpp_source.html#l00284">eve::warship::WarshipRegistry::loadFunctionsFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="acfdc82d2e3c03af0b9334393fd4e0ccc" name="acfdc82d2e3c03af0b9334393fd4e0ccc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfdc82d2e3c03af0b9334393fd4e0ccc">&#9670;&#160;</a></span>registerHullsFromJson()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::warship::Warship::registerHullsFromJson </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register hull templates from a JSON object or array. </p>
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00065">65</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipRegistry_8cpp_source.html#l00249">eve::warship::WarshipRegistry::loadHullsFromJson()</a>.</p>
+
+</div>
+</div>
+<a id="a89f44d5d083fb43672a837ddc20e825e" name="a89f44d5d083fb43672a837ddc20e825e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89f44d5d083fb43672a837ddc20e825e">&#9670;&#160;</a></span>registerMobility()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::warship::Warship::registerMobility </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1IWarshipMobility.html">IWarshipMobility</a> *&#160;</td>
+          <td class="paramname"><em>mobility</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Register a custom mobility plugin (ownership transferred). </p>
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00093">93</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipSystem_8cpp_source.html#l00156">eve::warship::WarshipSystem::registerMobility()</a>.</p>
+
+</div>
+</div>
+<a id="a130ddd4bd64dd4f77cd2d79c11ed5cdd" name="a130ddd4bd64dd4f77cd2d79c11ed5cdd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a130ddd4bd64dd4f77cd2d79c11ed5cdd">&#9670;&#160;</a></span>setInput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::warship::Warship::setInput </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>throttle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>steer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00212">212</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a41b9e75d419de93815ff5a99b8ef0e7f" name="a41b9e75d419de93815ff5a99b8ef0e7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41b9e75d419de93815ff5a99b8ef0e7f">&#9670;&#160;</a></span>stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::warship::Warship::stop </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00207">207</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="WarshipSystem_8cpp_source.html#l00331">eve::warship::WarshipSystem::stop()</a>.</p>
+
+</div>
+</div>
+<a id="aec632aca7aa7c2c56a66485fa5edc2a2" name="aec632aca7aa7c2c56a66485fa5edc2a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec632aca7aa7c2c56a66485fa5edc2a2">&#9670;&#160;</a></span>swapCompartments()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::warship::Warship::swapCompartments </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1warship_1_1WarshipEntity.html">WarshipEntity</a> *&#160;</td>
+          <td class="paramname"><em>ship</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>deckA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rowA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>colA</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>deckB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>rowB</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>colB</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00146">146</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UdpLink_8cpp_source.html#l00059">ok</a> , 以及 <a class="el" href="WarshipSystem_8cpp_source.html#l00241">eve::warship::WarshipSystem::swapCompartments()</a>.</p>
+
+</div>
+</div>
+<a id="a259f46ca84bbb9226c180ee46a0b393e" name="a259f46ca84bbb9226c180ee46a0b393e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a259f46ca84bbb9226c180ee46a0b393e">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::warship::Warship::update </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="Warship_8cpp_source.html">Warship.cpp</a> 第 <a class="el" href="Warship_8cpp_source.html#l00219">219</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a> , 以及 <a class="el" href="WarshipSystem_8cpp_source.html#l00363">eve::warship::WarshipSystem::update()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/warship/<a class="el" href="Warship_8h_source.html">Warship.h</a></li>
+<li>src/modules/warship/<a class="el" href="Warship_8cpp_source.html">Warship.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

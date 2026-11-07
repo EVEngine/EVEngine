@@ -1,0 +1,1635 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::logistics::Logistics类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1logistics.html">logistics</a></li><li class="navelem"><a class="el" href="classeve_1_1logistics_1_1Logistics.html">Logistics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1logistics_1_1Logistics-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::logistics::Logistics类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Deterministic 2D factory logistics: belts, discrete items, machine buffers, crafts.  
+ <a href="classeve_1_1logistics_1_1Logistics.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="Logistics_8h_source.html">Logistics.h</a>&gt;</code></p>
+<div class="dynheader">
+类 eve::logistics::Logistics 继承关系图:</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="classeve_1_1logistics_1_1Logistics.png" usemap="#eve::logistics::Logistics_map" alt=""/>
+  <map id="eve::logistics::Logistics_map" name="eve::logistics::Logistics_map">
+<area href="classeve_1_1Module.html" title="EVENGINE_API_FOUNDATION public API." alt="eve::Module" shape="rect" coords="0,0,139,24"/>
+  </map>
+</div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a7617fe92b06cc95f145b27f4b7dcf419" id="r_a7617fe92b06cc95f145b27f4b7dcf419"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a7617fe92b06cc95f145b27f4b7dcf419">Module_REG</a> (<a class="el" href="classeve_1_1logistics_1_1Logistics.html">Logistics</a>)</td></tr>
+<tr class="separator:a7617fe92b06cc95f145b27f4b7dcf419"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5866f9b0f2c6f002317fd1bf90c4214c" id="r_a5866f9b0f2c6f002317fd1bf90c4214c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a5866f9b0f2c6f002317fd1bf90c4214c">Logistics</a> ()</td></tr>
+<tr class="memdesc:a5866f9b0f2c6f002317fd1bf90c4214c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty unconfigured logistics world.  <br /></td></tr>
+<tr class="separator:a5866f9b0f2c6f002317fd1bf90c4214c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45e1deeaba5de95fe956b6913368ba55" id="r_a45e1deeaba5de95fe956b6913368ba55"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a45e1deeaba5de95fe956b6913368ba55">~Logistics</a> () override</td></tr>
+<tr class="memdesc:a45e1deeaba5de95fe956b6913368ba55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy logistics storage.  <br /></td></tr>
+<tr class="separator:a45e1deeaba5de95fe956b6913368ba55"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35ffff1c2cac225ba8ec90b7f2127d68" id="r_a35ffff1c2cac225ba8ec90b7f2127d68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a35ffff1c2cac225ba8ec90b7f2127d68">configure</a> (int <a class="el" href="classeve_1_1logistics_1_1Logistics.html#affde6137ff7fa78ee39e748f6e49c16f">width</a>, int <a class="el" href="classeve_1_1logistics_1_1Logistics.html#a0bcaa60a26edd3779a96dade81f97121">height</a>, int <a class="el" href="classeve_1_1logistics_1_1Logistics.html#abfeba2fe81226a26fdec76cf11972ec3">layers</a>, float <a class="el" href="classeve_1_1logistics_1_1Logistics.html#a8d704c308fd505e92ac73de141a30499">cellSize</a>, float <a class="el" href="classeve_1_1logistics_1_1Logistics.html#a785f6149cc6f2304490b7f8e61c76967">originX</a>, float <a class="el" href="classeve_1_1logistics_1_1Logistics.html#abc85868eb45a766d07982910dad10329">originY</a>)</td></tr>
+<tr class="memdesc:a35ffff1c2cac225ba8ec90b7f2127d68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size the factory grid and world mapping.  <br /></td></tr>
+<tr class="separator:a35ffff1c2cac225ba8ec90b7f2127d68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0f6088389899dfd10d31e6e63c7258b" id="r_ac0f6088389899dfd10d31e6e63c7258b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#ac0f6088389899dfd10d31e6e63c7258b">clear</a> ()</td></tr>
+<tr class="memdesc:ac0f6088389899dfd10d31e6e63c7258b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear every cell, item, machine, recipe and reset the simulation clock.  <br /></td></tr>
+<tr class="separator:ac0f6088389899dfd10d31e6e63c7258b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21062d184bb1fe5837d27ae8de537990" id="r_a21062d184bb1fe5837d27ae8de537990"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a21062d184bb1fe5837d27ae8de537990">registerRecipe</a> (std::string <a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, int inputType, int inputCount, int outputType, int outputCount, float durationSec)</td></tr>
+<tr class="memdesc:a21062d184bb1fe5837d27ae8de537990"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register or replace a named recipe.  <br /></td></tr>
+<tr class="separator:a21062d184bb1fe5837d27ae8de537990"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaeb3722cb76f508c26282fabda7ec35a" id="r_aaeb3722cb76f508c26282fabda7ec35a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#aaeb3722cb76f508c26282fabda7ec35a">placeBelt</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int <a class="el" href="TreeMesh_8cpp.html#ad8763533b7c9fc0f7c4dd1918d79df84">dir</a>, int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>=0)</td></tr>
+<tr class="memdesc:aaeb3722cb76f508c26282fabda7ec35a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place a belt cell facing <code>dir</code> (0=E,1=S,2=W,3=N) on layer.  <br /></td></tr>
+<tr class="separator:aaeb3722cb76f508c26282fabda7ec35a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a89a860b8480d7e2bdaccfd070e4af228" id="r_a89a860b8480d7e2bdaccfd070e4af228"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a89a860b8480d7e2bdaccfd070e4af228">clearCell</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>=0)</td></tr>
+<tr class="memdesc:a89a860b8480d7e2bdaccfd070e4af228"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove belt/source/sink content from a cell (machines must use removeMachine).  <br /></td></tr>
+<tr class="separator:a89a860b8480d7e2bdaccfd070e4af228"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24314a9c15b39fcf8c44ce946207b0a8" id="r_a24314a9c15b39fcf8c44ce946207b0a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a24314a9c15b39fcf8c44ce946207b0a8">placeMachine</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int <a class="el" href="classeve_1_1logistics_1_1Logistics.html#affde6137ff7fa78ee39e748f6e49c16f">width</a>, int <a class="el" href="classeve_1_1logistics_1_1Logistics.html#a0bcaa60a26edd3779a96dade81f97121">height</a>, std::string_view recipeId, int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>=0)</td></tr>
+<tr class="memdesc:a24314a9c15b39fcf8c44ce946207b0a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place a rectangular machine footprint and bind a recipe.  <br /></td></tr>
+<tr class="separator:a24314a9c15b39fcf8c44ce946207b0a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a198d8ef3aa76b2746af3df638bd5353e" id="r_a198d8ef3aa76b2746af3df638bd5353e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a198d8ef3aa76b2746af3df638bd5353e">removeMachine</a> (int machineId)</td></tr>
+<tr class="memdesc:a198d8ef3aa76b2746af3df638bd5353e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a machine by id and free its footprint cells.  <br /></td></tr>
+<tr class="separator:a198d8ef3aa76b2746af3df638bd5353e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f3e7da3f3e93baae7f9be91695966fc" id="r_a7f3e7da3f3e93baae7f9be91695966fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a7f3e7da3f3e93baae7f9be91695966fc">placeSource</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int itemType, float itemsPerSec, int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>=0)</td></tr>
+<tr class="memdesc:a7f3e7da3f3e93baae7f9be91695966fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place an item emitter that injects <code>itemType</code> onto the eastward adjacent belt.  <br /></td></tr>
+<tr class="separator:a7f3e7da3f3e93baae7f9be91695966fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a055aec0d86d224888df8a390a09b7f" id="r_a5a055aec0d86d224888df8a390a09b7f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a5a055aec0d86d224888df8a390a09b7f">placeSink</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>=0)</td></tr>
+<tr class="memdesc:a5a055aec0d86d224888df8a390a09b7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Place a sink that destroys items arriving from the westward adjacent belt.  <br /></td></tr>
+<tr class="separator:a5a055aec0d86d224888df8a390a09b7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0993e1b9d1c722b047443a365500db7" id="r_af0993e1b9d1c722b047443a365500db7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#af0993e1b9d1c722b047443a365500db7">spawnItem</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int itemType, int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>=0)</td></tr>
+<tr class="memdesc:af0993e1b9d1c722b047443a365500db7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Spawn one item onto a belt cell at progress 0.  <br /></td></tr>
+<tr class="separator:af0993e1b9d1c722b047443a365500db7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa07a0e58625cf3f40871110016984914" id="r_aa07a0e58625cf3f40871110016984914"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1logistics_1_1StepReport.html">StepReport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#aa07a0e58625cf3f40871110016984914">advance</a> (const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="memdesc:aa07a0e58625cf3f40871110016984914"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advance one fixed logistics step.  <br /></td></tr>
+<tr class="separator:aa07a0e58625cf3f40871110016984914"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a307434d249025bfa735f2a2945490e75" id="r_a307434d249025bfa735f2a2945490e75"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1logistics_1_1StepReport.html">StepReport</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a307434d249025bfa735f2a2945490e75">advance</a> (float <a class="el" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>)</td></tr>
+<tr class="memdesc:a307434d249025bfa735f2a2945490e75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience advance that allocates the next tick from an internal counter.  <br /></td></tr>
+<tr class="separator:a307434d249025bfa735f2a2945490e75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affde6137ff7fa78ee39e748f6e49c16f" id="r_affde6137ff7fa78ee39e748f6e49c16f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#affde6137ff7fa78ee39e748f6e49c16f">width</a> () const noexcept</td></tr>
+<tr class="memdesc:affde6137ff7fa78ee39e748f6e49c16f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grid width in cells.  <br /></td></tr>
+<tr class="separator:affde6137ff7fa78ee39e748f6e49c16f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bcaa60a26edd3779a96dade81f97121" id="r_a0bcaa60a26edd3779a96dade81f97121"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a0bcaa60a26edd3779a96dade81f97121">height</a> () const noexcept</td></tr>
+<tr class="memdesc:a0bcaa60a26edd3779a96dade81f97121"><td class="mdescLeft">&#160;</td><td class="mdescRight">Grid height in cells.  <br /></td></tr>
+<tr class="separator:a0bcaa60a26edd3779a96dade81f97121"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abfeba2fe81226a26fdec76cf11972ec3" id="r_abfeba2fe81226a26fdec76cf11972ec3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#abfeba2fe81226a26fdec76cf11972ec3">layers</a> () const noexcept</td></tr>
+<tr class="memdesc:abfeba2fe81226a26fdec76cf11972ec3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configured floor count.  <br /></td></tr>
+<tr class="separator:abfeba2fe81226a26fdec76cf11972ec3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d704c308fd505e92ac73de141a30499" id="r_a8d704c308fd505e92ac73de141a30499"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a8d704c308fd505e92ac73de141a30499">cellSize</a> () const noexcept</td></tr>
+<tr class="memdesc:a8d704c308fd505e92ac73de141a30499"><td class="mdescLeft">&#160;</td><td class="mdescRight">World units per cell.  <br /></td></tr>
+<tr class="separator:a8d704c308fd505e92ac73de141a30499"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a785f6149cc6f2304490b7f8e61c76967" id="r_a785f6149cc6f2304490b7f8e61c76967"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a785f6149cc6f2304490b7f8e61c76967">originX</a> () const noexcept</td></tr>
+<tr class="memdesc:a785f6149cc6f2304490b7f8e61c76967"><td class="mdescLeft">&#160;</td><td class="mdescRight">World origin X.  <br /></td></tr>
+<tr class="separator:a785f6149cc6f2304490b7f8e61c76967"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc85868eb45a766d07982910dad10329" id="r_abc85868eb45a766d07982910dad10329"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#abc85868eb45a766d07982910dad10329">originY</a> () const noexcept</td></tr>
+<tr class="memdesc:abc85868eb45a766d07982910dad10329"><td class="mdescLeft">&#160;</td><td class="mdescRight">World origin Y.  <br /></td></tr>
+<tr class="separator:abc85868eb45a766d07982910dad10329"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75ba8e8833432ad929cb37332bafa231" id="r_a75ba8e8833432ad929cb37332bafa231"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a75ba8e8833432ad929cb37332bafa231">currentTick</a> () const noexcept</td></tr>
+<tr class="memdesc:a75ba8e8833432ad929cb37332bafa231"><td class="mdescLeft">&#160;</td><td class="mdescRight">Last accepted simulation tick.  <br /></td></tr>
+<tr class="separator:a75ba8e8833432ad929cb37332bafa231"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0b8df9f00b8ca585fbb469568512912" id="r_ac0b8df9f00b8ca585fbb469568512912"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#ac0b8df9f00b8ca585fbb469568512912">cellKind</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>=0) const noexcept</td></tr>
+<tr class="memdesc:ac0b8df9f00b8ca585fbb469568512912"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cell kind at (cx,cy,layer); Empty when out of range.  <br /></td></tr>
+<tr class="separator:ac0b8df9f00b8ca585fbb469568512912"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ac63f08fae64eb9ce4a1a869f8387d9" id="r_a5ac63f08fae64eb9ce4a1a869f8387d9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a5ac63f08fae64eb9ce4a1a869f8387d9">cellDir</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>=0) const noexcept</td></tr>
+<tr class="memdesc:a5ac63f08fae64eb9ce4a1a869f8387d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Belt direction at cell, or -1 when not a belt.  <br /></td></tr>
+<tr class="separator:a5ac63f08fae64eb9ce4a1a869f8387d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebb5f9731dbf52aff1cdf6779a2671e4" id="r_aebb5f9731dbf52aff1cdf6779a2671e4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#aebb5f9731dbf52aff1cdf6779a2671e4">cellMachine</a> (int <a class="el" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, int <a class="el" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, int <a class="el" href="Pathfinder_8cpp.html#ac84a36ae433419b622c91ac3022cf1c9">layer</a>=0) const noexcept</td></tr>
+<tr class="memdesc:aebb5f9731dbf52aff1cdf6779a2671e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Machine id occupying the cell, or -1.  <br /></td></tr>
+<tr class="separator:aebb5f9731dbf52aff1cdf6779a2671e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bb8bac46ff0b3911545bb9c9f159bb0" id="r_a2bb8bac46ff0b3911545bb9c9f159bb0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a2bb8bac46ff0b3911545bb9c9f159bb0">itemCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a2bb8bac46ff0b3911545bb9c9f159bb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Live item count.  <br /></td></tr>
+<tr class="separator:a2bb8bac46ff0b3911545bb9c9f159bb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf5aa06aafb11f152690e90e2b89d01d" id="r_adf5aa06aafb11f152690e90e2b89d01d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1logistics_1_1ItemState.html">ItemState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#adf5aa06aafb11f152690e90e2b89d01d">itemAt</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:adf5aa06aafb11f152690e90e2b89d01d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy item i; NotFound when index is out of range.  <br /></td></tr>
+<tr class="separator:adf5aa06aafb11f152690e90e2b89d01d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a493bdd810845f885052f1dbc36aa21bf" id="r_a493bdd810845f885052f1dbc36aa21bf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a493bdd810845f885052f1dbc36aa21bf">packItemSimFloats</a> () const</td></tr>
+<tr class="memdesc:a493bdd810845f885052f1dbc36aa21bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack GPU-friendly floats: [cellX,cellY,progress,dir,type,layer] * itemCount. @cost O(items); amortize once per upload.  <br /></td></tr>
+<tr class="separator:a493bdd810845f885052f1dbc36aa21bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9a34e1c97b7913b2f999269297dbb62" id="r_ad9a34e1c97b7913b2f999269297dbb62"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; float &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#ad9a34e1c97b7913b2f999269297dbb62">packItemWorldFloats</a> () const</td></tr>
+<tr class="memdesc:ad9a34e1c97b7913b2f999269297dbb62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pack world positions for CPU draw fallback: [x,y,type] * itemCount. @cost O(items).  <br /></td></tr>
+<tr class="separator:ad9a34e1c97b7913b2f999269297dbb62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a099f43848e8d3379982ec6502862d165" id="r_a099f43848e8d3379982ec6502862d165"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a099f43848e8d3379982ec6502862d165">machineSlotCount</a> () const noexcept</td></tr>
+<tr class="memdesc:a099f43848e8d3379982ec6502862d165"><td class="mdescLeft">&#160;</td><td class="mdescRight">Live machine count (includes holes after remove; use machineAt).  <br /></td></tr>
+<tr class="separator:a099f43848e8d3379982ec6502862d165"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1ca1271387519892365843a302152fc" id="r_ad1ca1271387519892365843a302152fc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1logistics_1_1MachineState.html">MachineState</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#ad1ca1271387519892365843a302152fc">machineAt</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:ad1ca1271387519892365843a302152fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy machine slot i; NotFound when empty/out of range.  <br /></td></tr>
+<tr class="separator:ad1ca1271387519892365843a302152fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42d0ecaa230b67b02319f016afc4890d" id="r_a42d0ecaa230b67b02319f016afc4890d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a42d0ecaa230b67b02319f016afc4890d">machineOwnerId</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:a42d0ecaa230b67b02319f016afc4890d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable Production-owner string for machine slot i (empty when invalid).  <br /></td></tr>
+<tr class="separator:a42d0ecaa230b67b02319f016afc4890d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a98d40e9973fb985cb991a4c5a5e6b5eb" id="r_a98d40e9973fb985cb991a4c5a5e6b5eb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a98d40e9973fb985cb991a4c5a5e6b5eb">sunkTotal</a> () const noexcept</td></tr>
+<tr class="memdesc:a98d40e9973fb985cb991a4c5a5e6b5eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Items destroyed by sinks since configure/clear.  <br /></td></tr>
+<tr class="separator:a98d40e9973fb985cb991a4c5a5e6b5eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc1ed398d3a377076346e93f1149a7ad" id="r_acc1ed398d3a377076346e93f1149a7ad"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#acc1ed398d3a377076346e93f1149a7ad">craftsTotal</a> () const noexcept</td></tr>
+<tr class="memdesc:acc1ed398d3a377076346e93f1149a7ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Crafts completed since configure/clear.  <br /></td></tr>
+<tr class="separator:acc1ed398d3a377076346e93f1149a7ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0adbb8454d893076fd8c65fa15d52dd" id="r_ad0adbb8454d893076fd8c65fa15d52dd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#ad0adbb8454d893076fd8c65fa15d52dd">setBeltSpeed</a> (float cellsPerSec) noexcept</td></tr>
+<tr class="memdesc:ad0adbb8454d893076fd8c65fa15d52dd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default belt speed in cells per second.  <br /></td></tr>
+<tr class="separator:ad0adbb8454d893076fd8c65fa15d52dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35145bc9b6a1300d49c3c324fb99f089" id="r_a35145bc9b6a1300d49c3c324fb99f089"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a35145bc9b6a1300d49c3c324fb99f089">beltSpeed</a> () const noexcept</td></tr>
+<tr class="memdesc:a35145bc9b6a1300d49c3c324fb99f089"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current belt speed.  <br /></td></tr>
+<tr class="separator:a35145bc9b6a1300d49c3c324fb99f089"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af57db47d3e2a95947dd2f96746d25c39" id="r_af57db47d3e2a95947dd2f96746d25c39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#af57db47d3e2a95947dd2f96746d25c39">setBufferCapacity</a> (int <a class="el" href="GraphicsParticles_8cpp.html#ac6929dd676d28e30e74a1624a9324cc7">capacity</a>) noexcept</td></tr>
+<tr class="memdesc:af57db47d3e2a95947dd2f96746d25c39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max items stored in a machine input or output buffer.  <br /></td></tr>
+<tr class="separator:af57db47d3e2a95947dd2f96746d25c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5145a2bb05b523f94f138e9beb6d189f" id="r_a5145a2bb05b523f94f138e9beb6d189f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1logistics_1_1Logistics.html#a5145a2bb05b523f94f138e9beb6d189f">bufferCapacity</a> () const noexcept</td></tr>
+<tr class="memdesc:a5145a2bb05b523f94f138e9beb6d189f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current buffer capacity.  <br /></td></tr>
+<tr class="separator:a5145a2bb05b523f94f138e9beb6d189f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classeve_1_1Module"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classeve_1_1Module')"><img src="closed.png" alt="-"/>&#160;Public 成员函数 继承自 <a class="el" href="classeve_1_1Module.html">eve::Module</a></td></tr>
+<tr class="memitem:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module" id="r_ab848c8cbc6dab360eb5d37945c8b0111"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ab848c8cbc6dab360eb5d37945c8b0111">~Module</a> ()</td></tr>
+<tr class="memdesc:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Module.html" title="EVENGINE_API_FOUNDATION public API.">Module</a>.  <br /></td></tr>
+<tr class="separator:ab848c8cbc6dab360eb5d37945c8b0111 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module" id="r_ae00d561f21eef86f21d032b53ca84da0"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1Module.html#ae00d561f21eef86f21d032b53ca84da0">getName</a> () const =0</td></tr>
+<tr class="memdesc:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the name.  <br /></td></tr>
+<tr class="separator:ae00d561f21eef86f21d032b53ca84da0 inherit pub_methods_classeve_1_1Module"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Deterministic 2D factory logistics: belts, discrete items, machine buffers, crafts. </p>
+<p>Grid cells are the authority for belt topology. Items are a dense SoA (not one ECS entity per cargo). Machines own input/output buffers and an optional in-module craft timer; they expose <code>machineOwnerId</code> so a game can project the same work onto <code>production</code> WorkQueues.</p>
+<p>Layer 0 is the only active floor in the vertical slice; <code>configure</code> accepts <code>layers</code> so a later multi-floor / 3D host can reuse the same cell addressing <code>(x,y,layer)</code>.</p>
+<p>@thread Simulation owner thread only. @reentrancy No callbacks; no graphics includes. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00082">82</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a5866f9b0f2c6f002317fd1bf90c4214c" name="a5866f9b0f2c6f002317fd1bf90c4214c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5866f9b0f2c6f002317fd1bf90c4214c">&#9670;&#160;</a></span>Logistics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::logistics::Logistics::Logistics </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an empty unconfigured logistics world. </p>
+
+</div>
+</div>
+<a id="a45e1deeaba5de95fe956b6913368ba55" name="a45e1deeaba5de95fe956b6913368ba55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45e1deeaba5de95fe956b6913368ba55">&#9670;&#160;</a></span>~Logistics()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::logistics::Logistics::~Logistics </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destroy logistics storage. </p>
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aa07a0e58625cf3f40871110016984914" name="aa07a0e58625cf3f40871110016984914"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa07a0e58625cf3f40871110016984914">&#9670;&#160;</a></span>advance() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1logistics_1_1StepReport.html">StepReport</a> &gt; eve::logistics::Logistics::advance </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advance one fixed logistics step. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">step</td><td>External tick must be strictly increasing; dt must be positive and finite. @cost O(items + machines + sources); amortize once per simulation tick. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00570">570</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a>, <a class="el" href="Logistics_8h_source.html#l00034">eve::logistics::StepReport::elapsed</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Result_8h_source.html#l00514">eve::Result&lt; void &gt;::ok()</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Logistics_8h_source.html#l00033">eve::logistics::StepReport::tick</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00026">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Logistics_8cpp_source.html#l00588">advance()</a>.</p>
+
+</div>
+</div>
+<a id="a307434d249025bfa735f2a2945490e75" name="a307434d249025bfa735f2a2945490e75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a307434d249025bfa735f2a2945490e75">&#9670;&#160;</a></span>advance() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1logistics_1_1StepReport.html">StepReport</a> &gt; eve::logistics::Logistics::advance </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>dt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convenience advance that allocates the next tick from an internal counter. </p>
+<dl class="section remark"><dt>备注</dt><dd>Prefer <code>advance(SimulationStep)</code> for replay; this path is for demos/tests. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00588">588</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Logistics_8cpp_source.html#l00570">advance()</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a>, <a class="el" href="AnimCurveLibrary_8cpp_source.html#l00020">duration</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Time_8cpp_source.html#l00017">eve::Duration::fromSeconds()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00026">eve::detail::StrongUint64&lt; Tag &gt;::value()</a>.</p>
+
+</div>
+</div>
+<a id="a35145bc9b6a1300d49c3c324fb99f089" name="a35145bc9b6a1300d49c3c324fb99f089"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35145bc9b6a1300d49c3c324fb99f089">&#9670;&#160;</a></span>beltSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::logistics::Logistics::beltSpeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current belt speed. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00202">202</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5145a2bb05b523f94f138e9beb6d189f" name="a5145a2bb05b523f94f138e9beb6d189f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5145a2bb05b523f94f138e9beb6d189f">&#9670;&#160;</a></span>bufferCapacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::logistics::Logistics::bufferCapacity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Current buffer capacity. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00206">206</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5ac63f08fae64eb9ce4a1a869f8387d9" name="a5ac63f08fae64eb9ce4a1a869f8387d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5ac63f08fae64eb9ce4a1a869f8387d9">&#9670;&#160;</a></span>cellDir()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::logistics::Logistics::cellDir </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Belt direction at cell, or -1 when not a belt. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00395">395</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7ad1d0518303e6170ce9bb8bc1bd54248c">eve::logistics::Belt</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00016">cell</a>, <a class="el" href="CardTypes_8cpp_source.html#l00036">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00037">cy</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00151">layer</a>.</p>
+
+</div>
+</div>
+<a id="ac0b8df9f00b8ca585fbb469568512912" name="ac0b8df9f00b8ca585fbb469568512912"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0b8df9f00b8ca585fbb469568512912">&#9670;&#160;</a></span>cellKind()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::logistics::Logistics::cellKind </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cell kind at (cx,cy,layer); Empty when out of range. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00390">390</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00036">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00037">cy</a>, <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7ace2c8aed9c2fa0cfbed56cbda4d8bf07">eve::logistics::Empty</a> , 以及 <a class="el" href="Pathfinder_8cpp_source.html#l00151">layer</a>.</p>
+
+</div>
+</div>
+<a id="aebb5f9731dbf52aff1cdf6779a2671e4" name="aebb5f9731dbf52aff1cdf6779a2671e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebb5f9731dbf52aff1cdf6779a2671e4">&#9670;&#160;</a></span>cellMachine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::logistics::Logistics::cellMachine </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Machine id occupying the cell, or -1. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00401">401</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00016">cell</a>, <a class="el" href="CardTypes_8cpp_source.html#l00036">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00037">cy</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00151">layer</a> , 以及 <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7a47c954121886a5e5aaca7eece461b56f">eve::logistics::Machine</a>.</p>
+
+</div>
+</div>
+<a id="a8d704c308fd505e92ac73de141a30499" name="a8d704c308fd505e92ac73de141a30499"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d704c308fd505e92ac73de141a30499">&#9670;&#160;</a></span>cellSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::logistics::Logistics::cellSize </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>World units per cell. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00157">157</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Logistics_8cpp_source.html#l00030">configure()</a>.</p>
+
+</div>
+</div>
+<a id="ac0f6088389899dfd10d31e6e63c7258b" name="ac0f6088389899dfd10d31e6e63c7258b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0f6088389899dfd10d31e6e63c7258b">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::logistics::Logistics::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear every cell, item, machine, recipe and reset the simulation clock. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StrongUint64_8h_source.html#l00024">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero()</a>.</p>
+
+</div>
+</div>
+<a id="a89a860b8480d7e2bdaccfd070e4af228" name="a89a860b8480d7e2bdaccfd070e4af228"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89a860b8480d7e2bdaccfd070e4af228">&#9670;&#160;</a></span>clearCell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::logistics::Logistics::clearCell </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove belt/source/sink content from a cell (machines must use removeMachine). </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00149">149</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00016">cell</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="CardTypes_8cpp_source.html#l00036">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00037">cy</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00151">layer</a>, <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7a47c954121886a5e5aaca7eece461b56f">eve::logistics::Machine</a>, <a class="el" href="Result_8h_source.html#l00514">eve::Result&lt; void &gt;::ok()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a35ffff1c2cac225ba8ec90b7f2127d68" name="a35ffff1c2cac225ba8ec90b7f2127d68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35ffff1c2cac225ba8ec90b7f2127d68">&#9670;&#160;</a></span>configure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::logistics::Logistics::configure </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layers</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellSize</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>originY</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Size the factory grid and world mapping. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">width</td><td>Cell count on X (&gt;0). </td></tr>
+    <tr><td class="paramname">height</td><td>Cell count on Y (&gt;0). </td></tr>
+    <tr><td class="paramname">layers</td><td>Floor count (&gt;=1); only layer 0 is stepped in this slice. </td></tr>
+    <tr><td class="paramname">cellSize</td><td>World units per cell (&gt;0). </td></tr>
+    <tr><td class="paramname">originX</td><td>World X of cell (0,0) top-left corner. </td></tr>
+    <tr><td class="paramname">originY</td><td>World Y of cell (0,0) top-left corner. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>InvalidArgument for non-positive sizes; Applied on success (clears prior state). @cost Allocates O(width*height*layers) cell storage; amortize at factory rebuild. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Logistics_8h_source.html#l00157">cellSize()</a>, <a class="el" href="Logistics_8h_source.html#l00153">height()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Logistics_8h_source.html#l00155">layers()</a>, <a class="el" href="Logistics_8h_source.html#l00159">originX()</a>, <a class="el" href="Logistics_8h_source.html#l00161">originY()</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Logistics_8h_source.html#l00151">width()</a> , 以及 <a class="el" href="StrongUint64_8h_source.html#l00024">eve::detail::StrongUint64&lt; detail::SimulationTickTag &gt;::zero()</a>.</p>
+
+</div>
+</div>
+<a id="acc1ed398d3a377076346e93f1149a7ad" name="acc1ed398d3a377076346e93f1149a7ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc1ed398d3a377076346e93f1149a7ad">&#9670;&#160;</a></span>craftsTotal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::logistics::Logistics::craftsTotal </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Crafts completed since configure/clear. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00197">197</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a75ba8e8833432ad929cb37332bafa231" name="a75ba8e8833432ad929cb37332bafa231"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75ba8e8833432ad929cb37332bafa231">&#9670;&#160;</a></span>currentTick()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve.html#abfcfee3f5f9b1b38ed11b9c5f17cd675">SimulationTick</a> eve::logistics::Logistics::currentTick </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Last accepted simulation tick. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00163">163</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0bcaa60a26edd3779a96dade81f97121" name="a0bcaa60a26edd3779a96dade81f97121"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bcaa60a26edd3779a96dade81f97121">&#9670;&#160;</a></span>height()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::logistics::Logistics::height </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Grid height in cells. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Logistics_8cpp_source.html#l00030">configure()</a> , 以及 <a class="el" href="Logistics_8cpp_source.html#l00161">placeMachine()</a>.</p>
+
+</div>
+</div>
+<a id="adf5aa06aafb11f152690e90e2b89d01d" name="adf5aa06aafb11f152690e90e2b89d01d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf5aa06aafb11f152690e90e2b89d01d">&#9670;&#160;</a></span>itemAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1logistics_1_1ItemState.html">ItemState</a> &gt; eve::logistics::Logistics::itemAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy item i; NotFound when index is out of range. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00318">318</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="Logistics_8h_source.html#l00173">itemCount()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Logistics_8cpp_source.html#l00346">packItemWorldFloats()</a>.</p>
+
+</div>
+</div>
+<a id="a2bb8bac46ff0b3911545bb9c9f159bb0" name="a2bb8bac46ff0b3911545bb9c9f159bb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bb8bac46ff0b3911545bb9c9f159bb0">&#9670;&#160;</a></span>itemCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::logistics::Logistics::itemCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Live item count. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00173">173</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Logistics_8cpp_source.html#l00318">itemAt()</a>, <a class="el" href="Logistics_8cpp_source.html#l00331">packItemSimFloats()</a> , 以及 <a class="el" href="Logistics_8cpp_source.html#l00346">packItemWorldFloats()</a>.</p>
+
+</div>
+</div>
+<a id="abfeba2fe81226a26fdec76cf11972ec3" name="abfeba2fe81226a26fdec76cf11972ec3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abfeba2fe81226a26fdec76cf11972ec3">&#9670;&#160;</a></span>layers()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::logistics::Logistics::layers </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Configured floor count. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00155">155</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Logistics_8cpp_source.html#l00030">configure()</a>.</p>
+
+</div>
+</div>
+<a id="ad1ca1271387519892365843a302152fc" name="ad1ca1271387519892365843a302152fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1ca1271387519892365843a302152fc">&#9670;&#160;</a></span>machineAt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1logistics_1_1MachineState.html">MachineState</a> &gt; eve::logistics::Logistics::machineAt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy machine slot i; NotFound when empty/out of range. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00364">364</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Logistics_8h_source.html#l00056">eve::logistics::MachineState::id</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7a47c954121886a5e5aaca7eece461b56f">eve::logistics::Machine</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a42d0ecaa230b67b02319f016afc4890d" name="a42d0ecaa230b67b02319f016afc4890d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42d0ecaa230b67b02319f016afc4890d">&#9670;&#160;</a></span>machineOwnerId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::logistics::Logistics::machineOwnerId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Stable Production-owner string for machine slot i (empty when invalid). </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00384">384</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a> , 以及 <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7a47c954121886a5e5aaca7eece461b56f">eve::logistics::Machine</a>.</p>
+
+</div>
+</div>
+<a id="a099f43848e8d3379982ec6502862d165" name="a099f43848e8d3379982ec6502862d165"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a099f43848e8d3379982ec6502862d165">&#9670;&#160;</a></span>machineSlotCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::logistics::Logistics::machineSlotCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Live machine count (includes holes after remove; use machineAt). </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00188">188</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7617fe92b06cc95f145b27f4b7dcf419" name="a7617fe92b06cc95f145b27f4b7dcf419"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7617fe92b06cc95f145b27f4b7dcf419">&#9670;&#160;</a></span>Module_REG()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::logistics::Logistics::Module_REG </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1logistics_1_1Logistics.html">Logistics</a>&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a785f6149cc6f2304490b7f8e61c76967" name="a785f6149cc6f2304490b7f8e61c76967"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a785f6149cc6f2304490b7f8e61c76967">&#9670;&#160;</a></span>originX()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::logistics::Logistics::originX </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>World origin X. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00159">159</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Logistics_8cpp_source.html#l00030">configure()</a>.</p>
+
+</div>
+</div>
+<a id="abc85868eb45a766d07982910dad10329" name="abc85868eb45a766d07982910dad10329"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc85868eb45a766d07982910dad10329">&#9670;&#160;</a></span>originY()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::logistics::Logistics::originY </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>World origin Y. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00161">161</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Logistics_8cpp_source.html#l00030">configure()</a>.</p>
+
+</div>
+</div>
+<a id="a493bdd810845f885052f1dbc36aa21bf" name="a493bdd810845f885052f1dbc36aa21bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a493bdd810845f885052f1dbc36aa21bf">&#9670;&#160;</a></span>packItemSimFloats()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; float &gt; &gt; eve::logistics::Logistics::packItemSimFloats </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pack GPU-friendly floats: [cellX,cellY,progress,dir,type,layer] * itemCount. @cost O(items); amortize once per upload. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00331">331</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Logistics_8h_source.html#l00173">itemCount()</a> , 以及 <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>.</p>
+
+</div>
+</div>
+<a id="ad9a34e1c97b7913b2f999269297dbb62" name="ad9a34e1c97b7913b2f999269297dbb62"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9a34e1c97b7913b2f999269297dbb62">&#9670;&#160;</a></span>packItemWorldFloats()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; float &gt; &gt; eve::logistics::Logistics::packItemWorldFloats </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pack world positions for CPU draw fallback: [x,y,type] * itemCount. @cost O(items). </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00346">346</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Logistics_8cpp_source.html#l00318">itemAt()</a>, <a class="el" href="Logistics_8h_source.html#l00173">itemCount()</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="Logistics_8h_source.html#l00047">eve::logistics::ItemState::type</a>, <a class="el" href="Logistics_8h_source.html#l00045">eve::logistics::ItemState::x</a> , 以及 <a class="el" href="Logistics_8h_source.html#l00046">eve::logistics::ItemState::y</a>.</p>
+
+</div>
+</div>
+<a id="aaeb3722cb76f508c26282fabda7ec35a" name="aaeb3722cb76f508c26282fabda7ec35a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaeb3722cb76f508c26282fabda7ec35a">&#9670;&#160;</a></span>placeBelt()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::logistics::Logistics::placeBelt </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Place a belt cell facing <code>dir</code> (0=E,1=S,2=W,3=N) on layer. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00133">133</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7ad1d0518303e6170ce9bb8bc1bd54248c">eve::logistics::Belt</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00016">cell</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="CardTypes_8cpp_source.html#l00036">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00037">cy</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00150">dir</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00151">layer</a>, <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7a47c954121886a5e5aaca7eece461b56f">eve::logistics::Machine</a>, <a class="el" href="Result_8h_source.html#l00514">eve::Result&lt; void &gt;::ok()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a24314a9c15b39fcf8c44ce946207b0a8" name="a24314a9c15b39fcf8c44ce946207b0a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24314a9c15b39fcf8c44ce946207b0a8">&#9670;&#160;</a></span>placeMachine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::logistics::Logistics::placeMachine </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>recipeId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Place a rectangular machine footprint and bind a recipe. </p>
+<dl class="section return"><dt>返回</dt><dd>Stable machine id (&gt;=0). </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>Input port faces west of origin; output port faces east of origin+width-1. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00161">161</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00016">cell</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="CardTypes_8cpp_source.html#l00036">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00037">cy</a>, <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7ace2c8aed9c2fa0cfbed56cbda4d8bf07">eve::logistics::Empty</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Logistics_8h_source.html#l00153">height()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00011">kind</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00151">layer</a>, <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7a47c954121886a5e5aaca7eece461b56f">eve::logistics::Machine</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00514">eve::Result&lt; void &gt;::ok()</a>, <a class="el" href="RPGBalance_8cpp_source.html#l00100">slot</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="Logistics_8h_source.html#l00151">width()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="a5a055aec0d86d224888df8a390a09b7f" name="a5a055aec0d86d224888df8a390a09b7f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a055aec0d86d224888df8a390a09b7f">&#9670;&#160;</a></span>placeSink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::logistics::Logistics::placeSink </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Place a sink that destroys items arriving from the westward adjacent belt. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00239">239</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00016">cell</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="CardTypes_8cpp_source.html#l00036">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00037">cy</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00151">layer</a>, <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7a47c954121886a5e5aaca7eece461b56f">eve::logistics::Machine</a>, <a class="el" href="Result_8h_source.html#l00514">eve::Result&lt; void &gt;::ok()</a>, <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7a1eb558b5d865ebabb06575f5f0042599">eve::logistics::Sink</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a7f3e7da3f3e93baae7f9be91695966fc" name="a7f3e7da3f3e93baae7f9be91695966fc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f3e7da3f3e93baae7f9be91695966fc">&#9670;&#160;</a></span>placeSource()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::logistics::Logistics::placeSource </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>itemType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>itemsPerSec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Place an item emitter that injects <code>itemType</code> onto the eastward adjacent belt. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00222">222</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TacticsPath_8cpp_source.html#l00016">cell</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="CardTypes_8cpp_source.html#l00036">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00037">cy</a>, <a class="el" href="namespaceeve_1_1logistics.html#a300c551800d1ea6511ded9fb77ad1f93aa99dc62d017d04cf67266593f9c3761e">eve::logistics::East</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00151">layer</a>, <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7a47c954121886a5e5aaca7eece461b56f">eve::logistics::Machine</a>, <a class="el" href="Result_8h_source.html#l00514">eve::Result&lt; void &gt;::ok()</a>, <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7af31bbdd1b3e85bccd652680e16935819">eve::logistics::Source</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a21062d184bb1fe5837d27ae8de537990" name="a21062d184bb1fe5837d27ae8de537990"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a21062d184bb1fe5837d27ae8de537990">&#9670;&#160;</a></span>registerRecipe()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::logistics::Logistics::registerRecipe </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>inputType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>inputCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>outputType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>outputCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>durationSec</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register or replace a named recipe. </p>
+<dl class="section return"><dt>返回</dt><dd>recipe index. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00116">116</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a198d8ef3aa76b2746af3df638bd5353e" name="a198d8ef3aa76b2746af3df638bd5353e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a198d8ef3aa76b2746af3df638bd5353e">&#9670;&#160;</a></span>removeMachine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::logistics::Logistics::removeMachine </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>machineId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a machine by id and free its footprint cells. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00206">206</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7a47c954121886a5e5aaca7eece461b56f">eve::logistics::Machine</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Result_8h_source.html#l00514">eve::Result&lt; void &gt;::ok()</a>, <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">x</a> , 以及 <a class="el" href="ActionGuidePack_8cpp_source.html#l00377">y</a>.</p>
+
+</div>
+</div>
+<a id="ad0adbb8454d893076fd8c65fa15d52dd" name="ad0adbb8454d893076fd8c65fa15d52dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0adbb8454d893076fd8c65fa15d52dd">&#9670;&#160;</a></span>setBeltSpeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::logistics::Logistics::setBeltSpeed </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>cellsPerSec</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Default belt speed in cells per second. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00200">200</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af57db47d3e2a95947dd2f96746d25c39" name="af57db47d3e2a95947dd2f96746d25c39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af57db47d3e2a95947dd2f96746d25c39">&#9670;&#160;</a></span>setBufferCapacity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::logistics::Logistics::setBufferCapacity </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>capacity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Max items stored in a machine input or output buffer. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00204">204</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsParticles_8cpp_source.html#l00037">capacity</a>.</p>
+
+</div>
+</div>
+<a id="af0993e1b9d1c722b047443a365500db7" name="af0993e1b9d1c722b047443a365500db7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0993e1b9d1c722b047443a365500db7">&#9670;&#160;</a></span>spawnItem()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; int &gt; eve::logistics::Logistics::spawnItem </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>cy</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>itemType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>layer</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Spawn one item onto a belt cell at progress 0. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a> 第 <a class="el" href="Logistics_8cpp_source.html#l00284">284</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1logistics.html#a8f159ec9bb51e19c80e6c0166b6f23a7ad1d0518303e6170ce9bb8bc1bd54248c">eve::logistics::Belt</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00016">cell</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="CardTypes_8cpp_source.html#l00036">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00037">cy</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00151">layer</a>, <a class="el" href="Result_8h_source.html#l00514">eve::Result&lt; void &gt;::ok()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="a98d40e9973fb985cb991a4c5a5e6b5eb" name="a98d40e9973fb985cb991a4c5a5e6b5eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98d40e9973fb985cb991a4c5a5e6b5eb">&#9670;&#160;</a></span>sunkTotal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::logistics::Logistics::sunkTotal </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Items destroyed by sinks since configure/clear. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00195">195</a> 行定义.</p>
+
+</div>
+</div>
+<a id="affde6137ff7fa78ee39e748f6e49c16f" name="affde6137ff7fa78ee39e748f6e49c16f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affde6137ff7fa78ee39e748f6e49c16f">&#9670;&#160;</a></span>width()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::logistics::Logistics::width </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Grid width in cells. </p>
+
+<p class="definition">在文件 <a class="el" href="Logistics_8h_source.html">Logistics.h</a> 第 <a class="el" href="Logistics_8h_source.html#l00151">151</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Logistics_8cpp_source.html#l00030">configure()</a> , 以及 <a class="el" href="Logistics_8cpp_source.html#l00161">placeMachine()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/logistics/<a class="el" href="Logistics_8h_source.html">Logistics.h</a></li>
+<li>src/modules/logistics/<a class="el" href="Logistics_8cpp_source.html">Logistics.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,734 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::growth::GrowthWorld类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1growth.html">growth</a></li><li class="navelem"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html">GrowthWorld</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="#friends">友元</a> &#124;
+<a href="classeve_1_1growth_1_1GrowthWorld-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::growth::GrowthWorld类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owner of calendar, RNG seed, and the sole simulation advance path.  
+ <a href="classeve_1_1growth_1_1GrowthWorld.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="GrowthSystem_8h_source.html">GrowthSystem.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ab5e6c49e7ea83227ff35f37d09edf2c0" id="r_ab5e6c49e7ea83227ff35f37d09edf2c0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#ab5e6c49e7ea83227ff35f37d09edf2c0">GrowthWorld</a> ()=default</td></tr>
+<tr class="separator:ab5e6c49e7ea83227ff35f37d09edf2c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3cef0d1064e91014f2ffb68cc2369e35" id="r_a3cef0d1064e91014f2ffb68cc2369e35"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#a3cef0d1064e91014f2ffb68cc2369e35">setSecondsPerSimDay</a> (double seconds) noexcept</td></tr>
+<tr class="memdesc:a3cef0d1064e91014f2ffb68cc2369e35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seconds of <a class="el" href="structeve_1_1SimulationStep.html#a89ec67c7e4c7e873e6fa2da019dbb890" title="Fixed simulation duration for this step.">SimulationStep.delta</a> that equal one simulation day.  <br /></td></tr>
+<tr class="separator:a3cef0d1064e91014f2ffb68cc2369e35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a951324d88db20ed580a5d22afa746258" id="r_a951324d88db20ed580a5d22afa746258"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#a951324d88db20ed580a5d22afa746258">secondsPerSimDay</a> () const noexcept</td></tr>
+<tr class="separator:a951324d88db20ed580a5d22afa746258"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8621e9110d83f78e2c04a7e624e1240" id="r_ac8621e9110d83f78e2c04a7e624e1240"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#ac8621e9110d83f78e2c04a7e624e1240">setRngSeed</a> (std::uint64_t <a class="el" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>) noexcept</td></tr>
+<tr class="memdesc:ac8621e9110d83f78e2c04a7e624e1240"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic seed for disease / yield hash streams.  <br /></td></tr>
+<tr class="separator:ac8621e9110d83f78e2c04a7e624e1240"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39603f3dda8c6be789f1ff2df03a8c7a" id="r_a39603f3dda8c6be789f1ff2df03a8c7a"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#a39603f3dda8c6be789f1ff2df03a8c7a">rngSeed</a> () const noexcept</td></tr>
+<tr class="separator:a39603f3dda8c6be789f1ff2df03a8c7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed3db412f3fd07a2be57cd8c8acb8e06" id="r_aed3db412f3fd07a2be57cd8c8acb8e06"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1growth_1_1GrowthCalendar.html">GrowthCalendar</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#aed3db412f3fd07a2be57cd8c8acb8e06">calendar</a> () noexcept</td></tr>
+<tr class="separator:aed3db412f3fd07a2be57cd8c8acb8e06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9757ab02b8868a5aa743d15fa6529300" id="r_a9757ab02b8868a5aa743d15fa6529300"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1growth_1_1GrowthCalendar.html">GrowthCalendar</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#a9757ab02b8868a5aa743d15fa6529300">calendar</a> () const noexcept</td></tr>
+<tr class="separator:a9757ab02b8868a5aa743d15fa6529300"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ce5af9c2037691d8c73147b396ea768" id="r_a1ce5af9c2037691d8c73147b396ea768"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1growth_1_1GrowthEventLog.html">GrowthEventLog</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#a1ce5af9c2037691d8c73147b396ea768">events</a> () noexcept</td></tr>
+<tr class="separator:a1ce5af9c2037691d8c73147b396ea768"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a394e483d8826fe043b6152fac2ea1010" id="r_a394e483d8826fe043b6152fac2ea1010"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classeve_1_1growth_1_1GrowthEventLog.html">GrowthEventLog</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#a394e483d8826fe043b6152fac2ea1010">events</a> () const noexcept</td></tr>
+<tr class="separator:a394e483d8826fe043b6152fac2ea1010"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6893b87f497531f8818d63ebdbf91bd" id="r_af6893b87f497531f8818d63ebdbf91bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#af6893b87f497531f8818d63ebdbf91bd">step</a> (const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;step)</td></tr>
+<tr class="memdesc:af6893b87f497531f8818d63ebdbf91bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a fixed <a class="el" href="structeve_1_1SimulationStep.html" title="One deterministic fixed-step emitted by SimulationClock.">SimulationStep</a> into fractional sim days and advances. @cost Linear in live organism count for the fractional day span.  <br /></td></tr>
+<tr class="separator:af6893b87f497531f8818d63ebdbf91bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e651c6509442ec7b91b4eb5073f7f3c" id="r_a0e651c6509442ec7b91b4eb5073f7f3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#a0e651c6509442ec7b91b4eb5073f7f3c">advanceDays</a> (double days)</td></tr>
+<tr class="memdesc:a0e651c6509442ec7b91b4eb5073f7f3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Advances every live organism by simulation days (may be fractional). @cost Linear in organism count × whole-day crossings for calendar events.  <br /></td></tr>
+<tr class="separator:a0e651c6509442ec7b91b4eb5073f7f3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90b34f7ebf20e54716b940e03753d819" id="r_a90b34f7ebf20e54716b940e03753d819"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#a90b34f7ebf20e54716b940e03753d819">tryBreed</a> (<a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> &amp;carrier, <a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> &amp;partner)</td></tr>
+<tr class="memdesc:a90b34f7ebf20e54716b940e03753d819"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts pair_gestation on carrier when both partners satisfy the species rules. @cost Cheap validation + component write; offspring spawn on later advance.  <br /></td></tr>
+<tr class="separator:a90b34f7ebf20e54716b940e03753d819"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97ccb15f2999688542d6d65aa33d5b46" id="r_a97ccb15f2999688542d6d65aa33d5b46"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#a97ccb15f2999688542d6d65aa33d5b46">tryReproduce</a> (<a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> &amp;organism)</td></tr>
+<tr class="memdesc:a97ccb15f2999688542d6d65aa33d5b46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Triggers a solo reproduction pulse for self_bud / fission / spore_burst.  <br /></td></tr>
+<tr class="separator:a97ccb15f2999688542d6d65aa33d5b46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ef4bd7d424516a92ae19d299dfaf05e" id="r_a8ef4bd7d424516a92ae19d299dfaf05e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#a8ef4bd7d424516a92ae19d299dfaf05e">resetForTests</a> ()</td></tr>
+<tr class="memdesc:a8ef4bd7d424516a92ae19d299dfaf05e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clears organisms' world-facing bookkeeping used by tests (events + calendar).  <br /></td></tr>
+<tr class="separator:a8ef4bd7d424516a92ae19d299dfaf05e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a12beda480a1dd6309027be17867e297d" id="r_a12beda480a1dd6309027be17867e297d"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1growth_1_1GrowthWorld.html">GrowthWorld</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#a12beda480a1dd6309027be17867e297d">instance</a> ()</td></tr>
+<tr class="memdesc:a12beda480a1dd6309027be17867e297d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Process-wide world used by <a class="el" href="classeve_1_1growth_1_1Organism.html" title="Growth short-root entity for any configured lifeform.">Organism</a> helpers and the <a class="el" href="classeve_1_1growth_1_1Growth.html" title="Farm growth module facade (eve.Growth): species registry + world step.">Growth</a> module.  <br /></td></tr>
+<tr class="separator:a12beda480a1dd6309027be17867e297d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab994fd243502721306bda9b79264fb0e" id="r_ab994fd243502721306bda9b79264fb0e"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#ab994fd243502721306bda9b79264fb0e">resetInstance</a> ()</td></tr>
+<tr class="memdesc:ab994fd243502721306bda9b79264fb0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Replaces process instance with a fresh world (tests).  <br /></td></tr>
+<tr class="separator:ab994fd243502721306bda9b79264fb0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+友元</h2></td></tr>
+<tr class="memitem:ad9bf847964019af8b96d9bd848944893" id="r_ad9bf847964019af8b96d9bd848944893"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html#ad9bf847964019af8b96d9bd848944893">Organism</a></td></tr>
+<tr class="separator:ad9bf847964019af8b96d9bd848944893"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owner of calendar, RNG seed, and the sole simulation advance path. </p>
+<p>Callers inject <a class="el" href="structeve_1_1SimulationStep.html" title="One deterministic fixed-step emitted by SimulationClock.">SimulationStep</a> (or explicit sim days). Wall clock is never read. </p>
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8h_source.html">GrowthSystem.h</a> 第 <a class="el" href="GrowthSystem_8h_source.html#l00019">19</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ab5e6c49e7ea83227ff35f37d09edf2c0" name="ab5e6c49e7ea83227ff35f37d09edf2c0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5e6c49e7ea83227ff35f37d09edf2c0">&#9670;&#160;</a></span>GrowthWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::growth::GrowthWorld::GrowthWorld </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a0e651c6509442ec7b91b4eb5073f7f3c" name="a0e651c6509442ec7b91b4eb5073f7f3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e651c6509442ec7b91b4eb5073f7f3c">&#9670;&#160;</a></span>advanceDays()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::growth::GrowthWorld::advanceDays </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>days</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Advances every live organism by simulation days (may be fractional). @cost Linear in organism count × whole-day crossings for calendar events. </p>
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8cpp_source.html">GrowthSystem.cpp</a> 第 <a class="el" href="GrowthSystem_8cpp_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthCalendar_8cpp_source.html#l00136">eve::growth::GrowthCalendar::advanceWholeDays()</a>, <a class="el" href="GrowthCalendar_8h_source.html#l00056">eve::growth::GrowthCalendar::dayIndex()</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Organism_8cpp_source.html#l00080">eve::growth::Organism::isDead()</a>, <a class="el" href="Organism_8cpp_source.html#l00052">eve::growth::Organism::liveOrganisms()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Growth_8cpp_source.html#l00035">eve::growth::Growth::advanceDays()</a> , 以及 <a class="el" href="GrowthSystem_8cpp_source.html#l00095">step()</a>.</p>
+
+</div>
+</div>
+<a id="a9757ab02b8868a5aa743d15fa6529300" name="a9757ab02b8868a5aa743d15fa6529300"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9757ab02b8868a5aa743d15fa6529300">&#9670;&#160;</a></span>calendar() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1growth_1_1GrowthCalendar.html">GrowthCalendar</a> &amp; eve::growth::GrowthWorld::calendar </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8h_source.html">GrowthSystem.h</a> 第 <a class="el" href="GrowthSystem_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed3db412f3fd07a2be57cd8c8acb8e06" name="aed3db412f3fd07a2be57cd8c8acb8e06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed3db412f3fd07a2be57cd8c8acb8e06">&#9670;&#160;</a></span>calendar() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1growth_1_1GrowthCalendar.html">GrowthCalendar</a> &amp; eve::growth::GrowthWorld::calendar </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8h_source.html">GrowthSystem.h</a> 第 <a class="el" href="GrowthSystem_8h_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Growth_8cpp_source.html#l00050">eve::growth::Growth::dayIndex()</a>, <a class="el" href="Growth_8cpp_source.html#l00054">eve::growth::Growth::seasonName()</a>, <a class="el" href="Growth_8cpp_source.html#l00023">eve::growth::Growth::setDaysPerSeason()</a>, <a class="el" href="Growth_8cpp_source.html#l00025">eve::growth::Growth::setSeasonLayoutFromJson()</a> , 以及 <a class="el" href="Growth_8cpp_source.html#l00052">eve::growth::Growth::year()</a>.</p>
+
+</div>
+</div>
+<a id="a394e483d8826fe043b6152fac2ea1010" name="a394e483d8826fe043b6152fac2ea1010"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a394e483d8826fe043b6152fac2ea1010">&#9670;&#160;</a></span>events() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="classeve_1_1growth_1_1GrowthEventLog.html">GrowthEventLog</a> &amp; eve::growth::GrowthWorld::events </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8h_source.html">GrowthSystem.h</a> 第 <a class="el" href="GrowthSystem_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ce5af9c2037691d8c73147b396ea768" name="a1ce5af9c2037691d8c73147b396ea768"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ce5af9c2037691d8c73147b396ea768">&#9670;&#160;</a></span>events() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1growth_1_1GrowthEventLog.html">GrowthEventLog</a> &amp; eve::growth::GrowthWorld::events </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8h_source.html">GrowthSystem.h</a> 第 <a class="el" href="GrowthSystem_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Growth_8cpp_source.html#l00098">eve::growth::Growth::clearEvents()</a>, <a class="el" href="Growth_8cpp_source.html#l00100">eve::growth::Growth::eventCount()</a>, <a class="el" href="Growth_8cpp_source.html#l00118">eve::growth::Growth::eventDetail()</a>, <a class="el" href="Growth_8cpp_source.html#l00102">eve::growth::Growth::eventKind()</a>, <a class="el" href="Growth_8cpp_source.html#l00108">eve::growth::Growth::eventOrganismId()</a> , 以及 <a class="el" href="Growth_8cpp_source.html#l00113">eve::growth::Growth::eventSpeciesId()</a>.</p>
+
+</div>
+</div>
+<a id="a12beda480a1dd6309027be17867e297d" name="a12beda480a1dd6309027be17867e297d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a12beda480a1dd6309027be17867e297d">&#9670;&#160;</a></span>instance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1growth_1_1GrowthWorld.html">GrowthWorld</a> &amp; eve::growth::GrowthWorld::instance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Process-wide world used by <a class="el" href="classeve_1_1growth_1_1Organism.html" title="Growth short-root entity for any configured lifeform.">Organism</a> helpers and the <a class="el" href="classeve_1_1growth_1_1Growth.html" title="Farm growth module facade (eve.Growth): species registry + world step.">Growth</a> module. </p>
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8cpp_source.html">GrowthSystem.cpp</a> 第 <a class="el" href="GrowthSystem_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Growth_8cpp_source.html#l00035">eve::growth::Growth::advanceDays()</a>, <a class="el" href="Growth_8cpp_source.html#l00098">eve::growth::Growth::clearEvents()</a>, <a class="el" href="Growth_8cpp_source.html#l00050">eve::growth::Growth::dayIndex()</a>, <a class="el" href="Growth_8cpp_source.html#l00100">eve::growth::Growth::eventCount()</a>, <a class="el" href="Growth_8cpp_source.html#l00118">eve::growth::Growth::eventDetail()</a>, <a class="el" href="Growth_8cpp_source.html#l00102">eve::growth::Growth::eventKind()</a>, <a class="el" href="Growth_8cpp_source.html#l00108">eve::growth::Growth::eventOrganismId()</a>, <a class="el" href="Growth_8cpp_source.html#l00113">eve::growth::Growth::eventSpeciesId()</a>, <a class="el" href="Organism_8cpp_source.html#l00137">eve::growth::Organism::harvest()</a>, <a class="el" href="Organism_8cpp_source.html#l00098">eve::growth::Organism::refillNeed()</a>, <a class="el" href="Growth_8cpp_source.html#l00054">eve::growth::Growth::seasonName()</a>, <a class="el" href="Growth_8cpp_source.html#l00023">eve::growth::Growth::setDaysPerSeason()</a>, <a class="el" href="Growth_8cpp_source.html#l00033">eve::growth::Growth::setRngSeed()</a>, <a class="el" href="Growth_8cpp_source.html#l00025">eve::growth::Growth::setSeasonLayoutFromJson()</a>, <a class="el" href="Growth_8cpp_source.html#l00029">eve::growth::Growth::setSecondsPerSimDay()</a>, <a class="el" href="Growth_8cpp_source.html#l00037">eve::growth::Growth::stepSeconds()</a>, <a class="el" href="Growth_8cpp_source.html#l00082">eve::growth::Growth::tryBreed()</a>, <a class="el" href="Growth_8cpp_source.html#l00090">eve::growth::Growth::tryReproduce()</a> , 以及 <a class="el" href="Growth_8cpp_source.html#l00052">eve::growth::Growth::year()</a>.</p>
+
+</div>
+</div>
+<a id="a8ef4bd7d424516a92ae19d299dfaf05e" name="a8ef4bd7d424516a92ae19d299dfaf05e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ef4bd7d424516a92ae19d299dfaf05e">&#9670;&#160;</a></span>resetForTests()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::growth::GrowthWorld::resetForTests </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clears organisms' world-facing bookkeeping used by tests (events + calendar). </p>
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8cpp_source.html">GrowthSystem.cpp</a> 第 <a class="el" href="GrowthSystem_8cpp_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthEvents_8cpp_source.html#l00007">eve::growth::GrowthEventLog::clear()</a> , 以及 <a class="el" href="GrowthCalendar_8cpp_source.html#l00141">eve::growth::GrowthCalendar::reset()</a>.</p>
+
+</div>
+</div>
+<a id="ab994fd243502721306bda9b79264fb0e" name="ab994fd243502721306bda9b79264fb0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab994fd243502721306bda9b79264fb0e">&#9670;&#160;</a></span>resetInstance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::growth::GrowthWorld::resetInstance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Replaces process instance with a fresh world (tests). </p>
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8cpp_source.html">GrowthSystem.cpp</a> 第 <a class="el" href="GrowthSystem_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Organism_8cpp_source.html#l00052">eve::growth::Organism::liveOrganisms()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Growth_8cpp_source.html#l00123">eve::growth::Growth::resetWorld()</a>.</p>
+
+</div>
+</div>
+<a id="a39603f3dda8c6be789f1ff2df03a8c7a" name="a39603f3dda8c6be789f1ff2df03a8c7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39603f3dda8c6be789f1ff2df03a8c7a">&#9670;&#160;</a></span>rngSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::growth::GrowthWorld::rngSeed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8h_source.html">GrowthSystem.h</a> 第 <a class="el" href="GrowthSystem_8h_source.html#l00029">29</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a951324d88db20ed580a5d22afa746258" name="a951324d88db20ed580a5d22afa746258"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a951324d88db20ed580a5d22afa746258">&#9670;&#160;</a></span>secondsPerSimDay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::growth::GrowthWorld::secondsPerSimDay </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8h_source.html">GrowthSystem.h</a> 第 <a class="el" href="GrowthSystem_8h_source.html#l00025">25</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac8621e9110d83f78e2c04a7e624e1240" name="ac8621e9110d83f78e2c04a7e624e1240"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8621e9110d83f78e2c04a7e624e1240">&#9670;&#160;</a></span>setRngSeed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::growth::GrowthWorld::setRngSeed </td>
+          <td>(</td>
+          <td class="paramtype">std::uint64_t&#160;</td>
+          <td class="paramname"><em>seed</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Deterministic seed for disease / yield hash streams. </p>
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8h_source.html">GrowthSystem.h</a> 第 <a class="el" href="GrowthSystem_8h_source.html#l00028">28</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PointSet_8cpp_source.html#l00811">seed</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Growth_8cpp_source.html#l00033">eve::growth::Growth::setRngSeed()</a>.</p>
+
+</div>
+</div>
+<a id="a3cef0d1064e91014f2ffb68cc2369e35" name="a3cef0d1064e91014f2ffb68cc2369e35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cef0d1064e91014f2ffb68cc2369e35">&#9670;&#160;</a></span>setSecondsPerSimDay()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::growth::GrowthWorld::setSecondsPerSimDay </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Seconds of <a class="el" href="structeve_1_1SimulationStep.html#a89ec67c7e4c7e873e6fa2da019dbb890" title="Fixed simulation duration for this step.">SimulationStep.delta</a> that equal one simulation day. </p>
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8cpp_source.html">GrowthSystem.cpp</a> 第 <a class="el" href="GrowthSystem_8cpp_source.html#l00070">70</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Growth_8cpp_source.html#l00029">eve::growth::Growth::setSecondsPerSimDay()</a>.</p>
+
+</div>
+</div>
+<a id="af6893b87f497531f8818d63ebdbf91bd" name="af6893b87f497531f8818d63ebdbf91bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6893b87f497531f8818d63ebdbf91bd">&#9670;&#160;</a></span>step()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::growth::GrowthWorld::step </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts a fixed <a class="el" href="structeve_1_1SimulationStep.html" title="One deterministic fixed-step emitted by SimulationClock.">SimulationStep</a> into fractional sim days and advances. @cost Linear in live organism count for the fractional day span. </p>
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8cpp_source.html">GrowthSystem.cpp</a> 第 <a class="el" href="GrowthSystem_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GrowthSystem_8cpp_source.html#l00104">advanceDays()</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Growth_8cpp_source.html#l00037">eve::growth::Growth::stepSeconds()</a>.</p>
+
+</div>
+</div>
+<a id="a90b34f7ebf20e54716b940e03753d819" name="a90b34f7ebf20e54716b940e03753d819"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90b34f7ebf20e54716b940e03753d819">&#9670;&#160;</a></span>tryBreed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::growth::GrowthWorld::tryBreed </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> &amp;&#160;</td>
+          <td class="paramname"><em>carrier</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> &amp;&#160;</td>
+          <td class="paramname"><em>partner</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Starts pair_gestation on carrier when both partners satisfy the species rules. @cost Cheap validation + component write; offspring spawn on later advance. </p>
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8cpp_source.html">GrowthSystem.cpp</a> 第 <a class="el" href="GrowthSystem_8cpp_source.html#l00318">318</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a9cdf4bce4cb098c44c699ecf43c2990b">eve::growth::Bred</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Species_8cpp_source.html#l00540">eve::growth::SpeciesRegistry::find()</a>, <a class="el" href="Species_8h_source.html#l00055">eve::growth::ReproductionDef::gestationDays</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Organism_8cpp_source.html#l00080">eve::growth::Organism::isDead()</a>, <a class="el" href="Organism_8cpp_source.html#l00078">eve::growth::Organism::isMature()</a>, <a class="el" href="Organism_8cpp_source.html#l00086">eve::growth::Organism::isPregnant()</a>, <a class="el" href="Species_8h_source.html#l00054">eve::growth::ReproductionDef::mode</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18a35aace7e5c74d9c18da72cde07542df7">eve::growth::PairGestation</a>, <a class="el" href="Species_8h_source.html#l00061">eve::growth::ReproductionDef::partnerMustSameSpecies</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Species_8h_source.html#l00103">eve::growth::SpeciesDef::reproduction</a>, <a class="el" href="Species_8h_source.html#l00060">eve::growth::ReproductionDef::requiresPartner</a>, <a class="el" href="Organism_8cpp_source.html#l00060">eve::growth::Organism::speciesId()</a>, <a class="el" href="Organism_8cpp_source.html#l00171">eve::growth::Organism::stableId()</a> , 以及 <a class="el" href="Result_8h_source.html#l00185">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Growth_8cpp_source.html#l00082">eve::growth::Growth::tryBreed()</a>.</p>
+
+</div>
+</div>
+<a id="a97ccb15f2999688542d6d65aa33d5b46" name="a97ccb15f2999688542d6d65aa33d5b46"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97ccb15f2999688542d6d65aa33d5b46">&#9670;&#160;</a></span>tryReproduce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::growth::GrowthWorld::tryReproduce </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a> &amp;&#160;</td>
+          <td class="paramname"><em>organism</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Triggers a solo reproduction pulse for self_bud / fission / spore_burst. </p>
+<dl class="section remark"><dt>备注</dt><dd>Interval modes also fire automatically from advanceDays; this forces one attempt. @cost Cheap validation; may spawn organisms immediately. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8cpp_source.html">GrowthSystem.cpp</a> 第 <a class="el" href="GrowthSystem_8cpp_source.html#l00363">363</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1growth.html#aaf57392c19dfe5ef25a50eb87aeacad7a9cdf4bce4cb098c44c699ecf43c2990b">eve::growth::Bred</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00033">count</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00021">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00196">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="Species_8cpp_source.html#l00540">eve::growth::SpeciesRegistry::find()</a>, <a class="el" href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18a8ad61c516d68a74deb9d3c753e98a82b">eve::growth::Fission</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="Organism_8cpp_source.html#l00080">eve::growth::Organism::isDead()</a>, <a class="el" href="Organism_8cpp_source.html#l00078">eve::growth::Organism::isMature()</a>, <a class="el" href="Species_8h_source.html#l00085">eve::growth::SpeciesDef::kindId</a>, <a class="el" href="Species_8h_source.html#l00054">eve::growth::ReproductionDef::mode</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a38c300f4fc9ce8a77aad4a30de05cad8">eve::NotFound</a>, <a class="el" href="Species_8h_source.html#l00058">eve::growth::ReproductionDef::offspringCountMax</a>, <a class="el" href="Species_8h_source.html#l00057">eve::growth::ReproductionDef::offspringCountMin</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="Species_8h_source.html#l00103">eve::growth::SpeciesDef::reproduction</a>, <a class="el" href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18ad6ce1e683512b6f02d4b73deca9e191e">eve::growth::SelfBud</a>, <a class="el" href="Organism_8cpp_source.html#l00060">eve::growth::Organism::speciesId()</a> , 以及 <a class="el" href="namespaceeve_1_1growth.html#a606eeafe9e1dabdf6e6138983e7d9f18ac170f2cf13e012b368982e9f48b8b6ae">eve::growth::SporeBurst</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Growth_8cpp_source.html#l00090">eve::growth::Growth::tryReproduce()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">友元及相关函数文档</h2>
+<a id="ad9bf847964019af8b96d9bd848944893" name="ad9bf847964019af8b96d9bd848944893"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9bf847964019af8b96d9bd848944893">&#9670;&#160;</a></span>Organism</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classeve_1_1growth_1_1Organism.html">Organism</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="GrowthSystem_8h_source.html">GrowthSystem.h</a> 第 <a class="el" href="GrowthSystem_8h_source.html#l00070">70</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/growth/<a class="el" href="GrowthSystem_8h_source.html">GrowthSystem.h</a></li>
+<li>src/modules/growth/<a class="el" href="GrowthSystem_8cpp_source.html">GrowthSystem.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

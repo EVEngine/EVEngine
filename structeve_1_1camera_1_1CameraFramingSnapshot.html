@@ -1,0 +1,719 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::camera::CameraFramingSnapshot结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.7.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1camera.html">camera</a></li><li class="navelem"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html">CameraFramingSnapshot</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1camera_1_1CameraFramingSnapshot-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::camera::CameraFramingSnapshot结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Serializable gameplay camera framing for story push/pop restore.  
+ <a href="structeve_1_1camera_1_1CameraFramingSnapshot.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CameraController_8h_source.html">CameraController.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a51a022a31f5912e41dbd8daae00a180e" id="r_a51a022a31f5912e41dbd8daae00a180e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a51a022a31f5912e41dbd8daae00a180e">mode</a> = &quot;follow&quot;</td></tr>
+<tr class="separator:a51a022a31f5912e41dbd8daae00a180e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19f0dbf2afac7da3996e767bdd515762" id="r_a19f0dbf2afac7da3996e767bdd515762"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a19f0dbf2afac7da3996e767bdd515762">activeRig</a></td></tr>
+<tr class="separator:a19f0dbf2afac7da3996e767bdd515762"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f5611c2204fc4798c5dafdc223a98cd" id="r_a4f5611c2204fc4798c5dafdc223a98cd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a4f5611c2204fc4798c5dafdc223a98cd">targetX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a4f5611c2204fc4798c5dafdc223a98cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab24e88344c2dc833ab3431765f5ac8cc" id="r_ab24e88344c2dc833ab3431765f5ac8cc"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#ab24e88344c2dc833ab3431765f5ac8cc">targetY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab24e88344c2dc833ab3431765f5ac8cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a92b1b379efbb07be85eb053e231565" id="r_a6a92b1b379efbb07be85eb053e231565"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a6a92b1b379efbb07be85eb053e231565">targetZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6a92b1b379efbb07be85eb053e231565"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96216a6d04351152c50441f2b7884c72" id="r_a96216a6d04351152c50441f2b7884c72"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a96216a6d04351152c50441f2b7884c72">offsetX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a96216a6d04351152c50441f2b7884c72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a740c06a9cb8bf3f645ae7396110d6f8b" id="r_a740c06a9cb8bf3f645ae7396110d6f8b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a740c06a9cb8bf3f645ae7396110d6f8b">offsetY</a> = 2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a740c06a9cb8bf3f645ae7396110d6f8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3bb09bf2230d366bf786da67430d566" id="r_ab3bb09bf2230d366bf786da67430d566"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#ab3bb09bf2230d366bf786da67430d566">offsetZ</a> = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab3bb09bf2230d366bf786da67430d566"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafbe7e06f17ced74f09459690c900b68" id="r_aafbe7e06f17ced74f09459690c900b68"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#aafbe7e06f17ced74f09459690c900b68">lookAheadX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aafbe7e06f17ced74f09459690c900b68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeec109a5ac83d4d0b24cd2e0e8ec37a3" id="r_aeec109a5ac83d4d0b24cd2e0e8ec37a3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#aeec109a5ac83d4d0b24cd2e0e8ec37a3">lookAheadY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aeec109a5ac83d4d0b24cd2e0e8ec37a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28879b07d6eb90ec358cd4be35d6255b" id="r_a28879b07d6eb90ec358cd4be35d6255b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a28879b07d6eb90ec358cd4be35d6255b">lookAheadZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a28879b07d6eb90ec358cd4be35d6255b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ddb9167fdceb9be4b0dc282c4348d30" id="r_a8ddb9167fdceb9be4b0dc282c4348d30"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a8ddb9167fdceb9be4b0dc282c4348d30">radius</a> = 10.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8ddb9167fdceb9be4b0dc282c4348d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae12c2dc88c44db8a5d1f11f69e047159" id="r_ae12c2dc88c44db8a5d1f11f69e047159"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#ae12c2dc88c44db8a5d1f11f69e047159">azimuth</a> = 45.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae12c2dc88c44db8a5d1f11f69e047159"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33142f4079e72e3517495bee4d42de65" id="r_a33142f4079e72e3517495bee4d42de65"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a33142f4079e72e3517495bee4d42de65">elevation</a> = 30.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a33142f4079e72e3517495bee4d42de65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9348673aeef055a84e7853d526e02242" id="r_a9348673aeef055a84e7853d526e02242"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a9348673aeef055a84e7853d526e02242">yaw</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9348673aeef055a84e7853d526e02242"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8511bfd55441d71cc3649387ef6804b7" id="r_a8511bfd55441d71cc3649387ef6804b7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a8511bfd55441d71cc3649387ef6804b7">pitch</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8511bfd55441d71cc3649387ef6804b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70b002dc97b3343396a2a5f725289f3d" id="r_a70b002dc97b3343396a2a5f725289f3d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a70b002dc97b3343396a2a5f725289f3d">fov</a> = 60.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a70b002dc97b3343396a2a5f725289f3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa952f3861fb33566464cd49a5b0081c" id="r_afa952f3861fb33566464cd49a5b0081c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#afa952f3861fb33566464cd49a5b0081c">smooth</a> = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:afa952f3861fb33566464cd49a5b0081c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb8e365374b10633b61d1473f4e5297f" id="r_aeb8e365374b10633b61d1473f4e5297f"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#aeb8e365374b10633b61d1473f4e5297f">positionSmooth</a> = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aeb8e365374b10633b61d1473f4e5297f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30b200a0f7da4d8bd336b32e1420f1f3" id="r_a30b200a0f7da4d8bd336b32e1420f1f3"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a30b200a0f7da4d8bd336b32e1420f1f3">targetSmooth</a> = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a30b200a0f7da4d8bd336b32e1420f1f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6647e72e9645cfcaca3f3e6fb0d63ed6" id="r_a6647e72e9645cfcaca3f3e6fb0d63ed6"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a6647e72e9645cfcaca3f3e6fb0d63ed6">maxSpeed</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6647e72e9645cfcaca3f3e6fb0d63ed6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3404a012f6d434488dd516fb2aad144b" id="r_a3404a012f6d434488dd516fb2aad144b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a3404a012f6d434488dd516fb2aad144b">eyeX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3404a012f6d434488dd516fb2aad144b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2310bde1e12a843f4f8ab1cbc2d66864" id="r_a2310bde1e12a843f4f8ab1cbc2d66864"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a2310bde1e12a843f4f8ab1cbc2d66864">eyeY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2310bde1e12a843f4f8ab1cbc2d66864"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31b2e295a613b592958a59e95814dd17" id="r_a31b2e295a613b592958a59e95814dd17"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a31b2e295a613b592958a59e95814dd17">eyeZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a31b2e295a613b592958a59e95814dd17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2aab74f310b9d01b359d9b4f59c598ef" id="r_a2aab74f310b9d01b359d9b4f59c598ef"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a2aab74f310b9d01b359d9b4f59c598ef">lookX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a2aab74f310b9d01b359d9b4f59c598ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6423759cc74f371fa43cb2401c5b8f68" id="r_a6423759cc74f371fa43cb2401c5b8f68"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a6423759cc74f371fa43cb2401c5b8f68">lookY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a6423759cc74f371fa43cb2401c5b8f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6772b1e53f88884690a985effd23561" id="r_ad6772b1e53f88884690a985effd23561"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#ad6772b1e53f88884690a985effd23561">lookZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ad6772b1e53f88884690a985effd23561"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1490613c4ff0cffde11f255760c9185" id="r_ae1490613c4ff0cffde11f255760c9185"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#ae1490613c4ff0cffde11f255760c9185">directorEnabled</a> = false</td></tr>
+<tr class="separator:ae1490613c4ff0cffde11f255760c9185"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37d16115ebc223c80283926a3d6da08a" id="r_a37d16115ebc223c80283926a3d6da08a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1camera_1_1CameraFramingSnapshot.html#a37d16115ebc223c80283926a3d6da08a">timelinePlaying</a> = false</td></tr>
+<tr class="separator:a37d16115ebc223c80283926a3d6da08a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Serializable gameplay camera framing for story push/pop restore. </p>
+<dl class="section remark"><dt>备注</dt><dd>Captures mode, active rig, follow/orbit parameters and the live smoothed pose. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00033">33</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a19f0dbf2afac7da3996e767bdd515762" name="a19f0dbf2afac7da3996e767bdd515762"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19f0dbf2afac7da3996e767bdd515762">&#9670;&#160;</a></span>activeRig</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::camera::CameraFramingSnapshot::activeRig</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae12c2dc88c44db8a5d1f11f69e047159" name="ae12c2dc88c44db8a5d1f11f69e047159"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae12c2dc88c44db8a5d1f11f69e047159">&#9670;&#160;</a></span>azimuth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::azimuth = 45.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00046">46</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae1490613c4ff0cffde11f255760c9185" name="ae1490613c4ff0cffde11f255760c9185"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1490613c4ff0cffde11f255760c9185">&#9670;&#160;</a></span>directorEnabled</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraFramingSnapshot::directorEnabled = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a33142f4079e72e3517495bee4d42de65" name="a33142f4079e72e3517495bee4d42de65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33142f4079e72e3517495bee4d42de65">&#9670;&#160;</a></span>elevation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::elevation = 30.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3404a012f6d434488dd516fb2aad144b" name="a3404a012f6d434488dd516fb2aad144b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3404a012f6d434488dd516fb2aad144b">&#9670;&#160;</a></span>eyeX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::eyeX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2310bde1e12a843f4f8ab1cbc2d66864" name="a2310bde1e12a843f4f8ab1cbc2d66864"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2310bde1e12a843f4f8ab1cbc2d66864">&#9670;&#160;</a></span>eyeY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::eyeY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00056">56</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a31b2e295a613b592958a59e95814dd17" name="a31b2e295a613b592958a59e95814dd17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31b2e295a613b592958a59e95814dd17">&#9670;&#160;</a></span>eyeZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::eyeZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a70b002dc97b3343396a2a5f725289f3d" name="a70b002dc97b3343396a2a5f725289f3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70b002dc97b3343396a2a5f725289f3d">&#9670;&#160;</a></span>fov</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::fov = 60.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aafbe7e06f17ced74f09459690c900b68" name="aafbe7e06f17ced74f09459690c900b68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafbe7e06f17ced74f09459690c900b68">&#9670;&#160;</a></span>lookAheadX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::lookAheadX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00042">42</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeec109a5ac83d4d0b24cd2e0e8ec37a3" name="aeec109a5ac83d4d0b24cd2e0e8ec37a3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeec109a5ac83d4d0b24cd2e0e8ec37a3">&#9670;&#160;</a></span>lookAheadY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::lookAheadY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a28879b07d6eb90ec358cd4be35d6255b" name="a28879b07d6eb90ec358cd4be35d6255b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28879b07d6eb90ec358cd4be35d6255b">&#9670;&#160;</a></span>lookAheadZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::lookAheadZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00044">44</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2aab74f310b9d01b359d9b4f59c598ef" name="a2aab74f310b9d01b359d9b4f59c598ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2aab74f310b9d01b359d9b4f59c598ef">&#9670;&#160;</a></span>lookX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::lookX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6423759cc74f371fa43cb2401c5b8f68" name="a6423759cc74f371fa43cb2401c5b8f68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6423759cc74f371fa43cb2401c5b8f68">&#9670;&#160;</a></span>lookY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::lookY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00059">59</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad6772b1e53f88884690a985effd23561" name="ad6772b1e53f88884690a985effd23561"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6772b1e53f88884690a985effd23561">&#9670;&#160;</a></span>lookZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::lookZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00060">60</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6647e72e9645cfcaca3f3e6fb0d63ed6" name="a6647e72e9645cfcaca3f3e6fb0d63ed6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6647e72e9645cfcaca3f3e6fb0d63ed6">&#9670;&#160;</a></span>maxSpeed</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::maxSpeed = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a51a022a31f5912e41dbd8daae00a180e" name="a51a022a31f5912e41dbd8daae00a180e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51a022a31f5912e41dbd8daae00a180e">&#9670;&#160;</a></span>mode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::camera::CameraFramingSnapshot::mode = &quot;follow&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00034">34</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CameraController_8cpp_source.html#l00424">eve::camera::CameraController::captureFraming()</a>.</p>
+
+</div>
+</div>
+<a id="a96216a6d04351152c50441f2b7884c72" name="a96216a6d04351152c50441f2b7884c72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96216a6d04351152c50441f2b7884c72">&#9670;&#160;</a></span>offsetX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::offsetX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a740c06a9cb8bf3f645ae7396110d6f8b" name="a740c06a9cb8bf3f645ae7396110d6f8b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a740c06a9cb8bf3f645ae7396110d6f8b">&#9670;&#160;</a></span>offsetY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::offsetY = 2.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab3bb09bf2230d366bf786da67430d566" name="ab3bb09bf2230d366bf786da67430d566"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3bb09bf2230d366bf786da67430d566">&#9670;&#160;</a></span>offsetZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::offsetZ = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8511bfd55441d71cc3649387ef6804b7" name="a8511bfd55441d71cc3649387ef6804b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8511bfd55441d71cc3649387ef6804b7">&#9670;&#160;</a></span>pitch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::pitch = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aeb8e365374b10633b61d1473f4e5297f" name="aeb8e365374b10633b61d1473f4e5297f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb8e365374b10633b61d1473f4e5297f">&#9670;&#160;</a></span>positionSmooth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::positionSmooth = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00052">52</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8ddb9167fdceb9be4b0dc282c4348d30" name="a8ddb9167fdceb9be4b0dc282c4348d30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ddb9167fdceb9be4b0dc282c4348d30">&#9670;&#160;</a></span>radius</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::radius = 10.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afa952f3861fb33566464cd49a5b0081c" name="afa952f3861fb33566464cd49a5b0081c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa952f3861fb33566464cd49a5b0081c">&#9670;&#160;</a></span>smooth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::smooth = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a30b200a0f7da4d8bd336b32e1420f1f3" name="a30b200a0f7da4d8bd336b32e1420f1f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30b200a0f7da4d8bd336b32e1420f1f3">&#9670;&#160;</a></span>targetSmooth</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::targetSmooth = 6.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a4f5611c2204fc4798c5dafdc223a98cd" name="a4f5611c2204fc4798c5dafdc223a98cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f5611c2204fc4798c5dafdc223a98cd">&#9670;&#160;</a></span>targetX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::targetX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab24e88344c2dc833ab3431765f5ac8cc" name="ab24e88344c2dc833ab3431765f5ac8cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab24e88344c2dc833ab3431765f5ac8cc">&#9670;&#160;</a></span>targetY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::targetY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6a92b1b379efbb07be85eb053e231565" name="a6a92b1b379efbb07be85eb053e231565"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a92b1b379efbb07be85eb053e231565">&#9670;&#160;</a></span>targetZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::targetZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a37d16115ebc223c80283926a3d6da08a" name="a37d16115ebc223c80283926a3d6da08a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37d16115ebc223c80283926a3d6da08a">&#9670;&#160;</a></span>timelinePlaying</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::camera::CameraFramingSnapshot::timelinePlaying = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00062">62</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9348673aeef055a84e7853d526e02242" name="a9348673aeef055a84e7853d526e02242"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9348673aeef055a84e7853d526e02242">&#9670;&#160;</a></span>yaw</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::camera::CameraFramingSnapshot::yaw = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CameraController_8h_source.html">CameraController.h</a> 第 <a class="el" href="CameraController_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/camera/<a class="el" href="CameraController_8h_source.html">CameraController.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
