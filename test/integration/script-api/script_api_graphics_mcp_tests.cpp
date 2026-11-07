@@ -442,6 +442,9 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     bool foundWhitebox         = false;
     bool foundRecipeList       = false;
     bool foundRecipeApply      = false;
+    bool foundAssetKitList     = false;
+    bool foundAssetKitGet      = false;
+    bool foundAssetKitResolve  = false;
     bool foundWorkshop         = false;
     bool foundUiTree           = false;
     bool foundUiGet            = false;
@@ -494,6 +497,9 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         if (name == "eve_whitebox_playtest") foundWhitebox = true;
         if (name == "eve_recipe_list") foundRecipeList = true;
         if (name == "eve_recipe_apply") foundRecipeApply = true;
+        if (name == "eve_asset_kit_list") foundAssetKitList = true;
+        if (name == "eve_asset_kit_get") foundAssetKitGet = true;
+        if (name == "eve_asset_kit_resolve") foundAssetKitResolve = true;
         if (name == "eve_workshop") foundWorkshop = true;
         if (name == "eve_ui_tree") foundUiTree = true;
         if (name == "eve_ui_get") foundUiGet = true;
@@ -542,6 +548,9 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(foundWhitebox);
     CHECK(foundRecipeList);
     CHECK(foundRecipeApply);
+    CHECK(foundAssetKitList);
+    CHECK(foundAssetKitGet);
+    CHECK(foundAssetKitResolve);
     CHECK(foundWorkshop);
     CHECK(foundUiTree);
     CHECK(foundUiGet);

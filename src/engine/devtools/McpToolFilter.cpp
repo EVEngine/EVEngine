@@ -137,6 +137,11 @@ std::vector<std::string> mcpToolTags(std::string_view name) {
         add("agent");
         return tags;
     }
+    if (startsWith(name, "eve_asset_kit_")) {
+        add("agent");
+        add("core");
+        return tags;
+    }
     if (name == "eve_workshop") {
         add("play");
         add("scene");
