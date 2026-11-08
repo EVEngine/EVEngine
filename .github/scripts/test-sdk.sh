@@ -49,15 +49,17 @@ esac
 fail() { echo "ERROR: $*" >&2; exit 1; }
 
 WORK="$(mktemp -d)"
+: > "$WORK/.eve-sdk-test-work"
 cleanup() {
   local result=$?
-  if ! rm -rf "$WORK"; then
-    if [ "$PLAT" = win32 ]; then
-      python3 "$SCRIPTS/report-windows-locks.py" "$WORK" || true
-    fi
-    return 1
+  local cleanup_result=0
+  if [ "$PLAT" = win32 ]; then
+    python3 "$SCRIPTS/../../scripts/cleanup_sdk_work.py" "$WORK" || cleanup_result=$?
+  else
+    rm -rf "$WORK" || cleanup_result=$?
   fi
-  return "$result"
+  if [ "$result" -ne 0 ]; then return "$result"; fi
+  return "$cleanup_result"
 }
 trap cleanup EXIT
 

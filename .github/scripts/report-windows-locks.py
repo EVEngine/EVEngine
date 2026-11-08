@@ -8,9 +8,9 @@ from pathlib import Path
 import sys
 
 
-def report(directory: Path) -> None:
+def report(directory: Path) -> list[int]:
     if sys.platform != "win32":
-        return
+        return []
 
     class UniqueProcess(ctypes.Structure):
         _fields_ = [("pid", wintypes.DWORD), ("started", wintypes.FILETIME)]
@@ -29,7 +29,7 @@ def report(directory: Path) -> None:
     files = sorted(str(path.resolve()) for path in directory.rglob("*") if path.is_file())
     print(f"cleanup-locks: remaining_files={len(files)}", flush=True)
     if not files:
-        return
+        return []
     # System32-only lookup avoids loading a DLL from a package or working directory.
     manager = ctypes.WinDLL("Rstrtmgr.dll", winmode=0x00000800)
     start = manager.RmStartSession
@@ -89,6 +89,7 @@ def report(directory: Path) -> None:
                 f"service={owner.service!r}",
                 flush=True,
             )
+        return [owner.process.pid for owner in owners[: count.value]]
     finally:
         end(session)
 
