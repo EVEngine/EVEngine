@@ -81,4 +81,4 @@ runs:
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.github_token }}
-      run: python3 scripts/install_swiftshader.py --destination C:/SwiftShader
+      run: python3 scripts/install_swiftshader.py --destination C:/SwiftShader --register-driver
