@@ -792,8 +792,12 @@ uint32_t Graphics::materialTableGetOrCreate(Material *material) {
     if (!material) return kInvalidBindlessSlot;
     auto it = materialTableIndex_.find(material);
     if (it != materialTableIndex_.end()) {
-        materialTableRecords_[it->second] = buildMaterialRecord(material);
-        syncMaterialTable();
+        const GpuMaterialRecord updated = buildMaterialRecord(material);
+        GpuMaterialRecord&      stored  = materialTableRecords_[it->second];
+        if (std::memcmp(&stored, &updated, sizeof(updated)) != 0) {
+            stored = updated;
+            syncMaterialTable();
+        }
         return it->second;
     }
     if (!materialTableFree_.empty()) {
@@ -907,10 +911,11 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
     // by (pipeline, material, mesh), so commands sharing a mesh are contiguous;
     // bind only when the mesh changes.
     GpuMesh *boundMesh = nullptr;
-    for (uint32_t i = 0; i < drawCount; ++i) {
+    for (uint32_t i = 0; i < drawCount;) {
         const GpuInstance &first = sorted[cmds[i].firstInstance];
         if (first.meshId >= meshRecordOwners_.size()) {
             EV_ASSERT(false, "indirect draw references an unregistered mesh record");
+            ++i;
             continue;
         }
         GpuMesh *mesh = meshRecordOwners_[first.meshId];
@@ -920,8 +925,15 @@ bool Graphics::gpuDrivenSubmitOpaque(const GpuInstance *instances, uint32_t inst
             cb.bindIndexBuffer(mesh->indices.buffer, 0, mesh->indexType);
             boundMesh = mesh;
         }
-        cb.drawIndexedIndirect(arena.buffer(), cmdAlloc.offset + vk::DeviceSize(i) * stride, 1,
-                               stride);
+        uint32_t batchEnd = i + 1;
+        if (gpuDrivenCaps_.multiDrawIndirect) {
+            const uint32_t limit = device.physical_device.properties.limits.maxDrawIndirectCount;
+            while (batchEnd < drawCount && batchEnd - i < limit &&
+                   sorted[cmds[batchEnd].firstInstance].meshId == first.meshId)
+                ++batchEnd;
+        }
+        cb.drawIndexedIndirect(arena.buffer(), cmdAlloc.offset + vk::DeviceSize(i) * stride, batchEnd - i, stride);
+        i = batchEnd;
     }
     return true;
 }
