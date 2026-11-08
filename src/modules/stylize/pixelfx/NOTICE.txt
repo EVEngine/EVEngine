@@ -145,7 +145,7 @@ following Sprite Fusion holy-light (MIT, Copyright (c) 2026 Hugo Duprez).
 Meteor.cpp: fire/meteor.js; impact particle recipe adapted from Sprite Fusion
 explosion (MIT, Copyright (c) 2026 Hugo Duprez).
 
-Snow.cpp and Weather.h: weather/snow.js and weather/_lib.js; layered snowfall
+PixelSnow.cpp and Weather.h: weather/snow.js and weather/_lib.js; layered snowfall
 recipe follows Sprite Fusion snow (MIT, Copyright (c) 2026 Hugo Duprez).
 
 Fog.cpp, Clouds.cpp and Weather.h noise/row helpers: weather/fog.js,
