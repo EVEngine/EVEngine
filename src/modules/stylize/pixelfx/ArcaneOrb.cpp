@@ -48,7 +48,7 @@ void orb(Paint& p, const std::vector<uint32_t>& C, const Scene& s) {
     p.disc(
         cx, cy, RAD, [&](double d, double) { return d > .82 ? C[2] : C[1]; },
         [](double d, double) { return .32 + .5 * d * d; });
-    for (const auto [offset, main] :
+    for (const auto& [offset, main] :
          std::array<std::pair<double, bool>, 4>{{{0, true}, {PI, true}, {PI / 2, false}, {(3 * PI) / 2, false}}})
         for (double u = .08; u <= .85; u += .012) {
             const double a = ph * TAU * 2 + offset + u * 3.4, r = u * RAD * .92, x = cx + std::cos(a) * r,
