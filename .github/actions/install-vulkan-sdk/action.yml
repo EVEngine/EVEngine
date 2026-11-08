@@ -1,9 +1,8 @@
 name: Install Vulkan SDK (with retries)
 description: >
   Wrap jakoch/install-vulkan-sdk-action with transient-network retries.
-  Windows jobs that also install SwiftShader still fetch rasterizer
-  versions.json after a Vulkan SDK cache hit; GitHub 5xx there is a
-  common flake that otherwise fails the job after the SDK is restored.
+  Install Windows SwiftShader from a pinned, digest-verified release without
+  querying mutable rasterizer versions.json metadata.
 inputs:
   vulkan_version:
     description: Vulkan SDK version
@@ -38,7 +37,7 @@ runs:
       with:
         vulkan_version: ${{ inputs.vulkan_version }}
         install_runtime: ${{ inputs.install_runtime }}
-        install_swiftshader: ${{ inputs.install_swiftshader }}
+        install_swiftshader: false
         cache: ${{ inputs.cache }}
         cache_save_if: ${{ inputs.cache_save_if }}
         github_token: ${{ inputs.github_token }}
@@ -56,7 +55,7 @@ runs:
       with:
         vulkan_version: ${{ inputs.vulkan_version }}
         install_runtime: ${{ inputs.install_runtime }}
-        install_swiftshader: ${{ inputs.install_swiftshader }}
+        install_swiftshader: false
         cache: ${{ inputs.cache }}
         cache_save_if: ${{ inputs.cache_save_if }}
         github_token: ${{ inputs.github_token }}
@@ -72,7 +71,14 @@ runs:
       with:
         vulkan_version: ${{ inputs.vulkan_version }}
         install_runtime: ${{ inputs.install_runtime }}
-        install_swiftshader: ${{ inputs.install_swiftshader }}
+        install_swiftshader: false
         cache: ${{ inputs.cache }}
         cache_save_if: ${{ inputs.cache_save_if }}
         github_token: ${{ inputs.github_token }}
+
+    - name: Install pinned SwiftShader with SHA-256 verification
+      if: runner.os == 'Windows' && inputs.install_swiftshader == 'true'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github_token }}
+      run: python3 scripts/install_swiftshader.py --destination C:/SwiftShader
