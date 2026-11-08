@@ -20,8 +20,9 @@ systems.
 - Automatic ammunition dispatch, reservations, multi-vehicle convoys, moving
   relay interception, hostile-coverage-aware rendezvous, convoy pacing, and
   convoy-wide escort screens.
-- Match victory/surrender, canonical snapshots and hashes, command logs, replay,
-  and lockstep coordination.
+- Match victory/surrender (annihilation, headquarters, resource target, score
+  target), optional time limits with sudden death, control-point score accrual,
+  canonical snapshots and hashes, command logs, replay, and lockstep coordination.
 
 ## Integration outline
 
@@ -80,6 +81,7 @@ process-local entity integers. The current ownership mapping is:
 | Visibility, radar and target acquisition | `map` FOV and `sensing::SensingWorld` |
 | Damage, weapons and projectiles | `combat::DamageRuntime` and `weapon` runtimes |
 | Teams and alliances | `Match::Participants` plus `FactionRelationSystem`; no parallel diplomacy table |
+| Match clocks and scores | `Match::Rules::timeLimit` / `suddenDeath`, `Match::Scores`, building `capture.scorePerSecond` |
 | Content, upgrades and persistence | `definitions`, RTS tech projection, stable snapshots and replay |
 
 The Squirrel boundary creates and materializes data-defined roots by stable
@@ -139,8 +141,12 @@ the terminal endpoint belongs to target impact settlement. These queries read
 the current canonical elevation field without a cache or an additional terrain
 owner. `test/unit/rts/gameplay_control_rts.cpp` covers the geometric boundary cases.
 Match roots are likewise script-accessible through
-stable identities: setup rules, teams, start, surrender, retained lifecycle
-events and final outcomes all route through `MatchSystem`. The sandbox runs a
+stable identities: setup rules, timing, teams, start, surrender, score credits,
+retained lifecycle events and final outcomes all route through `MatchSystem`.
+Script victory strings are `annihilation`, `headquarters`, `resource`, and
+`score`; `configureMatchTiming(match, seconds, suddenDeath)` arms the optional
+clock. Held buildings with `controlPointScorePerSecond` accrue into
+`Match::Scores` under `score` victory. The sandbox runs a
 headquarters-destruction match rather than maintaining a parallel win condition.
 Fog authorization has an explicit persisted `Faction::Intel::enabled` state;
 an enabled faction with no contacts sees no targetable enemies, while native

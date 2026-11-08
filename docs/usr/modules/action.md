@@ -43,6 +43,11 @@ tick / delta，不读取墙钟。所有易失败方法返回统一 Result 投影
 Ability 生命周期仍由本模块的 `AbilityRuntime`/`ActionRuntime` 唯一拥有。Combat /
 RPG / Weapon 等域可以继续在 C++ 侧复用同一协议，也可以通过本脚本面独立编排。
 
+**每 tick 只推进一次：** `advanceAbilities` / 原生 `AbilityRuntime::step` 对同一
+`SimulationTick` 的第二次调用返回 `Conflict`，避免冷却与 phase 被双倍结算。宿主应在固定
+仿真步里调用一次；多段命中走 timeline notify / 遭遇 `hit`，不要靠重复 `step` 同一 tick。
+动作 RPG 接线见 [arpg-host](arpg-host.md)。
+
 ## Guide pack（白膜 → AI 成图）
 
 `eve.action.guide-pack` schema v1（`schema` / `schemaVersion` 线格式）描述镜头、AOV 合同与

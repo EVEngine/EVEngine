@@ -48,7 +48,12 @@ class WorkflowLayoutTests(unittest.TestCase):
         intel = release.split("  macos-x86_64:\n", 1)[1].split("  windows-arm64:\n", 1)[0]
         self.assertIn('EVENGINE_VULKAN_VALIDATION: "1"', intel)
         self.assertIn("--no-tests=error", intel)
-        self.assertIn("CTEST_JOBS=1 CTEST_REPEAT='' LABEL_FILTER=''", intel)
+        # Serial GPU sharing stays mandatory; do not force CTEST_REPEAT='' —
+        # until-pass:2 is required so a single MoltenVK DeviceLost can recover
+        # before poisoning the rest of the Intel lane (#701).
+        self.assertIn("CTEST_JOBS=1 LABEL_FILTER=''", intel)
+        self.assertNotIn("CTEST_REPEAT=''", intel)
+        self.assertIn("until-pass:2", intel)
         self.assertLess(intel.index("Validate Intel macOS rendering"),
                         intel.index("Run native Intel macOS unit tests"))
 

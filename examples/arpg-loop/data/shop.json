@@ -1,0 +1,10 @@
+[
+  {
+    "id": "camp_potion",
+    "itemId": "camp_potion",
+    "name": "Camp Potion",
+    "desc": "Restore 40 HP at camp",
+    "buyPrice": 15,
+    "sellPrice": 5
+  }
+]

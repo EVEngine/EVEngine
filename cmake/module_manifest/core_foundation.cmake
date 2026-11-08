@@ -137,6 +137,9 @@ eve_declare_module(NAME policyregistry LAYER 0 SCRIPT PolicyRegistryModule SLOT 
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME production LAYER 0 SCRIPT Production SLOT production
                    GROUP minimal 2d 3d web)
+# Deterministic wave schedules + base lives for tower-defense style compositions.
+eve_declare_module(NAME towerdefense LAYER 0 SCRIPT TowerDefense SLOT towerdefense
+                   GROUP minimal 2d 3d web)
 # 2D factory logistics (belts / discrete items / machine buffers). Layer count is
 # reserved for multi-floor; only layer 0 is stepped in the vertical slice.
 eve_declare_module(NAME logistics LAYER 0 SCRIPT Logistics SLOT logistics
@@ -189,6 +192,10 @@ eve_declare_module(NAME physics_softbody DIR physics/softbody LAYER 3
 eve_declare_module(NAME schema LAYER 0 SCRIPT Schema SLOT schema
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME social LAYER 0 SCRIPT Social SLOT social
+                   GROUP minimal 2d 3d web)
+# Squad membership, post occupancy and reinforce spawn-request policy. Owns only
+# roster facts; navigation / production / NPC behavior stay in their modules.
+eve_declare_module(NAME roster LAYER 0 SCRIPT Roster SLOT roster
                    GROUP minimal 2d 3d web)
 eve_declare_module(NAME statepatch LAYER 0 SCRIPT StatePatch SLOT statepatch
                    DEPS transaction

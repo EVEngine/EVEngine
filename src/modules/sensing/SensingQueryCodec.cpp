@@ -128,8 +128,16 @@ Result<SensingQueryRequest> decodeSensingQuery(std::string_view bytes) {
         r.spec.countPolicy =
             choice<CountPolicy>(n, "countPolicy", CountPolicy::TruncateToMax,
                                 {{"truncate", CountPolicy::TruncateToMax}, {"fail", CountPolicy::FailIfOutOfRange}});
-        r.spec.sortKey = choice<SortKey>(n, "sort", SortKey::DistanceAscending,
-                                         {{"distance", SortKey::DistanceAscending}, {"none", SortKey::None}});
+        r.spec.sortKey = choice<SortKey>(
+            n, "sort", SortKey::DistanceAscending,
+            {{"distance", SortKey::DistanceAscending},
+             {"closest", SortKey::DistanceAscending},
+             {"furthest", SortKey::DistanceDescending},
+             {"first", SortKey::PathProgressDescending},
+             {"last", SortKey::PathProgressAscending},
+             {"strongest", SortKey::StrengthDescending},
+             {"weakest", SortKey::StrengthAscending},
+             {"none", SortKey::None}});
         if (n.has("shape")) {
             auto shape = n.get("shape");
             require(shape.isObject(), "shape");

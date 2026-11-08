@@ -85,5 +85,10 @@ for apk_file in "${apk_files[@]}"; do
   # the emulator's data partition. Release it only after runtime proof passed.
   adb shell am force-stop com.evengine.example
   adb uninstall com.evengine.example
+  # Uninstall alone leaves PackageManager / dex / tmp residue (~300 MB/cycle on
+  # API 35); reclaim before the next ~380 MB APK or the 4th install can hit
+  # INSTALL_FAILED_INSUFFICIENT_STORAGE even when df still shows gigabytes free.
+  adb shell pm trim-caches 999G
+  adb shell rm -rf /data/local/tmp/*
   rm -f "$aligned_apk" "$signed_apk"
 done

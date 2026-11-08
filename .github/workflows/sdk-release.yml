@@ -270,7 +270,10 @@ jobs:
         run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
 
       - name: Build macosx SDK
-        timeout-minutes: 90
+        # macos-15-intel cold builds have crossed 90m while still finishing the
+        # last few of ~1850 ninja targets (job wall is 180m). arm64 stays well
+        # under 90m; give x86_64 headroom without starving test/package steps.
+        timeout-minutes: ${{ matrix.architecture == 'x86_64' && 150 || 90 }}
         run: make "sdk/$SDK_TARGET" CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS=4
 
       - name: Test macosx SDK usability
@@ -1031,6 +1034,13 @@ jobs:
   # Every desktop consumer builds an ARM64-only APK from the official Android
   # SDK. API 35's x86_64 image can execute those APKs through ARM translation,
   # while GitHub's Linux runner supplies KVM for a reliable emulator boot.
+  #
+  # Host disk math: emulator -partition-size N needs ~N+1638 MB free under
+  # ~/.android/avd (8192 → 9830 MB). ubuntu-latest often has only 6–10 GB free
+  # after the system image download, so free unused host toolchains first.
+  # Guest /data still accumulates PackageManager residue across sequential
+  # ~380 MB APK installs (~+300 MB/cycle); 4096 left INSTALL_FAILED_INSUFFICIENT_STORAGE
+  # on the 4th APK despite ~3.8 GB "Avail". Keep 8192 and reclaim between APKs.
   run-android:
     name: Run all ARM64 consumer APKs on API 35 emulator
     needs: [consumer-win32, consumer-linux, consumer-macosx]
@@ -1048,6 +1058,30 @@ jobs:
           pattern: android-apk-*
           path: apk
           merge-multiple: true
+
+      - name: Free host disk for emulator userdata
+        run: |
+          set -euo pipefail
+          df -h /
+          # Keep ANDROID_HOME/emulator + platform-tools; drop large unused
+          # toolchains so AVD userdata creation (~9.8 GB for partition-size
+          # 8192) still fits after the API 35 system-image download.
+          sudo rm -rf \
+            /usr/share/dotnet \
+            /usr/local/lib/android/sdk/ndk \
+            /usr/local/lib/android/sdk/cmake \
+            /opt/ghc \
+            /usr/local/share/boost \
+            "${AGENT_TOOLSDIRECTORY:-/opt/hostedtoolcache}" \
+            || true
+          docker system prune -af || true
+          df -h /
+          avail_kb="$(df -Pk /home/runner | awk 'NR==2 {print $4}')"
+          need_kb=$((9830 * 1024))
+          if [ "$avail_kb" -lt "$need_kb" ]; then
+            echo "ERROR: need >=9830 MB free for -partition-size 8192 userdata; have $((avail_kb / 1024)) MB" >&2
+            exit 1
+          fi
 
       - name: Enable KVM access
         run: |
@@ -1072,6 +1106,7 @@ jobs:
             -wipe-data
             -noaudio
             -no-boot-anim
+            -no-metrics
             -accel on
           disable-linux-hw-accel: false
           disable-animations: true
@@ -1180,6 +1215,9 @@ jobs:
           gh release download "$TAG" --repo "$REPO" --dir artifacts \
             --pattern "eve-sdk-webgpu-$TAG.zip" --pattern SHA256SUMS
       - name: Setup pinned WebGPU browser
+        # playwright install --with-deps can stall >10m on apt font mirrors;
+        # the composite action installs the browser binary only and gets
+        # display/Vulkan deps from its second step.
         timeout-minutes: 20
         uses: ./.github/actions/setup-webgpu-browser
 

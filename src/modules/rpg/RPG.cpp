@@ -13,6 +13,7 @@
 #include "rpg/EncounterCatalogue.h"
 #include "rpg/EncounterVictoryInternal.h"
 #include "rpg/EquipmentSystem.h"
+#include "rpg/ForgeBench.h"
 #include "rpg/GameState.h"
 #include "rpg/LevelSystem.h"
 #include "rpg/LootSystem.h"
@@ -1215,6 +1216,98 @@ void RPG::expose(ssq::Table &table) {
         return value && value->isBool() && value->asBool();
     });
 
+    auto forge =
+        table.addClass<ForgeBench>("RPGForge", std::function<ForgeBench*()>([]() { return new ForgeBench(); }), true);
+    forge.addFunc("bindBag", [vm](ForgeBench* self, inventory::Bag* bag) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "RPGForge receiver must not be null", "forge")));
+        return eve::script::projectResult(vm, self->bind(bag, nullptr, nullptr));
+    });
+    forge.addFunc(
+        "bind", [vm](ForgeBench* self, inventory::Bag* bag, ssq::Object equipmentObject, ssq::Object actorObject) {
+            if (!self)
+                return eve::script::projectResult(
+                    vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                            eve::DiagnosticCode::InvalidArgument, "RPGForge receiver must not be null", "forge")));
+            inventory::EquipmentSet* equipment =
+                equipmentObject.isNull() ? nullptr : equipmentObject.toPtrUnsafe<inventory::EquipmentSet*>();
+            RPGActor* actor = actorObject.isNull() ? nullptr : actorObject.toPtrUnsafe<RPGActor*>();
+            return eve::script::projectResult(vm, self->bind(bag, equipment, actor));
+        });
+    forge.addFunc("unbind", &ForgeBench::unbind);
+    forge.addFunc("isBound", &ForgeBench::isBound);
+    forge.addFunc("craftFromJson", [vm](ForgeBench* self, const std::string& json, int batchSize, int priority) {
+        if (!self)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<CraftingReceipt>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "RPGForge receiver must not be null", "forge")),
+                [](const CraftingReceipt& receipt) {
+                    return eve::Value(eve::Value::Object{{"taskId", eve::Value(receipt.productionTaskId)}});
+                });
+        return eve::script::projectResult(
+            vm, self->craftFromJson(json, batchSize <= 0 ? 1u : static_cast<std::uint32_t>(batchSize), priority),
+            [](const CraftingReceipt& receipt) {
+                return eve::Value(eve::Value::Object{{"taskId", eve::Value(receipt.productionTaskId)}});
+            });
+    });
+    forge.addFunc("upgradeFromJson", [vm](ForgeBench* self, const std::string& json, int bagSlot,
+                                          int expectedInstanceId, int priority) {
+        if (!self)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<EquipmentUpgradeReceipt>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::InvalidArgument, "RPGForge receiver must not be null", "forge")),
+                [](const EquipmentUpgradeReceipt& receipt) {
+                    return eve::Value(eve::Value::Object{{"taskId", eve::Value(receipt.productionTaskId)}});
+                });
+        return eve::script::projectResult(
+            vm, self->upgradeFromJson(json, bagSlot, expectedInstanceId, priority),
+            [](const EquipmentUpgradeReceipt& receipt) {
+                return eve::Value(eve::Value::Object{{"taskId", eve::Value(receipt.productionTaskId)}});
+            });
+    });
+    forge.addFunc("advance", [vm](ForgeBench* self, std::int64_t tick, float seconds) {
+        if (!self)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "RPGForge receiver must not be null", "forge")));
+        auto duration = eve::Duration::fromSeconds(seconds);
+        if (!duration) return eve::script::projectResult(vm, eve::Result<void>::failure(duration.status()));
+        return eve::script::projectResult(
+            vm, self->advance(eve::SimulationTick(static_cast<std::uint64_t>(tick)), duration.value()));
+    });
+    forge.addFunc("settle", [vm](ForgeBench* self, const std::string& taskId) {
+        if (!self)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "RPGForge receiver must not be null", "forge")),
+                [](int value) { return eve::Value(value); });
+        return eve::script::projectResult(vm, self->settle(taskId), [](int value) { return eve::Value(value); });
+    });
+    forge.addFunc("settleReady", [vm](ForgeBench* self) {
+        if (!self)
+            return eve::script::projectResult(
+                vm,
+                eve::Result<int>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "RPGForge receiver must not be null", "forge")),
+                [](int value) { return eve::Value(value); });
+        return eve::script::projectResult(vm, self->settleReady(), [](int value) { return eve::Value(value); });
+    });
+    forge.addFunc("queueHandle", [](ForgeBench* self) -> std::int64_t {
+        return self ? static_cast<std::int64_t>(self->queueHandle()) : 0;
+    });
+    forge.addFunc("taskCount", &ForgeBench::taskCount);
+    forge.addFunc("taskIdAt", &ForgeBench::taskIdAt);
+    forge.addFunc("taskStateAt", &ForgeBench::taskStateAt);
+    forge.addFunc("taskKindAt", &ForgeBench::taskKindAt);
+    forge.addFunc("taskProgressAt", &ForgeBench::taskProgressAt);
+    forge.addFunc("taskDurationAt", &ForgeBench::taskDurationAt);
+    forge.addFunc("syncEquipment", &ForgeBench::syncEquipment);
+
     auto actionEncounter = table.addClass<ActionEncounter>(
         "RPGActionEncounter", std::function<ActionEncounter *()>([]() { return new ActionEncounter(); }), true);
     actionEncounter.addFunc("bind", [vm](ActionEncounter *session, RPGActor *player, RPGActor *enemy,
@@ -1231,6 +1324,9 @@ void RPG::expose(ssq::Table &table) {
         });
     actionEncounter.addFunc("close", [](ActionEncounter* session) { session->close(); });
     actionEncounter.addFunc("hasPendingReward", &ActionEncounter::hasPendingReward);
+    actionEncounter.addFunc("isClosed", &ActionEncounter::isClosed);
+    actionEncounter.addFunc("isBound", &ActionEncounter::isBound);
+    actionEncounter.addFunc("lastTick", &ActionEncounter::lastTick);
 
     auto saveSession = table.addClass<RPGSaveSession>(
         "RPGSaveSession", std::function<RPGSaveSession *()>([]() { return new RPGSaveSession(); }), true);

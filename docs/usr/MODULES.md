@@ -68,6 +68,7 @@
 - [事务](modules/transaction.md)：跨参与者准备/提交和失败原子性；C++ 契约章节。
 - [RTS](modules/rts.md)：世界、阵营、单位命令、经济/生产组合与固定步进。
 - [动作战斗](modules/combat.md)：行动协议与命中、伤害、属性结算的组合。
+- [动作 RPG 宿主接线](modules/arpg-host.md)：单机 ARPG 身份映射、时序、失败矩阵与 `RPGActionEncounter`。
 - [战棋](modules/tactics.md)：棋盘拓扑、回合、命令与快照回放。
 - [群体移动](modules/crowd.md)：流场、拥挤避让与单位移动。
 - [感知](modules/sensing.md)：空间查询与感知记录。
@@ -102,11 +103,14 @@
 - [六边形地图](modules/hexmap.md)：可编辑的尖顶六边形格网（平面与球面两种后端），按 5×5 分块生成地形/水面/河流/道路/城墙/地物与迷雾网格，附寻路、单位移动和存档。
 - [武器系统](modules/weapon.md)：数据驱动的武器、弹药池、挂点、瞄准、开火、装填与事件查询。
 - [载具系统](modules/vehicle.md)：载具定义、移动命令、座位和炮塔、伤害以及 2D/3D 物理接入。
+- [战舰系统](modules/warship.md)：巨型舰体（战舰/帆船/航母/星际）、可重组舱段网格与能力投影、水面/帆力/航母/太空机动。
 - [通用效果](modules/effects.md)：按主体管理可堆叠、可过期的效果及其结构化载荷与事件。
 - [原子状态补丁](modules/statepatch.md)：用带冲突检查的批次原子修改 JSON 状态，并支持脏键、事件和快照。
 - [通用命令队列](modules/orders.md)：确定性优先级命令、抢占、超时、载荷、生命周期事件和快照。
 - [社会关系图](modules/social.md)：所有权、控制权、角色指派和带权有向关系。
+- [编制与补员](modules/roster.md)：小队成员、岗哨占用、空缺事件与延迟 spawn 请求（不拥有生成/导航/行为树）。
 - [生产队列](modules/production.md)：按 owner 分配并行槽位，确定性推进可暂停、恢复的生产任务。
+- [塔防组合](modules/towerdefense.md)：确定性波次导演、基地漏怪扣命；与 map 路径探测、sensing 选敌策略组合。
 - [工厂物流](modules/logistics.md)：2D 传送带 / 离散物品 SoA / 机器缓冲与合成；GPU 只做可视化位置解算。
 - [权限规则](modules/authority.md)：按 actor、scope 和 capability 仲裁有优先级、可过期的允许/拒绝规则。
 

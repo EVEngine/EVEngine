@@ -61,6 +61,7 @@ TileLayer revision 或代价改变会在下一步重新规划。不可达目标�
 | `CombatCharacterPoseSource` | 把角色位置/朝向变成 melee pose（局部 +Z 为面朝方向） |
 | `CombatMotionWarp` | 攻击中向 lock-on 目标做有预算的水平校正 |
 | `CombatCameraFraming` | 锁定镜头数学（eye/lookAt）；camera 模块只负责 apply |
+| `FpsGait` / `FpsHeadBob` | 第一人称 Walk/Sprint/Crouch 姿态与 head bob（不含物理积分；示例 `fps-arena` 镜像契约） |
 | `CombatCancelResolver` | 输入缓冲 + cancel/combo 窗口 + `ComboGraph` 一帧解析（不激活 Ability） |
 | `CombatLoopRuntime` | 一帧顺序焊接 steering/cancel → warp → character → hurtbox → melee → dodge/guard/feel/reaction → camera |
 | `HitFeelRuntime` | 命中停顿与受击硬直时长（注入仿真时间） |
@@ -93,6 +94,10 @@ Timeline 新增内建窗口：`input:cancel-window`（payload `allows`，可选 
 `WeaponEventType::Fire` 事件，几何命中仍由 `MeleeHitRuntime` 拥有。
 
 可玩组合烟测见 `examples/combat-arena`；更细的几何/取消/锁定/循环契约见 `test/combat_*.cpp`。
+
+**每 tick 只推进一次：** `CombatLoopRuntime::advance` 要求仿真 tick **严格递增**；同一 tick
+再次 `advance` 返回 `Conflict`，避免位移、近战扫掠与 hitstop 被双算。动作 RPG 宿主清单见
+[arpg-host](arpg-host.md)。
 
 ## 组合边界
 

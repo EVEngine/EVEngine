@@ -65,6 +65,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [physics-bake-replay](physics-bake-replay/README.md) | 刚体、布料、绳索、粒子真实录制与持久化，源停用后双实例独立重放 |
 | [railgun-3d](railgun-3d/README.md) | 超电磁炮 3D：瞬闪光束、黄红冷却弹道、等距烟圈与白蓝飘散粒子 |
 | [physics-workshop](physics-workshop/README.md) | 3D 悬索、气动布帆、双配重滑轮与共享阵风场综合模拟 |
+| [conveyor-belt](conveyor-belt/README.md) | 3D 传送带：材质 UV 滚动 + Shape3D 切向速度同速驱动货物 |
 | [physics-force-lab](physics-force-lab/README.md) | 2D/3D 场效果、排水浮力、机翼升阻力与轮胎转动 |
 | [devlab](devlab/README.md) | 运行时即编辑器：`--debug` 下的控制台 / REPL、快照、暂停、热重载、错误切片、AI 面板（**旗舰示例，先跑这个**） |
 | [ai-game](ai-game/README.md) | AI 驾驶真实游戏：Agent 通过 MCP 读状态 / 改数值 / 截图 / 快照复位（含一键复现脚本 `agent_demo.py`） |
@@ -110,6 +111,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [interactive-shallow-water](interactive-shallow-water/README.md) | GPU 浅水方程交互水面：Saint-Venant 求解 + 角色腿部 Capsule 排水/涌浪 |
 | [metroidvania](metroidvania/README.md) | 物理驱动的横版动作游戏：连击、蹬墙跳、空中冲刺、Boss；脚本 ECS 实体 + System |
 | [commandery-rts](commandery-rts/README.md) | 将领行政 RTS：框选/编队移动、占领经济点、生产、军饷与叛乱；单位/炮弹为脚本 ECS |
+| [sangokushi10](sangokushi10/README.md) | 三国志 10 风格回合竖切：Schema 自定义国家/城池/武将/军团，Social 任命与邻接，Database 排行 |
 | [rts-sandbox](rts-sandbox/README.md) | RTS 端到端 Squirrel 组合剖面：命令、生产、编队与结算 |
 | [rts-cardfront](rts-cardfront/README.md) | 可玩联动任务：真实采集、工人建造、单位生产与原子卡牌技能 |
 | [hex-levels](hex-levels/README.md) | 六边形引擎功能测试关卡：寻路 / FOV / 光照 / 掉落 / WFC（31 关） |
@@ -129,6 +131,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | 示例 | 演示能力 |
 |---|---|
 | [camera-controllers](camera-controllers/README.md) | 第三人称相机：follow / orbit / topdown / firstperson / cinematic |
+| [fps-arena](fps-arena/README.md) | 第一人称射击 Phase A：镜头 + 胶囊移动 + weapon 事件 → rayCast → combat 伤害 |
 | [character-motion-lab](character-motion-lab/README.md) | 三个人物、八种免费动作、跨骨架重定向、同步播放与逐帧观察 |
 | [control-rig-editor](control-rig-editor/README.md) | 原生 Control Rig 制作：控制器拖动、FK/Aim/IK 求解图、关键帧、事务撤销与 AnimClip 烘焙 |
 | [layered-animation](layered-animation/README.md) | 真实 CC0 KayKit 动作叠加：三段动作单独播放 + `AnimLayerMixer`（走路基底 + 脊柱遮罩攻击覆盖 + 受击叠加） |
@@ -274,6 +277,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [combat-action-editor](combat-action-editor/README.md) | 战斗动作编辑示例：用 UI 无关编辑器 SDK 组装项目专属工作区 |
 | [combat-arena](combat-arena/README.md) | 动作战斗竖切：移动/闪避/伤害/锁定与敌人近距攻击的组合烟测 |
 | [companion-tactics](companion-tactics/README.md) | 队友协作战术沙场：原生 AI 状态机、能力评分、治疗预约、保护吸伤、动态站位与玩家指挥 |
+| [post-patrol-reinforce](post-patrol-reinforce/README.md) | 岗哨编制 / 小队巡逻意图 / 阵亡后延迟补员请求（`eve.Roster`） |
 | [squad-boss-3d](squad-boss-3d/README.md) | 3D 四人打 BOSS：EQS 站位/躲避、GAS 玩家技能、多队友协同（治疗预约/指挥/原生 AI） |
 | [procgen-script-editor](procgen-script-editor/README.md) | 宿主封装 Squirrel generator（`generators/forest.nut`）的程序化生成编辑器 |
 | [ui-theme-editor](ui-theme-editor/README.md) | UI 主题编辑示例：组装命名 Theme 工作区 + 实时预览 |

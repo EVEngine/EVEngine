@@ -384,7 +384,7 @@ inline std::ostream& operator<<(std::ostream& stream, TaskState state) { return 
 EVENGINE_API_FOUNDATION std::string_view eventKindName(ProductionEventKind kind);
 
 /** @brief Script module factory for generic production queues. */
-class Production : public Module {
+class EVENGINE_API_FOUNDATION Production : public Module {
 public:
     Module_REG(Production);
     /** @brief Constructs a Production. */

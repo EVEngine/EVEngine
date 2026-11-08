@@ -250,6 +250,10 @@ install(FILES "${CMAKE_SOURCE_DIR}/cmake/sdk/llms.txt"
     DESTINATION .
     RENAME llms.txt
 )
+# AI asset kits: pixel/format contracts for card / visual-novel art generation.
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/cmake/sdk/asset-kits/"
+    DESTINATION share/eve/ai/asset-kits
+)
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/tools/eve-mcp/"
     DESTINATION share/eve/ai/eve-mcp
 )
