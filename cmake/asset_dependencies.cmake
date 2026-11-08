@@ -22,6 +22,7 @@ function(eve_download_archive_with_retries url outfile expected_sha256)
         message(STATUS
             "Downloading ${url} (attempt ${_eve_attempt}/${_eve_max_attempts})")
         file(DOWNLOAD "${url}" "${outfile}"
+            HTTPHEADER "Accept: application/octet-stream"
             STATUS _eve_dl_status
             TIMEOUT 120
             TLS_VERIFY ON
@@ -65,7 +66,9 @@ function(load_asset_zstd)
     set(_eve_zstd_sha256
         eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3)
     set(_eve_zstd_url
-        https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz)
+        https://api.github.com/repos/facebook/zstd/releases/assets/230758919)
+    # Release Asset API for the same v1.5.7 tarball; avoids release-frontend 504s.
+    # The archive SHA256 above remains the authority for downloaded content.
     set(_eve_zstd_archive
         "${CMAKE_BINARY_DIR}/_eve_downloads/zstd-1.5.7.tar.gz")
     eve_download_archive_with_retries(

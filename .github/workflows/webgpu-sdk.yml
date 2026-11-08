@@ -91,9 +91,11 @@ jobs:
           set -euo pipefail
           mkdir -p artifacts/webgpu-dependencies
           archive="artifacts/webgpu-dependencies/emdawnwebgpu.zip"
-          url="https://github.com/google/dawn/releases/download/${EMDAWNWEBGPU_RELEASE}/emdawnwebgpu_pkg-${EMDAWNWEBGPU_RELEASE}.zip"
+          # Same locked v20260423.175430 asset via the release API; the verifier
+          # below still checks its lock-file hash and archive contents.
+          url="https://api.github.com/repos/google/dawn/releases/assets/404253185"
           if ! curl --fail --location --retry 4 --retry-all-errors --retry-delay 5 \
-            --output "$archive" "$url"; then
+            --header 'Accept: application/octet-stream' --output "$archive" "$url"; then
             python3 -c 'from pathlib import Path; from scripts.ci_result import CIResult, FailureKind; CIResult.failure(FailureKind.INFRASTRUCTURE, "WEBGPU_DEPENDENCY_DOWNLOAD_FAILED", "webgpu-dependencies", "failed to download the locked emdawnwebgpu archive after retries").write(Path("artifacts/webgpu-dependencies/ci-result.json"))'
             exit 1
           fi

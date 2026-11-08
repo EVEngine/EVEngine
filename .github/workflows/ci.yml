@@ -238,6 +238,10 @@ jobs:
           choco install make ninja -y --no-progress
           echo "VS_GENERATOR=Visual Studio 17 2022" >> $env:GITHUB_ENV
 
+      - name: Seed verified compilation cache tool
+        timeout-minutes: 10
+        run: python .github/scripts/seed-sccache.py
+
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
@@ -379,6 +383,10 @@ jobs:
         shell: pwsh
         run: choco install make ninja -y --no-progress
 
+      - name: Seed verified compilation cache tool
+        timeout-minutes: 10
+        run: python .github/scripts/seed-sccache.py
+
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
@@ -492,6 +500,10 @@ jobs:
       - name: Install tools
         timeout-minutes: 10
         run: brew install ninja || true
+
+      - name: Seed verified compilation cache tool
+        timeout-minutes: 10
+        run: python .github/scripts/seed-sccache.py
 
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
@@ -787,6 +799,10 @@ jobs:
             mesa-vulkan-drivers vulkan-tools \
             xvfb ffmpeg python3-pil
 
+      - name: Seed verified compilation cache tool
+        timeout-minutes: 10
+        run: python .github/scripts/seed-sccache.py
+
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
@@ -988,6 +1004,10 @@ jobs:
             mesa-vulkan-drivers vulkan-tools \
             xvfb
 
+      - name: Seed verified compilation cache tool
+        timeout-minutes: 10
+        run: python .github/scripts/seed-sccache.py
+
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
         uses: mozilla-actions/sccache-action@fc920bf0ec8de6ee65d409111f7ec508035751ba # v0.0.11
@@ -1096,6 +1116,10 @@ jobs:
             -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
             -o Dir::Etc::sourceparts=- -o Acquire::Retries=2
           sudo apt-get install -y --no-install-recommends clang ninja-build
+
+      - name: Seed verified compilation cache tool
+        timeout-minutes: 10
+        run: python .github/scripts/seed-sccache.py
 
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
