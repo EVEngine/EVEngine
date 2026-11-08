@@ -386,6 +386,7 @@ if(_has_asset)
 endif()
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/graphics/BuildSettings.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/stylize/BuildSettings.cmake")
 
 eve_module_enabled(ik _has_ik)
 if(_has_ik)

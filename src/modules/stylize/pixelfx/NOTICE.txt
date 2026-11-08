@@ -1,0 +1,629 @@
+Adapted from patch-gg/pixelfx revision a84159688af3ca37a4be05a0d422b94451b2e24e.
+https://github.com/patch-gg/pixelfx
+
+Math.h, Painter.h, Font.h, FontData.inc, Simulation.h and PixelFxInternal.h:
+core/math.js, color.js, painter.js, particles.js, shapes.js, font.js and sim.js.
+Fire.h, FireProps.cpp and Brazier.cpp: fire/_lib.js, fire/torch.js,
+fire/candle.js and fire/brazier.js. SpiritFlame.cpp: fire/spirit-flame.js. The fire recipe derives from Hugo Duprez's
+Sprite Fusion fire (https://www.spritefusion.com/pixel-art-vfx/fire), MIT.
+Fireball.cpp: fire/fireball.js, including the Sprite Fusion explosion recipe
+(https://www.spritefusion.com/pixel-art-vfx/explosion), MIT, Copyright (c) 2026 Hugo Duprez.
+FireTornado.cpp: fire/fire-tornado.js, including the Sprite Fusion fire recipe above.
+FireBreath.cpp and Flamethrower.cpp: fire/fire-breath.js and fire/flamethrower.js,
+including the Sprite Fusion explosion recipe above.
+FlamePillar.cpp: fire/flame-pillar.js, including the Sprite Fusion explosion recipe
+above and holy light (https://www.spritefusion.com/pixel-art-vfx/holy-light), MIT,
+Copyright (c) 2026 Hugo Duprez.
+Campfire.cpp: fire/campfire.js, including the Sprite Fusion fire recipe above.
+Rig.cpp and Rig.h: core/rig.js pose solver, raster, outline and weapon geometry.
+Actor.cpp: core/actor.js stock actor rows, palettes, masks and anchors.
+Holy.cpp: holy/halo.js and holy/sunburst.js, including halo head relighting.
+EVEngine callers compose body and effect planes separately; Rig.cpp owns native skeletal poses.
+LaserBolt.cpp: projectiles/laser-bolt.js and projectiles/_lib.js (beat).
+ImpactFrame.cpp: impacts/impact-frame.js. Masks are evaluated on demand rather than cached.
+
+The laser bands, travelling pulses and spiralling sparks follow Hugo Duprez's
+Sprite Fusion energy beam (https://www.spritefusion.com/pixel-art-vfx/energy), MIT,
+Copyright (c) 2026 Hugo Duprez. The common sparkle primitive is adapted through
+pixelfx core/sim.js, also attributed to Hugo Duprez.
+
+Only code/effects are included. Patch Pixel fonts and gallery assets are not imported.
+See LICENSE.txt for the upstream MIT notice. EVEngine APIs and parameter validation
+are new integration code. All 244 effect kernels are included; full Act composition is a separate integration.
+
+PoseTrack in Rig.cpp: core/act.js lerpPose, poseAt and isHeld. The held-pose timing
+adapts Hollow Crown (https://github.com/rehan-remade/hollow-crown), MIT License,
+Copyright (c) 2026 rehan-remade, through pixelfx core/act.js.
+
+FireRing.cpp: fire/fire-ring.js, including Sprite Fusion fire and explosion recipes
+(https://www.spritefusion.com/pixel-art-vfx/fire and
+https://www.spritefusion.com/pixel-art-vfx/explosion), MIT,
+Copyright (c) 2026 Hugo Duprez.
+
+Arrow.cpp: projectiles/arrow.js arrow geometry, flutter poses and air wake.
+EnergyDisc.cpp: projectiles/energy-disc.js. Projectile.h: projectiles/_lib.js wake and spark.
+The tangent sparks adapt Sprite Fusion energy/impact, MIT,
+https://www.spritefusion.com/pixel-art-vfx/energy,
+Copyright (c) 2026 Hugo Duprez.
+
+BulletTracer.cpp: projectiles/bullet-tracer.js, including Sprite Fusion impact ricochet
+(https://www.spritefusion.com/pixel-art-vfx/impact), MIT, Copyright (c) 2026 Hugo Duprez.
+MuzzlePistol.cpp and MuzzleShotgun.cpp: projectiles/muzzle-pistol.js and muzzle-shotgun.js.
+Projectile.cpp: projectiles/_lib.js cloud/blur, Smoke, flashShape/flash and casing helpers.
+The smoke, flash lobes, sparks and casing recipes adapt Sprite Fusion muzzle-flash
+(https://www.spritefusion.com/pixel-art-vfx/muzzle-flash), MIT,
+Copyright (c) 2026 Hugo Duprez.
+
+MuzzleSmg.cpp: projectiles/muzzle-smg.js, including Sprite Fusion muzzle-flash recipes
+(https://www.spritefusion.com/pixel-art-vfx/muzzle-flash), MIT,
+Copyright (c) 2026 Hugo Duprez.
+PlasmaShot.cpp: projectiles/plasma-shot.js, including Sprite Fusion energy bolt/orb
+(https://www.spritefusion.com/pixel-art-vfx/energy), MIT,
+Copyright (c) 2026 Hugo Duprez.
+
+MagicMissile.cpp: projectiles/magic-missile.js, including Sprite Fusion energy bolt
+(https://www.spritefusion.com/pixel-art-vfx/energy), MIT,
+Copyright (c) 2026 Hugo Duprez. The existing core/sim.js flare helper is reused.
+
+Cannonball.cpp: projectiles/cannonball.js, including Sprite Fusion muzzle-flash and
+explosion recipes (https://www.spritefusion.com/pixel-art-vfx/muzzle-flash), MIT,
+Copyright (c) 2026 Hugo Duprez.
+Rocket.cpp: projectiles/rocket.js and projectiles/_lib.js pixelShape. The body and outline
+are generated procedurally; Sprite Fusion explosion spark/fire recipes are retained,
+https://www.spritefusion.com/pixel-art-vfx/explosion, MIT, Copyright (c) 2026 Hugo Duprez.
+HomingMissile.cpp: projectiles/homing-missile.js and projectiles/_lib.js turnSprite recipe,
+including Sprite Fusion explosion particles, debris, ground ring and lights, MIT,
+Copyright (c) 2026 Hugo Duprez.
+
+SignalFlare.cpp: projectiles/flare.js, including Sprite Fusion explosion/sparkle recipes
+(https://www.spritefusion.com/pixel-art-vfx/explosion), MIT,
+Copyright (c) 2026 Hugo Duprez.
+SmallExplosion.cpp: explosions/small-explosion.js, including Sprite Fusion explosion
+fire, smoke, spark, brand, grit, rock and scorch recipes, MIT,
+Copyright (c) 2026 Hugo Duprez. Existing native core/sim.js Blazes/Particles helpers are reused.
+
+Explosion.h: explosions/_lib.js rolling plume, lobe shading and rising column, MIT,
+Copyright (c) 2026 Patch and Hugo Duprez.
+
+BigExplosion.cpp and Explosion.h: explosions/big-explosion.js and explosions/_lib.js,
+including Sprite Fusion fire/rock/scorch recipes, MIT, Copyright (c) 2026 Patch and Hugo Duprez.
+
+BarrelExplosion.cpp: explosions/barrel-explosion.js; Explosion.h soft-edge particle fading
+from explosions/_lib.js, including Sprite Fusion explosion recipes, MIT,
+Copyright (c) 2026 Patch and Hugo Duprez.
+
+DirtExplosion.cpp and Explosion.h: explosions/dirt-explosion.js and explosions/_lib.js
+earth, grit and crater recipes adapted from Sprite Fusion explosion, MIT,
+Copyright (c) 2026 Patch and Hugo Duprez. Implosion.cpp: explosions/implosion.js,
+including Sprite Fusion energy charge recipes, MIT, Copyright (c) 2026 Hugo Duprez.
+
+FireworkBurst.cpp and FireworkRocket.cpp: explosions/firework-burst.js and
+explosions/firework-rocket.js, including Sprite Fusion sparkle/flare/glitter/crackle
+recipes, MIT, Copyright (c) 2026 Patch and Hugo Duprez.
+
+PlasmaExplosion.cpp: explosions/plasma-explosion.js, including Sprite Fusion energy
+release/arc recipes, MIT, Copyright (c) 2026 Hugo Duprez. CartoonPow.cpp:
+explosions/cartoon-pow.js, MIT, Copyright (c) 2026 Patch and Hugo Duprez.
+
+Grenade.cpp: explosions/grenade.js, including Sprite Fusion explosion recipes, MIT,
+Copyright (c) 2026 Hugo Duprez. SmokeBomb.cpp: explosions/smoke-bomb.js and
+explosions/_lib.js lobe shading, MIT, Copyright (c) 2026 Patch and Hugo Duprez.
+
+Nuke.cpp and Explosion.h: explosions/nuke.js and explosions/_lib.js fraying/haze/
+clipped-dome recipes, including Sprite Fusion explosion particles, MIT,
+Copyright (c) 2026 Patch and Hugo Duprez.
+
+Water.h, Ripples.cpp and RainSplash.cpp: water/_lib.js, water/ripples.js and
+water/rain-splash.js, including Sprite Fusion blood droplets and rain streaks,
+MIT, Copyright (c) 2026 Patch and Hugo Duprez.
+
+Drip.cpp and Bubbles.cpp: water/drip.js, water/bubbles.js and water/_lib.js
+wet stone, including Sprite Fusion blood bead/tail and bubbles/surface shading,
+MIT, Copyright (c) 2026 Patch and Hugo Duprez.
+
+WaterSplash.cpp and WaterSimulation.h: water/splash.js and water/_lib.js owning
+drops, ripples, mist, foam and pebble recipes, including Sprite Fusion blood
+droplets, MIT, Copyright (c) 2026 Patch and Hugo Duprez.
+
+Fountain.cpp and WaterOrb.cpp: water/fountain.js and water/water-orb.js, including
+Sprite Fusion bubbles caustic light and energy orb build/current/orbits, MIT,
+Copyright (c) 2026 Patch and Hugo Duprez.
+
+Whirlpool.cpp: water/whirlpool.js, including Sprite Fusion black-hole differential
+streak/flow recipe, MIT, Copyright (c) 2026 Patch and Hugo Duprez.
+
+WaterJet.cpp and Waterfall.cpp: water/water-jet.js, water/waterfall.js and shared
+water billows; Sprite Fusion energy beam build and bubbles caustics, MIT,
+Copyright (c) 2026 Patch and Hugo Duprez.
+
+WaveCrash.cpp: water/wave-crash.js, including the crescent and light treatment
+following Sprite Fusion slash (MIT, Copyright (c) 2026 Hugo Duprez).
+
+Geyser.cpp: water/geyser.js, including the banded column and slam/floor ring
+following Sprite Fusion holy-light (MIT, Copyright (c) 2026 Hugo Duprez).
+
+Meteor.cpp: fire/meteor.js; impact particle recipe adapted from Sprite Fusion
+explosion (MIT, Copyright (c) 2026 Hugo Duprez).
+
+Snow.cpp and Weather.h: weather/snow.js and weather/_lib.js; layered snowfall
+recipe follows Sprite Fusion snow (MIT, Copyright (c) 2026 Hugo Duprez).
+
+Fog.cpp, Clouds.cpp and Weather.h noise/row helpers: weather/fog.js,
+weather/clouds.js and weather/_lib.js; noise bake and banded crest shading
+follow Sprite Fusion fog (MIT, Copyright (c) 2026 Hugo Duprez).
+
+GodRays.cpp and Aurora.cpp: weather/god-rays.js and weather/aurora.js; banded
+light/strands follow Sprite Fusion holy-light (MIT, Copyright (c) 2026 Hugo Duprez).
+
+Rain.cpp and Weather.h crown helper: weather/rain.js and weather/_lib.js; rain
+recipe follows Sprite Fusion rain (MIT, Copyright (c) 2026 Hugo Duprez).
+
+Blizzard.cpp and ShootingStars.cpp: weather/blizzard.js and
+weather/shooting-stars.js; driven snow and glints follow Sprite Fusion snow
+and sparkle (MIT, Copyright (c) 2026 Hugo Duprez).
+
+FallingLeaves.cpp, CherryBlossoms.cpp and Weather.h ordered raster helper:
+weather/falling-leaves.js and weather/cherry-blossoms.js; leaf/petal motion
+follows Sprite Fusion falling-leaves (MIT, Copyright (c) 2026 Hugo Duprez).
+
+Fireflies.cpp: weather/fireflies.js; firefly paths, glow, wings and meadow
+follow Sprite Fusion fireflies (MIT, Copyright (c) 2026 Hugo Duprez).
+
+Storm.cpp: weather/storm.js and weather/_lib.js; branching lightning,
+channel glow, streaks and splashes follow Sprite Fusion lightning
+(MIT, Copyright (c) 2026 Hugo Duprez).
+
+Lightning.h, SparkArc.cpp and BallLightning.cpp: lightning/_lib.js,
+lightning/spark-arc.js and lightning/ball-lightning.js; forked arcs, priority
+halo/body/core inking and light follow Sprite Fusion lightning; the layered
+ball, wake and floor zap follow Sprite Fusion energy
+(MIT, Copyright (c) 2026 Hugo Duprez).
+
+PlasmaBall.cpp and Thunderclap.cpp, Lightning.h scorch helper:
+lightning/plasma-ball.js, lightning/thunderclap.js and lightning/_lib.js;
+plasma globe follows Sprite Fusion energy, bolts/scorch/shock/spray follow
+Sprite Fusion lightning and explosion (MIT, Copyright (c) 2026 Hugo Duprez).
+
+ZapHit.cpp and LightningStrike.cpp: lightning/zap-hit.js and
+lightning/lightning-strike.js; arc inking/flicker, stepped leader, cooling
+channel and scorch follow Sprite Fusion lightning
+(MIT, Copyright (c) 2026 Hugo Duprez).
+
+TeslaCoil.cpp and StormCloud.cpp: lightning/tesla-coil.js and
+lightning/storm-cloud.js; branching/restruck arcs, flicker, floor zaps and
+orb-derived sparks follow Sprite Fusion lightning and energy
+(MIT, Copyright (c) 2026 Hugo Duprez).
+
+Electrified.cpp: lightning/electrified.js; silhouette-edge arcs, grounding
+and jolt sparks follow Sprite Fusion lightning crackle
+(MIT, Copyright (c) 2026 Hugo Duprez).
+
+ChargeUp.cpp: lightning/charge-up.js; spiraling charge streaks, accelerating
+core pulse, arcs and release flash/rings/motes/stars follow Sprite Fusion
+energy charge (MIT, Copyright (c) 2026 Hugo Duprez).
+
+ChainLightning.cpp: lightning/chain-lightning.js; hop timing, restruck
+links, glowing nodes and crawling/grounding arcs follow Sprite Fusion
+lightning (MIT, Copyright (c) 2026 Hugo Duprez).
+
+IceCrystal.cpp: ice/ice-crystal.js; projected hexagonal prism facets, hull,
+lighting, glints, floor shadow and layered circling motes. Includes Sprite
+Fusion pickup recipe, MIT, Copyright (c) 2026 Hugo Duprez.
+
+Ice.h and SnowflakeBurst.cpp: ice/_lib.js flakeDesign/snowflake/endBy and
+ice/snowflake-burst.js; seeded geometry, gathering/pop/glints, fixed-step
+flake drift, settling and melting. Pop recipe includes Sprite Fusion sparkle,
+MIT, Copyright (c) 2026 Hugo Duprez.
+
+Curse.cpp: shadow/curse.js, including Sprite Fusion poison
+(https://www.spritefusion.com/pixel-art-vfx/poison), MIT,
+Copyright (c) 2026 Hugo Duprez.
+
+IceLance.cpp and Ice.h blade: ice/ice-lance.js and ice/_lib.js blade;
+faceted spear, cold wake, shedding puffs/chips, speed lines, rings and
+fletching. Includes Sprite Fusion energy bolt and ice recipes, MIT,
+Copyright (c) 2026 Hugo Duprez.
+
+IcePanes.h/.cpp and IceSpikes.cpp: ice/_lib.js inPoly/splitPoly/glassPoly/
+Panes and ice/ice-spikes.js; owning tumbling/skidding/brittle/crumbling ice
+panes, frost wave, faceted blade growth and shattering. Includes Sprite
+Fusion ice recipe, MIT, Copyright (c) 2026 Hugo Duprez.
+
+IcicleFall.cpp and IcePanes.cpp centroid: ice/icicle-fall.js and
+ice/_lib.js centroid; rime/drip/root snap, falling icicle, centroid-based
+random polygon cuts, impact frost/band, panes and debris. Includes Sprite
+Fusion ice break recipe, MIT, Copyright (c) 2026 Hugo Duprez.
+
+IceFractures.h/.cpp and IceShatter.cpp: ice/_lib.js fractures/drawFractures
+and ice/ice-shatter.js; source-ordered crack walks, faceted block, jolt,
+recursive face cuts, tone fragments and scuffs. Includes Sprite Fusion ice
+crack-and-burst recipe, MIT, Copyright (c) 2026 Hugo Duprez.
+
+Freeze.cpp: ice/freeze.js and ice/_lib.js iceOf; owning actor Float32 flood,
+frozen colors/feathers, facet/edge maps, seal/sweeps, cracks, glass fragments
+and thaw. Includes Sprite Fusion ice recipe, MIT, Copyright (c) 2026 Hugo Duprez.
+
+FrostNova.cpp: ice/frost-nova.js; source charge snowflake, expanding split ring,
+three crystal rows, frost floor, shard/snow emission and melt/drips.
+
+FrostBreath.cpp: ice/frost-breath.js; tiled gust, soft body/core/cap puffs,
+wind streaks, snow and tumbling crystals. Includes Sprite Fusion pixel-art
+VFX recipes, MIT, Copyright (c) 2026 Hugo Duprez.
+
+BlizzardVortex.cpp: ice/blizzard-vortex.js; source swaying funnel, split wind
+bands/orbiters, foot puffs, floor drift and mouth cloud. Includes Sprite Fusion
+black-hole recipe, MIT, Copyright (c) 2026 Hugo Duprez.
+
+Pickup.h and CoinSpin.cpp: pickups/_lib.js Layer/blobShadow/glint/coin3d and
+pickups/coin-spin.js; owning scratch outline, embossed thick coin, reeded rim,
+flash and hover. Includes Sprite Fusion pickup recipe, MIT, Copyright (c) 2026
+Hugo Duprez.
+
+PickupGem.h and GemSpin.cpp: pickups/_lib.js brilliant/drawGem and pickups/
+gem-spin.js; owning convex facet planes, per-pixel ray intersection, source
+material/highlight/edge shading and refracted floor light. Includes Sprite
+Fusion pickup/sparkle recipes, MIT, Copyright (c) 2026 Hugo Duprez.
+
+CrystalShard.cpp and Pickup.h pool: pickups/crystal-shard.js and pickups/
+_lib.js pool; irregular prism/cap/shear/chip planes, masked crack pulses,
+orbiting splinters and seeded embers. Includes Sprite Fusion ice/pickup recipes,
+MIT, Copyright (c) 2026 Hugo Duprez.
+
+XpOrb.cpp: pickups/xp-orb.js; figure-eight, tapered tail/core, shaded orb and
+seeded falling flecks. Includes Sprite Fusion pickup-orb recipe, MIT,
+Copyright (c) 2026 Hugo Duprez.
+LootBeam.cpp: pickups/loot-beam.js; column bands/threads, rings, dropped sword
+and motes. Includes Sprite Fusion holy-light recipe, MIT, Copyright (c) 2026
+Hugo Duprez.
+
+PowerStar.cpp: pickups/power-star.js; bevelled arms/ridges, beat swell, rays
+and emitted sparks. KeyGlint.cpp: pickups/key-glint.js; ring/collar/shaft/bit
+geometry, metal shading, glint and sparks. Includes Sprite Fusion pickup and
+sparkle recipes, MIT, Copyright (c) 2026 Hugo Duprez.
+
+Pickup.h pillow/heartSdf and HeartPickup.cpp: pickups/_lib.js and pickups/
+heart-pickup.js; sextic distance, curved surface lighting and double beat.
+Potion.cpp: pickups/potion.js; glass/cork, lagged brew, bubbles/pop and wisps.
+Includes Sprite Fusion pickup/bubble recipes, MIT, Copyright (c) 2026 Hugo Duprez.
+
+CollectBurst.cpp: pickups/collect-burst.js; pickup flash/cross, expanding
+rings, curved braking stars/trails and drifting motes. Includes Sprite Fusion
+pickup recipe, MIT, Copyright (c) 2026 Hugo Duprez.
+
+ChestOpen.cpp and PickupLoot.h: pickups/chest-open.js and pickups/_lib.js
+coin/gemlet; hinged sampled lid/wood/iron/hoard, fan rays, bouncing/collecting
+coins and gems, gold dust dissolution. Includes Sprite Fusion pickup/glint
+recipes, MIT, Copyright (c) 2026 Hugo Duprez.
+
+Critter.h: critters/_lib.js Grid and seed shift; offscreen color/Float32 alpha/
+tag cells, geometry, outward outline and dither/translucent stamping.
+
+Butterfly.cpp: critters/butterfly.js; burst/glide flight and wing folds, polygon
+veins/apex spots/eyespot shading, body/antennae and seeded dust trail.
+Bird.cpp: critters/bird.js; key-pose wing interpolation, lift history, tail/
+body/breast/beak/feather shading, Float32 translucent wing echo and loose feather.
+
+Bat.cpp: critters/bat.js; four-frame membrane/finger geometry, figure-eight
+flight, translucent downbeat echo, moon dust and eye-light trails/glints.
+Eyeball.cpp and Critter.h floorShadow: critters/eyeball.js and _lib.js shadow;
+seeded surface veins, gaze/iris perspective, blink lids, hanging nerve, orbiting
+motes and translucent floor shadow.
+
+FishSchool.cpp and CritterBubble.h: critters/fish-school.js and _lib.js bubble;
+body/tail waves, translucent fins, depth rows, dart/hold motion, mouth bubbles
+and caustic light. CritterFire.h: _lib.js tongue/firePuff/bounce; nested flame
+layers, cooling fire shapes and closed-form floor hops. Includes Sprite Fusion
+bubble/fire recipes, MIT, Copyright (c) 2026 Hugo Duprez.
+
+FlyingSkull.cpp: critters/flying-skull.js; prepared stable crown tongues,
+sampled bone/temple/socket/teeth/jaw shading, burning eyes, mouth flame, smoke/
+puffs/embers and optional floor sparks/light. Uses Sprite Fusion fire recipes,
+MIT, Copyright (c) 2026 Hugo Duprez.
+
+Frog.cpp: critters/frog.js; procedural limbs, tongue strike, fly, throat and landing dust.
+Ghost.cpp: critters/ghost.js; lagged sheet, scalloped hem, gaze, arms and translucent cells.
+CritterMotion.h and Critter.h: source toss, spring and ordered variable-radius tube rasterization.
+
+Wisp.cpp: critters/wisp.js; figure-eight motion, face, cold glow, layered fire tails, puffs and embers.
+Fire helpers retain Sprite Fusion fire attribution above.
+
+Snake.cpp: critters/snake.js; rolling humps, scale/belly shading, forked tongue, analytic dust and shadows.
+
+Jellyfish.cpp: critters/jellyfish.js; depth-shaded translucent bell, tentacles, frilled arms, water rings, lamps and bubbles.
+Critter.h: source four-neighbor inward depth snapshots. Bubble helpers retain Sprite Fusion attribution above.
+
+Slime.cpp: critters/slime.js; squashing jelly, hop, droplets, goo strings, puddle and bubbles.
+Puddle shading/bubbles retain Sprite Fusion poison attribution above. CritterMotion.h: source piecewise smooth curve.
+
+Blessing.cpp: holy/blessing.js; cone rays, top-surface light, floor pool, falling sparkles and mask-dependent landings.
+
+HolyFeathers.h: holy/_lib.js feather rasterizer and loose-feather simulation.
+FeatherBurst.cpp: holy/feather-burst.js puff, feather/down emissions, glints and light.
+
+HolyActor.h: holy/_lib.js owning actor silhouette and floor-oval semantics.
+DivineShield.cpp: holy/divine-shield.js sphere lattice, film, glints, rim and floor seal.
+Math.h jsHypot2 independently expresses the source two-argument max-normalized norm arithmetic; no V8 code/runtime is bundled.
+
+Heal.cpp: holy/heal.js lotus petals, hoop, actor restoration, spiral riders/hearts and light.
+HolyActor.h: source recolor traversal independent of mask occupancy.
+
+HealAoe.cpp: holy/heal-aoe.js floor wash, rolling ring, sprouting plus signs,
+seed/release jet, particles and lights; holy/_lib.js plus bevel rasterizer.
+
+HolyPillar.cpp: holy/holy-pillar.js opening/folding shaft fan, iris sun, floor
+sigil, caught motes, feather simulation, particle bursts and lights.
+
+Smite.cpp: holy/smite.js falling hammer, floor mark, shock ring/dome, cooling
+cracks/forks, stone chips, dust, sparks and lights.
+
+ResurrectionWings.h: holy/resurrection.js arm arc-length sampling, feather
+unfolding/wingbeat/scatter, ordered quill rasterization and primary trails.
+HolyFeathers.h: source explicit side override after default RNG consumption.
+
+Resurrection.cpp: holy/resurrection.js shaft, floor pool, actor ash/life recolor,
+halo formation, wing-triggered bursts, scatter, particles and lights.
+
+Impact.h: impacts/_lib.js stone shades, random rock outline and faceted rock shading.
+BluntHit.cpp: impacts/blunt-hit.js lumpy hot core, inked wedges, soft dust ring,
+faceted clods, collision dust kicks and warm lights.
+
+Impact.h: impacts/_lib.js directional spike preparation and three-pass hit star.
+BulletImpact.cpp: impacts/bullet-impact.js wall hit, spark cone, chips/dust/smoke,
+cooling rim/cracks, opening half-ring and grazing light.
+
+Impact.h: impacts/_lib.js broken ring segments and breakup rasterization.
+CritHit.cpp: impacts/crit-hit.js ranked star keyframes, four-ray flare, broken
+ring, sparks, tumbling shards, motes, twinkles and lights.
+
+HitSpark.cpp: impacts/hit-spark.js asymmetric directional cross, diamond core,
+spark cone, bouncing hot chips and light pop.
+
+HitFlash.cpp: impacts/hit-flash.js white/red/rim/cooling actor beats, source
+luminance ramps, directional hot burst, comic wedges and lights.
+
+Parry.cpp: impacts/parry.js three star keyframes, crossed blade glints,
+broken gold ring, spark fan, motes, delayed stars and lights.
+
+Ricochet.cpp: impacts/ricochet.js incoming/outgoing tracer, glancing star,
+cooling skid, floor sparks/grit/dust and lights.
+ShieldBlock.cpp: impacts/shield-block.js front/back dome lattice, surface
+ripples, per-cell blink/fade, glancing sparks and lifting motes.
+
+GroundImpact.h: impacts/_lib.js jagged crack walks/forks, growth and hot
+crack rendering, standing crescents and lumpy half-plane dust rings.
+HeavyLanding.cpp: impacts/heavy-landing.js floor dent/cracks, two dust rings,
+far/near puffs, hopping pebbles/grit and collision dust kicks.
+GroundSlam.cpp: impacts/ground-slam.js crater/hot cracks/embers, floor burst,
+racing shock fronts, sustained dust spray, rocks/grit/cloud and lights.
+
+ScifiGhosts.h: scifi/_lib.js periodic Ghosts emission reconstruction,
+source240Hz integration, ground collisions and fire/smoke carry-over.
+Jetpack.cpp: scifi/jetpack.js prepared exhaust, flame cones and metal pack.
+TeleporterPad.cpp: scifi/teleporter-pad.js pad, light column, lifts and stars.
+Hologram.cpp: scifi/hologram.js crystal projection, scanlines and split tears.
+
+LaserGrid.cpp: scifi/laser-grid.js steel posts, sliding/scissoring security
+beams, distance-lit haze/motes, crossings, floor scorch and spark/smoke loops.
+
+ScifiArcs.h: scifi/_lib.js three-pass half-pixel electric arc strokes.
+EnergyCore.cpp: scifi/energy-core.js pulsing plasma, tilted orbit rings,
+front/back steel cage, prepared cage arcs, sparks/motes and shock rings.
+
+Scanner.cpp: scifi/scanner.js actor-row/outline preparation, locking brackets,
+scan slice, cooling outline, readout and periodic edge data bits.
+
+ForceField.cpp: scifi/force-field.js spherical hex plates and seams/bevels,
+projected forked cracks, two shots/ripples, floor emitters and periodic debris.
+
+TractorBeam.cpp: scifi/tractor-beam.js hovering pod/cone, climbing rings,
+far/near tumbling rocks through pop/hover/spiral/swallow, dust/grit and streaks.
+
+WarpOut.cpp: scifi/warp-out.js actor outline/flash, timed body bits, upward
+beam, floor target, sparks/stars and lift-away; external actor visibility.
+
+Arcane.h: arcane/_lib.js floor rings, glyphs, sigils, motes, streaks and arcs.
+RuneCircle.cpp, StarFall.cpp, ManaBurst.cpp and SpellCharge.cpp: respectively
+arcane/rune-circle.js, star-fall.js, mana-burst.js and spell-charge.js.
+ArcaneOrb.cpp: arcane/arcane-orb.js glass orb, spiral arms, tilted rings,
+near/far orbiting motes and drifting motes.
+
+ArcaneBeam.cpp: arcane/arcane-beam.js, including Sprite Fusion energy beam
+(https://www.spritefusion.com/pixel-art-vfx/energy), MIT, Copyright (c) 2026
+Hugo Duprez. Arcane.h bayer threshold: arcane/_lib.js.
+
+ArcaneMissiles.cpp: arcane/arcane-missiles.js, including Sprite Fusion energy
+bolt (https://www.spritefusion.com/pixel-art-vfx/energy), MIT, Copyright (c)
+2026 Hugo Duprez.
+
+BlinkIn.cpp: arcane/blink-in.js, including Sprite Fusion blink
+(https://www.spritefusion.com/pixel-art-vfx/movement), MIT, Copyright (c)
+2026 Hugo Duprez. Arcane.h shades/squeezed: arcane/_lib.js.
+
+BlinkOut.cpp: arcane/blink-out.js, including Sprite Fusion blink
+(https://www.spritefusion.com/pixel-art-vfx/movement), MIT, Copyright (c)
+2026 Hugo Duprez.
+
+MagicCircleCast.cpp: arcane/magic-circle-cast.js, including Sprite Fusion holy
+light (https://www.spritefusion.com/pixel-art-vfx/holy-light), MIT, Copyright
+(c) 2026 Hugo Duprez.
+
+Portal.cpp: arcane/portal.js; Arcane.h tone: arcane/_lib.js, including Sprite
+Fusion black hole (https://www.spritefusion.com/pixel-art-vfx/black-hole), MIT,
+Copyright (c) 2026 Hugo Duprez.
+
+TimeStop.cpp: arcane/time-stop.js, including Sprite Fusion ice shatter
+(https://www.spritefusion.com/pixel-art-vfx/ice), MIT, Copyright (c) 2026
+Hugo Duprez.
+
+Shadow.h: shadow/_lib.js annulus/halo/unlight/ringFast/ringLight/attract/floorPool.
+ShadowGeometry.h: shadow/_lib.js inStar/blackStar/shard owning geometry and painting.
+Eclipse.cpp: shadow/eclipse.js, including source cycle-based sky stars,
+prepared streamer geometry, pearl corona and final moon unlight; MIT, Patch.
+HexSigil.cpp: shadow/hex-sigil.js timed pen paths, seven-pointed star,
+randomized glyph branches and crumbling stroke fragments; MIT, Patch.
+LifeSteal.cpp: shadow/life-steal.js seven homing blood orbs, bounded comet tails,
+impact ink and actor flush; MIT, Patch.
+DarkExplosion.cpp: shadow/dark-explosion.js, including Sprite Fusion black-hole
+(https://www.spritefusion.com/pixel-art-vfx/black-hole) and explosion
+(https://www.spritefusion.com/pixel-art-vfx/explosion), MIT,
+Copyright (c) 2026 Hugo Duprez.
+ShadowSimulation.h: shadow/_lib.js Puffs flame/side-lit soot and ink Drops simulation.
+GraspingHands.cpp: shadow/grasping-hands.js articulated arms, claws and pool events;
+MIT, Copyright (c) 2026 Patch.
+BlackHole.cpp: shadow/black-hole.js,
+including Sprite Fusion black-hole (https://www.spritefusion.com/pixel-art-vfx/black-hole),
+MIT, Copyright (c) 2026 Hugo Duprez.
+NecroSkulls.cpp: shadow/necro-skulls.js tilted five-skull orbit, ghost tails, bone sprite and cold flame; MIT, Copyright (c) 2026 Patch.
+ShadowFlames.cpp: shadow/shadow-flames.js nested inverted flame tongues, smoke, pale licks, embers and black-heart light removal. Includes Sprite Fusion fire (https://www.spritefusion.com/pixel-art-vfx/fire), MIT, Copyright (c) 2026 Hugo Duprez; MIT, Copyright (c) 2026 Patch.
+ShadowTendrils.cpp: shadow/shadow-tendrils.js seven lit hooked tentacles, pool, ink, soot and glint simulation; MIT, Copyright (c) 2026 Patch.
+SoulDrain.cpp: shadow/soul-drain.js cubic funnel streamlines, hollow-faced souls, crystal vessel, landing rings and motes; MIT, Copyright (c) 2026 Patch.
+VoidOrb.cpp: shadow/void-orb.js Float32 vortex tables, lens double images, dust, accelerating motes, gulp rings and black-core light removal; MIT, Copyright (c) 2026 Patch.
+AcidSplash.cpp and NatureSimulation.h: nature/acid-splash.js and nature/_lib.js liquid Drops, including Sprite Fusion blood (https://www.spritefusion.com/pixel-art-vfx/blood), MIT, Copyright (c) 2026 Hugo Duprez; MIT, Copyright (c) 2026 Patch.
+NatureGeometry.h: nature/_lib.js stoneShape and drawRock, bounded owning corners and local faceted-stone raster scratch; MIT, Copyright (c) 2026 Patch.
+
+Boulder.cpp: nature/boulder.js, including Sprite Fusion explosion (https://www.spritefusion.com/pixel-art-vfx/explosion), MIT, Copyright (c) 2026 Hugo Duprez; MIT, Copyright (c) 2026 Patch.
+
+EarthSpike.cpp and NatureSpikeGeometry.h: nature/earth-spike.js and nature/_lib.js spike helpers, including Sprite Fusion ice spikes and explosion (https://www.spritefusion.com/pixel-art-vfx/ice), MIT, Copyright (c) 2026 Hugo Duprez; MIT, Copyright (c) 2026 Patch.
+
+HealingBloom.cpp and NatureLeafGeometry.h: nature/healing-bloom.js and nature/_lib.js drawLeaf, including Sprite Fusion heal (https://www.spritefusion.com/pixel-art-vfx/heal), MIT, Copyright (c) 2026 Hugo Duprez; MIT, Copyright (c) 2026 Patch.
+
+LeafStorm.cpp: nature/leaf-storm.js, including Sprite Fusion falling leaves (https://www.spritefusion.com/pixel-art-vfx/falling-leaves), MIT, Copyright (c) 2026 Hugo Duprez; MIT, Copyright (c) 2026 Patch.
+
+PoisonCloud.cpp: nature/poison-cloud.js, MIT, Copyright (c) 2026 Patch.
+
+Quake.cpp: nature/quake.js, including Sprite Fusion explosion (https://www.spritefusion.com/pixel-art-vfx/explosion), MIT, Copyright (c) 2026 Hugo Duprez; MIT, Copyright (c) 2026 Patch.
+
+RootSnare.cpp: nature/root-snare.js, including Sprite Fusion ice freeze (https://www.spritefusion.com/pixel-art-vfx/ice), MIT, Copyright (c) 2026 Hugo Duprez; MIT, Copyright (c) 2026 Patch.
+
+SporeBurst.cpp and NatureGas.h: nature/spore-burst.js and nature/_lib.js gas helpers, including Sprite Fusion poison (https://www.spritefusion.com/pixel-art-vfx/poison), MIT, Copyright (c) 2026 Hugo Duprez; MIT, Copyright (c) 2026 Patch.
+
+Thorns.cpp: nature/thorns.js, including Sprite Fusion ice spikes (https://www.spritefusion.com/pixel-art-vfx/ice), MIT, Copyright (c) 2026 Hugo Duprez; MIT, Copyright (c) 2026 Patch.
+
+Tornado.cpp: nature/tornado.js, MIT, Copyright (c) 2026 Patch; uses canonical nature/_lib.js stone/leaf helpers credited above.
+
+ToxicPuddle.cpp: nature/toxic-puddle.js, MIT, Copyright (c) 2026 Patch.
+
+VineWhip.cpp: nature/vine-whip.js, including Sprite Fusion slash (https://www.spritefusion.com/pixel-art-vfx/slash), MIT, Copyright (c) 2026 Hugo Duprez; MIT, Copyright (c) 2026 Patch.
+
+CoinDrop.cpp: spawn/coin-drop.js, including Sprite Fusion pickup (https://www.spritefusion.com/pixel-art-vfx/pickup), MIT, Copyright (c) 2026 Hugo Duprez; MIT, Copyright (c) 2026 Patch.
+
+Disintegrate.cpp and SpawnBody.h: spawn/disintegrate.js and spawn/_lib.js bodyOf/rimOf, including Sprite Fusion movement (https://www.spritefusion.com/pixel-art-vfx/movement), MIT, Copyright (c) 2026 Hugo Duprez; MIT, Copyright (c) 2026 Patch.
+
+DissolveBurn.cpp adapts src/fx/spawn/dissolve-burn.js (Patch; flame/smoke/ember
+components adapted upstream from Sprite Fusion, Hugo Duprez, MIT).
+
+EggGeometry.h and EggHatch.cpp adapt src/fx/spawn/egg-hatch.js (Patch; staged
+cracking/shattering adapted upstream from Sprite Fusion, Hugo Duprez, MIT).
+
+Poof.cpp adapts src/fx/spawn/poof.js (Patch; layered smoke puffs adapted
+upstream from Sprite Fusion, Hugo Duprez, MIT).
+
+RespawnBeam.cpp and SoulRise.cpp adapt their corresponding src/fx/spawn files
+(Patch; holy-light/movement/heal components adapted upstream from Sprite
+Fusion, Hugo Duprez, MIT).
+
+ShatterDeath.cpp, SpawnPortal.cpp, SummonRise.cpp and SummonBeast.h adapt the
+corresponding src/fx/spawn files (Patch; ice/black-hole/explosion components
+adapted upstream from Sprite Fusion, Hugo Duprez, MIT).
+
+StatusShape.h, Haste.cpp, Slowed.cpp and Bleeding.cpp adapt their corresponding status sources
+(Patch; Haste movement trails and dust adapted upstream from Sprite Fusion,
+Hugo Duprez, MIT).
+
+Bleeding blood beads, crowns and drying splats retain the upstream Sprite Fusion
+blood attribution (https://www.spritefusion.com/pixel-art-vfx/blood), MIT,
+Copyright (c) 2026 Hugo Duprez.
+
+StatusVisual.h, Stunned.cpp, Sleep.cpp, Confused.cpp and Charmed.cpp adapt the
+corresponding status sources (Patch; shaded glyphs/icons and sparkles adapted
+upstream from Sprite Fusion heal, https://www.spritefusion.com/pixel-art-vfx/heal,
+MIT, Copyright (c) 2026 Hugo Duprez). StatusEyes.h adapts Patch's status/_lib.js
+eye detector. Cursed.cpp retains the original Sprite Fusion poison attribution
+(https://www.spritefusion.com/pixel-art-vfx/poison), MIT, Copyright (c) 2026 Hugo Duprez.
+
+StatusFire.h and Burning.cpp adapt status/_lib.js and status/burning.js (Patch;
+flame tongues, smoke and embers adapted upstream from Sprite Fusion fire,
+https://www.spritefusion.com/pixel-art-vfx/fire), MIT, Copyright (c) 2026 Hugo Duprez.
+
+Poisoned.cpp adapts Patch's status/poisoned.js, MIT.
+
+Rage.cpp adapts status/rage.js (Patch; shaded anger mark and embers adapted
+upstream from Sprite Fusion heal and fire), MIT, Copyright (c) 2026 Hugo Duprez.
+
+Petrified.cpp adapts status/petrified.js (Patch; creeping front, branching cracks
+and stone debris adapted upstream from Sprite Fusion ice,
+https://www.spritefusion.com/pixel-art-vfx/ice), MIT, Copyright (c) 2026 Hugo Duprez.
+
+Frozen.cpp adapts Patch's status/frozen.js, MIT. FrozenOrder.h is an index-only
+native adaptation of V8's array-sort.tq from Node v26.4.0, retaining the original
+Frozen random-comparator call order without a JS runtime. Copyright (c) 2001-2018
+Python Software Foundation; All Rights Reserved. Copyright 2014, the V8 project
+authors. V8 BSD and PSF terms and the modification summary are retained in
+FrozenOrder.LICENSE.txt and installed with these notices in the SDK.
+
+MeleeSwing.h, ClawSwipe.cpp, SpearSweep.cpp and Thrust.cpp adapt the corresponding
+melee/_lib.js and melee effect sources (Patch; slash crescents/traces, explosion
+dust/grit, dash speed lines and sparkle stars adapted upstream from Sprite Fusion,
+https://www.spritefusion.com/pixel-art-vfx), MIT, Copyright (c) 2026 Hugo Duprez.
+
+SwordSlash.cpp, DoubleSlash.cpp and DaggerFlurry.cpp adapt their corresponding
+melee sources; MeleeSwing.h also adapts their shared shavings/sliver helpers.
+The crescent, echo, trace, glint and spark recipes retain Sprite Fusion slash
+attribution (https://www.spritefusion.com/pixel-art-vfx/slash), MIT,
+Copyright (c) 2026 Hugo Duprez, alongside Patch's original MIT source notice.
+
+Uppercut, Spin slash and Whip crack adapt the corresponding upstream melee
+recipes and shared comic star, MIT, Copyright (c) 2026 Patch and Hugo Duprez
+(Sprite Fusion). See the upstream source comments for original recipe links.
+
+Scythe reap, Heavy cleave and Hammer smash adapt their upstream melee recipes
+and shared rock/cracks/polyline helpers, MIT, Copyright (c) 2026 Patch and Hugo
+Duprez (Sprite Fusion). Original links are retained in the upstream sources.
+
+Damage number, Combo counter and Exclamation adapt their upstream UI recipes;
+UiWord adapts spell/drawWord/shake from ui/_lib.js. MIT, Copyright (c) 2026 Patch.
+Glyph data remains the code-owned core/font.js adaptation, not gallery font assets.
+
+Crit number, Health bar hit and Heart lost adapt their upstream UI recipes;
+UiHud adapts panel/HEART/heartPal from ui/_lib.js. MIT, Copyright (c) 2026 Patch.
+
+Countdown adapts its upstream UI recipe, MIT, Copyright (c) 2026 Patch.
+Confetti adapts its upstream UI recipe and Sprite Fusion falling-leaves flutter,
+MIT, Copyright (c) 2026 Patch and Hugo Duprez.
+
+Coin collect adapts its upstream UI recipe and Sprite Fusion pickup pop/trails,
+MIT, Copyright (c) 2026 Patch and Hugo Duprez.
+
+Achievement and Quest complete adapt their upstream UI recipes,
+MIT, Copyright (c) 2026 Patch.
+UiActor adapts UI tint/light/halo helpers; tint adapts Sprite Fusion power-up,
+MIT, Copyright (c) 2026 Patch and Hugo Duprez.
+
+Level up adapts its upstream UI recipe and Sprite Fusion holy-light/power-up,
+MIT, Copyright (c) 2026 Patch and Hugo Duprez.
+
+Blinds, CRT off and Pixel dissolve adapt their upstream transition recipes;
+ScreenTransition adapts clipTo/rect/glint from transitions/_lib.js. MIT,
+Copyright (c) 2026 Patch and Hugo Duprez (Sprite Fusion holy-light/lightning/sparkle).
+
+Chain.h adapts core/chain.js. Arrow shot, Pistol shots, Fireball throw,
+Ice lance throw, Rocket launcher, Lightning call, Meteor call, Holy smite,
+Dash strike, Earth stomp, Ground pound and Sword combo adapt fx/moves/*.js.
+MIT, Copyright (c) 2026 Patch. Child effects retain their respective notices.
+
+Iris, Star iris, Diamond wipe, Glitch wipe, Slash wipe, Shatter wipe and Burn away
+adapt their upstream transition recipes. ScreenGeometry and ScreenField adapt
+transitions/_lib.js. MIT, Copyright (c) 2026 Patch and Hugo Duprez.
+
+ActRuntime.cpp adapts core/act.js source clock, hitstop, shake, pose and event
+sequencing, MIT, Copyright (c) 2026 Patch; the held-pose/hitstop convention adapts
+Hollow Crown (https://github.com/rehan-remade/hollow-crown), MIT,
+Copyright (c) 2026 rehan-remade. ActData.cpp retains authored act data from the
+same pinned source. The metadata importer is authoring-only, not a JS runtime.
+
+ActTarget.cpp adapts core/act.js procedural straw target artwork, spring/shear
+rendering and straw particle raster composition, MIT, Copyright (c) 2026 Patch.
+
+ActRuntime.cpp also adapts core/act.js source standing-body carry/follow,
+nearest rest-cell mapping, ghosts, dust and full frame composition, MIT,
+Copyright (c) 2026 Patch. Stock actor artwork remains owned by Actor.cpp.

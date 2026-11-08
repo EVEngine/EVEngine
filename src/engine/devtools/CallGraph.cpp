@@ -127,6 +127,11 @@ uint32_t CallGraph::onReturn(const SourceLoc& loc, const std::string& funcName) 
     const uint32_t id    = append(TraceKind::Return, loc, fn);
     if (!frameStack_.empty()) {
         newest().frameId = frameStack_.back();
+        // Cross-frame writes can replace an outer scope's definition with an inner
+        // event ID. Event retirement cannot clean that alias through its own frame.
+        // Reaching-definition lookup only needs live activations; historical slices
+        // retain their already-recorded events and data-flow edges independently.
+        lastDef_.erase(frameStack_.back());
         frameStack_.pop_back();
     }
     return id;
