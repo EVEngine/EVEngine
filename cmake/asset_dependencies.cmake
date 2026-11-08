@@ -48,6 +48,11 @@ function(eve_download_archive_with_retries url outfile expected_sha256)
             string(REGEX MATCHALL "HTTP/[0-9.]+ [0-9]+" _eve_http_status "${_eve_dl_log}")
             message(WARNING
                 "Download failed for ${_eve_url}: ${_eve_dl_status}; HTTP: ${_eve_http_status}")
+            if(_eve_http_status MATCHES "HTTP/[0-9.]+ (401|403|429)")
+                file(REMOVE "${outfile}")
+                message(FATAL_ERROR
+                    "Access or rate-limit response; stopping without retrying or changing routes")
+            endif()
         endif()
         if(EXISTS "${outfile}")
             file(REMOVE "${outfile}")
@@ -76,14 +81,15 @@ function(load_asset_zstd)
     set(_eve_zstd_sha256
         eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3)
     set(_eve_zstd_url
-        https://api.github.com/repos/facebook/zstd/releases/assets/230758919)
-    # Release Asset API for the same v1.5.7 tarball; avoids release-frontend 504s.
+        https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz)
+    # Use the normal public release route first to avoid needless API quota use.
+    # The Release Asset API serves the same v1.5.7 tarball after transient 5xx.
     # The archive SHA256 above remains the authority for downloaded content.
     set(_eve_zstd_archive
         "${CMAKE_BINARY_DIR}/_eve_downloads/zstd-1.5.7.tar.gz")
     eve_download_archive_with_retries(
         "${_eve_zstd_url}" "${_eve_zstd_archive}" "${_eve_zstd_sha256}"
-        "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz")
+        "https://api.github.com/repos/facebook/zstd/releases/assets/230758919")
 
     include(FetchContent)
     set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)

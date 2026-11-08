@@ -1,16 +1,18 @@
 """Seed the official sccache action's tool cache with a verified release asset.
 
-Use the Release Asset API to avoid the failing release-download frontend.
+Prefer the public release download; use the API only after transient failures.
 The upstream action still owns PATH, runtime credentials and statistics.
 """
 
 import hashlib
 import io
 import os
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 import platform
 import tarfile
 import time
+import urllib.error
 import urllib.request
 
 
@@ -22,22 +24,80 @@ ASSETS = {
 }
 
 
-def main():
-    asset, expected = ASSETS[(platform.system(), platform.machine())]
-    url = f"https://api.github.com/repos/mozilla/sccache/releases/assets/{asset}"
-    data = None
+def server_delays(headers):
+    """Return all server-specified retry delays; callers honor the longest."""
+    delays = []
+    retry = headers.get("Retry-After")
+    reset = headers.get("X-RateLimit-Reset")
+    if retry:
+        try:
+            delays.append(float(retry))
+        except ValueError:
+            delays.append(parsedate_to_datetime(retry).timestamp() - time.time())
+    if reset:
+        delays.append(float(reset) - time.time())
+    return delays
+
+
+def fetch_verified(urls, expected):
+    """Fetch at most five times; rate-limited routes never switch endpoints."""
+    route = 0
+    waited = 0.0
     for attempt in range(5):
         try:
-            request = urllib.request.Request(url, headers={"Accept": "application/octet-stream"})
+            request = urllib.request.Request(urls[route], headers={"Accept": "application/octet-stream"})
             with urllib.request.urlopen(request, timeout=120) as response:
                 data = response.read()
-            break
+        except urllib.error.HTTPError as error:
+            error.close()
+            limited = error.code == 429 or (
+                error.code == 403
+                and (error.headers.get("X-RateLimit-Remaining") == "0" or "rate limit" in str(error.reason).lower())
+            )
+            if limited:
+                # Do not evade API quotas by moving to another host/route.
+                delays = server_delays(error.headers)
+                if not delays:
+                    raise RuntimeError("Rate limited without a retry time; stopping requests") from error
+                delay = max([1.0, *delays])
+                if attempt == 4 or waited + delay > 120:
+                    raise RuntimeError("Rate-limit reset exceeds the bounded wait budget; stopping requests") from error
+                print(f"HTTP {error.code}: respecting rate-limit wait of {delay:.1f}s")
+            elif 500 <= error.code < 600:
+                if attempt == 4:
+                    raise
+                delay = max([2 * (attempt + 1), *server_delays(error.headers)])
+                if waited + delay > 120:
+                    raise RuntimeError("Server retry time exceeds the bounded wait budget") from error
+                route = (route + 1) % len(urls)
+                print(f"HTTP {error.code}: retrying an official route after {delay}s")
+            else:
+                # Includes access denial; never turn a denied request into a route switch.
+                raise
         except OSError:
             if attempt == 4:
                 raise
-            time.sleep(2 * (attempt + 1))
-    if hashlib.sha256(data).hexdigest() != expected:
-        raise ValueError("sccache v0.16.0 archive SHA256 mismatch")
+            delay = 2 * (attempt + 1)
+            route = (route + 1) % len(urls)
+        else:
+            if hashlib.sha256(data).hexdigest() != expected:
+                raise ValueError("sccache v0.16.0 archive SHA256 mismatch")
+            return data
+        time.sleep(delay)
+        waited += delay
+    raise RuntimeError("sccache download exhausted its five attempts")
+
+
+def main():
+    system, machine = platform.system(), platform.machine()
+    asset, expected = ASSETS[(system, machine)]
+    release_arch = {"AMD64": "x86_64", "x86_64": "x86_64", "arm64": "aarch64"}[machine]
+    release_platform = {"Windows": "pc-windows-msvc", "Linux": "unknown-linux-musl", "Darwin": "apple-darwin"}[system]
+    filename = f"sccache-v0.16.0-{release_arch}-{release_platform}.tar.gz"
+    data = fetch_verified([
+        f"https://github.com/mozilla/sccache/releases/download/v0.16.0/{filename}",
+        f"https://api.github.com/repos/mozilla/sccache/releases/assets/{asset}",
+    ], expected)
     arch = {"AMD64": "x64", "x86_64": "x64", "arm64": "arm64"}[platform.machine()]
     target = Path(os.environ["RUNNER_TOOL_CACHE"]) / "sccache" / "0.16.0" / arch
     target.mkdir(parents=True, exist_ok=True)

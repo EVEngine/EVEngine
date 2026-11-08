@@ -22,7 +22,7 @@ class AssetDependencyDownloadTests(unittest.TestCase):
         class Handler(BaseHTTPRequestHandler):
             def do_GET(self) -> None:
                 requests.append(self.path)
-                self.send_response(503 if self.path == "/fail" else 200)
+                self.send_response(403 if self.path == "/denied" else 503 if self.path == "/fail" else 200)
                 self.end_headers()
                 self.wfile.write(payload if self.path == "/good" else b"invalid bytes")
 
@@ -76,6 +76,12 @@ class AssetDependencyDownloadTests(unittest.TestCase):
                 self.assertEqual(requests, ["/bad", "/fail", "/bad", "/fail", "/bad"])
                 self.assertFalse(output.exists())
                 self.assertIn("after 5 attempts", failed.stderr)
+                requests.clear()
+                denied = download("denied", "good")
+                self.assertNotEqual(denied.returncode, 0)
+                self.assertEqual(requests, ["/denied"])
+                self.assertFalse(output.exists())
+                self.assertIn("Access or rate-limit response", denied.stderr)
         finally:
             server.shutdown()
             server.server_close()
