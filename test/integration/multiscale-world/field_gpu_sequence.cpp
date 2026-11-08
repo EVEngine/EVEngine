@@ -25,7 +25,7 @@
 namespace {
 using Row = std::array<float, 4>;
 std::string shaderSource(const char* name) {
-    const auto root = std::filesystem::path(__FILE__).parent_path().parent_path().parent_path();
+    const auto root = std::filesystem::path(__FILE__).parent_path().parent_path().parent_path().parent_path();
     std::ifstream input(root / "src/modules/physics/field/gpu" / name, std::ios::binary);
     return {std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
 }

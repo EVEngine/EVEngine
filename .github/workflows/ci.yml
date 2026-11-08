@@ -298,6 +298,12 @@ jobs:
         run: |
           make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}" \
             CMAKE_EXTRA_ARGS="-DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
+              -DEVENGINE_MODULE_SPATIAL_MULTISCALE=ON \
+              -DEVENGINE_MODULE_PHYSICS_FIELD=ON \
+              -DEVENGINE_MODULE_PHYSICS_FIELD_COUPLING=ON \
+              -DEVENGINE_MODULE_PROCGEN_RECURSIVE=ON \
+              -DEVENGINE_MODULE_PROCGEN_RECURSIVE_GRAPHICS=ON \
+              -DEVENGINE_MODULE_GRAPHICS_MULTISCALE=ON \
               -DEVENGINE_COMPILER_CACHE=SCCACHE ${{ steps.third-party-cache.outputs.cmake-args }}"
 
       - name: Verify Windows compiler cache reuse
@@ -539,7 +545,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           make build/macosx-debug JOBS="$(sysctl -n hw.ncpu)"
-          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE ${{ steps.third-party-cache.outputs.cmake-args }}"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_MODULE_SPATIAL_MULTISCALE=ON
+          -DEVENGINE_MODULE_PHYSICS_FIELD=ON
+          -DEVENGINE_MODULE_PHYSICS_FIELD_COUPLING=ON
+          -DEVENGINE_MODULE_PROCGEN_RECURSIVE=ON
+          -DEVENGINE_MODULE_PROCGEN_RECURSIVE_GRAPHICS=ON
+          -DEVENGINE_MODULE_GRAPHICS_MULTISCALE=ON
+          -DEVENGINE_COMPILER_CACHE=SCCACHE ${{ steps.third-party-cache.outputs.cmake-args }}"
 
       - name: Verify built third-party cache
         timeout-minutes: 5
@@ -1055,7 +1067,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: >-
           make build/linux-asan JOBS="$(nproc)"
-          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE ${{ steps.third-party-cache.outputs.cmake-args }}"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_MODULE_SPATIAL_MULTISCALE=ON
+          -DEVENGINE_MODULE_PHYSICS_FIELD=ON
+          -DEVENGINE_MODULE_PHYSICS_FIELD_COUPLING=ON
+          -DEVENGINE_MODULE_PROCGEN_RECURSIVE=ON
+          -DEVENGINE_MODULE_PROCGEN_RECURSIVE_GRAPHICS=ON
+          -DEVENGINE_MODULE_GRAPHICS_MULTISCALE=ON
+          -DEVENGINE_COMPILER_CACHE=SCCACHE ${{ steps.third-party-cache.outputs.cmake-args }}"
 
       - name: Verify built third-party cache
         timeout-minutes: 5
