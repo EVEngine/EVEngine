@@ -4383,8 +4383,8 @@ TEST_CASE("stylize.pixelfx.core.cartoonTextUtf8BoundsAndOwnership") {
     REQUIRE(PixelFx::prepareConfiguration(PixelFxKind::CartoonPow, settings));
     settings.explosion.text += "!";
     REQUIRE(!PixelFx::prepareConfiguration(PixelFxKind::CartoonPow, settings));
-    for (const std::string bad : {std::string("\xc0\xaf"), std::string("\xed\xa0\x80"), std::string("\xf4\x90\x80\x80"),
-                                  std::string("\xf0\x9f")}) {
+    for (const std::string& bad : {std::string("\xc0\xaf"), std::string("\xed\xa0\x80"),
+                                   std::string("\xf4\x90\x80\x80"), std::string("\xf0\x9f")}) {
         settings.explosion.text = bad;
         REQUIRE(!PixelFx::prepareConfiguration(PixelFxKind::CartoonPow, settings));
     }
