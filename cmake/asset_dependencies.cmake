@@ -6,6 +6,10 @@ include_guard(GLOBAL)
 # second chance. Prefetch into CMAKE_BINARY_DIR with retries, then point
 # FetchContent at the local archive.
 function(eve_download_archive_with_retries url outfile expected_sha256)
+    # Optional trailing URLs must identify byte-identical canonical archives.
+    # Keep one total attempt budget, independent of the number of routes.
+    set(_eve_urls "${url}" ${ARGN})
+    list(LENGTH _eve_urls _eve_url_count)
     get_filename_component(_eve_dl_dir "${outfile}" DIRECTORY)
     file(MAKE_DIRECTORY "${_eve_dl_dir}")
 
@@ -19,11 +23,14 @@ function(eve_download_archive_with_retries url outfile expected_sha256)
 
     set(_eve_max_attempts 5)
     foreach(_eve_attempt RANGE 1 ${_eve_max_attempts})
+        math(EXPR _eve_url_index "(${_eve_attempt} - 1) % ${_eve_url_count}")
+        list(GET _eve_urls ${_eve_url_index} _eve_url)
         message(STATUS
-            "Downloading ${url} (attempt ${_eve_attempt}/${_eve_max_attempts})")
-        file(DOWNLOAD "${url}" "${outfile}"
+            "Downloading ${_eve_url} (attempt ${_eve_attempt}/${_eve_max_attempts})")
+        file(DOWNLOAD "${_eve_url}" "${outfile}"
             HTTPHEADER "Accept: application/octet-stream"
             STATUS _eve_dl_status
+            LOG _eve_dl_log
             TIMEOUT 120
             TLS_VERIFY ON
             SHOW_PROGRESS)
@@ -37,7 +44,10 @@ function(eve_download_archive_with_retries url outfile expected_sha256)
                 "Hash mismatch for ${outfile}: got ${_eve_got_hash}, "
                 "expected ${expected_sha256}")
         else()
-            message(WARNING "Download failed for ${url}: ${_eve_dl_status}")
+            # Report status lines only, never redirect URLs or authorization data.
+            string(REGEX MATCHALL "HTTP/[0-9.]+ [0-9]+" _eve_http_status "${_eve_dl_log}")
+            message(WARNING
+                "Download failed for ${_eve_url}: ${_eve_dl_status}; HTTP: ${_eve_http_status}")
         endif()
         if(EXISTS "${outfile}")
             file(REMOVE "${outfile}")
@@ -72,7 +82,8 @@ function(load_asset_zstd)
     set(_eve_zstd_archive
         "${CMAKE_BINARY_DIR}/_eve_downloads/zstd-1.5.7.tar.gz")
     eve_download_archive_with_retries(
-        "${_eve_zstd_url}" "${_eve_zstd_archive}" "${_eve_zstd_sha256}")
+        "${_eve_zstd_url}" "${_eve_zstd_archive}" "${_eve_zstd_sha256}"
+        "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz")
 
     include(FetchContent)
     set(ZSTD_BUILD_PROGRAMS OFF CACHE BOOL "" FORCE)
