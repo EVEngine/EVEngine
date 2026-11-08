@@ -22,6 +22,7 @@
       "dialoguePersistence.jsonRoundtrip",
       "dialoguePersistence.migratesCurrentAndCallFrames",
       "dialoguePersistence.rejectsLegacyUnversionedState",
+      "rpg.saveSession.arpgLoopContentVersionRejectsFutureAndMigratesCompatible",
       "rpg.saveSession.explicitIdMigrationRewritesOwningPayloadBeforeValidation",
       "rpg.saveSession.explicitQuestAdditionMigrationPreservesOldProgress",
       "rpg.saveSession.explicitSingleActorPartyMigrationPreservesCompanionBaseline",
@@ -681,6 +682,84 @@ TEST_CASE("rpg.saveSession.explicitIdMigrationRewritesOwningPayloadBeforeValidat
 
     sourceActor->release();
     targetActor->release();
+    eve::inventory::ItemRegistry::clear();
+    QuestRegistry::clear();
+}
+
+TEST_CASE("rpg.saveSession.arpgLoopContentVersionRejectsFutureAndMigratesCompatible") {
+    // Phase D3 sample for examples/arpg-loop content ids: unknown future rejects;
+    // older compatible ids restore only after allowCompatibleContentVersion.
+    QuestRegistry::clear();
+    GameState sourceState;
+    sourceState.setVariable("gold", 23.0);
+    Tracker   sourceTracker;
+    RPGActor *sourceActor = RPGActor::createActor();
+    REQUIRE(sourceActor != nullptr);
+    sourceActor->setBaseAttribute("hp", 100.0);
+    sourceActor->setCurrent("hp", 88.0);
+    eve::inventory::ItemDefinition blade;
+    blade.id       = "sentinel_blade";
+    blade.maxStack = 1;
+    eve::inventory::ItemRegistry::registerItem(blade);
+    eve::inventory::Bag sourceBag(3);
+    sourceBag.addItem("sentinel_blade", 1);
+    eve::inventory::EquipmentSet sourceEquipment;
+    sourceEquipment.defineSlot("weapon");
+    RPGSaveSession source;
+    source.bind(sourceState, sourceTracker, *sourceActor, sourceBag, sourceEquipment);
+    REQUIRE(source.setContentVersion("arpg-loop-v0").ok());
+    auto encoded = source.snapshotJson();
+    REQUIRE(encoded.ok());
+
+    GameState liveState;
+    liveState.setVariable("gold", 99.0);
+    Tracker   liveTracker;
+    RPGActor *liveActor = RPGActor::createActor();
+    REQUIRE(liveActor != nullptr);
+    liveActor->setBaseAttribute("hp", 100.0);
+    liveActor->setCurrent("hp", 100.0);
+    eve::inventory::Bag          liveBag(3);
+    eve::inventory::EquipmentSet liveEquipment;
+    liveEquipment.defineSlot("weapon");
+
+    RPGSaveSession future;
+    future.bind(liveState, liveTracker, *liveActor, liveBag, liveEquipment);
+    REQUIRE(future.setContentVersion("arpg-loop-v1").ok());
+    // Current product has no route from v0 → v1 until the host opts in.
+    auto rejected = future.restoreSnapshotJson(encoded.value());
+    CHECK(!rejected.ok());
+    REQUIRE(rejected.error() != nullptr);
+    CHECK_EQ(static_cast<int>(rejected.error()->code()), static_cast<int>(eve::DiagnosticCode::Conflict));
+    CHECK_EQ(liveState.getVariable("gold"), 99.0);
+    CHECK_EQ(liveActor->getCurrent("hp"), 100.0);
+    CHECK_EQ(liveBag.countItem("sentinel_blade"), 0);
+
+    // Snapshot stamped arpg-loop-v1 must not load into a newer session without a route.
+    RPGSaveSession v1Writer;
+    v1Writer.bind(sourceState, sourceTracker, *sourceActor, sourceBag, sourceEquipment);
+    REQUIRE(v1Writer.setContentVersion("arpg-loop-v1").ok());
+    auto v1Snap = v1Writer.snapshotJson();
+    REQUIRE(v1Snap.ok());
+    RPGSaveSession newer;
+    newer.bind(liveState, liveTracker, *liveActor, liveBag, liveEquipment);
+    REQUIRE(newer.setContentVersion("arpg-loop-v2").ok());
+    auto tooNew = newer.restoreSnapshotJson(v1Snap.value());
+    CHECK(!tooNew.ok());
+    CHECK_EQ(liveState.getVariable("gold"), 99.0);
+
+    RPGSaveSession compatible;
+    compatible.bind(liveState, liveTracker, *liveActor, liveBag, liveEquipment);
+    REQUIRE(compatible.setContentVersion("arpg-loop-v1").ok());
+    REQUIRE(compatible.allowCompatibleContentVersion("arpg-loop-v0").ok());
+    REQUIRE(compatible.validateSnapshotJson(encoded.value()).ok());
+    CHECK_EQ(liveState.getVariable("gold"), 99.0);
+    REQUIRE(compatible.restoreSnapshotJson(encoded.value()).ok());
+    CHECK_EQ(liveState.getVariable("gold"), 23.0);
+    CHECK_EQ(liveActor->getCurrent("hp"), 88.0);
+    CHECK_EQ(liveBag.countItem("sentinel_blade"), 1);
+
+    sourceActor->release();
+    liveActor->release();
     eve::inventory::ItemRegistry::clear();
     QuestRegistry::clear();
 }

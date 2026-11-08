@@ -10,6 +10,7 @@ struct ActionEncounter::Impl {
     RPGDamageTarget                       player, enemy;
     std::optional<RPGActionDamageReceipt> pending;
     int                                   lastTick = -1;
+    bool                                  bound    = false;
     RPGActionDamageSink                   sink{[this](ecs::EntityHandle handle) -> std::optional<RPGDamageTarget> {
         auto same = [&](const RPGDamageTarget& value) {
             return handle.table == value.actor.table && handle.type == value.actor.type &&
@@ -38,6 +39,7 @@ Result<void> ActionEncounter::bind(RPGActor& player, RPGActor& enemy, std::strin
     impl_->player   = {ecs::handle_of(&player), SubjectRef::fromPersistentId(*source)};
     impl_->enemy    = {ecs::handle_of(&enemy), SubjectRef::fromPersistentId(*target)};
     impl_->lastTick = -1;
+    impl_->bound    = true;
     return Result<void>::success();
 }
 Result<double> ActionEncounter::hit(bool playerAttacks, double amount, int tick) {
@@ -97,4 +99,7 @@ Result<void> ActionEncounter::claim(GameState& state, Tracker& tracker, std::str
     return Result<void>::success(result.status());
 }
 bool ActionEncounter::hasPendingReward() const { return impl_ && impl_->pending.has_value(); }
+bool ActionEncounter::isClosed() const { return !impl_; }
+bool ActionEncounter::isBound() const { return impl_ && impl_->bound; }
+int  ActionEncounter::lastTick() const { return impl_ ? impl_->lastTick : -1; }
 }  // namespace eve::rpg

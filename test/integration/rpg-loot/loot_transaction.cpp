@@ -102,3 +102,65 @@ TEST_CASE("Loot empty successful draws advance random stream without inventory e
     CHECK(rng != before);
     CHECK(eve::inventory::InventorySystem::events().empty());
 }
+
+TEST_CASE("Loot weighted selection grants exactly one entry atomically") {
+    LootFixture                   fixture;
+    eve::inventory::Bag           bag(4);
+    std::mt19937                  rng(11);
+    eve::rpg::LootTableDefinition table;
+    table.id         = "weighted";
+    table.selectMode = eve::rpg::LootSelectMode::Weighted;
+    table.entries    = {{"sword", 0.0, 1, 1, 1.0, false}, {"gem", 0.0, 1, 1, 3.0, false}};
+    eve::rpg::LootSystem::registerTable(table);
+    auto detailed = eve::rpg::LootSystem::rollDetailed("weighted", &bag, rng, {});
+    REQUIRE(detailed.ok());
+    CHECK_EQ(detailed.value(), 1);
+    CHECK_EQ(bag.countItem("sword") + bag.countItem("gem"), 1);
+}
+
+TEST_CASE("Loot unique entries skip when bag already owns the item") {
+    LootFixture         fixture;
+    eve::inventory::Bag bag(4);
+    REQUIRE_EQ(bag.addItem("sword", 1), 1);
+    std::mt19937        rng(3);
+    eve::rpg::LootEntry uniqueSword{"sword", 1.0, 1, 1, 0.0, true};
+    eve::rpg::LootSystem::registerTable({"unique", {uniqueSword, {"gem", 1.0, 1, 1}}});
+    auto detailed = eve::rpg::LootSystem::rollDetailed("unique", &bag, rng, {});
+    REQUIRE(detailed.ok());
+    CHECK_EQ(detailed.value(), 1);
+    CHECK_EQ(bag.countItem("sword"), 1);
+    CHECK_EQ(bag.countItem("gem"), 1);
+}
+
+TEST_CASE("Loot luck boosts independent chances without mutating on invalid luck") {
+    LootFixture         fixture;
+    eve::inventory::Bag bag(4);
+    std::mt19937        rng(5);
+    const auto          before = rng;
+    eve::rpg::LootSystem::registerTable({"rare", {{"gem", 0.25, 1, 1}}});
+    auto badLuck = eve::rpg::LootSystem::rollDetailed("rare", &bag, rng, {.luck = -2.0});
+    CHECK(!badLuck.ok());
+    CHECK(rng == before);
+    CHECK_EQ(bag.countItem("gem"), 0);
+    // luck=3 scales 0.25 → 1.0 so the Bernoulli always hits for this seed path.
+    auto boosted = eve::rpg::LootSystem::rollDetailed("rare", &bag, rng, {.luck = 3.0});
+    REQUIRE(boosted.ok());
+    CHECK_EQ(boosted.value(), 1);
+    CHECK_EQ(bag.countItem("gem"), 1);
+}
+
+TEST_CASE("Loot JSON weighted unique tables register through selectMode") {
+    LootFixture fixture;
+    REQUIRE_EQ(eve::rpg::LootSystem::registerTablesFromJson(R"([
+      {"id":"json.weighted","selectMode":"weighted","entries":[
+        {"itemId":"sword","weight":1,"minQty":1,"maxQty":1,"unique":true},
+        {"itemId":"gem","weight":1,"minQty":1,"maxQty":1}
+      ]}
+    ])"),
+               1);
+    const auto *table = eve::rpg::LootSystem::find("json.weighted");
+    REQUIRE(table != nullptr);
+    CHECK(table->selectMode == eve::rpg::LootSelectMode::Weighted);
+    CHECK(table->entries[0].unique);
+    CHECK_EQ(table->entries[0].weight, 1.0);
+}
