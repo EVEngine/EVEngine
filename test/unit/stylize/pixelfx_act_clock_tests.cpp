@@ -1705,7 +1705,9 @@ TEST_CASE("stylize.pixelfx.actClock.sourceContract.authoredDetailsAndBorrow") {
     REQUIRE(!stomp.value()->timing()->hits[0].skin);
     auto upper = build(PixelFxKind::Uppercut, PixelFx::defaults(PixelFxKind::Uppercut));
     REQUIRE(upper);
-    for (const auto& key : upper.value()->timing()->poses)
+    const auto upperTiming = upper.value()->timing();
+    REQUIRE(upperTiming);
+    for (const auto& key : upperTiming->poses)
         if (key.time == .3 || key.time == .56) REQUIRE(!key.pose.contains(rig::PoseField::Ghost));
 }
 TEST_CASE("stylize.pixelfx.actClock.sourceContract.boundsTokenAndCacheHistory") {
