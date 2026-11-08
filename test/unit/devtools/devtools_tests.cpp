@@ -476,6 +476,7 @@ TEST_CASE("devtools.ActionGuide validate set get landmarks and absent capture") 
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_whitebox)
 // The source catalogue groups recipe/workshop MCP tests with the whitebox origin.
+#include "devtools/McpAssetKitTools.hpp"
 #include "devtools/McpRecipeTools.hpp"
 #include "devtools/McpTaskProfile.hpp"
 #include "devtools/McpToolFilter.hpp"
@@ -486,6 +487,47 @@ Poco::JSON::Object::Ptr result(const std::string& response) {
     auto               envelope = parser.parse(response).extract<Poco::JSON::Object::Ptr>();
     return parser.parse(envelope->getArray("content")->getObject(0)->getValue<std::string>("text"))
         .extract<Poco::JSON::Object::Ptr>();
+}
+TEST_CASE("devtools.Asset kit list/get/resolve: discover pixel contracts without a live VM") {
+    CHECK(eve::dev::isMcpAssetKitTool("eve_asset_kit_list"));
+    CHECK(eve::dev::isMcpAssetKitTool("eve_asset_kit_get"));
+    CHECK(eve::dev::isMcpAssetKitTool("eve_asset_kit_resolve"));
+    CHECK(!eve::dev::mcpToolMutates("eve_asset_kit_list"));
+    CHECK(!eve::dev::mcpToolMutates("eve_asset_kit_get"));
+    CHECK(!eve::dev::mcpToolMutates("eve_asset_kit_resolve"));
+    CHECK(eve::dev::mcpProfileAllowsTool("verify.play", "eve_asset_kit_list"));
+    CHECK(eve::dev::mcpProfileAllowsTool("content.scene", "eve_asset_kit_get"));
+    CHECK(eve::dev::mcpProfileAllowsTool("verify.play", "eve_asset_kit_resolve"));
+    auto listed = result(eve::dev::callMcpAssetKitTool("eve_asset_kit_list", {}));
+    REQUIRE(listed->getValue<bool>("ok"));
+    CHECK_EQ(listed->getValue<std::string>("api"), std::string("eve.asset-kit.api"));
+    CHECK(listed->getValue<int>("count") >= 3);
+    Poco::JSON::Parser parser;
+    auto filteredArgs =
+        parser.parse(R"({"genre":"card","tag":"ccg"})").extract<Poco::JSON::Object::Ptr>();
+    auto filtered = result(eve::dev::callMcpAssetKitTool("eve_asset_kit_list", filteredArgs));
+    REQUIRE(filtered->getValue<bool>("ok"));
+    CHECK_EQ(filtered->getValue<int>("count"), 1);
+    auto args =
+        parser.parse(R"({"id":"visual-novel.dialogue"})").extract<Poco::JSON::Object::Ptr>();
+    auto kitDoc = result(eve::dev::callMcpAssetKitTool("eve_asset_kit_get", args));
+    REQUIRE(kitDoc->getValue<bool>("ok"));
+    auto kit = kitDoc->getObject("kit");
+    REQUIRE(kit);
+    CHECK_EQ(kit->getValue<std::string>("id"), std::string("visual-novel.dialogue"));
+    REQUIRE(kit->isArray("slots"));
+    CHECK(kit->getArray("slots")->size() >= 2);
+    auto resolveArgs = parser
+                           .parse(R"({"kit":"card.playing","slot":"face","vars":{"suit":"hearts","rank":"A"}})")
+                           .extract<Poco::JSON::Object::Ptr>();
+    auto resolved = result(eve::dev::callMcpAssetKitTool("eve_asset_kit_resolve", resolveArgs));
+    REQUIRE(resolved->getValue<bool>("ok"));
+    auto job = resolved->getObject("job");
+    REQUIRE(job);
+    CHECK_EQ(job->getValue<std::string>("path"), std::string("assets/playing-cards/hearts_A.png"));
+    auto missingArgs = parser.parse(R"({"id":"no.such.kit"})").extract<Poco::JSON::Object::Ptr>();
+    auto missing     = result(eve::dev::callMcpAssetKitTool("eve_asset_kit_get", missingArgs));
+    CHECK(!missing->getValue<bool>("ok"));
 }
 TEST_CASE("devtools.Recipe list: discover recipes without a live VM") {
     CHECK(eve::dev::isMcpRecipeTool("eve_recipe_list"));

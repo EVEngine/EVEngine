@@ -102,10 +102,12 @@ class SdkReleaseArchitectureTests(unittest.TestCase):
         for directory in (
             "src/engine/common", "external/zeroerr/include/zeroerr", "examples/basic",
             "assets/styles", "tools/eve-mcp", ".cursor/skills/evescript", "cmake/sdk",
+            "cmake/sdk/asset-kits",
         ):
             (source / directory).mkdir(parents=True, exist_ok=True)
         for filename in ("LICENSE", "LICENSE-COMMERCIAL", "LICENSE-OPENSOURCE",
-                         ".cursor/skills/evescript/SKILL.md", "cmake/sdk/llms.txt"):
+                         ".cursor/skills/evescript/SKILL.md", "cmake/sdk/llms.txt",
+                         "cmake/sdk/asset-kits/catalog.json"):
             (source / filename).write_text("fixture", encoding="utf-8")
         for filename in ("EVEngineConfig.cmake.in", "EVEnginePlugin.cmake"):
             shutil.copyfile(ROOT / "cmake" / filename, source / "cmake" / filename)
