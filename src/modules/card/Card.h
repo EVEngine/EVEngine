@@ -52,7 +52,20 @@ struct CardPresentationSnapshot {
     bool hovered = false;
     bool dragging = false;
     bool disabled = false;
+    /** @brief Effective face target after hand faceDown/peek resolution. */
     bool faceUp = true;
+    /** @brief Animated face-down progress in [0, 1] (0 = up, 1 = down). */
+    float flip = 0.f;
+    /** @brief Flip rotation about the configured hinge, in degrees (0..180). */
+    float flipAngle = 0.f;
+    /** @brief Lift above the resting plane/layout at the current flip pose. */
+    float flipLift = 0.f;
+    /** @brief Absolute cosine foreshortening for the hinge axis (0 at edge-on). */
+    float flipAxisScale = 1.f;
+    /** @brief Which face texture to bind right now (swaps at the edge-on pinch). */
+    bool showingFront = true;
+    /** @brief Hinge used to produce this pose: 0 = vertical, 1 = horizontal. */
+    int flipAxis = 0;
 };
 
 /** @brief Maps a logical card canvas to a 3D parallelogram without depending on graphics. */
@@ -67,6 +80,20 @@ public:
     bool mapRay(float ox, float oy, float oz, float dx, float dy, float dz);
     /** @brief Map a logical point to the configured world plane. */
     bool mapLayout(float x, float y);
+    /**
+     * @brief Map a card's logical center into a lifted/flipped world pose on the plane.
+     * @param x Logical center X.
+     * @param y Logical center Y.
+     * @param layoutAngleDeg In-plane rotation (Hand fan angle), degrees.
+     * @param flipProgress Animated face-down amount in [0, 1].
+     * @param liftPeak Peak rise along the plane normal at the edge-on midpoint.
+     * @param flipAxis 0 = rotate about local up (width foreshortens), 1 = about local right.
+     * @return Success with cached world position and orthonormal basis U/V/N, or InvalidArgument when
+     * the logical rect or plane axes degenerate.
+     * @remarks Synchronous owner-thread query; does not allocate. Read getters after success.
+     */
+    [[nodiscard]] eve::Result<void> mapCardPose(float x, float y, float layoutAngleDeg, float flipProgress,
+                                                float liftPeak, int flipAxis);
     /** @brief Return the most recently mapped logical X coordinate. */
     float getLogicalX() const { return resultLogicalX_; }
     /** @brief Return the most recently mapped logical Y coordinate. */
@@ -77,18 +104,42 @@ public:
     float getWorldY() const { return resultWorld_.y; }
     /** @brief Return the most recently mapped world Z coordinate. */
     float getWorldZ() const { return resultWorld_.z; }
+    /** @brief Local card right axis after layout rotation and flip (world space). */
+    float getBasisUX() const { return resultBasisU_.x; }
+    /** @brief Basis U Y. */
+    float getBasisUY() const { return resultBasisU_.y; }
+    /** @brief Basis U Z. */
+    float getBasisUZ() const { return resultBasisU_.z; }
+    /** @brief Local card up axis after layout rotation and flip (world space). */
+    float getBasisVX() const { return resultBasisV_.x; }
+    /** @brief Basis V Y. */
+    float getBasisVY() const { return resultBasisV_.y; }
+    /** @brief Basis V Z. */
+    float getBasisVZ() const { return resultBasisV_.z; }
+    /** @brief Card facing normal after flip (world space). */
+    float getBasisNX() const { return resultBasisN_.x; }
+    /** @brief Basis N Y. */
+    float getBasisNY() const { return resultBasisN_.y; }
+    /** @brief Basis N Z. */
+    float getBasisNZ() const { return resultBasisN_.z; }
+    /** @brief Whether the most recent mapCardPose should bind the front face. */
+    bool isShowingFront() const { return resultShowingFront_; }
 
 private:
     glm::vec3 origin_{0.f};
     glm::vec3 axisU_{1.f, 0.f, 0.f};
     glm::vec3 axisV_{0.f, 0.f, 1.f};
     glm::vec3 resultWorld_{0.f};
+    glm::vec3 resultBasisU_{1.f, 0.f, 0.f};
+    glm::vec3 resultBasisV_{0.f, 0.f, 1.f};
+    glm::vec3 resultBasisN_{0.f, 1.f, 0.f};
     float logicalX_ = 0.f;
     float logicalY_ = 0.f;
     float logicalWidth_ = 1.f;
     float logicalHeight_ = 1.f;
     float resultLogicalX_ = 0.f;
     float resultLogicalY_ = 0.f;
+    bool      resultShowingFront_ = true;
 };
 
 /** @brief 卡牌模块入口（eve.Card）：定义注册、对象工厂与每帧 update/render。 */

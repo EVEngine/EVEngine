@@ -7,8 +7,11 @@ runs:
       shell: bash
       run: |
         # Use a fixed full browser; adapter limits are checked and recorded by the test.
+        # Do not pass --with-deps: apt font mirrors on GitHub runners can stall the
+        # job past the step timeout (fonts-unifont / wqy-zenhei). Display + Vulkan
+        # packages are installed explicitly in the next step.
         python3 -m pip install --quiet pillow playwright==1.64.1
-        python3 -m playwright install --with-deps --no-shell chromium
+        python3 -m playwright install --no-shell chromium
     - name: Install browser display and software Vulkan dependencies
       if: runner.os == 'Linux'
       shell: bash

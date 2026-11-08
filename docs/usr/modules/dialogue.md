@@ -6,6 +6,10 @@
 动作转发。**剧情继续用 Squirrel 写**（函数 / generator），不发明第二套 DSL。
 文案可走 `i18n` 翻译表。
 
+**AI 生图尺寸：** 立绘 / 背景不要自拟比例。asset kit `visual-novel.dialogue` 约定
+立绘源图 **1024×1536**（2:3，透明 PNG，显示 256×384）、背景 **1920×1080**（16:9）。
+MCP `eve_asset_kit_get`，或 [`cmake/sdk/asset-kits/`](../../../cmake/sdk/asset-kits/README.md)。
+
 ## 基本用法
 
 ```squirrel

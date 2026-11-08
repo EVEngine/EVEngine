@@ -261,6 +261,30 @@ TEST_CASE("action.ability.eventTriggersAndStepReportUseCanonicalState") {
     CHECK_EQ(end.value().completedCount, std::size_t{1});
     CHECK(runtime.activeActivations().empty());
 }
+
+TEST_CASE("action.ability.rejectsDuplicateStepOnSameTick") {
+    eve::action::ActionRuntime  actions;
+    eve::action::AbilityRuntime runtime(actions);
+    auto                        definition = ability("once");
+    definition.action.timing.active        = eve::Duration::fromNanoseconds(200);
+    definition.cooldown                    = eve::Duration::fromNanoseconds(50);
+    REQUIRE(runtime.registerDefinition(definition).ok());
+    auto grant = runtime.grant("fighter", definition.id);
+    REQUIRE(grant.ok());
+    REQUIRE(runtime.activate(grant.value(), eve::SimulationTick(1)).ok());
+    REQUIRE(runtime.step(eve::SimulationTick(2), eve::Duration::fromNanoseconds(50)).ok());
+    auto grantState = runtime.findGrant(grant.value());
+    REQUIRE(grantState.ok());
+    const auto cooledOnce = grantState.value().cooldownRemaining;
+    auto       duplicate  = runtime.step(eve::SimulationTick(2), eve::Duration::fromNanoseconds(50));
+    REQUIRE(!duplicate.ok());
+    CHECK_EQ(duplicate.status().code(), eve::StatusCode::Conflict);
+    grantState = runtime.findGrant(grant.value());
+    REQUIRE(grantState.ok());
+    CHECK(grantState.value().cooldownRemaining == cooledOnce);
+    CHECK(!runtime.step(eve::SimulationTick(1), eve::Duration::fromNanoseconds(50)).ok());
+    REQUIRE(runtime.step(eve::SimulationTick(3), eve::Duration::fromNanoseconds(50)).ok());
+}
 }  // namespace action_ability_contract
 #endif
 

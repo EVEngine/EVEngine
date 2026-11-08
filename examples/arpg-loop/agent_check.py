@@ -15,7 +15,10 @@ def main():
     client = module.McpClient("127.0.0.1", int(sys.argv[1]) if len(sys.argv) > 1 else 7538)
     output = Path(sys.argv[2] if len(sys.argv) > 2 else "/tmp/arpg-loop-evidence")
     output.mkdir(parents=True, exist_ok=True)
-    client.call("initialize", {"protocolVersion": "2025-06-18", "clientInfo": {"name": "arpg-loop-check", "version": "1"}})
+    client.call(
+        "initialize",
+        {"protocolVersion": "2025-06-18", "clientInfo": {"name": "arpg-loop-check", "version": "1"}},
+    )
     client.send({"jsonrpc": "2.0", "method": "notifications/initialized"})
 
     def play(**request):
@@ -49,17 +52,23 @@ def main():
         raise AssertionError(result)
 
     assert play(op="status")["contractId"] == "examples/arpg-loop"
-    session = tool("eve_agent_session_start", objective="Verify complete ARPG combat-growth-checkpoint loop", criteria=[
-        {"id": "loop", "description": "Three normal-input kills reward XP, gold, quest and gear"},
-        {"id": "restore", "description": "Pending loot and equipped growth survive checkpoint restore without duplication"},
-        {"id": "defeat", "description": "Death blocks combat and save; restart and load clear transient actions"},
-        {"id": "visual", "description": "Engine-owned frame displays the playable slice"},
-    ])["sessionId"]
+    session = tool(
+        "eve_agent_session_start",
+        objective="Verify ARPG camp/arena combat-growth-checkpoint loop",
+        criteria=[
+            {"id": "loop", "description": "Three normal-input kills reward XP, gold, quest and gear"},
+            {"id": "restore", "description": "Pending loot and equipped growth survive checkpoint restore without duplication"},
+            {"id": "defeat", "description": "Death blocks combat and save; restart and load clear transient actions"},
+            {"id": "camp", "description": "Camp side quest and shop do not corrupt combat quest progress"},
+            {"id": "visual", "description": "Engine-owned frame displays the playable slice"},
+        ],
+    )["sessionId"]
     for phase in ("modify", "run"):
         tool("eve_agent_session_advance", sessionId=session, phase=phase)
     play(op="clock", mode="pause")
     act("reset")
     state = step(1)
+    assert state["zone"] == "camp", state
     observations = []
 
     def move_to(x, y):
@@ -75,10 +84,26 @@ def main():
             step(4)
         raise AssertionError("movement did not converge")
 
+    # Camp side quest + failed shop when broke, then enter arena.
+    act("talk")
+    state = step(1)
+    assert state["sideQuest"] in ("active", "completed"), state
+    gold_before_buy = state["gold"]
+    act("buy")
+    state = step(1)
+    assert state["gold"] == gold_before_buy and state["potions"] == 0, state
+    assert state["sideQuest"] in ("active", "completed"), state
+    act("enterArena")
+    state = step(1)
+    assert state["zone"] == "arena" and state["enemyHp"] > 0, state
+
     for kill in range(1, 4):
         if kill > 1:
             act("next")
             state = step(1)
+            if state["zone"] != "arena":
+                act("enterArena")
+                state = step(1)
         for _ in range(250):
             if state["kills"] >= kill:
                 break
@@ -95,42 +120,66 @@ def main():
             state = step(6)
             observations.append(state)
             assert state["hp"] > 0, state
-        assert state["kills"] == kill and state["gold"] == kill * 10, state
+        assert state["kills"] == kill, state
         act("stop")
         if kill == 1:
+            # Camp-only checkpoint before altar pickup: restore must leave cache claimable.
+            act("returnCamp")
+            state = step(1)
+            assert state["zone"] == "camp" and state["pendingLoot"] == 0 and state["gold"] == 10, state
             act("save")
             assert "saved" in step(1)["message"].lower()
-        move_to(790, 170)
-        act("pickup")
-        state = step(1)
-        if kill == 1:
-            act("equip")
-            assert step(1)["attack"] == 26, state
             act("load")
             state = step(1)
-            assert state["items"] == 0 and state["attack"] == 18 and state["pendingLoot"] == 0, state
+            assert state["zone"] == "camp" and state["items"] == 0 and state["attack"] == 18, state
+            assert state["pendingLoot"] == 0 and state["gold"] == 10, state
+            act("enterArena")
+            step(1)
             move_to(790, 170)
             act("pickup")
             step(1)
             act("equip")
             state = step(1)
             assert state["attack"] == 26 and state["gold"] == 10, state
-    assert state["quest"] == "completed" and state["level"] >= 2 and state["items"] == 2, state
-    act("pickup")
+            # Side quest claim after first kill; shop spend must not touch main quest.
+            act("returnCamp")
+            state = step(1)
+            assert state["sideQuest"] == "ready", state
+            act("talk")
+            state = step(1)
+            assert state["gold"] == 18 and state["sideQuest"] == "completed", state
+            main_quest = state["quest"]
+            act("buy")
+            state = step(1)
+            assert state["potions"] == 1 and state["gold"] == 3 and state["quest"] == main_quest, state
+            act("enterArena")
+            state = step(1)
+        else:
+            move_to(790, 170)
+            act("pickup")
+            state = step(1)
+            if kill == 3:
+                assert state["gold"] == 23, state
+    assert state["quest"] == "completed" and state["level"] >= 2 and state["items"] >= 2, state
+    assert state["gold"] == 23, state
+    act("returnCamp")
     state = step(1)
-    assert state["items"] == 2 and state["gold"] == 30 and state["pendingLoot"] == -1, state
+    assert state["zone"] == "camp", state
     act("save")
     step(1)
     act("reset")
     fresh = step(1)
-    assert fresh["hp"] == 100 and fresh["kills"] == 0 and fresh["gold"] == 0, fresh
+    assert fresh["hp"] == 100 and fresh["kills"] == 0 and fresh["gold"] == 0 and fresh["zone"] == "camp", fresh
+    act("enterArena")
+    step(1)
     # Let ordinary AI attacks defeat the idle player; never edit HP through debug APIs.
     death_deadline = time.monotonic() + 90
+    defeated = None
     while time.monotonic() < death_deadline:
         defeated = step(60)
         if defeated["hp"] == 0:
             break
-    assert defeated["hp"] == 0 and defeated["kills"] == 0, defeated
+    assert defeated is not None and defeated["hp"] == 0 and defeated["kills"] == 0, defeated
     act("attack")
     act("heavy")
     act("dodge")
@@ -139,12 +188,13 @@ def main():
     assert after_death["enemyHp"] == defeated["enemyHp"], after_death
     assert after_death["px"] == defeated["px"] and after_death["dodge"] == 0, after_death
     act("save")
-    assert "save after a kill" in step(1)["message"].lower()
+    assert "camp" in step(1)["message"].lower()
     capture("defeat.png")
     act("reset")
     restarted = step(1)
-    assert restarted["hp"] == 100 and restarted["kills"] == 0, restarted
-    # Establish real cooldowns and held movement, then queue more inputs before load.
+    assert restarted["hp"] == 100 and restarted["kills"] == 0 and restarted["zone"] == "camp", restarted
+    act("enterArena")
+    step(1)
     act("heavy")
     act("dodge")
     act("right")
@@ -153,18 +203,45 @@ def main():
     act("attack")
     act("load")
     state = step(1)
-    assert state["px"] == 300 and state["py"] == 360, state
+    assert state["zone"] == "camp" and state["px"] == 120 and state["py"] == 360, state
     for field in ("cooldown", "heavyCooldown", "dodgeCooldown", "strike", "dodge", "windup", "inputX", "inputY"):
         assert state[field] == 0, (field, state)
-    assert state["kills"] == 3 and state["items"] == 2 and state["attack"] == 26 and state["quest"] == "completed", state
+    assert state["kills"] == 3 and state["items"] >= 2 and state["attack"] == 26 and state["quest"] == "completed", state
+    assert state["gold"] == 23 and state["sideQuest"] == "completed", state
     picture = capture("victory-restored.png")
     artifact = output / "observations.json"
-    artifact.write_text(json.dumps({"combat": observations, "defeated": defeated, "restarted": restarted, "beforeLoad": active, "restored": state}, indent=2), encoding="utf-8")
+    artifact.write_text(
+        json.dumps(
+            {
+                "combat": observations,
+                "defeated": defeated,
+                "restarted": restarted,
+                "beforeLoad": active,
+                "restored": state,
+            },
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
     for phase in ("observe", "verify"):
         tool("eve_agent_session_advance", sessionId=session, phase=phase)
-    for criterion, kind, path in [("loop", "runtime-observation", str(artifact.resolve())), ("restore", "runtime-observation", str(artifact.resolve())), ("defeat", "runtime-observation", str(artifact.resolve())), ("visual", "screenshot", picture)]:
-        tool("eve_agent_session_evidence", sessionId=session, criterionId=criterion, kind=kind, status="pass", summary="Normal input acceptance completed", artifact=path)
-    completed = tool("eve_agent_session_complete", sessionId=session, summary="ARPG combat-growth-save loop verified")
+    for criterion, kind, path in [
+        ("loop", "runtime-observation", str(artifact.resolve())),
+        ("restore", "runtime-observation", str(artifact.resolve())),
+        ("defeat", "runtime-observation", str(artifact.resolve())),
+        ("camp", "runtime-observation", str(artifact.resolve())),
+        ("visual", "screenshot", picture),
+    ]:
+        tool(
+            "eve_agent_session_evidence",
+            sessionId=session,
+            criterionId=criterion,
+            kind=kind,
+            status="pass",
+            summary="Normal input acceptance completed",
+            artifact=path,
+        )
+    completed = tool("eve_agent_session_complete", sessionId=session, summary="ARPG camp/arena loop verified")
     assert completed.get("phase") == "complete", completed
     play(op="clock", mode="play")
     print("PASS ARPG loop:", json.dumps(state), "evidence:", output)
