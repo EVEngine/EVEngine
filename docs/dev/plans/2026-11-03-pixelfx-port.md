@@ -137,6 +137,15 @@ all four diagnostic planes against the reference and verified that the original 
 color, light and seed remain unchanged. Access-denial logs expose only rate-reset metadata;
 they never retry a denial or print signed URLs/authorization headers.
 
+### Animation dependency-prefix selection during CI reconfiguration
+
+The Windows debug test step reconfigured a source-built dependency setup to the pinned
+prebuilt package. Animation's private guessed `build/third-party-binary` include roots
+still preceded the selected package and loaded the previous Poco headers, producing
+C4244 errors under the unchanged strict warning policy. Animation now inherits the
+selected install prefix from `eve_engine_includes`; its source-only Assimp bridge roots
+are enabled only for source dependencies. No dependency sources or warning gates change.
+
 ## Validation and review gates
 
 Run against the final PR base/head:
