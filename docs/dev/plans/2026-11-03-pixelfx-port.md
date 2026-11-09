@@ -52,6 +52,15 @@ individual pixel; this must be distinguished from an incorrect effect algorithm.
 bitwise equality across platform math implementations is not claimed. Canonical reference-frame
 expectations and tolerances are not silently rewritten to hide a discrepancy.
 
+Runtime sources, owning test translation units and reference probes share the source-scoped
+`pixelfx/NumericContract.cmake` policy: preserve authored binary64 operation order without FMA
+contraction. Header-defined arithmetic must not be compiled under a different mode in a test
+or probe: a fused inline definition can also be selected by the linker for a runtime call.
+The macOS half-plane failure was reproduced on the original Windows/WSL host: contraction
+changed the strict `-2.375` vertex to `-2.3749999999999929`. Enabling contraction only in tests
+reproduced151 failures,150 overlapping the160 macOS failures, including identical FireballThrow
+hashes. This is a compilation-contract repair, not a new numerical tolerance or oracle change.
+
 On 2026-11-09 the user explicitly approved the first three measured RGB quantization boundaries,
 then separately approved the additional BlizzardVortex frame exposed by completing the suite.
 Each boundary is confined to its frame and the exact pixels/channels below. The pinned upstream

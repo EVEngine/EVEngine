@@ -50,13 +50,9 @@ if(MSVC)
         target_compile_options(${t} PRIVATE /utf-8 /W4 /WX /wd4100 /wd4251 /wd4275)
     endforeach()
 endif()
-foreach(t pixelfx_cpu pixelfx_cpu_dll)
-    if(MSVC OR CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
-        target_compile_options(${t} PRIVATE /fp:strict)
-    elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-        target_compile_options(${t} PRIVATE -ffp-contract=off -fno-fast-math)
-    endif()
-endforeach()
+include("${EVE_ROOT}/src/modules/stylize/pixelfx/NumericContract.cmake")
+eve_pixelfx_preserve_binary64_order(${PIXELFX_SOURCES} ${PIXELFX_TESTS}
+    native_probe.cpp rig_probe.cpp act_probe.cpp)
 
 # Match cmake/link_groups.cmake: static archive state is owned by each ELF image.
 if(UNIX AND NOT APPLE)

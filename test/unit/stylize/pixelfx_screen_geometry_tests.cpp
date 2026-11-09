@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <array>
 #include <bit>
+#include <cstdio>
 #include "stylize/pixelfx/ScreenField.h"
 #include "stylize/pixelfx/ScreenGeometry.h"
 #include "zeroerr/assert.h"
@@ -1301,6 +1302,9 @@ TEST_CASE("stylize.pixelfx.screenGeometry.sourceHalfPlaneInsertionOrder") {
         REQUIRE(result.size() == c.expected.size());
         for (size_t i = 0; i < result.size(); ++i) {
             REQUIRE(result[i].x == c.expected[i].x);
+            if (result[i].y != c.expected[i].y)
+                std::fprintf(stderr, "halfPlane vertex %zu: y=%.17g (%a), expected=%.17g (%a)\n", i, result[i].y,
+                             result[i].y, c.expected[i].y, c.expected[i].y);
             REQUIRE(result[i].y == c.expected[i].y);
         }
     }
