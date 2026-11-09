@@ -5,6 +5,7 @@
 #include <limits>
 #include <span>
 #include <vector>
+#include "PixelFxFrameDiagnostic.h"
 #include "stylize/PixelFx.h"
 #include "stylize/pixelfx/HolyActor.h"
 #include "stylize/pixelfx/HolyFeathers.h"
@@ -195,6 +196,8 @@ TEST_CASE("stylize.pixelfx.holy.featherBurstPhasesMaterialsAndTransactions") {
         uint32_t c = 2166136261u, l = 2166136261u;
         for (auto b : std::as_bytes(fx.color())) c = (c ^ uint8_t(b)) * 16777619u;
         for (auto b : std::as_bytes(fx.light())) l = (l ^ uint8_t(b)) * 16777619u;
+        if (c != expected[i * 2])
+            test_pixelfx_diagnostic::dumpMismatch("holy/feather-burst", times[i], fx.color(), fx.light());
         REQUIRE(c == expected[i * 2]);
         REQUIRE(l == expected[i * 2 + 1]);
     }

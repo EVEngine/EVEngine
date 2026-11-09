@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <limits>
+#include "PixelFxFrameDiagnostic.h"
 #include "stylize/PixelFx.h"
 #include "stylize/pixelfx/SpawnBody.h"
 #include "zeroerr/assert.h"
@@ -1606,6 +1607,8 @@ TEST_CASE("stylize.pixelfx.spawn.poofPinnedSourcePhasesAndTail") {
         REQUIRE(seek);
         REQUIRE(fx.commitSeek(std::move(seek).takeValue()));
         fx.draw();
+        if (checksum(fx.color()) != f.color)
+            test_pixelfx_diagnostic::dumpMismatch("spawn/poof", f.time, fx.color(), fx.light());
         REQUIRE(checksum(fx.color()) == f.color);
         REQUIRE(checksum(fx.light()) == f.light);
     }

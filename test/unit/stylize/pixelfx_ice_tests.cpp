@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <array>
 #include "PixelFxColorReference.h"
+#include "PixelFxFrameDiagnostic.h"
 #include "stylize/PixelFx.h"
 #include "stylize/pixelfx/Ice.h"
 #include "stylize/pixelfx/IceFractures.h"
@@ -1077,6 +1078,8 @@ TEST_CASE("stylize.pixelfx.ice.blizzardVortexSourceLayersAndConfiguration") {
                 {{11448, 0x12feedacu, 0b100}, {11575, 0x1cffefb8u, 0, 0b100}, {12343, 0x22ffeba6u, 0b010}}};
             REQUIRE(test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i], pixels));
         } else {
+            if (checksum(fx.color()) != expected[2 * i])
+                test_pixelfx_diagnostic::dumpMismatch("ice/blizzard-vortex", frames[i] / 120., fx.color(), fx.light());
             REQUIRE(checksum(fx.color()) == expected[2 * i]);
         }
         REQUIRE(checksum(fx.light()) == expected[2 * i + 1]);

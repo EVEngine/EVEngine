@@ -4,6 +4,7 @@
 #include <cmath>
 #include <limits>
 #include "PixelFxColorReference.h"
+#include "PixelFxFrameDiagnostic.h"
 #include "stylize/PixelFx.h"
 #include "stylize/pixelfx/MeleeSwing.h"
 #include "zeroerr/assert.h"
@@ -111,6 +112,8 @@ TEST_CASE("stylize.pixelfx.melee.scytheReapPinnedMaterialsSeedsAndFullTail") {
             REQUIRE(seek);
             REQUIRE(fx.commitSeek(std::move(seek).takeValue()));
             fx.draw();
+            if (checksum(fx.color()) != f.color)
+                test_pixelfx_diagnostic::dumpMismatch("melee/scythe-reap-seed123", f.time, fx.color(), fx.light());
             REQUIRE(checksum(fx.color()) == f.color);
             REQUIRE(checksum(fx.light()) == f.light);
             REQUIRE(fx.actorVisibility() == PixelFxActorVisibility::Visible);
