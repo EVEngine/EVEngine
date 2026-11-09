@@ -197,7 +197,9 @@ TEST_CASE("stylize.pixelfx.holy.featherBurstPhasesMaterialsAndTransactions") {
         for (auto b : std::as_bytes(fx.color())) c = (c ^ uint8_t(b)) * 16777619u;
         for (auto b : std::as_bytes(fx.light())) l = (l ^ uint8_t(b)) * 16777619u;
         if (c != expected[i * 2])
-            test_pixelfx_diagnostic::dumpMismatch("holy/feather-burst", times[i], fx.color(), fx.light());
+            test_pixelfx_diagnostic::dumpSequence("holy/feather-burst", fx, times.size(), [&](size_t j) {
+                return test_pixelfx_diagnostic::ExpectedFrame{times[j], expected[2 * j], expected[2 * j + 1]};
+            });
         REQUIRE(c == expected[i * 2]);
         REQUIRE(l == expected[i * 2 + 1]);
     }

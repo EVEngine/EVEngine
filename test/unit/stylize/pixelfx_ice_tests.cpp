@@ -1079,7 +1079,10 @@ TEST_CASE("stylize.pixelfx.ice.blizzardVortexSourceLayersAndConfiguration") {
             REQUIRE(test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i], pixels));
         } else {
             if (checksum(fx.color()) != expected[2 * i])
-                test_pixelfx_diagnostic::dumpMismatch("ice/blizzard-vortex", frames[i] / 120., fx.color(), fx.light());
+                test_pixelfx_diagnostic::dumpSequence("ice/blizzard-vortex", fx, frames.size(), [&](size_t j) {
+                    return test_pixelfx_diagnostic::ExpectedFrame{frames[j] / 120., expected[2 * j],
+                                                                  expected[2 * j + 1]};
+                });
             REQUIRE(checksum(fx.color()) == expected[2 * i]);
         }
         REQUIRE(checksum(fx.light()) == expected[2 * i + 1]);

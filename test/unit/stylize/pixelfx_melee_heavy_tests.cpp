@@ -113,7 +113,10 @@ TEST_CASE("stylize.pixelfx.melee.scytheReapPinnedMaterialsSeedsAndFullTail") {
             REQUIRE(fx.commitSeek(std::move(seek).takeValue()));
             fx.draw();
             if (checksum(fx.color()) != f.color)
-                test_pixelfx_diagnostic::dumpMismatch("melee/scythe-reap-seed123", f.time, fx.color(), fx.light());
+                test_pixelfx_diagnostic::dumpSequence(
+                    "melee/scythe-reap-seed123", fx, std::size(frames), [&](size_t j) {
+                        return test_pixelfx_diagnostic::ExpectedFrame{frames[j].time, frames[j].color, frames[j].light};
+                    });
             REQUIRE(checksum(fx.color()) == f.color);
             REQUIRE(checksum(fx.light()) == f.light);
             REQUIRE(fx.actorVisibility() == PixelFxActorVisibility::Visible);

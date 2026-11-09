@@ -65,12 +65,15 @@ The remaining macOS Poof failure was captured losslessly at tick24: four color p
 in position/alpha while the entire light plane matched. Moving only the floor-capped speed-line
 endpoint across `y=-2` in the pristine upstream painter reproduced the complete macOS color
 plane byte-for-byte. Darwin-target Clang output combines adjacent sin/cos calls into
-`__sincos_stret`, whereas the radius constructor calls sin alone. Poof now retains and reuses
-the exact sine that defined that immutable line's radius; it does not clamp coordinates or
-relax alpha/geometry assertions. Local reference comparison covers every tick0..32 for seeds21,
-0,123 and4294967295: all132 color/light frame pairs match exactly. The regression also pins
-eight full-frame color/light pairs, including seed4294967295 whose source raster would be
-changed by simply clamping the endpoint to the floor. Hosted macOS verification remains required.
+`__sincos_stret`, whereas the radius constructor calls sin alone. Reusing the constructor's
+sine did not resolve the actual macOS failure and that candidate was withdrawn. The original
+source arithmetic and strict alpha/geometry assertions remain in force. The regression pins
+eight full-frame color/light pairs, including seed4294967295 whose source raster would change
+under exact floor clipping. A separately measured candidate uses the defining floor only after
+a limited ray head reaches its cap: GCC/MSVC agree on132 frames/264 planes for four seeds and
+all six original Poof contracts remain exact. It changes the original V8 seed4294967295 color
+frames at ticks18..27, including four newly pinned regression frames. That semantic change and
+the corresponding four reference updates have not been applied; they require user approval.
 
 On 2026-11-09 the user explicitly approved the first three measured RGB quantization boundaries,
 then separately approved the additional BlizzardVortex frame exposed by completing the suite.
@@ -97,6 +100,35 @@ reference evidence before that point and alternate-seed dense coverage are retai
 
 The numerical-library experiment in EVEngine/third-party PR10 was closed at user request and
 is not consumed by this change. Source, prebuilt and SDK dependency ownership remain unchanged.
+
+Pinned dependency release transfers retry transient network/5xx failures at most three times
+per file, on the same official URL, with30-second network-operation timeouts and at most60 seconds of
+server-directed/backoff waits. Partial files are truncated before retry; SHA256 and package
+identity checks still precede installation. HTTP401/403/429 and certificate verification
+failures remain fatal and cannot select another route or AUTO source acquisition.
+
+The WebGPU SDK acquisition step feeds its already verified Dawn archive into Emscripten's
+normal port source cache before compilation, instead of downloading the identical archive
+again during prewarm. Both the existing SHA256 lock and Emscripten's upstream SHA512 identity
+are checked. Cache publication is staged; existing mismatched contents are rejected rather
+than overwritten. No dependency code, headers, include paths or compiler tests are replaced.
+The unmodified Emscripten6.0.9 loader (source4e4223852a0835923411059a3929907d7df1232e)
+loaded the real locked port from that cache with zero network requests in a local transport
+contract check. This is cache-loading evidence; actual WebGPU compile/browser checks remain
+required in CI.
+
+Android retains Gradle8.5 and uses its official downloads.gradle.org distribution entry point
+in both the APK wrapper and the SDK tool default. The APK wrapper also pins the official
+SHA256 `9d926787066a081739e8200858338b4a69e837c3a821a33aca9db09dd4a41026`.
+An entire132519731-byte transfer through that entry point matched the digest locally without
+retaining the archive. No Gradle wrapper implementation or version is changed.
+
+On a strict frame failure, diagnostic sampling uses a separate instance with the same settings
+to inspect every pinned time in that scenario before the original assertion aborts. Existing
+expected hashes and fatal assertions remain unchanged. A local seeded two-frame probe verified
+all four diagnostic planes against the reference and verified that the original instance's
+color, light and seed remain unchanged. Access-denial logs expose only rate-reset metadata;
+they never retry a denial or print signed URLs/authorization headers.
 
 ## Validation and review gates
 

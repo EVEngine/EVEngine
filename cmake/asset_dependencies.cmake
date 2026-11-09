@@ -50,8 +50,15 @@ function(eve_download_archive_with_retries url outfile expected_sha256)
                 "Download failed for ${_eve_url}: ${_eve_dl_status}; HTTP: ${_eve_http_status}")
             if(_eve_http_status MATCHES "HTTP/[0-9.]+ (401|403|429)")
                 file(REMOVE "${outfile}")
+                # Publish only non-secret reset metadata, never signed redirect
+                # URLs, cookies, authorization headers or response bodies.
+                string(TOLOWER "${_eve_dl_log}" _eve_dl_log_lower)
+                string(REGEX MATCHALL
+                    "(x-ratelimit-(remaining|reset)|retry-after):[^\r\n]+"
+                    _eve_reset_headers "${_eve_dl_log_lower}")
                 message(FATAL_ERROR
-                    "Access or rate-limit response; stopping without retrying or changing routes")
+                    "Access or rate-limit response; stopping without retrying or changing routes. "
+                    "Server reset metadata: ${_eve_reset_headers}")
             endif()
         endif()
         if(EXISTS "${outfile}")

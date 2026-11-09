@@ -89,6 +89,7 @@ jobs:
         timeout-minutes: 10
         run: |
           set -euo pipefail
+          source "$HOME/emsdk/emsdk_env.sh"
           mkdir -p artifacts/webgpu-dependencies
           archive="artifacts/webgpu-dependencies/emdawnwebgpu.zip"
           # Same locked v20260423.175430 asset via the release API; the verifier
@@ -99,10 +100,12 @@ jobs:
             python3 -c 'from pathlib import Path; from scripts.ci_result import CIResult, FailureKind; CIResult.failure(FailureKind.INFRASTRUCTURE, "WEBGPU_DEPENDENCY_DOWNLOAD_FAILED", "webgpu-dependencies", "failed to download the locked emdawnwebgpu archive after retries").write(Path("artifacts/webgpu-dependencies/ci-result.json"))'
             exit 1
           fi
+          webgpu_ports="$(em-config PORTS)"
           python3 scripts/verify_webgpu_dependencies.py \
             --lock cmake/webgpu_dependencies.json \
             --archive "$archive" \
             --emscripten-version "$EMSCRIPTEN_VERSION" \
+            --port-cache "$webgpu_ports" \
             --result-json artifacts/webgpu-dependencies/ci-result.json
 
       - name: Prewarm Emscripten WebGPU port

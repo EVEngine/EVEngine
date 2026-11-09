@@ -23,6 +23,10 @@ class AssetDependencyDownloadTests(unittest.TestCase):
             def do_GET(self) -> None:
                 requests.append(self.path)
                 self.send_response(403 if self.path == "/denied" else 503 if self.path == "/fail" else 200)
+                if self.path == "/denied":
+                    self.send_header("X-RateLimit-Remaining", "0")
+                    self.send_header("X-RateLimit-Reset", "1700000000")
+                    self.send_header("Authorization", "must-not-be-logged")
                 self.end_headers()
                 self.wfile.write(payload if self.path == "/good" else b"invalid bytes")
 
@@ -82,6 +86,8 @@ class AssetDependencyDownloadTests(unittest.TestCase):
                 self.assertEqual(requests, ["/denied"])
                 self.assertFalse(output.exists())
                 self.assertIn("Access or rate-limit response", denied.stderr)
+                self.assertRegex(denied.stderr, r"x-ratelimit-reset:\s+1700000000")
+                self.assertNotIn("must-not-be-logged", denied.stderr)
         finally:
             server.shutdown()
             server.server_close()
