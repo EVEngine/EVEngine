@@ -65,15 +65,22 @@ The remaining macOS Poof failure was captured losslessly at tick24: four color p
 in position/alpha while the entire light plane matched. Moving only the floor-capped speed-line
 endpoint across `y=-2` in the pristine upstream painter reproduced the complete macOS color
 plane byte-for-byte. Darwin-target Clang output combines adjacent sin/cos calls into
-`__sincos_stret`, whereas the radius constructor calls sin alone. Reusing the constructor's
-sine did not resolve the actual macOS failure and that candidate was withdrawn. The original
-source arithmetic and strict alpha/geometry assertions remain in force. The regression pins
-eight full-frame color/light pairs, including seed4294967295 whose source raster would change
-under exact floor clipping. A separately measured candidate uses the defining floor only after
-a limited ray head reaches its cap: GCC/MSVC agree on132 frames/264 planes for four seeds and
-all six original Poof contracts remain exact. It changes the original V8 seed4294967295 color
-frames at ticks18..27, including four newly pinned regression frames. That semantic change and
-the corresponding four reference updates have not been applied; they require user approval.
+`__sincos_stret`, whereas the radius constructor calls sin alone. Reusing libm's constructor
+sine alone did not resolve the actual macOS failure. The strict repair evaluates downward
+construction-angle sine with an independently authored compensated binary64 series: high/low
+pi reduction,20 Taylor correction steps and explicit fma product-error recovery. It runs only during
+construction; floor-limited rays retain that same computed value, and other rays keep their
+original draw-time math. It introduces no dependency implementation or numerical library.
+The regression pins eight original full-frame color/light pairs, including seed4294967295
+whose source raster would change under exact floor clipping. All original reference hashes
+and strict alpha/geometry assertions remain unchanged. Seven Poof cases/2724 assertions pass
+under GCC, Clang and both MSVC linkage routes. GCC and MSVC each match the original source on
+all132 frames/264 planes for four seeds. A separate6192-direction diagnostic contains2025
+floor-limited rays; the compensated calculation introduces no additional endpoint-row
+disagreement relative to the existing GCC baseline (both retain20 disagreements with V8).
+That direction-only observation is not a claim of full-frame or universal source parity.
+Actual macOS verification of the strict repair remains required. The separately measured
+exact-floor semantic candidate and its four reference updates remain unapplied.
 
 On 2026-11-09 the user explicitly approved the first three measured RGB quantization boundaries,
 then separately approved the additional BlizzardVortex frame exposed by completing the suite.

@@ -6,11 +6,50 @@
 namespace eve::stylize::pixelfx {
 namespace {
 constexpr double CY = -17;
+// Downward construction angles lie in [0.01, PI). Evaluate their sine
+// with compensated binary64 arithmetic once, rather than allowing a libm's
+// last bit to change which row a floor-capped ray ends on. Explicit fma
+// recovers product errors; all other operations retain the numeric contract.
+struct DirectionWide {
+    double hi, lo;
+};
+DirectionWide directionAdd(DirectionWide a, DirectionWide b) {
+    const double sum = a.hi + b.hi, v = sum - a.hi;
+    const double error = ((a.hi - (sum - v)) + (b.hi - v)) + a.lo + b.lo;
+    const double hi    = sum + error;
+    return {hi, error - (hi - sum)};
+}
+DirectionWide directionNegate(DirectionWide a) { return {-a.hi, -a.lo}; }
+DirectionWide directionMultiply(DirectionWide a, DirectionWide b) {
+    const double product = a.hi * b.hi;
+    const double error   = std::fma(a.hi, b.hi, -product) + a.hi * b.lo + a.lo * b.hi + a.lo * b.lo;
+    const double hi      = product + error;
+    return {hi, error - (hi - product)};
+}
+DirectionWide directionDivide(DirectionWide a, double divisor) {
+    const double quotient  = a.hi / divisor;
+    const double remainder = std::fma(-quotient, divisor, a.hi) + a.lo;
+    return directionAdd({quotient, 0}, {remainder / divisor, 0});
+}
+double directionSine(double angle) {
+    // The low component is mathematical pi minus the binary64 PI constant.
+    constexpr DirectionWide pi{PI, 1.2246467991473532e-16};
+    DirectionWide           x{angle, 0};
+    if (x.hi > PI / 2) x = directionAdd(pi, directionNegate(x));
+    const auto square = directionMultiply(x, x);
+    auto       term = x, sum = x;
+    for (int n = 1; n <= 20; ++n) {
+        term = directionDivide(directionNegate(directionMultiply(term, square)), double((2 * n) * (2 * n + 1)));
+        sum  = directionAdd(sum, term);
+    }
+    return sum.hi + sum.lo;
+}
 struct Ball {
     double x, y, vx, vy, r0, r1, life, delay, max;
 };
 struct SpeedLine {
-    double angle, radius, delay;
+    double angle, radius, delay, floorSine;
+    bool   floorLimited;
 };
 struct PoofEmission {
     ParticleKind kind;
@@ -45,8 +84,10 @@ struct Poof final : Kernel {
         }
         for (auto& b : balls) b.max = b.life;
         for (size_t i = 0; i < lines.size(); ++i) {
-            const double a = (double(i) / 12) * TAU + R.range(-.12, .12) + .13, sa = std::sin(a);
-            lines[i] = {a, std::min(R.range(24, 34), sa > .1 ? (-2 - CY) / sa : 99), R.range(0, .04)};
+            // Upward rays do not meet the floor and keep their original draw-time math.
+            const double a = (double(i) / 12) * TAU + R.range(-.12, .12) + .13, sa = a < PI ? directionSine(a) : 0;
+            const double radius = R.range(24, 34), floorRadius = sa > .1 ? (-2 - CY) / sa : 99;
+            lines[i] = {a, std::min(radius, floorRadius), R.range(0, .04), sa, floorRadius <= radius};
         }
         for (int i = 0; i < 7; ++i) {
             const double a = R.range(-PI, .3), sp = R.range(70, 125);
@@ -134,7 +175,8 @@ struct Poof final : Kernel {
             const double u = (t - l.delay) / .2;
             if (u <= 0 || u >= 1) continue;
             const double head = 8 + (l.radius - 8) * ease::outExpo(clamp(u / .6)),
-                         tail = 8 + (l.radius - 8) * ease::inCubic(u), ca = std::cos(l.angle), sa = std::sin(l.angle);
+                         tail = 8 + (l.radius - 8) * ease::inCubic(u), ca = std::cos(l.angle),
+                         sa = l.floorLimited ? l.floorSine : std::sin(l.angle);
             p.lineFn(
                 ca * tail, CY + sa * tail, ca * head, CY + sa * head, [&](double v) { return v > .6 ? WHITE : C[4]; },
                 1.);
