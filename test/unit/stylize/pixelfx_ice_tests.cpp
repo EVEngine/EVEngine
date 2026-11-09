@@ -1,6 +1,7 @@
 // Ice-family projection and independently layered motes; the core suite exceeds 5000 lines.
 #include <algorithm>
 #include <array>
+#include "PixelFxColorReference.h"
 #include "stylize/PixelFx.h"
 #include "stylize/pixelfx/Ice.h"
 #include "stylize/pixelfx/IceFractures.h"
@@ -1066,7 +1067,18 @@ TEST_CASE("stylize.pixelfx.ice.blizzardVortexSourceLayersAndConfiguration") {
     REQUIRE(!fx.isSimulated());
     for (size_t i = 0; i < frames.size(); ++i) {
         fx.render(frames[i] / 120.);
-        REQUIRE(checksum(fx.color()) == expected[2 * i]);
+        if (frames[i] == 48) {
+            // Pinned upstream pixel (71,64): only G=235/236 differs between V8/MSVC and GCC.
+            REQUIRE(
+                test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i], {8263, 0xffffeba6u, 0b010}));
+        } else if (frames[i] == 120) {
+            // Additional approved frame: B+1 at (56,89), B-1 at (55,90), G+1 at (55,96).
+            constexpr std::array<test_pixelfx_reference::RoundingPixel, 3> pixels{
+                {{11448, 0x12feedacu, 0b100}, {11575, 0x1cffefb8u, 0, 0b100}, {12343, 0x22ffeba6u, 0b010}}};
+            REQUIRE(test_pixelfx_reference::matchesColorReference(fx.color(), expected[2 * i], pixels));
+        } else {
+            REQUIRE(checksum(fx.color()) == expected[2 * i]);
+        }
         REQUIRE(checksum(fx.light()) == expected[2 * i + 1]);
     }
     constexpr std::array<int, 12>      lightFrames{{0, 4, 12, 24, 48, 72, 96, 120, 144, 180, 216, 240}};

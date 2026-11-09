@@ -2293,6 +2293,7 @@ TEST_CASE("stylize.pixelfx.playback.ownerDestructionAndTerminalClock") {
 #include <array>
 #include <cmath>
 #include <vector>
+#include "PixelFxColorReference.h"
 #include "stylize/pixelfx/Explosion.h"
 #include "stylize/pixelfx/Rig.h"
 #include "stylize/pixelfx/Simulation.h"
@@ -2312,6 +2313,58 @@ std::array<uint64_t, 5> metrics(std::span<const uint32_t> pixels) {
     return out;
 }
 }  // namespace
+TEST_CASE("stylize.pixelfx.core.colorReferenceMeasuredRoundingBoundaries") {
+    using test_pixelfx_reference::matchesColorReference;
+    using test_pixelfx_reference::RoundingPixel;
+    constexpr std::array<uint32_t, 3> expected{{0xff102030u, 0x555f6981u, 0xff405060u}};
+    constexpr RoundingPixel           reference{1, expected[1], 0b010};
+    constexpr uint32_t                hash = 0x39eb7943u;  // Independent three-pixel RGBA fixture FNV-1a.
+    REQUIRE(matchesColorReference(expected, hash, reference));
+    auto actual = expected;
+    actual[1] += 0x100u;
+    const auto unchanged = actual;
+    REQUIRE(matchesColorReference(actual, hash, reference));
+    REQUIRE(actual == unchanged);
+    for (uint32_t delta : {0x200u, 1u, 0x10000u, 0x1000000u, 0x101u}) {
+        actual = expected;
+        actual[1] += delta;
+        REQUIRE(!matchesColorReference(actual, hash, reference));
+    }
+    actual = expected;
+    actual[1] -= 0x100u;
+    REQUIRE(!matchesColorReference(actual, hash, reference));
+    actual    = expected;
+    actual[1] = 0;
+    REQUIRE(!matchesColorReference(actual, hash, reference));
+    actual = expected;
+    actual[0] += 0x100u;
+    REQUIRE(!matchesColorReference(actual, hash, reference));
+    actual = expected;
+    actual[2] += 1u;
+    REQUIRE(!matchesColorReference(actual, hash, reference));
+    REQUIRE(!matchesColorReference(expected, hash, {expected.size(), expected[1], 0b010}));
+    REQUIRE(!matchesColorReference(expected, hash, {1, expected[1], 0b1000}));
+    actual    = expected;
+    actual[1] = 0xfff1ffd7u;
+    REQUIRE(matchesColorReference(actual, 0xcaac2ebfu, {1, 0xfff1ffd7u, 0b101}));
+    actual[1] += 0x10001u;
+    REQUIRE(matchesColorReference(actual, 0xcaac2ebfu, {1, 0xfff1ffd7u, 0b101}));
+    actual[1] += 0x100u;
+    REQUIRE(!matchesColorReference(actual, 0xcaac2ebfu, {1, 0xfff1ffd7u, 0b101}));
+    constexpr std::array<RoundingPixel, 2> multiple{{{0, expected[0], 0, 0b001}, {1, expected[1], 0b010}}};
+    actual = expected;
+    actual[0] -= 1u;
+    actual[1] += 0x100u;
+    REQUIRE(matchesColorReference(actual, hash, multiple));
+    actual[0] -= 1u;
+    REQUIRE(!matchesColorReference(actual, hash, multiple));
+    constexpr std::array<RoundingPixel, 2> duplicate{{reference, reference}};
+    REQUIRE(!matchesColorReference(expected, hash, duplicate));
+    constexpr std::array<RoundingPixel, 2> reversed{{reference, {0, expected[0], 0b001}}};
+    REQUIRE(!matchesColorReference(expected, hash, reversed));
+    REQUIRE(!matchesColorReference(expected, hash, {1, expected[1], 0, 0b1000}));
+    REQUIRE(!matchesColorReference(expected, hash, {1, expected[1], 0b010, 0b010}));
+}
 TEST_CASE("stylize.pixelfx.core.mathReference") {
     constexpr uint32_t expectedRng[] = {50271532u,   266108690u,  4195786334u, 3002305430u, 2239590375u, 1741702388u,
                                         2002453909u, 1030470827u, 2376515373u, 3134562008u, 1107309403u, 669793123u};

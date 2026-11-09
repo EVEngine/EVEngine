@@ -52,6 +52,25 @@ individual pixel; this must be distinguished from an incorrect effect algorithm.
 bitwise equality across platform math implementations is not claimed. Canonical reference-frame
 expectations and tolerances are not silently rewritten to hide a discrepancy.
 
+On 2026-11-09 the user explicitly approved the first three measured RGB quantization boundaries,
+then separately approved the additional BlizzardVortex frame exposed by completing the suite.
+Each boundary is confined to its frame and the exact pixels/channels below. The pinned upstream
+reference export was regenerated and compared with the current GCC native output. Only the
+observed directional one-level channel difference is admitted; alpha and every other channel/pixel
+remain exact. The original full-frame hashes are retained: after checking the measured pixel,
+the comparison hashes its canonical reference value with all other actual pixels unchanged.
+Light-plane assertions remain exact, and this approval does not apply to other macOS failures.
+
+- BlizzardVortex, default seed17, tick48 (`0.4s`), 128x116 pixel(71,64): G235/236.
+- BlizzardVortex, default seed17, tick120 (`1.0s`), 128x116: pixel(56,89) B254/255,
+  pixel(55,90) B255/254, pixel(55,96) G235/236. All three alpha values remain exact.
+- ScytheReap, seed0, tick49 (`0.4083333333333333s`), 184x116 pixel(142,60): R215/216, B241/242.
+- EarthStomp, default seed1, tick166 (`1.3833333333333333s`), 290x142 pixel(181,124): G105/106;
+  alpha remains85.
+
+Counterexamples must reject a two-level difference, changes to an unselected channel,
+alpha, or any neighboring pixel, as well as an invalid reference index/channel mask.
+
 Pristine ShadowTendrils seed3 reaches a nonfinite line-width path around tick59 and can loop
 indefinitely upstream. The native finite-input guard is documented as PIXELFX-SOURCE-001;
 reference evidence before that point and alternate-seed dense coverage are retained locally.
