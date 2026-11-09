@@ -709,6 +709,12 @@ jobs:
         timeout-minutes: 60
         run: bash .github/scripts/consumer-test.sh "$HOST" "$TAG" "$RUNNER_TEMP/consumer"
 
+      - name: Verify Windows publication-lock race with the built SDK
+        timeout-minutes: 5
+        env:
+          EVENGINE_PACKAGE_TEST_SDK: ${{ runner.temp }}/consumer/eve-sdk/win32
+        run: python3 -X utf8 -m unittest scripts.tests.test_windows_package_publish
+
       - name: Upload android APK
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

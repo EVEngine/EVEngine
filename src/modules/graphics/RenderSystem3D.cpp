@@ -40,6 +40,7 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/vec3.hpp>
+#include <unordered_map>
 #include <vector>
 
 namespace eve::graphics {
@@ -1037,7 +1038,7 @@ void RenderSystem3D::render(Graphics& gfx) {
     // Single ECS traversal: one model matrix, one LOD pick, one set of
     // sphere-vs-frustum tests per part. Passes below only replay the list.
     std::vector<CulledItem> items;
-    items.reserve(64);
+    items.reserve(1024);
     if (haveManager) {
         auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
         for (auto it = view.begin(); it != view.end(); ++it) {
@@ -1049,7 +1050,7 @@ void RenderSystem3D::render(Graphics& gfx) {
             }
             Camera3D *camEnt = mr->camera ? mr->camera : defaultCam;
             if (!camEnt) continue;
-            const int         camIdx        = findOrAddCam(camEnt);
+            const int         camIdx        = camEnt == defaultCam ? 0 : findOrAddCam(camEnt);
             const CameraView& cv            = cams[size_t(camIdx)];
             const float       dx            = xf->x - cv.eye.x;
             const float       dy            = xf->y - cv.eye.y;
@@ -1111,15 +1112,19 @@ void RenderSystem3D::render(Graphics& gfx) {
                     item.worldR = glm::length(half) * maxScale;
                     item.inView = meshInstanceRangeVisible(range, model, cv.cullViewProj, cv.eye);
                     item.inDefaultView =
-                        defaultCam ? meshInstanceRangeVisible(range, model, cams[0].cullViewProj, cams[0].eye) : true;
+                        !defaultCam || camIdx == 0
+                            ? item.inView
+                            : meshInstanceRangeVisible(range, model, cams[0].cullViewProj, cams[0].eye);
                 } else if (drawMesh->hasBounds()) {
                     const glm::vec4 c4 =
                         model * glm::vec4(drawMesh->boundsCx, drawMesh->boundsCy, drawMesh->boundsCz, 1.f);
                     item.worldC        = glm::vec3(c4);
                     item.worldR        = drawMesh->boundsRadius * maxScale;
                     item.inView        = cv.frustum.sphereVisible(item.worldC, item.worldR);
-                    item.inDefaultView = defaultCam ? cams[0].frustum.sphereVisible(item.worldC, item.worldR) : true;
-                    const Camera3D::Data* shadowCamera   = defaultCam ? defaultCam->data().operator->() : cv.data;
+                    item.inDefaultView                 = !defaultCam || camIdx == 0
+                                                             ? item.inView
+                                                             : cams[0].frustum.sphereVisible(item.worldC, item.worldR);
+                    const Camera3D::Data* shadowCamera = defaultCam ? cams[0].data : cv.data;
                     const float           shadowDistance = shadowCamera->shadowLayerCullDistances[size_t(mr->layer)];
                     if (shadowCaster && shadowActive && castsShadow &&
                         (shadowDistance <= 0.f || dist <= shadowDistance)) {
@@ -1132,7 +1137,7 @@ void RenderSystem3D::render(Graphics& gfx) {
                     // No bounds (e.g. legacy/imported mesh): never cull.
                     item.inView                          = true;
                     item.inDefaultView                   = true;
-                    const Camera3D::Data* shadowCamera   = defaultCam ? defaultCam->data().operator->() : cv.data;
+                    const Camera3D::Data* shadowCamera   = defaultCam ? cams[0].data : cv.data;
                     const float           shadowDistance = shadowCamera->shadowLayerCullDistances[size_t(mr->layer)];
                     if (shadowCaster && shadowActive && castsShadow &&
                         (shadowDistance <= 0.f || dist <= shadowDistance))
@@ -1292,7 +1297,26 @@ void RenderSystem3D::render(Graphics& gfx) {
 
     // GPU-driven opaque is a ForwardPlus path; Hybrid lights core opaque via
     // deferredLighting and must not also submit GPU-driven lit draws.
-    const bool gpuDrivenWanted = !doDeferredLighting && rc->isEnabled("gpuDriven") && gfx.supportsGpuDriven3D();
+    // Repeated opaque mesh/material pairs are cheaper as one instanced indirect
+    // draw. Keep the explicit feature for smaller scenes and other backends.
+    bool autoInstance = false;
+    if (!rc->isEnabled("gpuDriven") && !doDeferredLighting && !useClustered && defaultCam &&
+        gfx.getBackendName() == "vulkan" && gfx.supportsGpuDriven3D()) {
+        std::unordered_map<Material*, std::unordered_map<Mesh*, uint32_t>> counts;
+        for (const CulledItem& item : items) {
+            if (!item.inView || item.shadowsOnly || item.camIdx != 0 || !item.material ||
+                item.surfaceMode != SurfaceMode::Opaque || item.shader || item.hair || item.xray ||
+                item.speedTreeFade || item.lodWeight < 0.9999f || item.mr->instances || item.mr->camera ||
+                item.mesh->hasGpuSkinning() || item.lightProbeUsage != 0 || !gfx.gpuDrivenMaterialUsable(item.material))
+                continue;
+            if (++counts[item.material][item.mesh] >= 128) {
+                autoInstance = true;
+                break;
+            }
+        }
+    }
+    const bool gpuDrivenWanted =
+        !doDeferredLighting && (rc->isEnabled("gpuDriven") || autoInstance) && gfx.supportsGpuDriven3D();
     gfx.gpuDrivenSetEnabled(gpuDrivenWanted);
 
     if (defaultCam) {
@@ -1571,7 +1595,9 @@ void RenderSystem3D::render(Graphics& gfx) {
             gpuOpaque.reserve(opaque.size());
             cpuOpaque.reserve(opaque.size());
             for (const CulledItem* it : opaque) {
-                if (it->mesh->hasGpuSkinning() || it->camIdx != 0 || !it->material || it->mr->camera != nullptr ||
+                if ((autoInstance && (it->surfaceMode != SurfaceMode::Opaque || it->hair || it->xray ||
+                                      it->speedTreeFade || it->lodWeight < 0.9999f || it->mr->instances)) ||
+                    it->mesh->hasGpuSkinning() || it->camIdx != 0 || !it->material || it->mr->camera != nullptr ||
                     it->material->effectiveShader() != nullptr || it->lightProbeUsage != 0 ||
                     !gfx.gpuDrivenMaterialUsable(it->material))
                     cpuOpaque.push_back(it);
@@ -1596,6 +1622,18 @@ void RenderSystem3D::render(Graphics& gfx) {
 
                 std::vector<eve::graphics::GpuInstance> instances;
                 instances.reserve(gpuOpaque.size());
+                std::unordered_map<Material*, uint32_t> materialIds;
+                std::unordered_map<Mesh*, uint32_t>     meshIds;
+                auto                                    materialId = [&](Material* material) {
+                    auto [entry, inserted] = materialIds.try_emplace(material);
+                    if (inserted) entry->second = gfx.gpuDrivenMaterialRecord(material);
+                    return entry->second;
+                };
+                auto meshId = [&](Mesh* mesh) {
+                    auto [entry, inserted] = meshIds.try_emplace(mesh);
+                    if (inserted) entry->second = gfx.gpuDrivenMeshRecord(mesh);
+                    return entry->second;
+                };
                 bool       recordsOk     = true;
                 bool       vgAny         = false;
                 const bool resolveWanted = gfx.gpuDrivenResolveWanted();
@@ -1606,7 +1644,7 @@ void RenderSystem3D::render(Graphics& gfx) {
                     const uint32_t vgAsset =
                         resolveWanted ? gfx.gpuDrivenVgAssetId(it->mesh) : eve::graphics::kInvalidGpuDrivenSlot;
                     if (vgAsset != eve::graphics::kInvalidGpuDrivenSlot && probes.count == 0) {
-                        const uint32_t matId = gfx.gpuDrivenMaterialRecord(it->material);
+                        const uint32_t matId = materialId(it->material);
                         if (matId == eve::graphics::kInvalidGpuDrivenSlot) {
                             recordsOk = false;
                             break;
@@ -1616,8 +1654,8 @@ void RenderSystem3D::render(Graphics& gfx) {
                     }
                     eve::graphics::GpuInstance inst{};
                     inst.model                  = it->model;
-                    inst.meshId                 = gfx.gpuDrivenMeshRecord(it->mesh);
-                    inst.materialId             = gfx.gpuDrivenMaterialRecord(it->material);
+                    inst.meshId                 = meshId(it->mesh);
+                    inst.materialId             = materialId(it->material);
                     inst.reflectionProbeSlots.z = uint32_t(probes.count);
                     for (int probeIndex = 0; probeIndex < probes.count; ++probeIndex) {
                         const auto&    probe = probes.probes[probeIndex];
@@ -1645,7 +1683,7 @@ void RenderSystem3D::render(Graphics& gfx) {
                 }
                 if (recordsOk) {
                     // Stage 2: GPU frustum/HZB cull + GPU-written indirect commands.
-                    if (gfx.gpuDrivenCullEnabled() && !instances.empty() &&
+                    if (rc->isEnabled("gpuDriven") && gfx.gpuDrivenCullEnabled() && !instances.empty() &&
                         gfx.gpuDrivenCullBegin(instances.data(), uint32_t(instances.size()))) {
                         gfx.gpuDrivenCullEmit(cv.cullViewProj, eye, cd->fovYDeg, cd->nearZ, cd->farZ);
                         if (gfx.gpuDrivenResolveWanted()) {
@@ -1659,7 +1697,7 @@ void RenderSystem3D::render(Graphics& gfx) {
                             gfx.gpuDrivenDrawOpaque();
                         }
                         gpuDrivenUsed = true;
-                    } else if (gfx.gpuDrivenCullEnabled() && instances.empty() && vgAny) {
+                    } else if (rc->isEnabled("gpuDriven") && gfx.gpuDrivenCullEnabled() && instances.empty() && vgAny) {
                         // VG-only frame: no instance chain; the vis pass runs the
                         // VG cluster cull + draws + resolve.
                         gfx.gpuDrivenVgComputeSection(cv.cullViewProj, eye, cd->fovYDeg, cd->nearZ, cd->farZ);

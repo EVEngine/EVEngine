@@ -23,7 +23,7 @@
     "package": "vsce package --no-dependencies"
   },
   "devDependencies": {
-    "@vscode/vsce": "^4.0.0"
+    "@vscode/vsce": "^4.1.0"
   },
   "contributes": {
     "configuration": {
